@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanzas 101 - Guía Completa de Inversión</title>
+    <meta name="description" content="Guía interactiva de finanzas e inversión: calculadora de interés compuesto, simulador de cartera, test de perfil inversor, quiz y más.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.10.3/umd/Recharts.min.js"></script>
+    <script src="https://unpkg.com/lucide-react@0.263.1/dist/umd/lucide-react.min.js"></script>
+    <style>
+        * { scrollbar-width: thin; scrollbar-color: #f9a8d4 transparent; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background-color: #f9a8d4; border-radius: 3px; }
+        input[type="range"] { -webkit-appearance: none; appearance: none; height: 8px; border-radius: 4px; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #10b981; cursor: pointer; border: 2px solid white; }
+        input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: #10b981; cursor: pointer; border: 2px solid white; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-white to-pink-50">
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useMemo } = React;
+        const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } = Recharts;
+        const { TrendingUp, Shield, Target, BookOpen, AlertTriangle, CheckCircle, XCircle, ChevronRight, ChevronDown, ChevronUp, Share2, Wallet, BarChart3, Lock, RefreshCw, Award, Lightbulb, Brain, Clock, Building, Globe, Zap, Users, Activity, TrendingDown, Eye, Calculator, FileText, Search, Menu, X, Star, Check, PieChart: PieChartIcon, GraduationCap, Smartphone, Gem, DollarSign, Home, Coins } = lucideReact;
+
+        function FinanzasApp() {
+            const [section, setSection] = useState('inicio');
+            const [menuOpen, setMenuOpen] = useState(false);
+            const [showGlosario, setShowGlosario] = useState(false);
+            const [searchTerm, setSearchTerm] = useState('');
+            
+            const [calcCapital, setCalcCapital] = useState(10000);
+            const [calcMensual, setCalcMensual] = useState(200);
+            const [calcRent, setCalcRent] = useState(8);
+            const [calcAnios, setCalcAnios] = useState(20);
+            
+            const [cartera, setCartera] = useState({ rv: 60, rf: 25, oro: 10, cash: 5 });
+            const [activoExpandido, setActivoExpandido] = useState(null);
+            
+            const [quizIniciado, setQuizIniciado] = useState(false);
+            const [quizPregunta, setQuizPregunta] = useState(0);
+            const [quizRespuestas, setQuizRespuestas] = useState({});
+            const [quizTerminado, setQuizTerminado] = useState(false);
+            
+            const [testFase, setTestFase] = useState(0);
+            const [testRespuestas, setTestRespuestas] = useState({});
+            const [testResultados, setTestResultados] = useState(false);
+            const [brokerFiltro, setBrokerFiltro] = useState('todos');
+
+            const glosario = [
+                { term: 'Acción', def: 'Parte del capital de una empresa. Al comprarla, eres copropietario.' },
+                { term: 'ETF', def: 'Exchange-Traded Fund. Fondo cotizado que replica un índice.' },
+                { term: 'Fondo indexado', def: 'Fondo que replica un índice con gestión pasiva y bajas comisiones.' },
+                { term: 'TER', def: 'Total Expense Ratio. Coste anual total de un fondo/ETF. Busca <0.3%.' },
+                { term: 'DCA', def: 'Dollar Cost Averaging. Invertir cantidad fija periódicamente.' },
+                { term: 'Diversificación', def: 'Repartir inversión entre diferentes activos para reducir riesgo.' },
+                { term: 'Volatilidad', def: 'Variación del precio. Mayor volatilidad = más riesgo a corto plazo.' },
+                { term: 'Bull Market', def: 'Mercado alcista con subidas sostenidas (+20% desde mínimos).' },
+                { term: 'Bear Market', def: 'Mercado bajista. Caída >20% desde máximos.' },
+                { term: 'FOMO', def: 'Fear Of Missing Out. Comprar porque "todos lo hacen".' },
+                { term: 'Interés compuesto', def: 'Los intereses generan más intereses. Efecto bola de nieve.' },
+                { term: 'Rebalanceo', def: 'Ajustar la cartera para mantener los % objetivo.' },
+                { term: 'Liquidez', def: 'Facilidad para convertir un activo en efectivo sin perder valor.' },
+                { term: 'Dividendo', def: 'Parte de los beneficios que la empresa reparte a accionistas.' },
+                { term: 'IRPF', def: 'Impuesto sobre la Renta. Las ganancias patrimoniales tributan 19-28%.' },
+                { term: 'Plusvalía', def: 'Ganancia obtenida al vender un activo por más de lo que costó.' },
+            ];
+
+            const activos = [
+                { 
+                    id: 'acciones', nombre: 'Acciones', icon: TrendingUp, color: 'emerald',
+                    queEs: 'Una acción es una participación en la propiedad de una empresa. Si compras 1 acción de Apple, eres copropietario de Apple junto con millones de otros accionistas.',
+                    comoFunciona: 'Las empresas emiten acciones para obtener capital. Tu beneficio puede venir de: 1) Subida del precio (plusvalía) y 2) Dividendos (reparto de beneficios). Cotiza en bolsa y puedes comprar/vender en horario de mercado.',
+                    rentabilidad: '~10% anual histórico (S&P 500, 100 años). Ajustado por inflación: ~7%.',
+                    riesgo: 'Alto a corto plazo (puede caer 50% en crisis). Moderado a largo plazo (+10 años).',
+                    ventajas: ['Alta rentabilidad potencial a largo plazo', 'Liquidez: compra/vende cuando quieras', 'Dividendos: ingresos pasivos', 'Protección contra inflación', 'Ser dueño de empresas reales'],
+                    desventajas: ['Volatilidad alta a corto plazo', 'Requiere conocimiento para stock picking', 'Riesgo si la empresa quiebra', 'Impacto emocional de las caídas'],
+                    ejemplos: ['Apple (AAPL)', 'Microsoft (MSFT)', 'Inditex (ITX)', 'BBVA', 'Coca-Cola'],
+                    idealPara: 'Inversores con horizonte >10 años que toleran volatilidad.',
+                    comoInvertir: 'Directamente comprando acciones individuales (requiere análisis) o a través de fondos/ETFs (recomendado para principiantes).'
+                },
+                { 
+                    id: 'etfs', nombre: 'ETFs', icon: Globe, color: 'blue',
+                    queEs: 'Un ETF (Exchange-Traded Fund) es una "cesta" de activos que cotiza en bolsa como una acción. Un solo ETF del MSCI World contiene más de 1.500 empresas de 23 países.',
+                    comoFunciona: 'El ETF replica un índice comprando todas sus empresas en la proporción correcta. Tú compras participaciones del ETF como si fuera una acción. El precio fluctúa durante el día.',
+                    rentabilidad: '~8-10% anual histórico para ETFs de acciones globales (MSCI World).',
+                    riesgo: 'Variable según el tipo. ETF de acciones globales: moderado. ETF de bonos: bajo.',
+                    ventajas: ['Diversificación instantánea con una sola compra', 'Comisiones muy bajas (TER 0.03-0.25%)', 'Transparentes: sabes qué contienen', 'Alta liquidez', 'Gran variedad disponible'],
+                    desventajas: ['En España tributan al vender (no hay traspaso sin tributar)', 'Se compran por participaciones enteras', 'Spread entre compra/venta'],
+                    ejemplos: ['iShares Core MSCI World (IWDA)', 'Vanguard S&P 500 (VOO)', 'iShares Core S&P 500 (IVV)'],
+                    idealPara: 'Inversores que quieren diversificación simple y barata.',
+                    comoInvertir: 'A través de brokers como DEGIRO, Interactive Brokers, Trade Republic. Busca ETFs de acumulación domiciliados en Irlanda.'
+                },
+                { 
+                    id: 'fondos', nombre: 'Fondos Indexados', icon: PieChartIcon, color: 'purple',
+                    queEs: 'Similar a un ETF: replica un índice con gestión pasiva. La diferencia es el formato legal (fondo de inversión vs fondo cotizado) y cómo se compra.',
+                    comoFunciona: 'Haces una orden de suscripción por el importe que quieras (ej: 100€). El fondo calcula el valor liquidativo 1 vez al día y te asigna las participaciones correspondientes.',
+                    rentabilidad: 'Igual que el índice que replican menos el TER. ~8-10% histórico para fondos de acciones globales.',
+                    riesgo: 'Igual que ETFs equivalentes. Depende del índice que repliquen.',
+                    ventajas: ['VENTAJA FISCAL EN ESPAÑA: traspasos entre fondos sin tributar', 'Puedes invertir importes exactos (100€, no "2.3 participaciones")', 'Ideales para DCA mensual automatizado', 'Sin tentación de trading'],
+                    desventajas: ['Menos variedad que ETFs', 'Ejecución más lenta (1 día)', 'TER ligeramente superior a ETFs equivalentes'],
+                    ejemplos: ['Vanguard Global Stock Index Fund', 'Fidelity MSCI World Index Fund', 'iShares Developed World Index Fund'],
+                    idealPara: 'Inversores españoles que hacen aportaciones periódicas (DCA). La ventaja fiscal es enorme.',
+                    comoInvertir: 'MyInvestor (mejor selección), Indexa Capital (robo-advisor), ING, Openbank.'
+                },
+                { 
+                    id: 'bonos', nombre: 'Bonos / Renta Fija', icon: Lock, color: 'cyan',
+                    queEs: 'Un bono es un préstamo que haces a un gobierno o empresa. A cambio, te pagan intereses periódicos y te devuelven el principal al vencimiento.',
+                    comoFunciona: 'Compras un bono de 1.000€ al 3% anual a 10 años. Cada año recibes 30€ de intereses. Al final de los 10 años, recuperas tus 1.000€.',
+                    rentabilidad: 'Bonos gobierno AAA: 2-4% histórico. Bonos corporativos: 4-6%. Bonos high yield: 6-10% (más riesgo).',
+                    riesgo: 'Bajo para bonos de gobiernos solventes (Alemania, EEUU). Medio para corporativos. Alto para high yield.',
+                    ventajas: ['Rentabilidad más predecible', 'Menor volatilidad que acciones', 'Ingresos regulares (cupones)', 'Diversificador en cartera'],
+                    desventajas: ['Rentabilidad real baja (a veces negativa tras inflación)', 'Sensibles a subidas de tipos de interés', 'Riesgo de impago en bonos corporativos'],
+                    ejemplos: ['Letras del Tesoro español', 'Bonos del Estado 10 años', 'iShares Core Euro Government Bond'],
+                    idealPara: 'Perfiles conservadores o como parte estabilizadora de una cartera diversificada.',
+                    comoInvertir: 'Directamente en tesoro.es (Letras, Bonos) o a través de fondos/ETFs de renta fija.'
+                },
+                { 
+                    id: 'oro', nombre: 'Oro', icon: Gem, color: 'amber',
+                    queEs: 'Metal precioso usado como reserva de valor durante miles de años. Oferta limitada (no se puede "imprimir" oro) y demanda constante.',
+                    comoFunciona: 'Puedes comprar oro físico (lingotes, monedas) o "papel" (ETCs que poseen oro físico). El precio fluctúa según oferta/demanda global.',
+                    rentabilidad: '~5-7% anual a muy largo plazo. No genera rentas (no paga dividendos ni intereses).',
+                    riesgo: 'Moderado. Puede caer 30-40% pero históricamente siempre ha recuperado. No tiene riesgo de contraparte.',
+                    ventajas: ['Refugio en crisis económicas/geopolíticas', 'Protección contra inflación a largo plazo', 'Diversificador: baja correlación con acciones', 'Activo tangible y universal'],
+                    desventajas: ['No genera ingresos pasivos', 'Almacenamiento si es físico', 'Volatilidad a corto plazo', 'No produce nada (solo vale lo que otro pague)'],
+                    ejemplos: ['iShares Physical Gold (IGLN)', 'Invesco Physical Gold', 'Monedas Krugerrand/Maple Leaf'],
+                    idealPara: '5-15% de la cartera como diversificador y seguro contra crisis.',
+                    comoInvertir: 'ETCs de oro físico (más práctico) o oro físico en tiendas especializadas (Degussa, Coininvest).'
+                },
+                { 
+                    id: 'inmobiliario', nombre: 'Inmobiliario', icon: Home, color: 'orange',
+                    queEs: 'Inversión en bienes inmuebles: viviendas, locales, oficinas, naves. Puede ser inversión directa (comprar un piso) o indirecta (REITs/SOCIMIs).',
+                    comoFunciona: 'Directo: compras, reformas si hace falta, alquilas, cobras renta mensual. Indirecto: compras acciones de empresas que poseen inmuebles (REITs).',
+                    rentabilidad: 'Alquiler directo: 3-6% neto (después de gastos). REITs: 7-10% total histórico (dividendos + revalorización).',
+                    riesgo: 'Medio-alto directo (concentración, iliquidez). Medio REITs (diversificados, líquidos).',
+                    ventajas: ['Activo tangible que puedes "tocar"', 'Ingresos recurrentes (alquileres)', 'Protección contra inflación', 'Apalancamiento con hipoteca'],
+                    desventajas: ['Muy ilíquido si es directo', 'Gestión y mantenimiento', 'Concentración geográfica', 'Capital inicial alto'],
+                    ejemplos: ['Vivienda para alquilar', 'Merlin Properties (SOCIMI)', 'iShares Developed Markets Property Yield'],
+                    idealPara: 'Capital alto (directo) o 5-10% de cartera en REITs para diversificar.',
+                    comoInvertir: 'Directo: compra de inmueble. Indirecto: REITs/SOCIMIs en bolsa o ETFs inmobiliarios.'
+                },
+                { 
+                    id: 'cripto', nombre: 'Bitcoin / Cripto', icon: Coins, color: 'yellow',
+                    queEs: 'Activos digitales descentralizados basados en blockchain. Bitcoin: la primera y más conocida, con oferta limitada a 21 millones de unidades.',
+                    comoFunciona: 'Se compran en exchanges (Coinbase, Kraken) o brokers. Funcionan 24/7. Precio determinado por oferta/demanda pura.',
+                    rentabilidad: 'Bitcoin: +100% anual de media desde 2010. PERO con caídas del 80% en algunos años. Extremadamente volátil.',
+                    riesgo: 'Muy alto. Puede perder 50-80% de su valor en meses. Regulación incierta. Riesgo tecnológico.',
+                    ventajas: ['Descentralizado: sin control gubernamental', 'Oferta limitada (Bitcoin)', 'Alta rentabilidad potencial', 'Accesible globalmente 24/7'],
+                    desventajas: ['Volatilidad extrema', 'Regulación incierta y cambiante', 'No genera rentas', 'Riesgo de hackeos/pérdida de claves', 'Muchas criptos son estafas'],
+                    ejemplos: ['Bitcoin (BTC)', 'Ethereum (ETH)', 'ETFs de Bitcoin (IBIT, FBTC)'],
+                    idealPara: 'Máximo 1-5% de la cartera para quien entienda y acepte el riesgo extremo.',
+                    comoInvertir: 'Exchanges (Coinbase, Kraken) o ETFs de Bitcoin en brokers tradicionales (más seguro).'
+                }
+            ];
+
+            const carteras = [
+                { nombre: 'Conservadora', rv: 30, rf: 50, oro: 10, cash: 10, rent: '4-5%', volatilidad: 'Baja', horizonte: '3-5 años' },
+                { nombre: 'Moderada', rv: 60, rf: 30, oro: 5, cash: 5, rent: '6-7%', volatilidad: 'Media', horizonte: '7-10 años' },
+                { nombre: 'Agresiva', rv: 90, rf: 5, oro: 5, cash: 0, rent: '8-9%', volatilidad: 'Alta', horizonte: '15+ años' },
+                { nombre: 'Permanente', rv: 25, rf: 25, oro: 25, cash: 25, rent: '5-6%', volatilidad: 'Baja', horizonte: 'Cualquiera' }
+            ];
+
+            const brokers = [
+                { name: 'MyInvestor', tipo: 'fondos', desc: 'El mejor para fondos indexados Vanguard/iShares. Cuenta remunerada al 2% TAE. Sin comisiones de custodia.', rating: 5, pais: '🇪🇸', productos: 'Fondos, ETFs, Acciones', comision: 'gratis' },
+                { name: 'Indexa Capital', tipo: 'robo', desc: 'Robo-advisor líder en España. Gestión 100% automatizada. Cartera diversificada global. Ideal si no quieres hacer nada.', rating: 5, pais: '🇪🇸', productos: 'Gestión delegada', comision: 'baja' },
+                { name: 'Trade Republic', tipo: 'app', desc: 'App muy sencilla. Planes de inversión gratis. Cuenta remunerada al 3% TAE. Popular entre jóvenes.', rating: 4, pais: '🇩🇪', productos: 'Acciones, ETFs, Cripto', comision: 'gratis' },
+                { name: 'DEGIRO', tipo: 'broker', desc: 'Gran variedad de mercados globales. ETFs selección core gratis. Interfaz algo compleja.', rating: 4, pais: '🇳🇱', productos: 'Todo tipo', comision: 'baja' },
+                { name: 'Interactive Brokers', tipo: 'broker', desc: 'El más completo del mundo. Para inversores avanzados. Acceso a todos los mercados. Comisiones muy bajas.', rating: 5, pais: '🇺🇸', productos: 'Profesional', comision: 'baja' },
+                { name: 'XTB', tipo: 'broker', desc: 'Sin comisiones en acciones/ETFs hasta 100k€/mes. Buena plataforma y formación. CFDs disponibles (cuidado).', rating: 4, pais: '🇵🇱', productos: 'Acciones, ETFs, CFDs', comision: 'gratis' },
+                { name: 'Revolut', tipo: 'app', desc: 'Todo en uno: banco + inversiones + cripto. Cómodo pero limitado. Bueno para empezar con poco.', rating: 3, pais: '🇬🇧', productos: 'Acciones, ETFs, Cripto', comision: 'gratis' }
+            ];
+
+            const quizPreguntas = [
+                { pregunta: '¿Qué significa TER en un fondo de inversión?', opciones: ['Tasa de Éxito Rentable', 'Total Expense Ratio (coste anual)', 'Tipo de Interés Europeo', 'Tiempo Estimado de Retorno'], correcta: 1 },
+                { pregunta: '¿Cuántos meses de gastos debería tener el fondo de emergencia?', opciones: ['1-2 meses', '3-4 meses', '6-12 meses', 'No es necesario tener fondo de emergencia'], correcta: 2 },
+                { pregunta: '¿Qué porcentaje de gestores profesionales NO consigue batir al índice a largo plazo?', opciones: ['Aproximadamente el 50%', 'Aproximadamente el 70%', 'Más del 90%', 'Solo el 30%'], correcta: 2 },
+                { pregunta: '¿Cuál es la principal ventaja fiscal de los fondos de inversión en España?', opciones: ['No pagan ningún impuesto', 'Traspasos entre fondos sin tributar', 'Deducción en el IRPF', 'Exención total a partir de 10 años'], correcta: 1 },
+                { pregunta: '¿Qué es la estrategia DCA (Dollar Cost Averaging)?', opciones: ['Comprar solo cuando el mercado baja', 'Invertir una cantidad fija de forma periódica', 'Vender siempre en máximos históricos', 'Diversificar en muchos activos'], correcta: 1 },
+                { pregunta: '¿Qué deuda deberías eliminar ANTES de empezar a invertir?', opciones: ['Hipoteca al 2%', 'Préstamo coche al 5%', 'Tarjeta de crédito al 20%', 'Todas las deudas sin excepción'], correcta: 2 },
+                { pregunta: '¿Qué es un Bear Market?', opciones: ['Mercado alcista con subidas sostenidas', 'Caída de más del 20% desde máximos', 'Mercado lateral sin tendencia', 'Subida del precio del oro'], correcta: 1 },
+                { pregunta: '¿Qué sesgo psicológico te hace comprar porque "todos lo están haciendo"?', opciones: ['Aversión a la pérdida', 'Sesgo de anclaje', 'FOMO (Fear Of Missing Out)', 'Sesgo de confirmación'], correcta: 2 },
+                { pregunta: '¿Cuál es la rentabilidad media histórica del S&P 500?', opciones: ['3-4% anual', '5-6% anual', '9-10% anual', '15-20% anual'], correcta: 2 },
+                { pregunta: '¿Qué es mejor para hacer DCA mensual en España?', opciones: ['ETFs', 'Fondos indexados', 'Acciones individuales', 'Da igual, es lo mismo'], correcta: 1 }
+            ];
+
+            const testPreguntas = {
+                fase1: [
+                    { id: 'presupuesto', texto: '¿Tienes un presupuesto de ingresos y gastos?' },
+                    { id: 'superavit', texto: '¿Tus ingresos superan consistentemente tus gastos?' },
+                    { id: 'emergencia', texto: '¿Tienes un fondo de emergencia de 6-12 meses de gastos?' },
+                    { id: 'deudas', texto: '¿Has eliminado todas las deudas con TAE superior al 6-7%?' },
+                    { id: 'riesgo', texto: '¿Entiendes y aceptas el riesgo de perder parte del capital?' }
+                ],
+                fase2: [
+                    { id: 'horizonte', texto: '¿Cuánto tiempo puedes mantener el dinero invertido?', opciones: ['Más de 15 años', '7-15 años', '3-7 años', 'Menos de 3 años'] },
+                    { id: 'caida', texto: 'Si tu cartera cae un 40%, ¿qué harías?', opciones: ['Comprar más (oportunidad)', 'Mantener sin tocar nada', 'Esperar nervioso', 'Vender todo'] },
+                    { id: 'gestion', texto: '¿Cuánto tiempo quieres dedicar a gestionar inversiones?', opciones: ['Cero (que sea automático)', 'Poco (revisión trimestral)', 'Algo (seguimiento mensual)', 'Mucho (análisis frecuente)'] }
+                ],
+                fase3: [
+                    { id: 'plan', texto: '¿Te comprometes a escribir un plan de inversión y seguirlo?' },
+                    { id: 'paciencia', texto: '¿Puedes comprometerte a no tocar la inversión durante 10+ años?' },
+                    { id: 'formacion', texto: '¿Estás dispuesto a seguir aprendiendo sobre inversión?' }
+                ]
+            };
+
+            const sesgos = [
+                { nombre: 'FOMO', icono: TrendingUp, descripcion: 'Compras porque "todos lo están haciendo" y tienes miedo de perderte la subida.', solucion: 'Sigue tu plan. Si no estaba en tu estrategia, no compres por impulso.', ejemplo: 'Comprar Bitcoin en máximos porque tu vecino ganó dinero.' },
+                { nombre: 'Aversión a la pérdida', icono: TrendingDown, descripcion: 'El dolor de perder 100€ es el doble que la alegría de ganar 100€.', solucion: 'No mires la cartera constantemente. Establece revisiones periódicas (trimestral).', ejemplo: 'Vender en pánico cuando cae un 20%.' },
+                { nombre: 'Sesgo de confirmación', icono: Eye, descripcion: 'Solo buscas información que confirma lo que ya crees.', solucion: 'Busca activamente argumentos en contra de tu posición.', ejemplo: 'Leer solo noticias positivas sobre una acción que tienes.' },
+                { nombre: 'Exceso de confianza', icono: Award, descripcion: 'Crees que puedes batir al mercado o que eres mejor que la media.', solucion: 'Recuerda: el 90%+ de profesionales no baten al índice. Tú tampoco lo harás.', ejemplo: 'Pensar que puedes hacer timing del mercado.' },
+                { nombre: 'Anclaje', icono: Target, descripcion: 'Te fijas en el precio al que compraste y tomas decisiones basadas en eso.', solucion: 'Pregúntate: ¿compraría HOY a este precio? El precio de compra es irrelevante.', ejemplo: 'No vender una mala inversión porque "ya subirá al precio que pagué".' },
+                { nombre: 'Efecto manada', icono: Users, descripcion: 'Sigues a la mayoría sin pensar. Si todos compran/venden, tú también.', solucion: 'Sé temeroso cuando otros son codiciosos, y codicioso cuando otros son temerosos.', ejemplo: 'Vender todo en marzo 2020 porque "todos vendían".' }
+            ];
+
+            const datosCalculadora = useMemo(() => {
+                const datos = [];
+                let capital = calcCapital;
+                const tasaMensual = calcRent / 100 / 12;
+                for (let año = 0; año <= calcAnios; año++) {
+                    datos.push({ año, capital: Math.round(capital), aportado: calcCapital + (calcMensual * 12 * año) });
+                    for (let mes = 0; mes < 12; mes++) { capital = capital * (1 + tasaMensual) + calcMensual; }
+                }
+                return datos;
+            }, [calcCapital, calcMensual, calcRent, calcAnios]);
+
+            const capitalFinal = datosCalculadora[datosCalculadora.length - 1]?.capital || 0;
+            const totalAportado = calcCapital + (calcMensual * 12 * calcAnios);
+            const gananciaTotal = capitalFinal - totalAportado;
+            const multiplicador = totalAportado > 0 ? (capitalFinal / totalAportado).toFixed(2) : 0;
+
+            const rentabilidadCartera = useMemo(() => {
+                const rentabilidades = { rv: 8, rf: 3, oro: 5, cash: 1 };
+                return Object.entries(cartera).reduce((acc, [k, v]) => acc + (rentabilidades[k] * v / 100), 0).toFixed(1);
+            }, [cartera]);
+
+            const totalCartera = Object.values(cartera).reduce((a, b) => a + b, 0);
+            const quizPuntuacion = Object.entries(quizRespuestas).filter(([i, r]) => quizPreguntas[parseInt(i)].correcta === r).length;
+            const puedePasarFase1 = () => testPreguntas.fase1.every(q => testRespuestas[q.id] === true);
+            
+            const obtenerRecomendacion = () => {
+                const { horizonte, caida, gestion } = testRespuestas;
+                let perfil = 'Moderado';
+                let carteraRec = carteras[1];
+                let brokersRec = ['MyInvestor'];
+                if (caida === 'Vender todo' || horizonte === 'Menos de 3 años') { perfil = 'Conservador'; carteraRec = carteras[0]; }
+                else if ((caida === 'Comprar más (oportunidad)' || caida === 'Mantener sin tocar nada') && horizonte === 'Más de 15 años') { perfil = 'Agresivo'; carteraRec = carteras[2]; }
+                if (gestion === 'Cero (que sea automático)') { brokersRec = ['Indexa Capital', 'MyInvestor']; }
+                else if (gestion === 'Mucho (análisis frecuente)') { brokersRec = ['Interactive Brokers', 'DEGIRO']; }
+                else { brokersRec = ['MyInvestor', 'Trade Republic']; }
+                return { perfil, carteraRec, brokersRec };
+            };
+
+            const NavBtn = ({ sec, icono: Icono, label }) => (
+                <button onClick={() => { setSection(sec); setMenuOpen(false); }} className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm transition-all ${section === sec ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg' : 'text-gray-500 hover:text-gray-800 hover:bg-pink-50'}`}>
+                    <Icono size={16} /><span className="font-medium">{label}</span>
+                </button>
+            );
+
+            const filteredGlosario = glosario.filter(g => g.term.toLowerCase().includes(searchTerm.toLowerCase()) || g.def.toLowerCase().includes(searchTerm.toLowerCase()));
+            const filteredBrokers = brokers.filter(b => brokerFiltro === 'todos' || b.tipo === brokerFiltro);
+
+            const colores = {
+                emerald: { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-600' },
+                blue: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-600' },
+                purple: { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-600' },
+                cyan: { bg: 'bg-cyan-50', border: 'border-cyan-200', text: 'text-cyan-600' },
+                amber: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-600' },
+                orange: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-600' },
+                yellow: { bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-600' }
+            };
+
+            const Inicio = () => (
+                <div className="space-y-8">
+                    <div className="text-center py-8">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-pink-100 rounded-full text-pink-500 text-sm font-medium mb-6 border border-pink-200">
+                            <Zap size={16} /> Versión 3.0 — Guía Definitiva
+                        </div>
+                        <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 mb-4">Finanzas e Inversión</h1>
+                        <p className="text-lg text-gray-500 max-w-xl mx-auto mb-8">Todo lo que necesitas saber para gestionar tu dinero e invertir con cabeza</p>
+                        <div className="flex flex-wrap justify-center gap-3">
+                            <button onClick={() => setSection('test')} className="px-6 py-3 bg-gradient-to-r from-pink-500 to-rose-500 rounded-xl font-bold text-white shadow-lg shadow-pink-300/50 hover:scale-105 transition-all flex items-center gap-2"><Target size={18} /> Test de perfil</button>
+                            <button onClick={() => setSection('calc')} className="px-6 py-3 bg-pink-50 rounded-xl font-bold text-gray-800 border border-pink-200 hover:bg-pink-100 transition-all flex items-center gap-2"><Calculator size={18} /> Calculadora</button>
+                            <button onClick={() => setSection('quiz')} className="px-6 py-3 bg-purple-50 rounded-xl font-bold text-purple-600 border border-purple-200 hover:bg-purple-100 transition-all flex items-center gap-2"><GraduationCap size={18} /> Quiz</button>
+                        </div>
+                    </div>
+                    <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-200">
+                        <div className="flex items-center gap-4">
+                            <AlertTriangle className="text-amber-600 flex-shrink-0" size={40} />
+                            <div><p className="text-xl font-bold text-gray-800">Invertir no es para hacerse rico rápido</p><p className="text-gray-600">Es para <span className="text-amber-600 font-bold">proteger tu patrimonio</span> de la inflación y hacerlo crecer a largo plazo.</p></div>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {[
+                            { icono: Wallet, titulo: 'Gestión', sec: 'gestion', desc: 'Presupuesto y ahorro' },
+                            { icono: BarChart3, titulo: 'Activos', sec: 'activos', desc: 'Tipos de inversión' },
+                            { icono: Calculator, titulo: 'Calculadora', sec: 'calc', desc: 'Interés compuesto' },
+                            { icono: PieChartIcon, titulo: 'Cartera', sec: 'cartera', desc: 'Simula tu cartera' },
+                            { icono: Target, titulo: 'Estrategias', sec: 'estrategias', desc: 'Cómo invertir' },
+                            { icono: Brain, titulo: 'Psicología', sec: 'psicologia', desc: 'Sesgos cognitivos' },
+                            { icono: Building, titulo: 'Brokers', sec: 'brokers', desc: 'Dónde invertir' },
+                            { icono: GraduationCap, titulo: 'Quiz', sec: 'quiz', desc: 'Pon a prueba' }
+                        ].map((item, i) => (
+                            <button key={i} onClick={() => setSection(item.sec)} className="p-4 bg-white rounded-xl border border-gray-200 hover:border-pink-300 hover:bg-white transition-all text-left group">
+                                <item.icono className="text-pink-500 mb-2 group-hover:scale-110 transition-transform" size={28} />
+                                <p className="font-bold text-gray-800">{item.titulo}</p>
+                                <p className="text-xs text-gray-500">{item.desc}</p>
+                            </button>
+                        ))}
+                    </div>
+                    <div className="bg-white rounded-2xl p-6 border border-gray-200">
+                        <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2"><TrendingUp className="text-pink-500" /> Rentabilidad histórica real</h3>
+                        <div className="space-y-3">
+                            {[
+                                { indice: 'S&P 500', periodo: '1928-2024 (96 años)', rent: '10.1%', nota: 'Las 500 mayores empresas de EEUU' },
+                                { indice: 'MSCI World', periodo: '1970-2024 (54 años)', rent: '8.5%', nota: '1.500+ empresas de 23 países desarrollados' },
+                                { indice: 'IBEX 35', periodo: '1992-2024 (32 años)', rent: '4.8%', nota: 'Las 35 mayores empresas de España' }
+                            ].map((d, i) => (
+                                <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                                    <div><p className="font-bold text-gray-800">{d.indice}</p><p className="text-xs text-gray-500">{d.periodo}</p><p className="text-xs text-gray-400">{d.nota}</p></div>
+                                    <p className="text-xl font-black text-pink-500">{d.rent}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const Gestion = () => (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3"><Wallet className="text-pink-500" /> Gestión del Dinero</h2>
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <div className="bg-white rounded-xl p-6 border border-gray-200">
+                            <h3 className="font-bold text-gray-800 mb-4">Regla 50/30/20</h3>
+                            <div className="h-48">
+                                <ResponsiveContainer><PieChart><Pie data={[{name:'Necesidades',value:50},{name:'Ocio',value:30},{name:'Ahorro',value:20}]} cx="50%" cy="50%" innerRadius={45} outerRadius={75} dataKey="value" stroke="none"><Cell fill="#10b981" /><Cell fill="#3b82f6" /><Cell fill="#f59e0b" /></Pie><Tooltip /></PieChart></ResponsiveContainer>
+                            </div>
+                            <div className="flex justify-center gap-4 text-sm flex-wrap">
+                                <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-emerald-500"></span>50% Necesidades</span>
+                                <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-blue-500"></span>30% Ocio</span>
+                                <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-amber-500"></span>20% Ahorro/Inversión</span>
+                            </div>
+                        </div>
+                        <div className="bg-white rounded-xl p-6 border border-gray-200">
+                            <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2"><Shield className="text-blue-600" /> Fondo de Emergencia</h3>
+                            <div className="flex items-center gap-4 p-4 bg-blue-50 rounded-xl border border-blue-200 mb-4">
+                                <span className="text-5xl font-black text-blue-600">6-12</span>
+                                <div><p className="text-gray-800 font-bold text-lg">meses de gastos</p><p className="text-sm text-gray-500">en cuenta de alta disponibilidad</p></div>
+                            </div>
+                            <p className="text-sm text-gray-500">Este colchón te protege de imprevistos (paro, enfermedad, reparaciones) y te permite invertir sin necesitar ese dinero.</p>
+                        </div>
+                    </div>
+                    <div className="bg-white rounded-xl p-6 border border-gray-200">
+                        <h3 className="font-bold text-gray-800 mb-4">📋 Orden de prioridades financieras</h3>
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-4 p-4 bg-red-50 rounded-xl border border-red-200">
+                                <div className="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center font-bold text-lg">1</div>
+                                <div className="flex-1"><p className="text-gray-800 font-bold">Eliminar deuda mala</p><p className="text-sm text-gray-500">Prioriza deudas con TAE {'>'} 6-7% (tarjetas, créditos al consumo)</p></div>
+                            </div>
+                            <div className="flex items-center gap-4 p-4 bg-amber-50 rounded-xl border border-amber-200">
+                                <div className="w-10 h-10 rounded-full bg-amber-500 text-gray-800 flex items-center justify-center font-bold text-lg">2</div>
+                                <div className="flex-1"><p className="text-gray-800 font-bold">Construir fondo de emergencia</p><p className="text-sm text-gray-500">6-12 meses de gastos en cuenta remunerada accesible</p></div>
+                            </div>
+                            <div className="flex items-center gap-4 p-4 bg-pink-50 rounded-xl border border-pink-200">
+                                <div className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-lg">3</div>
+                                <div className="flex-1"><p className="text-gray-800 font-bold">Invertir el excedente</p><p className="text-sm text-gray-500">Todo lo que sobre después de gastos, ahorro y emergencia</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const Activos = () => (
+                <div className="space-y-6">
+                    <div><h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2"><BarChart3 className="text-pink-500" /> Tipos de Activos</h2><p className="text-gray-500">Haz clic en cada activo para ver información detallada sobre qué es, cómo funciona, ventajas, desventajas y cómo invertir.</p></div>
+                    <div className="space-y-3">
+                        {activos.map((activo) => {
+                            const expanded = activoExpandido === activo.id;
+                            const colorClasses = colores[activo.color];
+                            return (
+                                <div key={activo.id} className={`bg-white rounded-xl border transition-all duration-300 overflow-hidden ${expanded ? 'border-pink-300' : 'border-gray-200 hover:border-gray-300'}`}>
+                                    <button onClick={() => setActivoExpandido(expanded ? null : activo.id)} className="w-full p-5 text-left flex items-center justify-between">
+                                        <div className="flex items-center gap-4">
+                                            <div className={`p-3 ${colorClasses.bg} rounded-xl border ${colorClasses.border}`}><activo.icon className={colorClasses.text} size={28} /></div>
+                                            <div><p className="font-bold text-gray-800 text-lg">{activo.nombre}</p><p className="text-sm text-gray-500">{activo.queEs.substring(0, 60)}...</p></div>
+                                        </div>
+                                        {expanded ? <ChevronUp className="text-gray-500" size={24} /> : <ChevronDown className="text-gray-500" size={24} />}
+                                    </button>
+                                    {expanded && (
+                                        <div className="px-5 pb-6 space-y-5 border-t border-gray-200 pt-5">
+                                            <div className="grid md:grid-cols-2 gap-6">
+                                                <div><h4 className="font-bold text-gray-800 mb-2 flex items-center gap-2">💡 ¿Qué es?</h4><p className="text-gray-600 text-sm leading-relaxed">{activo.queEs}</p></div>
+                                                <div><h4 className="font-bold text-gray-800 mb-2 flex items-center gap-2">⚙️ ¿Cómo funciona?</h4><p className="text-gray-600 text-sm leading-relaxed">{activo.comoFunciona}</p></div>
+                                            </div>
+                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                                <div className="p-3 bg-gray-50 rounded-xl"><p className="text-xs text-gray-500 mb-1">📈 Rentabilidad</p><p className="text-sm text-gray-800 font-medium">{activo.rentabilidad}</p></div>
+                                                <div className="p-3 bg-gray-50 rounded-xl"><p className="text-xs text-gray-500 mb-1">⚠️ Riesgo</p><p className="text-sm text-gray-800 font-medium">{activo.riesgo}</p></div>
+                                                <div className="p-3 bg-gray-50 rounded-xl"><p className="text-xs text-gray-500 mb-1">👤 Ideal para</p><p className="text-sm text-gray-800 font-medium">{activo.idealPara}</p></div>
+                                                <div className="p-3 bg-gray-50 rounded-xl"><p className="text-xs text-gray-500 mb-1">🛒 Cómo invertir</p><p className="text-sm text-gray-800 font-medium">{activo.comoInvertir}</p></div>
+                                            </div>
+                                            <div className="grid md:grid-cols-2 gap-6">
+                                                <div><h4 className="font-bold text-pink-500 mb-3">✓ Ventajas</h4><ul className="space-y-2">{activo.ventajas.map((v, i) => (<li key={i} className="flex items-start gap-2 text-sm text-gray-600"><Check size={16} className="text-pink-500 mt-0.5 flex-shrink-0" />{v}</li>))}</ul></div>
+                                                <div><h4 className="font-bold text-red-400 mb-3">✗ Desventajas</h4><ul className="space-y-2">{activo.desventajas.map((d, i) => (<li key={i} className="flex items-start gap-2 text-sm text-gray-600"><X size={16} className="text-red-400 mt-0.5 flex-shrink-0" />{d}</li>))}</ul></div>
+                                            </div>
+                                            <div><h4 className="font-bold text-gray-800 mb-3">📌 Ejemplos concretos</h4><div className="flex flex-wrap gap-2">{activo.ejemplos.map((e, i) => (<span key={i} className={`px-4 py-2 ${colorClasses.bg} rounded-full text-sm ${colorClasses.text} border ${colorClasses.border}`}>{e}</span>))}</div></div>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+
+            const Calculadora = () => (
+                <div className="space-y-6">
+                    <div><h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2"><Calculator className="text-pink-500" /> Calculadora de Interés Compuesto</h2><p className="text-gray-500">Modifica los valores para ver cómo crece tu dinero con el tiempo. El interés compuesto es la octava maravilla del mundo.</p></div>
+                    <div className="grid lg:grid-cols-2 gap-6">
+                        <div className="bg-white rounded-xl p-6 border border-gray-200 space-y-6">
+                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">💰 Capital inicial</span><span className="text-gray-800 font-bold text-lg">{calcCapital.toLocaleString()}€</span></label><input type="range" min="0" max="100000" step="1000" value={calcCapital} onChange={(e) => setCalcCapital(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-400 mt-1"><span>0€</span><span>100.000€</span></div></div>
+                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">📅 Aportación mensual</span><span className="text-gray-800 font-bold text-lg">{calcMensual}€/mes</span></label><input type="range" min="0" max="2000" step="50" value={calcMensual} onChange={(e) => setCalcMensual(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-400 mt-1"><span>0€</span><span>2.000€</span></div></div>
+                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">📈 Rentabilidad anual esperada</span><span className="text-gray-800 font-bold text-lg">{calcRent}%</span></label><input type="range" min="1" max="15" step="0.5" value={calcRent} onChange={(e) => setCalcRent(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-400 mt-1"><span>1%</span><span>15%</span></div></div>
+                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">⏱️ Horizonte temporal</span><span className="text-gray-800 font-bold text-lg">{calcAnios} años</span></label><input type="range" min="1" max="40" step="1" value={calcAnios} onChange={(e) => setCalcAnios(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-400 mt-1"><span>1 año</span><span>40 años</span></div></div>
+                            <div className="grid grid-cols-2 gap-3 pt-4 border-t border-gray-200">
+                                <div className="text-center p-4 bg-gray-50 rounded-xl"><p className="text-xs text-gray-500 mb-1">Total aportado</p><p className="text-xl font-bold text-gray-600">{totalAportado.toLocaleString()}€</p></div>
+                                <div className="text-center p-4 bg-pink-50 rounded-xl border border-pink-200"><p className="text-xs text-gray-500 mb-1">Capital final</p><p className="text-xl font-bold text-pink-500">{capitalFinal.toLocaleString()}€</p></div>
+                                <div className="text-center p-4 bg-purple-50 rounded-xl border border-purple-200"><p className="text-xs text-gray-500 mb-1">Ganancia total</p><p className="text-xl font-bold text-purple-600">+{gananciaTotal.toLocaleString()}€</p></div>
+                                <div className="text-center p-4 bg-amber-50 rounded-xl border border-amber-200"><p className="text-xs text-gray-500 mb-1">Multiplicador</p><p className="text-xl font-bold text-amber-600">x{multiplicador}</p></div>
+                            </div>
+                        </div>
+                        <div className="bg-white rounded-xl p-6 border border-gray-200">
+                            <h3 className="font-bold text-gray-800 mb-4">📊 Evolución del capital</h3>
+                            <div className="h-72">
+                                <ResponsiveContainer>
+                                    <AreaChart data={datosCalculadora}>
+                                        <defs><linearGradient id="colorCapital" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/><stop offset="95%" stopColor="#10b981" stopOpacity={0}/></linearGradient><linearGradient id="colorAportado" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#9ca3af" stopOpacity={0.3}/><stop offset="95%" stopColor="#9ca3af" stopOpacity={0}/></linearGradient></defs>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#fce7f3" />
+                                        <XAxis dataKey="año" stroke="#9ca3af" tick={{fill: '#6b7280'}} tickFormatter={(v) => `${v}a`} />
+                                        <YAxis stroke="#9ca3af" tick={{fill: '#6b7280'}} tickFormatter={(v) => `${(v/1000).toFixed(0)}k`} />
+                                        <Tooltip contentStyle={{backgroundColor: '#fff', border: '1px solid #fce7f3', borderRadius: '8px'}} labelStyle={{color: '#374151'}} formatter={(value) => [`${value.toLocaleString()}€`]} />
+                                        <Area type="monotone" dataKey="aportado" stroke="#9ca3af" fill="url(#colorAportado)" name="Aportado" />
+                                        <Area type="monotone" dataKey="capital" stroke="#10b981" fill="url(#colorCapital)" name="Capital" strokeWidth={2} />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                            <p className="text-sm text-gray-500 mt-4 p-4 bg-pink-50 rounded-xl border border-pink-200">💡 Con <strong className="text-gray-800">{calcCapital.toLocaleString()}€</strong> iniciales y aportaciones de <strong className="text-gray-800">{calcMensual}€/mes</strong> al <strong className="text-gray-800">{calcRent}%</strong> durante <strong className="text-gray-800">{calcAnios} años</strong>, tu dinero se multiplica por <strong className="text-pink-500">{multiplicador}x</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const Cartera = () => (
+                <div className="space-y-6">
+                    <div><h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2"><PieChartIcon className="text-pink-500" /> Simulador de Cartera</h2><p className="text-gray-500">Ajusta la distribución de tu cartera y ve la rentabilidad esperada. Prueba las carteras modelo.</p></div>
+                    <div className="grid lg:grid-cols-2 gap-6">
+                        <div className="bg-white rounded-xl p-6 border border-gray-200 space-y-5">
+                            <div><label className="flex justify-between text-sm mb-2"><span className="text-gray-500">📈 Renta Variable (Acciones/ETFs)</span><span className="text-pink-500 font-bold">{cartera.rv}%</span></label><input type="range" min="0" max="100" value={cartera.rv} onChange={(e) => setCartera(p => ({...p, rv: Number(e.target.value)}))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /></div>
+                            <div><label className="flex justify-between text-sm mb-2"><span className="text-gray-500">🔒 Renta Fija (Bonos)</span><span className="text-blue-600 font-bold">{cartera.rf}%</span></label><input type="range" min="0" max="100" value={cartera.rf} onChange={(e) => setCartera(p => ({...p, rf: Number(e.target.value)}))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /></div>
+                            <div><label className="flex justify-between text-sm mb-2"><span className="text-gray-500">🥇 Oro</span><span className="text-amber-600 font-bold">{cartera.oro}%</span></label><input type="range" min="0" max="100" value={cartera.oro} onChange={(e) => setCartera(p => ({...p, oro: Number(e.target.value)}))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /></div>
+                            <div><label className="flex justify-between text-sm mb-2"><span className="text-gray-500">💵 Efectivo</span><span className="text-gray-500 font-bold">{cartera.cash}%</span></label><input type="range" min="0" max="100" value={cartera.cash} onChange={(e) => setCartera(p => ({...p, cash: Number(e.target.value)}))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /></div>
+                            <div className="pt-4 border-t border-gray-200 space-y-3">
+                                <div className="flex justify-between items-center"><span className="text-gray-500">Total</span><span className={`text-xl font-bold ${totalCartera === 100 ? 'text-pink-500' : 'text-red-400'}`}>{totalCartera}% {totalCartera !== 100 && '⚠️'}</span></div>
+                                <div className="flex justify-between items-center"><span className="text-gray-500">Rentabilidad esperada</span><span className="text-xl font-bold text-pink-500">~{rentabilidadCartera}% anual</span></div>
+                            </div>
+                        </div>
+                        <div className="bg-white rounded-xl p-6 border border-gray-200">
+                            <h3 className="font-bold text-gray-800 mb-4">Tu distribución</h3>
+                            <div className="h-56">
+                                <ResponsiveContainer><PieChart><Pie data={[{ name: 'Renta Variable', value: cartera.rv, fill: '#10b981' },{ name: 'Renta Fija', value: cartera.rf, fill: '#3b82f6' },{ name: 'Oro', value: cartera.oro, fill: '#f59e0b' },{ name: 'Efectivo', value: cartera.cash, fill: '#9ca3af' }].filter(d => d.value > 0)} cx="50%" cy="50%" innerRadius={55} outerRadius={85} dataKey="value" stroke="none" /><Tooltip formatter={(v) => [`${v}%`]} /></PieChart></ResponsiveContainer>
+                            </div>
+                            <div className="flex flex-wrap justify-center gap-4 text-sm">
+                                <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-emerald-500"></span>RV {cartera.rv}%</span>
+                                <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-blue-500"></span>RF {cartera.rf}%</span>
+                                <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-amber-500"></span>Oro {cartera.oro}%</span>
+                                <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-slate-500"></span>Cash {cartera.cash}%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="bg-white rounded-xl p-6 border border-gray-200">
+                        <h3 className="font-bold text-gray-800 mb-4">📋 Carteras modelo (haz clic para aplicar)</h3>
+                        <div className="grid md:grid-cols-4 gap-4">
+                            {carteras.map((c, i) => (
+                                <button key={i} onClick={() => setCartera({ rv: c.rv, rf: c.rf, oro: c.oro, cash: c.cash })} className="p-4 bg-gray-50 rounded-xl hover:bg-gray-50 transition-all text-left border border-transparent hover:border-pink-200">
+                                    <p className="font-bold text-gray-800 mb-2">{c.nombre}</p>
+                                    <div className="flex gap-0.5 mb-3 h-3 rounded-full overflow-hidden">{c.rv > 0 && <div className="bg-emerald-500" style={{width: `${c.rv}%`}}></div>}{c.rf > 0 && <div className="bg-blue-500" style={{width: `${c.rf}%`}}></div>}{c.oro > 0 && <div className="bg-amber-500" style={{width: `${c.oro}%`}}></div>}{c.cash > 0 && <div className="bg-slate-500" style={{width: `${c.cash}%`}}></div>}</div>
+                                    <p className="text-sm text-pink-500 font-medium">Rent: {c.rent}</p><p className="text-xs text-gray-400">Horizonte: {c.horizonte}</p>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const Estrategias = () => (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3"><Target className="text-pink-500" /> Estrategias de Inversión</h2>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {[
+                            { nombre: 'DCA', desc: 'Invertir cantidad fija cada mes sin importar el precio', riesgo: 'Bajo-Medio', esfuerzo: 'Muy bajo', best: true },
+                            { nombre: 'Buy & Hold', desc: 'Comprar y mantener durante años sin tocar', riesgo: 'Medio', esfuerzo: 'Muy bajo', best: true },
+                            { nombre: 'Indexación', desc: 'Replicar índices globales con fondos/ETFs', riesgo: 'Medio', esfuerzo: 'Muy bajo', best: true },
+                            { nombre: 'Cartera Permanente', desc: '25% acciones, 25% bonos, 25% oro, 25% cash', riesgo: 'Bajo', esfuerzo: 'Bajo' },
+                            { nombre: 'Value Investing', desc: 'Buscar empresas infravaloradas por el mercado', riesgo: 'Medio-Alto', esfuerzo: 'Alto' },
+                            { nombre: 'Dividendos', desc: 'Invertir en empresas que pagan dividendos consistentes', riesgo: 'Medio', esfuerzo: 'Medio' }
+                        ].map((s, i) => (
+                            <div key={i} className={`p-5 bg-white rounded-xl border ${s.best ? 'border-pink-300 ring-1 ring-emerald-500/20' : 'border-gray-200'}`}>
+                                {s.best && <span className="inline-block text-xs bg-emerald-500 text-white px-2 py-1 rounded-full mb-3">✓ Recomendada</span>}
+                                <h4 className="font-bold text-gray-800 text-lg">{s.nombre}</h4><p className="text-sm text-gray-500 my-2">{s.desc}</p>
+                                <div className="space-y-1 text-xs"><p><span className="text-gray-400">Riesgo:</span> <span className="text-gray-800">{s.riesgo}</span></p><p><span className="text-gray-400">Esfuerzo:</span> <span className="text-gray-800">{s.esfuerzo}</span></p></div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="bg-red-50 rounded-xl p-6 border border-red-200">
+                        <h3 className="font-bold text-red-400 mb-4 flex items-center gap-2"><XCircle /> Lo que NO funciona (estadísticamente)</h3>
+                        <div className="grid md:grid-cols-3 gap-4">
+                            {[
+                                { nombre: 'Day Trading', stat: '>80% pierden dinero', desc: 'Comisiones + emociones + tiempo = pérdidas' },
+                                { nombre: 'Apalancamiento', stat: 'Riesgo de ruina', desc: 'Puedes perder más del 100% de tu inversión' },
+                                { nombre: 'Seguir rumores/tips', stat: 'Compras caro, vendes barato', desc: 'El FOMO destruye la rentabilidad' }
+                            ].map((item, i) => (
+                                <div key={i} className="p-4 bg-gradient-to-br from-amber-50 via-white to-pink-50/50 rounded-xl"><p className="font-bold text-gray-800">{item.nombre}</p><p className="text-red-400 font-bold text-sm">{item.stat}</p><p className="text-xs text-gray-400 mt-1">{item.desc}</p></div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const Psicologia = () => (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3"><Brain className="text-pink-500" /> Psicología del Inversor</h2>
+                    <div className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 rounded-xl p-6 border border-pink-500/30 text-center">
+                        <p className="text-xl text-gray-600">"El mercado transfiere dinero de los <span className="text-pink-400 font-bold">impacientes</span> a los <span className="text-pink-500 font-bold">pacientes</span>"</p>
+                        <p className="text-sm text-gray-400 mt-2">— Warren Buffett</p>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-4">
+                        {sesgos.map((s, i) => (
+                            <div key={i} className="bg-white rounded-xl p-5 border border-gray-200">
+                                <div className="flex items-center gap-3 mb-3"><div className="p-2 bg-pink-500/20 rounded-lg border border-pink-500/30"><s.icono className="text-pink-400" size={24} /></div><h4 className="font-bold text-gray-800 text-lg">{s.nombre}</h4></div>
+                                <p className="text-sm text-gray-500 mb-3">{s.descripcion}</p>
+                                <div className="p-3 bg-gray-50 rounded-lg mb-3"><p className="text-xs text-gray-400">Ejemplo:</p><p className="text-sm text-gray-600">{s.ejemplo}</p></div>
+                                <div className="p-3 bg-pink-50 rounded-lg border border-pink-200"><p className="text-xs text-emerald-600"><strong>✓ Solución:</strong> {s.solucion}</p></div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+
+            const Brokers = () => (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3"><Building className="text-pink-500" /> Comparador de Brokers</h2>
+                    <div className="flex flex-wrap gap-2">
+                        {['todos', 'fondos', 'broker', 'app', 'robo'].map((f) => (
+                            <button key={f} onClick={() => setBrokerFiltro(f)} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${brokerFiltro === f ? 'bg-emerald-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-slate-600'}`}>
+                                {f === 'todos' ? 'Todos' : f === 'fondos' ? '📊 Fondos' : f === 'broker' ? '📈 Broker' : f === 'app' ? '📱 App' : '🤖 Robo-advisor'}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="space-y-3">
+                        {filteredBrokers.map((b, i) => (
+                            <div key={i} className="bg-white rounded-xl p-5 border border-gray-200 hover:border-pink-200 transition-all">
+                                <div className="flex items-center gap-3 mb-3"><span className="text-2xl">{b.pais}</span><h4 className="font-bold text-gray-800 text-lg">{b.name}</h4><div className="flex gap-0.5 ml-2">{[...Array(b.rating)].map((_, j) => <Star key={j} size={14} className="text-amber-600 fill-amber-400" />)}</div></div>
+                                <p className="text-sm text-gray-500 mb-3">{b.desc}</p>
+                                <div className="flex flex-wrap gap-2">
+                                    <span className="px-3 py-1 bg-pink-100 rounded-full text-xs text-emerald-600 border border-pink-200">{b.comision === 'gratis' ? '✓ Sin comisiones' : '💰 Comisiones bajas'}</span>
+                                    <span className="px-3 py-1 bg-blue-500/20 rounded-full text-xs text-blue-300 border border-blue-200">{b.productos}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="bg-white rounded-xl p-5 border border-gray-200"><p className="text-sm text-gray-500"><strong className="text-gray-800">🔒 Seguridad:</strong> Todos los brokers listados están regulados y tus inversiones están protegidas hasta 100.000€ por el FOGAIN (España) o sistemas equivalentes (UE).</p></div>
+                </div>
+            );
+
+            const Quiz = () => {
+                if (!quizIniciado) {
+                    return (
+                        <div className="text-center py-16 space-y-6">
+                            <GraduationCap className="mx-auto text-purple-600" size={80} />
+                            <h2 className="text-3xl font-black text-gray-800">Quiz de Conocimientos</h2>
+                            <p className="text-gray-500 max-w-md mx-auto">10 preguntas para poner a prueba lo que has aprendido sobre finanzas e inversión.</p>
+                            <button onClick={() => { setQuizIniciado(true); setQuizPregunta(0); setQuizRespuestas({}); setQuizTerminado(false); }} className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-bold text-gray-800 text-lg hover:scale-105 transition-all shadow-lg shadow-purple-500/25">Empezar Quiz</button>
+                        </div>
+                    );
+                }
+                if (quizTerminado) {
+                    return (
+                        <div className="text-center py-8 space-y-6">
+                            <div className="inline-flex items-center justify-center w-28 h-28 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-gray-800 text-4xl font-black shadow-lg">{quizPuntuacion}/10</div>
+                            <h2 className="text-2xl font-black text-gray-800">{quizPuntuacion >= 8 ? '¡Excelente! 🏆' : quizPuntuacion >= 5 ? '¡Bien hecho! 👍' : 'Sigue aprendiendo 📚'}</h2>
+                            <p className="text-gray-500">{quizPuntuacion >= 8 ? 'Dominas los conceptos básicos de inversión.' : quizPuntuacion >= 5 ? 'Tienes buena base, pero hay margen de mejora.' : 'Te recomiendo repasar las secciones de la guía.'}</p>
+                            <div className="max-w-2xl mx-auto space-y-3 text-left">
+                                {quizPreguntas.map((q, i) => (
+                                    <div key={i} className={`p-4 rounded-xl ${quizRespuestas[i] === q.correcta ? 'bg-pink-50 border border-pink-200' : 'bg-red-50 border border-red-200'}`}>
+                                        <p className="text-sm text-gray-800 mb-1">{q.pregunta}</p><p className="text-xs text-pink-500">✓ {q.opciones[q.correcta]}</p>
+                                    </div>
+                                ))}
+                            </div>
+                            <button onClick={() => setQuizIniciado(false)} className="px-6 py-3 bg-pink-50 rounded-xl text-gray-800 hover:bg-pink-100 transition-all">Repetir Quiz</button>
+                        </div>
+                    );
+                }
+                const q = quizPreguntas[quizPregunta];
+                return (
+                    <div className="max-w-2xl mx-auto space-y-6">
+                        <div className="flex items-center justify-between">
+                            <span className="text-gray-500">Pregunta {quizPregunta + 1} de 10</span>
+                            <div className="flex gap-1">{[...Array(10)].map((_, i) => (<div key={i} className={`w-3 h-3 rounded-full ${i < quizPregunta ? (quizRespuestas[i] === quizPreguntas[i].correcta ? 'bg-emerald-500' : 'bg-red-500') : i === quizPregunta ? 'bg-purple-500' : 'bg-gray-100'}`} />))}</div>
+                        </div>
+                        <div className="bg-white rounded-xl p-8 border border-gray-200">
+                            <p className="text-xl font-bold text-gray-800 mb-8">{q.pregunta}</p>
+                            <div className="space-y-3">
+                                {q.opciones.map((opt, i) => {
+                                    const respondido = quizRespuestas[quizPregunta] !== undefined;
+                                    const esSeleccionada = quizRespuestas[quizPregunta] === i;
+                                    const esCorrecta = i === q.correcta;
+                                    let clases = "w-full p-4 rounded-xl text-left transition-all font-medium ";
+                                    if (respondido) {
+                                        if (esSeleccionada) { clases += esCorrecta ? "bg-emerald-500 text-white" : "bg-red-500 text-white"; }
+                                        else if (esCorrecta) { clases += "bg-pink-100 border-2 border-emerald-500 text-emerald-600"; }
+                                        else { clases += "bg-gray-50 text-gray-400"; }
+                                    } else { clases += "bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-800"; }
+                                    return (
+                                        <button key={i} onClick={() => { if (!respondido) { setQuizRespuestas(p => ({...p, [quizPregunta]: i})); setTimeout(() => { if (quizPregunta < 9) { setQuizPregunta(quizPregunta + 1); } else { setQuizTerminado(true); } }, 1000); }}} disabled={respondido} className={clases}>{opt}</button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            const Test = () => {
+                if (testResultados) {
+                    const rec = obtenerRecomendacion();
+                    return (
+                        <div className="space-y-6">
+                            <div className="text-center"><Award className="mx-auto text-pink-500 mb-4" size={64} /><h2 className="text-3xl font-black text-gray-800">Tu Perfil: <span className="text-pink-500">{rec.perfil}</span></h2></div>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="bg-pink-50 rounded-xl p-6 border border-pink-200">
+                                    <h3 className="font-bold text-pink-500 text-lg mb-4">📊 Cartera recomendada</h3>
+                                    <div className="flex gap-1 mb-4 h-5 rounded-full overflow-hidden"><div className="bg-emerald-500" style={{width: `${rec.carteraRec.rv}%`}}></div><div className="bg-blue-500" style={{width: `${rec.carteraRec.rf}%`}}></div><div className="bg-amber-500" style={{width: `${rec.carteraRec.oro}%`}}></div><div className="bg-slate-500" style={{width: `${rec.carteraRec.cash}%`}}></div></div>
+                                    <p className="text-gray-600">RV {rec.carteraRec.rv}% | RF {rec.carteraRec.rf}% | Oro {rec.carteraRec.oro}% | Cash {rec.carteraRec.cash}%</p><p className="text-emerald-600 font-medium mt-2">Rentabilidad esperada: {rec.carteraRec.rent}</p>
+                                </div>
+                                <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
+                                    <h3 className="font-bold text-purple-600 text-lg mb-4">🏦 Brokers recomendados</h3>
+                                    <div className="flex flex-wrap gap-2">{rec.brokersRec.map((b, i) => (<span key={i} className="px-4 py-2 bg-purple-50 rounded-full text-purple-600 border border-purple-200">{b}</span>))}</div>
+                                </div>
+                            </div>
+                            <div className="bg-white rounded-xl p-6 border border-gray-200">
+                                <h3 className="font-bold text-gray-800 mb-4">📋 Próximos pasos</h3>
+                                <ol className="space-y-3">
+                                    <li className="flex items-start gap-3"><span className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">1</span><span className="text-gray-600">Abre cuenta en {rec.brokersRec[0]}</span></li>
+                                    <li className="flex items-start gap-3"><span className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">2</span><span className="text-gray-600">Configura una aportación mensual automática (DCA)</span></li>
+                                    <li className="flex items-start gap-3"><span className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">3</span><span className="text-gray-600">Invierte en fondos/ETFs globales siguiendo tu distribución</span></li>
+                                    <li className="flex items-start gap-3"><span className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">4</span><span className="text-gray-600">Olvídate y deja que el tiempo haga su magia</span></li>
+                                </ol>
+                            </div>
+                            <div className="flex justify-center gap-4">
+                                <button onClick={() => { setTestRespuestas({}); setTestFase(0); setTestResultados(false); }} className="px-6 py-3 bg-pink-50 rounded-xl text-gray-800 hover:bg-pink-100 flex items-center gap-2"><RefreshCw size={18} /> Repetir test</button>
+                                <button onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(`📊 Mi perfil inversor: ${rec.perfil}\n\n✅ Haz el test en la Guía de Finanzas e Inversión`)}`, '_blank')} className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 rounded-xl text-gray-800 flex items-center gap-2"><Share2 size={18} /> Compartir</button>
+                            </div>
+                        </div>
+                    );
+                }
+                const fases = [{ nombre: 'Requisitos previos', preguntas: testPreguntas.fase1 },{ nombre: 'Tu perfil de riesgo', preguntas: testPreguntas.fase2 },{ nombre: 'Compromiso', preguntas: testPreguntas.fase3 }];
+                const faseActual = fases[testFase];
+                const todasRespondidas = faseActual.preguntas.every(q => testRespuestas[q.id] !== undefined);
+                return (
+                    <div className="max-w-2xl mx-auto space-y-6">
+                        <h2 className="text-2xl font-black text-gray-800 text-center">🎯 Test de Perfil Inversor</h2>
+                        <div className="flex justify-center gap-3">{fases.map((_, i) => (<div key={i} className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${i < testFase ? 'bg-emerald-500 text-white' : i === testFase ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white' : 'bg-gray-100 text-gray-500'}`}>{i < testFase ? <Check size={20} /> : i + 1}</div>))}</div>
+                        <div className="bg-white rounded-xl p-6 border border-gray-200">
+                            <h3 className="font-bold text-gray-800 mb-2">Fase {testFase + 1}: {faseActual.nombre}</h3>
+                            {testFase === 0 && (<div className="p-4 bg-amber-50 rounded-xl border border-amber-200 mb-6"><p className="text-sm text-amber-600">⚠️ Si respondes "No" a alguna pregunta, trabaja en ello antes de empezar a invertir.</p></div>)}
+                            <div className="space-y-4">
+                                {faseActual.preguntas.map((q) => {
+                                    const respondida = testRespuestas[q.id] !== undefined;
+                                    const esPositiva = testRespuestas[q.id] === true || typeof testRespuestas[q.id] === 'string';
+                                    return (
+                                        <div key={q.id} className={`p-4 rounded-xl border transition-all ${respondida ? (esPositiva ? 'bg-pink-50 border-pink-200' : 'bg-red-50 border-red-200') : 'bg-gray-50 border-gray-200'}`}>
+                                            <p className="text-gray-800 mb-4">{q.texto}</p>
+                                            {q.opciones ? (
+                                                <div className="space-y-2">{q.opciones.map((opt, j) => (<button key={j} onClick={() => setTestRespuestas(p => ({...p, [q.id]: opt}))} className={`w-full p-3 rounded-lg text-left text-sm transition-all ${testRespuestas[q.id] === opt ? 'bg-pink-100 border border-pink-300 text-emerald-600' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}>{opt}</button>))}</div>
+                                            ) : (
+                                                <div className="flex gap-3">
+                                                    <button onClick={() => setTestRespuestas(p => ({...p, [q.id]: true}))} className={`flex-1 py-3 rounded-lg font-medium transition-all ${testRespuestas[q.id] === true ? 'bg-emerald-500 text-white' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}>Sí</button>
+                                                    <button onClick={() => setTestRespuestas(p => ({...p, [q.id]: false}))} className={`flex-1 py-3 rounded-lg font-medium transition-all ${testRespuestas[q.id] === false ? 'bg-red-500 text-white' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}>No</button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            {testFase === 0 && !puedePasarFase1() && todasRespondidas && (<div className="mt-6 p-4 bg-red-50 rounded-xl border border-red-200"><p className="text-red-400 font-bold">❌ Aún no estás preparado para invertir</p><p className="text-sm text-gray-500 mt-1">Trabaja primero en los requisitos marcados en rojo.</p></div>)}
+                            <div className="flex justify-between mt-6 pt-4 border-t border-gray-200">
+                                <button onClick={() => testFase > 0 && setTestFase(testFase - 1)} disabled={testFase === 0} className={`px-5 py-2 rounded-xl ${testFase === 0 ? 'opacity-50 cursor-not-allowed' : 'bg-pink-50 text-gray-800 hover:bg-pink-100'}`}>← Anterior</button>
+                                <button onClick={() => { if (testFase < 2) setTestFase(testFase + 1); else setTestResultados(true); }} disabled={!todasRespondidas || (testFase === 0 && !puedePasarFase1())} className={`px-5 py-2 rounded-xl flex items-center gap-2 ${todasRespondidas && (testFase !== 0 || puedePasarFase1()) ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white' : 'bg-gray-100 text-gray-500 cursor-not-allowed'}`}>{testFase === 2 ? 'Ver resultados' : 'Siguiente'} <ChevronRight size={18} /></button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            const GlosarioModal = () => (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowGlosario(false)}>
+                    <div className="bg-gradient-to-br from-amber-50 via-white to-pink-50 rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden border border-gray-200" onClick={e => e.stopPropagation()}>
+                        <div className="p-4 border-b border-gray-200 flex items-center justify-between"><h3 className="text-lg font-bold text-gray-800 flex items-center gap-2"><BookOpen className="text-pink-500" /> Glosario financiero</h3><button onClick={() => setShowGlosario(false)} className="p-2 hover:bg-white rounded-lg"><X className="text-gray-500" /></button></div>
+                        <div className="p-4 border-b border-gray-200"><div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} /><input type="text" placeholder="Buscar término..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-800 focus:outline-none focus:border-emerald-500" /></div></div>
+                        <div className="overflow-y-auto max-h-[50vh] p-4 space-y-2">{filteredGlosario.map((item, i) => (<div key={i} className="p-4 bg-white rounded-xl"><p className="font-bold text-pink-500">{item.term}</p><p className="text-sm text-gray-600 mt-1">{item.def}</p></div>))}</div>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-pink-50 text-gray-800">
+                    <div className="fixed inset-0 overflow-hidden pointer-events-none"><div className="absolute top-0 left-1/4 w-96 h-96 bg-pink-200/30 rounded-full blur-3xl" /><div className="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-200/30 rounded-full blur-3xl" /></div>
+                    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-gray-200">
+                        <div className="max-w-6xl mx-auto px-4 py-3">
+                            <div className="flex items-center justify-between">
+                                <button onClick={() => setSection('inicio')} className="flex items-center gap-2"><div className="p-2 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl"><TrendingUp size={20} /></div><span className="font-bold text-lg hidden sm:block">Finanzas 101</span></button>
+                                <nav className="hidden lg:flex gap-1"><NavBtn sec="inicio" icono={Zap} label="Inicio" /><NavBtn sec="gestion" icono={Wallet} label="Gestión" /><NavBtn sec="activos" icono={BarChart3} label="Activos" /><NavBtn sec="calc" icono={Calculator} label="Calculadora" /><NavBtn sec="cartera" icono={PieChartIcon} label="Cartera" /><NavBtn sec="estrategias" icono={Target} label="Estrategias" /><NavBtn sec="psicologia" icono={Brain} label="Psicología" /><NavBtn sec="brokers" icono={Building} label="Brokers" /><NavBtn sec="quiz" icono={GraduationCap} label="Quiz" /><NavBtn sec="test" icono={Award} label="Test" /></nav>
+                                <button onClick={() => setMenuOpen(!menuOpen)} className="lg:hidden p-2 hover:bg-white rounded-lg">{menuOpen ? <X size={24} /> : <Menu size={24} />}</button>
+                            </div>
+                            {menuOpen && (<nav className="lg:hidden flex flex-wrap gap-2 mt-3 pb-2"><NavBtn sec="inicio" icono={Zap} label="Inicio" /><NavBtn sec="gestion" icono={Wallet} label="Gestión" /><NavBtn sec="activos" icono={BarChart3} label="Activos" /><NavBtn sec="calc" icono={Calculator} label="Calc" /><NavBtn sec="cartera" icono={PieChartIcon} label="Cartera" /><NavBtn sec="estrategias" icono={Target} label="Estrategias" /><NavBtn sec="psicologia" icono={Brain} label="Psicología" /><NavBtn sec="brokers" icono={Building} label="Brokers" /><NavBtn sec="quiz" icono={GraduationCap} label="Quiz" /><NavBtn sec="test" icono={Award} label="Test" /></nav>)}
+                        </div>
+                    </header>
+                    <main className="relative z-10 max-w-6xl mx-auto px-4 py-8">
+                        {section === 'inicio' && <Inicio />}
+                        {section === 'gestion' && <Gestion />}
+                        {section === 'activos' && <Activos />}
+                        {section === 'calc' && <Calculadora />}
+                        {section === 'cartera' && <Cartera />}
+                        {section === 'estrategias' && <Estrategias />}
+                        {section === 'psicologia' && <Psicologia />}
+                        {section === 'brokers' && <Brokers />}
+                        {section === 'quiz' && <Quiz />}
+                        {section === 'test' && <Test />}
+                    </main>
+                    <button onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent('📊 Guía COMPLETA de Finanzas e Inversión\n\n✅ Calculadora interés compuesto\n✅ Simulador de cartera\n✅ Test de perfil inversor\n✅ Quiz de conocimientos\n✅ Comparador de brokers\n\n🚀 ¡Todo interactivo!')}`, '_blank')} className="fixed bottom-6 right-6 p-4 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full shadow-lg shadow-emerald-500/25 hover:scale-110 transition-all z-50"><Smartphone size={24} /></button>
+                    <button onClick={() => setShowGlosario(true)} className="fixed bottom-6 left-6 p-4 bg-white rounded-full shadow-lg hover:scale-110 transition-all z-50 border border-gray-200"><BookOpen size={24} /></button>
+                    {showGlosario && <GlosarioModal />}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<FinanzasApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>

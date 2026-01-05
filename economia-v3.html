@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Economia - Guia Completa Interactiva</title>
+    <meta name="description" content="Aprèn economia amb simuladors interactius: oferta i demanda, IS-LM, teoria de jocs, costos, multiplicador i més.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.10.3/umd/Recharts.min.js"></script>
+    <script src="https://unpkg.com/lucide-react@0.263.1/dist/umd/lucide-react.min.js"></script>
+    <style>
+        * { scrollbar-width: thin; scrollbar-color: #e91e63 #fdf6e3; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #fdf6e3; }
+        ::-webkit-scrollbar-thumb { background-color: #e91e63; border-radius: 3px; }
+        input[type="range"] { -webkit-appearance: none; appearance: none; height: 8px; border-radius: 4px; background: #fce4ec; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #e91e63; cursor: pointer; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .formula { font-family: 'Times New Roman', serif; font-style: italic; }
+    </style>
+</head>
+<body class="bg-amber-50">
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useMemo, useEffect } = React;
+        const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, ReferenceLine, Legend, BarChart, Bar, PieChart, Pie, Cell } = Recharts;
+        const { TrendingUp, TrendingDown, BookOpen, Users, Building2, Globe, Lightbulb, Calculator, BarChart3, PieChart: PieChartIcon, ArrowUpDown, Scale, Landmark, Banknote, ShoppingCart, Factory, GraduationCap, Brain, Target, ChevronDown, ChevronUp, ChevronRight, Check, X, Menu, Search, Zap, Clock, Award, RefreshCw, Info, AlertTriangle, DollarSign, Percent, Activity, Layers, ArrowRight, Play, Gamepad2, FileText, Star, Sparkles, BookMarked, Newspaper, Home, CreditCard, Briefcase, TrendingUp as TUp, CircleDollarSign, Building, Wallet, PiggyBank, LineChart as LineChartIcon } = lucideReact;
+
+        function EconomiaApp() {
+            const [section, setSection] = useState('inicio');
+            const [menuOpen, setMenuOpen] = useState(false);
+            const [showGlosario, setShowGlosario] = useState(false);
+            const [searchTerm, setSearchTerm] = useState('');
+            
+            // === ESTAT SIMULADORS ===
+            
+            // Constructor Oferta-Demanda
+            const [demandaMax, setDemandaMax] = useState(100); // Quantitat màxima quan P=0
+            const [demandaPendent, setDemandaPendent] = useState(2); // Unitats que baixa per cada € de preu
+            const [ofertaMin, setOfertaMin] = useState(0); // Quantitat mínima quan P=0  
+            const [ofertaPendent, setOfertaPendent] = useState(2); // Unitats que puja per cada € de preu
+            const [preuFixat, setPreuFixat] = useState(null);
+            const [mostrarExcedents, setMostrarExcedents] = useState(true);
+            
+            // Elasticitat
+            const [elastP1, setElastP1] = useState(10);
+            const [elastP2, setElastP2] = useState(12);
+            const [elastQ1, setElastQ1] = useState(100);
+            const [elastQ2, setElastQ2] = useState(80);
+            
+            // PIB
+            const [pibC, setPibC] = useState(550);
+            const [pibI, setPibI] = useState(200);
+            const [pibG, setPibG] = useState(180);
+            const [pibX, setPibX] = useState(120);
+            const [pibM, setPibM] = useState(150);
+            
+            // Multiplicador
+            const [pmc, setPmc] = useState(0.8);
+            const [deltaG, setDeltaG] = useState(100);
+            
+            // IS-LM
+            const [islmG, setIslmG] = useState(100);
+            const [islmT, setIslmT] = useState(80);
+            const [islmM, setIslmM] = useState(500);
+            
+            // Costos
+            const [costCF, setCostCF] = useState(100);
+            const [costCVu, setCostCVu] = useState(10);
+            const [costQ, setCostQ] = useState(20);
+            
+            // Aranzels
+            const [aranzelPmundial, setAranzelPmundial] = useState(10);
+            const [aranzelTarifa, setAranzelTarifa] = useState(5);
+            
+            // Teoria de jocs
+            const [jocSeleccionat, setJocSeleccionat] = useState('presoner');
+            const [jugadorA, setJugadorA] = useState(null);
+            const [jugadorB, setJugadorB] = useState(null);
+            
+            // Quiz
+            const [quizActiu, setQuizActiu] = useState(false);
+            const [quizPregunta, setQuizPregunta] = useState(0);
+            const [quizRespostes, setQuizRespostes] = useState({});
+            const [quizFinalitzat, setQuizFinalitzat] = useState(false);
+            
+            // Expansions
+            const [pensadorExpandit, setPensadorExpandit] = useState(null);
+            const [epocaExpandida, setEpocaExpandida] = useState(null);
+            const [mercatSeleccionat, setMercatSeleccionat] = useState('perfecta');
+            const [concepteExpandit, setConcepteExpandit] = useState(null);
+
+            // === DADES ===
+            const glosario = [
+                { term: 'PIB', def: 'Producte Interior Brut. Valor total de béns i serveis finals produïts en un país durant un any.' },
+                { term: 'PIB real', def: 'PIB a preus constants. Elimina l\'efecte de la inflació per comparar creixement real.' },
+                { term: 'PIB nominal', def: 'PIB a preus corrents de cada any. Inclou l\'efecte de la inflació.' },
+                { term: 'Inflació', def: 'Augment generalitzat i sostingut dels preus. Es mesura amb l\'IPC.' },
+                { term: 'Deflació', def: 'Disminució generalitzada dels preus. Pot paralitzar l\'economia.' },
+                { term: 'IPC', def: 'Índex de Preus al Consum. Mesura l\'evolució dels preus d\'una cistella de béns.' },
+                { term: 'Oferta', def: 'Quantitat que els productors volen vendre a cada preu. Relació positiva amb el preu.' },
+                { term: 'Demanda', def: 'Quantitat que els consumidors volen comprar a cada preu. Relació negativa amb el preu.' },
+                { term: 'Equilibri', def: 'Punt on oferta = demanda. Determina preu i quantitat de mercat.' },
+                { term: 'Elasticitat', def: 'Sensibilitat de la quantitat davant canvis en el preu. |Ep| > 1 és elàstica.' },
+                { term: 'Monopoli', def: 'Mercat amb un únic venedor. Genera ineficiència (P > CMg).' },
+                { term: 'Oligopoli', def: 'Mercat amb pocs venedors interdependents. Analitzat amb teoria de jocs.' },
+                { term: 'Cost d\'oportunitat', def: 'Valor de la millor alternativa a la qual renunciem.' },
+                { term: 'Cost marginal', def: 'Cost d\'una unitat addicional. CMg = ΔCT/ΔQ.' },
+                { term: 'Cost mitjà', def: 'Cost per unitat. CMe = CT/Q.' },
+                { term: 'Externalitat', def: 'Efecte sobre tercers no compensat pel mercat.' },
+                { term: 'Bé públic', def: 'No excloïble i no rival. Ex: defensa nacional.' },
+                { term: 'Política fiscal', def: 'Ús de G i T pel Govern per influir en l\'economia.' },
+                { term: 'Política monetària', def: 'Control de l\'oferta monetària i tipus d\'interès pel BCE.' },
+                { term: 'Multiplicador', def: 'Efecte amplificat de ΔG sobre el PIB. k = 1/(1-PMC).' },
+                { term: 'Equilibri de Nash', def: 'Cap jugador pot millorar canviant unilateralment.' },
+                { term: 'Avantatge comparatiu', def: 'Produir amb menor cost d\'oportunitat (Ricardo).' },
+                { term: 'Aranzel', def: 'Impost sobre importacions.' },
+                { term: 'BCE', def: 'Banc Central Europeu. Controla política monetària de l\'eurozona.' },
+                { term: 'IS-LM', def: 'Model que combina equilibri del mercat de béns (IS) i de diner (LM).' },
+            ];
+
+            const pensadors = [
+                { id: 'smith', nom: 'Adam Smith', anys: '1723-1790', pais: '🏴󠁧󠁢󠁳󠁣󠁴󠁿', escola: 'Clàssica', color: 'emerald', obra: 'La riquesa de les nacions (1776)', idees: ['Mà invisible', 'Divisió del treball', 'Laissez-faire', 'Valor-treball'], cita: '"No és de la benevolència del carnisser que esperem el sopar, sinó del seu interès propi."', context: 'Il·lustració, inicis Revolució Industrial', critica: 'No preveu monopolis ni externalitats', influencia: 'Pare de l\'economia moderna i liberalisme econòmic' },
+                { id: 'ricardo', nom: 'David Ricardo', anys: '1772-1823', pais: '🇬🇧', escola: 'Clàssica', color: 'blue', obra: 'Principis d\'economia política (1817)', idees: ['Avantatge comparatiu', 'Renda de la terra', 'Valor-treball', 'Llei de ferro dels salaris'], cita: '"Cada país ha d\'especialitzar-se en allò que produeix amb menor cost d\'oportunitat."', context: 'Guerres napoleòniques, debat Corn Laws', critica: 'Valor-treball superat', influencia: 'Base del comerç internacional' },
+                { id: 'marx', nom: 'Karl Marx', anys: '1818-1883', pais: '🇩🇪', escola: 'Marxisme', color: 'red', obra: 'El Capital (1867)', idees: ['Plusvàlua', 'Lluita de classes', 'Materialisme històric', 'Alienació'], cita: '"La qüestió és transformar el món."', context: 'Revolució Industrial, moviments obrers', critica: 'Prediccions no complides, règims comunistes', influencia: 'Revolucions, sociologia, filosofia' },
+                { id: 'marshall', nom: 'Alfred Marshall', anys: '1842-1924', pais: '🇬🇧', escola: 'Neoclàssica', color: 'teal', obra: 'Principis d\'economia (1890)', idees: ['Oferta i demanda', 'Elasticitat', 'Equilibri parcial', 'Excedents'], cita: '"L\'economia és l\'estudi de la humanitat en els assumptes ordinaris."', context: 'Professionalització economia', critica: 'Ignora interdependències', influencia: 'Microeconomia moderna' },
+                { id: 'keynes', nom: 'John M. Keynes', anys: '1883-1946', pais: '🇬🇧', escola: 'Keynesianisme', color: 'blue', obra: 'Teoria general (1936)', idees: ['Demanda agregada', 'Multiplicador', 'Intervenció estatal', 'Rigideses'], cita: '"A llarg termini, tots som morts."', context: 'Gran Depressió 1929', critica: 'Pot generar inflació i dèficits', influencia: 'New Deal, Estat del Benestar' },
+                { id: 'friedman', nom: 'Milton Friedman', anys: '1912-2006', pais: '🇺🇸', escola: 'Monetarisme', color: 'indigo', obra: 'Història monetària dels EUA (1963)', idees: ['Inflació és monetària', 'Regla monetària', 'Taxa natural d\'atur', 'Liberalisme'], cita: '"No hi ha tal cosa com un dinar gratis."', context: 'Estanflació anys 70', critica: 'Augment desigualtat', influencia: 'Reagan, Thatcher, Nobel 1976' },
+                { id: 'hayek', nom: 'Friedrich Hayek', anys: '1899-1992', pais: '🇦🇹', escola: 'Austríaca', color: 'amber', obra: 'Camí de servitud (1944)', idees: ['Ordre espontani', 'Coneixement dispers', 'Crítica socialisme', 'Liberalisme'], cita: '"La tasca de l\'economia és mostrar als homes com de poc saben."', context: 'Auge totalitarismes', critica: 'Subestima fallades mercat', influencia: 'Thatcher, Nobel 1974' },
+                { id: 'nash', nom: 'John Nash', anys: '1928-2015', pais: '🇺🇸', escola: 'Teoria de Jocs', color: 'purple', obra: 'Equilibrium points (1950)', idees: ['Equilibri de Nash', 'Jocs no cooperatius', 'Estratègia dominant'], cita: '"Les matemàtiques són la clau de les ciències."', context: 'Guerra Freda, RAND', critica: 'Assumeix racionalitat extrema', influencia: 'Nobel 1994, A Beautiful Mind' },
+                { id: 'piketty', nom: 'Thomas Piketty', anys: '1971-', pais: '🇫🇷', escola: 'Desigualtat', color: 'rose', obra: 'El capital al s. XXI (2013)', idees: ['r > g', 'Desigualtat creixent', 'Impost global capital'], cita: '"Quan r > g, la desigualtat augmenta inevitablement."', context: 'Post-crisi 2008', critica: 'Propostes difícils d\'implementar', influencia: 'Debat sobre desigualtat' },
+            ];
+
+            const epoques = [
+                { id: 'antic', nom: 'Antiga', periode: '3000aC-476dC', color: 'amber', trets: ['Agricultura', 'Primeres monedes', 'Esclavitud', 'Comerç mediterrani'], pensadors: 'Aristòtil' },
+                { id: 'medieval', nom: 'Medieval', periode: '476-1453', color: 'orange', trets: ['Feudalisme', 'Gremis', 'Usura prohibida', 'Preu just'], pensadors: 'Tomàs d\'Aquino' },
+                { id: 'mercantilisme', nom: 'Mercantilisme', periode: '1500-1750', color: 'red', trets: ['Or = riquesa', 'Balança positiva', 'Colonialisme', 'Intervencionisme'], pensadors: 'Colbert' },
+                { id: 'classic', nom: 'Clàssica', periode: '1750-1870', color: 'emerald', trets: ['Laissez-faire', 'Rev. Industrial', 'Valor-treball', 'Lliure comerç'], pensadors: 'Smith, Ricardo, Marx' },
+                { id: 'neoclassic', nom: 'Neoclàssica', periode: '1870-1930', color: 'purple', trets: ['Marginalisme', 'Homo economicus', 'Equilibri general', 'Matemàtiques'], pensadors: 'Marshall, Walras' },
+                { id: 'keynesianisme', nom: 'Keynesianisme', periode: '1930-1970', color: 'blue', trets: ['Demanda agregada', 'Intervenció estatal', 'Estat Benestar', 'Multiplicador'], pensadors: 'Keynes, Samuelson' },
+                { id: 'monetarisme', nom: 'Neoliberalisme', periode: '1970-2008', color: 'indigo', trets: ['Control monetari', 'Desregulació', 'Privatització', 'Globalització'], pensadors: 'Friedman, Hayek' },
+                { id: 'actual', nom: 'Actual', periode: '2008-ara', color: 'rose', trets: ['Crisi 2008', 'Desigualtat', 'Sostenibilitat', 'Ec. conductual'], pensadors: 'Piketty, Thaler' },
+            ];
+
+            const estructuresMercat = [
+                { id: 'perfecta', nom: 'Competència Perfecta', oferents: 'Molts', producte: 'Homogeni', barreres: 'Cap', poder: 'Cap', color: 'emerald', exemples: ['Agricultura', 'Borsa'], trets: ['P = CMg', 'Benefici 0 a llarg termini', 'Eficiència màxima'] },
+                { id: 'monopolistica', nom: 'Comp. Monopolística', oferents: 'Molts', producte: 'Diferenciat', barreres: 'Baixes', poder: 'Limitat', color: 'blue', exemples: ['Restaurants', 'Roba'], trets: ['Diferenciació', 'Publicitat', 'Benefici 0 a llarg'] },
+                { id: 'oligopoli', nom: 'Oligopoli', oferents: 'Pocs', producte: 'Variable', barreres: 'Altes', poder: 'Alt', color: 'purple', exemples: ['Telèfons', 'Petroli', 'Banca'], trets: ['Interdependència', 'Teoria jocs', 'Possible col·lusió'] },
+                { id: 'monopoli', nom: 'Monopoli', oferents: 'Un', producte: 'Únic', barreres: 'Total', poder: 'Total', color: 'red', exemples: ['Patents', 'Xarxa elèctrica'], trets: ['P > CMg', 'Ineficiència', 'Regulació necessària'] },
+            ];
+
+            const jocs = {
+                presoner: { nom: 'Dilema del Presoner', estrategies: ['Callar', 'Delatar'], matriu: [[[-1,-1],[-10,0]],[[0,-10],[-5,-5]]], nash: [1,1], explicacio: 'Delatar és estratègia dominant. L\'equilibri (-5,-5) és pitjor que cooperar (-1,-1).' },
+                coordinacio: { nom: 'Coordinació', estrategies: ['A', 'B'], matriu: [[[10,10],[0,0]],[[0,0],[10,10]]], nash: 'múltiple', explicacio: 'Dos equilibris. Cal coordinar-se (punts focals).' },
+                gallina: { nom: 'Gallina', estrategies: ['Girar', 'Seguir'], matriu: [[[0,0],[-1,5]],[[5,-1],[-100,-100]]], nash: 'múltiple', explicacio: 'El pitjor és que ningú cedeixi.' },
+            };
+
+            const quizPreguntas = [
+                { pregunta: 'Què és el PIB?', opciones: ['Deute total', 'Valor producció anual', 'Impostos', 'Inversió estrangera'], correcta: 1 },
+                { pregunta: 'Qui va escriure "La riquesa de les nacions"?', opciones: ['Marx', 'Keynes', 'Smith', 'Friedman'], correcta: 2 },
+                { pregunta: 'Què és l\'elasticitat?', opciones: ['Preu màxim', 'Sensibilitat de Q al preu', 'Cost producció', 'Benefici'], correcta: 1 },
+                { pregunta: 'Quin mercat té un sol venedor?', opciones: ['Perfecta', 'Oligopoli', 'Monopoli', 'Monopolística'], correcta: 2 },
+                { pregunta: 'Què és l\'equilibri de Nash?', opciones: ['Oferta=Demanda', 'Cap jugador millora canviant sol', 'Màxim benefici', 'Equilibri laboral'], correcta: 1 },
+                { pregunta: 'Què defensa Keynes?', opciones: ['Mínim Estat', 'Control monetari', 'Intervenció en crisis', 'Abolir propietat'], correcta: 2 },
+                { pregunta: 'Fórmula del PIB (despesa)?', opciones: ['C+I+G+(X-M)', 'O+D', 'I-D', 'C×I×G'], correcta: 0 },
+                { pregunta: 'Què és el cost d\'oportunitat?', opciones: ['Cost extra', 'Valor alternativa renunciada', 'Cost total', 'Preu venda'], correcta: 1 },
+                { pregunta: 'Qui va dir "A llarg termini, tots som morts"?', opciones: ['Smith', 'Marx', 'Keynes', 'Hayek'], correcta: 2 },
+                { pregunta: 'Què és un bé públic?', opciones: ['Produït per l\'Estat', 'No excloïble i no rival', 'Gratuït', 'Necessari'], correcta: 1 },
+            ];
+
+            // === CÀLCULS ===
+            
+            // Equilibri oferta-demanda
+            const equilibri = useMemo(() => {
+                // Qd = demandaMax - demandaPendent × P  →  P = (demandaMax - Qd) / demandaPendent
+                // Qs = ofertaMin + ofertaPendent × P   →  P = (Qs - ofertaMin) / ofertaPendent
+                // Equilibri: Qd = Qs
+                // demandaMax - demandaPendent×P = ofertaMin + ofertaPendent×P
+                // demandaMax - ofertaMin = (demandaPendent + ofertaPendent)×P
+                const pEq = (demandaMax - ofertaMin) / (demandaPendent + ofertaPendent);
+                const qEq = ofertaMin + ofertaPendent * pEq;
+                return { p: Math.max(0, pEq).toFixed(2), q: Math.max(0, qEq).toFixed(2) };
+            }, [demandaMax, demandaPendent, ofertaMin, ofertaPendent]);
+
+            // Dades per al gràfic
+            const dadesGrafic = useMemo(() => {
+                const dades = [];
+                const pMax = (demandaMax / demandaPendent) * 1.2;
+                for (let p = 0; p <= pMax; p += pMax/30) {
+                    const qd = Math.max(0, demandaMax - demandaPendent * p);
+                    const qs = Math.max(0, ofertaMin + ofertaPendent * p);
+                    dades.push({ preu: p.toFixed(1), demanda: qd, oferta: qs });
+                }
+                return dades;
+            }, [demandaMax, demandaPendent, ofertaMin, ofertaPendent]);
+
+            // Excés si hi ha preu fixat
+            const exces = useMemo(() => {
+                if (preuFixat === null) return null;
+                const qd = Math.max(0, demandaMax - demandaPendent * preuFixat);
+                const qs = Math.max(0, ofertaMin + ofertaPendent * preuFixat);
+                const diff = qs - qd;
+                return { qd: qd.toFixed(1), qs: qs.toFixed(1), tipus: diff > 0.5 ? 'oferta' : diff < -0.5 ? 'demanda' : 'equilibri', quantitat: Math.abs(diff).toFixed(1) };
+            }, [preuFixat, demandaMax, demandaPendent, ofertaMin, ofertaPendent]);
+
+            // Elasticitat
+            const elasticitat = useMemo(() => {
+                const canviQ = ((elastQ2 - elastQ1) / ((elastQ1 + elastQ2) / 2)) * 100;
+                const canviP = ((elastP2 - elastP1) / ((elastP1 + elastP2) / 2)) * 100;
+                const ep = Math.abs(canviQ / canviP);
+                let tipus = 'unitària';
+                if (ep > 1) tipus = 'elàstica';
+                else if (ep < 1) tipus = 'inelàstica';
+                return { valor: isFinite(ep) ? ep.toFixed(2) : '∞', tipus, canviQ: canviQ.toFixed(1), canviP: canviP.toFixed(1) };
+            }, [elastP1, elastP2, elastQ1, elastQ2]);
+
+            // PIB
+            const pib = pibC + pibI + pibG + pibX - pibM;
+            const pibDades = [
+                { nom: 'Consum (C)', valor: pibC, color: '#10b981' },
+                { nom: 'Inversió (I)', valor: pibI, color: '#3b82f6' },
+                { nom: 'Despesa (G)', valor: pibG, color: '#f59e0b' },
+                { nom: 'Export (X)', valor: pibX, color: '#8b5cf6' },
+                { nom: '-Import (M)', valor: -pibM, color: '#ef4444' },
+            ];
+
+            // Multiplicador
+            const multiplicador = 1 / (1 - pmc);
+            const efecteTotal = deltaG * multiplicador;
+
+            // Costos
+            const costCV = costCVu * costQ;
+            const costCT = costCF + costCV;
+            const costCMe = costQ > 0 ? costCT / costQ : 0;
+            const costCMg = costCVu; // simplificat
+            const dadesCostos = useMemo(() => {
+                const d = [];
+                for (let q = 1; q <= 50; q++) {
+                    const cf = costCF;
+                    const cv = costCVu * q + 0.5 * q * q; // CV amb rendiments decreixents
+                    const ct = cf + cv;
+                    d.push({ q, CF: cf, CV: cv, CT: ct, CMe: ct/q, CMg: costCVu + q });
+                }
+                return d;
+            }, [costCF, costCVu]);
+
+            // IS-LM simplificat
+            const islmDades = useMemo(() => {
+                const d = [];
+                // IS: Y = mult × (C0 + I0 + G - cT)  →  r = f(Y) decreixent
+                // LM: M/P = L(Y, r)  →  r = f(Y) creixent
+                for (let y = 100; y <= 1000; y += 50) {
+                    const rIS = 10 - 0.01 * y + 0.02 * islmG;
+                    const rLM = -5 + 0.015 * y - 0.01 * islmM;
+                    d.push({ Y: y, IS: Math.max(0, rIS), LM: Math.max(0, rLM) });
+                }
+                return d;
+            }, [islmG, islmM]);
+
+            // Quiz
+            const quizPunts = Object.entries(quizRespostes).filter(([i, r]) => quizPreguntas[parseInt(i)].correcta === r).length;
+
+            // === COMPONENTS ===
+            const Card = ({ children, className = '', accent = false }) => (
+                <div className={`bg-white rounded-2xl p-6 shadow-sm border ${accent ? 'border-pink-200 bg-gradient-to-br from-white to-pink-50' : 'border-gray-100'} ${className}`}>
+                    {children}
+                </div>
+            );
+
+            const NavBtn = ({ sec, icono: Icono, label }) => (
+                <button onClick={() => { setSection(sec); setMenuOpen(false); }} className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm transition-all ${section === sec ? 'bg-pink-500 text-white shadow-md' : 'text-gray-600 hover:bg-pink-50 hover:text-pink-600'}`}>
+                    <Icono size={16} /><span className="font-medium">{label}</span>
+                </button>
+            );
+
+            const filteredGlosario = glosario.filter(g => g.term.toLowerCase().includes(searchTerm.toLowerCase()) || g.def.toLowerCase().includes(searchTerm.toLowerCase()));
+
+            // === SECCIONS ===
+            
+            const Inicio = () => (
+                <div className="space-y-8">
+                    <div className="text-center py-8">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-pink-100 rounded-full text-pink-600 text-sm font-medium mb-6 border border-pink-200">
+                            <GraduationCap size={16} /> Nivell Batxillerat / Introducció Universitària
+                        </div>
+                        <h1 className="text-4xl md:text-5xl font-black text-gray-800 mb-4">Economia</h1>
+                        <p className="text-lg text-gray-500 max-w-xl mx-auto mb-8">Guia completa interactiva amb simuladors, teoria i exercicis</p>
+                        <div className="flex flex-wrap justify-center gap-3">
+                            <button onClick={() => setSection('equilibri')} className="px-6 py-3 bg-pink-500 rounded-xl font-bold text-white shadow-md hover:bg-pink-600 transition-all flex items-center gap-2"><Scale size={18} /> Oferta i Demanda</button>
+                            <button onClick={() => setSection('macro')} className="px-6 py-3 bg-white rounded-xl font-bold text-gray-700 border border-gray-200 hover:border-pink-300 transition-all flex items-center gap-2"><BarChart3 size={18} /> Macroeconomia</button>
+                            <button onClick={() => setSection('jocs')} className="px-6 py-3 bg-purple-50 rounded-xl font-bold text-purple-700 border border-purple-200 hover:bg-purple-100 transition-all flex items-center gap-2"><Gamepad2 size={18} /> Teoria de Jocs</button>
+                        </div>
+                    </div>
+
+                    <Card accent>
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-pink-100 rounded-xl"><Lightbulb className="text-pink-500" size={32} /></div>
+                            <div>
+                                <p className="text-xl font-bold text-gray-800">L'economia és la ciència de les decisions</p>
+                                <p className="text-gray-600">Estudia com assignem <span className="text-pink-500 font-semibold">recursos escassos</span> per satisfer <span className="text-pink-500 font-semibold">necessitats il·limitades</span>.</p>
+                            </div>
+                        </div>
+                    </Card>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {[
+                            { icono: Clock, titulo: 'Història', sec: 'historia', desc: 'Pensament econòmic', color: 'bg-orange-50 border-orange-200' },
+                            { icono: Scale, titulo: 'Mercat', sec: 'equilibri', desc: 'Oferta i demanda', color: 'bg-pink-50 border-pink-200' },
+                            { icono: Percent, titulo: 'Elasticitat', sec: 'elasticitat', desc: 'Sensibilitat', color: 'bg-purple-50 border-purple-200' },
+                            { icono: Factory, titulo: 'Costos', sec: 'costos', desc: 'Producció', color: 'bg-amber-50 border-amber-200' },
+                            { icono: Building2, titulo: 'Mercats', sec: 'mercats', desc: 'Estructures', color: 'bg-blue-50 border-blue-200' },
+                            { icono: BarChart3, titulo: 'Macro', sec: 'macro', desc: 'PIB i polítiques', color: 'bg-teal-50 border-teal-200' },
+                            { icono: Globe, titulo: 'Comerç', sec: 'comerc', desc: 'Internacional', color: 'bg-indigo-50 border-indigo-200' },
+                            { icono: Gamepad2, titulo: 'Jocs', sec: 'jocs', desc: 'Estratègia', color: 'bg-rose-50 border-rose-200' },
+                        ].map((item, i) => (
+                            <button key={i} onClick={() => setSection(item.sec)} className={`p-4 rounded-xl border ${item.color} hover:shadow-md transition-all text-left group`}>
+                                <item.icono className="text-gray-600 mb-2 group-hover:scale-110 transition-transform" size={28} />
+                                <p className="font-bold text-gray-800">{item.titulo}</p>
+                                <p className="text-xs text-gray-500">{item.desc}</p>
+                            </button>
+                        ))}
+                    </div>
+
+                    <Card>
+                        <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2"><Users className="text-pink-500" /> Principals escoles</h3>
+                        <div className="grid md:grid-cols-4 gap-3">
+                            {[
+                                { nom: 'Clàssica', autor: 'Smith, Ricardo', idea: 'Mà invisible, lliure mercat', color: 'emerald' },
+                                { nom: 'Marxisme', autor: 'Marx', idea: 'Plusvàlua, lluita classes', color: 'red' },
+                                { nom: 'Keynesiana', autor: 'Keynes', idea: 'Intervenció en crisis', color: 'blue' },
+                                { nom: 'Monetarisme', autor: 'Friedman', idea: 'Control monetari', color: 'purple' },
+                            ].map((e, i) => (
+                                <div key={i} className={`p-4 rounded-xl bg-${e.color}-50 border border-${e.color}-200`}>
+                                    <p className={`font-bold text-${e.color}-700`}>{e.nom}</p>
+                                    <p className="text-xs text-gray-500">{e.autor}</p>
+                                    <p className="text-sm text-gray-600 mt-1">{e.idea}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </Card>
+                </div>
+            );
+
+            const Equilibri = () => (
+                <div className="space-y-6">
+                    <div>
+                        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2"><Scale className="text-pink-500" /> Oferta i Demanda</h2>
+                        <p className="text-gray-500">Construeix les funcions pas a pas i observa l'equilibri de mercat.</p>
+                    </div>
+
+                    <div className="grid lg:grid-cols-2 gap-6">
+                        <Card>
+                            <h3 className="font-bold text-pink-600 mb-4 flex items-center gap-2"><TrendingDown size={18} /> Construeix la DEMANDA</h3>
+                            
+                            <div className="bg-pink-50 rounded-xl p-4 mb-4 border border-pink-200">
+                                <p className="text-sm text-gray-600 mb-2">La funció de demanda serà:</p>
+                                <p className="text-xl font-bold text-pink-600 formula">Qd = {demandaMax} - {demandaPendent} × P</p>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="flex justify-between text-sm mb-2">
+                                        <span className="text-gray-600">🎯 <strong>Quantitat màxima</strong> (quan P=0)</span>
+                                        <span className="text-pink-600 font-bold">{demandaMax} unitats</span>
+                                    </label>
+                                    <p className="text-xs text-gray-400 mb-2">Si el bé fos gratuït, quantes unitats es demanarien?</p>
+                                    <input type="range" min="50" max="200" value={demandaMax} onChange={(e) => setDemandaMax(Number(e.target.value))} className="w-full" />
+                                </div>
+                                <div>
+                                    <label className="flex justify-between text-sm mb-2">
+                                        <span className="text-gray-600">📉 <strong>Sensibilitat al preu</strong></span>
+                                        <span className="text-pink-600 font-bold">{demandaPendent} u/€</span>
+                                    </label>
+                                    <p className="text-xs text-gray-400 mb-2">Per cada € que puja el preu, quantes unitats menys es demanen?</p>
+                                    <input type="range" min="0.5" max="5" step="0.5" value={demandaPendent} onChange={(e) => setDemandaPendent(Number(e.target.value))} className="w-full" />
+                                </div>
+                            </div>
+
+                            <div className="mt-6 pt-4 border-t border-gray-100">
+                                <h3 className="font-bold text-teal-600 mb-4 flex items-center gap-2"><TrendingUp size={18} /> Construeix l'OFERTA</h3>
+                                
+                                <div className="bg-teal-50 rounded-xl p-4 mb-4 border border-teal-200">
+                                    <p className="text-sm text-gray-600 mb-2">La funció d'oferta serà:</p>
+                                    <p className="text-xl font-bold text-teal-600 formula">Qs = {ofertaMin} + {ofertaPendent} × P</p>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="flex justify-between text-sm mb-2">
+                                            <span className="text-gray-600">🏭 <strong>Oferta mínima</strong> (quan P=0)</span>
+                                            <span className="text-teal-600 font-bold">{ofertaMin} unitats</span>
+                                        </label>
+                                        <p className="text-xs text-gray-400 mb-2">Quantes unitats s'ofereixen si el preu és 0?</p>
+                                        <input type="range" min="0" max="50" value={ofertaMin} onChange={(e) => setOfertaMin(Number(e.target.value))} className="w-full" />
+                                    </div>
+                                    <div>
+                                        <label className="flex justify-between text-sm mb-2">
+                                            <span className="text-gray-600">📈 <strong>Sensibilitat al preu</strong></span>
+                                            <span className="text-teal-600 font-bold">{ofertaPendent} u/€</span>
+                                        </label>
+                                        <p className="text-xs text-gray-400 mb-2">Per cada € que puja el preu, quantes unitats més s'ofereixen?</p>
+                                        <input type="range" min="0.5" max="5" step="0.5" value={ofertaPendent} onChange={(e) => setOfertaPendent(Number(e.target.value))} className="w-full" />
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">📊 Gràfic del Mercat</h3>
+                            <div className="h-64 mb-4">
+                                <ResponsiveContainer>
+                                    <LineChart data={dadesGrafic} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                        <XAxis dataKey="demanda" type="number" domain={[0, 'auto']} stroke="#6b7280" label={{ value: 'Quantitat (Q)', position: 'bottom', fill: '#6b7280', fontSize: 12 }} />
+                                        <YAxis stroke="#6b7280" label={{ value: 'Preu (P)', angle: -90, position: 'insideLeft', fill: '#6b7280', fontSize: 12 }} />
+                                        <Tooltip contentStyle={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }} />
+                                        <Line type="linear" dataKey="demanda" data={dadesGrafic.map(d => ({x: d.demanda, y: parseFloat(d.preu)}))} stroke="#ec4899" strokeWidth={3} dot={false} name="Demanda" />
+                                        <Line type="linear" dataKey="oferta" data={dadesGrafic.map(d => ({x: d.oferta, y: parseFloat(d.preu)}))} stroke="#14b8a6" strokeWidth={3} dot={false} name="Oferta" />
+                                        {preuFixat && <ReferenceLine y={preuFixat} stroke="#f59e0b" strokeWidth={2} strokeDasharray="5 5" />}
+                                        <Legend />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+
+                            <div className="bg-gradient-to-r from-pink-50 to-teal-50 rounded-xl p-4 border border-pink-200">
+                                <p className="text-center font-bold text-gray-800 mb-3">📍 PUNT D'EQUILIBRI</p>
+                                <div className="flex justify-center gap-8">
+                                    <div className="text-center">
+                                        <p className="text-xs text-gray-500">Preu (P*)</p>
+                                        <p className="text-3xl font-black text-pink-500">{equilibri.p}€</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-xs text-gray-500">Quantitat (Q*)</p>
+                                        <p className="text-3xl font-black text-teal-500">{equilibri.q} u.</p>
+                                    </div>
+                                </div>
+                                <div className="mt-3 text-center text-sm text-gray-600">
+                                    <p className="formula">Qd = Qs → {demandaMax} - {demandaPendent}P = {ofertaMin} + {ofertaPendent}P</p>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+
+                    <Card>
+                        <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2"><AlertTriangle className="text-amber-500" /> Simula Intervenció: Preu Fixat</h3>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="flex justify-between text-sm mb-2">
+                                    <span className="text-gray-600">Preu fixat pel govern</span>
+                                    <span className="font-bold text-amber-600">{preuFixat !== null ? `${preuFixat}€` : 'Cap'}</span>
+                                </label>
+                                <input type="range" min="5" max="40" value={preuFixat || 20} onChange={(e) => setPreuFixat(Number(e.target.value))} className="w-full" />
+                                <div className="flex gap-2 mt-3">
+                                    <button onClick={() => setPreuFixat(Math.max(5, parseFloat(equilibri.p) - 8))} className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-sm border border-red-200 hover:bg-red-100">Preu màxim</button>
+                                    <button onClick={() => setPreuFixat(parseFloat(equilibri.p) + 8)} className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-sm border border-blue-200 hover:bg-blue-100">Preu mínim</button>
+                                    <button onClick={() => setPreuFixat(null)} className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200">Treure</button>
+                                </div>
+                            </div>
+                            {preuFixat && exces && (
+                                <div className={`p-4 rounded-xl ${exces.tipus === 'oferta' ? 'bg-teal-50 border border-teal-200' : exces.tipus === 'demanda' ? 'bg-red-50 border border-red-200' : 'bg-gray-50'}`}>
+                                    <p className="font-bold text-gray-800 mb-2">
+                                        {exces.tipus === 'oferta' ? '📦 EXCÉS D\'OFERTA (Excedent)' : exces.tipus === 'demanda' ? '🛒 EXCÉS DE DEMANDA (Escassetat)' : '✓ Equilibri'}
+                                    </p>
+                                    <div className="grid grid-cols-3 gap-2 text-center">
+                                        <div><p className="text-xs text-gray-500">Qd</p><p className="font-bold text-pink-500 text-lg">{exces.qd}</p></div>
+                                        <div><p className="text-xs text-gray-500">Qs</p><p className="font-bold text-teal-500 text-lg">{exces.qs}</p></div>
+                                        <div><p className="text-xs text-gray-500">Excés</p><p className="font-bold text-amber-500 text-lg">{exces.quantitat}</p></div>
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-2">
+                                        {exces.tipus === 'oferta' ? 'El preu és massa alt: sobra producte. Exemple: salari mínim per sobre equilibri → atur.' : 
+                                         exces.tipus === 'demanda' ? 'El preu és massa baix: falta producte. Exemple: control de lloguers → escassetat d\'habitatge.' : ''}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </Card>
+                </div>
+            );
+
+            const Elasticitat = () => (
+                <div className="space-y-6">
+                    <div>
+                        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2"><Percent className="text-pink-500" /> Elasticitat-Preu de la Demanda</h2>
+                        <p className="text-gray-500">Mesura com reacciona la quantitat demandada davant canvis en el preu.</p>
+                    </div>
+
+                    <Card>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 className="font-bold text-pink-600 mb-3">📍 Situació Inicial</h4>
+                                <div className="space-y-3">
+                                    <div>
+                                        <label className="flex justify-between text-sm mb-1"><span>Preu (P₁)</span><span className="font-bold">{elastP1}€</span></label>
+                                        <input type="range" min="1" max="50" value={elastP1} onChange={(e) => setElastP1(Number(e.target.value))} className="w-full" />
+                                    </div>
+                                    <div>
+                                        <label className="flex justify-between text-sm mb-1"><span>Quantitat (Q₁)</span><span className="font-bold">{elastQ1} u.</span></label>
+                                        <input type="range" min="10" max="200" value={elastQ1} onChange={(e) => setElastQ1(Number(e.target.value))} className="w-full" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-teal-600 mb-3">📍 Situació Final</h4>
+                                <div className="space-y-3">
+                                    <div>
+                                        <label className="flex justify-between text-sm mb-1"><span>Preu (P₂)</span><span className="font-bold">{elastP2}€</span></label>
+                                        <input type="range" min="1" max="50" value={elastP2} onChange={(e) => setElastP2(Number(e.target.value))} className="w-full" />
+                                    </div>
+                                    <div>
+                                        <label className="flex justify-between text-sm mb-1"><span>Quantitat (Q₂)</span><span className="font-bold">{elastQ2} u.</span></label>
+                                        <input type="range" min="10" max="200" value={elastQ2} onChange={(e) => setElastQ2(Number(e.target.value))} className="w-full" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-6 p-4 bg-gray-50 rounded-xl">
+                            <p className="text-sm text-gray-500 mb-2">Fórmula (mètode del punt mig):</p>
+                            <p className="formula text-gray-700">Ep = |%ΔQ / %ΔP| = |{elasticitat.canviQ}% / {elasticitat.canviP}%|</p>
+                        </div>
+
+                        <div className={`mt-4 p-6 rounded-xl text-center ${elasticitat.tipus === 'elàstica' ? 'bg-red-50 border border-red-200' : elasticitat.tipus === 'inelàstica' ? 'bg-blue-50 border border-blue-200' : 'bg-purple-50 border border-purple-200'}`}>
+                            <p className="text-4xl font-black mb-2">{elasticitat.valor}</p>
+                            <p className="font-bold text-lg">Demanda {elasticitat.tipus.toUpperCase()}</p>
+                            <p className="text-sm text-gray-600 mt-2">
+                                {elasticitat.tipus === 'elàstica' ? '|Ep| > 1: La quantitat varia MÉS que el preu (béns amb substituts). Baixar preus AUGMENTA ingressos.' : 
+                                 elasticitat.tipus === 'inelàstica' ? '|Ep| < 1: La quantitat varia MENYS que el preu (béns necessaris). Pujar preus AUGMENTA ingressos.' : 
+                                 '|Ep| = 1: La quantitat varia igual que el preu. Ingressos constants.'}
+                            </p>
+                        </div>
+                    </Card>
+
+                    <Card>
+                        <h3 className="font-bold text-gray-800 mb-4">📚 Exemples d'elasticitat</h3>
+                        <div className="grid md:grid-cols-3 gap-4">
+                            <div className="p-4 bg-red-50 rounded-xl border border-red-200">
+                                <p className="font-bold text-red-700">Molt elàstica (Ep {'>'} 1)</p>
+                                <ul className="text-sm text-gray-600 mt-2 space-y-1">
+                                    <li>• Vacances a l'estranger</li>
+                                    <li>• Cotxes de luxe</li>
+                                    <li>• Restaurants cars</li>
+                                </ul>
+                            </div>
+                            <div className="p-4 bg-purple-50 rounded-xl border border-purple-200">
+                                <p className="font-bold text-purple-700">Unitària (Ep ≈ 1)</p>
+                                <ul className="text-sm text-gray-600 mt-2 space-y-1">
+                                    <li>• Roba de marca mitja</li>
+                                    <li>• Electrònica de consum</li>
+                                </ul>
+                            </div>
+                            <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                                <p className="font-bold text-blue-700">Inelàstica (Ep {'<'} 1)</p>
+                                <ul className="text-sm text-gray-600 mt-2 space-y-1">
+                                    <li>• Benzina (curt termini)</li>
+                                    <li>• Medicaments</li>
+                                    <li>• Aliments bàsics</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+            );
+
+            const Costos = () => (
+                <div className="space-y-6">
+                    <div>
+                        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2"><Factory className="text-pink-500" /> Costos de Producció</h2>
+                        <p className="text-gray-500">Simula els costos d'una empresa i observa les corbes.</p>
+                    </div>
+
+                    <div className="grid lg:grid-cols-2 gap-6">
+                        <Card>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="flex justify-between text-sm mb-2">
+                                        <span className="text-gray-600">🏭 Cost Fix (CF)</span>
+                                        <span className="font-bold text-amber-600">{costCF}€</span>
+                                    </label>
+                                    <p className="text-xs text-gray-400 mb-2">Lloguer, assegurances, sous fixos...</p>
+                                    <input type="range" min="50" max="300" value={costCF} onChange={(e) => setCostCF(Number(e.target.value))} className="w-full" />
+                                </div>
+                                <div>
+                                    <label className="flex justify-between text-sm mb-2">
+                                        <span className="text-gray-600">📦 Cost Variable unitari (CVu)</span>
+                                        <span className="font-bold text-blue-600">{costCVu}€/u</span>
+                                    </label>
+                                    <p className="text-xs text-gray-400 mb-2">Matèries primes per unitat...</p>
+                                    <input type="range" min="5" max="30" value={costCVu} onChange={(e) => setCostCVu(Number(e.target.value))} className="w-full" />
+                                </div>
+                                <div>
+                                    <label className="flex justify-between text-sm mb-2">
+                                        <span className="text-gray-600">📊 Quantitat produïda (Q)</span>
+                                        <span className="font-bold text-pink-600">{costQ} unitats</span>
+                                    </label>
+                                    <input type="range" min="1" max="50" value={costQ} onChange={(e) => setCostQ(Number(e.target.value))} className="w-full" />
+                                </div>
+                            </div>
+
+                            <div className="mt-6 grid grid-cols-2 gap-3">
+                                <div className="p-3 bg-amber-50 rounded-xl text-center border border-amber-200">
+                                    <p className="text-xs text-gray-500">Cost Fix</p>
+                                    <p className="text-xl font-bold text-amber-600">{costCF}€</p>
+                                </div>
+                                <div className="p-3 bg-blue-50 rounded-xl text-center border border-blue-200">
+                                    <p className="text-xs text-gray-500">Cost Variable</p>
+                                    <p className="text-xl font-bold text-blue-600">{(costCVu * costQ).toFixed(0)}€</p>
+                                </div>
+                                <div className="p-3 bg-pink-50 rounded-xl text-center border border-pink-200">
+                                    <p className="text-xs text-gray-500">Cost Total</p>
+                                    <p className="text-xl font-bold text-pink-600">{(costCF + costCVu * costQ).toFixed(0)}€</p>
+                                </div>
+                                <div className="p-3 bg-teal-50 rounded-xl text-center border border-teal-200">
+                                    <p className="text-xs text-gray-500">Cost Mitjà</p>
+                                    <p className="text-xl font-bold text-teal-600">{((costCF + costCVu * costQ) / costQ).toFixed(2)}€/u</p>
+                                </div>
+                            </div>
+                        </Card>
+
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">📈 Corbes de Costos</h3>
+                            <div className="h-64">
+                                <ResponsiveContainer>
+                                    <LineChart data={dadesCostos} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                        <XAxis dataKey="q" stroke="#6b7280" label={{ value: 'Q', position: 'bottom', fontSize: 12 }} />
+                                        <YAxis stroke="#6b7280" />
+                                        <Tooltip />
+                                        <Line type="monotone" dataKey="CMe" stroke="#ec4899" strokeWidth={2} name="CMe" dot={false} />
+                                        <Line type="monotone" dataKey="CMg" stroke="#14b8a6" strokeWidth={2} name="CMg" dot={false} />
+                                        <Legend />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+                            <p className="text-sm text-gray-500 mt-4">
+                                💡 El CMg talla el CMe pel seu punt mínim. Si CMg {'<'} CMe → CMe baixa. Si CMg {'>'} CMe → CMe puja.
+                            </p>
+                        </Card>
+                    </div>
+                </div>
+            );
+
+            const Macro = () => (
+                <div className="space-y-6">
+                    <div>
+                        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2"><BarChart3 className="text-pink-500" /> Macroeconomia</h2>
+                        <p className="text-gray-500">PIB, política fiscal, multiplicador i model IS-LM.</p>
+                    </div>
+
+                    <Card>
+                        <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2"><PieChartIcon className="text-pink-500" /> Calculadora del PIB</h3>
+                        <div className="grid md:grid-cols-5 gap-3 mb-4">
+                            <div>
+                                <label className="text-xs text-gray-500">Consum (C)</label>
+                                <input type="number" value={pibC} onChange={(e) => setPibC(Number(e.target.value))} className="w-full p-2 border rounded-lg text-center font-bold" />
+                            </div>
+                            <div>
+                                <label className="text-xs text-gray-500">Inversió (I)</label>
+                                <input type="number" value={pibI} onChange={(e) => setPibI(Number(e.target.value))} className="w-full p-2 border rounded-lg text-center font-bold" />
+                            </div>
+                            <div>
+                                <label className="text-xs text-gray-500">Despesa (G)</label>
+                                <input type="number" value={pibG} onChange={(e) => setPibG(Number(e.target.value))} className="w-full p-2 border rounded-lg text-center font-bold" />
+                            </div>
+                            <div>
+                                <label className="text-xs text-gray-500">Export (X)</label>
+                                <input type="number" value={pibX} onChange={(e) => setPibX(Number(e.target.value))} className="w-full p-2 border rounded-lg text-center font-bold" />
+                            </div>
+                            <div>
+                                <label className="text-xs text-gray-500">Import (M)</label>
+                                <input type="number" value={pibM} onChange={(e) => setPibM(Number(e.target.value))} className="w-full p-2 border rounded-lg text-center font-bold" />
+                            </div>
+                        </div>
+                        <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-4 text-center border border-pink-200">
+                            <p className="text-sm text-gray-600 formula">PIB = C + I + G + (X - M)</p>
+                            <p className="text-sm text-gray-600 formula mt-1">PIB = {pibC} + {pibI} + {pibG} + ({pibX} - {pibM})</p>
+                            <p className="text-4xl font-black text-pink-600 mt-2">{pib} M€</p>
+                        </div>
+                    </Card>
+
+                    <Card>
+                        <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2"><Zap className="text-amber-500" /> Multiplicador Keynesià</h3>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="flex justify-between text-sm mb-2">
+                                        <span>Propensió Marginal al Consum (PMC)</span>
+                                        <span className="font-bold">{pmc}</span>
+                                    </label>
+                                    <p className="text-xs text-gray-400 mb-2">De cada € extra, quin % es consumeix?</p>
+                                    <input type="range" min="0.5" max="0.95" step="0.05" value={pmc} onChange={(e) => setPmc(Number(e.target.value))} className="w-full" />
+                                </div>
+                                <div>
+                                    <label className="flex justify-between text-sm mb-2">
+                                        <span>Augment de la despesa pública (ΔG)</span>
+                                        <span className="font-bold">{deltaG} M€</span>
+                                    </label>
+                                    <input type="range" min="10" max="200" value={deltaG} onChange={(e) => setDeltaG(Number(e.target.value))} className="w-full" />
+                                </div>
+                            </div>
+                            <div>
+                                <div className="bg-amber-50 rounded-xl p-4 border border-amber-200 mb-3">
+                                    <p className="text-sm text-gray-600 formula">Multiplicador (k) = 1 / (1 - PMC) = 1 / (1 - {pmc})</p>
+                                    <p className="text-3xl font-black text-amber-600 mt-2">k = {multiplicador.toFixed(2)}</p>
+                                </div>
+                                <div className="bg-teal-50 rounded-xl p-4 border border-teal-200">
+                                    <p className="text-sm text-gray-600 formula">ΔPIB = k × ΔG = {multiplicador.toFixed(2)} × {deltaG}</p>
+                                    <p className="text-3xl font-black text-teal-600 mt-2">ΔPIB = {efecteTotal.toFixed(0)} M€</p>
+                                </div>
+                                <p className="text-xs text-gray-500 mt-2">
+                                    💡 Cada € de despesa pública genera {multiplicador.toFixed(2)}€ de PIB (efecte en cadena).
+                                </p>
+                            </div>
+                        </div>
+                    </Card>
+
+                    <Card>
+                        <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2"><LineChartIcon className="text-blue-500" /> Model IS-LM (Simplificat)</h3>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="flex justify-between text-sm mb-2">
+                                        <span>Despesa pública (G) - Política fiscal</span>
+                                        <span className="font-bold text-blue-600">{islmG}</span>
+                                    </label>
+                                    <input type="range" min="50" max="200" value={islmG} onChange={(e) => setIslmG(Number(e.target.value))} className="w-full" />
+                                    <p className="text-xs text-gray-400">↑G desplaça IS a la dreta → més Y, més r</p>
+                                </div>
+                                <div>
+                                    <label className="flex justify-between text-sm mb-2">
+                                        <span>Oferta monetària (M) - Política monetària</span>
+                                        <span className="font-bold text-purple-600">{islmM}</span>
+                                    </label>
+                                    <input type="range" min="300" max="700" value={islmM} onChange={(e) => setIslmM(Number(e.target.value))} className="w-full" />
+                                    <p className="text-xs text-gray-400">↑M desplaça LM a la dreta → més Y, menys r</p>
+                                </div>
+                            </div>
+                            <div className="h-56">
+                                <ResponsiveContainer>
+                                    <LineChart data={islmDades} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                        <XAxis dataKey="Y" stroke="#6b7280" label={{ value: 'Renda (Y)', position: 'bottom', fontSize: 12 }} />
+                                        <YAxis stroke="#6b7280" label={{ value: 'r', angle: -90, position: 'insideLeft', fontSize: 12 }} domain={[0, 10]} />
+                                        <Tooltip />
+                                        <Line type="monotone" dataKey="IS" stroke="#3b82f6" strokeWidth={3} name="IS" dot={false} />
+                                        <Line type="monotone" dataKey="LM" stroke="#8b5cf6" strokeWidth={3} name="LM" dot={false} />
+                                        <Legend />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+                        <div className="mt-4 p-4 bg-gray-50 rounded-xl">
+                            <p className="text-sm text-gray-600">
+                                <strong>IS:</strong> Equilibri mercat béns (I=S). Pendent negatiu: ↑r → ↓I → ↓Y<br/>
+                                <strong>LM:</strong> Equilibri mercat diner (L=M). Pendent positiu: ↑Y → ↑L → ↑r per equilibrar
+                            </p>
+                        </div>
+                    </Card>
+                </div>
+            );
+
+            const Mercats = () => (
+                <div className="space-y-6">
+                    <div>
+                        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2"><Building2 className="text-pink-500" /> Estructures de Mercat</h2>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 mb-4">
+                        {estructuresMercat.map(m => (
+                            <button key={m.id} onClick={() => setMercatSeleccionat(m.id)} className={`px-4 py-2 rounded-lg font-medium transition-all ${mercatSeleccionat === m.id ? `bg-${m.color}-500 text-white` : `bg-${m.color}-50 text-${m.color}-700 border border-${m.color}-200`}`}>
+                                {m.nom}
+                            </button>
+                        ))}
+                    </div>
+
+                    {estructuresMercat.filter(m => m.id === mercatSeleccionat).map(m => (
+                        <Card key={m.id}>
+                            <h3 className={`text-xl font-bold text-${m.color}-600 mb-4`}>{m.nom}</h3>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <table className="w-full text-sm">
+                                        <tbody>
+                                            <tr className="border-b"><td className="py-2 text-gray-500">Oferents</td><td className="py-2 font-medium">{m.oferents}</td></tr>
+                                            <tr className="border-b"><td className="py-2 text-gray-500">Producte</td><td className="py-2 font-medium">{m.producte}</td></tr>
+                                            <tr className="border-b"><td className="py-2 text-gray-500">Barreres entrada</td><td className="py-2 font-medium">{m.barreres}</td></tr>
+                                            <tr><td className="py-2 text-gray-500">Poder de mercat</td><td className="py-2 font-medium">{m.poder}</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div>
+                                    <p className="font-medium text-gray-700 mb-2">Característiques:</p>
+                                    <ul className="space-y-1">
+                                        {m.trets.map((t, i) => <li key={i} className="flex items-start gap-2 text-sm"><Check size={16} className={`text-${m.color}-500 mt-0.5`} />{t}</li>)}
+                                    </ul>
+                                    <p className="font-medium text-gray-700 mt-4 mb-2">Exemples:</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {m.exemples.map((e, i) => <span key={i} className={`px-3 py-1 bg-${m.color}-50 text-${m.color}-700 rounded-full text-sm border border-${m.color}-200`}>{e}</span>)}
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                    ))}
+                </div>
+            );
+
+            const Comerc = () => (
+                <div className="space-y-6">
+                    <div>
+                        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2"><Globe className="text-pink-500" /> Comerç Internacional</h2>
+                    </div>
+
+                    <Card>
+                        <h3 className="font-bold text-gray-800 mb-4">📊 Avantatge Comparatiu (Ricardo)</h3>
+                        <div className="bg-blue-50 rounded-xl p-4 border border-blue-200 mb-4">
+                            <p className="text-gray-700">Cada país ha d'especialitzar-se en allò que produeix amb <strong>menor cost d'oportunitat</strong>, no en allò que fa millor en termes absoluts.</p>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="bg-gray-100">
+                                        <th className="p-3 text-left">País</th>
+                                        <th className="p-3 text-center">Hores per Vi</th>
+                                        <th className="p-3 text-center">Hores per Roba</th>
+                                        <th className="p-3 text-center">Cost oport. Vi</th>
+                                        <th className="p-3 text-center">Especialització</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border-b">
+                                        <td className="p-3 font-medium">🇵🇹 Portugal</td>
+                                        <td className="p-3 text-center">80h</td>
+                                        <td className="p-3 text-center">90h</td>
+                                        <td className="p-3 text-center">80/90 = 0.89 robes</td>
+                                        <td className="p-3 text-center text-emerald-600 font-bold">🍷 Vi</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="p-3 font-medium">🇬🇧 Anglaterra</td>
+                                        <td className="p-3 text-center">120h</td>
+                                        <td className="p-3 text-center">100h</td>
+                                        <td className="p-3 text-center">120/100 = 1.2 robes</td>
+                                        <td className="p-3 text-center text-blue-600 font-bold">👔 Roba</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p className="text-sm text-gray-500 mt-4">
+                            💡 Portugal té avantatge absolut en tot, però avantatge comparatiu en vi (menor cost d'oportunitat). Amb especialització i comerç, tots dos països guanyen.
+                        </p>
+                    </Card>
+
+                    <Card>
+                        <h3 className="font-bold text-gray-800 mb-4">🚧 Efecte d'un Aranzel</h3>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="flex justify-between text-sm mb-2">
+                                        <span>Preu mundial</span>
+                                        <span className="font-bold">{aranzelPmundial}€</span>
+                                    </label>
+                                    <input type="range" min="5" max="20" value={aranzelPmundial} onChange={(e) => setAranzelPmundial(Number(e.target.value))} className="w-full" />
+                                </div>
+                                <div>
+                                    <label className="flex justify-between text-sm mb-2">
+                                        <span>Aranzel</span>
+                                        <span className="font-bold text-red-600">{aranzelTarifa}€</span>
+                                    </label>
+                                    <input type="range" min="0" max="10" value={aranzelTarifa} onChange={(e) => setAranzelTarifa(Number(e.target.value))} className="w-full" />
+                                </div>
+                            </div>
+                            <div className="space-y-3">
+                                <div className="p-3 bg-gray-50 rounded-lg">
+                                    <p className="text-sm text-gray-500">Preu amb aranzel</p>
+                                    <p className="text-2xl font-bold text-gray-800">{aranzelPmundial + aranzelTarifa}€</p>
+                                </div>
+                                <div className="text-sm text-gray-600 space-y-1">
+                                    <p>✓ Productors nacionals: <span className="text-emerald-600 font-medium">guanyen</span> (més vendes)</p>
+                                    <p>✗ Consumidors: <span className="text-red-600 font-medium">perden</span> (preu més alt)</p>
+                                    <p>✓ Govern: <span className="text-blue-600 font-medium">recapta</span> {aranzelTarifa}€ per unitat</p>
+                                    <p>✗ Societat: <span className="text-red-600 font-medium">pèrdua neta</span> (ineficiència)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+            );
+
+            const Historia = () => (
+                <div className="space-y-6">
+                    <div>
+                        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2"><Clock className="text-pink-500" /> Història del Pensament Econòmic</h2>
+                    </div>
+
+                    <div className="grid md:grid-cols-4 gap-3">
+                        {epoques.map(e => (
+                            <button key={e.id} onClick={() => setEpocaExpandida(epocaExpandida === e.id ? null : e.id)} className={`p-4 rounded-xl border text-left transition-all ${epocaExpandida === e.id ? `bg-${e.color}-100 border-${e.color}-300` : `bg-${e.color}-50 border-${e.color}-200 hover:border-${e.color}-300`}`}>
+                                <p className={`font-bold text-${e.color}-700`}>{e.nom}</p>
+                                <p className="text-xs text-gray-500">{e.periode}</p>
+                            </button>
+                        ))}
+                    </div>
+
+                    {epocaExpandida && epoques.filter(e => e.id === epocaExpandida).map(e => (
+                        <Card key={e.id}>
+                            <h3 className={`text-xl font-bold text-${e.color}-600 mb-2`}>{e.nom}</h3>
+                            <p className="text-sm text-gray-500 mb-4">{e.periode}</p>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <p className="font-medium text-gray-700 mb-2">Característiques:</p>
+                                    <ul className="space-y-1">
+                                        {e.trets.map((t, i) => <li key={i} className="flex items-start gap-2 text-sm"><Check size={16} className={`text-${e.color}-500 mt-0.5`} />{t}</li>)}
+                                    </ul>
+                                </div>
+                                <div>
+                                    <p className="font-medium text-gray-700 mb-2">Pensadors principals:</p>
+                                    <p className="text-sm text-gray-600">{e.pensadors}</p>
+                                </div>
+                            </div>
+                        </Card>
+                    ))}
+
+                    <h3 className="text-xl font-bold text-gray-800 mt-8 mb-4">👤 Pensadors Econòmics</h3>
+                    <div className="space-y-3">
+                        {pensadors.map(p => (
+                            <div key={p.id} className={`bg-white rounded-xl border transition-all ${pensadorExpandit === p.id ? `border-${p.color}-300 shadow-md` : 'border-gray-100'}`}>
+                                <button onClick={() => setPensadorExpandit(pensadorExpandit === p.id ? null : p.id)} className="w-full p-4 text-left flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-2xl">{p.pais}</span>
+                                        <div>
+                                            <p className="font-bold text-gray-800">{p.nom}</p>
+                                            <p className="text-xs text-gray-500">{p.anys} • {p.escola}</p>
+                                        </div>
+                                    </div>
+                                    {pensadorExpandit === p.id ? <ChevronUp className="text-gray-400" /> : <ChevronDown className="text-gray-400" />}
+                                </button>
+                                {pensadorExpandit === p.id && (
+                                    <div className="px-4 pb-4 pt-0 border-t border-gray-100">
+                                        <p className="text-sm text-gray-600 mb-3"><strong>Obra:</strong> {p.obra}</p>
+                                        <p className="font-medium text-gray-700 mb-2">Idees clau:</p>
+                                        <ul className="space-y-1 mb-3">
+                                            {p.idees.map((idea, i) => <li key={i} className="text-sm text-gray-600">• {idea}</li>)}
+                                        </ul>
+                                        <div className={`p-3 bg-${p.color}-50 rounded-lg border border-${p.color}-200 mb-3`}>
+                                            <p className="text-sm italic text-gray-700">"{p.cita}"</p>
+                                        </div>
+                                        <p className="text-sm text-gray-600"><strong>Influència:</strong> {p.influencia}</p>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+
+            const TeoriaJocs = () => (
+                <div className="space-y-6">
+                    <div>
+                        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2"><Gamepad2 className="text-pink-500" /> Teoria de Jocs</h2>
+                        <p className="text-gray-500">Analitza situacions d'interdependència estratègica.</p>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                        {Object.entries(jocs).map(([key, j]) => (
+                            <button key={key} onClick={() => { setJocSeleccionat(key); setJugadorA(null); setJugadorB(null); }} className={`px-4 py-2 rounded-lg font-medium transition-all ${jocSeleccionat === key ? 'bg-purple-500 text-white' : 'bg-purple-50 text-purple-700 border border-purple-200'}`}>
+                                {j.nom}
+                            </button>
+                        ))}
+                    </div>
+
+                    {jocs[jocSeleccionat] && (
+                        <Card>
+                            <h3 className="text-xl font-bold text-purple-600 mb-2">{jocs[jocSeleccionat].nom}</h3>
+                            
+                            <div className="overflow-x-auto my-4">
+                                <table className="w-full max-w-md mx-auto">
+                                    <thead>
+                                        <tr>
+                                            <th className="p-2"></th>
+                                            <th className="p-2 text-center bg-blue-50 rounded-tl-lg">{jocs[jocSeleccionat].estrategies[0]}</th>
+                                            <th className="p-2 text-center bg-blue-50 rounded-tr-lg">{jocs[jocSeleccionat].estrategies[1]}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {jocs[jocSeleccionat].matriu.map((fila, i) => (
+                                            <tr key={i}>
+                                                <td className="p-2 bg-pink-50 font-medium text-center">{jocs[jocSeleccionat].estrategies[i]}</td>
+                                                {fila.map((cel, j) => {
+                                                    const esNash = Array.isArray(jocs[jocSeleccionat].nash) && jocs[jocSeleccionat].nash[0] === i && jocs[jocSeleccionat].nash[1] === j;
+                                                    return (
+                                                        <td key={j} className={`p-3 text-center border ${esNash ? 'bg-yellow-100 border-yellow-400' : 'bg-white border-gray-200'}`}>
+                                                            <span className="font-bold">{cel[0]}, {cel[1]}</span>
+                                                            {esNash && <span className="block text-xs text-yellow-700 mt-1">★ Nash</span>}
+                                                        </td>
+                                                    );
+                                                })}
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div className="p-4 bg-purple-50 rounded-xl border border-purple-200">
+                                <p className="text-sm text-gray-700">{jocs[jocSeleccionat].explicacio}</p>
+                            </div>
+                        </Card>
+                    )}
+
+                    <Card>
+                        <h3 className="font-bold text-gray-800 mb-4">📚 Conceptes clau</h3>
+                        <div className="grid md:grid-cols-2 gap-4">
+                            <div className="p-4 bg-yellow-50 rounded-xl border border-yellow-200">
+                                <p className="font-bold text-yellow-700">Equilibri de Nash</p>
+                                <p className="text-sm text-gray-600 mt-1">Cap jugador pot millorar canviant unilateralment la seva estratègia.</p>
+                            </div>
+                            <div className="p-4 bg-pink-50 rounded-xl border border-pink-200">
+                                <p className="font-bold text-pink-700">Estratègia dominant</p>
+                                <p className="text-sm text-gray-600 mt-1">La millor opció independentment del que faci l'altre.</p>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+            );
+
+            const Quiz = () => {
+                if (!quizActiu) {
+                    return (
+                        <div className="text-center py-16 space-y-6">
+                            <Brain className="mx-auto text-pink-400" size={80} />
+                            <h2 className="text-3xl font-black text-gray-800">Quiz d'Economia</h2>
+                            <p className="text-gray-500 max-w-md mx-auto">10 preguntes per posar a prova els teus coneixements.</p>
+                            <button onClick={() => { setQuizActiu(true); setQuizPregunta(0); setQuizRespostes({}); setQuizFinalitzat(false); }} className="px-8 py-4 bg-pink-500 rounded-xl font-bold text-white text-lg hover:bg-pink-600 transition-all shadow-md">Començar Quiz</button>
+                        </div>
+                    );
+                }
+
+                if (quizFinalitzat) {
+                    return (
+                        <div className="text-center py-8 space-y-6">
+                            <div className="inline-flex items-center justify-center w-28 h-28 rounded-full bg-pink-500 text-white text-4xl font-black shadow-lg">{quizPunts}/10</div>
+                            <h2 className="text-2xl font-black text-gray-800">{quizPunts >= 8 ? '🏆 Excel·lent!' : quizPunts >= 5 ? '👍 Bé!' : '📚 Segueix aprenent!'}</h2>
+                            <button onClick={() => setQuizActiu(false)} className="px-6 py-3 bg-gray-100 rounded-xl font-bold text-gray-700 hover:bg-gray-200">Repetir</button>
+                        </div>
+                    );
+                }
+
+                const q = quizPreguntas[quizPregunta];
+                return (
+                    <div className="max-w-2xl mx-auto space-y-6">
+                        <div className="flex justify-between items-center">
+                            <span className="text-gray-500">Pregunta {quizPregunta + 1} de 10</span>
+                            <div className="flex gap-1">
+                                {[...Array(10)].map((_, i) => (
+                                    <div key={i} className={`w-3 h-3 rounded-full ${i < quizPregunta ? (quizRespostes[i] === quizPreguntas[i].correcta ? 'bg-emerald-500' : 'bg-red-500') : i === quizPregunta ? 'bg-pink-500' : 'bg-gray-200'}`} />
+                                ))}
+                            </div>
+                        </div>
+                        <Card>
+                            <p className="text-xl font-bold text-gray-800 mb-6">{q.pregunta}</p>
+                            <div className="space-y-3">
+                                {q.opciones.map((opt, i) => {
+                                    const contestada = quizRespostes[quizPregunta] !== undefined;
+                                    const seleccionada = quizRespostes[quizPregunta] === i;
+                                    const correcta = i === q.correcta;
+                                    let classes = "w-full p-4 rounded-xl text-left transition-all font-medium ";
+                                    if (contestada) {
+                                        if (seleccionada) classes += correcta ? "bg-emerald-500 text-white" : "bg-red-500 text-white";
+                                        else if (correcta) classes += "bg-emerald-100 border-2 border-emerald-500 text-emerald-700";
+                                        else classes += "bg-gray-100 text-gray-400";
+                                    } else classes += "bg-gray-50 text-gray-700 hover:bg-pink-50 border border-gray-200";
+                                    return (
+                                        <button key={i} onClick={() => { if (!contestada) { setQuizRespostes(p => ({...p, [quizPregunta]: i})); setTimeout(() => { if (quizPregunta < 9) setQuizPregunta(quizPregunta + 1); else setQuizFinalitzat(true); }, 1000); }}} disabled={contestada} className={classes}>{opt}</button>
+                                    );
+                                })}
+                            </div>
+                        </Card>
+                    </div>
+                );
+            };
+
+            const GlosarioModal = () => (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowGlosario(false)}>
+                    <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden shadow-xl" onClick={e => e.stopPropagation()}>
+                        <div className="p-4 border-b flex items-center justify-between">
+                            <h3 className="text-lg font-bold flex items-center gap-2"><BookOpen className="text-pink-500" /> Glosari</h3>
+                            <button onClick={() => setShowGlosario(false)} className="p-2 hover:bg-gray-100 rounded-lg"><X /></button>
+                        </div>
+                        <div className="p-4 border-b">
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                <input type="text" placeholder="Buscar..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 border rounded-lg" />
+                            </div>
+                        </div>
+                        <div className="overflow-y-auto max-h-[50vh] p-4 space-y-2">
+                            {filteredGlosario.map((item, i) => (
+                                <div key={i} className="p-3 bg-gray-50 rounded-lg">
+                                    <p className="font-bold text-pink-600">{item.term}</p>
+                                    <p className="text-sm text-gray-600">{item.def}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-pink-50">
+                    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-lg border-b border-gray-100 shadow-sm">
+                        <div className="max-w-6xl mx-auto px-4 py-3">
+                            <div className="flex items-center justify-between">
+                                <button onClick={() => setSection('inicio')} className="flex items-center gap-2">
+                                    <div className="p-2 bg-pink-500 rounded-xl text-white"><BarChart3 size={20} /></div>
+                                    <span className="font-bold text-lg hidden sm:block">Economia</span>
+                                </button>
+                                <nav className="hidden lg:flex gap-1">
+                                    <NavBtn sec="inicio" icono={Home} label="Inici" />
+                                    <NavBtn sec="historia" icono={Clock} label="Història" />
+                                    <NavBtn sec="equilibri" icono={Scale} label="Mercat" />
+                                    <NavBtn sec="elasticitat" icono={Percent} label="Elasticitat" />
+                                    <NavBtn sec="costos" icono={Factory} label="Costos" />
+                                    <NavBtn sec="mercats" icono={Building2} label="Mercats" />
+                                    <NavBtn sec="macro" icono={BarChart3} label="Macro" />
+                                    <NavBtn sec="comerc" icono={Globe} label="Comerç" />
+                                    <NavBtn sec="jocs" icono={Gamepad2} label="Jocs" />
+                                    <NavBtn sec="quiz" icono={Brain} label="Quiz" />
+                                </nav>
+                                <button onClick={() => setMenuOpen(!menuOpen)} className="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
+                                    {menuOpen ? <X size={24} /> : <Menu size={24} />}
+                                </button>
+                            </div>
+                            {menuOpen && (
+                                <nav className="lg:hidden flex flex-wrap gap-2 mt-3 pb-2">
+                                    <NavBtn sec="inicio" icono={Home} label="Inici" />
+                                    <NavBtn sec="historia" icono={Clock} label="Història" />
+                                    <NavBtn sec="equilibri" icono={Scale} label="Mercat" />
+                                    <NavBtn sec="costos" icono={Factory} label="Costos" />
+                                    <NavBtn sec="macro" icono={BarChart3} label="Macro" />
+                                    <NavBtn sec="jocs" icono={Gamepad2} label="Jocs" />
+                                    <NavBtn sec="quiz" icono={Brain} label="Quiz" />
+                                </nav>
+                            )}
+                        </div>
+                    </header>
+
+                    <main className="max-w-6xl mx-auto px-4 py-8">
+                        {section === 'inicio' && <Inicio />}
+                        {section === 'historia' && <Historia />}
+                        {section === 'equilibri' && <Equilibri />}
+                        {section === 'elasticitat' && <Elasticitat />}
+                        {section === 'costos' && <Costos />}
+                        {section === 'mercats' && <Mercats />}
+                        {section === 'macro' && <Macro />}
+                        {section === 'comerc' && <Comerc />}
+                        {section === 'jocs' && <TeoriaJocs />}
+                        {section === 'quiz' && <Quiz />}
+                    </main>
+
+                    <button onClick={() => setShowGlosario(true)} className="fixed bottom-6 left-6 p-4 bg-white rounded-full shadow-lg hover:shadow-xl transition-all border border-gray-200 hover:border-pink-300">
+                        <BookOpen size={24} className="text-pink-500" />
+                    </button>
+
+                    {showGlosario && <GlosarioModal />}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<EconomiaApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
