@@ -1,0 +1,2679 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Economia de l'Empresa - Guia Completa Interactiva</title>
+    <meta name="description" content="Aprèn economia de l'empresa amb simuladors interactius.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏢</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.10.3/umd/Recharts.min.js"></script>
+    <script src="https://unpkg.com/lucide-react@0.300.0/dist/umd/lucide-react.min.js"></script>
+    <style>
+        * { scrollbar-width: thin; scrollbar-color: #ec4899 #fdf2f8; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #fdf2f8; }
+        ::-webkit-scrollbar-thumb { background-color: #ec4899; border-radius: 3px; }
+        input[type="range"] { -webkit-appearance: none; appearance: none; height: 8px; border-radius: 4px; background: #fce4ec; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #ec4899; cursor: pointer; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-white to-pink-50">
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useMemo, useCallback } = React;
+        const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, ReferenceLine, Legend, BarChart, Bar, PieChart: RePieChart, Pie, Cell } = Recharts;
+        const { Building2, Calculator, TrendingUp, TrendingDown, Users, FileText, Target, Lightbulb, PieChart, BarChart3, Scale, Landmark, Banknote, ShoppingCart, Factory, GraduationCap, Brain, ChevronDown, ChevronUp, ChevronRight, Check, X, Menu, Search, Zap, Clock, Award, RefreshCw, Info, AlertTriangle, DollarSign, Percent, Activity, Layers, ArrowRight, Briefcase, Settings, Package, Megaphone, Truck, BookOpen, CircleDollarSign, Receipt, Building, Coins, HandCoins, Wallet, Rocket, Sparkles, Globe, Heart, Shield, Wrench, Eye, MessageSquare, Share2, Box, CreditCard, PiggyBank, BarChart2, FileCheck, ClipboardList, UserCheck, Store, Compass, Map, Flag, Star, Home, ArrowUpRight, ArrowDownRight, Repeat, Network, GitBranch, Gauge, Timer, Warehouse, MapPin, Mail, MousePointer, Hash, Video, Smartphone, Share, ThumbsUp } = lucideReact;
+
+
+// ============================================================================
+// SISTEMA DE TRADUCCIONS
+// ============================================================================
+
+const translations = {
+  // NAVEGACIÓ I UI
+  nav: {
+    inicio: { val: 'Inici', es: 'Inicio', en: 'Home' },
+    costos: { val: 'Costos', es: 'Costes', en: 'Costs' },
+    puntmort: { val: 'Punt Mort', es: 'Punto Muerto', en: 'Break-even' },
+    productivitat: { val: 'Productivitat', es: 'Productividad', en: 'Productivity' },
+    van: { val: 'VAN/TIR', es: 'VAN/TIR', en: 'NPV/IRR' },
+    formes: { val: 'Formes Jurídiques', es: 'Formas Jurídicas', en: 'Legal Forms' },
+    financament: { val: 'Finançament', es: 'Financiación', en: 'Financing' },
+    ratios: { val: 'Ràtios', es: 'Ratios', en: 'Ratios' },
+    rrhh: { val: 'Recursos Humans', es: 'Recursos Humanos', en: 'Human Resources' },
+    produccio: { val: 'Producció', es: 'Producción', en: 'Production' },
+    marketing: { val: 'Màrqueting', es: 'Marketing', en: 'Marketing' },
+    estrategia: { val: 'Estratègia', es: 'Estrategia', en: 'Strategy' },
+    canvas: { val: 'Canvas', es: 'Canvas', en: 'Canvas' },
+    analisi: { val: 'Anàlisi', es: 'Análisis', en: 'Analysis' },
+    creixement: { val: 'Creixement', es: 'Crecimiento', en: 'Growth' },
+    innovacio: { val: 'Innovació', es: 'Innovación', en: 'Innovation' },
+    quiz: { val: 'Quiz', es: 'Quiz', en: 'Quiz' },
+    glosari: { val: 'Glosari', es: 'Glosario', en: 'Glossary' },
+  },
+  
+  // TEXTOS GENERALS
+  ui: {
+    buscar: { val: 'Cercar...', es: 'Buscar...', en: 'Search...' },
+    unitats: { val: 'unitats', es: 'unidades', en: 'units' },
+    euros: { val: 'euros', es: 'euros', en: 'euros' },
+    anys: { val: 'anys', es: 'años', en: 'years' },
+    mesos: { val: 'mesos', es: 'meses', en: 'months' },
+    formula: { val: 'Fórmula', es: 'Fórmula', en: 'Formula' },
+    exemple: { val: 'Exemple', es: 'Ejemplo', en: 'Example' },
+    avantatges: { val: 'Avantatges', es: 'Ventajas', en: 'Advantages' },
+    desavantatges: { val: 'Desavantatges', es: 'Desventajas', en: 'Disadvantages' },
+    caracteristiques: { val: 'Característiques', es: 'Características', en: 'Features' },
+    ideal: { val: 'Ideal per a', es: 'Ideal para', en: 'Ideal for' },
+    seguent: { val: 'Següent', es: 'Siguiente', en: 'Next' },
+    anterior: { val: 'Anterior', es: 'Anterior', en: 'Previous' },
+    correcte: { val: 'Correcte!', es: '¡Correcto!', en: 'Correct!' },
+    incorrecte: { val: 'Incorrecte', es: 'Incorrecto', en: 'Incorrect' },
+    puntuacio: { val: 'Puntuació', es: 'Puntuación', en: 'Score' },
+    repetir: { val: 'Repetir', es: 'Repetir', en: 'Retry' },
+    tornar: { val: 'Tornar', es: 'Volver', en: 'Back' },
+    començar: { val: 'Començar', es: 'Empezar', en: 'Start' },
+    resultat: { val: 'Resultat', es: 'Resultado', en: 'Result' },
+    calcular: { val: 'Calcular', es: 'Calcular', en: 'Calculate' },
+  },
+
+  // INICI
+  inicio: {
+    titol: { 
+      val: 'Empresa', 
+      es: 'Empresa', 
+      en: 'Business' 
+    },
+    subtitol: { 
+      val: 'Guia Completa per Emprenedors i Estudiants', 
+      es: 'Guía Completa para Emprendedores y Estudiantes', 
+      en: 'Complete Guide for Entrepreneurs and Students' 
+    },
+    desc: {
+      val: 'Tot el que necessites saber per crear, gestionar i fer créixer el teu negoci',
+      es: 'Todo lo que necesitas saber para crear, gestionar y hacer crecer tu negocio',
+      en: 'Everything you need to know to create, manage and grow your business'
+    },
+    frase: {
+      val: 'Un negoci existeix per resoldre problemes',
+      es: 'Un negocio existe para resolver problemas',
+      en: 'A business exists to solve problems'
+    },
+    fraseDesc: {
+      val: 'Guanyar diners no és la causa, és la conseqüència de solucionar problemes millor que la competència.',
+      es: 'Ganar dinero no es la causa, es la consecuencia de solucionar problemas mejor que la competencia.',
+      en: 'Making money is not the cause, it is the consequence of solving problems better than the competition.'
+    }
+  },
+
+  // COSTOS
+  costos: {
+    titol: { val: 'Costos de Producció', es: 'Costes de Producción', en: 'Production Costs' },
+    cf: { val: 'Costos Fixos (CF)', es: 'Costes Fijos (CF)', en: 'Fixed Costs (FC)' },
+    cv: { val: 'Costos Variables (CV)', es: 'Costes Variables (CV)', en: 'Variable Costs (VC)' },
+    ct: { val: 'Cost Total (CT)', es: 'Coste Total (CT)', en: 'Total Cost (TC)' },
+    cme: { val: 'Cost Mitjà (CMe)', es: 'Coste Medio (CMe)', en: 'Average Cost (AC)' },
+    cmg: { val: 'Cost Marginal (CMg)', es: 'Coste Marginal (CMg)', en: 'Marginal Cost (MC)' },
+    cfDesc: { 
+      val: 'Costos que NO varien amb la producció: lloguer, assegurances, amortització, sous fixos', 
+      es: 'Costes que NO varían con la producción: alquiler, seguros, amortización, sueldos fijos',
+      en: 'Costs that do NOT vary with production: rent, insurance, depreciation, fixed salaries'
+    },
+    cvDesc: {
+      val: 'Costos que SÍ varien amb la producció: matèries primes, energia, mà d\'obra directa',
+      es: 'Costes que SÍ varían con la producción: materias primas, energía, mano de obra directa',
+      en: 'Costs that DO vary with production: raw materials, energy, direct labor'
+    }
+  },
+
+  // PUNT MORT
+  puntmort: {
+    titol: { val: 'Punt Mort (Break-even)', es: 'Punto Muerto (Break-even)', en: 'Break-even Point' },
+    desc: {
+      val: 'El punt mort és el nivell de vendes on els ingressos totals igualen els costos totals. A partir d\'aquí, comences a tenir beneficis.',
+      es: 'El punto muerto es el nivel de ventas donde los ingresos totales igualan los costes totales. A partir de aquí, empiezas a tener beneficios.',
+      en: 'The break-even point is the sales level where total revenue equals total costs. From here, you start making profits.'
+    },
+    margeContribucio: { val: 'Marge de Contribució', es: 'Margen de Contribución', en: 'Contribution Margin' },
+    preuVenda: { val: 'Preu de Venda (PV)', es: 'Precio de Venta (PV)', en: 'Selling Price (SP)' },
+    costVariable: { val: 'Cost Variable Unitari (CVu)', es: 'Coste Variable Unitario (CVu)', en: 'Variable Cost per Unit (VCu)' }
+  },
+
+  // VAN/TIR
+  van: {
+    titol: { val: 'Anàlisi d\'Inversions: VAN i TIR', es: 'Análisis de Inversiones: VAN y TIR', en: 'Investment Analysis: NPV and IRR' },
+    vanNom: { val: 'Valor Actual Net (VAN)', es: 'Valor Actual Neto (VAN)', en: 'Net Present Value (NPV)' },
+    tirNom: { val: 'Taxa Interna de Rendibilitat (TIR)', es: 'Tasa Interna de Rendibilidad (TIR)', en: 'Internal Rate of Return (IRR)' },
+    payback: { val: 'Termini de Recuperació (Payback)', es: 'Plazo de Recuperación (Payback)', en: 'Payback Period' },
+    inversioInicial: { val: 'Inversió Inicial', es: 'Inversión Inicial', en: 'Initial Investment' },
+    taxaDescompte: { val: 'Taxa de Descompte (k)', es: 'Tasa de Descuento (k)', en: 'Discount Rate (k)' },
+    fluxos: { val: 'Fluxos de Caixa', es: 'Flujos de Caja', en: 'Cash Flows' },
+    vanPositiu: { val: 'VAN > 0: Projecte RENDIBLE ✓', es: 'VAN > 0: Proyecto RENTABLE ✓', en: 'NPV > 0: PROFITABLE Project ✓' },
+    vanNegatiu: { val: 'VAN < 0: Projecte NO rendible ✗', es: 'VAN < 0: Proyecto NO rentable ✗', en: 'NPV < 0: NOT profitable Project ✗' },
+    vanDesc: {
+      val: 'El VAN actualitza tots els fluxos de caixa futurs al valor present. Si és positiu, el projecte genera valor.',
+      es: 'El VAN actualiza todos los flujos de caja futuros al valor presente. Si es positivo, el proyecto genera valor.',
+      en: 'NPV discounts all future cash flows to present value. If positive, the project generates value.'
+    },
+    tirDesc: {
+      val: 'La TIR és la taxa que fa el VAN = 0. Si TIR > k (cost de capital), el projecte és rendible.',
+      es: 'La TIR es la tasa que hace el VAN = 0. Si TIR > k (coste de capital), el proyecto es rentable.',
+      en: 'IRR is the rate that makes NPV = 0. If IRR > k (cost of capital), the project is profitable.'
+    }
+  },
+
+  // FORMES JURÍDIQUES
+  formes: {
+    titol: { val: 'Formes Jurídiques', es: 'Formas Jurídicas', en: 'Legal Forms' },
+    capitalMinim: { val: 'Capital mínim', es: 'Capital mínimo', en: 'Minimum capital' },
+    socis: { val: 'Socis', es: 'Socios', en: 'Partners' },
+    responsabilitat: { val: 'Responsabilitat', es: 'Responsabilidad', en: 'Liability' },
+    tributacio: { val: 'Tributació', es: 'Tributación', en: 'Taxation' },
+    tramits: { val: 'Tràmits', es: 'Trámites', en: 'Procedures' },
+    autonomo: { val: 'Empresari Individual (Autònom)', es: 'Empresario Individual (Autónomo)', en: 'Sole Proprietor (Self-employed)' },
+    sl: { val: 'Societat Limitada (SL)', es: 'Sociedad Limitada (SL)', en: 'Limited Liability Company (LLC)' },
+    sa: { val: 'Societat Anònima (SA)', es: 'Sociedad Anónima (SA)', en: 'Corporation (Inc.)' },
+    coop: { val: 'Cooperativa', es: 'Cooperativa', en: 'Cooperative' },
+    slaboral: { val: 'Societat Laboral', es: 'Sociedad Laboral', en: 'Worker-owned Company' }
+  },
+
+  // FINANÇAMENT
+  financament: {
+    titol: { val: 'Fonts de Finançament', es: 'Fuentes de Financiación', en: 'Sources of Financing' },
+    propi: { val: 'Finançament Propi', es: 'Financiación Propia', en: 'Equity Financing' },
+    alie: { val: 'Finançament Aliè', es: 'Financiación Ajena', en: 'Debt Financing' },
+    curtTermini: { val: 'Curt Termini', es: 'Corto Plazo', en: 'Short Term' },
+    llargTermini: { val: 'Llarg Termini', es: 'Largo Plazo', en: 'Long Term' },
+    aportacions: { val: 'Aportacions dels socis', es: 'Aportaciones de los socios', en: 'Partner contributions' },
+    reserves: { val: 'Reserves i beneficis retinguts', es: 'Reservas y beneficios retenidos', en: 'Reserves and retained earnings' },
+    prestec: { val: 'Préstec bancari', es: 'Préstamo bancario', en: 'Bank loan' },
+    hipoteca: { val: 'Hipoteca', es: 'Hipoteca', en: 'Mortgage' },
+    leasing: { val: 'Leasing', es: 'Leasing', en: 'Leasing' },
+    renting: { val: 'Renting', es: 'Renting', en: 'Renting' },
+    factoring: { val: 'Factoring', es: 'Factoring', en: 'Factoring' },
+    confirming: { val: 'Confirming', es: 'Confirming', en: 'Confirming' },
+    crowdfunding: { val: 'Crowdfunding', es: 'Crowdfunding', en: 'Crowdfunding' },
+    businessAngels: { val: 'Business Angels', es: 'Business Angels', en: 'Business Angels' },
+    capitalRisc: { val: 'Capital Risc', es: 'Capital Riesgo', en: 'Venture Capital' },
+    subvencions: { val: 'Subvencions', es: 'Subvenciones', en: 'Grants' }
+  },
+
+  // RÀTIOS
+  ratios: {
+    titol: { val: 'Anàlisi per Ràtios', es: 'Análisis por Ratios', en: 'Ratio Analysis' },
+    liquiditat: { val: 'Ràtios de Liquiditat', es: 'Ratios de Liquidez', en: 'Liquidity Ratios' },
+    endeutament: { val: 'Ràtios d\'Endeutament', es: 'Ratios de Endeudamiento', en: 'Debt Ratios' },
+    rendibilitat: { val: 'Ràtios de Rendibilitat', es: 'Ratios de Rentabilidad', en: 'Profitability Ratios' },
+    activitat: { val: 'Ràtios d\'Activitat', es: 'Ratios de Actividad', en: 'Activity Ratios' },
+    fonsManiobra: { val: 'Fons de Maniobra', es: 'Fondo de Maniobra', en: 'Working Capital' },
+    ratioLiquiditat: { val: 'Ràtio de Liquiditat', es: 'Ratio de Liquidez', en: 'Current Ratio' },
+    acidTest: { val: 'Prova Àcida (Acid Test)', es: 'Prueba Ácida (Acid Test)', en: 'Acid Test (Quick Ratio)' },
+    tresoreria: { val: 'Ràtio de Tresoreria', es: 'Ratio de Tesorería', en: 'Cash Ratio' },
+    endeutamentTotal: { val: 'Endeutament Total', es: 'Endeudamiento Total', en: 'Total Debt Ratio' },
+    autonomia: { val: 'Autonomia Financera', es: 'Autonomía Financiera', en: 'Financial Autonomy' },
+    roe: { val: 'ROE (Rendibilitat Financera)', es: 'ROE (Rentabilidad Financiera)', en: 'ROE (Return on Equity)' },
+    roa: { val: 'ROA (Rendibilitat Econòmica)', es: 'ROA (Rentabilidad Económica)', en: 'ROA (Return on Assets)' },
+    ros: { val: 'ROS (Rendibilitat sobre Vendes)', es: 'ROS (Rentabilidad sobre Ventas)', en: 'ROS (Return on Sales)' }
+  },
+
+  // RECURSOS HUMANS
+  rrhh: {
+    titol: { val: 'Recursos Humans', es: 'Recursos Humanos', en: 'Human Resources' },
+    organigrama: { val: 'Organigrama', es: 'Organigrama', en: 'Organization Chart' },
+    contractes: { val: 'Tipus de Contractes', es: 'Tipos de Contratos', en: 'Types of Contracts' },
+    seleccio: { val: 'Procés de Selecció', es: 'Proceso de Selección', en: 'Selection Process' },
+    motivacio: { val: 'Motivació', es: 'Motivación', en: 'Motivation' },
+    retribucio: { val: 'Retribució', es: 'Retribución', en: 'Compensation' },
+    formacio: { val: 'Formació', es: 'Formación', en: 'Training' },
+    indefinit: { val: 'Indefinit', es: 'Indefinido', en: 'Permanent' },
+    temporal: { val: 'Temporal', es: 'Temporal', en: 'Temporary' },
+    formacioAprenentatge: { val: 'Formació i Aprenentatge', es: 'Formación y Aprendizaje', en: 'Training and Apprenticeship' },
+    practiques: { val: 'Pràctiques', es: 'Prácticas', en: 'Internship' },
+    fixDiscontinuu: { val: 'Fix Discontinu', es: 'Fijo Discontinuo', en: 'Seasonal Permanent' },
+    maslow: { val: 'Piràmide de Maslow', es: 'Pirámide de Maslow', en: 'Maslow\'s Pyramid' },
+    herzberg: { val: 'Teoria de Herzberg', es: 'Teoría de Herzberg', en: 'Herzberg\'s Theory' },
+    mcgregor: { val: 'Teoria X i Y de McGregor', es: 'Teoría X e Y de McGregor', en: 'McGregor\'s Theory X and Y' }
+  },
+
+  // PRODUCCIÓ
+  produccio: {
+    titol: { val: 'Producció i Operacions', es: 'Producción y Operaciones', en: 'Production and Operations' },
+    procesProductiu: { val: 'Procés Productiu', es: 'Proceso Productivo', en: 'Production Process' },
+    tipusProces: { val: 'Tipus de Processos', es: 'Tipos de Procesos', en: 'Types of Processes' },
+    gestioEstocs: { val: 'Gestió d\'Estocs', es: 'Gestión de Stocks', en: 'Inventory Management' },
+    qualitat: { val: 'Qualitat', es: 'Calidad', en: 'Quality' },
+    cadenaValor: { val: 'Cadena de Valor', es: 'Cadena de Valor', en: 'Value Chain' },
+    jit: { val: 'Just in Time', es: 'Just in Time', en: 'Just in Time' },
+    kanban: { val: 'Kanban', es: 'Kanban', en: 'Kanban' },
+    eoq: { val: 'Lot Econòmic (EOQ)', es: 'Lote Económico (EOQ)', en: 'Economic Order Quantity (EOQ)' },
+    puntComanda: { val: 'Punt de Comanda', es: 'Punto de Pedido', en: 'Reorder Point' },
+    estocSeguretat: { val: 'Estoc de Seguretat', es: 'Stock de Seguridad', en: 'Safety Stock' },
+    productivitat: { val: 'Productivitat', es: 'Productividad', en: 'Productivity' },
+    eficiencia: { val: 'Eficiència', es: 'Eficiencia', en: 'Efficiency' },
+    eficacia: { val: 'Eficàcia', es: 'Eficacia', en: 'Effectiveness' }
+  },
+
+  // MARKETING
+  marketing: {
+    titol: { val: 'Màrqueting', es: 'Marketing', en: 'Marketing' },
+    les4p: { val: 'Les 4P del Marketing Mix', es: 'Las 4P del Marketing Mix', en: 'The 4Ps of Marketing Mix' },
+    producte: { val: 'Producte (Product)', es: 'Producto (Product)', en: 'Product' },
+    preu: { val: 'Preu (Price)', es: 'Precio (Price)', en: 'Price' },
+    distribucio: { val: 'Distribució (Place)', es: 'Distribución (Place)', en: 'Place (Distribution)' },
+    comunicacio: { val: 'Comunicació (Promotion)', es: 'Comunicación (Promotion)', en: 'Promotion' },
+    segmentacio: { val: 'Segmentació', es: 'Segmentación', en: 'Segmentation' },
+    posicionament: { val: 'Posicionament', es: 'Posicionamiento', en: 'Positioning' },
+    buyerPersona: { val: 'Buyer Persona', es: 'Buyer Persona', en: 'Buyer Persona' },
+    cicleVidaProducte: { val: 'Cicle de Vida del Producte', es: 'Ciclo de Vida del Producto', en: 'Product Life Cycle' },
+    introduccio: { val: 'Introducció', es: 'Introducción', en: 'Introduction' },
+    creixement: { val: 'Creixement', es: 'Crecimiento', en: 'Growth' },
+    maduresa: { val: 'Maduresa', es: 'Madurez', en: 'Maturity' },
+    declivi: { val: 'Declivi', es: 'Declive', en: 'Decline' },
+    marketingDigital: { val: 'Màrqueting Digital', es: 'Marketing Digital', en: 'Digital Marketing' },
+    seo: { val: 'SEO (Posicionament Orgànic)', es: 'SEO (Posicionamiento Orgánico)', en: 'SEO (Search Engine Optimization)' },
+    sem: { val: 'SEM (Publicitat en Cercadors)', es: 'SEM (Publicidad en Buscadores)', en: 'SEM (Search Engine Marketing)' },
+    xarxesSocials: { val: 'Xarxes Socials', es: 'Redes Sociales', en: 'Social Media' },
+    emailMarketing: { val: 'Email Marketing', es: 'Email Marketing', en: 'Email Marketing' },
+    contentMarketing: { val: 'Marketing de Continguts', es: 'Marketing de Contenidos', en: 'Content Marketing' }
+  },
+
+  // ESTRATÈGIA
+  estrategia: {
+    titol: { val: 'Estratègia Empresarial', es: 'Estrategia Empresarial', en: 'Business Strategy' },
+    missio: { val: 'Missió', es: 'Misión', en: 'Mission' },
+    visio: { val: 'Visió', es: 'Visión', en: 'Vision' },
+    valors: { val: 'Valors', es: 'Valores', en: 'Values' },
+    objectius: { val: 'Objectius', es: 'Objetivos', en: 'Objectives' },
+    porter: { val: 'Estratègies Genèriques de Porter', es: 'Estrategias Genéricas de Porter', en: 'Porter\'s Generic Strategies' },
+    lideratge: { val: 'Lideratge en Costos', es: 'Liderazgo en Costes', en: 'Cost Leadership' },
+    diferenciacio: { val: 'Diferenciació', es: 'Diferenciación', en: 'Differentiation' },
+    focus: { val: 'Enfocament (Nínxol)', es: 'Enfoque (Nicho)', en: 'Focus (Niche)' },
+    ansoff: { val: 'Matriu d\'Ansoff', es: 'Matriz de Ansoff', en: 'Ansoff Matrix' },
+    penetracio: { val: 'Penetració de Mercat', es: 'Penetración de Mercado', en: 'Market Penetration' },
+    desenvolupamentProducte: { val: 'Desenvolupament de Producte', es: 'Desarrollo de Producto', en: 'Product Development' },
+    desenvolupamentMercat: { val: 'Desenvolupament de Mercat', es: 'Desarrollo de Mercado', en: 'Market Development' },
+    diversificacio: { val: 'Diversificació', es: 'Diversificación', en: 'Diversification' }
+  },
+
+  // ANÀLISI
+  analisi: {
+    titol: { val: 'Eines d\'Anàlisi Estratègica', es: 'Herramientas de Análisis Estratégico', en: 'Strategic Analysis Tools' },
+    dafo: { val: 'Anàlisi DAFO/SWOT', es: 'Análisis DAFO/SWOT', en: 'SWOT Analysis' },
+    debilitats: { val: 'Debilitats', es: 'Debilidades', en: 'Weaknesses' },
+    amenaces: { val: 'Amenaces', es: 'Amenazas', en: 'Threats' },
+    fortaleses: { val: 'Fortaleses', es: 'Fortalezas', en: 'Strengths' },
+    oportunitats: { val: 'Oportunitats', es: 'Oportunidades', en: 'Opportunities' },
+    porter5: { val: '5 Forces de Porter', es: '5 Fuerzas de Porter', en: 'Porter\'s 5 Forces' },
+    pestel: { val: 'Anàlisi PESTEL', es: 'Análisis PESTEL', en: 'PESTEL Analysis' },
+    politic: { val: 'Polític', es: 'Político', en: 'Political' },
+    economic: { val: 'Econòmic', es: 'Económico', en: 'Economic' },
+    social: { val: 'Social', es: 'Social', en: 'Social' },
+    tecnologic: { val: 'Tecnològic', es: 'Tecnológico', en: 'Technological' },
+    ecologic: { val: 'Ecològic', es: 'Ecológico', en: 'Environmental' },
+    legal: { val: 'Legal', es: 'Legal', en: 'Legal' }
+  },
+
+  // CREIXEMENT
+  creixement: {
+    titol: { val: 'Creixement Empresarial', es: 'Crecimiento Empresarial', en: 'Business Growth' },
+    intern: { val: 'Creixement Intern', es: 'Crecimiento Interno', en: 'Internal Growth' },
+    extern: { val: 'Creixement Extern', es: 'Crecimiento Externo', en: 'External Growth' },
+    fusio: { val: 'Fusió', es: 'Fusión', en: 'Merger' },
+    adquisicio: { val: 'Adquisició', es: 'Adquisición', en: 'Acquisition' },
+    jointVenture: { val: 'Joint Venture', es: 'Joint Venture', en: 'Joint Venture' },
+    franquicia: { val: 'Franquícia', es: 'Franquicia', en: 'Franchise' },
+    internacionalitzacio: { val: 'Internacionalització', es: 'Internacionalización', en: 'Internationalization' },
+    exportacio: { val: 'Exportació', es: 'Exportación', en: 'Export' },
+    filial: { val: 'Filial', es: 'Filial', en: 'Subsidiary' },
+    integracio: { val: 'Integració', es: 'Integración', en: 'Integration' },
+    vertical: { val: 'Vertical', es: 'Vertical', en: 'Vertical' },
+    horitzontal: { val: 'Horitzontal', es: 'Horizontal', en: 'Horizontal' }
+  },
+
+  // INNOVACIÓ
+  innovacio: {
+    titol: { val: 'Innovació i Emprenedoria', es: 'Innovación y Emprendimiento', en: 'Innovation and Entrepreneurship' },
+    tipusInnovacio: { val: 'Tipus d\'Innovació', es: 'Tipos de Innovación', en: 'Types of Innovation' },
+    producte: { val: 'Innovació de Producte', es: 'Innovación de Producto', en: 'Product Innovation' },
+    proces: { val: 'Innovació de Procés', es: 'Innovación de Proceso', en: 'Process Innovation' },
+    organitzativa: { val: 'Innovació Organitzativa', es: 'Innovación Organizativa', en: 'Organizational Innovation' },
+    marketing: { val: 'Innovació en Màrqueting', es: 'Innovación en Marketing', en: 'Marketing Innovation' },
+    incremental: { val: 'Incremental', es: 'Incremental', en: 'Incremental' },
+    radical: { val: 'Radical/Disruptiva', es: 'Radical/Disruptiva', en: 'Radical/Disruptive' },
+    leanStartup: { val: 'Lean Startup', es: 'Lean Startup', en: 'Lean Startup' },
+    mvp: { val: 'MVP (Mínim Producte Viable)', es: 'MVP (Mínimo Producto Viable)', en: 'MVP (Minimum Viable Product)' },
+    pivotar: { val: 'Pivotar', es: 'Pivotar', en: 'Pivot' },
+    construirMesurarAprendre: { val: 'Construir-Mesurar-Aprendre', es: 'Construir-Medir-Aprender', en: 'Build-Measure-Learn' }
+  },
+
+  // CANVAS
+  canvas: {
+    titol: { val: 'Business Model Canvas', es: 'Business Model Canvas', en: 'Business Model Canvas' },
+    segments: { val: 'Segments de Clients', es: 'Segmentos de Clientes', en: 'Customer Segments' },
+    proposta: { val: 'Proposta de Valor', es: 'Propuesta de Valor', en: 'Value Proposition' },
+    canals: { val: 'Canals', es: 'Canales', en: 'Channels' },
+    relacions: { val: 'Relacions amb Clients', es: 'Relaciones con Clientes', en: 'Customer Relationships' },
+    ingressos: { val: 'Fonts d\'Ingressos', es: 'Fuentes de Ingresos', en: 'Revenue Streams' },
+    recursos: { val: 'Recursos Clau', es: 'Recursos Clave', en: 'Key Resources' },
+    activitats: { val: 'Activitats Clau', es: 'Actividades Clave', en: 'Key Activities' },
+    socis: { val: 'Socis Clau', es: 'Socios Clave', en: 'Key Partners' },
+    costos: { val: 'Estructura de Costos', es: 'Estructura de Costes', en: 'Cost Structure' }
+  },
+
+  // LOCALITZACIÓ
+  localitzacio: {
+    titol: { val: 'Localització Empresarial', es: 'Localización Empresarial', en: 'Business Location' },
+    factors: { val: 'Factors de Localització', es: 'Factores de Localización', en: 'Location Factors' },
+    accessibilitat: { val: 'Accessibilitat', es: 'Accesibilidad', en: 'Accessibility' },
+    infraestructures: { val: 'Infraestructures', es: 'Infraestructuras', en: 'Infrastructure' },
+    maObra: { val: 'Mà d\'Obra', es: 'Mano de Obra', en: 'Labor Force' },
+    proximitat: { val: 'Proximitat a clients/proveïdors', es: 'Proximidad a clientes/proveedores', en: 'Proximity to customers/suppliers' },
+    costTerreny: { val: 'Cost del terreny', es: 'Coste del terreno', en: 'Land cost' },
+    fiscalitat: { val: 'Fiscalitat', es: 'Fiscalidad', en: 'Taxation' },
+    mediAmbient: { val: 'Medi Ambient', es: 'Medio Ambiente', en: 'Environment' }
+  }
+};
+
+// ============================================================================
+// DADES COMPLETES
+// ============================================================================
+
+const glosarioData = {
+  val: [
+    { term: 'Punt mort', def: 'Nivell de vendes on IT = CT. Benefici = 0. Q* = CF / (PV - CVu)', cat: 'costos' },
+    { term: 'Costos fixos (CF)', def: 'Costos independents de la producció: lloguer, assegurances, amortització', cat: 'costos' },
+    { term: 'Costos variables (CV)', def: 'Costos que varien amb la producció: matèries primes, energia', cat: 'costos' },
+    { term: 'Cost total (CT)', def: 'CT = CF + CV. Suma de tots els costos de producció', cat: 'costos' },
+    { term: 'Cost mitjà (CMe)', def: 'Cost per unitat: CMe = CT/Q', cat: 'costos' },
+    { term: 'Cost marginal (CMg)', def: 'Cost d\'una unitat addicional: CMg = ΔCT/ΔQ', cat: 'costos' },
+    { term: 'Marge de contribució', def: 'PV - CVu. El que cada unitat aporta per cobrir CF', cat: 'costos' },
+    { term: 'Economies d\'escala', def: 'Reducció del CMe quan augmenta la producció', cat: 'costos' },
+    { term: 'Productivitat', def: 'Producció / Factors utilitzats. Mesura l\'eficiència', cat: 'produccio' },
+    { term: 'Eficiència', def: 'Aconseguir objectius amb el mínim de recursos', cat: 'produccio' },
+    { term: 'Eficàcia', def: 'Aconseguir els objectius proposats', cat: 'produccio' },
+    { term: 'VAN', def: 'Valor Actual Net. Suma dels fluxos actualitzats - inversió inicial', cat: 'inversions' },
+    { term: 'TIR', def: 'Taxa Interna de Rendibilitat. Taxa que fa VAN = 0', cat: 'inversions' },
+    { term: 'Payback', def: 'Termini de recuperació de la inversió', cat: 'inversions' },
+    { term: 'ROI', def: 'Return on Investment: (Benefici / Inversió) × 100', cat: 'ratios' },
+    { term: 'ROE', def: 'Return on Equity: Benefici Net / Patrimoni Net', cat: 'ratios' },
+    { term: 'ROA', def: 'Return on Assets: BAII / Actiu Total', cat: 'ratios' },
+    { term: 'Fons de maniobra', def: 'AC - PC. Ha de ser positiu per garantir liquiditat', cat: 'ratios' },
+    { term: 'Ràtio de liquiditat', def: 'AC / PC. Ideal: 1,5-2', cat: 'ratios' },
+    { term: 'Acid test', def: '(AC - Existències) / PC. Ideal: 0,8-1', cat: 'ratios' },
+    { term: 'Autònom', def: 'Empresari individual amb responsabilitat il·limitada. Tributa IRPF', cat: 'formes' },
+    { term: 'SL', def: 'Societat Limitada. Capital mínim 1€, responsabilitat limitada. IS 25%', cat: 'formes' },
+    { term: 'SA', def: 'Societat Anònima. Capital mínim 60.000€, accions negociables', cat: 'formes' },
+    { term: 'Cooperativa', def: 'Societat democràtica. 1 persona = 1 vot. Avantatges fiscals', cat: 'formes' },
+    { term: 'DAFO/SWOT', def: 'Anàlisi: Debilitats, Amenaces, Fortaleses, Oportunitats', cat: 'estrategia' },
+    { term: 'Canvas', def: 'Business Model Canvas: 9 blocs del model de negoci', cat: 'estrategia' },
+    { term: 'Proposta de valor', def: 'El motiu pel qual els clients et trien a tu', cat: 'estrategia' },
+    { term: 'Buyer persona', def: 'Representació semifictícia del client ideal', cat: 'marketing' },
+    { term: 'Marketing mix', def: 'Les 4P: Producte, Preu, Promoció, Place (distribució)', cat: 'marketing' },
+    { term: 'Segmentació', def: 'Dividir el mercat en grups homogenis', cat: 'marketing' },
+    { term: 'Posicionament', def: 'Lloc que ocupa la marca a la ment del consumidor', cat: 'marketing' },
+    { term: 'Lean Startup', def: 'Metodologia: Construir-Mesurar-Aprendre', cat: 'innovacio' },
+    { term: 'MVP', def: 'Mínim Producte Viable. Versió bàsica per validar hipòtesis', cat: 'innovacio' },
+    { term: 'Pivotar', def: 'Canviar d\'estratègia basant-se en l\'aprenentatge', cat: 'innovacio' },
+    { term: 'Leasing', def: 'Arrendament financer amb opció de compra', cat: 'financament' },
+    { term: 'Renting', def: 'Arrendament operatiu sense opció de compra', cat: 'financament' },
+    { term: 'Factoring', def: 'Vendre els drets de cobrament de factures', cat: 'financament' },
+    { term: 'Crowdfunding', def: 'Finançament col·lectiu a través de plataformes', cat: 'financament' },
+    { term: 'Business Angels', def: 'Inversors privats en startups en fases inicials', cat: 'financament' },
+    { term: 'Capital risc', def: 'Fons d\'inversió en empreses amb alt potencial', cat: 'financament' },
+    { term: 'EOQ', def: 'Lot Econòmic de Comanda. Quantitat òptima a demanar', cat: 'produccio' },
+    { term: 'Just in Time', def: 'Producció sense estocs, just quan es necessita', cat: 'produccio' },
+    { term: 'Cadena de valor', def: 'Activitats que afegeixen valor al producte (Porter)', cat: 'produccio' },
+    { term: 'Integració vertical', def: 'Controlar fases anteriors o posteriors de la producció', cat: 'creixement' },
+    { term: 'Integració horitzontal', def: 'Fusió o adquisició de competidors', cat: 'creixement' },
+    { term: 'Franquícia', def: 'Model on el franquiciador cedeix marca i know-how', cat: 'creixement' },
+    { term: 'Joint venture', def: 'Associació temporal entre empreses per un projecte', cat: 'creixement' },
+    { term: 'Matriu d\'Ansoff', def: 'Estratègies de creixement: producte/mercat actual/nou', cat: 'estrategia' },
+    { term: '5 forces de Porter', def: 'Anàlisi competitiu del sector', cat: 'estrategia' },
+    { term: 'PESTEL', def: 'Anàlisi macroentorn: Polític, Econòmic, Social, Tecnològic, Ecològic, Legal', cat: 'estrategia' }
+  ],
+  es: [
+    { term: 'Punto muerto', def: 'Nivel de ventas donde IT = CT. Beneficio = 0. Q* = CF / (PV - CVu)', cat: 'costos' },
+    { term: 'Costes fijos (CF)', def: 'Costes independientes de la producción: alquiler, seguros, amortización', cat: 'costos' },
+    { term: 'Costes variables (CV)', def: 'Costes que varían con la producción: materias primas, energía', cat: 'costos' },
+    { term: 'Coste total (CT)', def: 'CT = CF + CV. Suma de todos los costes de producción', cat: 'costos' },
+    { term: 'Coste medio (CMe)', def: 'Coste por unidad: CMe = CT/Q', cat: 'costos' },
+    { term: 'Coste marginal (CMg)', def: 'Coste de una unidad adicional: CMg = ΔCT/ΔQ', cat: 'costos' },
+    { term: 'Margen de contribución', def: 'PV - CVu. Lo que cada unidad aporta para cubrir CF', cat: 'costos' },
+    { term: 'Economías de escala', def: 'Reducción del CMe cuando aumenta la producción', cat: 'costos' },
+    { term: 'Productividad', def: 'Producción / Factores utilizados. Mide la eficiencia', cat: 'produccio' },
+    { term: 'Eficiencia', def: 'Conseguir objetivos con el mínimo de recursos', cat: 'produccio' },
+    { term: 'Eficacia', def: 'Conseguir los objetivos propuestos', cat: 'produccio' },
+    { term: 'VAN', def: 'Valor Actual Neto. Suma de flujos actualizados - inversión inicial', cat: 'inversions' },
+    { term: 'TIR', def: 'Tasa Interna de Rendibilidad. Tasa que hace VAN = 0', cat: 'inversions' },
+    { term: 'Payback', def: 'Plazo de recuperación de la inversión', cat: 'inversions' },
+    { term: 'ROI', def: 'Return on Investment: (Beneficio / Inversión) × 100', cat: 'ratios' },
+    { term: 'ROE', def: 'Return on Equity: Beneficio Neto / Patrimonio Neto', cat: 'ratios' },
+    { term: 'ROA', def: 'Return on Assets: BAII / Activo Total', cat: 'ratios' },
+    { term: 'Fondo de maniobra', def: 'AC - PC. Debe ser positivo para garantizar liquidez', cat: 'ratios' },
+    { term: 'Ratio de liquidez', def: 'AC / PC. Ideal: 1,5-2', cat: 'ratios' },
+    { term: 'Acid test', def: '(AC - Existencias) / PC. Ideal: 0,8-1', cat: 'ratios' },
+    { term: 'Autónomo', def: 'Empresario individual con responsabilidad ilimitada. Tributa IRPF', cat: 'formes' },
+    { term: 'SL', def: 'Sociedad Limitada. Capital mínimo 1€, responsabilidad limitada. IS 25%', cat: 'formes' },
+    { term: 'SA', def: 'Sociedad Anónima. Capital mínimo 60.000€, acciones negociables', cat: 'formes' },
+    { term: 'Cooperativa', def: 'Sociedad democrática. 1 persona = 1 voto. Ventajas fiscales', cat: 'formes' },
+    { term: 'DAFO/SWOT', def: 'Análisis: Debilidades, Amenazas, Fortalezas, Oportunidades', cat: 'estrategia' },
+    { term: 'Canvas', def: 'Business Model Canvas: 9 bloques del modelo de negocio', cat: 'estrategia' },
+    { term: 'Propuesta de valor', def: 'El motivo por el cual los clientes te eligen a ti', cat: 'estrategia' },
+    { term: 'Buyer persona', def: 'Representación semificticia del cliente ideal', cat: 'marketing' },
+    { term: 'Marketing mix', def: 'Las 4P: Producto, Precio, Promoción, Place (distribución)', cat: 'marketing' },
+    { term: 'Segmentación', def: 'Dividir el mercado en grupos homogéneos', cat: 'marketing' },
+    { term: 'Posicionamiento', def: 'Lugar que ocupa la marca en la mente del consumidor', cat: 'marketing' },
+    { term: 'Lean Startup', def: 'Metodología: Construir-Medir-Aprender', cat: 'innovacio' },
+    { term: 'MVP', def: 'Mínimo Producto Viable. Versión básica para validar hipótesis', cat: 'innovacio' },
+    { term: 'Pivotar', def: 'Cambiar de estrategia basándose en el aprendizaje', cat: 'innovacio' },
+    { term: 'Leasing', def: 'Arrendamiento financiero con opción de compra', cat: 'financament' },
+    { term: 'Renting', def: 'Arrendamiento operativo sin opción de compra', cat: 'financament' },
+    { term: 'Factoring', def: 'Vender los derechos de cobro de facturas', cat: 'financament' },
+    { term: 'Crowdfunding', def: 'Financiación colectiva a través de plataformas', cat: 'financament' },
+    { term: 'Business Angels', def: 'Inversores privados en startups en fases iniciales', cat: 'financament' },
+    { term: 'Capital riesgo', def: 'Fondos de inversión en empresas con alto potencial', cat: 'financament' },
+    { term: 'EOQ', def: 'Lote Económico de Pedido. Cantidad óptima a pedir', cat: 'produccio' },
+    { term: 'Just in Time', def: 'Producción sin stocks, justo cuando se necesita', cat: 'produccio' },
+    { term: 'Cadena de valor', def: 'Actividades que añaden valor al producto (Porter)', cat: 'produccio' },
+    { term: 'Integración vertical', def: 'Controlar fases anteriores o posteriores de la producción', cat: 'creixement' },
+    { term: 'Integración horizontal', def: 'Fusión o adquisición de competidores', cat: 'creixement' },
+    { term: 'Franquicia', def: 'Modelo donde el franquiciador cede marca y know-how', cat: 'creixement' },
+    { term: 'Joint venture', def: 'Asociación temporal entre empresas para un proyecto', cat: 'creixement' },
+    { term: 'Matriz de Ansoff', def: 'Estrategias de crecimiento: producto/mercado actual/nuevo', cat: 'estrategia' },
+    { term: '5 fuerzas de Porter', def: 'Análisis competitivo del sector', cat: 'estrategia' },
+    { term: 'PESTEL', def: 'Análisis macroentorno: Político, Económico, Social, Tecnológico, Ecológico, Legal', cat: 'estrategia' }
+  ],
+  en: [
+    { term: 'Break-even point', def: 'Sales level where TR = TC. Profit = 0. Q* = FC / (SP - VCu)', cat: 'costos' },
+    { term: 'Fixed costs (FC)', def: 'Costs independent of production: rent, insurance, depreciation', cat: 'costos' },
+    { term: 'Variable costs (VC)', def: 'Costs that vary with production: raw materials, energy', cat: 'costos' },
+    { term: 'Total cost (TC)', def: 'TC = FC + VC. Sum of all production costs', cat: 'costos' },
+    { term: 'Average cost (AC)', def: 'Cost per unit: AC = TC/Q', cat: 'costos' },
+    { term: 'Marginal cost (MC)', def: 'Cost of one additional unit: MC = ΔTC/ΔQ', cat: 'costos' },
+    { term: 'Contribution margin', def: 'SP - VCu. What each unit contributes to cover FC', cat: 'costos' },
+    { term: 'Economies of scale', def: 'Reduction of AC when production increases', cat: 'costos' },
+    { term: 'Productivity', def: 'Output / Inputs used. Measures efficiency', cat: 'produccio' },
+    { term: 'Efficiency', def: 'Achieving objectives with minimum resources', cat: 'produccio' },
+    { term: 'Effectiveness', def: 'Achieving the proposed objectives', cat: 'produccio' },
+    { term: 'NPV', def: 'Net Present Value. Sum of discounted cash flows - initial investment', cat: 'inversions' },
+    { term: 'IRR', def: 'Internal Rate of Return. Rate that makes NPV = 0', cat: 'inversions' },
+    { term: 'Payback', def: 'Investment recovery period', cat: 'inversions' },
+    { term: 'ROI', def: 'Return on Investment: (Profit / Investment) × 100', cat: 'ratios' },
+    { term: 'ROE', def: 'Return on Equity: Net Income / Shareholders Equity', cat: 'ratios' },
+    { term: 'ROA', def: 'Return on Assets: EBIT / Total Assets', cat: 'ratios' },
+    { term: 'Working capital', def: 'CA - CL. Must be positive to ensure liquidity', cat: 'ratios' },
+    { term: 'Current ratio', def: 'CA / CL. Ideal: 1.5-2', cat: 'ratios' },
+    { term: 'Acid test', def: '(CA - Inventory) / CL. Ideal: 0.8-1', cat: 'ratios' },
+    { term: 'Sole proprietor', def: 'Individual entrepreneur with unlimited liability', cat: 'formes' },
+    { term: 'LLC', def: 'Limited Liability Company. Limited liability, flexible structure', cat: 'formes' },
+    { term: 'Corporation', def: 'Company with shareholders, tradable shares', cat: 'formes' },
+    { term: 'Cooperative', def: 'Democratic society. 1 person = 1 vote. Tax benefits', cat: 'formes' },
+    { term: 'SWOT', def: 'Analysis: Strengths, Weaknesses, Opportunities, Threats', cat: 'estrategia' },
+    { term: 'Canvas', def: 'Business Model Canvas: 9 blocks of the business model', cat: 'estrategia' },
+    { term: 'Value proposition', def: 'The reason why customers choose you', cat: 'estrategia' },
+    { term: 'Buyer persona', def: 'Semi-fictional representation of the ideal customer', cat: 'marketing' },
+    { term: 'Marketing mix', def: 'The 4Ps: Product, Price, Promotion, Place', cat: 'marketing' },
+    { term: 'Segmentation', def: 'Dividing the market into homogeneous groups', cat: 'marketing' },
+    { term: 'Positioning', def: 'Place the brand occupies in the consumer\'s mind', cat: 'marketing' },
+    { term: 'Lean Startup', def: 'Methodology: Build-Measure-Learn', cat: 'innovacio' },
+    { term: 'MVP', def: 'Minimum Viable Product. Basic version to validate hypotheses', cat: 'innovacio' },
+    { term: 'Pivot', def: 'Change strategy based on learning', cat: 'innovacio' },
+    { term: 'Leasing', def: 'Financial lease with purchase option', cat: 'financament' },
+    { term: 'Renting', def: 'Operating lease without purchase option', cat: 'financament' },
+    { term: 'Factoring', def: 'Selling invoice collection rights', cat: 'financament' },
+    { term: 'Crowdfunding', def: 'Collective financing through platforms', cat: 'financament' },
+    { term: 'Business Angels', def: 'Private investors in early-stage startups', cat: 'financament' },
+    { term: 'Venture Capital', def: 'Investment funds in high-potential companies', cat: 'financament' },
+    { term: 'EOQ', def: 'Economic Order Quantity. Optimal quantity to order', cat: 'produccio' },
+    { term: 'Just in Time', def: 'Production without inventory, just when needed', cat: 'produccio' },
+    { term: 'Value chain', def: 'Activities that add value to the product (Porter)', cat: 'produccio' },
+    { term: 'Vertical integration', def: 'Controlling upstream or downstream production phases', cat: 'creixement' },
+    { term: 'Horizontal integration', def: 'Merger or acquisition of competitors', cat: 'creixement' },
+    { term: 'Franchise', def: 'Model where franchisor grants brand and know-how', cat: 'creixement' },
+    { term: 'Joint venture', def: 'Temporary association between companies for a project', cat: 'creixement' },
+    { term: 'Ansoff Matrix', def: 'Growth strategies: product/market current/new', cat: 'estrategia' },
+    { term: 'Porter\'s 5 forces', def: 'Competitive analysis of the industry', cat: 'estrategia' },
+    { term: 'PESTEL', def: 'Macro-environment analysis: Political, Economic, Social, Technological, Environmental, Legal', cat: 'estrategia' }
+  ]
+};
+
+// Formes jurídiques per idioma
+const formesJuridiquesData = {
+  val: [
+    {
+      id: 'autonomo', nom: 'Empresari Individual (Autònom)', capitalMinim: '0€', socis: '1',
+      responsabilitat: 'Il·limitada (patrimoni personal)', tributacio: 'IRPF (19-47%)',
+      seguretatSocial: 'RETA (règim d\'autònoms)',
+      avantatges: ['Constitució senzilla i ràpida', 'Control total de la gestió', 'Menys obligacions comptables', 'Quota reduïda nous autònoms (80€/mes)', 'Pot deduir despeses'],
+      desavantatges: ['Responsabilitat il·limitada', 'IRPF progressiu pot ser alt', 'Dificultat per obtenir finançament', 'Menys credibilitat empresarial'],
+      ideal: 'Freelancers, professionals liberals, petits comerços',
+      tramits: ['Alta censal (model 036/037)', 'Alta RETA', 'Llicència d\'activitat si cal']
+    },
+    {
+      id: 'sl', nom: 'Societat Limitada (SL)', capitalMinim: '1€ (nova llei 2022)', socis: '1 o més',
+      responsabilitat: 'Limitada al capital aportat', tributacio: 'IS (25%, 15% primers anys)',
+      seguretatSocial: 'Règim General o RETA',
+      avantatges: ['Responsabilitat limitada', 'IS fix (pot ser menor que IRPF)', 'Major credibilitat', 'Facilitat per incorporar socis', 'Pot créixer i captar inversió'],
+      desavantatges: ['Tràmits més complexos', 'Obligacions comptables (comptes anuals)', 'Participacions no lliurement transmissibles', 'Costos de gestoria i notaria'],
+      ideal: 'PIMES, negocis amb risc, diversos socis',
+      tramits: ['Certificació nom al Registre Mercantil', 'Estatuts socials', 'Escriptura notarial', 'NIF', 'Inscripció RM']
+    },
+    {
+      id: 'sa', nom: 'Societat Anònima (SA)', capitalMinim: '60.000€ (25% desemborsat)', socis: '1 o més',
+      responsabilitat: 'Limitada al capital aportat', tributacio: 'IS (25%)',
+      seguretatSocial: 'Règim General o RETA',
+      avantatges: ['Pot cotitzar en borsa', 'Accions lliurement transmissibles', 'Gran capacitat de finançament', 'Màxima credibilitat'],
+      desavantatges: ['Capital mínim molt elevat', 'Tràmits complexos', 'Obligacions d\'auditoria', 'Normativa molt exigent'],
+      ideal: 'Grans empreses, empreses que volen cotitzar',
+      tramits: ['Certificació nom', 'Escriptura pública', 'Inscripció RM', 'Dipòsit accions']
+    },
+    {
+      id: 'coop', nom: 'Cooperativa', capitalMinim: 'Segons estatuts', socis: 'Mínim 3',
+      responsabilitat: 'Limitada', tributacio: 'Règim especial (bonificacions)',
+      seguretatSocial: 'Règim General o RETA',
+      avantatges: ['Importants avantatges fiscals', 'Democràtica: 1 persona = 1 vot', 'Subvencions i ajudes', 'Valors socials'],
+      desavantatges: ['Mínim 3 socis', 'Decisions més lentes', 'Dificultat per atraure inversors', 'Normativa autonòmica variable'],
+      ideal: 'Grups amb valors cooperatius, economia social',
+      tramits: ['Assemblea constituent', 'Estatuts', 'Inscripció Registre Cooperatives']
+    },
+    {
+      id: 'slaboral', nom: 'Societat Laboral (SLL/SAL)', capitalMinim: '1€ (SLL) / 60.000€ (SAL)', socis: 'Mínim 2 (majoria treballadors)',
+      responsabilitat: 'Limitada', tributacio: 'IS amb bonificacions',
+      seguretatSocial: 'Règim General',
+      avantatges: ['Bonificacions fiscals', 'Subvencions específiques', 'Treballadors són propietaris', 'Major implicació'],
+      desavantatges: ['Majoria socis han de ser treballadors', 'Cap soci pot tenir >33%', 'Tràmits complexos'],
+      ideal: 'Grups de treballadors que creen empresa',
+      tramits: ['Certificació nom', 'Escriptura', 'Qualificació com a laboral', 'Inscripció RM']
+    }
+  ],
+  es: [
+    {
+      id: 'autonomo', nom: 'Empresario Individual (Autónomo)', capitalMinim: '0€', socis: '1',
+      responsabilitat: 'Ilimitada (patrimonio personal)', tributacio: 'IRPF (19-47%)',
+      seguretatSocial: 'RETA (régimen de autónomos)',
+      avantatges: ['Constitución sencilla y rápida', 'Control total de la gestión', 'Menos obligaciones contables', 'Cuota reducida nuevos autónomos (80€/mes)', 'Puede deducir gastos'],
+      desavantatges: ['Responsabilidad ilimitada', 'IRPF progresivo puede ser alto', 'Dificultad para obtener financiación', 'Menos credibilidad empresarial'],
+      ideal: 'Freelancers, profesionales liberales, pequeños comercios',
+      tramits: ['Alta censal (modelo 036/037)', 'Alta RETA', 'Licencia de actividad si procede']
+    },
+    {
+      id: 'sl', nom: 'Sociedad Limitada (SL)', capitalMinim: '1€ (nueva ley 2022)', socis: '1 o más',
+      responsabilitat: 'Limitada al capital aportado', tributacio: 'IS (25%, 15% primeros años)',
+      seguretatSocial: 'Régimen General o RETA',
+      avantatges: ['Responsabilidad limitada', 'IS fijo (puede ser menor que IRPF)', 'Mayor credibilidad', 'Facilidad para incorporar socios', 'Puede crecer y captar inversión'],
+      desavantatges: ['Trámites más complejos', 'Obligaciones contables (cuentas anuales)', 'Participaciones no libremente transmisibles', 'Costes de gestoría y notaría'],
+      ideal: 'PYMES, negocios con riesgo, varios socios',
+      tramits: ['Certificación nombre en Registro Mercantil', 'Estatutos sociales', 'Escritura notarial', 'NIF', 'Inscripción RM']
+    },
+    {
+      id: 'sa', nom: 'Sociedad Anónima (SA)', capitalMinim: '60.000€ (25% desembolsado)', socis: '1 o más',
+      responsabilitat: 'Limitada al capital aportado', tributacio: 'IS (25%)',
+      seguretatSocial: 'Régimen General o RETA',
+      avantatges: ['Puede cotizar en bolsa', 'Acciones libremente transmisibles', 'Gran capacidad de financiación', 'Máxima credibilidad'],
+      desavantatges: ['Capital mínimo muy elevado', 'Trámites complejos', 'Obligaciones de auditoría', 'Normativa muy exigente'],
+      ideal: 'Grandes empresas, empresas que quieren cotizar',
+      tramits: ['Certificación nombre', 'Escritura pública', 'Inscripción RM', 'Depósito acciones']
+    },
+    {
+      id: 'coop', nom: 'Cooperativa', capitalMinim: 'Según estatutos', socis: 'Mínimo 3',
+      responsabilitat: 'Limitada', tributacio: 'Régimen especial (bonificaciones)',
+      seguretatSocial: 'Régimen General o RETA',
+      avantatges: ['Importantes ventajas fiscales', 'Democrática: 1 persona = 1 voto', 'Subvenciones y ayudas', 'Valores sociales'],
+      desavantatges: ['Mínimo 3 socios', 'Decisiones más lentas', 'Dificultad para atraer inversores', 'Normativa autonómica variable'],
+      ideal: 'Grupos con valores cooperativos, economía social',
+      tramits: ['Asamblea constituyente', 'Estatutos', 'Inscripción Registro Cooperativas']
+    },
+    {
+      id: 'slaboral', nom: 'Sociedad Laboral (SLL/SAL)', capitalMinim: '1€ (SLL) / 60.000€ (SAL)', socis: 'Mínimo 2 (mayoría trabajadores)',
+      responsabilitat: 'Limitada', tributacio: 'IS con bonificaciones',
+      seguretatSocial: 'Régimen General',
+      avantatges: ['Bonificaciones fiscales', 'Subvenciones específicas', 'Trabajadores son propietarios', 'Mayor implicación'],
+      desavantatges: ['Mayoría socios deben ser trabajadores', 'Ningún socio puede tener >33%', 'Trámites complejos'],
+      ideal: 'Grupos de trabajadores que crean empresa',
+      tramits: ['Certificación nombre', 'Escritura', 'Calificación como laboral', 'Inscripción RM']
+    }
+  ],
+  en: [
+    {
+      id: 'autonomo', nom: 'Sole Proprietor (Self-employed)', capitalMinim: '€0', socis: '1',
+      responsabilitat: 'Unlimited (personal assets)', tributacio: 'Income Tax (19-47%)',
+      seguretatSocial: 'Self-employed regime',
+      avantatges: ['Simple and quick setup', 'Full control of management', 'Fewer accounting obligations', 'Reduced fee for new self-employed', 'Can deduct expenses'],
+      desavantatges: ['Unlimited liability', 'Progressive tax can be high', 'Difficulty obtaining financing', 'Less business credibility'],
+      ideal: 'Freelancers, liberal professionals, small shops',
+      tramits: ['Tax registration', 'Social Security registration', 'Activity license if needed']
+    },
+    {
+      id: 'sl', nom: 'Limited Liability Company (LLC)', capitalMinim: '€1 (new law 2022)', socis: '1 or more',
+      responsabilitat: 'Limited to contributed capital', tributacio: 'Corporate Tax (25%, 15% first years)',
+      seguretatSocial: 'General Regime or Self-employed',
+      avantatges: ['Limited liability', 'Fixed corporate tax', 'Greater credibility', 'Easy to add partners', 'Can grow and attract investment'],
+      desavantatges: ['More complex procedures', 'Accounting obligations', 'Shares not freely transferable', 'Agency and notary costs'],
+      ideal: 'SMEs, risky businesses, multiple partners',
+      tramits: ['Name certification', 'Bylaws', 'Notarial deed', 'Tax ID', 'Commercial Registry']
+    },
+    {
+      id: 'sa', nom: 'Corporation (Inc.)', capitalMinim: '€60,000 (25% paid up)', socis: '1 or more',
+      responsabilitat: 'Limited to contributed capital', tributacio: 'Corporate Tax (25%)',
+      seguretatSocial: 'General Regime or Self-employed',
+      avantatges: ['Can be publicly traded', 'Freely transferable shares', 'Great financing capacity', 'Maximum credibility'],
+      desavantatges: ['Very high minimum capital', 'Complex procedures', 'Audit obligations', 'Very demanding regulations'],
+      ideal: 'Large companies, companies seeking to go public',
+      tramits: ['Name certification', 'Public deed', 'Commercial Registry', 'Share deposit']
+    },
+    {
+      id: 'coop', nom: 'Cooperative', capitalMinim: 'According to bylaws', socis: 'Minimum 3',
+      responsabilitat: 'Limited', tributacio: 'Special regime (tax benefits)',
+      seguretatSocial: 'General Regime or Self-employed',
+      avantatges: ['Important tax benefits', 'Democratic: 1 person = 1 vote', 'Subsidies and grants', 'Social values'],
+      desavantatges: ['Minimum 3 members', 'Slower decisions', 'Difficulty attracting investors', 'Variable regional regulations'],
+      ideal: 'Groups with cooperative values, social economy',
+      tramits: ['Constituent assembly', 'Bylaws', 'Cooperative Registry']
+    },
+    {
+      id: 'slaboral', nom: 'Worker-owned Company', capitalMinim: '€1 (SLL) / €60,000 (SAL)', socis: 'Minimum 2 (majority workers)',
+      responsabilitat: 'Limited', tributacio: 'Corporate Tax with bonuses',
+      seguretatSocial: 'General Regime',
+      avantatges: ['Tax bonuses', 'Specific subsidies', 'Workers are owners', 'Greater involvement'],
+      desavantatges: ['Majority must be workers', 'No partner can have >33%', 'Complex procedures'],
+      ideal: 'Groups of workers creating a company',
+      tramits: ['Name certification', 'Deed', 'Labor qualification', 'Commercial Registry']
+    }
+  ]
+};
+
+function EmpresaApp() {
+  // ============================================================================
+  // ESTAT
+  // ============================================================================
+  const [idioma, setIdioma] = useState('val');
+  const [section, setSection] = useState('inicio');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [showGlosario, setShowGlosario] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  // Funció de traducció
+  const t = useCallback((category, key) => {
+    try {
+      return translations[category][key][idioma] || translations[category][key]['val'];
+    } catch {
+      return key;
+    }
+  }, [idioma]);
+
+  // Obtenir glosari per idioma
+  const glosario = glosarioData[idioma] || glosarioData.val;
+  const formesJuridiques = formesJuridiquesData[idioma] || formesJuridiquesData.val;
+
+  // ============================================================================
+  // ESTATS SIMULADORS
+  // ============================================================================
+  
+  // Punt mort
+  const [costosFixos, setCostosFixos] = useState(50000);
+  const [preuVenda, setPreuVenda] = useState(50);
+  const [costVariable, setCostVariable] = useState(30);
+  
+  // Productivitat
+  const [produccioTotal, setProduccioTotal] = useState(1000);
+  const [treballadors, setTreballadors] = useState(10);
+  const [horesTreballades, setHoresTreballades] = useState(1600);
+  const [capitalInvertit, setCapitalInvertit] = useState(100000);
+  
+  // VAN/TIR
+  const [inversioInicial, setInversioInicial] = useState(100000);
+  const [fluxos, setFluxos] = useState([30000, 35000, 40000, 45000, 50000]);
+  const [taxaDescompte, setTaxaDescompte] = useState(10);
+  
+  // Costos
+  const [cfSimulador, setCfSimulador] = useState(10000);
+  const [cvUnitari, setCvUnitari] = useState(20);
+  const [produccioSimulador, setProduccioSimulador] = useState(500);
+  const [preuVendaSimulador, setPreuVendaSimulador] = useState(40);
+  
+  // Ràtios financers
+  const [actiuCorrent, setActiuCorrent] = useState(150000);
+  const [passiuCorrent, setPassiuCorrent] = useState(100000);
+  const [existencies, setExistencies] = useState(30000);
+  const [tresoreria, setTresoreria] = useState(20000);
+  const [actiuTotal, setActiuTotal] = useState(500000);
+  const [passiuTotal, setPassiuTotal] = useState(300000);
+  const [patrimoniNet, setPatrimoniNet] = useState(200000);
+  const [beneficiNet, setBeneficiNet] = useState(40000);
+  const [baii, setBaii] = useState(60000);
+  const [vendes, setVendes] = useState(800000);
+  
+  // Préstec
+  const [capitalPrestec, setCapitalPrestec] = useState(50000);
+  const [tipusInteres, setTipusInteres] = useState(5);
+  const [anysPrestec, setAnysPrestec] = useState(5);
+  
+  // Estocs (EOQ)
+  const [demandaAnual, setDemandaAnual] = useState(10000);
+  const [costComanda, setCostComanda] = useState(100);
+  const [costEmmagatzematge, setCostEmmagatzematge] = useState(2);
+  const [diesLliurament, setDiesLliurament] = useState(5);
+  
+  // Nòmina
+  const [salariBase, setSalariBase] = useState(1500);
+  const [extres, setExtres] = useState(0);
+  const [irpfPercent, setIrpfPercent] = useState(15);
+  
+  // Formes jurídiques
+  const [formaSeleccionada, setFormaSeleccionada] = useState('autonomo');
+  
+  // DAFO
+  const [dafoItems, setDafoItems] = useState({
+    fortaleses: [''], debilitats: [''], oportunitats: [''], amenaces: ['']
+  });
+  
+  // Canvas
+  const [canvasActiu, setCanvasActiu] = useState(null);
+  const [canvasData, setCanvasData] = useState({
+    segments: '', proposta: '', canals: '', relacions: '', ingressos: '',
+    recursos: '', activitats: '', socis: '', costos: ''
+  });
+  
+  // Ansoff
+  const [ansoffSeleccionat, setAnsoffSeleccionat] = useState(null);
+  
+  // Cicle de vida
+  const [faseSeleccionada, setFaseSeleccionada] = useState('introduccio');
+  
+  // Quiz
+  const [quizIniciado, setQuizIniciado] = useState(false);
+  const [quizPregunta, setQuizPregunta] = useState(0);
+  const [quizRespuestas, setQuizRespuestas] = useState({});
+  const [quizTerminado, setQuizTerminado] = useState(false);
+  const [quizCategoria, setQuizCategoria] = useState('tots');
+  
+  // Expansions
+  const [temaExpandit, setTemaExpandit] = useState(null);
+  const [subSection, setSubSection] = useState(null);
+
+  // ============================================================================
+  // CÀLCULS
+  // ============================================================================
+  
+  // Punt mort
+  const margeContribucio = preuVenda - costVariable;
+  const puntMortUnitats = margeContribucio > 0 ? Math.ceil(costosFixos / margeContribucio) : 0;
+  const puntMortEuros = puntMortUnitats * preuVenda;
+  
+  const dadesPuntMort = useMemo(() => {
+    const dades = [];
+    const maxUnitats = Math.max(puntMortUnitats * 2, 100);
+    for (let q = 0; q <= maxUnitats; q += Math.ceil(maxUnitats / 20)) {
+      dades.push({
+        unitats: q,
+        ingressos: q * preuVenda,
+        costos: costosFixos + (q * costVariable),
+        benefici: (q * preuVenda) - costosFixos - (q * costVariable)
+      });
+    }
+    return dades;
+  }, [costosFixos, preuVenda, costVariable, puntMortUnitats]);
+
+  // Productivitat
+  const productTreball = treballadors > 0 ? (produccioTotal / treballadors).toFixed(2) : 0;
+  const productHora = horesTreballades > 0 ? (produccioTotal / horesTreballades).toFixed(2) : 0;
+  const productCapital = capitalInvertit > 0 ? (produccioTotal / capitalInvertit * 1000).toFixed(2) : 0;
+
+  // Costos
+  const ctSimulador = cfSimulador + (cvUnitari * produccioSimulador);
+  const cmeSimulador = produccioSimulador > 0 ? (ctSimulador / produccioSimulador).toFixed(2) : 0;
+  const cmgSimulador = cvUnitari; // Simplificat
+  const itSimulador = preuVendaSimulador * produccioSimulador;
+  const beneficiSimulador = itSimulador - ctSimulador;
+
+  const dadesCostos = useMemo(() => {
+    const d = [];
+    for (let q = 1; q <= 100; q += 5) {
+      const cf = cfSimulador;
+      const cv = cvUnitari * q;
+      const ct = cf + cv;
+      const cme = ct / q;
+      const cmg = cvUnitari + (0.1 * q); // Rendiments decreixents
+      d.push({ q, CF: cf, CV: cv, CT: ct, CMe: cme.toFixed(1), CMg: cmg.toFixed(1) });
+    }
+    return d;
+  }, [cfSimulador, cvUnitari]);
+
+  // VAN i TIR
+  const van = useMemo(() => {
+    let suma = 0;
+    fluxos.forEach((flux, i) => {
+      suma += flux / Math.pow(1 + taxaDescompte / 100, i + 1);
+    });
+    return (suma - inversioInicial).toFixed(2);
+  }, [fluxos, taxaDescompte, inversioInicial]);
+
+  // Càlcul aproximat de TIR (mètode iteratiu simplificat)
+  const tir = useMemo(() => {
+    let low = 0, high = 100;
+    for (let i = 0; i < 50; i++) {
+      const mid = (low + high) / 2;
+      let vanMid = -inversioInicial;
+      fluxos.forEach((f, j) => { vanMid += f / Math.pow(1 + mid / 100, j + 1); });
+      if (vanMid > 0) low = mid;
+      else high = mid;
+    }
+    return ((low + high) / 2).toFixed(2);
+  }, [fluxos, inversioInicial]);
+
+  const payback = useMemo(() => {
+    let acumulat = 0;
+    for (let i = 0; i < fluxos.length; i++) {
+      acumulat += fluxos[i];
+      if (acumulat >= inversioInicial) {
+        const anterior = acumulat - fluxos[i];
+        const fraccio = (inversioInicial - anterior) / fluxos[i];
+        return (i + fraccio).toFixed(2);
+      }
+    }
+    return `>${fluxos.length}`;
+  }, [fluxos, inversioInicial]);
+
+  // Ràtios
+  const fonsManiobra = actiuCorrent - passiuCorrent;
+  const ratioLiquiditat = passiuCorrent > 0 ? (actiuCorrent / passiuCorrent).toFixed(2) : 0;
+  const acidTest = passiuCorrent > 0 ? ((actiuCorrent - existencies) / passiuCorrent).toFixed(2) : 0;
+  const ratioTresoreria = passiuCorrent > 0 ? (tresoreria / passiuCorrent).toFixed(2) : 0;
+  const endeutament = actiuTotal > 0 ? ((passiuTotal / actiuTotal) * 100).toFixed(1) : 0;
+  const autonomia = actiuTotal > 0 ? ((patrimoniNet / actiuTotal) * 100).toFixed(1) : 0;
+  const roe = patrimoniNet > 0 ? ((beneficiNet / patrimoniNet) * 100).toFixed(2) : 0;
+  const roa = actiuTotal > 0 ? ((baii / actiuTotal) * 100).toFixed(2) : 0;
+  const ros = vendes > 0 ? ((beneficiNet / vendes) * 100).toFixed(2) : 0;
+
+  // Préstec
+  const tipusMensual = tipusInteres / 100 / 12;
+  const numPagaments = anysPrestec * 12;
+  const quotaMensual = tipusMensual > 0 ? 
+    (capitalPrestec * tipusMensual * Math.pow(1 + tipusMensual, numPagaments)) / (Math.pow(1 + tipusMensual, numPagaments) - 1) : 
+    capitalPrestec / numPagaments;
+  const totalPagar = quotaMensual * numPagaments;
+  const interessosTotals = totalPagar - capitalPrestec;
+
+  // EOQ (Lot Econòmic)
+  const eoq = Math.sqrt((2 * demandaAnual * costComanda) / costEmmagatzematge).toFixed(0);
+  const numComandes = (demandaAnual / eoq).toFixed(1);
+  const puntRecomanda = ((demandaAnual / 365) * diesLliurament).toFixed(0);
+  const costTotalEstoc = (numComandes * costComanda + (eoq / 2) * costEmmagatzematge).toFixed(2);
+
+  // Nòmina simplificada
+  const salariTotal = salariBase + extres;
+  const seguretaSocialTreballador = salariTotal * 0.0635; // 6.35% aprox
+  const baseIrpf = salariTotal - seguretaSocialTreballador;
+  const retencioIrpf = baseIrpf * (irpfPercent / 100);
+  const salariNet = salariTotal - seguretaSocialTreballador - retencioIrpf;
+  const costEmpresa = salariTotal * 1.32; // ~32% SS empresa
+
+  // Quiz puntuació
+  const quizPuntuacion = Object.entries(quizRespuestas).filter(([i, r]) => {
+    const preguntes = getQuizPreguntes();
+    return preguntes[parseInt(i)]?.correcta === r;
+  }).length;
+
+  // ============================================================================
+  // QUIZ DATA
+  // ============================================================================
+  
+  function getQuizPreguntes() {
+    const preguntes = {
+      val: [
+        { pregunta: 'Què és el punt mort?', opcions: ['El benefici màxim', 'El punt on IT = CT (benefici = 0)', 'El mínim de producció', 'El màxim de vendes'], correcta: 1, cat: 'costos' },
+        { pregunta: 'Quins són els costos fixos?', opcions: ['Els que varien amb la producció', 'Els que NO canvien amb el nivell de producció', 'Els costos de matèries primes', 'Els impostos sobre vendes'], correcta: 1, cat: 'costos' },
+        { pregunta: 'Quin és el capital mínim d\'una SL actualment?', opcions: ['3.000€', '1€', '60.000€', '10.000€'], correcta: 1, cat: 'formes' },
+        { pregunta: 'Com tributa un autònom?', opcions: ['Impost de Societats', 'IVA', 'IRPF', 'IAE'], correcta: 2, cat: 'formes' },
+        { pregunta: 'Què és el marge de contribució?', opcions: ['Benefici total', 'Preu - Cost Variable Unitari', 'Cost Mitjà', 'Ingressos totals'], correcta: 1, cat: 'costos' },
+        { pregunta: 'Què significa DAFO?', opcions: ['Debilitats, Amenaces, Fortaleses, Oportunitats', 'Diner, Actius, Fons, Obligacions', 'Demanda, Aprovisionament, Fabricació, Oferta', 'Distribució, Associacions, Finances, Operacions'], correcta: 0, cat: 'estrategia' },
+        { pregunta: 'Si el VAN és positiu, el projecte és...', opcions: ['Rebutjable', 'Rendible', 'Indiferent', 'Arriscat'], correcta: 1, cat: 'inversions' },
+        { pregunta: 'Quin tipus de responsabilitat té un autònom?', opcions: ['Limitada', 'Il·limitada', 'Compartida', 'Cap'], correcta: 1, cat: 'formes' },
+        { pregunta: 'Què és el ROE?', opcions: ['Rendibilitat sobre actius', 'Rendibilitat financera (sobre patrimoni net)', 'Ràtio d\'endeutament', 'Retorn operatiu'], correcta: 1, cat: 'ratios' },
+        { pregunta: 'Per calcular el punt mort, què dividim?', opcions: ['IT entre CT', 'CF entre Marge de Contribució', 'CV entre Preu', 'Benefici entre Vendes'], correcta: 1, cat: 'costos' },
+        { pregunta: 'Quants blocs té el Business Model Canvas?', opcions: ['5', '7', '9', '12'], correcta: 2, cat: 'estrategia' },
+        { pregunta: 'Què és el fons de maniobra?', opcions: ['Actiu Total - Passiu Total', 'Actiu Corrent - Passiu Corrent', 'Patrimoni Net', 'Benefici Retingut'], correcta: 1, cat: 'ratios' },
+        { pregunta: 'La TIR és la taxa que fa el VAN igual a...', opcions: ['1', '100', '0', 'La inversió'], correcta: 2, cat: 'inversions' },
+        { pregunta: 'Quantes P té el Marketing Mix tradicional?', opcions: ['2', '3', '4', '5'], correcta: 2, cat: 'marketing' },
+        { pregunta: 'Què és el Lean Startup?', opcions: ['Un tipus de societat', 'Una metodologia per crear empreses minimitzant risc', 'Un tipus de finançament', 'Una forma de comptabilitat'], correcta: 1, cat: 'innovacio' },
+        { pregunta: 'Què és el leasing?', opcions: ['Préstec bancari', 'Arrendament financer amb opció de compra', 'Finançament col·lectiu', 'Venda d\'accions'], correcta: 1, cat: 'financament' },
+        { pregunta: 'Què és l\'EOQ?', opcions: ['Una ràtio financera', 'El lot econòmic de comanda', 'Un tipus de societat', 'Un indicador de productivitat'], correcta: 1, cat: 'produccio' },
+        { pregunta: 'Què és el crowdfunding?', opcions: ['Finançament bancari', 'Finançament col·lectiu per internet', 'Capital risc', 'Subvenció pública'], correcta: 1, cat: 'financament' },
+        { pregunta: 'A la matriu d\'Ansoff, vendre productes nous a mercats nous és...', opcions: ['Penetració', 'Desenvolupament producte', 'Desenvolupament mercat', 'Diversificació'], correcta: 3, cat: 'estrategia' },
+        { pregunta: 'Quantes forces té el model de Porter?', opcions: ['3', '4', '5', '6'], correcta: 2, cat: 'estrategia' },
+      ],
+      es: [
+        { pregunta: '¿Qué es el punto muerto?', opcions: ['El beneficio máximo', 'El punto donde IT = CT (beneficio = 0)', 'El mínimo de producción', 'El máximo de ventas'], correcta: 1, cat: 'costos' },
+        { pregunta: '¿Cuáles son los costes fijos?', opcions: ['Los que varían con la producción', 'Los que NO cambian con el nivel de producción', 'Los costes de materias primas', 'Los impuestos sobre ventas'], correcta: 1, cat: 'costos' },
+        { pregunta: '¿Cuál es el capital mínimo de una SL actualmente?', opcions: ['3.000€', '1€', '60.000€', '10.000€'], correcta: 1, cat: 'formes' },
+        { pregunta: '¿Cómo tributa un autónomo?', opcions: ['Impuesto de Sociedades', 'IVA', 'IRPF', 'IAE'], correcta: 2, cat: 'formes' },
+        { pregunta: '¿Qué es el margen de contribución?', opcions: ['Beneficio total', 'Precio - Coste Variable Unitario', 'Coste Medio', 'Ingresos totales'], correcta: 1, cat: 'costos' },
+        { pregunta: '¿Qué significa DAFO?', opcions: ['Debilidades, Amenazas, Fortalezas, Oportunidades', 'Dinero, Activos, Fondos, Obligaciones', 'Demanda, Aprovisionamiento, Fabricación, Oferta', 'Distribución, Asociaciones, Finanzas, Operaciones'], correcta: 0, cat: 'estrategia' },
+        { pregunta: 'Si el VAN es positivo, el proyecto es...', opcions: ['Rechazable', 'Rentable', 'Indiferente', 'Arriesgado'], correcta: 1, cat: 'inversions' },
+        { pregunta: '¿Qué tipo de responsabilidad tiene un autónomo?', opcions: ['Limitada', 'Ilimitada', 'Compartida', 'Ninguna'], correcta: 1, cat: 'formes' },
+        { pregunta: '¿Qué es el ROE?', opcions: ['Rentabilidad sobre activos', 'Rentabilidad financiera (sobre patrimonio neto)', 'Ratio de endeudamiento', 'Retorno operativo'], correcta: 1, cat: 'ratios' },
+        { pregunta: 'Para calcular el punto muerto, ¿qué dividimos?', opcions: ['IT entre CT', 'CF entre Margen de Contribución', 'CV entre Precio', 'Beneficio entre Ventas'], correcta: 1, cat: 'costos' },
+        { pregunta: '¿Cuántos bloques tiene el Business Model Canvas?', opcions: ['5', '7', '9', '12'], correcta: 2, cat: 'estrategia' },
+        { pregunta: '¿Qué es el fondo de maniobra?', opcions: ['Activo Total - Pasivo Total', 'Activo Corriente - Pasivo Corriente', 'Patrimonio Neto', 'Beneficio Retenido'], correcta: 1, cat: 'ratios' },
+        { pregunta: 'La TIR es la tasa que hace el VAN igual a...', opcions: ['1', '100', '0', 'La inversión'], correcta: 2, cat: 'inversions' },
+        { pregunta: '¿Cuántas P tiene el Marketing Mix tradicional?', opcions: ['2', '3', '4', '5'], correcta: 2, cat: 'marketing' },
+        { pregunta: '¿Qué es el Lean Startup?', opcions: ['Un tipo de sociedad', 'Una metodología para crear empresas minimizando riesgo', 'Un tipo de financiación', 'Una forma de contabilidad'], correcta: 1, cat: 'innovacio' },
+        { pregunta: '¿Qué es el leasing?', opcions: ['Préstamo bancario', 'Arrendamiento financiero con opción de compra', 'Financiación colectiva', 'Venta de acciones'], correcta: 1, cat: 'financament' },
+        { pregunta: '¿Qué es el EOQ?', opcions: ['Un ratio financiero', 'El lote económico de pedido', 'Un tipo de sociedad', 'Un indicador de productividad'], correcta: 1, cat: 'produccio' },
+        { pregunta: '¿Qué es el crowdfunding?', opcions: ['Financiación bancaria', 'Financiación colectiva por internet', 'Capital riesgo', 'Subvención pública'], correcta: 1, cat: 'financament' },
+        { pregunta: 'En la matriz de Ansoff, vender productos nuevos a mercados nuevos es...', opcions: ['Penetración', 'Desarrollo de producto', 'Desarrollo de mercado', 'Diversificación'], correcta: 3, cat: 'estrategia' },
+        { pregunta: '¿Cuántas fuerzas tiene el modelo de Porter?', opcions: ['3', '4', '5', '6'], correcta: 2, cat: 'estrategia' },
+      ],
+      en: [
+        { pregunta: 'What is the break-even point?', opcions: ['Maximum profit', 'Point where TR = TC (profit = 0)', 'Minimum production', 'Maximum sales'], correcta: 1, cat: 'costos' },
+        { pregunta: 'What are fixed costs?', opcions: ['Those that vary with production', 'Those that do NOT change with production level', 'Raw material costs', 'Sales taxes'], correcta: 1, cat: 'costos' },
+        { pregunta: 'What is the minimum capital for an LLC currently?', opcions: ['€3,000', '€1', '€60,000', '€10,000'], correcta: 1, cat: 'formes' },
+        { pregunta: 'How is a sole proprietor taxed?', opcions: ['Corporate Tax', 'VAT', 'Income Tax', 'Business Tax'], correcta: 2, cat: 'formes' },
+        { pregunta: 'What is the contribution margin?', opcions: ['Total profit', 'Price - Variable Cost per Unit', 'Average Cost', 'Total revenue'], correcta: 1, cat: 'costos' },
+        { pregunta: 'What does SWOT stand for?', opcions: ['Strengths, Weaknesses, Opportunities, Threats', 'Sales, Workers, Operations, Technology', 'Strategy, Workflow, Organization, Trends', 'Supply, Warehouse, Orders, Transport'], correcta: 0, cat: 'estrategia' },
+        { pregunta: 'If NPV is positive, the project is...', opcions: ['Rejectable', 'Profitable', 'Indifferent', 'Risky'], correcta: 1, cat: 'inversions' },
+        { pregunta: 'What type of liability does a sole proprietor have?', opcions: ['Limited', 'Unlimited', 'Shared', 'None'], correcta: 1, cat: 'formes' },
+        { pregunta: 'What is ROE?', opcions: ['Return on assets', 'Return on equity', 'Debt ratio', 'Operating return'], correcta: 1, cat: 'ratios' },
+        { pregunta: 'To calculate break-even, what do we divide?', opcions: ['TR by TC', 'FC by Contribution Margin', 'VC by Price', 'Profit by Sales'], correcta: 1, cat: 'costos' },
+        { pregunta: 'How many blocks does the Business Model Canvas have?', opcions: ['5', '7', '9', '12'], correcta: 2, cat: 'estrategia' },
+        { pregunta: 'What is working capital?', opcions: ['Total Assets - Total Liabilities', 'Current Assets - Current Liabilities', 'Net Equity', 'Retained Earnings'], correcta: 1, cat: 'ratios' },
+        { pregunta: 'IRR is the rate that makes NPV equal to...', opcions: ['1', '100', '0', 'The investment'], correcta: 2, cat: 'inversions' },
+        { pregunta: 'How many Ps does the traditional Marketing Mix have?', opcions: ['2', '3', '4', '5'], correcta: 2, cat: 'marketing' },
+        { pregunta: 'What is Lean Startup?', opcions: ['A type of company', 'A methodology to create businesses minimizing risk', 'A type of financing', 'An accounting method'], correcta: 1, cat: 'innovacio' },
+        { pregunta: 'What is leasing?', opcions: ['Bank loan', 'Financial lease with purchase option', 'Collective financing', 'Share sale'], correcta: 1, cat: 'financament' },
+        { pregunta: 'What is EOQ?', opcions: ['A financial ratio', 'Economic Order Quantity', 'A type of company', 'A productivity indicator'], correcta: 1, cat: 'produccio' },
+        { pregunta: 'What is crowdfunding?', opcions: ['Bank financing', 'Collective financing through internet', 'Venture capital', 'Public subsidy'], correcta: 1, cat: 'financament' },
+        { pregunta: 'In Ansoff matrix, selling new products to new markets is...', opcions: ['Penetration', 'Product development', 'Market development', 'Diversification'], correcta: 3, cat: 'estrategia' },
+        { pregunta: 'How many forces does Porter\'s model have?', opcions: ['3', '4', '5', '6'], correcta: 2, cat: 'estrategia' },
+      ]
+    };
+    return preguntes[idioma] || preguntes.val;
+  }
+
+  // ============================================================================
+  // COMPONENTS
+  // ============================================================================
+  
+  const NavBtn = ({ sec, icono: Icono, label }) => (
+    <button
+      onClick={() => { setSection(sec); setMenuOpen(false); setSubSection(null); }}
+      className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm transition-all ${
+        section === sec
+          ? 'bg-pink-500 text-white shadow-md'
+          : 'text-gray-600 hover:text-pink-600 hover:bg-pink-50'
+      }`}
+    >
+      <Icono size={16} />
+      <span className="font-medium">{label}</span>
+    </button>
+  );
+
+  const Card = ({ children, className = '', accent = false, title = null }) => (
+    <div className={`bg-white rounded-2xl border ${accent ? 'border-pink-200 bg-gradient-to-br from-white to-pink-50' : 'border-gray-100'} shadow-sm p-6 ${className}`}>
+      {title && <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">{title}</h3>}
+      {children}
+    </div>
+  );
+
+  const Slider = ({ label, value, setValue, min, max, step = 1, color = 'pink', sublabel = null, unit = '' }) => (
+    <div className="mb-4">
+      <label className="flex justify-between text-sm mb-1">
+        <span className="text-gray-600">{label}</span>
+        <span className={`font-bold text-${color}-600`}>{typeof value === 'number' ? value.toLocaleString() : value}{unit}</span>
+      </label>
+      {sublabel && <p className="text-xs text-gray-400 mb-2">{sublabel}</p>}
+      <input 
+        type="range" min={min} max={max} step={step} value={value} 
+        onChange={(e) => setValue(Number(e.target.value))} 
+        className={`w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-${color}-500`} 
+      />
+    </div>
+  );
+
+  const InfoBox = ({ children, color = 'pink', className = '' }) => (
+    <div className={`p-4 bg-${color}-50 rounded-xl border border-${color}-200 ${className}`}>
+      {children}
+    </div>
+  );
+
+  const StatCard = ({ label, value, unit = '', color = 'pink', icon: Icon = null }) => (
+    <div className={`p-4 bg-${color}-50 rounded-xl border border-${color}-200 text-center`}>
+      {Icon && <Icon className={`mx-auto mb-2 text-${color}-500`} size={24} />}
+      <p className="text-xs text-gray-500">{label}</p>
+      <p className={`text-2xl font-black text-${color}-600`}>{value}{unit}</p>
+    </div>
+  );
+
+  // Selector d'idioma
+  const LanguageSelector = () => (
+    <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+      {[
+        { code: 'val', label: 'VAL' },
+        { code: 'es', label: 'ES' },
+        { code: 'en', label: 'EN' }
+      ].map(lang => (
+        <button
+          key={lang.code}
+          onClick={() => setIdioma(lang.code)}
+          className={`px-2 py-1 rounded text-xs font-bold transition-all ${
+            idioma === lang.code 
+              ? 'bg-pink-500 text-white' 
+              : 'text-gray-600 hover:bg-gray-200'
+          }`}
+        >
+          {lang.label}
+        </button>
+      ))}
+    </div>
+  );
+
+  const filteredGlosario = glosario.filter(g =>
+    g.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    g.def.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Continua a la part 2...
+
+  // ============================================================================
+  // SECCIONS
+  // ============================================================================
+
+  const Inicio = () => (
+    <div className="space-y-8">
+      <div className="text-center py-8">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-pink-50 rounded-full text-pink-600 text-sm font-medium mb-6 border border-pink-200">
+          <Briefcase size={16} /> {t('inicio', 'subtitol')}
+        </div>
+        <h1 className="text-4xl md:text-5xl font-black text-gray-800 mb-4">
+          {t('inicio', 'titol')}
+        </h1>
+        <p className="text-lg text-gray-500 max-w-xl mx-auto mb-8">
+          {t('inicio', 'desc')}
+        </p>
+        <div className="flex flex-wrap justify-center gap-3">
+          <button onClick={() => setSection('puntmort')} className="px-6 py-3 bg-pink-500 rounded-xl font-bold text-white shadow-md hover:bg-pink-600 transition-all flex items-center gap-2">
+            <Target size={18} /> {t('nav', 'puntmort')}
+          </button>
+          <button onClick={() => setSection('canvas')} className="px-6 py-3 bg-white rounded-xl font-bold text-gray-700 border border-gray-200 hover:border-pink-300 hover:bg-pink-50 transition-all flex items-center gap-2">
+            <Layers size={18} /> Canvas
+          </button>
+          <button onClick={() => setSection('van')} className="px-6 py-3 bg-teal-50 rounded-xl font-bold text-teal-700 border border-teal-200 hover:bg-teal-100 transition-all flex items-center gap-2">
+            <TrendingUp size={18} /> VAN/TIR
+          </button>
+        </div>
+      </div>
+
+      <Card accent>
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-pink-100 rounded-xl">
+            <Lightbulb className="text-pink-500" size={32} />
+          </div>
+          <div>
+            <p className="text-xl font-bold text-gray-800">{t('inicio', 'frase')}</p>
+            <p className="text-gray-600">{t('inicio', 'fraseDesc')}</p>
+          </div>
+        </div>
+      </Card>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        {[
+          { icono: Target, titulo: t('nav', 'puntmort'), sec: 'puntmort', color: 'pink' },
+          { icono: Calculator, titulo: t('nav', 'costos'), sec: 'costos', color: 'purple' },
+          { icono: BarChart3, titulo: t('nav', 'productivitat'), sec: 'productivitat', color: 'blue' },
+          { icono: TrendingUp, titulo: t('nav', 'van'), sec: 'van', color: 'teal' },
+          { icono: Building, titulo: t('nav', 'formes'), sec: 'formes', color: 'orange' },
+          { icono: Wallet, titulo: t('nav', 'financament'), sec: 'financament', color: 'emerald' },
+          { icono: PieChart, titulo: t('nav', 'ratios'), sec: 'ratios', color: 'indigo' },
+          { icono: Users, titulo: t('nav', 'rrhh'), sec: 'rrhh', color: 'rose' },
+          { icono: Factory, titulo: t('nav', 'produccio'), sec: 'produccio', color: 'amber' },
+          { icono: Megaphone, titulo: t('nav', 'marketing'), sec: 'marketing', color: 'cyan' },
+          { icono: Compass, titulo: t('nav', 'estrategia'), sec: 'estrategia', color: 'violet' },
+          { icono: Layers, titulo: 'Canvas', sec: 'canvas', color: 'slate' },
+          { icono: Search, titulo: t('nav', 'analisi'), sec: 'analisi', color: 'lime' },
+          { icono: Rocket, titulo: t('nav', 'creixement'), sec: 'creixement', color: 'sky' },
+          { icono: Sparkles, titulo: t('nav', 'innovacio'), sec: 'innovacio', color: 'fuchsia' },
+          { icono: Brain, titulo: 'Quiz', sec: 'quiz', color: 'red' },
+        ].map((item, i) => (
+          <button key={i} onClick={() => setSection(item.sec)} className={`p-4 rounded-xl border bg-${item.color}-50 border-${item.color}-200 hover:shadow-md transition-all text-left group`}>
+            <item.icono className={`text-${item.color}-600 mb-2 group-hover:scale-110 transition-transform`} size={24} />
+            <p className="font-bold text-gray-800 text-sm">{item.titulo}</p>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  const PuntMort = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2">
+          <Target className="text-pink-500" /> {t('puntmort', 'titol')}
+        </h2>
+        <p className="text-gray-500">{t('puntmort', 'desc')}</p>
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-6">
+        <Card>
+          <Slider label={`💼 ${t('costos', 'cf')}`} value={costosFixos} setValue={setCostosFixos} min={1000} max={200000} step={1000} color="pink" unit="€" sublabel={t('costos', 'cfDesc')} />
+          <Slider label={`💰 ${t('puntmort', 'preuVenda')}`} value={preuVenda} setValue={setPreuVenda} min={1} max={500} color="teal" unit="€" />
+          <Slider label={`📦 ${t('puntmort', 'costVariable')}`} value={costVariable} setValue={setCostVariable} min={0} max={400} color="amber" unit="€" sublabel={t('costos', 'cvDesc')} />
+          
+          <InfoBox color="gray" className="mt-4">
+            <p className="text-xs text-gray-500 mb-2">📐 {t('ui', 'formula')}:</p>
+            <p className="font-mono text-sm">Q* = CF / (PV - CVu) = {costosFixos.toLocaleString()} / ({preuVenda} - {costVariable})</p>
+          </InfoBox>
+
+          <div className="grid grid-cols-3 gap-3 mt-4">
+            <StatCard label={`${t('nav', 'puntmort')} (Q)`} value={puntMortUnitats.toLocaleString()} unit=" u." color="pink" />
+            <StatCard label={`${t('nav', 'puntmort')} (€)`} value={puntMortEuros.toLocaleString()} unit="€" color="teal" />
+            <StatCard label={t('puntmort', 'margeContribucio')} value={margeContribucio} unit="€/u" color="amber" />
+          </div>
+        </Card>
+
+        <Card>
+          <h3 className="font-bold text-gray-800 mb-4">📊 {idioma === 'en' ? 'Chart' : 'Gràfic'}</h3>
+          <div className="h-64">
+            <ResponsiveContainer>
+              <LineChart data={dadesPuntMort} margin={{ top: 10, right: 30, left: 0, bottom: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="unitats" stroke="#6b7280" label={{ value: 'Q', position: 'bottom', fontSize: 12 }} />
+                <YAxis stroke="#6b7280" />
+                <Tooltip formatter={(v) => `${v.toLocaleString()}€`} />
+                <Line type="monotone" dataKey="ingressos" stroke="#14b8a6" strokeWidth={2} name="IT" dot={false} />
+                <Line type="monotone" dataKey="costos" stroke="#f59e0b" strokeWidth={2} name="CT" dot={false} />
+                <ReferenceLine x={puntMortUnitats} stroke="#ec4899" strokeDasharray="5 5" label={{ value: 'PM', fill: '#ec4899' }} />
+                <Legend />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <InfoBox color="pink" className="mt-4">
+            <p className="text-sm">
+              {idioma === 'val' && `✓ Per sota de ${puntMortUnitats} unitats: PÈRDUES. Per sobre: BENEFICIS.`}
+              {idioma === 'es' && `✓ Por debajo de ${puntMortUnitats} unidades: PÉRDIDAS. Por encima: BENEFICIOS.`}
+              {idioma === 'en' && `✓ Below ${puntMortUnitats} units: LOSSES. Above: PROFITS.`}
+            </p>
+          </InfoBox>
+        </Card>
+      </div>
+    </div>
+  );
+
+  const Costos = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2">
+          <Calculator className="text-pink-500" /> {t('costos', 'titol')}
+        </h2>
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-6">
+        <Card>
+          <Slider label={t('costos', 'cf')} value={cfSimulador} setValue={setCfSimulador} min={1000} max={50000} step={500} color="pink" unit="€" />
+          <Slider label={`${t('costos', 'cv')} (per unitat)`} value={cvUnitari} setValue={setCvUnitari} min={1} max={100} color="amber" unit="€/u" />
+          <Slider label={idioma === 'en' ? 'Production (Q)' : 'Producció (Q)'} value={produccioSimulador} setValue={setProduccioSimulador} min={10} max={1000} step={10} color="blue" unit=" u." />
+          <Slider label={idioma === 'en' ? 'Selling Price' : 'Preu de Venda'} value={preuVendaSimulador} setValue={setPreuVendaSimulador} min={10} max={200} color="teal" unit="€/u" />
+
+          <div className="grid grid-cols-2 gap-3 mt-4">
+            <StatCard label={t('costos', 'cf')} value={cfSimulador.toLocaleString()} unit="€" color="pink" />
+            <StatCard label={t('costos', 'cv')} value={(cvUnitari * produccioSimulador).toLocaleString()} unit="€" color="amber" />
+            <StatCard label={t('costos', 'ct')} value={ctSimulador.toLocaleString()} unit="€" color="purple" />
+            <StatCard label={t('costos', 'cme')} value={cmeSimulador} unit="€/u" color="blue" />
+          </div>
+
+          <InfoBox color={beneficiSimulador >= 0 ? 'emerald' : 'red'} className="mt-4">
+            <p className="text-center">
+              <span className="text-sm">{idioma === 'en' ? 'Revenue' : 'Ingressos'}: {itSimulador.toLocaleString()}€ | {idioma === 'en' ? 'Costs' : 'Costos'}: {ctSimulador.toLocaleString()}€</span><br/>
+              <span className="text-2xl font-black">{beneficiSimulador >= 0 ? '✓' : '✗'} {idioma === 'en' ? 'Profit' : 'Benefici'}: {beneficiSimulador.toLocaleString()}€</span>
+            </p>
+          </InfoBox>
+        </Card>
+
+        <Card>
+          <h3 className="font-bold text-gray-800 mb-4">{idioma === 'en' ? 'Cost Curves' : 'Corbes de Costos'}</h3>
+          <div className="h-64">
+            <ResponsiveContainer>
+              <LineChart data={dadesCostos} margin={{ top: 10, right: 30, left: 0, bottom: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="q" stroke="#6b7280" />
+                <YAxis stroke="#6b7280" />
+                <Tooltip />
+                <Line type="monotone" dataKey="CMe" stroke="#ec4899" strokeWidth={2} name="CMe" dot={false} />
+                <Line type="monotone" dataKey="CMg" stroke="#14b8a6" strokeWidth={2} name="CMg" dot={false} />
+                <Legend />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <InfoBox color="gray" className="mt-4">
+            <p className="text-sm">
+              {idioma === 'val' && '💡 El CMg talla el CMe pel seu punt MÍNIM. L\'empresa maximitza benefici on P = CMg.'}
+              {idioma === 'es' && '💡 El CMg corta el CMe por su punto MÍNIMO. La empresa maximiza beneficio donde P = CMg.'}
+              {idioma === 'en' && '💡 MC crosses AC at its MINIMUM point. The firm maximizes profit where P = MC.'}
+            </p>
+          </InfoBox>
+        </Card>
+      </div>
+    </div>
+  );
+
+  const Productivitat = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2">
+          <BarChart3 className="text-pink-500" /> {t('nav', 'productivitat')}
+        </h2>
+      </div>
+
+      <Card>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <Slider label={idioma === 'en' ? 'Total Production' : 'Producció Total'} value={produccioTotal} setValue={setProduccioTotal} min={100} max={10000} step={100} color="pink" unit=" u." />
+            <Slider label={idioma === 'en' ? 'Workers' : 'Treballadors'} value={treballadors} setValue={setTreballadors} min={1} max={100} color="blue" />
+            <Slider label={idioma === 'en' ? 'Hours Worked' : 'Hores Treballades'} value={horesTreballades} setValue={setHoresTreballades} min={100} max={10000} step={100} color="amber" unit=" h" />
+            <Slider label={idioma === 'en' ? 'Capital Invested' : 'Capital Invertit'} value={capitalInvertit} setValue={setCapitalInvertit} min={10000} max={500000} step={10000} color="emerald" unit="€" />
+          </div>
+          <div className="space-y-3">
+            <StatCard label={idioma === 'en' ? 'Labor Productivity' : 'Productivitat Treball'} value={productTreball} unit=" u/treb." color="blue" icon={Users} />
+            <StatCard label={idioma === 'en' ? 'Hourly Productivity' : 'Productivitat Hora'} value={productHora} unit=" u/h" color="amber" icon={Clock} />
+            <StatCard label={idioma === 'en' ? 'Capital Productivity' : 'Productivitat Capital'} value={productCapital} unit=" u/1000€" color="emerald" icon={Coins} />
+          </div>
+        </div>
+      </Card>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <InfoBox color="blue">
+          <p className="font-bold text-blue-700">{t('produccio', 'eficiencia')}</p>
+          <p className="text-sm text-gray-600 mt-1">
+            {idioma === 'val' && 'Aconseguir els OBJECTIUS amb el MÍNIM de RECURSOS possible.'}
+            {idioma === 'es' && 'Conseguir los OBJETIVOS con el MÍNIMO de RECURSOS posible.'}
+            {idioma === 'en' && 'Achieving OBJECTIVES with MINIMUM RESOURCES possible.'}
+          </p>
+        </InfoBox>
+        <InfoBox color="emerald">
+          <p className="font-bold text-emerald-700">{t('produccio', 'eficacia')}</p>
+          <p className="text-sm text-gray-600 mt-1">
+            {idioma === 'val' && 'Aconseguir els OBJECTIUS proposats (independentment dels recursos).'}
+            {idioma === 'es' && 'Conseguir los OBJETIVOS propuestos (independientemente de los recursos).'}
+            {idioma === 'en' && 'Achieving the proposed OBJECTIVES (regardless of resources).'}
+          </p>
+        </InfoBox>
+      </div>
+    </div>
+  );
+
+  const VanTir = () => {
+    const updateFlux = (index, value) => {
+      const newFluxos = [...fluxos];
+      newFluxos[index] = Number(value);
+      setFluxos(newFluxos);
+    };
+
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2">
+            <TrendingUp className="text-pink-500" /> {t('van', 'titol')}
+          </h2>
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-6">
+          <Card>
+            <Slider label={t('van', 'inversioInicial')} value={inversioInicial} setValue={setInversioInicial} min={10000} max={500000} step={5000} color="red" unit="€" />
+            <Slider label={t('van', 'taxaDescompte')} value={taxaDescompte} setValue={setTaxaDescompte} min={1} max={30} color="amber" unit="%" />
+            
+            <div className="mt-4">
+              <p className="text-sm text-gray-600 mb-2">{t('van', 'fluxos')} ({t('ui', 'anys')}):</p>
+              <div className="grid grid-cols-5 gap-2">
+                {fluxos.map((f, i) => (
+                  <div key={i}>
+                    <label className="text-xs text-gray-400">{idioma === 'en' ? 'Year' : 'Any'} {i + 1}</label>
+                    <input
+                      type="number"
+                      value={f}
+                      onChange={(e) => updateFlux(i, e.target.value)}
+                      className="w-full p-2 border rounded text-center text-sm"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+
+          <Card>
+            <div className="space-y-4">
+              <InfoBox color={parseFloat(van) >= 0 ? 'emerald' : 'red'}>
+                <p className="text-sm text-gray-500">{t('van', 'vanNom')}</p>
+                <p className="text-3xl font-black">{parseFloat(van).toLocaleString()}€</p>
+                <p className="text-sm mt-1">
+                  {parseFloat(van) >= 0 ? t('van', 'vanPositiu') : t('van', 'vanNegatiu')}
+                </p>
+              </InfoBox>
+
+              <div className="grid grid-cols-2 gap-3">
+                <InfoBox color="amber">
+                  <p className="text-sm text-gray-500">{t('van', 'tirNom')}</p>
+                  <p className="text-2xl font-black text-amber-600">{tir}%</p>
+                  <p className="text-xs text-gray-500">
+                    {parseFloat(tir) > taxaDescompte ? '✓ TIR > k' : '✗ TIR < k'}
+                  </p>
+                </InfoBox>
+                <InfoBox color="blue">
+                  <p className="text-sm text-gray-500">{t('van', 'payback')}</p>
+                  <p className="text-2xl font-black text-blue-600">{payback}</p>
+                  <p className="text-xs text-gray-500">{t('ui', 'anys')}</p>
+                </InfoBox>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        <Card>
+          <h3 className="font-bold text-gray-800 mb-4">{idioma === 'en' ? 'Formulas' : 'Fórmules'}</h3>
+          <div className="grid md:grid-cols-2 gap-4">
+            <InfoBox color="gray">
+              <p className="font-bold text-gray-700 mb-2">VAN</p>
+              <p className="text-sm font-mono">VAN = Σ(Ft / (1+k)^t) - I₀</p>
+              <p className="text-xs text-gray-500 mt-2">{t('van', 'vanDesc')}</p>
+            </InfoBox>
+            <InfoBox color="gray">
+              <p className="font-bold text-gray-700 mb-2">TIR</p>
+              <p className="text-sm font-mono">0 = Σ(Ft / (1+TIR)^t) - I₀</p>
+              <p className="text-xs text-gray-500 mt-2">{t('van', 'tirDesc')}</p>
+            </InfoBox>
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
+  const FormesJuridiques = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2">
+          <Building className="text-pink-500" /> {t('formes', 'titol')}
+        </h2>
+      </div>
+
+      <div className="flex flex-wrap gap-2 mb-4">
+        {formesJuridiques.map(f => (
+          <button
+            key={f.id}
+            onClick={() => setFormaSeleccionada(f.id)}
+            className={`px-4 py-2 rounded-lg font-medium transition-all ${
+              formaSeleccionada === f.id
+                ? 'bg-pink-500 text-white'
+                : 'bg-pink-50 text-pink-700 border border-pink-200'
+            }`}
+          >
+            {f.nom.split(' ')[0]}
+          </button>
+        ))}
+      </div>
+
+      {formesJuridiques.filter(f => f.id === formaSeleccionada).map(forma => (
+        <Card key={forma.id}>
+          <h3 className="text-xl font-bold text-gray-800 mb-4">{forma.nom}</h3>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <table className="w-full text-sm">
+                <tbody>
+                  <tr className="border-b"><td className="py-2 text-gray-500 w-1/3">{t('formes', 'capitalMinim')}</td><td className="py-2 font-medium">{forma.capitalMinim}</td></tr>
+                  <tr className="border-b"><td className="py-2 text-gray-500">{t('formes', 'socis')}</td><td className="py-2 font-medium">{forma.socis}</td></tr>
+                  <tr className="border-b"><td className="py-2 text-gray-500">{t('formes', 'responsabilitat')}</td><td className="py-2 font-medium">{forma.responsabilitat}</td></tr>
+                  <tr className="border-b"><td className="py-2 text-gray-500">{t('formes', 'tributacio')}</td><td className="py-2 font-medium">{forma.tributacio}</td></tr>
+                  <tr><td className="py-2 text-gray-500">Seg. Social</td><td className="py-2 font-medium">{forma.seguretatSocial}</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <p className="font-medium text-emerald-700 mb-2">✓ {t('ui', 'avantatges')}</p>
+              <ul className="text-sm space-y-1 mb-4">
+                {forma.avantatges.map((a, i) => <li key={i} className="flex items-start gap-2"><Check size={14} className="text-emerald-500 mt-0.5 flex-shrink-0" />{a}</li>)}
+              </ul>
+              <p className="font-medium text-red-700 mb-2">✗ {t('ui', 'desavantatges')}</p>
+              <ul className="text-sm space-y-1">
+                {forma.desavantatges.map((d, i) => <li key={i} className="flex items-start gap-2"><X size={14} className="text-red-500 mt-0.5 flex-shrink-0" />{d}</li>)}
+              </ul>
+            </div>
+          </div>
+          <InfoBox color="blue" className="mt-4">
+            <p className="text-sm"><strong>{t('ui', 'ideal')}:</strong> {forma.ideal}</p>
+          </InfoBox>
+        </Card>
+      ))}
+    </div>
+  );
+
+  const Financament = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2">
+          <Wallet className="text-pink-500" /> {t('financament', 'titol')}
+        </h2>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <Card title={<><PiggyBank className="text-emerald-500" /> {t('financament', 'propi')}</>}>
+          {[
+            { nom: t('financament', 'aportacions'), desc: idioma === 'val' ? 'Diners dels socis' : idioma === 'es' ? 'Dinero de los socios' : 'Partner money' },
+            { nom: t('financament', 'reserves'), desc: idioma === 'val' ? 'Beneficis no repartits' : idioma === 'es' ? 'Beneficios no repartidos' : 'Undistributed profits' },
+            { nom: 'Autofinançament', desc: idioma === 'val' ? 'Amortitzacions + Reserves' : idioma === 'es' ? 'Amortizaciones + Reservas' : 'Depreciation + Reserves' },
+          ].map((f, i) => (
+            <div key={i} className="p-3 bg-emerald-50 rounded-lg mb-2 border border-emerald-200">
+              <p className="font-medium text-emerald-700">{f.nom}</p>
+              <p className="text-xs text-gray-500">{f.desc}</p>
+            </div>
+          ))}
+          <p className="text-xs text-gray-500 mt-2">
+            {idioma === 'val' && '✓ No cal tornar-lo, però dilueix el control'}
+            {idioma === 'es' && '✓ No hay que devolverlo, pero diluye el control'}
+            {idioma === 'en' && '✓ No need to repay, but dilutes control'}
+          </p>
+        </Card>
+
+        <Card title={<><CreditCard className="text-blue-500" /> {t('financament', 'alie')}</>}>
+          <p className="text-sm font-medium text-blue-700 mb-2">{t('financament', 'llargTermini')}</p>
+          {[t('financament', 'prestec'), t('financament', 'hipoteca'), t('financament', 'leasing')].map((f, i) => (
+            <span key={i} className="inline-block px-3 py-1 bg-blue-50 rounded-full text-sm text-blue-700 mr-2 mb-2 border border-blue-200">{f}</span>
+          ))}
+          <p className="text-sm font-medium text-purple-700 mb-2 mt-3">{t('financament', 'curtTermini')}</p>
+          {[t('financament', 'factoring'), t('financament', 'confirming'), 'Pòlissa crèdit', 'Descompte efectes'].map((f, i) => (
+            <span key={i} className="inline-block px-3 py-1 bg-purple-50 rounded-full text-sm text-purple-700 mr-2 mb-2 border border-purple-200">{f}</span>
+          ))}
+        </Card>
+      </div>
+
+      <Card title={<><Rocket className="text-pink-500" /> {idioma === 'en' ? 'Alternative Financing' : 'Finançament Alternatiu'}</>}>
+        <div className="grid md:grid-cols-4 gap-3">
+          {[
+            { nom: t('financament', 'crowdfunding'), desc: idioma === 'val' ? 'Finançament col·lectiu online' : 'Collective financing online', color: 'pink' },
+            { nom: t('financament', 'businessAngels'), desc: idioma === 'val' ? 'Inversors privats en startups' : 'Private investors in startups', color: 'amber' },
+            { nom: t('financament', 'capitalRisc'), desc: 'Venture Capital', color: 'purple' },
+            { nom: t('financament', 'subvencions'), desc: idioma === 'val' ? 'Ajudes públiques' : 'Public grants', color: 'emerald' },
+          ].map((f, i) => (
+            <div key={i} className={`p-4 bg-${f.color}-50 rounded-xl border border-${f.color}-200 text-center`}>
+              <p className={`font-bold text-${f.color}-700`}>{f.nom}</p>
+              <p className="text-xs text-gray-500 mt-1">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <Card title={<><Calculator className="text-pink-500" /> {idioma === 'en' ? 'Loan Simulator' : 'Simulador de Préstec'}</>}>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <Slider label={idioma === 'en' ? 'Loan Amount' : 'Import del préstec'} value={capitalPrestec} setValue={setCapitalPrestec} min={5000} max={200000} step={5000} color="blue" unit="€" />
+            <Slider label={idioma === 'en' ? 'Interest Rate' : 'Tipus d\'interès'} value={tipusInteres} setValue={setTipusInteres} min={1} max={15} step={0.5} color="amber" unit="%" />
+            <Slider label={idioma === 'en' ? 'Term (years)' : 'Termini (anys)'} value={anysPrestec} setValue={setAnysPrestec} min={1} max={20} color="pink" unit={` ${t('ui', 'anys')}`} />
+          </div>
+          <div className="space-y-3">
+            <StatCard label={idioma === 'en' ? 'Monthly Payment' : 'Quota Mensual'} value={quotaMensual.toFixed(2)} unit="€" color="blue" />
+            <StatCard label={idioma === 'en' ? 'Total Interest' : 'Interessos Totals'} value={interessosTotals.toFixed(2)} unit="€" color="amber" />
+            <StatCard label={idioma === 'en' ? 'Total to Pay' : 'Total a Pagar'} value={totalPagar.toFixed(2)} unit="€" color="pink" />
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+
+  const Ratios = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2">
+          <PieChart className="text-pink-500" /> {t('ratios', 'titol')}
+        </h2>
+      </div>
+
+      <div className="flex flex-wrap gap-2 mb-4">
+        {['liquiditat', 'endeutament', 'rendibilitat'].map(s => (
+          <button key={s} onClick={() => setSubSection(subSection === s ? null : s)} className={`px-4 py-2 rounded-lg font-medium transition-all ${subSection === s ? 'bg-pink-500 text-white' : 'bg-pink-50 text-pink-700 border border-pink-200'}`}>
+            {t('ratios', s)}
+          </button>
+        ))}
+      </div>
+
+      {(!subSection || subSection === 'liquiditat') && (
+        <Card title={t('ratios', 'liquiditat')}>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <Slider label={idioma === 'en' ? 'Current Assets' : 'Actiu Corrent'} value={actiuCorrent} setValue={setActiuCorrent} min={10000} max={500000} step={5000} color="blue" unit="€" />
+              <Slider label={idioma === 'en' ? 'Current Liabilities' : 'Passiu Corrent'} value={passiuCorrent} setValue={setPassiuCorrent} min={10000} max={300000} step={5000} color="red" unit="€" />
+              <Slider label={idioma === 'en' ? 'Inventory' : 'Existències'} value={existencies} setValue={setExistencies} min={0} max={100000} step={5000} color="amber" unit="€" />
+              <Slider label={idioma === 'en' ? 'Cash' : 'Tresoreria'} value={tresoreria} setValue={setTresoreria} min={0} max={100000} step={5000} color="emerald" unit="€" />
+            </div>
+            <div className="space-y-3">
+              <InfoBox color={fonsManiobra >= 0 ? 'emerald' : 'red'}>
+                <p className="text-sm text-gray-500">{t('ratios', 'fonsManiobra')} (AC - PC)</p>
+                <p className="text-2xl font-black">{fonsManiobra.toLocaleString()}€</p>
+                <p className="text-xs">{fonsManiobra >= 0 ? '✓ Positiu' : '⚠️ Negatiu - Risc!'}</p>
+              </InfoBox>
+              <StatCard label={t('ratios', 'ratioLiquiditat')} value={ratioLiquiditat} color={parseFloat(ratioLiquiditat) >= 1.5 ? 'emerald' : parseFloat(ratioLiquiditat) >= 1 ? 'amber' : 'red'} />
+              <StatCard label={t('ratios', 'acidTest')} value={acidTest} color={parseFloat(acidTest) >= 0.8 ? 'emerald' : 'amber'} />
+              <StatCard label={t('ratios', 'tresoreria')} value={ratioTresoreria} color="blue" />
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {subSection === 'endeutament' && (
+        <Card title={t('ratios', 'endeutament')}>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <Slider label={idioma === 'en' ? 'Total Assets' : 'Actiu Total'} value={actiuTotal} setValue={setActiuTotal} min={100000} max={2000000} step={50000} color="blue" unit="€" />
+              <Slider label={idioma === 'en' ? 'Total Liabilities' : 'Passiu Total'} value={passiuTotal} setValue={setPassiuTotal} min={50000} max={1500000} step={50000} color="red" unit="€" />
+              <Slider label={idioma === 'en' ? 'Net Equity' : 'Patrimoni Net'} value={patrimoniNet} setValue={setPatrimoniNet} min={10000} max={1000000} step={10000} color="emerald" unit="€" />
+            </div>
+            <div className="space-y-3">
+              <StatCard label={t('ratios', 'endeutamentTotal')} value={endeutament} unit="%" color={parseFloat(endeutament) <= 60 ? 'emerald' : parseFloat(endeutament) <= 80 ? 'amber' : 'red'} />
+              <StatCard label={t('ratios', 'autonomia')} value={autonomia} unit="%" color={parseFloat(autonomia) >= 40 ? 'emerald' : 'amber'} />
+              <InfoBox color="gray">
+                <p className="text-xs">
+                  {idioma === 'val' && 'Endeutament ideal: 40-60%. Més del 80% és risc elevat.'}
+                  {idioma === 'es' && 'Endeudamiento ideal: 40-60%. Más del 80% es riesgo elevado.'}
+                  {idioma === 'en' && 'Ideal debt: 40-60%. Over 80% is high risk.'}
+                </p>
+              </InfoBox>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {subSection === 'rendibilitat' && (
+        <Card title={t('ratios', 'rendibilitat')}>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <Slider label={idioma === 'en' ? 'Net Profit' : 'Benefici Net'} value={beneficiNet} setValue={setBeneficiNet} min={0} max={200000} step={5000} color="emerald" unit="€" />
+              <Slider label="BAII (EBIT)" value={baii} setValue={setBaii} min={0} max={300000} step={5000} color="blue" unit="€" />
+              <Slider label={idioma === 'en' ? 'Sales' : 'Vendes'} value={vendes} setValue={setVendes} min={100000} max={2000000} step={50000} color="purple" unit="€" />
+            </div>
+            <div className="space-y-3">
+              <InfoBox color="emerald">
+                <p className="text-sm text-gray-500">{t('ratios', 'roe')}</p>
+                <p className="text-2xl font-black text-emerald-600">{roe}%</p>
+                <p className="text-xs">BN / PN × 100</p>
+              </InfoBox>
+              <InfoBox color="blue">
+                <p className="text-sm text-gray-500">{t('ratios', 'roa')}</p>
+                <p className="text-2xl font-black text-blue-600">{roa}%</p>
+                <p className="text-xs">BAII / AT × 100</p>
+              </InfoBox>
+              <InfoBox color="purple">
+                <p className="text-sm text-gray-500">{t('ratios', 'ros')}</p>
+                <p className="text-2xl font-black text-purple-600">{ros}%</p>
+                <p className="text-xs">BN / Vendes × 100</p>
+              </InfoBox>
+            </div>
+          </div>
+        </Card>
+      )}
+    </div>
+  );
+
+
+  const RRHH = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2">
+          <Users className="text-pink-500" /> {t('rrhh', 'titol')}
+        </h2>
+      </div>
+
+      <div className="flex flex-wrap gap-2 mb-4">
+        {['contractes', 'motivacio', 'nomina'].map(s => (
+          <button key={s} onClick={() => setSubSection(subSection === s ? null : s)} className={`px-4 py-2 rounded-lg font-medium transition-all ${subSection === s ? 'bg-pink-500 text-white' : 'bg-pink-50 text-pink-700 border border-pink-200'}`}>
+            {s === 'contractes' ? t('rrhh', 'contractes') : s === 'motivacio' ? t('rrhh', 'motivacio') : idioma === 'en' ? 'Payroll' : 'Nòmina'}
+          </button>
+        ))}
+      </div>
+
+      {(!subSection || subSection === 'contractes') && (
+        <Card title={t('rrhh', 'contractes')}>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { nom: t('rrhh', 'indefinit'), desc: idioma === 'val' ? 'Sense data de fi. El més estable.' : 'No end date. Most stable.', color: 'emerald' },
+              { nom: t('rrhh', 'temporal'), desc: idioma === 'val' ? 'Per obra, circumstàncies, substitució...' : 'For work, circumstances, replacement...', color: 'amber' },
+              { nom: t('rrhh', 'formacioAprenentatge'), desc: idioma === 'val' ? 'Per a joves 16-30 anys. Combina treball i formació.' : 'For youth 16-30. Combines work and training.', color: 'blue' },
+              { nom: t('rrhh', 'practiques'), desc: idioma === 'val' ? 'Per a titulats recents. Màx 2 anys.' : 'For recent graduates. Max 2 years.', color: 'purple' },
+              { nom: t('rrhh', 'fixDiscontinuu'), desc: idioma === 'val' ? 'Treball de temporada recurrent.' : 'Recurring seasonal work.', color: 'orange' },
+              { nom: 'Temps Parcial', desc: idioma === 'val' ? 'Menys hores que la jornada completa.' : 'Less hours than full time.', color: 'cyan' },
+            ].map((c, i) => (
+              <div key={i} className={`p-4 bg-${c.color}-50 rounded-xl border border-${c.color}-200`}>
+                <p className={`font-bold text-${c.color}-700`}>{c.nom}</p>
+                <p className="text-sm text-gray-600 mt-1">{c.desc}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {subSection === 'motivacio' && (
+        <div className="space-y-4">
+          <Card title={t('rrhh', 'maslow')}>
+            <div className="flex justify-center">
+              <div className="w-full max-w-md">
+                {[
+                  { nivell: idioma === 'en' ? 'Self-actualization' : 'Autorealització', color: 'purple', width: '40%' },
+                  { nivell: idioma === 'en' ? 'Esteem' : 'Estima', color: 'blue', width: '55%' },
+                  { nivell: idioma === 'en' ? 'Social/Belonging' : 'Socials/Pertinença', color: 'teal', width: '70%' },
+                  { nivell: idioma === 'en' ? 'Safety' : 'Seguretat', color: 'amber', width: '85%' },
+                  { nivell: idioma === 'en' ? 'Physiological' : 'Fisiològiques', color: 'red', width: '100%' },
+                ].map((n, i) => (
+                  <div key={i} className={`bg-${n.color}-100 p-2 text-center text-sm font-medium text-${n.color}-800 mb-1 rounded`} style={{ width: n.width, marginLeft: 'auto', marginRight: 'auto' }}>
+                    {n.nivell}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <p className="text-sm text-gray-500 text-center mt-4">
+              {idioma === 'val' && 'S\'han de satisfer les necessitats de baix abans de les de dalt.'}
+              {idioma === 'es' && 'Se deben satisfacer las necesidades de abajo antes que las de arriba.'}
+              {idioma === 'en' && 'Lower needs must be satisfied before upper ones.'}
+            </p>
+          </Card>
+
+          <Card title={t('rrhh', 'herzberg')}>
+            <div className="grid md:grid-cols-2 gap-4">
+              <InfoBox color="red">
+                <p className="font-bold text-red-700">{idioma === 'en' ? 'Hygiene Factors' : 'Factors Higiènics'}</p>
+                <p className="text-sm text-gray-600 mt-1">
+                  {idioma === 'val' && 'Si falten → Insatisfacció. Si hi són → NO insatisfacció (però no motivació)'}
+                  {idioma === 'es' && 'Si faltan → Insatisfacción. Si están → NO insatisfacción (pero no motivación)'}
+                  {idioma === 'en' && 'If missing → Dissatisfaction. If present → NO dissatisfaction (but not motivation)'}
+                </p>
+                <p className="text-xs text-gray-500 mt-2">{idioma === 'val' ? 'Salari, condicions, seguretat, supervisió' : 'Salary, conditions, security, supervision'}</p>
+              </InfoBox>
+              <InfoBox color="emerald">
+                <p className="font-bold text-emerald-700">{idioma === 'en' ? 'Motivating Factors' : 'Factors Motivadors'}</p>
+                <p className="text-sm text-gray-600 mt-1">
+                  {idioma === 'val' && 'Si hi són → MOTIVACIÓ i satisfacció.'}
+                  {idioma === 'es' && 'Si están → MOTIVACIÓN y satisfacción.'}
+                  {idioma === 'en' && 'If present → MOTIVATION and satisfaction.'}
+                </p>
+                <p className="text-xs text-gray-500 mt-2">{idioma === 'val' ? 'Reconeixement, creixement, responsabilitat, èxit' : 'Recognition, growth, responsibility, achievement'}</p>
+              </InfoBox>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {subSection === 'nomina' && (
+        <Card title={idioma === 'en' ? 'Payroll Simulator' : 'Simulador de Nòmina'}>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <Slider label={idioma === 'en' ? 'Base Salary' : 'Salari Base'} value={salariBase} setValue={setSalariBase} min={500} max={5000} step={50} color="blue" unit="€" />
+              <Slider label={idioma === 'en' ? 'Extras/Bonuses' : 'Complements/Extres'} value={extres} setValue={setExtres} min={0} max={1000} step={50} color="emerald" unit="€" />
+              <Slider label={idioma === 'en' ? 'IRPF Withholding' : 'Retenció IRPF'} value={irpfPercent} setValue={setIrpfPercent} min={0} max={45} color="red" unit="%" />
+            </div>
+            <div className="space-y-3">
+              <InfoBox color="blue">
+                <p className="text-sm text-gray-500">{idioma === 'en' ? 'Gross Salary' : 'Salari Brut'}</p>
+                <p className="text-2xl font-black text-blue-600">{salariTotal.toFixed(2)}€</p>
+              </InfoBox>
+              <div className="grid grid-cols-2 gap-2">
+                <InfoBox color="amber">
+                  <p className="text-xs text-gray-500">SS Treballador (6.35%)</p>
+                  <p className="font-bold text-amber-600">-{seguretaSocialTreballador.toFixed(2)}€</p>
+                </InfoBox>
+                <InfoBox color="red">
+                  <p className="text-xs text-gray-500">IRPF ({irpfPercent}%)</p>
+                  <p className="font-bold text-red-600">-{retencioIrpf.toFixed(2)}€</p>
+                </InfoBox>
+              </div>
+              <InfoBox color="emerald">
+                <p className="text-sm text-gray-500">{idioma === 'en' ? 'Net Salary' : 'Salari Net'}</p>
+                <p className="text-3xl font-black text-emerald-600">{salariNet.toFixed(2)}€</p>
+              </InfoBox>
+              <InfoBox color="purple">
+                <p className="text-xs text-gray-500">{idioma === 'en' ? 'Company Cost' : 'Cost Empresa'} (~32% SS)</p>
+                <p className="font-bold text-purple-600">{costEmpresa.toFixed(2)}€</p>
+              </InfoBox>
+            </div>
+          </div>
+        </Card>
+      )}
+    </div>
+  );
+
+  const Produccio = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2">
+          <Factory className="text-pink-500" /> {t('produccio', 'titol')}
+        </h2>
+      </div>
+
+      <div className="flex flex-wrap gap-2 mb-4">
+        {['eoq', 'cadena', 'qualitat'].map(s => (
+          <button key={s} onClick={() => setSubSection(subSection === s ? null : s)} className={`px-4 py-2 rounded-lg font-medium transition-all ${subSection === s ? 'bg-pink-500 text-white' : 'bg-pink-50 text-pink-700 border border-pink-200'}`}>
+            {s === 'eoq' ? 'EOQ' : s === 'cadena' ? t('produccio', 'cadenaValor') : t('produccio', 'qualitat')}
+          </button>
+        ))}
+      </div>
+
+      {(!subSection || subSection === 'eoq') && (
+        <Card title={<><Package className="text-pink-500" /> {t('produccio', 'eoq')} - {idioma === 'en' ? 'Inventory Management' : 'Gestió d\'Estocs'}</>}>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <Slider label={idioma === 'en' ? 'Annual Demand' : 'Demanda Anual'} value={demandaAnual} setValue={setDemandaAnual} min={1000} max={100000} step={1000} color="blue" unit=" u." />
+              <Slider label={idioma === 'en' ? 'Order Cost' : 'Cost per Comanda'} value={costComanda} setValue={setCostComanda} min={10} max={500} step={10} color="amber" unit="€" />
+              <Slider label={idioma === 'en' ? 'Storage Cost (per unit/year)' : 'Cost Emmagatzematge (u/any)'} value={costEmmagatzematge} setValue={setCostEmmagatzematge} min={0.5} max={20} step={0.5} color="red" unit="€" />
+              <Slider label={idioma === 'en' ? 'Delivery Days' : 'Dies de Lliurament'} value={diesLliurament} setValue={setDiesLliurament} min={1} max={30} color="purple" unit=" dies" />
+            </div>
+            <div className="space-y-3">
+              <InfoBox color="emerald">
+                <p className="text-sm text-gray-500">EOQ (Q*) = √(2DS/H)</p>
+                <p className="text-3xl font-black text-emerald-600">{eoq} {t('ui', 'unitats')}</p>
+                <p className="text-xs text-gray-500">{idioma === 'en' ? 'Optimal order quantity' : 'Quantitat òptima de comanda'}</p>
+              </InfoBox>
+              <div className="grid grid-cols-2 gap-2">
+                <StatCard label={idioma === 'en' ? 'Orders/Year' : 'Comandes/Any'} value={numComandes} color="blue" />
+                <StatCard label={t('produccio', 'puntComanda')} value={puntRecomanda} unit=" u." color="purple" />
+              </div>
+              <StatCard label={idioma === 'en' ? 'Total Inventory Cost' : 'Cost Total Estoc'} value={costTotalEstoc} unit="€/any" color="amber" />
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {subSection === 'cadena' && (
+        <Card title={t('produccio', 'cadenaValor')}>
+          <p className="text-sm text-gray-600 mb-4">
+            {idioma === 'val' && 'Model de Porter que descompon l\'empresa en activitats que afegeixen valor.'}
+            {idioma === 'es' && 'Modelo de Porter que descompone la empresa en actividades que añaden valor.'}
+            {idioma === 'en' && 'Porter\'s model that breaks down the company into value-adding activities.'}
+          </p>
+          <div className="space-y-3">
+            <InfoBox color="pink">
+              <p className="font-bold text-pink-700">{idioma === 'en' ? 'Primary Activities' : 'Activitats Primàries'}</p>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {(idioma === 'en' ? ['Inbound Logistics', 'Operations', 'Outbound Logistics', 'Marketing & Sales', 'Service'] : 
+                  ['Logística Interna', 'Operacions', 'Logística Externa', 'Marketing i Vendes', 'Servei']).map((a, i) => (
+                  <span key={i} className="px-3 py-1 bg-white rounded-full text-sm text-pink-700 border border-pink-300">{a}</span>
+                ))}
+              </div>
+            </InfoBox>
+            <InfoBox color="blue">
+              <p className="font-bold text-blue-700">{idioma === 'en' ? 'Support Activities' : 'Activitats de Suport'}</p>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {(idioma === 'en' ? ['Infrastructure', 'HR Management', 'Technology Dev.', 'Procurement'] : 
+                  ['Infraestructura', 'Gestió RH', 'Desenvolupament Tecnològic', 'Aprovisionament']).map((a, i) => (
+                  <span key={i} className="px-3 py-1 bg-white rounded-full text-sm text-blue-700 border border-blue-300">{a}</span>
+                ))}
+              </div>
+            </InfoBox>
+          </div>
+        </Card>
+      )}
+
+      {subSection === 'qualitat' && (
+        <Card title={t('produccio', 'qualitat')}>
+          <div className="grid md:grid-cols-2 gap-4">
+            {[
+              { nom: 'ISO 9001', desc: idioma === 'val' ? 'Sistemes de gestió de qualitat' : 'Quality management systems', color: 'blue' },
+              { nom: 'ISO 14001', desc: idioma === 'val' ? 'Gestió ambiental' : 'Environmental management', color: 'emerald' },
+              { nom: t('produccio', 'jit'), desc: idioma === 'val' ? 'Produir just el que es necessita, quan es necessita' : 'Produce just what is needed, when needed', color: 'purple' },
+              { nom: t('produccio', 'kanban'), desc: idioma === 'val' ? 'Sistema visual de gestió del flux de treball' : 'Visual workflow management system', color: 'amber' },
+              { nom: 'TQM', desc: idioma === 'val' ? 'Gestió de la Qualitat Total' : 'Total Quality Management', color: 'pink' },
+              { nom: 'Six Sigma', desc: idioma === 'val' ? 'Reducció de defectes a 3.4 per milió' : 'Reduce defects to 3.4 per million', color: 'indigo' },
+            ].map((q, i) => (
+              <div key={i} className={`p-4 bg-${q.color}-50 rounded-xl border border-${q.color}-200`}>
+                <p className={`font-bold text-${q.color}-700`}>{q.nom}</p>
+                <p className="text-sm text-gray-600 mt-1">{q.desc}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+    </div>
+  );
+
+  const Marketing = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2">
+          <Megaphone className="text-pink-500" /> {t('marketing', 'titol')}
+        </h2>
+      </div>
+
+      <Card title={t('marketing', 'les4p')}>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { nom: t('marketing', 'producte'), color: 'pink', items: idioma === 'val' ? ['Qualitat', 'Disseny', 'Marca', 'Packaging', 'Garantia'] : ['Quality', 'Design', 'Brand', 'Packaging', 'Warranty'] },
+            { nom: t('marketing', 'preu'), color: 'emerald', items: idioma === 'val' ? ['Preu de llista', 'Descomptes', 'Finançament', 'Condicions pagament'] : ['List price', 'Discounts', 'Financing', 'Payment terms'] },
+            { nom: t('marketing', 'distribucio'), color: 'blue', items: idioma === 'val' ? ['Canals', 'Cobertura', 'Localització', 'Inventari', 'Transport'] : ['Channels', 'Coverage', 'Location', 'Inventory', 'Transport'] },
+            { nom: t('marketing', 'comunicacio'), color: 'purple', items: idioma === 'val' ? ['Publicitat', 'Promoció', 'RRPP', 'Venda personal', 'Marketing directe'] : ['Advertising', 'Promotion', 'PR', 'Personal selling', 'Direct marketing'] },
+          ].map((p, i) => (
+            <div key={i} className={`p-4 bg-${p.color}-50 rounded-xl border border-${p.color}-200`}>
+              <p className={`font-bold text-${p.color}-700 mb-2`}>{p.nom}</p>
+              <ul className="space-y-1">
+                {p.items.map((item, j) => <li key={j} className="text-sm text-gray-600 flex items-center gap-1"><ChevronRight size={12} className={`text-${p.color}-500`} />{item}</li>)}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <Card title={t('marketing', 'cicleVidaProducte')}>
+        <div className="grid grid-cols-4 gap-2 mb-4">
+          {[
+            { fase: t('marketing', 'introduccio'), color: 'blue', desc: idioma === 'val' ? 'Baixes vendes, alts costos' : 'Low sales, high costs' },
+            { fase: t('marketing', 'creixement'), color: 'emerald', desc: idioma === 'val' ? 'Vendes creixen, beneficis' : 'Sales grow, profits' },
+            { fase: t('marketing', 'maduresa'), color: 'amber', desc: idioma === 'val' ? 'Màxim vendes, competència' : 'Peak sales, competition' },
+            { fase: t('marketing', 'declivi'), color: 'red', desc: idioma === 'val' ? 'Vendes baixen' : 'Sales decline' },
+          ].map((f, i) => (
+            <div key={i} className={`p-3 bg-${f.color}-50 rounded-lg border border-${f.color}-200 text-center`}>
+              <p className={`font-bold text-${f.color}-700 text-sm`}>{f.fase}</p>
+              <p className="text-xs text-gray-500">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+        <div className="h-32">
+          <ResponsiveContainer>
+            <AreaChart data={[
+              { t: 1, v: 5 }, { t: 2, v: 20 }, { t: 3, v: 50 }, { t: 4, v: 80 }, { t: 5, v: 95 }, 
+              { t: 6, v: 100 }, { t: 7, v: 95 }, { t: 8, v: 80 }, { t: 9, v: 60 }, { t: 10, v: 30 }
+            ]} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <Area type="monotone" dataKey="v" stroke="#ec4899" fill="#fce7f3" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+
+      <Card title={t('marketing', 'marketingDigital')}>
+        <div className="grid md:grid-cols-3 gap-4">
+          {[
+            { nom: t('marketing', 'seo'), icon: Search, color: 'emerald' },
+            { nom: t('marketing', 'sem'), icon: MousePointer, color: 'blue' },
+            { nom: t('marketing', 'xarxesSocials'), icon: Share, color: 'pink' },
+            { nom: t('marketing', 'emailMarketing'), icon: Mail, color: 'amber' },
+            { nom: t('marketing', 'contentMarketing'), icon: FileText, color: 'purple' },
+            { nom: 'Influencer Marketing', icon: ThumbsUp, color: 'rose' },
+          ].map((m, i) => (
+            <div key={i} className={`p-4 bg-${m.color}-50 rounded-xl border border-${m.color}-200 flex items-center gap-3`}>
+              <m.icon className={`text-${m.color}-500`} size={24} />
+              <p className={`font-medium text-${m.color}-700`}>{m.nom}</p>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+
+  const Estrategia = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2">
+          <Compass className="text-pink-500" /> {t('estrategia', 'titol')}
+        </h2>
+      </div>
+
+      <Card title={<><Target className="text-pink-500" /> {t('estrategia', 'missio')}, {t('estrategia', 'visio')}, {t('estrategia', 'valors')}</>}>
+        <div className="grid md:grid-cols-3 gap-4">
+          <InfoBox color="pink">
+            <p className="font-bold text-pink-700">{t('estrategia', 'missio')}</p>
+            <p className="text-sm text-gray-600 mt-1">
+              {idioma === 'val' && 'Per què existim? Què fem i per a qui?'}
+              {idioma === 'es' && '¿Por qué existimos? ¿Qué hacemos y para quién?'}
+              {idioma === 'en' && 'Why do we exist? What do we do and for whom?'}
+            </p>
+          </InfoBox>
+          <InfoBox color="blue">
+            <p className="font-bold text-blue-700">{t('estrategia', 'visio')}</p>
+            <p className="text-sm text-gray-600 mt-1">
+              {idioma === 'val' && 'On volem arribar? Futur desitjat.'}
+              {idioma === 'es' && '¿Dónde queremos llegar? Futuro deseado.'}
+              {idioma === 'en' && 'Where do we want to go? Desired future.'}
+            </p>
+          </InfoBox>
+          <InfoBox color="emerald">
+            <p className="font-bold text-emerald-700">{t('estrategia', 'valors')}</p>
+            <p className="text-sm text-gray-600 mt-1">
+              {idioma === 'val' && 'Principis que guien les nostres accions.'}
+              {idioma === 'es' && 'Principios que guían nuestras acciones.'}
+              {idioma === 'en' && 'Principles that guide our actions.'}
+            </p>
+          </InfoBox>
+        </div>
+      </Card>
+
+      <Card title={t('estrategia', 'porter')}>
+        <div className="grid md:grid-cols-3 gap-4">
+          {[
+            { nom: t('estrategia', 'lideratge'), desc: idioma === 'val' ? 'Ser el més barat del mercat' : 'Be the cheapest in the market', color: 'emerald', ex: 'Ryanair, Mercadona' },
+            { nom: t('estrategia', 'diferenciacio'), desc: idioma === 'val' ? 'Oferir alguna cosa única' : 'Offer something unique', color: 'blue', ex: 'Apple, BMW' },
+            { nom: t('estrategia', 'focus'), desc: idioma === 'val' ? 'Especialitzar-se en un segment' : 'Specialize in a segment', color: 'purple', ex: 'Ferrari, Rolex' },
+          ].map((e, i) => (
+            <div key={i} className={`p-4 bg-${e.color}-50 rounded-xl border border-${e.color}-200`}>
+              <p className={`font-bold text-${e.color}-700`}>{e.nom}</p>
+              <p className="text-sm text-gray-600 mt-1">{e.desc}</p>
+              <p className="text-xs text-gray-400 mt-2">Ex: {e.ex}</p>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <Card title={t('estrategia', 'ansoff')}>
+        <div className="grid grid-cols-3 gap-2">
+          <div></div>
+          <div className="text-center p-2 bg-gray-100 rounded font-medium text-sm">{idioma === 'en' ? 'Current Product' : 'Producte Actual'}</div>
+          <div className="text-center p-2 bg-gray-100 rounded font-medium text-sm">{idioma === 'en' ? 'New Product' : 'Producte Nou'}</div>
+          
+          <div className="text-center p-2 bg-gray-100 rounded font-medium text-sm">{idioma === 'en' ? 'Current Market' : 'Mercat Actual'}</div>
+          <button onClick={() => setAnsoffSeleccionat('penetracio')} className={`p-4 rounded-xl border-2 text-center transition-all ${ansoffSeleccionat === 'penetracio' ? 'bg-emerald-100 border-emerald-400' : 'bg-emerald-50 border-emerald-200 hover:border-emerald-400'}`}>
+            <p className="font-bold text-emerald-700">{t('estrategia', 'penetracio')}</p>
+            <p className="text-xs text-gray-500">{idioma === 'val' ? 'Baix risc' : 'Low risk'}</p>
+          </button>
+          <button onClick={() => setAnsoffSeleccionat('producte')} className={`p-4 rounded-xl border-2 text-center transition-all ${ansoffSeleccionat === 'producte' ? 'bg-blue-100 border-blue-400' : 'bg-blue-50 border-blue-200 hover:border-blue-400'}`}>
+            <p className="font-bold text-blue-700">{t('estrategia', 'desenvolupamentProducte')}</p>
+            <p className="text-xs text-gray-500">{idioma === 'val' ? 'Risc moderat' : 'Moderate risk'}</p>
+          </button>
+          
+          <div className="text-center p-2 bg-gray-100 rounded font-medium text-sm">{idioma === 'en' ? 'New Market' : 'Mercat Nou'}</div>
+          <button onClick={() => setAnsoffSeleccionat('mercat')} className={`p-4 rounded-xl border-2 text-center transition-all ${ansoffSeleccionat === 'mercat' ? 'bg-amber-100 border-amber-400' : 'bg-amber-50 border-amber-200 hover:border-amber-400'}`}>
+            <p className="font-bold text-amber-700">{t('estrategia', 'desenvolupamentMercat')}</p>
+            <p className="text-xs text-gray-500">{idioma === 'val' ? 'Risc moderat' : 'Moderate risk'}</p>
+          </button>
+          <button onClick={() => setAnsoffSeleccionat('diversificacio')} className={`p-4 rounded-xl border-2 text-center transition-all ${ansoffSeleccionat === 'diversificacio' ? 'bg-red-100 border-red-400' : 'bg-red-50 border-red-200 hover:border-red-400'}`}>
+            <p className="font-bold text-red-700">{t('estrategia', 'diversificacio')}</p>
+            <p className="text-xs text-gray-500">{idioma === 'val' ? 'Alt risc' : 'High risk'}</p>
+          </button>
+        </div>
+        {ansoffSeleccionat && (
+          <InfoBox color="gray" className="mt-4">
+            {ansoffSeleccionat === 'penetracio' && (idioma === 'val' ? 'Vendre MÉS del mateix producte al mateix mercat. Ex: Promocions, fidelització.' : 'Sell MORE of the same product to the same market. Ex: Promotions, loyalty.')}
+            {ansoffSeleccionat === 'producte' && (idioma === 'val' ? 'Nous productes per als clients actuals. Ex: Apple llançant l\'iPad.' : 'New products for current customers. Ex: Apple launching iPad.')}
+            {ansoffSeleccionat === 'mercat' && (idioma === 'val' ? 'Producte actual a nous mercats. Ex: Internacionalització.' : 'Current product to new markets. Ex: Internationalization.')}
+            {ansoffSeleccionat === 'diversificacio' && (idioma === 'val' ? 'Nous productes a nous mercats. Molt arriscat. Ex: Amazon entrant en streaming.' : 'New products to new markets. Very risky. Ex: Amazon entering streaming.')}
+          </InfoBox>
+        )}
+      </Card>
+    </div>
+  );
+
+
+  const Canvas = () => {
+    const canvasBlocs = [
+      { id: 'segments', nom: t('canvas', 'segments'), icon: Users, color: 'blue', pregunta: idioma === 'val' ? 'Per a qui creem valor?' : 'For whom do we create value?' },
+      { id: 'proposta', nom: t('canvas', 'proposta'), icon: Heart, color: 'pink', pregunta: idioma === 'val' ? 'Quin problema solucionem?' : 'What problem do we solve?' },
+      { id: 'canals', nom: t('canvas', 'canals'), icon: Truck, color: 'emerald', pregunta: idioma === 'val' ? 'Com arribem als clients?' : 'How do we reach customers?' },
+      { id: 'relacions', nom: t('canvas', 'relacions'), icon: MessageSquare, color: 'purple', pregunta: idioma === 'val' ? 'Quin tipus de relació?' : 'What type of relationship?' },
+      { id: 'ingressos', nom: t('canvas', 'ingressos'), icon: CircleDollarSign, color: 'amber', pregunta: idioma === 'val' ? 'Per què paguen?' : 'What do they pay for?' },
+      { id: 'recursos', nom: t('canvas', 'recursos'), icon: Wrench, color: 'orange', pregunta: idioma === 'val' ? 'Què necessitem?' : 'What do we need?' },
+      { id: 'activitats', nom: t('canvas', 'activitats'), icon: Settings, color: 'cyan', pregunta: idioma === 'val' ? 'Què hem de fer?' : 'What must we do?' },
+      { id: 'socis', nom: t('canvas', 'socis'), icon: HandCoins, color: 'indigo', pregunta: idioma === 'val' ? 'Qui ens ajuda?' : 'Who helps us?' },
+      { id: 'costos', nom: t('canvas', 'costos'), icon: Receipt, color: 'red', pregunta: idioma === 'val' ? 'Quins costos tenim?' : 'What are our costs?' },
+    ];
+
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2">
+            <Layers className="text-pink-500" /> Business Model Canvas
+          </h2>
+          <p className="text-gray-500">
+            {idioma === 'val' && '9 blocs per descriure visualment el teu model de negoci.'}
+            {idioma === 'es' && '9 bloques para describir visualmente tu modelo de negocio.'}
+            {idioma === 'en' && '9 blocks to visually describe your business model.'}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+          {/* Layout del Canvas */}
+          <div className="col-span-2 md:col-span-1 row-span-2">
+            <CanvasBloc bloc={canvasBlocs.find(b => b.id === 'socis')} />
+          </div>
+          <div className="col-span-1 row-span-1">
+            <CanvasBloc bloc={canvasBlocs.find(b => b.id === 'activitats')} />
+          </div>
+          <div className="col-span-1 row-span-2">
+            <CanvasBloc bloc={canvasBlocs.find(b => b.id === 'proposta')} />
+          </div>
+          <div className="col-span-1 row-span-1">
+            <CanvasBloc bloc={canvasBlocs.find(b => b.id === 'relacions')} />
+          </div>
+          <div className="col-span-2 md:col-span-1 row-span-2">
+            <CanvasBloc bloc={canvasBlocs.find(b => b.id === 'segments')} />
+          </div>
+          <div className="col-span-1 row-span-1">
+            <CanvasBloc bloc={canvasBlocs.find(b => b.id === 'recursos')} />
+          </div>
+          <div className="col-span-1 row-span-1">
+            <CanvasBloc bloc={canvasBlocs.find(b => b.id === 'canals')} />
+          </div>
+          <div className="col-span-2 md:col-span-2 lg:col-span-2">
+            <CanvasBloc bloc={canvasBlocs.find(b => b.id === 'costos')} />
+          </div>
+          <div className="col-span-2 md:col-span-3 lg:col-span-3">
+            <CanvasBloc bloc={canvasBlocs.find(b => b.id === 'ingressos')} />
+          </div>
+        </div>
+
+        {canvasActiu && (
+          <Card accent>
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="text-lg font-bold text-gray-800">{canvasBlocs.find(b => b.id === canvasActiu)?.nom}</h3>
+              <button onClick={() => setCanvasActiu(null)} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+            </div>
+            <textarea
+              value={canvasData[canvasActiu] || ''}
+              onChange={(e) => setCanvasData(prev => ({ ...prev, [canvasActiu]: e.target.value }))}
+              placeholder={canvasBlocs.find(b => b.id === canvasActiu)?.pregunta}
+              className="w-full p-3 border rounded-xl min-h-[100px] focus:ring-2 focus:ring-pink-300 focus:border-pink-300"
+            />
+          </Card>
+        )}
+      </div>
+    );
+  };
+
+  const CanvasBloc = ({ bloc }) => (
+    <button
+      onClick={() => setCanvasActiu(bloc.id)}
+      className={`w-full h-full min-h-[100px] p-3 rounded-xl border-2 transition-all text-left ${
+        canvasActiu === bloc.id 
+          ? `bg-${bloc.color}-100 border-${bloc.color}-400` 
+          : `bg-${bloc.color}-50 border-${bloc.color}-200 hover:border-${bloc.color}-400`
+      }`}
+    >
+      <bloc.icon className={`text-${bloc.color}-500 mb-1`} size={20} />
+      <p className={`font-bold text-${bloc.color}-700 text-sm`}>{bloc.nom}</p>
+      <p className="text-xs text-gray-500 mt-1">{bloc.pregunta}</p>
+      {canvasData[bloc.id] && (
+        <p className="text-xs text-gray-600 mt-2 line-clamp-2">{canvasData[bloc.id]}</p>
+      )}
+    </button>
+  );
+
+  const Analisi = () => {
+    const addDafoItem = (cat) => setDafoItems(prev => ({ ...prev, [cat]: [...prev[cat], ''] }));
+    const updateDafoItem = (cat, idx, val) => setDafoItems(prev => ({ ...prev, [cat]: prev[cat].map((item, i) => i === idx ? val : item) }));
+    const removeDafoItem = (cat, idx) => setDafoItems(prev => ({ ...prev, [cat]: prev[cat].filter((_, i) => i !== idx) }));
+
+    const porter5Forces = [
+      { nom: idioma === 'val' ? 'Rivalitat competidors' : 'Competitor rivalry', desc: idioma === 'val' ? 'Intensitat de la competència' : 'Competition intensity', color: 'pink' },
+      { nom: idioma === 'val' ? 'Amenaça nous entrants' : 'Threat of new entrants', desc: idioma === 'val' ? 'Barreres d\'entrada' : 'Entry barriers', color: 'blue' },
+      { nom: idioma === 'val' ? 'Poder negociador clients' : 'Buyer power', desc: idioma === 'val' ? 'Capacitat de pressionar preus' : 'Ability to pressure prices', color: 'emerald' },
+      { nom: idioma === 'val' ? 'Poder negociador proveïdors' : 'Supplier power', desc: idioma === 'val' ? 'Capacitat de pujar preus' : 'Ability to raise prices', color: 'amber' },
+      { nom: idioma === 'val' ? 'Amenaça substitutius' : 'Threat of substitutes', desc: idioma === 'val' ? 'Productes alternatius' : 'Alternative products', color: 'purple' },
+    ];
+
+    const pestel = [
+      { cat: t('analisi', 'politic'), color: 'red', items: idioma === 'val' ? ['Estabilitat política', 'Política fiscal', 'Regulació comerç'] : ['Political stability', 'Tax policy', 'Trade regulation'] },
+      { cat: t('analisi', 'economic'), color: 'emerald', items: idioma === 'val' ? ['PIB', 'Inflació', 'Tipus interès', 'Atur'] : ['GDP', 'Inflation', 'Interest rates', 'Unemployment'] },
+      { cat: t('analisi', 'social'), color: 'blue', items: idioma === 'val' ? ['Demografia', 'Estil de vida', 'Educació'] : ['Demographics', 'Lifestyle', 'Education'] },
+      { cat: t('analisi', 'tecnologic'), color: 'purple', items: idioma === 'val' ? ['I+D', 'Automatització', 'Digitalització'] : ['R&D', 'Automation', 'Digitalization'] },
+      { cat: t('analisi', 'ecologic'), color: 'lime', items: idioma === 'val' ? ['Canvi climàtic', 'Reciclatge', 'Energies renovables'] : ['Climate change', 'Recycling', 'Renewable energy'] },
+      { cat: t('analisi', 'legal'), color: 'amber', items: idioma === 'val' ? ['Lleis laborals', 'Protecció consumidor', 'Propietat intel·lectual'] : ['Labor laws', 'Consumer protection', 'Intellectual property'] },
+    ];
+
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2">
+            <Search className="text-pink-500" /> {t('analisi', 'titol')}
+          </h2>
+        </div>
+
+        <div className="flex flex-wrap gap-2 mb-4">
+          {['dafo', 'porter', 'pestel'].map(s => (
+            <button key={s} onClick={() => setSubSection(subSection === s ? null : s)} className={`px-4 py-2 rounded-lg font-medium transition-all ${subSection === s ? 'bg-pink-500 text-white' : 'bg-pink-50 text-pink-700 border border-pink-200'}`}>
+              {s === 'dafo' ? 'DAFO/SWOT' : s === 'porter' ? '5 Forces Porter' : 'PESTEL'}
+            </button>
+          ))}
+        </div>
+
+        {(!subSection || subSection === 'dafo') && (
+          <Card title={t('analisi', 'dafo')}>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { id: 'fortaleses', nom: t('analisi', 'fortaleses'), color: 'emerald', icon: '💪' },
+                { id: 'debilitats', nom: t('analisi', 'debilitats'), color: 'red', icon: '⚠️' },
+                { id: 'oportunitats', nom: t('analisi', 'oportunitats'), color: 'blue', icon: '🎯' },
+                { id: 'amenaces', nom: t('analisi', 'amenaces'), color: 'amber', icon: '⛈️' },
+              ].map(cat => (
+                <div key={cat.id} className={`p-4 bg-${cat.color}-50 rounded-xl border border-${cat.color}-200`}>
+                  <p className={`font-bold text-${cat.color}-700 mb-3`}>{cat.icon} {cat.nom}</p>
+                  {dafoItems[cat.id].map((item, idx) => (
+                    <div key={idx} className="flex gap-2 mb-2">
+                      <input
+                        type="text"
+                        value={item}
+                        onChange={(e) => updateDafoItem(cat.id, idx, e.target.value)}
+                        className="flex-1 p-2 text-sm border rounded"
+                        placeholder={`${cat.nom} ${idx + 1}...`}
+                      />
+                      <button onClick={() => removeDafoItem(cat.id, idx)} className="text-gray-400 hover:text-red-500"><X size={16} /></button>
+                    </div>
+                  ))}
+                  <button onClick={() => addDafoItem(cat.id)} className={`text-sm text-${cat.color}-600 hover:underline`}>+ {idioma === 'en' ? 'Add' : 'Afegir'}</button>
+                </div>
+              ))}
+            </div>
+            <InfoBox color="gray" className="mt-4">
+              <p className="text-sm">
+                {idioma === 'val' && '💡 Fortaleses i Debilitats són INTERNES (controlem). Oportunitats i Amenaces són EXTERNES (no controlem).'}
+                {idioma === 'es' && '💡 Fortalezas y Debilidades son INTERNAS (controlamos). Oportunidades y Amenazas son EXTERNAS (no controlamos).'}
+                {idioma === 'en' && '💡 Strengths and Weaknesses are INTERNAL (we control). Opportunities and Threats are EXTERNAL (we don\'t control).'}
+              </p>
+            </InfoBox>
+          </Card>
+        )}
+
+        {subSection === 'porter' && (
+          <Card title={t('analisi', 'porter5')}>
+            <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {porter5Forces.map((f, i) => (
+                <div key={i} className={`p-4 bg-${f.color}-50 rounded-xl border border-${f.color}-200 text-center`}>
+                  <p className={`font-bold text-${f.color}-700 text-sm`}>{f.nom}</p>
+                  <p className="text-xs text-gray-500 mt-1">{f.desc}</p>
+                </div>
+              ))}
+            </div>
+            <InfoBox color="pink" className="mt-4">
+              <p className="text-sm">
+                {idioma === 'val' && '💡 Com més intenses les forces, menys atractiu és el sector. Busca sectors amb barreres altes i poca rivalitat.'}
+                {idioma === 'es' && '💡 Cuanto más intensas las fuerzas, menos atractivo es el sector. Busca sectores con barreras altas y poca rivalidad.'}
+                {idioma === 'en' && '💡 The more intense the forces, the less attractive the sector. Look for sectors with high barriers and low rivalry.'}
+              </p>
+            </InfoBox>
+          </Card>
+        )}
+
+        {subSection === 'pestel' && (
+          <Card title={t('analisi', 'pestel')}>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {pestel.map((p, i) => (
+                <div key={i} className={`p-4 bg-${p.color}-50 rounded-xl border border-${p.color}-200`}>
+                  <p className={`font-bold text-${p.color}-700`}>{p.cat}</p>
+                  <ul className="mt-2 space-y-1">
+                    {p.items.map((item, j) => (
+                      <li key={j} className="text-sm text-gray-600 flex items-center gap-1">
+                        <ChevronRight size={12} className={`text-${p.color}-500`} />{item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
+      </div>
+    );
+  };
+
+  const Creixement = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2">
+          <Rocket className="text-pink-500" /> {t('creixement', 'titol')}
+        </h2>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <Card title={<><ArrowUpRight className="text-emerald-500" /> {t('creixement', 'intern')}</>}>
+          <p className="text-sm text-gray-600 mb-3">
+            {idioma === 'val' && 'Créixer amb els propis recursos, sense fusió ni adquisició.'}
+            {idioma === 'es' && 'Crecer con los propios recursos, sin fusión ni adquisición.'}
+            {idioma === 'en' && 'Grow with own resources, without merger or acquisition.'}
+          </p>
+          <div className="space-y-2">
+            {(idioma === 'val' ? ['Ampliar capacitat productiva', 'Nous productes', 'Nous mercats geogràfics', 'Obertura noves botigues'] : 
+              ['Expand production capacity', 'New products', 'New geographic markets', 'Open new stores']).map((e, i) => (
+              <div key={i} className="p-2 bg-emerald-50 rounded-lg text-sm text-emerald-700 border border-emerald-200">{e}</div>
+            ))}
+          </div>
+          <p className="text-xs text-gray-500 mt-3">✓ {idioma === 'val' ? 'Més control, més lent' : 'More control, slower'}</p>
+        </Card>
+
+        <Card title={<><GitBranch className="text-blue-500" /> {t('creixement', 'extern')}</>}>
+          <p className="text-sm text-gray-600 mb-3">
+            {idioma === 'val' && 'Créixer mitjançant acords amb altres empreses.'}
+            {idioma === 'es' && 'Crecer mediante acuerdos con otras empresas.'}
+            {idioma === 'en' && 'Grow through agreements with other companies.'}
+          </p>
+          <div className="space-y-2">
+            {[
+              { nom: t('creixement', 'fusio'), desc: idioma === 'val' ? 'Dues empreses s\'uneixen en una' : 'Two companies merge into one' },
+              { nom: t('creixement', 'adquisicio'), desc: idioma === 'val' ? 'Una empresa en compra una altra' : 'One company buys another' },
+              { nom: t('creixement', 'jointVenture'), desc: idioma === 'val' ? 'Associació temporal per un projecte' : 'Temporary association for a project' },
+              { nom: t('creixement', 'franquicia'), desc: idioma === 'val' ? 'Cedir marca i know-how' : 'Grant brand and know-how' },
+            ].map((e, i) => (
+              <div key={i} className="p-2 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="font-medium text-blue-700 text-sm">{e.nom}</p>
+                <p className="text-xs text-gray-500">{e.desc}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-gray-500 mt-3">✓ {idioma === 'val' ? 'Més ràpid, menys control' : 'Faster, less control'}</p>
+        </Card>
+      </div>
+
+      <Card title={<><Network className="text-pink-500" /> {t('creixement', 'integracio')}</>}>
+        <div className="grid md:grid-cols-2 gap-4">
+          <InfoBox color="purple">
+            <p className="font-bold text-purple-700">{t('creixement', 'vertical')}</p>
+            <p className="text-sm text-gray-600 mt-1">
+              {idioma === 'val' && 'Cap enrere (proveïdors) o cap endavant (distribució). Ex: Inditex fabrica i ven.'}
+              {idioma === 'es' && 'Hacia atrás (proveedores) o hacia adelante (distribución). Ej: Inditex fabrica y vende.'}
+              {idioma === 'en' && 'Backward (suppliers) or forward (distribution). Ex: Inditex manufactures and sells.'}
+            </p>
+          </InfoBox>
+          <InfoBox color="cyan">
+            <p className="font-bold text-cyan-700">{t('creixement', 'horitzontal')}</p>
+            <p className="text-sm text-gray-600 mt-1">
+              {idioma === 'val' && 'Fusió o adquisició de competidors del mateix sector. Ex: Facebook comprant Instagram.'}
+              {idioma === 'es' && 'Fusión o adquisición de competidores del mismo sector. Ej: Facebook comprando Instagram.'}
+              {idioma === 'en' && 'Merger or acquisition of competitors in the same sector. Ex: Facebook buying Instagram.'}
+            </p>
+          </InfoBox>
+        </div>
+      </Card>
+
+      <Card title={<><Globe className="text-pink-500" /> {t('creixement', 'internacionalitzacio')}</>}>
+        <div className="grid md:grid-cols-4 gap-3">
+          {[
+            { nom: t('creixement', 'exportacio'), desc: idioma === 'val' ? 'Vendre a l\'exterior' : 'Sell abroad', risc: idioma === 'val' ? 'Baix' : 'Low', color: 'emerald' },
+            { nom: idioma === 'val' ? 'Llicència' : 'License', desc: idioma === 'val' ? 'Cedir drets a empresa estrangera' : 'Grant rights to foreign company', risc: idioma === 'val' ? 'Baix-Mitjà' : 'Low-Medium', color: 'blue' },
+            { nom: t('creixement', 'jointVenture'), desc: idioma === 'val' ? 'Soci local' : 'Local partner', risc: idioma === 'val' ? 'Mitjà' : 'Medium', color: 'amber' },
+            { nom: t('creixement', 'filial'), desc: idioma === 'val' ? 'Empresa pròpia a l\'estranger' : 'Own company abroad', risc: idioma === 'val' ? 'Alt' : 'High', color: 'red' },
+          ].map((m, i) => (
+            <div key={i} className={`p-3 bg-${m.color}-50 rounded-xl border border-${m.color}-200 text-center`}>
+              <p className={`font-bold text-${m.color}-700 text-sm`}>{m.nom}</p>
+              <p className="text-xs text-gray-500 mt-1">{m.desc}</p>
+              <p className={`text-xs text-${m.color}-600 mt-2 font-medium`}>{idioma === 'val' ? 'Risc' : 'Risk'}: {m.risc}</p>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+
+  const Innovacio = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2">
+          <Sparkles className="text-pink-500" /> {t('innovacio', 'titol')}
+        </h2>
+      </div>
+
+      <Card title={t('innovacio', 'tipusInnovacio')}>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { nom: t('innovacio', 'producte'), desc: idioma === 'val' ? 'Nous productes o millores' : 'New products or improvements', ex: 'iPhone', color: 'pink' },
+            { nom: t('innovacio', 'proces'), desc: idioma === 'val' ? 'Noves formes de produir' : 'New ways to produce', ex: 'Just in Time', color: 'blue' },
+            { nom: t('innovacio', 'organitzativa'), desc: idioma === 'val' ? 'Noves formes d\'organitzar' : 'New ways to organize', ex: idioma === 'val' ? 'Teletreball' : 'Remote work', color: 'emerald' },
+            { nom: t('innovacio', 'marketing'), desc: idioma === 'val' ? 'Noves formes de vendre' : 'New ways to sell', ex: idioma === 'val' ? 'Subscripcions' : 'Subscriptions', color: 'purple' },
+          ].map((t, i) => (
+            <div key={i} className={`p-4 bg-${t.color}-50 rounded-xl border border-${t.color}-200`}>
+              <p className={`font-bold text-${t.color}-700`}>{t.nom}</p>
+              <p className="text-sm text-gray-600 mt-1">{t.desc}</p>
+              <p className="text-xs text-gray-400 mt-2">Ex: {t.ex}</p>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <InfoBox color="blue">
+          <p className="font-bold text-blue-700">{t('innovacio', 'incremental')}</p>
+          <p className="text-sm text-gray-600 mt-1">
+            {idioma === 'val' && 'Millores graduals sobre productes existents. Menys risc.'}
+            {idioma === 'es' && 'Mejoras graduales sobre productos existentes. Menos riesgo.'}
+            {idioma === 'en' && 'Gradual improvements on existing products. Less risk.'}
+          </p>
+          <p className="text-xs text-gray-400 mt-2">Ex: iPhone 14 → iPhone 15</p>
+        </InfoBox>
+        <InfoBox color="purple">
+          <p className="font-bold text-purple-700">{t('innovacio', 'radical')}</p>
+          <p className="text-sm text-gray-600 mt-1">
+            {idioma === 'val' && 'Canvis revolucionaris que creen nous mercats. Alt risc, alta recompensa.'}
+            {idioma === 'es' && 'Cambios revolucionarios que crean nuevos mercados. Alto riesgo, alta recompensa.'}
+            {idioma === 'en' && 'Revolutionary changes that create new markets. High risk, high reward.'}
+          </p>
+          <p className="text-xs text-gray-400 mt-2">Ex: Primer iPhone, Netflix streaming</p>
+        </InfoBox>
+      </div>
+
+      <Card title={<><Rocket className="text-pink-500" /> {t('innovacio', 'leanStartup')}</>}>
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center gap-4">
+            <div className="p-4 bg-blue-100 rounded-full">
+              <Wrench className="text-blue-600" size={24} />
+              <p className="text-xs font-bold text-blue-700 mt-1">{idioma === 'val' ? 'CONSTRUIR' : 'BUILD'}</p>
+            </div>
+            <ArrowRight className="text-gray-400" />
+            <div className="p-4 bg-emerald-100 rounded-full">
+              <Gauge className="text-emerald-600" size={24} />
+              <p className="text-xs font-bold text-emerald-700 mt-1">{idioma === 'val' ? 'MESURAR' : 'MEASURE'}</p>
+            </div>
+            <ArrowRight className="text-gray-400" />
+            <div className="p-4 bg-purple-100 rounded-full">
+              <GraduationCap className="text-purple-600" size={24} />
+              <p className="text-xs font-bold text-purple-700 mt-1">{idioma === 'val' ? 'APRENDRE' : 'LEARN'}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-4">
+          <InfoBox color="pink">
+            <p className="font-bold text-pink-700">{t('innovacio', 'mvp')}</p>
+            <p className="text-sm text-gray-600 mt-1">
+              {idioma === 'val' && 'Versió mínima del producte per validar hipòtesis amb clients reals.'}
+              {idioma === 'es' && 'Versión mínima del producto para validar hipótesis con clientes reales.'}
+              {idioma === 'en' && 'Minimum product version to validate hypotheses with real customers.'}
+            </p>
+          </InfoBox>
+          <InfoBox color="amber">
+            <p className="font-bold text-amber-700">{t('innovacio', 'pivotar')}</p>
+            <p className="text-sm text-gray-600 mt-1">
+              {idioma === 'val' && 'Canviar de direcció basant-se en l\'aprenentatge validat.'}
+              {idioma === 'es' && 'Cambiar de dirección basándose en el aprendizaje validado.'}
+              {idioma === 'en' && 'Change direction based on validated learning.'}
+            </p>
+          </InfoBox>
+          <InfoBox color="emerald">
+            <p className="font-bold text-emerald-700">{idioma === 'val' ? 'Perseverar' : 'Persevere'}</p>
+            <p className="text-sm text-gray-600 mt-1">
+              {idioma === 'val' && 'Continuar si les hipòtesis es confirmen.'}
+              {idioma === 'es' && 'Continuar si las hipótesis se confirman.'}
+              {idioma === 'en' && 'Continue if hypotheses are confirmed.'}
+            </p>
+          </InfoBox>
+        </div>
+      </Card>
+    </div>
+  );
+
+  const Quiz = () => {
+    const preguntes = getQuizPreguntes();
+    const preguntesFiltrades = quizCategoria === 'tots' ? preguntes : preguntes.filter(p => p.cat === quizCategoria);
+
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2">
+            <Brain className="text-pink-500" /> Quiz
+          </h2>
+        </div>
+
+        {!quizIniciado ? (
+          <Card accent className="text-center py-8">
+            <Brain className="mx-auto text-pink-500 mb-4" size={48} />
+            <h3 className="text-xl font-bold text-gray-800 mb-4">
+              {idioma === 'val' && 'Posa a prova els teus coneixements!'}
+              {idioma === 'es' && '¡Pon a prueba tus conocimientos!'}
+              {idioma === 'en' && 'Test your knowledge!'}
+            </h3>
+            <p className="text-gray-500 mb-6">{preguntesFiltrades.length} {idioma === 'val' ? 'preguntes' : idioma === 'es' ? 'preguntas' : 'questions'}</p>
+            
+            <div className="flex flex-wrap justify-center gap-2 mb-6">
+              {['tots', 'costos', 'formes', 'inversions', 'ratios', 'estrategia', 'marketing', 'financament', 'produccio', 'innovacio'].map(cat => (
+                <button key={cat} onClick={() => setQuizCategoria(cat)} className={`px-3 py-1 rounded-full text-sm ${quizCategoria === cat ? 'bg-pink-500 text-white' : 'bg-pink-50 text-pink-700 border border-pink-200'}`}>
+                  {cat === 'tots' ? (idioma === 'val' ? 'Tots' : 'All') : cat}
+                </button>
+              ))}
+            </div>
+            
+            <button onClick={() => { setQuizIniciado(true); setQuizPregunta(0); setQuizRespuestas({}); setQuizTerminado(false); }} className="px-8 py-3 bg-pink-500 text-white rounded-xl font-bold hover:bg-pink-600 transition-all">
+              {t('ui', 'començar')} →
+            </button>
+          </Card>
+        ) : quizTerminado ? (
+          <Card accent className="text-center py-8">
+            <Award className="mx-auto text-amber-500 mb-4" size={48} />
+            <h3 className="text-2xl font-black text-gray-800 mb-2">{t('ui', 'resultat')}</h3>
+            <p className="text-5xl font-black text-pink-500 mb-4">{quizPuntuacion}/{preguntesFiltrades.length}</p>
+            <p className="text-gray-500 mb-6">
+              {quizPuntuacion === preguntesFiltrades.length ? '🏆 ' + (idioma === 'val' ? 'Perfecte!' : 'Perfect!') :
+               quizPuntuacion >= preguntesFiltrades.length * 0.7 ? '👏 ' + (idioma === 'val' ? 'Molt bé!' : 'Very good!') :
+               quizPuntuacion >= preguntesFiltrades.length * 0.5 ? '📚 ' + (idioma === 'val' ? 'Pots millorar' : 'Room to improve') :
+               '💪 ' + (idioma === 'val' ? 'Continua estudiant!' : 'Keep studying!')}
+            </p>
+            <button onClick={() => { setQuizIniciado(false); setQuizTerminado(false); }} className="px-8 py-3 bg-pink-500 text-white rounded-xl font-bold hover:bg-pink-600">
+              {t('ui', 'repetir')}
+            </button>
+          </Card>
+        ) : (
+          <Card>
+            <div className="flex gap-1 mb-4">
+              {preguntesFiltrades.map((_, i) => (
+                <div key={i} className={`h-2 flex-1 rounded-full ${
+                  i < quizPregunta ? (quizRespuestas[i] === preguntesFiltrades[i].correcta ? 'bg-emerald-500' : 'bg-red-500') :
+                  i === quizPregunta ? 'bg-pink-500' : 'bg-gray-200'
+                }`} />
+              ))}
+            </div>
+
+            <p className="text-sm text-gray-500 mb-2">{idioma === 'val' ? 'Pregunta' : 'Question'} {quizPregunta + 1}/{preguntesFiltrades.length}</p>
+            <h3 className="text-xl font-bold text-gray-800 mb-6">{preguntesFiltrades[quizPregunta]?.pregunta}</h3>
+
+            <div className="space-y-3">
+              {preguntesFiltrades[quizPregunta]?.opcions.map((op, i) => {
+                const respost = quizRespuestas[quizPregunta] !== undefined;
+                const correcta = preguntesFiltrades[quizPregunta].correcta === i;
+                const seleccionada = quizRespuestas[quizPregunta] === i;
+                
+                return (
+                  <button
+                    key={i}
+                    onClick={() => !respost && setQuizRespuestas(prev => ({ ...prev, [quizPregunta]: i }))}
+                    disabled={respost}
+                    className={`w-full p-4 rounded-xl text-left transition-all border-2 ${
+                      respost
+                        ? correcta
+                          ? 'bg-emerald-100 border-emerald-400 text-emerald-800'
+                          : seleccionada
+                            ? 'bg-red-100 border-red-400 text-red-800'
+                            : 'bg-gray-50 border-gray-200 text-gray-500'
+                        : 'bg-white border-gray-200 hover:border-pink-300 hover:bg-pink-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                        respost && correcta ? 'bg-emerald-500 text-white' :
+                        respost && seleccionada ? 'bg-red-500 text-white' :
+                        'bg-gray-100 text-gray-600'
+                      }`}>
+                        {respost && correcta ? <Check size={16} /> : respost && seleccionada ? <X size={16} /> : String.fromCharCode(65 + i)}
+                      </span>
+                      <span className="font-medium">{op}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {quizRespuestas[quizPregunta] !== undefined && (
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={() => quizPregunta < preguntesFiltrades.length - 1 ? setQuizPregunta(quizPregunta + 1) : setQuizTerminado(true)}
+                  className="px-6 py-2 bg-pink-500 text-white rounded-lg font-medium hover:bg-pink-600"
+                >
+                  {quizPregunta < preguntesFiltrades.length - 1 ? t('ui', 'seguent') + ' →' : idioma === 'val' ? 'Veure resultat' : 'See result'}
+                </button>
+              </div>
+            )}
+          </Card>
+        )}
+      </div>
+    );
+  };
+
+
+  // ============================================================================
+  // RENDER PRINCIPAL
+  // ============================================================================
+  
+  const renderSection = () => {
+    switch (section) {
+      case 'inicio': return <Inicio />;
+      case 'puntmort': return <PuntMort />;
+      case 'costos': return <Costos />;
+      case 'productivitat': return <Productivitat />;
+      case 'van': return <VanTir />;
+      case 'formes': return <FormesJuridiques />;
+      case 'financament': return <Financament />;
+      case 'ratios': return <Ratios />;
+      case 'rrhh': return <RRHH />;
+      case 'produccio': return <Produccio />;
+      case 'marketing': return <Marketing />;
+      case 'estrategia': return <Estrategia />;
+      case 'canvas': return <Canvas />;
+      case 'analisi': return <Analisi />;
+      case 'creixement': return <Creixement />;
+      case 'innovacio': return <Innovacio />;
+      case 'quiz': return <Quiz />;
+      default: return <Inicio />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-pink-50">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <button onClick={() => setSection('inicio')} className="flex items-center gap-2 font-black text-xl text-gray-800">
+              <Building2 className="text-pink-500" size={28} />
+              <span>{t('inicio', 'titol')}</span>
+            </button>
+            
+            <div className="hidden lg:flex items-center gap-1 flex-wrap">
+              <NavBtn sec="puntmort" icono={Target} label={t('nav', 'puntmort')} />
+              <NavBtn sec="costos" icono={Calculator} label={t('nav', 'costos')} />
+              <NavBtn sec="van" icono={TrendingUp} label="VAN/TIR" />
+              <NavBtn sec="formes" icono={Building} label={t('nav', 'formes')} />
+              <NavBtn sec="financament" icono={Wallet} label={t('nav', 'financament')} />
+              <NavBtn sec="ratios" icono={PieChart} label={t('nav', 'ratios')} />
+              <NavBtn sec="rrhh" icono={Users} label="RRHH" />
+              <NavBtn sec="marketing" icono={Megaphone} label="Marketing" />
+              <NavBtn sec="estrategia" icono={Compass} label={t('nav', 'estrategia')} />
+              <NavBtn sec="canvas" icono={Layers} label="Canvas" />
+              <NavBtn sec="quiz" icono={Brain} label="Quiz" />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <LanguageSelector />
+              <button onClick={() => setMenuOpen(!menuOpen)} className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
+                {menuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Mobile menu */}
+        {menuOpen && (
+          <div className="lg:hidden bg-white border-t border-gray-100 p-4">
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { sec: 'inicio', icon: Home, label: t('nav', 'inicio') },
+                { sec: 'puntmort', icon: Target, label: t('nav', 'puntmort') },
+                { sec: 'costos', icon: Calculator, label: t('nav', 'costos') },
+                { sec: 'productivitat', icon: BarChart3, label: t('nav', 'productivitat') },
+                { sec: 'van', icon: TrendingUp, label: 'VAN/TIR' },
+                { sec: 'formes', icon: Building, label: t('nav', 'formes') },
+                { sec: 'financament', icon: Wallet, label: t('nav', 'financament') },
+                { sec: 'ratios', icon: PieChart, label: t('nav', 'ratios') },
+                { sec: 'rrhh', icon: Users, label: 'RRHH' },
+                { sec: 'produccio', icon: Factory, label: t('nav', 'produccio') },
+                { sec: 'marketing', icon: Megaphone, label: 'Marketing' },
+                { sec: 'estrategia', icon: Compass, label: t('nav', 'estrategia') },
+                { sec: 'canvas', icon: Layers, label: 'Canvas' },
+                { sec: 'analisi', icon: Search, label: t('nav', 'analisi') },
+                { sec: 'creixement', icon: Rocket, label: t('nav', 'creixement') },
+                { sec: 'innovacio', icon: Sparkles, label: t('nav', 'innovacio') },
+                { sec: 'quiz', icon: Brain, label: 'Quiz' },
+              ].map(item => (
+                <button
+                  key={item.sec}
+                  onClick={() => { setSection(item.sec); setMenuOpen(false); }}
+                  className={`p-3 rounded-lg text-center ${section === item.sec ? 'bg-pink-100 text-pink-700' : 'bg-gray-50 text-gray-600'}`}
+                >
+                  <item.icon size={20} className="mx-auto mb-1" />
+                  <span className="text-xs font-medium">{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </header>
+
+      {/* Main content */}
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        {renderSection()}
+      </main>
+
+      {/* Glossary button */}
+      <button
+        onClick={() => setShowGlosario(true)}
+        className="fixed bottom-6 left-6 p-4 bg-pink-500 text-white rounded-full shadow-lg hover:bg-pink-600 transition-all hover:scale-110 z-40"
+        title={t('nav', 'glosari')}
+      >
+        <BookOpen size={24} />
+      </button>
+
+      {/* Glossary modal */}
+      {showGlosario && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setShowGlosario(false)}>
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+              <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <BookOpen className="text-pink-500" /> {t('nav', 'glosari')}
+              </h3>
+              <button onClick={() => setShowGlosario(false)} className="text-gray-400 hover:text-gray-600">
+                <X size={24} />
+              </button>
+            </div>
+            <div className="p-4 border-b border-gray-100">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder={t('ui', 'buscar')}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-300 focus:border-pink-300"
+                />
+              </div>
+            </div>
+            <div className="overflow-y-auto max-h-[60vh] p-4">
+              <div className="space-y-2">
+                {filteredGlosario.map((g, i) => (
+                  <div key={i} className="p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-pink-200 transition-all">
+                    <p className="font-bold text-pink-600">{g.term}</p>
+                    <p className="text-sm text-gray-600">{g.def}</p>
+                    <span className="inline-block mt-1 px-2 py-0.5 bg-pink-100 text-pink-700 rounded text-xs">{g.cat}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Footer */}
+      <footer className="bg-gray-50 border-t border-gray-100 py-6 mt-12">
+        <div className="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm">
+          <p className="font-medium text-gray-700 mb-1">
+            {idioma === 'val' && '🎓 App Educativa d\'Economia de l\'Empresa'}
+            {idioma === 'es' && '🎓 App Educativa de Economía de la Empresa'}
+            {idioma === 'en' && '🎓 Business Economics Educational App'}
+          </p>
+          <p>
+            {idioma === 'val' && 'Batxillerat · Cicles Formatius · Universitat'}
+            {idioma === 'es' && 'Bachillerato · Ciclos Formativos · Universidad'}
+            {idioma === 'en' && 'High School · Vocational Training · University'}
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+        ReactDOM.render(<EmpresaApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
