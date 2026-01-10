@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vida Pràctica - PDE</title>
-    <meta name="description" content="Educació financera quotidiana: CV, nòmines, hipoteques, contractes i més.">
+    <meta name="description" content="Educació financera quotidiana: CV, nòmines, hipoteques, contractes.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💼</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide-react@0.263.1/dist/umd/lucide-react.min.js"></script>
     <style>
         * { scrollbar-width: thin; scrollbar-color: #8b5cf6 #f5f3ff; }
         ::-webkit-scrollbar { width: 6px; }
@@ -22,7 +21,6 @@
     <div id="root"></div>
     <script type="text/babel">
         const { useState } = React;
-        const { Briefcase, FileText, CreditCard, Home, Calculator, FileCheck, BookOpen, Menu, X, CheckCircle, XCircle, AlertCircle, ArrowRight, Euro, Percent, Calendar, Building, Shield, Search, ChevronRight, Zap } = lucideReact;
 
         function App() {
             const [section, setSection] = useState('inicio');
@@ -33,319 +31,280 @@
             const textos = {
                 val: {
                     titol: 'Vida Pràctica',
-                    subtitol: 'Educació Financera Quotidiana',
-                    nav: { inicio: 'Inici', cv: 'Currículum', nomina: 'Nòmina', hipoteca: 'Hipoteca', renda: 'Renda', contractes: 'Contractes', glossari: 'Glossari' },
+                    nav: { inicio: '🏠 Inici', cv: '📄 CV', nomina: '💳 Nòmina', hipoteca: '🏠 Hipoteca', renda: '🧾 Renda', contractes: '📋 Contractes', glossari: '📖 Glossari' },
                     inicio: {
                         titol: 'Benvingut a Vida Pràctica',
-                        desc: "Tot el que mai t'han ensenyat a l'escola sobre la vida real",
+                        desc: "Tot el que mai t'han ensenyat a l'escola",
                         cards: [
-                            { id: 'cv', icon: FileText, title: 'Currículum', desc: 'Com fer un CV professional' },
-                            { id: 'nomina', icon: CreditCard, title: 'Nòmina', desc: 'Entén cada línia de la teua nòmina' },
-                            { id: 'hipoteca', icon: Home, title: 'Hipoteca', desc: 'Tot el que has de saber abans de firmar' },
-                            { id: 'renda', icon: Calculator, title: 'Renda', desc: 'La declaració de la renda explicada' },
-                            { id: 'contractes', icon: FileCheck, title: 'Contractes', desc: 'Tipus de contractes laborals' },
-                            { id: 'glossari', icon: BookOpen, title: 'Glossari', desc: 'Termes financers explicats' }
+                            { id: 'cv', emoji: '📄', title: 'Currículum', desc: 'Com fer un CV professional' },
+                            { id: 'nomina', emoji: '💳', title: 'Nòmina', desc: 'Entén cada línia de la teua nòmina' },
+                            { id: 'hipoteca', emoji: '🏠', title: 'Hipoteca', desc: 'Tot el que has de saber abans de firmar' },
+                            { id: 'renda', emoji: '🧾', title: 'Renda', desc: 'La declaració de la renda explicada' },
+                            { id: 'contractes', emoji: '📋', title: 'Contractes', desc: 'Tipus de contractes laborals' },
+                            { id: 'glossari', emoji: '📖', title: 'Glossari', desc: 'Termes financers explicats' }
                         ],
-                        veureMes: 'Veure més'
+                        veureMes: 'Veure més →'
                     },
                     cv: {
-                        titol: 'Com fer un Currículum Professional',
+                        titol: '📄 Com fer un Currículum Professional',
                         estructura: 'Estructura recomanada',
                         pasos: [
-                            { num: '1', title: 'Dades personals', desc: 'Nom, telèfon, email, LinkedIn (opcional). NO poses foto llevat que la demanen.' },
-                            { num: '2', title: 'Perfil professional', desc: '2-3 línies resumint qui ets i què busques. Adapta-ho a cada oferta.' },
-                            { num: '3', title: 'Experiència laboral', desc: 'De més recent a més antic. Inclou empresa, càrrec, dates i 3-4 èxits concrets.' },
-                            { num: '4', title: 'Formació', desc: 'Títols oficials i cursos rellevants. No cal posar primària ni ESO.' },
-                            { num: '5', title: 'Habilitats', desc: 'Idiomes amb nivell real, programes informàtics, competències clau.' }
+                            { num: '1', title: 'Dades personals', desc: 'Nom, telèfon, email, LinkedIn. NO poses foto llevat que la demanen.' },
+                            { num: '2', title: 'Perfil professional', desc: '2-3 línies resumint qui ets i què busques.' },
+                            { num: '3', title: 'Experiència laboral', desc: 'De més recent a més antic. Inclou empresa, càrrec i èxits.' },
+                            { num: '4', title: 'Formació', desc: 'Títols oficials i cursos rellevants.' },
+                            { num: '5', title: 'Habilitats', desc: 'Idiomes amb nivell real, programes, competències.' }
                         ],
-                        errors: 'Errors comuns a evitar',
-                        errorsList: ['CV de més de 2 pàgines', "Faltes d'ortografia", 'Email poc professional', 'Mentir sobre experiència', 'Disseny massa recarregat', 'No adaptar-lo a cada oferta'],
-                        consells: 'Consells clau',
-                        consellsList: ['Utilitza verbs d\'acció: "vaig liderar", "vaig aconseguir"', 'Quantifica els teus èxits: "vaig augmentar vendes un 20%"', 'Revisa-ho sempre abans d\'enviar', 'Guarda-ho en PDF', 'El nom del fitxer: CV_NomCognom.pdf']
+                        errors: '❌ Errors comuns',
+                        errorsList: ['CV de més de 2 pàgines', "Faltes d'ortografia", 'Email poc professional', 'Mentir sobre experiència', 'Disseny massa recarregat'],
+                        consells: '✅ Consells clau',
+                        consellsList: ['Utilitza verbs d\'acció', 'Quantifica els teus èxits', 'Revisa-ho sempre', 'Guarda-ho en PDF', 'Nom: CV_NomCognom.pdf']
                     },
                     nomina: {
-                        titol: 'Com llegir la teua Nòmina',
-                        seccions: 'Seccions de la nòmina',
-                        encap: { title: 'Encapçalament', items: ["Dades de l'empresa (CIF, adreça)", 'Les teues dades (NIF, antiguitat, categoria)', 'Període de liquidació'] },
-                        meritacions: { title: 'Meritacions (el que guanyes)', items: ['Salari base: segons conveni', 'Complements: antiguitat, nocturnitat, perills...', "Hores extra: si n'has fet", 'Pagues extra: prorrateig o senceres'] },
-                        deduccions: { title: 'Deduccions (el que et resten)', items: ['IRPF: impost sobre la renda (varia segons sou)', 'Seguretat Social: ~6.35% del brut', 'Altres: anticipos, embargaments...'] },
-                        exemple: 'Exemple pràctic',
-                        exempleData: { brut: 2000, ss: 127, irpf: 300, net: 1573 },
+                        titol: '💳 Com llegir la teua Nòmina',
+                        encap: { title: '📋 Encapçalament', items: ["Dades de l'empresa", 'Les teues dades', 'Període'] },
+                        meritacions: { title: '💰 Meritacions (guanyes)', items: ['Salari base', 'Complements', 'Hores extra', 'Pagues extra'] },
+                        deduccions: { title: '➖ Deduccions (resten)', items: ['IRPF (~15-20%)', 'Seguretat Social (~6.35%)', 'Altres'] },
+                        exemple: '📊 Exemple pràctic',
                         brutLabel: 'Brut', netLabel: 'Net'
                     },
                     hipoteca: {
-                        titol: 'Guia de la Hipoteca',
+                        titol: '🏠 Guia de la Hipoteca',
                         conceptes: 'Conceptes clau',
                         conceptesList: [
                             { term: 'Capital', def: 'Diners que et presta el banc' },
-                            { term: 'Interès', def: 'El cost del préstec (TAE)' },
-                            { term: 'Termini', def: 'Anys per tornar-ho (màx 30)' },
+                            { term: 'Interès', def: 'El cost del préstec' },
+                            { term: 'Termini', def: 'Anys per tornar-ho' },
                             { term: 'Quota', def: 'El que pagues cada mes' }
                         ],
                         tipus: "Tipus d'hipoteca",
                         tipusList: [
-                            { nom: 'Fixa', desc: 'Sempre pagues el mateix', pros: 'Estabilitat', contres: 'Sol ser més cara', color: 'emerald' },
-                            { nom: 'Variable', desc: "Canvia amb l'Euríbor", pros: 'Pot ser més barata', contres: 'Incertesa', color: 'amber' },
-                            { nom: 'Mixta', desc: 'Fixa uns anys, després variable', pros: 'Equilibri', contres: 'Complexitat', color: 'blue' }
+                            { nom: '🟢 Fixa', desc: 'Sempre pagues el mateix. Estable però més cara.' },
+                            { nom: '🟡 Variable', desc: "Canvia amb l'Euríbor. Pot ser barata o cara." },
+                            { nom: '🔵 Mixta', desc: 'Fixa uns anys, després variable.' }
                         ],
-                        despeses: 'Despeses a tenir en compte',
-                        despesesList: ['Taxació: 300-500€', 'Notaria: 600-1000€', 'Registre: 400-650€', 'Gestoria: 300-500€'],
-                        consell: 'Necessites ~20% entrada + 10% despeses. La quota no hauria de superar el 30-35% dels teus ingressos nets.'
+                        consell: '⚠️ Necessites ~20% entrada + 10% despeses. Quota màx: 30-35% dels ingressos.'
                     },
                     renda: {
-                        titol: 'Declaració de la Renda (IRPF)',
+                        titol: '🧾 Declaració de la Renda (IRPF)',
                         que: 'Qui ha de declarar?',
-                        queList: ['Ingressos del treball > 22.000€/any (1 pagador)', 'Ingressos del treball > 15.000€/any (2+ pagadors)', 'Rendiments del capital > 1.600€/any', 'Autònoms (sempre)'],
+                        queList: ['Ingressos > 22.000€/any (1 pagador)', 'Ingressos > 15.000€/any (2+ pagadors)', 'Rendiments capital > 1.600€', 'Autònoms (sempre)'],
                         deduccions: 'Deduccions habituals',
-                        deduccionsList: ['Hipoteca habitatge habitual (si és anterior a 2013)', 'Donacions a ONG', 'Aportacions a plans de pensions', 'Quotes sindicals', 'Deducció per maternitat'],
-                        resultat: 'El resultat',
-                        resultatDesc: "Si t'han retingut més del que tocava → Et tornen diners. Si t'han retingut menys → Has de pagar.",
-                        consell: "Revisa sempre l'esborrany! Hisenda no inclou totes les deduccions automàticament."
+                        deduccionsList: ['Hipoteca (si anterior a 2013)', 'Donacions a ONG', 'Plans de pensions', 'Quotes sindicals'],
+                        consell: '⚠️ Revisa sempre l\'esborrany! Hisenda no inclou tot automàticament.'
                     },
                     contractes: {
-                        titol: 'Tipus de Contractes Laborals',
+                        titol: '📋 Tipus de Contractes Laborals',
                         tipus: [
-                            { nom: 'Indefinit', desc: 'Sense data de fi. El més estable.', color: 'emerald' },
-                            { nom: 'Temporal', desc: 'Per obra, circumstàncies o substitució.', color: 'amber' },
-                            { nom: 'Pràctiques', desc: 'Per a titulats recents. Màx 2 anys.', color: 'blue' },
-                            { nom: 'Formació', desc: 'Combina treball i formació. 16-25 anys.', color: 'purple' },
-                            { nom: 'Fix discontinu', desc: 'Treballs estacionals o intermitents.', color: 'pink' }
+                            { nom: '🟢 Indefinit', desc: 'Sense data de fi. El més estable.' },
+                            { nom: '🟡 Temporal', desc: 'Per obra o substitució.' },
+                            { nom: '🔵 Pràctiques', desc: 'Per a titulats recents. Màx 2 anys.' },
+                            { nom: '🟣 Formació', desc: 'Combina treball i formació. 16-25 anys.' },
+                            { nom: '🟤 Fix discontinu', desc: 'Treballs estacionals.' }
                         ],
-                        drets: 'Els teus drets bàsics',
-                        dretsList: ['Salari mínim segons conveni', '30 dies naturals de vacances/any', 'Permís per malaltia (baixa)', '14 festius anuals', 'Finiquito en acabar']
+                        drets: '🛡️ Els teus drets bàsics',
+                        dretsList: ['Salari mínim segons conveni', '30 dies vacances/any', 'Baixa per malaltia', '14 festius anuals', 'Finiquito en acabar']
                     },
                     glossari: {
-                        titol: 'Glossari de Termes',
+                        titol: '📖 Glossari de Termes',
                         cerca: 'Cerca un terme...',
                         termes: [
-                            { terme: 'IRPF', def: "Impost sobre la Renda de les Persones Físiques. L'impost que pagues pels teus ingressos." },
-                            { terme: 'Salari brut', def: 'El total que guanyes abans de deduccions.' },
-                            { terme: 'Salari net', def: 'El que realment reps al compte després de deduccions.' },
-                            { terme: 'Seguretat Social', def: 'Sistema públic que cobreix sanitat, pensions, atur, etc.' },
-                            { terme: 'Euríbor', def: 'Índex de referència per a hipoteques variables a Europa.' },
-                            { terme: 'TAE', def: "Taxa Anual Equivalent. El cost real d'un préstec incloent comissions." },
-                            { terme: 'TIN', def: "Tipus d'Interès Nominal. L'interès pur sense comissions." },
-                            { terme: 'Amortització', def: "Pagament del capital d'un préstec." },
-                            { terme: 'Conveni col·lectiu', def: "Acord que regula les condicions laborals d'un sector." },
-                            { terme: 'Finiquito', def: 'Liquidació final quan acaba una relació laboral.' },
-                            { terme: 'Prorrata', def: 'Distribució proporcional de les pagues extra cada mes.' },
-                            { terme: 'Base de cotització', def: 'Import sobre el qual es calculen les cotitzacions a la SS.' },
-                            { terme: 'Embargament', def: 'Retenció legal de part del salari per deutes.' },
-                            { terme: 'Indemnització', def: 'Compensació econòmica per acomiadament.' },
-                            { terme: 'Antiguitat', def: 'Temps treballat en una empresa. Pot generar complements.' },
-                            { terme: 'Nocturnitat', def: 'Complement per treballar en horari nocturn (22h-6h).' }
+                            { terme: 'IRPF', def: "Impost sobre la Renda. L'impost que pagues pels teus ingressos." },
+                            { terme: 'Salari brut', def: 'El total abans de deduccions.' },
+                            { terme: 'Salari net', def: 'El que reps després de deduccions.' },
+                            { terme: 'Seguretat Social', def: 'Sistema públic: sanitat, pensions, atur.' },
+                            { terme: 'Euríbor', def: 'Índex per a hipoteques variables.' },
+                            { terme: 'TAE', def: "Cost real d'un préstec amb comissions." },
+                            { terme: 'TIN', def: "Interès pur sense comissions." },
+                            { terme: 'Conveni', def: 'Acord que regula condicions laborals.' },
+                            { terme: 'Finiquito', def: 'Liquidació final en acabar contracte.' },
+                            { terme: 'Indemnització', def: 'Compensació per acomiadament.' }
                         ]
                     }
                 },
                 es: {
                     titol: 'Vida Práctica',
-                    subtitol: 'Educación Financiera Cotidiana',
-                    nav: { inicio: 'Inicio', cv: 'Currículum', nomina: 'Nómina', hipoteca: 'Hipoteca', renda: 'Renta', contractes: 'Contratos', glossari: 'Glosario' },
+                    nav: { inicio: '🏠 Inicio', cv: '📄 CV', nomina: '💳 Nómina', hipoteca: '🏠 Hipoteca', renda: '🧾 Renta', contractes: '📋 Contratos', glossari: '📖 Glosario' },
                     inicio: {
                         titol: 'Bienvenido a Vida Práctica',
-                        desc: 'Todo lo que nunca te enseñaron en el colegio sobre la vida real',
+                        desc: 'Todo lo que nunca te enseñaron en el colegio',
                         cards: [
-                            { id: 'cv', icon: FileText, title: 'Currículum', desc: 'Cómo hacer un CV profesional' },
-                            { id: 'nomina', icon: CreditCard, title: 'Nómina', desc: 'Entiende cada línea de tu nómina' },
-                            { id: 'hipoteca', icon: Home, title: 'Hipoteca', desc: 'Todo lo que debes saber antes de firmar' },
-                            { id: 'renda', icon: Calculator, title: 'Renta', desc: 'La declaración de la renta explicada' },
-                            { id: 'contractes', icon: FileCheck, title: 'Contratos', desc: 'Tipos de contratos laborales' },
-                            { id: 'glossari', icon: BookOpen, title: 'Glosario', desc: 'Términos financieros explicados' }
+                            { id: 'cv', emoji: '📄', title: 'Currículum', desc: 'Cómo hacer un CV profesional' },
+                            { id: 'nomina', emoji: '💳', title: 'Nómina', desc: 'Entiende cada línea de tu nómina' },
+                            { id: 'hipoteca', emoji: '🏠', title: 'Hipoteca', desc: 'Todo lo que debes saber antes de firmar' },
+                            { id: 'renda', emoji: '🧾', title: 'Renta', desc: 'La declaración de la renta explicada' },
+                            { id: 'contractes', emoji: '📋', title: 'Contratos', desc: 'Tipos de contratos laborales' },
+                            { id: 'glossari', emoji: '📖', title: 'Glosario', desc: 'Términos financieros explicados' }
                         ],
-                        veureMes: 'Ver más'
+                        veureMes: 'Ver más →'
                     },
                     cv: {
-                        titol: 'Cómo hacer un Currículum Profesional',
+                        titol: '📄 Cómo hacer un Currículum Profesional',
                         estructura: 'Estructura recomendada',
                         pasos: [
-                            { num: '1', title: 'Datos personales', desc: 'Nombre, teléfono, email, LinkedIn (opcional). NO pongas foto salvo que la pidan.' },
-                            { num: '2', title: 'Perfil profesional', desc: '2-3 líneas resumiendo quién eres y qué buscas. Adáptalo a cada oferta.' },
-                            { num: '3', title: 'Experiencia laboral', desc: 'De más reciente a más antiguo. Incluye empresa, cargo, fechas y 3-4 logros concretos.' },
-                            { num: '4', title: 'Formación', desc: 'Títulos oficiales y cursos relevantes. No hace falta poner primaria ni ESO.' },
-                            { num: '5', title: 'Habilidades', desc: 'Idiomas con nivel real, programas informáticos, competencias clave.' }
+                            { num: '1', title: 'Datos personales', desc: 'Nombre, teléfono, email, LinkedIn. NO foto salvo que la pidan.' },
+                            { num: '2', title: 'Perfil profesional', desc: '2-3 líneas resumiendo quién eres.' },
+                            { num: '3', title: 'Experiencia laboral', desc: 'De más reciente a más antiguo.' },
+                            { num: '4', title: 'Formación', desc: 'Títulos oficiales y cursos relevantes.' },
+                            { num: '5', title: 'Habilidades', desc: 'Idiomas, programas, competencias.' }
                         ],
-                        errors: 'Errores comunes a evitar',
-                        errorsList: ['CV de más de 2 páginas', 'Faltas de ortografía', 'Email poco profesional', 'Mentir sobre experiencia', 'Diseño demasiado recargado', 'No adaptarlo a cada oferta'],
-                        consells: 'Consejos clave',
-                        consellsList: ['Utiliza verbos de acción: "lideré", "conseguí"', 'Cuantifica tus logros: "aumenté ventas un 20%"', 'Revísalo siempre antes de enviar', 'Guárdalo en PDF', 'El nombre del archivo: CV_NombreApellido.pdf']
+                        errors: '❌ Errores comunes',
+                        errorsList: ['CV de más de 2 páginas', 'Faltas de ortografía', 'Email poco profesional', 'Mentir sobre experiencia', 'Diseño recargado'],
+                        consells: '✅ Consejos clave',
+                        consellsList: ['Usa verbos de acción', 'Cuantifica logros', 'Revisa siempre', 'Guarda en PDF', 'Nombre: CV_NombreApellido.pdf']
                     },
                     nomina: {
-                        titol: 'Cómo leer tu Nómina',
-                        seccions: 'Secciones de la nómina',
-                        encap: { title: 'Encabezado', items: ['Datos de la empresa (CIF, dirección)', 'Tus datos (NIF, antigüedad, categoría)', 'Período de liquidación'] },
-                        meritacions: { title: 'Devengos (lo que ganas)', items: ['Salario base: según convenio', 'Complementos: antigüedad, nocturnidad, peligrosidad...', 'Horas extra: si las has hecho', 'Pagas extra: prorrateo o enteras'] },
-                        deduccions: { title: 'Deducciones (lo que te quitan)', items: ['IRPF: impuesto sobre la renta (varía según sueldo)', 'Seguridad Social: ~6.35% del bruto', 'Otros: anticipos, embargos...'] },
-                        exemple: 'Ejemplo práctico',
-                        exempleData: { brut: 2000, ss: 127, irpf: 300, net: 1573 },
+                        titol: '💳 Cómo leer tu Nómina',
+                        encap: { title: '📋 Encabezado', items: ['Datos empresa', 'Tus datos', 'Período'] },
+                        meritacions: { title: '💰 Devengos (ganas)', items: ['Salario base', 'Complementos', 'Horas extra', 'Pagas extra'] },
+                        deduccions: { title: '➖ Deducciones (quitan)', items: ['IRPF (~15-20%)', 'Seguridad Social (~6.35%)', 'Otros'] },
+                        exemple: '📊 Ejemplo práctico',
                         brutLabel: 'Bruto', netLabel: 'Neto'
                     },
                     hipoteca: {
-                        titol: 'Guía de la Hipoteca',
+                        titol: '🏠 Guía de la Hipoteca',
                         conceptes: 'Conceptos clave',
                         conceptesList: [
                             { term: 'Capital', def: 'Dinero que te presta el banco' },
-                            { term: 'Interés', def: 'El coste del préstamo (TAE)' },
-                            { term: 'Plazo', def: 'Años para devolverlo (máx 30)' },
+                            { term: 'Interés', def: 'El coste del préstamo' },
+                            { term: 'Plazo', def: 'Años para devolverlo' },
                             { term: 'Cuota', def: 'Lo que pagas cada mes' }
                         ],
                         tipus: 'Tipos de hipoteca',
                         tipusList: [
-                            { nom: 'Fija', desc: 'Siempre pagas lo mismo', pros: 'Estabilidad', contres: 'Suele ser más cara', color: 'emerald' },
-                            { nom: 'Variable', desc: 'Cambia con el Euríbor', pros: 'Puede ser más barata', contres: 'Incertidumbre', color: 'amber' },
-                            { nom: 'Mixta', desc: 'Fija unos años, luego variable', pros: 'Equilibrio', contres: 'Complejidad', color: 'blue' }
+                            { nom: '🟢 Fija', desc: 'Siempre pagas lo mismo. Estable pero más cara.' },
+                            { nom: '🟡 Variable', desc: 'Cambia con el Euríbor. Puede ser barata o cara.' },
+                            { nom: '🔵 Mixta', desc: 'Fija unos años, luego variable.' }
                         ],
-                        despeses: 'Gastos a tener en cuenta',
-                        despesesList: ['Tasación: 300-500€', 'Notaría: 600-1000€', 'Registro: 400-650€', 'Gestoría: 300-500€'],
-                        consell: 'Necesitas ~20% entrada + 10% gastos. La cuota no debería superar el 30-35% de tus ingresos netos.'
+                        consell: '⚠️ Necesitas ~20% entrada + 10% gastos. Cuota máx: 30-35% de ingresos.'
                     },
                     renda: {
-                        titol: 'Declaración de la Renta (IRPF)',
+                        titol: '🧾 Declaración de la Renta (IRPF)',
                         que: '¿Quién debe declarar?',
-                        queList: ['Ingresos del trabajo > 22.000€/año (1 pagador)', 'Ingresos del trabajo > 15.000€/año (2+ pagadores)', 'Rendimientos del capital > 1.600€/año', 'Autónomos (siempre)'],
+                        queList: ['Ingresos > 22.000€/año (1 pagador)', 'Ingresos > 15.000€/año (2+ pagadores)', 'Rendimientos capital > 1.600€', 'Autónomos (siempre)'],
                         deduccions: 'Deducciones habituales',
-                        deduccionsList: ['Hipoteca vivienda habitual (si es anterior a 2013)', 'Donaciones a ONG', 'Aportaciones a planes de pensiones', 'Cuotas sindicales', 'Deducción por maternidad'],
-                        resultat: 'El resultado',
-                        resultatDesc: 'Si te han retenido más de lo que tocaba → Te devuelven dinero. Si te han retenido menos → Tienes que pagar.',
-                        consell: '¡Revisa siempre el borrador! Hacienda no incluye todas las deducciones automáticamente.'
+                        deduccionsList: ['Hipoteca (si anterior a 2013)', 'Donaciones a ONG', 'Planes de pensiones', 'Cuotas sindicales'],
+                        consell: '⚠️ ¡Revisa siempre el borrador! Hacienda no incluye todo automáticamente.'
                     },
                     contractes: {
-                        titol: 'Tipos de Contratos Laborales',
+                        titol: '📋 Tipos de Contratos Laborales',
                         tipus: [
-                            { nom: 'Indefinido', desc: 'Sin fecha de fin. El más estable.', color: 'emerald' },
-                            { nom: 'Temporal', desc: 'Por obra, circunstancias o sustitución.', color: 'amber' },
-                            { nom: 'Prácticas', desc: 'Para titulados recientes. Máx 2 años.', color: 'blue' },
-                            { nom: 'Formación', desc: 'Combina trabajo y formación. 16-25 años.', color: 'purple' },
-                            { nom: 'Fijo discontinuo', desc: 'Trabajos estacionales o intermitentes.', color: 'pink' }
+                            { nom: '🟢 Indefinido', desc: 'Sin fecha de fin. El más estable.' },
+                            { nom: '🟡 Temporal', desc: 'Por obra o sustitución.' },
+                            { nom: '🔵 Prácticas', desc: 'Para titulados recientes. Máx 2 años.' },
+                            { nom: '🟣 Formación', desc: 'Combina trabajo y formación. 16-25 años.' },
+                            { nom: '🟤 Fijo discontinuo', desc: 'Trabajos estacionales.' }
                         ],
-                        drets: 'Tus derechos básicos',
-                        dretsList: ['Salario mínimo según convenio', '30 días naturales de vacaciones/año', 'Permiso por enfermedad (baja)', '14 festivos anuales', 'Finiquito al terminar']
+                        drets: '🛡️ Tus derechos básicos',
+                        dretsList: ['Salario mínimo según convenio', '30 días vacaciones/año', 'Baja por enfermedad', '14 festivos anuales', 'Finiquito al terminar']
                     },
                     glossari: {
-                        titol: 'Glosario de Términos',
+                        titol: '📖 Glosario de Términos',
                         cerca: 'Busca un término...',
                         termes: [
-                            { terme: 'IRPF', def: 'Impuesto sobre la Renta de las Personas Físicas. El impuesto que pagas por tus ingresos.' },
-                            { terme: 'Salario bruto', def: 'El total que ganas antes de deducciones.' },
-                            { terme: 'Salario neto', def: 'Lo que realmente recibes en cuenta después de deducciones.' },
-                            { terme: 'Seguridad Social', def: 'Sistema público que cubre sanidad, pensiones, paro, etc.' },
-                            { terme: 'Euríbor', def: 'Índice de referencia para hipotecas variables en Europa.' },
-                            { terme: 'TAE', def: 'Tasa Anual Equivalente. El coste real de un préstamo incluyendo comisiones.' },
-                            { terme: 'TIN', def: 'Tipo de Interés Nominal. El interés puro sin comisiones.' },
-                            { terme: 'Amortización', def: 'Pago del capital de un préstamo.' },
-                            { terme: 'Convenio colectivo', def: 'Acuerdo que regula las condiciones laborales de un sector.' },
-                            { terme: 'Finiquito', def: 'Liquidación final cuando termina una relación laboral.' },
-                            { terme: 'Prorrata', def: 'Distribución proporcional de las pagas extra cada mes.' },
-                            { terme: 'Base de cotización', def: 'Importe sobre el que se calculan las cotizaciones a la SS.' },
-                            { terme: 'Embargo', def: 'Retención legal de parte del salario por deudas.' },
-                            { terme: 'Indemnización', def: 'Compensación económica por despido.' },
-                            { terme: 'Antigüedad', def: 'Tiempo trabajado en una empresa. Puede generar complementos.' },
-                            { terme: 'Nocturnidad', def: 'Complemento por trabajar en horario nocturno (22h-6h).' }
+                            { terme: 'IRPF', def: 'Impuesto sobre la Renta. El impuesto por tus ingresos.' },
+                            { terme: 'Salario bruto', def: 'El total antes de deducciones.' },
+                            { terme: 'Salario neto', def: 'Lo que recibes después de deducciones.' },
+                            { terme: 'Seguridad Social', def: 'Sistema público: sanidad, pensiones, paro.' },
+                            { terme: 'Euríbor', def: 'Índice para hipotecas variables.' },
+                            { terme: 'TAE', def: 'Coste real de un préstamo con comisiones.' },
+                            { terme: 'TIN', def: 'Interés puro sin comisiones.' },
+                            { terme: 'Convenio', def: 'Acuerdo que regula condiciones laborales.' },
+                            { terme: 'Finiquito', def: 'Liquidación final al acabar contrato.' },
+                            { terme: 'Indemnización', def: 'Compensación por despido.' }
                         ]
                     }
                 },
                 en: {
                     titol: 'Practical Life',
-                    subtitol: 'Everyday Financial Education',
-                    nav: { inicio: 'Home', cv: 'CV', nomina: 'Payslip', hipoteca: 'Mortgage', renda: 'Tax Return', contractes: 'Contracts', glossari: 'Glossary' },
+                    nav: { inicio: '🏠 Home', cv: '📄 CV', nomina: '💳 Payslip', hipoteca: '🏠 Mortgage', renda: '🧾 Tax', contractes: '📋 Contracts', glossari: '📖 Glossary' },
                     inicio: {
                         titol: 'Welcome to Practical Life',
-                        desc: 'Everything they never taught you in school about real life',
+                        desc: 'Everything they never taught you in school',
                         cards: [
-                            { id: 'cv', icon: FileText, title: 'CV', desc: 'How to make a professional CV' },
-                            { id: 'nomina', icon: CreditCard, title: 'Payslip', desc: 'Understand every line of your payslip' },
-                            { id: 'hipoteca', icon: Home, title: 'Mortgage', desc: 'Everything you need to know before signing' },
-                            { id: 'renda', icon: Calculator, title: 'Tax Return', desc: 'Income tax explained' },
-                            { id: 'contractes', icon: FileCheck, title: 'Contracts', desc: 'Types of employment contracts' },
-                            { id: 'glossari', icon: BookOpen, title: 'Glossary', desc: 'Financial terms explained' }
+                            { id: 'cv', emoji: '📄', title: 'CV', desc: 'How to make a professional CV' },
+                            { id: 'nomina', emoji: '💳', title: 'Payslip', desc: 'Understand every line of your payslip' },
+                            { id: 'hipoteca', emoji: '🏠', title: 'Mortgage', desc: 'Everything you need to know before signing' },
+                            { id: 'renda', emoji: '🧾', title: 'Tax Return', desc: 'Income tax explained' },
+                            { id: 'contractes', emoji: '📋', title: 'Contracts', desc: 'Types of employment contracts' },
+                            { id: 'glossari', emoji: '📖', title: 'Glossary', desc: 'Financial terms explained' }
                         ],
-                        veureMes: 'See more'
+                        veureMes: 'See more →'
                     },
                     cv: {
-                        titol: 'How to Make a Professional CV',
+                        titol: '📄 How to Make a Professional CV',
                         estructura: 'Recommended structure',
                         pasos: [
-                            { num: '1', title: 'Personal details', desc: 'Name, phone, email, LinkedIn (optional). DO NOT include photo unless requested.' },
-                            { num: '2', title: 'Professional profile', desc: "2-3 lines summarizing who you are and what you're looking for. Adapt it for each job." },
-                            { num: '3', title: 'Work experience', desc: 'From most recent to oldest. Include company, position, dates and 3-4 concrete achievements.' },
-                            { num: '4', title: 'Education', desc: 'Official degrees and relevant courses. No need to include primary school.' },
-                            { num: '5', title: 'Skills', desc: 'Languages with actual level, software, key competencies.' }
+                            { num: '1', title: 'Personal details', desc: 'Name, phone, email, LinkedIn. NO photo unless requested.' },
+                            { num: '2', title: 'Professional profile', desc: '2-3 lines summarizing who you are.' },
+                            { num: '3', title: 'Work experience', desc: 'From most recent to oldest.' },
+                            { num: '4', title: 'Education', desc: 'Official degrees and relevant courses.' },
+                            { num: '5', title: 'Skills', desc: 'Languages, software, competencies.' }
                         ],
-                        errors: 'Common mistakes to avoid',
-                        errorsList: ['CV longer than 2 pages', 'Spelling mistakes', 'Unprofessional email', 'Lying about experience', 'Overly cluttered design', 'Not adapting it for each job'],
-                        consells: 'Key tips',
-                        consellsList: ['Use action verbs: "led", "achieved"', 'Quantify your achievements: "increased sales by 20%"', 'Always proofread before sending', 'Save it as PDF', 'File name: CV_FirstNameLastName.pdf']
+                        errors: '❌ Common mistakes',
+                        errorsList: ['CV longer than 2 pages', 'Spelling mistakes', 'Unprofessional email', 'Lying about experience', 'Cluttered design'],
+                        consells: '✅ Key tips',
+                        consellsList: ['Use action verbs', 'Quantify achievements', 'Always proofread', 'Save as PDF', 'Name: CV_FirstNameLastName.pdf']
                     },
                     nomina: {
-                        titol: 'How to Read Your Payslip',
-                        seccions: 'Payslip sections',
-                        encap: { title: 'Header', items: ['Company details (Tax ID, address)', 'Your details (ID, seniority, category)', 'Pay period'] },
-                        meritacions: { title: 'Earnings (what you earn)', items: ['Base salary: according to agreement', 'Supplements: seniority, night shift, hazards...', 'Overtime: if worked', 'Bonus payments: spread out or lump sum'] },
-                        deduccions: { title: 'Deductions (what they take)', items: ['Income tax: varies by salary', 'Social Security: ~6.35% of gross', 'Other: advances, garnishments...'] },
-                        exemple: 'Practical example',
-                        exempleData: { brut: 2000, ss: 127, irpf: 300, net: 1573 },
+                        titol: '💳 How to Read Your Payslip',
+                        encap: { title: '📋 Header', items: ['Company info', 'Your info', 'Period'] },
+                        meritacions: { title: '💰 Earnings', items: ['Base salary', 'Supplements', 'Overtime', 'Bonuses'] },
+                        deduccions: { title: '➖ Deductions', items: ['Income tax (~15-20%)', 'Social Security (~6.35%)', 'Other'] },
+                        exemple: '📊 Practical example',
                         brutLabel: 'Gross', netLabel: 'Net'
                     },
                     hipoteca: {
-                        titol: 'Mortgage Guide',
+                        titol: '🏠 Mortgage Guide',
                         conceptes: 'Key concepts',
                         conceptesList: [
                             { term: 'Principal', def: 'Money the bank lends you' },
-                            { term: 'Interest', def: 'The cost of the loan (APR)' },
-                            { term: 'Term', def: 'Years to repay (max 30)' },
+                            { term: 'Interest', def: 'The cost of the loan' },
+                            { term: 'Term', def: 'Years to repay' },
                             { term: 'Payment', def: 'What you pay monthly' }
                         ],
                         tipus: 'Types of mortgage',
                         tipusList: [
-                            { nom: 'Fixed', desc: 'Always pay the same', pros: 'Stability', contres: 'Usually more expensive', color: 'emerald' },
-                            { nom: 'Variable', desc: 'Changes with Euribor', pros: 'Can be cheaper', contres: 'Uncertainty', color: 'amber' },
-                            { nom: 'Mixed', desc: 'Fixed for some years, then variable', pros: 'Balance', contres: 'Complexity', color: 'blue' }
+                            { nom: '🟢 Fixed', desc: 'Always pay the same. Stable but more expensive.' },
+                            { nom: '🟡 Variable', desc: 'Changes with Euribor. Can be cheap or expensive.' },
+                            { nom: '🔵 Mixed', desc: 'Fixed for some years, then variable.' }
                         ],
-                        despeses: 'Costs to consider',
-                        despesesList: ['Valuation: €300-500', 'Notary: €600-1000', 'Registry: €400-650', 'Agency: €300-500'],
-                        consell: "You need ~20% down payment + 10% costs. Monthly payment shouldn't exceed 30-35% of your net income."
+                        consell: '⚠️ You need ~20% down + 10% costs. Max payment: 30-35% of income.'
                     },
                     renda: {
-                        titol: 'Income Tax Return',
+                        titol: '🧾 Income Tax Return',
                         que: 'Who must file?',
-                        queList: ['Work income > €22,000/year (1 employer)', 'Work income > €15,000/year (2+ employers)', 'Capital gains > €1,600/year', 'Self-employed (always)'],
+                        queList: ['Income > €22,000/year (1 employer)', 'Income > €15,000/year (2+ employers)', 'Capital gains > €1,600', 'Self-employed (always)'],
                         deduccions: 'Common deductions',
-                        deduccionsList: ['Main residence mortgage (if before 2013)', 'Donations to NGOs', 'Pension plan contributions', 'Union dues', 'Maternity deduction'],
-                        resultat: 'The result',
-                        resultatDesc: 'If they withheld more than owed → You get a refund. If they withheld less → You have to pay.',
-                        consell: "Always review the draft! The tax office doesn't automatically include all deductions."
+                        deduccionsList: ['Mortgage (if before 2013)', 'NGO donations', 'Pension plans', 'Union dues'],
+                        consell: "⚠️ Always review the draft! Tax office doesn't include everything automatically."
                     },
                     contractes: {
-                        titol: 'Types of Employment Contracts',
+                        titol: '📋 Types of Employment Contracts',
                         tipus: [
-                            { nom: 'Permanent', desc: 'No end date. Most stable.', color: 'emerald' },
-                            { nom: 'Temporary', desc: 'For projects, circumstances or substitution.', color: 'amber' },
-                            { nom: 'Internship', desc: 'For recent graduates. Max 2 years.', color: 'blue' },
-                            { nom: 'Training', desc: 'Combines work and training. Ages 16-25.', color: 'purple' },
-                            { nom: 'Seasonal', desc: 'Seasonal or intermittent work.', color: 'pink' }
+                            { nom: '🟢 Permanent', desc: 'No end date. Most stable.' },
+                            { nom: '🟡 Temporary', desc: 'For projects or substitution.' },
+                            { nom: '🔵 Internship', desc: 'For recent graduates. Max 2 years.' },
+                            { nom: '🟣 Training', desc: 'Combines work and training. Ages 16-25.' },
+                            { nom: '🟤 Seasonal', desc: 'Seasonal work.' }
                         ],
-                        drets: 'Your basic rights',
-                        dretsList: ['Minimum wage per agreement', '30 calendar days vacation/year', 'Sick leave permission', '14 annual holidays', 'Final settlement when leaving']
+                        drets: '🛡️ Your basic rights',
+                        dretsList: ['Minimum wage per agreement', '30 days vacation/year', 'Sick leave', '14 annual holidays', 'Final settlement when leaving']
                     },
                     glossari: {
-                        titol: 'Glossary of Terms',
+                        titol: '📖 Glossary of Terms',
                         cerca: 'Search for a term...',
                         termes: [
-                            { terme: 'Income Tax', def: 'Tax on Personal Income. The tax you pay on your earnings.' },
-                            { terme: 'Gross salary', def: 'Total earnings before deductions.' },
-                            { terme: 'Net salary', def: 'What you actually receive after deductions.' },
-                            { terme: 'Social Security', def: 'Public system covering healthcare, pensions, unemployment, etc.' },
-                            { terme: 'Euribor', def: 'Reference index for variable mortgages in Europe.' },
-                            { terme: 'APR', def: 'Annual Percentage Rate. The real cost of a loan including fees.' },
-                            { terme: 'Interest Rate', def: 'The pure interest without fees.' },
-                            { terme: 'Amortization', def: "Repayment of a loan's principal." },
-                            { terme: 'Collective Agreement', def: 'Agreement regulating working conditions in a sector.' },
-                            { terme: 'Final Settlement', def: 'Final payment when an employment relationship ends.' },
-                            { terme: 'Pro-rata', def: 'Proportional distribution of bonus payments each month.' },
-                            { terme: 'Contribution Base', def: 'Amount on which Social Security contributions are calculated.' },
-                            { terme: 'Garnishment', def: 'Legal withholding of part of salary for debts.' },
-                            { terme: 'Severance', def: 'Financial compensation for dismissal.' },
-                            { terme: 'Seniority', def: 'Time worked at a company. May generate supplements.' },
-                            { terme: 'Night shift bonus', def: 'Supplement for working night hours (10pm-6am).' }
+                            { terme: 'Income Tax', def: 'Tax on your earnings.' },
+                            { terme: 'Gross salary', def: 'Total before deductions.' },
+                            { terme: 'Net salary', def: 'What you receive after deductions.' },
+                            { terme: 'Social Security', def: 'Public system: healthcare, pensions, unemployment.' },
+                            { terme: 'Euribor', def: 'Index for variable mortgages.' },
+                            { terme: 'APR', def: 'Real cost of a loan with fees.' },
+                            { terme: 'Interest Rate', def: 'Pure interest without fees.' },
+                            { terme: 'Agreement', def: 'Contract regulating working conditions.' },
+                            { terme: 'Final Settlement', def: 'Final payment when contract ends.' },
+                            { terme: 'Severance', def: 'Compensation for dismissal.' }
                         ]
                     }
                 }
@@ -353,9 +312,9 @@
 
             const t = textos[idioma];
 
-            const NavBtn = ({ sec, icono: Icon, label }) => (
-                <button onClick={() => { setSection(sec); setMenuOpen(false); }} className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${section === sec ? 'bg-violet-500 text-white' : 'text-gray-600 hover:bg-violet-100'}`}>
-                    <Icon size={16} /><span className="hidden sm:inline">{label}</span>
+            const NavBtn = ({ sec, label }) => (
+                <button onClick={() => { setSection(sec); setMenuOpen(false); }} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${section === sec ? 'bg-violet-500 text-white' : 'text-gray-600 hover:bg-violet-100'}`}>
+                    {label}
                 </button>
             );
 
@@ -381,15 +340,11 @@
                     </div>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {t.inicio.cards.map(card => (
-                            <button key={card.id} onClick={() => setSection(card.id)} className="group p-6 bg-white rounded-2xl border border-gray-100 hover:border-violet-300 hover:shadow-lg hover:shadow-violet-100 transition-all text-left">
-                                <div className="p-3 bg-violet-100 rounded-xl w-fit mb-4 group-hover:bg-violet-500 transition-colors">
-                                    <card.icon className="text-violet-500 group-hover:text-white transition-colors" size={24} />
-                                </div>
+                            <button key={card.id} onClick={() => setSection(card.id)} className="group p-6 bg-white rounded-2xl border border-gray-100 hover:border-violet-300 hover:shadow-lg transition-all text-left">
+                                <div className="text-4xl mb-4">{card.emoji}</div>
                                 <h3 className="font-bold text-gray-800 mb-1">{card.title}</h3>
                                 <p className="text-sm text-gray-500">{card.desc}</p>
-                                <div className="mt-4 text-violet-500 text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
-                                    {t.inicio.veureMes} <ChevronRight size={16} />
-                                </div>
+                                <p className="mt-4 text-violet-500 text-sm font-medium">{t.inicio.veureMes}</p>
                             </button>
                         ))}
                     </div>
@@ -399,8 +354,8 @@
             const CV = () => (
                 <div className="space-y-8">
                     <h2 className="text-2xl font-black text-gray-800">{t.cv.titol}</h2>
-                    <Card className="border-violet-200 shadow-lg shadow-violet-100">
-                        <h3 className="font-bold text-lg text-gray-800 mb-4 flex items-center gap-2"><FileText className="text-violet-500" size={20} /> {t.cv.estructura}</h3>
+                    <Card className="border-violet-200 shadow-lg">
+                        <h3 className="font-bold text-lg text-gray-800 mb-4">📋 {t.cv.estructura}</h3>
                         <div className="space-y-4">
                             {t.cv.pasos.map(pas => (
                                 <div key={pas.num} className="flex gap-4">
@@ -411,21 +366,13 @@
                         </div>
                     </Card>
                     <div className="grid md:grid-cols-2 gap-6">
-                        <Card>
-                            <h3 className="font-bold text-lg text-gray-800 mb-4 flex items-center gap-2"><XCircle className="text-red-500" size={20} /> {t.cv.errors}</h3>
-                            <ul className="space-y-2">
-                                {t.cv.errorsList.map((error, i) => (
-                                    <li key={i} className="flex items-center gap-2 text-sm text-gray-600"><XCircle className="text-red-400 flex-shrink-0" size={16} /> {error}</li>
-                                ))}
-                            </ul>
+                        <Card className="bg-red-50 border-red-100">
+                            <h3 className="font-bold text-lg text-red-700 mb-4">{t.cv.errors}</h3>
+                            <ul className="space-y-2">{t.cv.errorsList.map((e, i) => <li key={i} className="text-sm text-red-600">• {e}</li>)}</ul>
                         </Card>
-                        <Card>
-                            <h3 className="font-bold text-lg text-gray-800 mb-4 flex items-center gap-2"><CheckCircle className="text-emerald-500" size={20} /> {t.cv.consells}</h3>
-                            <ul className="space-y-2">
-                                {t.cv.consellsList.map((consell, i) => (
-                                    <li key={i} className="flex items-start gap-2 text-sm text-gray-600"><CheckCircle className="text-emerald-400 flex-shrink-0 mt-0.5" size={16} /> {consell}</li>
-                                ))}
-                            </ul>
+                        <Card className="bg-emerald-50 border-emerald-100">
+                            <h3 className="font-bold text-lg text-emerald-700 mb-4">{t.cv.consells}</h3>
+                            <ul className="space-y-2">{t.cv.consellsList.map((c, i) => <li key={i} className="text-sm text-emerald-600">• {c}</li>)}</ul>
                         </Card>
                     </div>
                 </div>
@@ -435,17 +382,17 @@
                 <div className="space-y-8">
                     <h2 className="text-2xl font-black text-gray-800">{t.nomina.titol}</h2>
                     <div className="grid md:grid-cols-3 gap-4">
-                        <Card><h3 className="font-bold text-gray-800 mb-3">{t.nomina.encap.title}</h3><ul className="space-y-2">{t.nomina.encap.items.map((item, i) => <li key={i} className="text-sm text-gray-500 flex items-start gap-2"><span className="text-violet-400">•</span>{item}</li>)}</ul></Card>
-                        <Card className="bg-emerald-50 border-emerald-100"><h3 className="font-bold text-emerald-700 mb-3">{t.nomina.meritacions.title}</h3><ul className="space-y-2">{t.nomina.meritacions.items.map((item, i) => <li key={i} className="text-sm text-emerald-600 flex items-start gap-2"><span>+</span>{item}</li>)}</ul></Card>
-                        <Card className="bg-red-50 border-red-100"><h3 className="font-bold text-red-700 mb-3">{t.nomina.deduccions.title}</h3><ul className="space-y-2">{t.nomina.deduccions.items.map((item, i) => <li key={i} className="text-sm text-red-600 flex items-start gap-2"><span>−</span>{item}</li>)}</ul></Card>
+                        <Card><h3 className="font-bold text-gray-800 mb-3">{t.nomina.encap.title}</h3><ul className="space-y-1">{t.nomina.encap.items.map((item, i) => <li key={i} className="text-sm text-gray-500">• {item}</li>)}</ul></Card>
+                        <Card className="bg-emerald-50 border-emerald-100"><h3 className="font-bold text-emerald-700 mb-3">{t.nomina.meritacions.title}</h3><ul className="space-y-1">{t.nomina.meritacions.items.map((item, i) => <li key={i} className="text-sm text-emerald-600">+ {item}</li>)}</ul></Card>
+                        <Card className="bg-red-50 border-red-100"><h3 className="font-bold text-red-700 mb-3">{t.nomina.deduccions.title}</h3><ul className="space-y-1">{t.nomina.deduccions.items.map((item, i) => <li key={i} className="text-sm text-red-600">− {item}</li>)}</ul></Card>
                     </div>
-                    <Card className="border-violet-200 shadow-lg shadow-violet-100">
-                        <h3 className="font-bold text-lg text-gray-800 mb-4 flex items-center gap-2"><Calculator className="text-violet-500" size={20} /> {t.nomina.exemple}</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div className="p-4 bg-gray-100 rounded-xl text-center"><p className="text-xs text-gray-500 mb-1">{t.nomina.brutLabel}</p><p className="text-2xl font-black text-gray-800">{t.nomina.exempleData.brut}€</p></div>
-                            <div className="p-4 bg-red-100 rounded-xl text-center"><p className="text-xs text-red-600 mb-1">SS (6.35%)</p><p className="text-2xl font-black text-red-600">-{t.nomina.exempleData.ss}€</p></div>
-                            <div className="p-4 bg-red-100 rounded-xl text-center"><p className="text-xs text-red-600 mb-1">IRPF (15%)</p><p className="text-2xl font-black text-red-600">-{t.nomina.exempleData.irpf}€</p></div>
-                            <div className="p-4 bg-emerald-100 rounded-xl text-center"><p className="text-xs text-emerald-600 mb-1">{t.nomina.netLabel}</p><p className="text-2xl font-black text-emerald-600">{t.nomina.exempleData.net}€</p></div>
+                    <Card className="border-violet-200 shadow-lg">
+                        <h3 className="font-bold text-lg text-gray-800 mb-4">{t.nomina.exemple}</h3>
+                        <div className="grid grid-cols-4 gap-4 text-center">
+                            <div className="p-4 bg-gray-100 rounded-xl"><p className="text-xs text-gray-500">{t.nomina.brutLabel}</p><p className="text-xl font-black">2000€</p></div>
+                            <div className="p-4 bg-red-100 rounded-xl"><p className="text-xs text-red-600">SS</p><p className="text-xl font-black text-red-600">-127€</p></div>
+                            <div className="p-4 bg-red-100 rounded-xl"><p className="text-xs text-red-600">IRPF</p><p className="text-xl font-black text-red-600">-300€</p></div>
+                            <div className="p-4 bg-emerald-100 rounded-xl"><p className="text-xs text-emerald-600">{t.nomina.netLabel}</p><p className="text-xl font-black text-emerald-600">1573€</p></div>
                         </div>
                     </Card>
                 </div>
@@ -455,11 +402,8 @@
                 <div className="space-y-8">
                     <h2 className="text-2xl font-black text-gray-800">{t.hipoteca.titol}</h2>
                     <Card><h3 className="font-bold text-gray-800 mb-4">{t.hipoteca.conceptes}</h3><div className="grid grid-cols-2 md:grid-cols-4 gap-4">{t.hipoteca.conceptesList.map((c, i) => (<div key={i} className="p-3 bg-violet-50 rounded-xl"><p className="font-bold text-violet-700">{c.term}</p><p className="text-xs text-gray-500">{c.def}</p></div>))}</div></Card>
-                    <div><h3 className="font-bold text-gray-800 mb-4">{t.hipoteca.tipus}</h3><div className="grid md:grid-cols-3 gap-4">{t.hipoteca.tipusList.map((tip, i) => (<div key={i} className={`p-6 rounded-2xl border ${tip.color === 'emerald' ? 'bg-emerald-50 border-emerald-100' : tip.color === 'amber' ? 'bg-amber-50 border-amber-100' : 'bg-blue-50 border-blue-100'}`}><h4 className={`font-bold text-lg mb-2 ${tip.color === 'emerald' ? 'text-emerald-700' : tip.color === 'amber' ? 'text-amber-700' : 'text-blue-700'}`}>{tip.nom}</h4><p className="text-sm text-gray-600 mb-3">{tip.desc}</p><div className="flex gap-4 text-xs"><span className="text-emerald-600">✓ {tip.pros}</span><span className="text-red-600">✗ {tip.contres}</span></div></div>))}</div></div>
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <Card><h3 className="font-bold text-gray-800 mb-4">{t.hipoteca.despeses}</h3><ul className="space-y-2">{t.hipoteca.despesesList.map((d, i) => <li key={i} className="flex items-center gap-2 text-sm text-gray-600"><Euro className="text-amber-500" size={16} />{d}</li>)}</ul></Card>
-                        <div className="p-6 bg-violet-500 text-white rounded-2xl flex items-start gap-3"><AlertCircle size={24} className="flex-shrink-0" /><p className="font-medium">{t.hipoteca.consell}</p></div>
-                    </div>
+                    <div><h3 className="font-bold text-gray-800 mb-4">{t.hipoteca.tipus}</h3><div className="space-y-3">{t.hipoteca.tipusList.map((tip, i) => (<div key={i} className="p-4 bg-white rounded-xl border border-gray-100"><p className="font-bold text-gray-800">{tip.nom}</p><p className="text-sm text-gray-500">{tip.desc}</p></div>))}</div></div>
+                    <div className="p-6 bg-amber-100 border border-amber-200 rounded-2xl"><p className="text-amber-800 font-medium">{t.hipoteca.consell}</p></div>
                 </div>
             );
 
@@ -467,56 +411,31 @@
                 <div className="space-y-8">
                     <h2 className="text-2xl font-black text-gray-800">{t.renda.titol}</h2>
                     <div className="grid md:grid-cols-2 gap-6">
-                        <Card><h3 className="font-bold text-gray-800 mb-4">{t.renda.que}</h3><ul className="space-y-2">{t.renda.queList.map((q, i) => <li key={i} className="flex items-start gap-2 text-sm text-gray-600"><CheckCircle className="text-violet-400 flex-shrink-0 mt-0.5" size={16} />{q}</li>)}</ul></Card>
-                        <Card><h3 className="font-bold text-gray-800 mb-4">{t.renda.deduccions}</h3><ul className="space-y-2">{t.renda.deduccionsList.map((d, i) => <li key={i} className="flex items-start gap-2 text-sm text-gray-600"><CheckCircle className="text-emerald-400 flex-shrink-0 mt-0.5" size={16} />{d}</li>)}</ul></Card>
+                        <Card><h3 className="font-bold text-gray-800 mb-4">{t.renda.que}</h3><ul className="space-y-2">{t.renda.queList.map((q, i) => <li key={i} className="text-sm text-gray-600">✓ {q}</li>)}</ul></Card>
+                        <Card><h3 className="font-bold text-gray-800 mb-4">{t.renda.deduccions}</h3><ul className="space-y-2">{t.renda.deduccionsList.map((d, i) => <li key={i} className="text-sm text-gray-600">✓ {d}</li>)}</ul></Card>
                     </div>
-                    <Card className="border-violet-200 shadow-lg shadow-violet-100"><h3 className="font-bold text-gray-800 mb-2">{t.renda.resultat}</h3><p className="text-gray-600">{t.renda.resultatDesc}</p></Card>
-                    <div className="p-6 bg-amber-100 border border-amber-200 rounded-2xl"><div className="flex items-start gap-3"><AlertCircle className="text-amber-600 flex-shrink-0" size={24} /><p className="text-amber-800 font-medium">{t.renda.consell}</p></div></div>
+                    <div className="p-6 bg-amber-100 border border-amber-200 rounded-2xl"><p className="text-amber-800 font-medium">{t.renda.consell}</p></div>
                 </div>
             );
 
             const Contractes = () => (
                 <div className="space-y-8">
                     <h2 className="text-2xl font-black text-gray-800">{t.contractes.titol}</h2>
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {t.contractes.tipus.map((tip, i) => (
-                            <div key={i} className={`p-6 rounded-2xl border ${tip.color === 'emerald' ? 'bg-emerald-50 border-emerald-100' : tip.color === 'amber' ? 'bg-amber-50 border-amber-100' : tip.color === 'blue' ? 'bg-blue-50 border-blue-100' : tip.color === 'purple' ? 'bg-purple-50 border-purple-100' : 'bg-pink-50 border-pink-100'}`}>
-                                <h3 className={`font-bold text-lg mb-2 ${tip.color === 'emerald' ? 'text-emerald-700' : tip.color === 'amber' ? 'text-amber-700' : tip.color === 'blue' ? 'text-blue-700' : tip.color === 'purple' ? 'text-purple-700' : 'text-pink-700'}`}>{tip.nom}</h3>
-                                <p className="text-sm text-gray-600">{tip.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                    <Card className="border-violet-200 shadow-lg shadow-violet-100">
-                        <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2"><Shield className="text-violet-500" size={20} /> {t.contractes.drets}</h3>
-                        <ul className="space-y-2">
-                            {t.contractes.dretsList.map((d, i) => (
-                                <li key={i} className="flex items-center gap-2 text-gray-600"><CheckCircle className="text-emerald-500" size={18} />{d}</li>
-                            ))}
-                        </ul>
+                    <div className="space-y-3">{t.contractes.tipus.map((tip, i) => (<div key={i} className="p-4 bg-white rounded-xl border border-gray-100"><p className="font-bold text-gray-800">{tip.nom}</p><p className="text-sm text-gray-500">{tip.desc}</p></div>))}</div>
+                    <Card className="border-violet-200 shadow-lg">
+                        <h3 className="font-bold text-gray-800 mb-4">{t.contractes.drets}</h3>
+                        <ul className="space-y-2">{t.contractes.dretsList.map((d, i) => <li key={i} className="text-gray-600">✓ {d}</li>)}</ul>
                     </Card>
                 </div>
             );
 
             const Glossari = () => {
-                const termesFiltrats = t.glossari.termes.filter(term => 
-                    term.terme.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                    term.def.toLowerCase().includes(searchTerm.toLowerCase())
-                );
+                const filtered = t.glossari.termes.filter(term => term.terme.toLowerCase().includes(searchTerm.toLowerCase()) || term.def.toLowerCase().includes(searchTerm.toLowerCase()));
                 return (
                     <div className="space-y-6">
                         <h2 className="text-2xl font-black text-gray-800">{t.glossari.titol}</h2>
-                        <div className="relative">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                            <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder={t.glossari.cerca} className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent" />
-                        </div>
-                        <div className="grid sm:grid-cols-2 gap-4">
-                            {termesFiltrats.map((term, i) => (
-                                <Card key={i}>
-                                    <h3 className="font-bold text-violet-600 mb-1">{term.terme}</h3>
-                                    <p className="text-sm text-gray-600">{term.def}</p>
-                                </Card>
-                            ))}
-                        </div>
+                        <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder={t.glossari.cerca} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500" />
+                        <div className="grid sm:grid-cols-2 gap-4">{filtered.map((term, i) => (<Card key={i}><h3 className="font-bold text-violet-600 mb-1">{term.terme}</h3><p className="text-sm text-gray-600">{term.def}</p></Card>))}</div>
                     </div>
                 );
             };
@@ -527,42 +446,28 @@
                         <div className="max-w-6xl mx-auto px-4 py-3">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <a href="./index.html" className="p-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-gray-600 transition-colors" title="Tornar a l'inici">
-                                        <Home size={20} />
-                                    </a>
+                                    <a href="./index.html" className="p-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-gray-600 transition-colors text-xl" title="Tornar">🏠</a>
                                     <button onClick={() => setSection('inicio')} className="flex items-center gap-2">
-                                        <div className="p-2 bg-violet-500 rounded-xl text-white"><Briefcase size={20} /></div>
+                                        <div className="p-2 bg-violet-500 rounded-xl text-xl">💼</div>
                                         <span className="font-bold text-lg hidden sm:block">{t.titol}</span>
                                     </button>
                                 </div>
                                 <nav className="hidden lg:flex gap-1 items-center">
-                                    <NavBtn sec="inicio" icono={Zap} label={t.nav.inicio} />
-                                    <NavBtn sec="cv" icono={FileText} label={t.nav.cv} />
-                                    <NavBtn sec="nomina" icono={CreditCard} label={t.nav.nomina} />
-                                    <NavBtn sec="hipoteca" icono={Home} label={t.nav.hipoteca} />
-                                    <NavBtn sec="renda" icono={Calculator} label={t.nav.renda} />
-                                    <NavBtn sec="contractes" icono={FileCheck} label={t.nav.contractes} />
-                                    <NavBtn sec="glossari" icono={BookOpen} label={t.nav.glossari} />
+                                    <NavBtn sec="inicio" label={t.nav.inicio} />
+                                    <NavBtn sec="cv" label={t.nav.cv} />
+                                    <NavBtn sec="nomina" label={t.nav.nomina} />
+                                    <NavBtn sec="hipoteca" label={t.nav.hipoteca} />
+                                    <NavBtn sec="renda" label={t.nav.renda} />
+                                    <NavBtn sec="contractes" label={t.nav.contractes} />
+                                    <NavBtn sec="glossari" label={t.nav.glossari} />
                                     <LanguageSelector />
                                 </nav>
                                 <div className="lg:hidden flex items-center gap-2">
                                     <LanguageSelector />
-                                    <button onClick={() => setMenuOpen(!menuOpen)} className="p-2 hover:bg-gray-100 rounded-lg">
-                                        {menuOpen ? <X size={24} /> : <Menu size={24} />}
-                                    </button>
+                                    <button onClick={() => setMenuOpen(!menuOpen)} className="p-2 hover:bg-gray-100 rounded-lg text-xl">{menuOpen ? '✕' : '☰'}</button>
                                 </div>
                             </div>
-                            {menuOpen && (
-                                <nav className="lg:hidden flex flex-wrap gap-2 mt-3 pb-2">
-                                    <NavBtn sec="inicio" icono={Zap} label={t.nav.inicio} />
-                                    <NavBtn sec="cv" icono={FileText} label={t.nav.cv} />
-                                    <NavBtn sec="nomina" icono={CreditCard} label={t.nav.nomina} />
-                                    <NavBtn sec="hipoteca" icono={Home} label={t.nav.hipoteca} />
-                                    <NavBtn sec="renda" icono={Calculator} label={t.nav.renda} />
-                                    <NavBtn sec="contractes" icono={FileCheck} label={t.nav.contractes} />
-                                    <NavBtn sec="glossari" icono={BookOpen} label={t.nav.glossari} />
-                                </nav>
-                            )}
+                            {menuOpen && (<nav className="lg:hidden flex flex-wrap gap-2 mt-3 pb-2"><NavBtn sec="inicio" label={t.nav.inicio} /><NavBtn sec="cv" label={t.nav.cv} /><NavBtn sec="nomina" label={t.nav.nomina} /><NavBtn sec="hipoteca" label={t.nav.hipoteca} /><NavBtn sec="renda" label={t.nav.renda} /><NavBtn sec="contractes" label={t.nav.contractes} /><NavBtn sec="glossari" label={t.nav.glossari} /></nav>)}
                         </div>
                     </header>
 
