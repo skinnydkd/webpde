@@ -700,7 +700,7 @@ function EmpresaApp() {
   const t = useCallback((category, key) => {
     try {
       return translations[category][key][idioma] || translations[category][key]['val'];
-    } catch (e) {
+    } catch {
       return key;
     }
   }, [idioma]);
@@ -2536,10 +2536,15 @@ function EmpresaApp() {
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            <button onClick={() => setSection('inicio')} className="flex items-center gap-2 font-black text-xl text-gray-800">
-              <Building2 className="text-pink-500" size={28} />
-              <span>{t('inicio', 'titol')}</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <a href="./index.html" className="p-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-gray-600 transition-colors" title="Tornar a l'inici">
+                <Home size={20} />
+              </a>
+              <button onClick={() => setSection('inicio')} className="flex items-center gap-2 font-black text-xl text-gray-800">
+                <Building2 className="text-pink-500" size={28} />
+                <span>{t('inicio', 'titol')}</span>
+              </button>
+            </div>
             
             <div className="hidden lg:flex items-center gap-1 flex-wrap">
               <NavBtn sec="puntmort" icono={Target} label={t('nav', 'puntmort')} />
