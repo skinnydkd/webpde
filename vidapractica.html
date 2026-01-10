@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vida Pràctica - Educació Financera Quotidiana</title>
+    <meta name="description" content="Tot el que mai t'han ensenyat: com fer un CV, llegir una nòmina, demanar una hipoteca, declaració de la renda i més.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💼</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide-react@0.300.0/dist/umd/lucide-react.min.js"></script>
+    <style>
+        * { scrollbar-width: thin; scrollbar-color: #8b5cf6 #f5f3ff; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f5f3ff; }
+        ::-webkit-scrollbar-thumb { background-color: #8b5cf6; border-radius: 3px; }
+        input[type="range"] { -webkit-appearance: none; appearance: none; height: 8px; border-radius: 4px; background: #ede9fe; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #8b5cf6; cursor: pointer; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-violet-50 via-white to-purple-50">
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useCallback } = React;
+        const { FileText, CreditCard, Home, Calculator, Briefcase, GraduationCap, ChevronDown, ChevronUp, ChevronRight, Check, X, Menu, Search, Zap, Award, Info, AlertTriangle, DollarSign, Percent, Star, Sparkles, BookOpen, Users, Building2, Phone, Mail, MapPin, Calendar, Clock, Target, Lightbulb, Shield, TrendingUp, FileCheck, ClipboardList, Receipt, Wallet, PiggyBank, Scale, Heart, Eye, CheckCircle, XCircle, HelpCircle } = lucideReact;
+
+        // ============================================================================
+        // SISTEMA DE TRADUCCIONS
+        // ============================================================================
+        const translations = {
+            nav: {
+                inicio: { val: 'Inici', es: 'Inicio', en: 'Home' },
+                cv: { val: 'Currículum', es: 'Currículum', en: 'CV/Resume' },
+                nomina: { val: 'Nòmina', es: 'Nómina', en: 'Payslip' },
+                hipoteca: { val: 'Hipoteca', es: 'Hipoteca', en: 'Mortgage' },
+                renta: { val: 'Renda', es: 'Renta', en: 'Tax Return' },
+                contratos: { val: 'Contractes', es: 'Contratos', en: 'Contracts' },
+                glosario: { val: 'Glossari', es: 'Glosario', en: 'Glossary' }
+            },
+            titulo: {
+                app: { val: 'Vida Pràctica', es: 'Vida Práctica', en: 'Practical Life' },
+                subtitulo: { val: 'Educació Financera Quotidiana', es: 'Educación Financiera Cotidiana', en: 'Everyday Financial Education' }
+            },
+            inicio: {
+                badge: { val: '💡 Tot el que mai t\'han ensenyat', es: '💡 Todo lo que nunca te han enseñado', en: '💡 Everything they never taught you' },
+                titulo: { val: 'Educació per a la vida real', es: 'Educación para la vida real', en: 'Education for real life' },
+                subtitulo: { val: 'Aprèn a fer un CV, entendre la teua nòmina, demanar una hipoteca i molt més', es: 'Aprende a hacer un CV, entender tu nómina, pedir una hipoteca y mucho más', en: 'Learn to make a CV, understand your payslip, apply for a mortgage and much more' },
+                cvTitulo: { val: 'Currículum', es: 'Currículum', en: 'CV/Resume' },
+                cvDesc: { val: 'Com fer un CV professional', es: 'Cómo hacer un CV profesional', en: 'How to make a professional CV' },
+                nominaTitulo: { val: 'Nòmina', es: 'Nómina', en: 'Payslip' },
+                nominaDesc: { val: 'Entén cada línia', es: 'Entiende cada línea', en: 'Understand every line' },
+                hipotecaTitulo: { val: 'Hipoteca', es: 'Hipoteca', en: 'Mortgage' },
+                hipotecaDesc: { val: 'Guia completa', es: 'Guía completa', en: 'Complete guide' },
+                rentaTitulo: { val: 'Renda', es: 'Renta', en: 'Tax Return' },
+                rentaDesc: { val: 'Declaració IRPF', es: 'Declaración IRPF', en: 'Income Tax Return' },
+                contratosTitulo: { val: 'Contractes', es: 'Contratos', en: 'Contracts' },
+                contratosDesc: { val: 'Què has de saber', es: 'Qué debes saber', en: 'What you need to know' },
+                glosarioTitulo: { val: 'Glossari', es: 'Glosario', en: 'Glossary' },
+                glosarioDesc: { val: 'Termes importants', es: 'Términos importantes', en: 'Important terms' }
+            },
+            cv: {
+                titulo: { val: 'Com fer un Currículum Professional', es: 'Cómo hacer un Currículum Profesional', en: 'How to Make a Professional CV' },
+                intro: { val: 'El CV és la teua carta de presentació. En 6-10 segons, el reclutador decideix si continua llegint o passa al següent.', es: 'El CV es tu carta de presentación. En 6-10 segundos, el reclutador decide si continúa leyendo o pasa al siguiente.', en: 'Your CV is your introduction. In 6-10 seconds, the recruiter decides whether to continue reading or move on.' },
+                estructura: { val: 'Estructura recomanada', es: 'Estructura recomendada', en: 'Recommended structure' },
+                datosPersonales: { val: 'Dades personals', es: 'Datos personales', en: 'Personal details' },
+                datosPersonalesDesc: { val: 'Nom complet, telèfon, email professional, ciutat (no adreça completa), LinkedIn', es: 'Nombre completo, teléfono, email profesional, ciudad (no dirección completa), LinkedIn', en: 'Full name, phone, professional email, city (not full address), LinkedIn' },
+                perfil: { val: 'Perfil professional', es: 'Perfil profesional', en: 'Professional profile' },
+                perfilDesc: { val: '2-3 línies resumint qui ets, què aportes i què busques', es: '2-3 líneas resumiendo quién eres, qué aportas y qué buscas', en: '2-3 lines summarizing who you are, what you bring and what you are looking for' },
+                experiencia: { val: 'Experiència laboral', es: 'Experiencia laboral', en: 'Work experience' },
+                experienciaDesc: { val: 'De més recent a més antic. Empresa, càrrec, dates, 3-5 assoliments amb resultats quantificables', es: 'De más reciente a más antiguo. Empresa, cargo, fechas, 3-5 logros con resultados cuantificables', en: 'Most recent first. Company, position, dates, 3-5 achievements with quantifiable results' },
+                formacion: { val: 'Formació', es: 'Formación', en: 'Education' },
+                formacionDesc: { val: 'Títol, institució, any. Cursos rellevants recents', es: 'Título, institución, año. Cursos relevantes recientes', en: 'Degree, institution, year. Recent relevant courses' },
+                habilidades: { val: 'Habilitats', es: 'Habilidades', en: 'Skills' },
+                habilidadesDesc: { val: 'Tècniques (programes, idiomes amb nivell) i competències clau', es: 'Técnicas (programas, idiomas con nivel) y competencias clave', en: 'Technical (software, languages with level) and key competencies' },
+                errores: { val: 'Errors comuns a evitar', es: 'Errores comunes a evitar', en: 'Common mistakes to avoid' },
+                error1: { val: 'Més de 2 pàgines (1 pàgina ideal per a < 10 anys experiència)', es: 'Más de 2 páginas (1 página ideal para < 10 años experiencia)', en: 'More than 2 pages (1 page ideal for < 10 years experience)' },
+                error2: { val: 'Foto poc professional o amb fons inadequat', es: 'Foto poco profesional o con fondo inadecuado', en: 'Unprofessional photo or inappropriate background' },
+                error3: { val: 'Email tipus "gatito_sexy_99@..."', es: 'Email tipo "gatito_sexy_99@..."', en: 'Email like "sexy_kitten_99@..."' },
+                error4: { val: 'Descriure tasques en lloc d\'assoliments', es: 'Describir tareas en lugar de logros', en: 'Describing tasks instead of achievements' },
+                error5: { val: 'Faltes d\'ortografia o format inconsistent', es: 'Faltas de ortografía o formato inconsistente', en: 'Spelling mistakes or inconsistent formatting' },
+                error6: { val: 'Incloure informació irrellevant (hobbies genèrics, etc.)', es: 'Incluir información irrelevante (hobbies genéricos, etc.)', en: 'Including irrelevant information (generic hobbies, etc.)' },
+                tips: { val: 'Consells clau', es: 'Consejos clave', en: 'Key tips' },
+                tip1: { val: 'Adapta el CV a cada oferta (paraules clau)', es: 'Adapta el CV a cada oferta (palabras clave)', en: 'Adapt your CV to each job (keywords)' },
+                tip2: { val: 'Usa verbs d\'acció: "vaig liderar", "vaig implementar", "vaig aconseguir"', es: 'Usa verbos de acción: "lideré", "implementé", "conseguí"', en: 'Use action verbs: "led", "implemented", "achieved"' },
+                tip3: { val: 'Quantifica sempre que pugues: "vaig augmentar vendes un 25%"', es: 'Cuantifica siempre que puedas: "aumenté ventas un 25%"', en: 'Quantify whenever possible: "increased sales by 25%"' },
+                tip4: { val: 'Format net, llegible, amb espais en blanc', es: 'Formato limpio, legible, con espacios en blanco', en: 'Clean, readable format with white space' },
+                tip5: { val: 'Guarda en PDF per mantenir el format', es: 'Guarda en PDF para mantener el formato', en: 'Save as PDF to maintain formatting' }
+            },
+            nomina: {
+                titulo: { val: 'Com llegir la teua Nòmina', es: 'Cómo leer tu Nómina', en: 'How to Read Your Payslip' },
+                intro: { val: 'La nòmina és el document que detalla el teu salari i les deduccions. Entendre-la és fonamental per saber què cobres i per què.', es: 'La nómina es el documento que detalla tu salario y las deducciones. Entenderla es fundamental para saber qué cobras y por qué.', en: 'The payslip details your salary and deductions. Understanding it is essential to know what you earn and why.' },
+                encabezado: { val: 'Encapçalament', es: 'Encabezado', en: 'Header' },
+                encabezadoDesc: { val: 'Dades de l\'empresa (nom, CIF, adreça) i del treballador (nom, NIF, antiguitat, categoria, grup de cotització)', es: 'Datos de la empresa (nombre, CIF, dirección) y del trabajador (nombre, NIF, antigüedad, categoría, grupo de cotización)', en: 'Company details (name, tax ID, address) and employee details (name, ID, seniority, category, contribution group)' },
+                devengos: { val: 'Meritacions (el que guanyes)', es: 'Devengos (lo que ganas)', en: 'Earnings (what you earn)' },
+                salarioBase: { val: 'Salari base', es: 'Salario base', en: 'Base salary' },
+                salarioBaseDesc: { val: 'Quantitat fixa segons conveni o contracte', es: 'Cantidad fija según convenio o contrato', en: 'Fixed amount according to agreement or contract' },
+                complementos: { val: 'Complements salarials', es: 'Complementos salariales', en: 'Salary supplements' },
+                complementosDesc: { val: 'Antiguitat, nocturnitat, perillositat, productivitat...', es: 'Antigüedad, nocturnidad, peligrosidad, productividad...', en: 'Seniority, night shift, hazard pay, productivity...' },
+                horasExtra: { val: 'Hores extres', es: 'Horas extra', en: 'Overtime' },
+                horasExtraDesc: { val: 'Pagades entre un 25-75% més que l\'hora normal', es: 'Pagadas entre un 25-75% más que la hora normal', en: 'Paid 25-75% more than normal hours' },
+                pagasExtra: { val: 'Pagues extres', es: 'Pagas extra', en: 'Bonus pay' },
+                pagasExtraDesc: { val: 'Normalment 2 anuals (estiu i Nadal), poden estar prorratejades', es: 'Normalmente 2 anuales (verano y Navidad), pueden estar prorrateadas', en: 'Usually 2 per year (summer and Christmas), may be prorated' },
+                deducciones: { val: 'Deduccions (el que et lleven)', es: 'Deducciones (lo que te quitan)', en: 'Deductions (what they take)' },
+                irpf: { val: 'IRPF', es: 'IRPF', en: 'Income Tax' },
+                irpfDesc: { val: 'Impost sobre la renda. Percentatge variable segons salari i situació personal (fills, hipoteca...)', es: 'Impuesto sobre la renta. Porcentaje variable según salario y situación personal (hijos, hipoteca...)', en: 'Income tax. Variable percentage based on salary and personal situation (children, mortgage...)' },
+                seguridadSocial: { val: 'Seguretat Social', es: 'Seguridad Social', en: 'Social Security' },
+                seguridadSocialDesc: { val: 'Aprox. 6,35% del teu brut. Finança pensions, sanitat, atur...', es: 'Aprox. 6,35% de tu bruto. Financia pensiones, sanidad, desempleo...', en: 'Approx. 6.35% of your gross. Funds pensions, healthcare, unemployment...' },
+                liquido: { val: 'Líquid a percebre', es: 'Líquido a percibir', en: 'Net pay' },
+                liquidoDesc: { val: 'El que realment reps al compte: Meritacions - Deduccions', es: 'Lo que realmente recibes en cuenta: Devengos - Deducciones', en: 'What you actually receive: Earnings - Deductions' },
+                ejemplo: { val: 'Exemple pràctic', es: 'Ejemplo práctico', en: 'Practical example' },
+                bruto: { val: 'Brut mensual', es: 'Bruto mensual', en: 'Monthly gross' },
+                retencion: { val: 'Retenció IRPF', es: 'Retención IRPF', en: 'Income tax withholding' },
+                neto: { val: 'Net mensual', es: 'Neto mensual', en: 'Monthly net' }
+            },
+            hipoteca: {
+                titulo: { val: 'Guia Completa de la Hipoteca', es: 'Guía Completa de la Hipoteca', en: 'Complete Mortgage Guide' },
+                intro: { val: 'La hipoteca és probablement la decisió financera més important de la teua vida. Entén bé tots els conceptes abans de signar.', es: 'La hipoteca es probablemente la decisión financiera más importante de tu vida. Entiende bien todos los conceptos antes de firmar.', en: 'A mortgage is probably the most important financial decision of your life. Understand all concepts before signing.' },
+                conceptos: { val: 'Conceptes clau', es: 'Conceptos clave', en: 'Key concepts' },
+                capital: { val: 'Capital', es: 'Capital', en: 'Principal' },
+                capitalDesc: { val: 'La quantitat que demanes prestada al banc', es: 'La cantidad que pides prestada al banco', en: 'The amount you borrow from the bank' },
+                interes: { val: 'Interès', es: 'Interés', en: 'Interest' },
+                interesDesc: { val: 'El cost de demanar diners prestats, expressat en percentatge anual', es: 'El coste de pedir dinero prestado, expresado en porcentaje anual', en: 'The cost of borrowing money, expressed as annual percentage' },
+                plazo: { val: 'Termini', es: 'Plazo', en: 'Term' },
+                plazoDesc: { val: 'Temps per tornar el préstec (habitualment 20-30 anys)', es: 'Tiempo para devolver el préstamo (habitualmente 20-30 años)', en: 'Time to repay the loan (usually 20-30 years)' },
+                cuota: { val: 'Quota', es: 'Cuota', en: 'Monthly payment' },
+                cuotaDesc: { val: 'El que pagues cada mes (capital + interessos)', es: 'Lo que pagas cada mes (capital + intereses)', en: 'What you pay monthly (principal + interest)' },
+                tipos: { val: 'Tipus d\'hipoteca', es: 'Tipos de hipoteca', en: 'Types of mortgage' },
+                fijo: { val: 'Tipus fix', es: 'Tipo fijo', en: 'Fixed rate' },
+                fijoDesc: { val: 'Interès constant durant tota la vida del préstec. Quota sempre igual. Més seguretat, però sol ser més car inicialment.', es: 'Interés constante durante toda la vida del préstamo. Cuota siempre igual. Más seguridad, pero suele ser más caro inicialmente.', en: 'Constant interest throughout the loan. Same payment always. More security, but usually more expensive initially.' },
+                variable: { val: 'Tipus variable', es: 'Tipo variable', en: 'Variable rate' },
+                variableDesc: { val: 'Basat en Euríbor + diferencial. La quota puja/baixa segons el mercat. Més risc, però pot ser més barat.', es: 'Basado en Euríbor + diferencial. La cuota sube/baja según el mercado. Más riesgo, pero puede ser más barato.', en: 'Based on Euribor + spread. Payment rises/falls with market. More risk, but can be cheaper.' },
+                mixto: { val: 'Tipus mixt', es: 'Tipo mixto', en: 'Mixed rate' },
+                mixtoDesc: { val: 'Fix els primers anys (5-10), després variable. Combina seguretat inicial amb possible estalvi posterior.', es: 'Fijo los primeros años (5-10), después variable. Combina seguridad inicial con posible ahorro posterior.', en: 'Fixed first years (5-10), then variable. Combines initial security with potential later savings.' },
+                gastos: { val: 'Despeses associades', es: 'Gastos asociados', en: 'Associated costs' },
+                tasacion: { val: 'Taxació', es: 'Tasación', en: 'Valuation' },
+                tasacionDesc: { val: '300-500€ aprox. Obligatòria per determinar el valor de l\'immoble', es: '300-500€ aprox. Obligatoria para determinar el valor del inmueble', en: '€300-500 approx. Required to determine property value' },
+                notaria: { val: 'Notaria', es: 'Notaría', en: 'Notary' },
+                notariaDesc: { val: 'Variable segons import. El banc sol pagar-ho des de 2019', es: 'Variable según importe. El banco suele pagarlo desde 2019', en: 'Varies by amount. Bank usually pays since 2019' },
+                registro: { val: 'Registre', es: 'Registro', en: 'Registry' },
+                registroDesc: { val: 'Inscripció al Registre de la Propietat', es: 'Inscripción en el Registro de la Propiedad', en: 'Property Registry inscription' },
+                gestoria: { val: 'Gestoria', es: 'Gestoría', en: 'Administrative agency' },
+                gestoriaDesc: { val: 'Tramitació de documents (opcional però habitual)', es: 'Tramitación de documentos (opcional pero habitual)', en: 'Document processing (optional but common)' },
+                entrada: { val: 'Entrada necessària', es: 'Entrada necesaria', en: 'Down payment needed' },
+                entradaDesc: { val: 'Els bancs solen finançar màxim 80% del valor. Necessites tenir el 20% + despeses (aprox. 10% més)', es: 'Los bancos suelen financiar máximo 80% del valor. Necesitas tener el 20% + gastos (aprox. 10% más)', en: 'Banks usually finance max 80% of value. You need 20% + costs (approx. 10% more)' },
+                consejo: { val: 'Consell important', es: 'Consejo importante', en: 'Important advice' },
+                consejoDesc: { val: 'La quota mensual no hauria de superar el 30-35% dels teus ingressos nets. Compara sempre diverses ofertes i negocia les condicions!', es: 'La cuota mensual no debería superar el 30-35% de tus ingresos netos. ¡Compara siempre varias ofertas y negocia las condiciones!', en: 'Monthly payment should not exceed 30-35% of net income. Always compare offers and negotiate terms!' }
+            },
+            renta: {
+                titulo: { val: 'Declaració de la Renda (IRPF)', es: 'Declaración de la Renta (IRPF)', en: 'Income Tax Return' },
+                intro: { val: 'L\'IRPF és l\'impost que grava els ingressos de les persones físiques. Cada any has de presentar la declaració (abril-juny).', es: 'El IRPF es el impuesto que grava los ingresos de las personas físicas. Cada año debes presentar la declaración (abril-junio).', en: 'Income tax is the tax on personal income. Every year you must file a return (April-June).' },
+                obligados: { val: 'Qui ha de declarar?', es: '¿Quién debe declarar?', en: 'Who must file?' },
+                obligado1: { val: 'Rendiments del treball > 22.000€/any (un pagador)', es: 'Rendimientos del trabajo > 22.000€/año (un pagador)', en: 'Work income > €22,000/year (one employer)' },
+                obligado2: { val: 'Rendiments del treball > 15.000€/any (diversos pagadors i segon > 1.500€)', es: 'Rendimientos del trabajo > 15.000€/año (varios pagadores y segundo > 1.500€)', en: 'Work income > €15,000/year (multiple employers and second > €1,500)' },
+                obligado3: { val: 'Rendiments del capital mobiliari > 1.600€/any', es: 'Rendimientos del capital mobiliario > 1.600€/año', en: 'Investment income > €1,600/year' },
+                obligado4: { val: 'Guanys patrimonials > 1.000€/any', es: 'Ganancias patrimoniales > 1.000€/año', en: 'Capital gains > €1,000/year' },
+                deducciones: { val: 'Deduccions habituals', es: 'Deducciones habituales', en: 'Common deductions' },
+                deduccion1: { val: 'Hipoteca habitatge habitual (compra abans de 2013)', es: 'Hipoteca vivienda habitual (compra antes de 2013)', en: 'Primary residence mortgage (purchase before 2013)' },
+                deduccion2: { val: 'Aportacions a plans de pensions (màx. 1.500€/any)', es: 'Aportaciones a planes de pensiones (máx. 1.500€/año)', en: 'Pension plan contributions (max €1,500/year)' },
+                deduccion3: { val: 'Donatius a ONG i fundacions', es: 'Donativos a ONG y fundaciones', en: 'Donations to NGOs and foundations' },
+                deduccion4: { val: 'Maternitat i família nombrosa', es: 'Maternidad y familia numerosa', en: 'Maternity and large family' },
+                deduccion5: { val: 'Deduccions autonòmiques (lloguer, material escolar...)', es: 'Deducciones autonómicas (alquiler, material escolar...)', en: 'Regional deductions (rent, school supplies...)' },
+                resultado: { val: 'Resultat de la declaració', es: 'Resultado de la declaración', en: 'Return result' },
+                devolver: { val: 'A retornar', es: 'A devolver', en: 'Refund' },
+                devolverDesc: { val: 'T\'han retingut més del que tocava → Hisenda et torna diners', es: 'Te han retenido más de lo que tocaba → Hacienda te devuelve dinero', en: 'You were over-withheld → Tax authority refunds you' },
+                pagar: { val: 'A pagar', es: 'A pagar', en: 'Amount due' },
+                pagarDesc: { val: 'T\'han retingut menys del que tocava → Has de pagar la diferència', es: 'Te han retenido menos de lo que tocaba → Debes pagar la diferencia', en: 'You were under-withheld → You must pay the difference' },
+                consejo: { val: 'Consell', es: 'Consejo', en: 'Tip' },
+                consejoDesc: { val: 'Revisa sempre l\'esborrany! Hisenda no té tota la informació (deduccions autonòmiques, donatius...). Pots estalviar diners.', es: '¡Revisa siempre el borrador! Hacienda no tiene toda la información (deducciones autonómicas, donativos...). Puedes ahorrar dinero.', en: 'Always review the draft! Tax authority doesn\'t have all info (regional deductions, donations...). You can save money.' }
+            },
+            contratos: {
+                titulo: { val: 'Tipus de Contractes Laborals', es: 'Tipos de Contratos Laborales', en: 'Types of Employment Contracts' },
+                intro: { val: 'Conèixer els tipus de contractes t\'ajuda a entendre els teus drets i obligacions com a treballador.', es: 'Conocer los tipos de contratos te ayuda a entender tus derechos y obligaciones como trabajador.', en: 'Knowing contract types helps you understand your rights and obligations as an employee.' },
+                indefinido: { val: 'Indefinit', es: 'Indefinido', en: 'Permanent' },
+                indefinidoDesc: { val: 'Sense data de finalització. Màxima estabilitat. Indemnització per acomiadament improcedent: 33 dies/any.', es: 'Sin fecha de finalización. Máxima estabilidad. Indemnización por despido improcedente: 33 días/año.', en: 'No end date. Maximum stability. Unfair dismissal compensation: 33 days/year.' },
+                temporal: { val: 'Temporal', es: 'Temporal', en: 'Temporary' },
+                temporalDesc: { val: 'Durada determinada per circumstàncies de producció o substitució. Màxim 6-12 mesos segons conveni.', es: 'Duración determinada por circunstancias de producción o sustitución. Máximo 6-12 meses según convenio.', en: 'Fixed duration for production or substitution. Maximum 6-12 months depending on agreement.' },
+                practicas: { val: 'Pràctiques', es: 'Prácticas', en: 'Internship' },
+                practicasDesc: { val: 'Per a titulats recents (< 3 anys des del títol). Retribució mínima 60% primer any, 75% segon.', es: 'Para titulados recientes (< 3 años desde el título). Retribución mínima 60% primer año, 75% segundo.', en: 'For recent graduates (< 3 years since degree). Minimum pay 60% first year, 75% second.' },
+                formacion: { val: 'Formació en alternança', es: 'Formación en alternancia', en: 'Apprenticeship' },
+                formacionDesc: { val: 'Combina treball i formació. Per a joves 16-30 anys sense qualificació. Durada 3 mesos - 2 anys.', es: 'Combina trabajo y formación. Para jóvenes 16-30 años sin cualificación. Duración 3 meses - 2 años.', en: 'Combines work and training. For young people 16-30 without qualifications. Duration 3 months - 2 years.' },
+                fijoDiscontinuo: { val: 'Fix discontinu', es: 'Fijo discontinuo', en: 'Permanent seasonal' },
+                fijoDiscontinuoDesc: { val: 'Feines estacionals però estables (turisme, agricultura...). Ets fixe però només treballes certes èpoques.', es: 'Trabajos estacionales pero estables (turismo, agricultura...). Eres fijo pero solo trabajas ciertas épocas.', en: 'Seasonal but stable jobs (tourism, agriculture...). You are permanent but only work certain periods.' },
+                derechos: { val: 'Drets bàsics de tot treballador', es: 'Derechos básicos de todo trabajador', en: 'Basic rights of every worker' },
+                derecho1: { val: 'Salari mínim interprofessional (SMI)', es: 'Salario mínimo interprofesional (SMI)', en: 'Minimum wage' },
+                derecho2: { val: 'Vacances: mínim 30 dies naturals/any', es: 'Vacaciones: mínimo 30 días naturales/año', en: 'Holidays: minimum 30 calendar days/year' },
+                derecho3: { val: 'Jornada màxima: 40h setmanals de mitjana', es: 'Jornada máxima: 40h semanales de media', en: 'Maximum working week: 40h average' },
+                derecho4: { val: 'Cotització a la Seguretat Social', es: 'Cotización a la Seguridad Social', en: 'Social Security contributions' },
+                derecho5: { val: 'Protecció davant acomiadament injustificat', es: 'Protección ante despido injustificado', en: 'Protection against unfair dismissal' }
+            },
+            glosario: {
+                titulo: { val: 'Glossari de Termes', es: 'Glosario de Términos', en: 'Glossary of Terms' },
+                buscar: { val: 'Cercar terme...', es: 'Buscar término...', en: 'Search term...' }
+            },
+            ui: {
+                verMas: { val: 'Veure més', es: 'Ver más', en: 'See more' },
+                verMenos: { val: 'Veure menys', es: 'Ver menos', en: 'See less' }
+            }
+        };
+
+        // Glossari de termes
+        const glosarioTerms = {
+            val: [
+                { term: 'IRPF', def: "Impost sobre la Renda de les Persones Físiques. Grava els ingressos de les persones." },
+                { term: 'Salari brut', def: "Total que guanyes abans de deduccions (IRPF, Seguretat Social)." },
+                { term: 'Salari net', def: "El que realment reps al compte després de deduccions." },
+                { term: 'Seguretat Social', def: "Sistema públic que cobreix pensions, sanitat, atur, etc." },
+                { term: 'Base de cotització', def: "Import sobre el qual es calculen les cotitzacions a la Seguretat Social." },
+                { term: 'Euríbor', def: "Tipus d'interès de referència per a hipoteques variables a Europa." },
+                { term: 'TAE', def: "Taxa Anual Equivalent. Cost real d'un préstec incloent comissions." },
+                { term: 'TIN', def: "Tipus d'Interès Nominal. Interès sense comissions ni despeses." },
+                { term: 'Amortització', def: "Devolució gradual del capital d'un préstec." },
+                { term: 'Conveni col·lectiu', def: "Acord entre empreses i sindicats que regula condicions laborals d'un sector." },
+                { term: 'Finiquito', def: "Document i pagament que reps quan acaba la relació laboral." },
+                { term: 'Prorrata', def: "Repartiment proporcional de les pagues extres cada mes." },
+                { term: 'Retribució en espècie', def: "Part del salari en béns o serveis (cotxe empresa, assegurança...)." },
+                { term: 'Trienni', def: "Complement salarial per cada 3 anys d'antiguitat." },
+                { term: 'Acomiadament procedent', def: "Justificat per causes objectives. Indemnització: 20 dies/any." },
+                { term: 'Acomiadament improcedent', def: "Injustificat. Indemnització: 33 dies/any (o 45 si és anterior a 2012)." },
+            ],
+            es: [
+                { term: 'IRPF', def: "Impuesto sobre la Renta de las Personas Físicas. Grava los ingresos de las personas." },
+                { term: 'Salario bruto', def: "Total que ganas antes de deducciones (IRPF, Seguridad Social)." },
+                { term: 'Salario neto', def: "Lo que realmente recibes en cuenta después de deducciones." },
+                { term: 'Seguridad Social', def: "Sistema público que cubre pensiones, sanidad, desempleo, etc." },
+                { term: 'Base de cotización', def: "Importe sobre el cual se calculan las cotizaciones a la Seguridad Social." },
+                { term: 'Euríbor', def: "Tipo de interés de referencia para hipotecas variables en Europa." },
+                { term: 'TAE', def: "Tasa Anual Equivalente. Coste real de un préstamo incluyendo comisiones." },
+                { term: 'TIN', def: "Tipo de Interés Nominal. Interés sin comisiones ni gastos." },
+                { term: 'Amortización', def: "Devolución gradual del capital de un préstamo." },
+                { term: 'Convenio colectivo', def: "Acuerdo entre empresas y sindicatos que regula condiciones laborales de un sector." },
+                { term: 'Finiquito', def: "Documento y pago que recibes cuando termina la relación laboral." },
+                { term: 'Prorrata', def: "Reparto proporcional de las pagas extra cada mes." },
+                { term: 'Retribución en especie', def: "Parte del salario en bienes o servicios (coche empresa, seguro...)." },
+                { term: 'Trienio', def: "Complemento salarial por cada 3 años de antigüedad." },
+                { term: 'Despido procedente', def: "Justificado por causas objetivas. Indemnización: 20 días/año." },
+                { term: 'Despido improcedente', def: "Injustificado. Indemnización: 33 días/año (o 45 si es anterior a 2012)." },
+            ],
+            en: [
+                { term: 'Income Tax', def: "Tax on personal income." },
+                { term: 'Gross salary', def: "Total earnings before deductions (tax, social security)." },
+                { term: 'Net salary', def: "What you actually receive after deductions." },
+                { term: 'Social Security', def: "Public system covering pensions, healthcare, unemployment, etc." },
+                { term: 'Contribution base', def: "Amount on which social security contributions are calculated." },
+                { term: 'Euribor', def: "Reference interest rate for variable mortgages in Europe." },
+                { term: 'APR', def: "Annual Percentage Rate. Real cost of a loan including fees." },
+                { term: 'Nominal Interest Rate', def: "Interest without fees or charges." },
+                { term: 'Amortization', def: "Gradual repayment of loan principal." },
+                { term: 'Collective agreement', def: "Agreement between employers and unions regulating sector working conditions." },
+                { term: 'Settlement', def: "Document and payment received when employment ends." },
+                { term: 'Prorated', def: "Proportional distribution of bonus pay each month." },
+                { term: 'Benefits in kind', def: "Part of salary in goods or services (company car, insurance...)." },
+                { term: 'Seniority bonus', def: "Salary supplement for each 3 years of service." },
+                { term: 'Fair dismissal', def: "Justified for objective reasons. Compensation: 20 days/year." },
+                { term: 'Unfair dismissal', def: "Unjustified. Compensation: 33 days/year (or 45 if before 2012)." },
+            ]
+        };
+
+        function VidaPracticaApp() {
+            const [section, setSection] = useState('inicio');
+            const [menuOpen, setMenuOpen] = useState(false);
+            const [showGlosario, setShowGlosario] = useState(false);
+            const [searchTerm, setSearchTerm] = useState('');
+            const [idioma, setIdioma] = useState('val');
+            const [expandedSections, setExpandedSections] = useState({});
+
+            const t = useCallback((category, key) => {
+                try {
+                    return translations[category][key][idioma] || translations[category][key]['val'];
+                } catch {
+                    return key;
+                }
+            }, [idioma]);
+
+            const glosario = glosarioTerms[idioma] || glosarioTerms.val;
+            const filteredGlosario = glosario.filter(g => 
+                g.term.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                g.def.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            const toggleSection = (key) => {
+                setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
+            };
+
+            const LanguageSelector = () => (
+                <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                    {[
+                        { code: 'val', label: 'VAL' },
+                        { code: 'es', label: 'ES' },
+                        { code: 'en', label: 'EN' }
+                    ].map(lang => (
+                        <button
+                            key={lang.code}
+                            onClick={() => setIdioma(lang.code)}
+                            className={`px-2 py-1 rounded text-xs font-bold transition-all ${
+                                idioma === lang.code 
+                                    ? 'bg-violet-500 text-white' 
+                                    : 'text-gray-600 hover:bg-gray-200'
+                            }`}
+                        >
+                            {lang.label}
+                        </button>
+                    ))}
+                </div>
+            );
+
+            const NavBtn = ({ sec, icono: Icono, label }) => (
+                <button 
+                    onClick={() => { setSection(sec); setMenuOpen(false); }} 
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm transition-all ${
+                        section === sec 
+                            ? 'bg-gradient-to-r from-violet-500 to-purple-500 text-white shadow-lg' 
+                            : 'text-gray-500 hover:text-gray-800 hover:bg-violet-50'
+                    }`}
+                >
+                    <Icono size={16} /><span className="font-medium">{label}</span>
+                </button>
+            );
+
+            const Card = ({ children, className = '', accent = false }) => (
+                <div className={`bg-white rounded-2xl border ${accent ? 'border-violet-200' : 'border-gray-100'} p-6 ${className}`}>
+                    {children}
+                </div>
+            );
+
+            const InfoBox = ({ icon: Icon, title, children, color = 'violet' }) => (
+                <div className={`p-4 bg-${color}-50 rounded-xl border border-${color}-200`}>
+                    <div className="flex items-start gap-3">
+                        <div className={`p-2 bg-${color}-100 rounded-lg`}>
+                            <Icon className={`text-${color}-600`} size={20} />
+                        </div>
+                        <div>
+                            <h4 className="font-bold text-gray-800">{title}</h4>
+                            <div className="text-sm text-gray-600 mt-1">{children}</div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const Inicio = () => (
+                <div className="space-y-8">
+                    <div className="text-center py-8">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-violet-100 rounded-full text-violet-600 text-sm font-medium mb-6 border border-violet-200">
+                            {t('inicio', 'badge')}
+                        </div>
+                        <h1 className="text-4xl md:text-5xl font-black text-gray-800 mb-4">
+                            {t('inicio', 'titulo')}
+                        </h1>
+                        <p className="text-lg text-gray-500 max-w-xl mx-auto mb-8">
+                            {t('inicio', 'subtitulo')}
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {[
+                            { sec: 'cv', icon: FileText, title: t('inicio', 'cvTitulo'), desc: t('inicio', 'cvDesc'), color: 'violet' },
+                            { sec: 'nomina', icon: CreditCard, title: t('inicio', 'nominaTitulo'), desc: t('inicio', 'nominaDesc'), color: 'emerald' },
+                            { sec: 'hipoteca', icon: Home, title: t('inicio', 'hipotecaTitulo'), desc: t('inicio', 'hipotecaDesc'), color: 'blue' },
+                            { sec: 'renta', icon: Calculator, title: t('inicio', 'rentaTitulo'), desc: t('inicio', 'rentaDesc'), color: 'amber' },
+                            { sec: 'contratos', icon: Briefcase, title: t('inicio', 'contratosTitulo'), desc: t('inicio', 'contratosDesc'), color: 'rose' },
+                            { sec: 'glosario', icon: BookOpen, title: t('inicio', 'glosarioTitulo'), desc: t('inicio', 'glosarioDesc'), color: 'purple' },
+                        ].map((item, i) => (
+                            <button 
+                                key={i} 
+                                onClick={() => setSection(item.sec)} 
+                                className={`p-5 bg-white rounded-xl border border-gray-200 hover:border-${item.color}-300 hover:shadow-lg transition-all text-left group`}
+                            >
+                                <item.icon className={`text-${item.color}-500 mb-3 group-hover:scale-110 transition-transform`} size={32} />
+                                <p className="font-bold text-gray-800">{item.title}</p>
+                                <p className="text-sm text-gray-500">{item.desc}</p>
+                            </button>
+                        ))}
+                    </div>
+
+                    <Card accent>
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-violet-100 rounded-xl">
+                                <Lightbulb className="text-violet-500" size={32} />
+                            </div>
+                            <div>
+                                <p className="text-xl font-bold text-gray-800">
+                                    {idioma === 'val' ? 'Coneixement pràctic per a la vida' : idioma === 'es' ? 'Conocimiento práctico para la vida' : 'Practical knowledge for life'}
+                                </p>
+                                <p className="text-gray-600">
+                                    {idioma === 'val' ? 'Informació que hauries d\'haver après a l\'escola però que ningú et va ensenyar.' : idioma === 'es' ? 'Información que deberías haber aprendido en la escuela pero que nadie te enseñó.' : 'Information you should have learned at school but no one taught you.'}
+                                </p>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+            );
+
+            const CV = () => (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3">
+                        <FileText className="text-violet-500" /> {t('cv', 'titulo')}
+                    </h2>
+                    
+                    <Card>
+                        <p className="text-gray-600">{t('cv', 'intro')}</p>
+                    </Card>
+
+                    <Card>
+                        <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <ClipboardList className="text-violet-500" /> {t('cv', 'estructura')}
+                        </h3>
+                        <div className="space-y-4">
+                            {[
+                                { num: 1, title: t('cv', 'datosPersonales'), desc: t('cv', 'datosPersonalesDesc') },
+                                { num: 2, title: t('cv', 'perfil'), desc: t('cv', 'perfilDesc') },
+                                { num: 3, title: t('cv', 'experiencia'), desc: t('cv', 'experienciaDesc') },
+                                { num: 4, title: t('cv', 'formacion'), desc: t('cv', 'formacionDesc') },
+                                { num: 5, title: t('cv', 'habilidades'), desc: t('cv', 'habilidadesDesc') },
+                            ].map((item) => (
+                                <div key={item.num} className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
+                                    <div className="w-8 h-8 rounded-full bg-violet-500 text-white flex items-center justify-center font-bold flex-shrink-0">
+                                        {item.num}
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-gray-800">{item.title}</p>
+                                        <p className="text-sm text-gray-600">{item.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </Card>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                <XCircle className="text-red-500" /> {t('cv', 'errores')}
+                            </h3>
+                            <ul className="space-y-2">
+                                {[t('cv', 'error1'), t('cv', 'error2'), t('cv', 'error3'), t('cv', 'error4'), t('cv', 'error5'), t('cv', 'error6')].map((error, i) => (
+                                    <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                                        <X className="text-red-400 flex-shrink-0 mt-0.5" size={16} />
+                                        {error}
+                                    </li>
+                                ))}
+                            </ul>
+                        </Card>
+
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                <CheckCircle className="text-emerald-500" /> {t('cv', 'tips')}
+                            </h3>
+                            <ul className="space-y-2">
+                                {[t('cv', 'tip1'), t('cv', 'tip2'), t('cv', 'tip3'), t('cv', 'tip4'), t('cv', 'tip5')].map((tip, i) => (
+                                    <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                                        <Check className="text-emerald-400 flex-shrink-0 mt-0.5" size={16} />
+                                        {tip}
+                                    </li>
+                                ))}
+                            </ul>
+                        </Card>
+                    </div>
+                </div>
+            );
+
+            const Nomina = () => (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3">
+                        <CreditCard className="text-emerald-500" /> {t('nomina', 'titulo')}
+                    </h2>
+                    
+                    <Card>
+                        <p className="text-gray-600">{t('nomina', 'intro')}</p>
+                    </Card>
+
+                    <Card>
+                        <h3 className="font-bold text-gray-800 mb-4">{t('nomina', 'encabezado')}</h3>
+                        <p className="text-sm text-gray-600">{t('nomina', 'encabezadoDesc')}</p>
+                    </Card>
+
+                    <Card>
+                        <h3 className="font-bold text-emerald-600 mb-4 flex items-center gap-2">
+                            <TrendingUp size={20} /> {t('nomina', 'devengos')}
+                        </h3>
+                        <div className="space-y-3">
+                            {[
+                                { title: t('nomina', 'salarioBase'), desc: t('nomina', 'salarioBaseDesc') },
+                                { title: t('nomina', 'complementos'), desc: t('nomina', 'complementosDesc') },
+                                { title: t('nomina', 'horasExtra'), desc: t('nomina', 'horasExtraDesc') },
+                                { title: t('nomina', 'pagasExtra'), desc: t('nomina', 'pagasExtraDesc') },
+                            ].map((item, i) => (
+                                <div key={i} className="p-3 bg-emerald-50 rounded-lg">
+                                    <p className="font-medium text-gray-800">{item.title}</p>
+                                    <p className="text-sm text-gray-600">{item.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </Card>
+
+                    <Card>
+                        <h3 className="font-bold text-red-500 mb-4 flex items-center gap-2">
+                            <Receipt size={20} /> {t('nomina', 'deducciones')}
+                        </h3>
+                        <div className="space-y-3">
+                            {[
+                                { title: t('nomina', 'irpf'), desc: t('nomina', 'irpfDesc') },
+                                { title: t('nomina', 'seguridadSocial'), desc: t('nomina', 'seguridadSocialDesc') },
+                            ].map((item, i) => (
+                                <div key={i} className="p-3 bg-red-50 rounded-lg">
+                                    <p className="font-medium text-gray-800">{item.title}</p>
+                                    <p className="text-sm text-gray-600">{item.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </Card>
+
+                    <Card accent>
+                        <h3 className="font-bold text-violet-600 mb-4 flex items-center gap-2">
+                            <Wallet size={20} /> {t('nomina', 'liquido')}
+                        </h3>
+                        <p className="text-gray-600">{t('nomina', 'liquidoDesc')}</p>
+                        
+                        <div className="mt-4 p-4 bg-violet-50 rounded-xl">
+                            <h4 className="font-bold text-gray-800 mb-3">{t('nomina', 'ejemplo')}</h4>
+                            <div className="space-y-2 text-sm">
+                                <div className="flex justify-between">
+                                    <span className="text-gray-600">{t('nomina', 'bruto')}:</span>
+                                    <span className="font-bold text-gray-800">2.000€</span>
+                                </div>
+                                <div className="flex justify-between text-red-600">
+                                    <span>{t('nomina', 'retencion')} (15%):</span>
+                                    <span>-300€</span>
+                                </div>
+                                <div className="flex justify-between text-red-600">
+                                    <span>{t('nomina', 'seguridadSocial')} (6,35%):</span>
+                                    <span>-127€</span>
+                                </div>
+                                <hr className="border-gray-200" />
+                                <div className="flex justify-between text-lg">
+                                    <span className="font-bold text-gray-800">{t('nomina', 'neto')}:</span>
+                                    <span className="font-black text-emerald-600">1.573€</span>
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+            );
+
+            const Hipoteca = () => (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3">
+                        <Home className="text-blue-500" /> {t('hipoteca', 'titulo')}
+                    </h2>
+                    
+                    <Card>
+                        <div className="flex items-start gap-3">
+                            <AlertTriangle className="text-amber-500 flex-shrink-0" size={24} />
+                            <p className="text-gray-600">{t('hipoteca', 'intro')}</p>
+                        </div>
+                    </Card>
+
+                    <Card>
+                        <h3 className="font-bold text-gray-800 mb-4">{t('hipoteca', 'conceptos')}</h3>
+                        <div className="grid md:grid-cols-2 gap-3">
+                            {[
+                                { title: t('hipoteca', 'capital'), desc: t('hipoteca', 'capitalDesc') },
+                                { title: t('hipoteca', 'interes'), desc: t('hipoteca', 'interesDesc') },
+                                { title: t('hipoteca', 'plazo'), desc: t('hipoteca', 'plazoDesc') },
+                                { title: t('hipoteca', 'cuota'), desc: t('hipoteca', 'cuotaDesc') },
+                            ].map((item, i) => (
+                                <div key={i} className="p-3 bg-blue-50 rounded-lg">
+                                    <p className="font-medium text-gray-800">{item.title}</p>
+                                    <p className="text-sm text-gray-600">{item.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </Card>
+
+                    <Card>
+                        <h3 className="font-bold text-gray-800 mb-4">{t('hipoteca', 'tipos')}</h3>
+                        <div className="space-y-3">
+                            {[
+                                { title: t('hipoteca', 'fijo'), desc: t('hipoteca', 'fijoDesc'), color: 'emerald' },
+                                { title: t('hipoteca', 'variable'), desc: t('hipoteca', 'variableDesc'), color: 'amber' },
+                                { title: t('hipoteca', 'mixto'), desc: t('hipoteca', 'mixtoDesc'), color: 'blue' },
+                            ].map((item, i) => (
+                                <div key={i} className={`p-4 bg-${item.color}-50 rounded-xl border border-${item.color}-200`}>
+                                    <p className={`font-bold text-${item.color}-700`}>{item.title}</p>
+                                    <p className="text-sm text-gray-600 mt-1">{item.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </Card>
+
+                    <Card>
+                        <h3 className="font-bold text-gray-800 mb-4">{t('hipoteca', 'gastos')}</h3>
+                        <div className="space-y-2">
+                            {[
+                                { title: t('hipoteca', 'tasacion'), desc: t('hipoteca', 'tasacionDesc') },
+                                { title: t('hipoteca', 'notaria'), desc: t('hipoteca', 'notariaDesc') },
+                                { title: t('hipoteca', 'registro'), desc: t('hipoteca', 'registroDesc') },
+                                { title: t('hipoteca', 'gestoria'), desc: t('hipoteca', 'gestoriaDesc') },
+                            ].map((item, i) => (
+                                <div key={i} className="flex items-start gap-2">
+                                    <Check className="text-blue-500 flex-shrink-0 mt-1" size={16} />
+                                    <div>
+                                        <span className="font-medium text-gray-800">{item.title}:</span>
+                                        <span className="text-sm text-gray-600 ml-1">{item.desc}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </Card>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-2">{t('hipoteca', 'entrada')}</h3>
+                            <p className="text-sm text-gray-600">{t('hipoteca', 'entradaDesc')}</p>
+                        </Card>
+                        <Card accent>
+                            <h3 className="font-bold text-violet-600 mb-2 flex items-center gap-2">
+                                <Lightbulb size={18} /> {t('hipoteca', 'consejo')}
+                            </h3>
+                            <p className="text-sm text-gray-600">{t('hipoteca', 'consejoDesc')}</p>
+                        </Card>
+                    </div>
+                </div>
+            );
+
+            const Renta = () => (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3">
+                        <Calculator className="text-amber-500" /> {t('renta', 'titulo')}
+                    </h2>
+                    
+                    <Card>
+                        <p className="text-gray-600">{t('renta', 'intro')}</p>
+                    </Card>
+
+                    <Card>
+                        <h3 className="font-bold text-gray-800 mb-4">{t('renta', 'obligados')}</h3>
+                        <ul className="space-y-2">
+                            {[t('renta', 'obligado1'), t('renta', 'obligado2'), t('renta', 'obligado3'), t('renta', 'obligado4')].map((item, i) => (
+                                <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                                    <Check className="text-amber-500 flex-shrink-0 mt-0.5" size={16} />
+                                    {item}
+                                </li>
+                            ))}
+                        </ul>
+                    </Card>
+
+                    <Card>
+                        <h3 className="font-bold text-gray-800 mb-4">{t('renta', 'deducciones')}</h3>
+                        <ul className="space-y-2">
+                            {[t('renta', 'deduccion1'), t('renta', 'deduccion2'), t('renta', 'deduccion3'), t('renta', 'deduccion4'), t('renta', 'deduccion5')].map((item, i) => (
+                                <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                                    <PiggyBank className="text-emerald-500 flex-shrink-0 mt-0.5" size={16} />
+                                    {item}
+                                </li>
+                            ))}
+                        </ul>
+                    </Card>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <Card>
+                            <h3 className="font-bold text-emerald-600 mb-2">{t('renta', 'devolver')}</h3>
+                            <p className="text-sm text-gray-600">{t('renta', 'devolverDesc')}</p>
+                        </Card>
+                        <Card>
+                            <h3 className="font-bold text-red-500 mb-2">{t('renta', 'pagar')}</h3>
+                            <p className="text-sm text-gray-600">{t('renta', 'pagarDesc')}</p>
+                        </Card>
+                    </div>
+
+                    <Card accent>
+                        <h3 className="font-bold text-violet-600 mb-2 flex items-center gap-2">
+                            <Lightbulb size={18} /> {t('renta', 'consejo')}
+                        </h3>
+                        <p className="text-sm text-gray-600">{t('renta', 'consejoDesc')}</p>
+                    </Card>
+                </div>
+            );
+
+            const Contratos = () => (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3">
+                        <Briefcase className="text-rose-500" /> {t('contratos', 'titulo')}
+                    </h2>
+                    
+                    <Card>
+                        <p className="text-gray-600">{t('contratos', 'intro')}</p>
+                    </Card>
+
+                    <div className="space-y-4">
+                        {[
+                            { title: t('contratos', 'indefinido'), desc: t('contratos', 'indefinidoDesc'), color: 'emerald' },
+                            { title: t('contratos', 'temporal'), desc: t('contratos', 'temporalDesc'), color: 'amber' },
+                            { title: t('contratos', 'practicas'), desc: t('contratos', 'practicasDesc'), color: 'blue' },
+                            { title: t('contratos', 'formacion'), desc: t('contratos', 'formacionDesc'), color: 'purple' },
+                            { title: t('contratos', 'fijoDiscontinuo'), desc: t('contratos', 'fijoDiscontinuoDesc'), color: 'rose' },
+                        ].map((item, i) => (
+                            <Card key={i}>
+                                <h3 className={`font-bold text-${item.color}-600 mb-2`}>{item.title}</h3>
+                                <p className="text-sm text-gray-600">{item.desc}</p>
+                            </Card>
+                        ))}
+                    </div>
+
+                    <Card accent>
+                        <h3 className="font-bold text-gray-800 mb-4">{t('contratos', 'derechos')}</h3>
+                        <ul className="space-y-2">
+                            {[t('contratos', 'derecho1'), t('contratos', 'derecho2'), t('contratos', 'derecho3'), t('contratos', 'derecho4'), t('contratos', 'derecho5')].map((item, i) => (
+                                <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                                    <Shield className="text-violet-500 flex-shrink-0 mt-0.5" size={16} />
+                                    {item}
+                                </li>
+                            ))}
+                        </ul>
+                    </Card>
+                </div>
+            );
+
+            const Glosario = () => (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3">
+                        <BookOpen className="text-purple-500" /> {t('glosario', 'titulo')}
+                    </h2>
+                    
+                    <div className="relative">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                        <input
+                            type="text"
+                            placeholder={t('glosario', 'buscar')}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-800 focus:outline-none focus:border-violet-500"
+                        />
+                    </div>
+
+                    <div className="space-y-3">
+                        {filteredGlosario.map((item, i) => (
+                            <Card key={i}>
+                                <p className="font-bold text-violet-600">{item.term}</p>
+                                <p className="text-sm text-gray-600 mt-1">{item.def}</p>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-purple-50">
+                    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-gray-200">
+                        <div className="max-w-6xl mx-auto px-4 py-3">
+                            <div className="flex items-center justify-between">
+                                <button onClick={() => setSection('inicio')} className="flex items-center gap-2">
+                                    <div className="p-2 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl">
+                                        <Briefcase className="text-white" size={20} />
+                                    </div>
+                                    <div className="hidden sm:block">
+                                        <span className="font-bold text-lg">{t('titulo', 'app')}</span>
+                                    </div>
+                                </button>
+                                <nav className="hidden lg:flex gap-1 items-center">
+                                    <NavBtn sec="inicio" icono={Zap} label={t('nav', 'inicio')} />
+                                    <NavBtn sec="cv" icono={FileText} label={t('nav', 'cv')} />
+                                    <NavBtn sec="nomina" icono={CreditCard} label={t('nav', 'nomina')} />
+                                    <NavBtn sec="hipoteca" icono={Home} label={t('nav', 'hipoteca')} />
+                                    <NavBtn sec="renta" icono={Calculator} label={t('nav', 'renta')} />
+                                    <NavBtn sec="contratos" icono={Briefcase} label={t('nav', 'contratos')} />
+                                    <NavBtn sec="glosario" icono={BookOpen} label={t('nav', 'glosario')} />
+                                    <div className="ml-2"><LanguageSelector /></div>
+                                </nav>
+                                <div className="lg:hidden flex items-center gap-2">
+                                    <LanguageSelector />
+                                    <button onClick={() => setMenuOpen(!menuOpen)} className="p-2 hover:bg-gray-100 rounded-lg">
+                                        {menuOpen ? <X size={24} /> : <Menu size={24} />}
+                                    </button>
+                                </div>
+                            </div>
+                            {menuOpen && (
+                                <nav className="lg:hidden flex flex-wrap gap-2 mt-3 pb-2">
+                                    <NavBtn sec="inicio" icono={Zap} label={t('nav', 'inicio')} />
+                                    <NavBtn sec="cv" icono={FileText} label="CV" />
+                                    <NavBtn sec="nomina" icono={CreditCard} label={t('nav', 'nomina')} />
+                                    <NavBtn sec="hipoteca" icono={Home} label={t('nav', 'hipoteca')} />
+                                    <NavBtn sec="renta" icono={Calculator} label={t('nav', 'renta')} />
+                                    <NavBtn sec="contratos" icono={Briefcase} label={t('nav', 'contratos')} />
+                                </nav>
+                            )}
+                        </div>
+                    </header>
+
+                    <main className="max-w-6xl mx-auto px-4 py-8">
+                        {section === 'inicio' && <Inicio />}
+                        {section === 'cv' && <CV />}
+                        {section === 'nomina' && <Nomina />}
+                        {section === 'hipoteca' && <Hipoteca />}
+                        {section === 'renta' && <Renta />}
+                        {section === 'contratos' && <Contratos />}
+                        {section === 'glosario' && <Glosario />}
+                    </main>
+
+                    <footer className="py-8 bg-white/50 border-t border-gray-100">
+                        <div className="max-w-6xl mx-auto px-4 text-center text-sm text-gray-500">
+                            <p>{t('titulo', 'app')} · {t('titulo', 'subtitulo')} · 2025</p>
+                        </div>
+                    </footer>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<VidaPracticaApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>

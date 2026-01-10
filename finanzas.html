@@ -25,15 +25,201 @@
 <body class="bg-gradient-to-br from-amber-50 via-white to-pink-50">
     <div id="root"></div>
     <script type="text/babel">
-        const { useState, useMemo } = React;
+        const { useState, useMemo, useCallback } = React;
         const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } = Recharts;
         const { TrendingUp, Shield, Target, BookOpen, AlertTriangle, CheckCircle, XCircle, ChevronRight, ChevronDown, ChevronUp, Share2, Wallet, BarChart3, Lock, RefreshCw, Award, Lightbulb, Brain, Clock, Building, Globe, Zap, Users, Activity, TrendingDown, Eye, Calculator, FileText, Search, Menu, X, Star, Check, PieChart: PieChartIcon, GraduationCap, Smartphone, Gem, DollarSign, Home, Coins } = lucideReact;
+
+        // ============================================================================
+        // SISTEMA DE TRADUCCIONS
+        // ============================================================================
+        const translations = {
+            nav: {
+                inicio: { val: 'Inici', es: 'Inicio', en: 'Home' },
+                gestion: { val: 'Gestió', es: 'Gestión', en: 'Management' },
+                activos: { val: 'Actius', es: 'Activos', en: 'Assets' },
+                calc: { val: 'Calculadora', es: 'Calculadora', en: 'Calculator' },
+                cartera: { val: 'Cartera', es: 'Cartera', en: 'Portfolio' },
+                estrategias: { val: 'Estratègies', es: 'Estrategias', en: 'Strategies' },
+                psicologia: { val: 'Psicologia', es: 'Psicología', en: 'Psychology' },
+                brokers: { val: 'Brokers', es: 'Brokers', en: 'Brokers' },
+                quiz: { val: 'Quiz', es: 'Quiz', en: 'Quiz' },
+                test: { val: 'Test', es: 'Test', en: 'Test' }
+            },
+            inicio: {
+                badge: { val: 'Versió 3.0 — Guia Definitiva', es: 'Versión 3.0 — Guía Definitiva', en: 'Version 3.0 — Definitive Guide' },
+                titol: { val: 'Finances i Inversió', es: 'Finanzas e Inversión', en: 'Finance and Investment' },
+                subtitol: { val: 'Tot el que necessites saber per gestionar els teus diners i invertir amb cap', es: 'Todo lo que necesitas saber para gestionar tu dinero e invertir con cabeza', en: 'Everything you need to know to manage your money and invest wisely' },
+                testPerfil: { val: 'Test de perfil', es: 'Test de perfil', en: 'Profile test' },
+                calculadora: { val: 'Calculadora', es: 'Calculadora', en: 'Calculator' },
+                aviso: { val: 'Invertir no és per fer-se ric ràpid', es: 'Invertir no es para hacerse rico rápido', en: 'Investing is not to get rich quick' },
+                avisoDesc: { val: 'És per protegir el teu patrimoni de la inflació i fer-lo créixer a llarg termini.', es: 'Es para proteger tu patrimonio de la inflación y hacerlo crecer a largo plazo.', en: 'It is to protect your assets from inflation and grow them in the long term.' },
+                gestion: { val: 'Gestió', es: 'Gestión', en: 'Management' },
+                gestionDesc: { val: 'Pressupost i estalvi', es: 'Presupuesto y ahorro', en: 'Budget and savings' },
+                activos: { val: 'Actius', es: 'Activos', en: 'Assets' },
+                activosDesc: { val: "Tipus d'inversió", es: 'Tipos de inversión', en: 'Types of investment' },
+                calculadora: { val: 'Calculadora', es: 'Calculadora', en: 'Calculator' },
+                calculadoraDesc: { val: 'Interès compost', es: 'Interés compuesto', en: 'Compound interest' },
+                cartera: { val: 'Cartera', es: 'Cartera', en: 'Portfolio' },
+                carteraDesc: { val: 'Simula la teua cartera', es: 'Simula tu cartera', en: 'Simulate your portfolio' },
+                estrategias: { val: 'Estratègies', es: 'Estrategias', en: 'Strategies' },
+                estrategiasDesc: { val: 'Com invertir', es: 'Cómo invertir', en: 'How to invest' },
+                psicologia: { val: 'Psicologia', es: 'Psicología', en: 'Psychology' },
+                psicologiaDesc: { val: 'Biaixos cognitius', es: 'Sesgos cognitivos', en: 'Cognitive biases' },
+                brokers: { val: 'Brokers', es: 'Brokers', en: 'Brokers' },
+                brokersDesc: { val: 'On invertir', es: 'Dónde invertir', en: 'Where to invest' },
+                quiz: { val: 'Quiz', es: 'Quiz', en: 'Quiz' },
+                quizDesc: { val: 'Posa a prova', es: 'Pon a prueba', en: 'Put to the test' },
+                rentabilidad: { val: 'Rendibilitat històrica real', es: 'Rentabilidad histórica real', en: 'Real historical return' },
+                empresas: { val: 'Les 500 majors empreses dels EUA', es: 'Las 500 mayores empresas de EEUU', en: 'The 500 largest US companies' },
+                empresasMundo: { val: "1.500+ empreses de 23 països desenvolupats", es: '1.500+ empresas de 23 países desarrollados', en: '1,500+ companies from 23 developed countries' },
+                empresasEsp: { val: "Les 35 majors empreses d'Espanya", es: 'Las 35 mayores empresas de España', en: "Spain's 35 largest companies" }
+            },
+            gestion: {
+                titol: { val: 'Gestió dels Diners', es: 'Gestión del Dinero', en: 'Money Management' },
+                regla: { val: 'Regla 50/30/20', es: 'Regla 50/30/20', en: '50/30/20 Rule' },
+                necesidades: { val: 'Necessitats', es: 'Necesidades', en: 'Needs' },
+                ocio: { val: 'Oci', es: 'Ocio', en: 'Leisure' },
+                ahorro: { val: 'Estalvi', es: 'Ahorro', en: 'Savings' },
+                ahorroInversion: { val: 'Estalvi/Inversió', es: 'Ahorro/Inversión', en: 'Savings/Investment' },
+                fondoEmergencia: { val: "Fons d'Emergència", es: 'Fondo de Emergencia', en: 'Emergency Fund' },
+                mesesGastos: { val: 'mesos de despeses', es: 'meses de gastos', en: 'months of expenses' },
+                enCuenta: { val: 'en compte d\'alta disponibilitat', es: 'en cuenta de alta disponibilidad', en: 'in high availability account' },
+                fondoDesc: { val: "Aquest coixí et protegeix d'imprevistos (atur, malaltia, reparacions) i et permet invertir sense necessitar eixos diners.", es: 'Este colchón te protege de imprevistos (paro, enfermedad, reparaciones) y te permite invertir sin necesitar ese dinero.', en: 'This cushion protects you from unforeseen events (unemployment, illness, repairs) and allows you to invest without needing that money.' },
+                ordenPrioridades: { val: '📋 Ordre de prioritats financeres', es: '📋 Orden de prioridades financieras', en: '📋 Order of financial priorities' },
+                eliminarDeuda: { val: 'Eliminar deute dolent', es: 'Eliminar deuda mala', en: 'Eliminate bad debt' },
+                eliminarDeudaDesc: { val: 'Prioritza deutes amb TAE > 6-7% (targetes, crèdits al consum)', es: 'Prioriza deudas con TAE > 6-7% (tarjetas, créditos al consumo)', en: 'Prioritize debts with APR > 6-7% (cards, consumer loans)' },
+                construirFondo: { val: "Construir fons d'emergència", es: 'Construir fondo de emergencia', en: 'Build emergency fund' },
+                construirFondoDesc: { val: '6-12 mesos de despeses en compte remunerat accessible', es: '6-12 meses de gastos en cuenta remunerada accesible', en: '6-12 months of expenses in accessible interest-bearing account' },
+                invertirExcedente: { val: "Invertir l'excedent", es: 'Invertir el excedente', en: 'Invest the surplus' },
+                invertirExcedenteDesc: { val: 'Tot el que sobre després de despeses, estalvi i emergència', es: 'Todo lo que sobre después de gastos, ahorro y emergencia', en: 'Everything left over after expenses, savings and emergency' }
+            },
+            activos: {
+                titol: { val: "Tipus d'Actius", es: 'Tipos de Activos', en: 'Types of Assets' },
+                desc: { val: "Fes clic en cada actiu per veure informació detallada sobre què és, com funciona, avantatges, desavantatges i com invertir.", es: 'Haz clic en cada activo para ver información detallada sobre qué es, cómo funciona, ventajas, desventajas y cómo invertir.', en: 'Click on each asset to see detailed information about what it is, how it works, advantages, disadvantages and how to invest.' },
+                queEs: { val: '💡 Què és?', es: '💡 ¿Qué es?', en: '💡 What is it?' },
+                comoFunciona: { val: '⚙️ Com funciona?', es: '⚙️ ¿Cómo funciona?', en: '⚙️ How does it work?' },
+                rentabilidad: { val: '📈 Rendibilitat', es: '📈 Rentabilidad', en: '📈 Return' },
+                riesgo: { val: '⚠️ Risc', es: '⚠️ Riesgo', en: '⚠️ Risk' },
+                ventajas: { val: '✅ Avantatges', es: '✅ Ventajas', en: '✅ Advantages' },
+                desventajas: { val: '❌ Desavantatges', es: '❌ Desventajas', en: '❌ Disadvantages' },
+                ejemplos: { val: '📋 Exemples', es: '📋 Ejemplos', en: '📋 Examples' },
+                idealPara: { val: '👤 Ideal per a', es: '👤 Ideal para', en: '👤 Ideal for' },
+                comoInvertir: { val: '🚀 Com invertir', es: '🚀 Cómo invertir', en: '🚀 How to invest' }
+            },
+            calc: {
+                titol: { val: 'Calculadora Interès Compost', es: 'Calculadora Interés Compuesto', en: 'Compound Interest Calculator' },
+                capitalInicial: { val: 'Capital inicial (€)', es: 'Capital inicial (€)', en: 'Initial capital (€)' },
+                aportacionMensual: { val: 'Aportació mensual (€)', es: 'Aportación mensual (€)', en: 'Monthly contribution (€)' },
+                rentabilidadAnual: { val: 'Rendibilitat anual (%)', es: 'Rentabilidad anual (%)', en: 'Annual return (%)' },
+                plazoAnios: { val: 'Termini (anys)', es: 'Plazo (años)', en: 'Term (years)' },
+                resultadoFinal: { val: 'Resultat final', es: 'Resultado final', en: 'Final result' },
+                totalAportado: { val: 'Total aportat', es: 'Total aportado', en: 'Total contributed' },
+                interesesGenerados: { val: 'Interessos generats', es: 'Intereses generados', en: 'Interest generated' },
+                multiplicador: { val: 'Multiplicador', es: 'Multiplicador', en: 'Multiplier' },
+                aportaciones: { val: 'Aportacions', es: 'Aportaciones', en: 'Contributions' },
+                intereses: { val: 'Interessos', es: 'Intereses', en: 'Interest' },
+                evolucion: { val: 'Evolució del patrimoni', es: 'Evolución del patrimonio', en: 'Wealth evolution' }
+            },
+            cartera: {
+                titol: { val: 'Simulador de Cartera', es: 'Simulador de Cartera', en: 'Portfolio Simulator' },
+                rv: { val: 'Renda Variable', es: 'Renta Variable', en: 'Stocks' },
+                rf: { val: 'Renda Fixa', es: 'Renta Fija', en: 'Bonds' },
+                oro: { val: 'Or', es: 'Oro', en: 'Gold' },
+                cash: { val: 'Efectiu', es: 'Efectivo', en: 'Cash' },
+                rentEsperada: { val: 'Rendibilitat esperada', es: 'Rentabilidad esperada', en: 'Expected return' },
+                riesgoNivel: { val: 'Nivell de risc', es: 'Nivel de riesgo', en: 'Risk level' },
+                bajo: { val: 'Baix', es: 'Bajo', en: 'Low' },
+                medio: { val: 'Mitjà', es: 'Medio', en: 'Medium' },
+                alto: { val: 'Alt', es: 'Alto', en: 'High' },
+                carterasModelo: { val: 'Carteres model', es: 'Carteras modelo', en: 'Model portfolios' },
+                conservadora: { val: 'Conservadora', es: 'Conservadora', en: 'Conservative' },
+                moderada: { val: 'Moderada', es: 'Moderada', en: 'Moderate' },
+                agresiva: { val: 'Agressiva', es: 'Agresiva', en: 'Aggressive' }
+            },
+            estrategias: {
+                titol: { val: "Estratègies d'Inversió", es: 'Estrategias de Inversión', en: 'Investment Strategies' }
+            },
+            psicologia: {
+                titol: { val: 'Psicologia de la Inversió', es: 'Psicología de la Inversión', en: 'Investment Psychology' }
+            },
+            brokers: {
+                titol: { val: 'Comparador de Brokers', es: 'Comparador de Brokers', en: 'Broker Comparison' },
+                todos: { val: 'Tots', es: 'Todos', en: 'All' },
+                fondos: { val: 'Fons', es: 'Fondos', en: 'Funds' },
+                etfs: { val: 'ETFs', es: 'ETFs', en: 'ETFs' },
+                acciones: { val: 'Accions', es: 'Acciones', en: 'Stocks' }
+            },
+            quiz: {
+                titol: { val: 'Quiz de Finances', es: 'Quiz de Finanzas', en: 'Finance Quiz' },
+                desc: { val: 'Posa a prova els teus coneixements financers amb 10 preguntes', es: 'Pon a prueba tus conocimientos financieros con 10 preguntas', en: 'Test your financial knowledge with 10 questions' },
+                comenzar: { val: 'Començar Quiz', es: 'Comenzar Quiz', en: 'Start Quiz' },
+                pregunta: { val: 'Pregunta', es: 'Pregunta', en: 'Question' },
+                de: { val: 'de', es: 'de', en: 'of' },
+                completado: { val: 'Quiz Completat!', es: '¡Quiz Completado!', en: 'Quiz Completed!' },
+                puntuacion: { val: 'Puntuació', es: 'Puntuación', en: 'Score' },
+                repetir: { val: 'Repetir Quiz', es: 'Repetir Quiz', en: 'Repeat Quiz' }
+            },
+            test: {
+                titol: { val: 'Test de Perfil Inversor', es: 'Test de Perfil Inversor', en: 'Investor Profile Test' },
+                tuPerfil: { val: 'El teu Perfil', es: 'Tu Perfil', en: 'Your Profile' },
+                carteraRec: { val: 'Cartera recomanada', es: 'Cartera recomendada', en: 'Recommended portfolio' },
+                brokersRec: { val: 'Brokers recomanats', es: 'Brokers recomendados', en: 'Recommended brokers' },
+                proximosPasos: { val: 'Pròxims passos', es: 'Próximos pasos', en: 'Next steps' },
+                repetir: { val: 'Repetir test', es: 'Repetir test', en: 'Repeat test' },
+                compartir: { val: 'Compartir', es: 'Compartir', en: 'Share' },
+                anterior: { val: 'Anterior', es: 'Anterior', en: 'Previous' },
+                siguiente: { val: 'Següent', es: 'Siguiente', en: 'Next' },
+                verResultados: { val: 'Veure resultats', es: 'Ver resultados', en: 'See results' },
+                si: { val: 'Sí', es: 'Sí', en: 'Yes' },
+                no: { val: 'No', es: 'No', en: 'No' }
+            },
+            glosario: {
+                titol: { val: 'Glossari financer', es: 'Glosario financiero', en: 'Financial glossary' },
+                buscar: { val: 'Cercar terme...', es: 'Buscar término...', en: 'Search term...' }
+            },
+            ui: {
+                anios: { val: 'anys', es: 'años', en: 'years' }
+            }
+        };
 
         function FinanzasApp() {
             const [section, setSection] = useState('inicio');
             const [menuOpen, setMenuOpen] = useState(false);
             const [showGlosario, setShowGlosario] = useState(false);
             const [searchTerm, setSearchTerm] = useState('');
+            const [idioma, setIdioma] = useState('val');
+
+            // Funció de traducció
+            const t = useCallback((category, key) => {
+                try {
+                    return translations[category][key][idioma] || translations[category][key]['val'];
+                } catch {
+                    return key;
+                }
+            }, [idioma]);
+
+            // Selector d'idioma
+            const LanguageSelector = () => (
+                <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                    {[
+                        { code: 'val', label: 'VAL' },
+                        { code: 'es', label: 'ES' },
+                        { code: 'en', label: 'EN' }
+                    ].map(lang => (
+                        <button
+                            key={lang.code}
+                            onClick={() => setIdioma(lang.code)}
+                            className={`px-2 py-1 rounded text-xs font-bold transition-all ${
+                                idioma === lang.code 
+                                    ? 'bg-pink-500 text-white' 
+                                    : 'text-gray-600 hover:bg-gray-200'
+                            }`}
+                        >
+                            {lang.label}
+                        </button>
+                    ))}
+                </div>
+            );
             
             const [calcCapital, setCalcCapital] = useState(10000);
             const [calcMensual, setCalcMensual] = useState(200);
@@ -722,11 +908,11 @@
                     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-gray-200">
                         <div className="max-w-6xl mx-auto px-4 py-3">
                             <div className="flex items-center justify-between">
-                                <button onClick={() => setSection('inicio')} className="flex items-center gap-2"><div className="p-2 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl"><TrendingUp size={20} /></div><span className="font-bold text-lg hidden sm:block">Finanzas 101</span></button>
-                                <nav className="hidden lg:flex gap-1"><NavBtn sec="inicio" icono={Zap} label="Inicio" /><NavBtn sec="gestion" icono={Wallet} label="Gestión" /><NavBtn sec="activos" icono={BarChart3} label="Activos" /><NavBtn sec="calc" icono={Calculator} label="Calculadora" /><NavBtn sec="cartera" icono={PieChartIcon} label="Cartera" /><NavBtn sec="estrategias" icono={Target} label="Estrategias" /><NavBtn sec="psicologia" icono={Brain} label="Psicología" /><NavBtn sec="brokers" icono={Building} label="Brokers" /><NavBtn sec="quiz" icono={GraduationCap} label="Quiz" /><NavBtn sec="test" icono={Award} label="Test" /></nav>
-                                <button onClick={() => setMenuOpen(!menuOpen)} className="lg:hidden p-2 hover:bg-white rounded-lg">{menuOpen ? <X size={24} /> : <Menu size={24} />}</button>
+                                <button onClick={() => setSection('inicio')} className="flex items-center gap-2"><div className="p-2 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl"><TrendingUp size={20} /></div><span className="font-bold text-lg hidden sm:block">{t('inicio', 'titol')}</span></button>
+                                <nav className="hidden lg:flex gap-1 items-center"><NavBtn sec="inicio" icono={Zap} label={t('nav', 'inicio')} /><NavBtn sec="gestion" icono={Wallet} label={t('nav', 'gestion')} /><NavBtn sec="activos" icono={BarChart3} label={t('nav', 'activos')} /><NavBtn sec="calc" icono={Calculator} label={t('nav', 'calc')} /><NavBtn sec="cartera" icono={PieChartIcon} label={t('nav', 'cartera')} /><NavBtn sec="estrategias" icono={Target} label={t('nav', 'estrategias')} /><NavBtn sec="psicologia" icono={Brain} label={t('nav', 'psicologia')} /><NavBtn sec="brokers" icono={Building} label={t('nav', 'brokers')} /><NavBtn sec="quiz" icono={GraduationCap} label={t('nav', 'quiz')} /><NavBtn sec="test" icono={Award} label={t('nav', 'test')} /><div className="ml-2"><LanguageSelector /></div></nav>
+                                <div className="lg:hidden flex items-center gap-2"><LanguageSelector /><button onClick={() => setMenuOpen(!menuOpen)} className="p-2 hover:bg-white rounded-lg">{menuOpen ? <X size={24} /> : <Menu size={24} />}</button></div>
                             </div>
-                            {menuOpen && (<nav className="lg:hidden flex flex-wrap gap-2 mt-3 pb-2"><NavBtn sec="inicio" icono={Zap} label="Inicio" /><NavBtn sec="gestion" icono={Wallet} label="Gestión" /><NavBtn sec="activos" icono={BarChart3} label="Activos" /><NavBtn sec="calc" icono={Calculator} label="Calc" /><NavBtn sec="cartera" icono={PieChartIcon} label="Cartera" /><NavBtn sec="estrategias" icono={Target} label="Estrategias" /><NavBtn sec="psicologia" icono={Brain} label="Psicología" /><NavBtn sec="brokers" icono={Building} label="Brokers" /><NavBtn sec="quiz" icono={GraduationCap} label="Quiz" /><NavBtn sec="test" icono={Award} label="Test" /></nav>)}
+                            {menuOpen && (<nav className="lg:hidden flex flex-wrap gap-2 mt-3 pb-2"><NavBtn sec="inicio" icono={Zap} label={t('nav', 'inicio')} /><NavBtn sec="gestion" icono={Wallet} label={t('nav', 'gestion')} /><NavBtn sec="activos" icono={BarChart3} label={t('nav', 'activos')} /><NavBtn sec="calc" icono={Calculator} label={t('nav', 'calc')} /><NavBtn sec="cartera" icono={PieChartIcon} label={t('nav', 'cartera')} /><NavBtn sec="estrategias" icono={Target} label={t('nav', 'estrategias')} /><NavBtn sec="psicologia" icono={Brain} label={t('nav', 'psicologia')} /><NavBtn sec="brokers" icono={Building} label={t('nav', 'brokers')} /><NavBtn sec="quiz" icono={GraduationCap} label={t('nav', 'quiz')} /><NavBtn sec="test" icono={Award} label={t('nav', 'test')} /></nav>)}
                         </div>
                     </header>
                     <main className="relative z-10 max-w-6xl mx-auto px-4 py-8">
