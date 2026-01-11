@@ -201,39 +201,56 @@
 
             const Nomina = () => (
                 <div className="space-y-6">
-                    <h2 className="text-2xl font-black text-gray-800">💳 Simulador de Nòmina</h2>
+                    <h2 className="text-2xl font-black text-gray-800">💳 Entendre la Nòmina</h2>
+                    
+                    {/* Introducció teòrica */}
+                    <Card className="bg-gradient-to-r from-violet-50 to-purple-50 border-violet-200">
+                        <h3 className="font-bold text-gray-800 mb-3">📚 Què és una nòmina?</h3>
+                        <p className="text-gray-600 text-sm mb-4">
+                            La nòmina és el document que reflecteix el pagament que rep un treballador per la seva feina. 
+                            Inclou el <strong>salari brut</strong> (total guanyat) i les <strong>deduccions</strong> (impostos i cotitzacions), 
+                            resultant en el <strong>salari net</strong> (el que reps al compte).
+                        </p>
+                        <div className="p-3 bg-white rounded-lg text-sm text-center">
+                            <span className="font-bold text-violet-600">SALARI NET = BRUT - SEGURETAT SOCIAL - IRPF</span>
+                        </div>
+                    </Card>
+                    
+                    {/* Simulador */}
                     <div className="grid lg:grid-cols-2 gap-6">
                         <Card>
-                            <h3 className="font-bold text-gray-800 mb-4">⚙️ Dades</h3>
+                            <h3 className="font-bold text-gray-800 mb-4">⚙️ Calcula la teua nòmina</h3>
                             <div className="space-y-4">
                                 <Slider label="Salari brut mensual" value={salarioBrut} onChange={setSalarioBrut} min={1000} max={10000} step={50} suffix="€" />
                                 <div>
-                                    <p className="text-sm text-gray-600 mb-2">Pagues</p>
+                                    <p className="text-sm text-gray-600 mb-2">Nombre de pagues</p>
                                     <div className="flex gap-2">
                                         {[12, 14].map(p => (
                                             <button key={p} onClick={() => setPagues(p)} className={`flex-1 py-2 rounded-lg font-bold ${pagues === p ? 'bg-violet-500 text-white' : 'bg-gray-100'}`}>{p} pagues</button>
                                         ))}
                                     </div>
+                                    <p className="text-xs text-gray-400 mt-1">14 pagues = 2 extres (juny/desembre) que es reparteixen</p>
                                 </div>
                                 <div>
-                                    <p className="text-sm text-gray-600 mb-2">Situació</p>
+                                    <p className="text-sm text-gray-600 mb-2">Situació personal</p>
                                     <div className="flex flex-wrap gap-2">
                                         {[['solter', 'Solter/a'], ['casat', 'Casat/da'], ['casat2fills', '2+ fills']].map(([k, l]) => (
                                             <button key={k} onClick={() => setCategoriaIRPF(k)} className={`px-3 py-2 rounded-lg text-sm ${categoriaIRPF === k ? 'bg-violet-500 text-white' : 'bg-gray-100'}`}>{l}</button>
                                         ))}
                                     </div>
+                                    <p className="text-xs text-gray-400 mt-1">Afecta les retencions d'IRPF</p>
                                 </div>
                             </div>
                         </Card>
                         <Card className="bg-gradient-to-br from-violet-500 to-purple-600 text-white border-0">
-                            <h3 className="font-bold mb-4">📊 Resultat</h3>
+                            <h3 className="font-bold mb-4">📊 La teua nòmina</h3>
                             <div className="space-y-3">
                                 <div className="flex justify-between py-2 border-b border-white/20">
-                                    <span>Brut</span>
+                                    <span>Salari Brut</span>
                                     <span className="font-bold">{salarioBrut}€</span>
                                 </div>
                                 <div className="flex justify-between py-2 border-b border-white/20">
-                                    <span>SS ({calculNomina.ssPercent}%)</span>
+                                    <span>Seguretat Social ({calculNomina.ssPercent}%)</span>
                                     <span className="text-red-200">-{calculNomina.ss.toFixed(0)}€</span>
                                 </div>
                                 <div className="flex justify-between py-2 border-b border-white/20">
@@ -241,27 +258,108 @@
                                     <span className="text-red-200">-{calculNomina.irpf.toFixed(0)}€</span>
                                 </div>
                                 <div className="flex justify-between py-3 bg-white/20 rounded-xl px-3 -mx-1">
-                                    <span className="font-bold">NET</span>
+                                    <span className="font-bold">SALARI NET</span>
                                     <span className="font-black text-2xl">{calculNomina.net.toFixed(0)}€</span>
                                 </div>
-                                <p className="text-center text-sm text-white/70">Anual: {calculNomina.netAnual.toLocaleString()}€ nets</p>
+                                <div className="grid grid-cols-2 gap-2 text-sm mt-2">
+                                    <div className="p-2 bg-white/10 rounded-lg text-center">
+                                        <p className="text-white/70">Net Anual</p>
+                                        <p className="font-bold">{calculNomina.netAnual.toLocaleString()}€</p>
+                                    </div>
+                                    <div className="p-2 bg-white/10 rounded-lg text-center">
+                                        <p className="text-white/70">Retencions/mes</p>
+                                        <p className="font-bold">{(calculNomina.ss + calculNomina.irpf).toFixed(0)}€</p>
+                                    </div>
+                                </div>
                             </div>
                         </Card>
                     </div>
+                    
+                    {/* Explicacions detallades */}
                     <Card>
-                        <h3 className="font-bold text-gray-800 mb-4">📚 Què és cada cosa?</h3>
-                        <div className="grid md:grid-cols-2 gap-4">
-                            {[
-                                { t: 'Salari Brut', d: "El total abans de deduccions. El que 'guanyes'." },
-                                { t: 'Seguretat Social', d: 'Cotització per sanitat, jubilació, atur... ~6.35%' },
-                                { t: 'IRPF', d: "Impost sobre la renda. Depèn del que guanyes i situació." },
-                                { t: 'Salari Net', d: "El que reps al compte. Brut - SS - IRPF." }
-                            ].map((c, i) => (
-                                <div key={i} className="p-3 bg-violet-50 rounded-xl">
-                                    <p className="font-bold text-violet-700">{c.t}</p>
-                                    <p className="text-sm text-gray-600">{c.d}</p>
+                        <h3 className="font-bold text-gray-800 mb-4">📖 Components de la nòmina explicats</h3>
+                        <div className="space-y-4">
+                            <div className="p-4 bg-green-50 border border-green-200 rounded-xl">
+                                <h4 className="font-bold text-green-700 mb-2">💵 Salari Brut</h4>
+                                <p className="text-sm text-gray-600 mb-2">
+                                    El total pactat amb l'empresa abans de cap deducció. Pot incloure:
+                                </p>
+                                <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
+                                    <li><strong>Salari base:</strong> Segons conveni o contracte</li>
+                                    <li><strong>Complements:</strong> Antiguitat, perillositat, nocturnitat...</li>
+                                    <li><strong>Hores extra:</strong> A part o compensades amb temps lliure</li>
+                                    <li><strong>Incentius:</strong> Comissions, bonus per objectius...</li>
+                                </ul>
+                            </div>
+                            
+                            <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                                <h4 className="font-bold text-blue-700 mb-2">🏥 Seguretat Social (SS)</h4>
+                                <p className="text-sm text-gray-600 mb-2">
+                                    Cotització obligatòria que pagues tu (~6.35%) i l'empresa (~30%). Cobreix:
+                                </p>
+                                <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
+                                    <li><strong>Jubilació:</strong> La teua futura pensió</li>
+                                    <li><strong>Sanitat:</strong> Sistema públic de salut</li>
+                                    <li><strong>Atur:</strong> Prestació si perds la feina</li>
+                                    <li><strong>Formació:</strong> Cursos subvencionats</li>
+                                    <li><strong>Accidents:</strong> Cobertura per accidents laborals</li>
+                                </ul>
+                            </div>
+                            
+                            <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                                <h4 className="font-bold text-amber-700 mb-2">📊 IRPF (Impost sobre la Renda)</h4>
+                                <p className="text-sm text-gray-600 mb-2">
+                                    Impost progressiu: com més guanyes, més percentatge pagues. Trams 2024:
+                                </p>
+                                <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs mt-2">
+                                    <div className="p-2 bg-white rounded-lg text-center">
+                                        <p className="font-bold">Fins 12.450€</p>
+                                        <p className="text-amber-600">19%</p>
+                                    </div>
+                                    <div className="p-2 bg-white rounded-lg text-center">
+                                        <p className="font-bold">12.450-20.200€</p>
+                                        <p className="text-amber-600">24%</p>
+                                    </div>
+                                    <div className="p-2 bg-white rounded-lg text-center">
+                                        <p className="font-bold">20.200-35.200€</p>
+                                        <p className="text-amber-600">30%</p>
+                                    </div>
+                                    <div className="p-2 bg-white rounded-lg text-center">
+                                        <p className="font-bold">35.200-60.000€</p>
+                                        <p className="text-amber-600">37%</p>
+                                    </div>
+                                    <div className="p-2 bg-white rounded-lg text-center">
+                                        <p className="font-bold">Més de 60.000€</p>
+                                        <p className="text-amber-600">45%</p>
+                                    </div>
                                 </div>
-                            ))}
+                                <p className="text-xs text-gray-500 mt-2">
+                                    ⚠️ Les retencions són a compte. A la Declaració de la Renda es calcula l'import real i es torna o paga la diferència.
+                                </p>
+                            </div>
+                        </div>
+                    </Card>
+                    
+                    {/* Consells */}
+                    <Card>
+                        <h3 className="font-bold text-gray-800 mb-4">💡 Consells pràctics</h3>
+                        <div className="grid md:grid-cols-2 gap-4">
+                            <div className="p-3 bg-violet-50 rounded-xl">
+                                <p className="font-bold text-violet-700">📝 Revisa sempre la nòmina</p>
+                                <p className="text-sm text-gray-600">Comprova que les hores, complements i deduccions són correctes.</p>
+                            </div>
+                            <div className="p-3 bg-violet-50 rounded-xl">
+                                <p className="font-bold text-violet-700">📁 Guarda les nòmines</p>
+                                <p className="text-sm text-gray-600">Les necessitaràs per declaració de renda, hipoteca, prestacions...</p>
+                            </div>
+                            <div className="p-3 bg-violet-50 rounded-xl">
+                                <p className="font-bold text-violet-700">🧮 Negocia el brut, no el net</p>
+                                <p className="text-sm text-gray-600">El net depèn de la teua situació personal, el brut és comparable.</p>
+                            </div>
+                            <div className="p-3 bg-violet-50 rounded-xl">
+                                <p className="font-bold text-violet-700">📅 Atenció a les pagues extra</p>
+                                <p className="text-sm text-gray-600">12 pagues = mensualitats més altes. 14 pagues = 2 "bonus" a l'any.</p>
+                            </div>
                         </div>
                     </Card>
                 </div>
@@ -269,25 +367,53 @@
 
             const Hipoteca = () => (
                 <div className="space-y-6">
-                    <h2 className="text-2xl font-black text-gray-800">🏠 Calculadora d'Hipoteca</h2>
+                    <h2 className="text-2xl font-black text-gray-800">🏠 Tot sobre la Hipoteca</h2>
+                    
+                    {/* Introducció teòrica */}
+                    <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200">
+                        <h3 className="font-bold text-gray-800 mb-3">📚 Què és una hipoteca?</h3>
+                        <p className="text-gray-600 text-sm mb-3">
+                            Una hipoteca és un <strong>préstec a llarg termini</strong> garantit per l'immoble que compres. 
+                            Si no pagues, el banc pot quedar-se la casa. Per això els interessos són més baixos que altres préstecs.
+                        </p>
+                        <div className="grid md:grid-cols-3 gap-3 text-sm">
+                            <div className="p-3 bg-white rounded-lg text-center">
+                                <p className="font-bold text-emerald-600">🏦 El banc</p>
+                                <p className="text-gray-500">Presta diners (capital)</p>
+                            </div>
+                            <div className="p-3 bg-white rounded-lg text-center">
+                                <p className="font-bold text-emerald-600">👤 Tu</p>
+                                <p className="text-gray-500">Tornes capital + interessos</p>
+                            </div>
+                            <div className="p-3 bg-white rounded-lg text-center">
+                                <p className="font-bold text-emerald-600">🏠 Garantia</p>
+                                <p className="text-gray-500">L'immoble respon del deute</p>
+                            </div>
+                        </div>
+                    </Card>
+                    
+                    {/* Simulador */}
                     <div className="grid lg:grid-cols-2 gap-6">
                         <Card>
-                            <h3 className="font-bold text-gray-800 mb-4">⚙️ Paràmetres</h3>
+                            <h3 className="font-bold text-gray-800 mb-4">⚙️ Calcula la teua hipoteca</h3>
                             <div className="space-y-4">
-                                <Slider label="Import préstec" value={hipCapital} onChange={setHipCapital} min={50000} max={500000} step={5000} suffix="€" />
-                                <Slider label="Interès anual" value={hipInteres} onChange={setHipInteres} min={1} max={8} step={0.1} suffix="%" />
-                                <Slider label="Anys" value={hipAnys} onChange={setHipAnys} min={5} max={40} suffix=" anys" />
+                                <Slider label="Import del préstec" value={hipCapital} onChange={setHipCapital} min={50000} max={500000} step={5000} suffix="€" />
+                                <Slider label="Interès anual (TIN)" value={hipInteres} onChange={setHipInteres} min={1} max={8} step={0.1} suffix="%" />
+                                <Slider label="Termini" value={hipAnys} onChange={setHipAnys} min={5} max={40} suffix=" anys" />
+                            </div>
+                            <div className="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-500">
+                                💡 Sistema d'amortització francés: quotes constants, primer pagues més interessos.
                             </div>
                         </Card>
                         <Card className="bg-gradient-to-br from-emerald-500 to-teal-500 text-white border-0">
                             <h3 className="font-bold mb-4">📊 Resultat</h3>
                             <div className="grid grid-cols-3 gap-3">
                                 <div className="text-center p-3 bg-white/20 rounded-xl">
-                                    <p className="text-xs text-white/70">Quota/mes</p>
+                                    <p className="text-xs text-white/70">Quota mensual</p>
                                     <p className="font-black text-xl">{calculHipoteca.quota.toFixed(0)}€</p>
                                 </div>
                                 <div className="text-center p-3 bg-white/20 rounded-xl">
-                                    <p className="text-xs text-white/70">Total</p>
+                                    <p className="text-xs text-white/70">Total a pagar</p>
                                     <p className="font-black text-xl">{(calculHipoteca.totalPagat/1000).toFixed(0)}k€</p>
                                 </div>
                                 <div className="text-center p-3 bg-white/20 rounded-xl">
@@ -296,24 +422,123 @@
                                 </div>
                             </div>
                             <div className="mt-4 p-3 bg-white/10 rounded-xl text-sm">
-                                <p>💡 Pagaràs <strong>{((calculHipoteca.totalInteressos/hipCapital)*100).toFixed(0)}%</strong> extra en interessos</p>
+                                <p>⚠️ Pagaràs <strong>{((calculHipoteca.totalInteressos/hipCapital)*100).toFixed(0)}%</strong> extra en interessos ({hipAnys} anys × {(calculHipoteca.quota * 12).toFixed(0)}€/any)</p>
+                            </div>
+                            <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+                                <div className="p-2 bg-white/10 rounded-lg text-center">
+                                    <p className="text-white/70">Quotes totals</p>
+                                    <p className="font-bold">{hipAnys * 12}</p>
+                                </div>
+                                <div className="p-2 bg-white/10 rounded-lg text-center">
+                                    <p className="text-white/70">Cost per any</p>
+                                    <p className="font-bold">{(calculHipoteca.quota * 12).toFixed(0)}€</p>
+                                </div>
                             </div>
                         </Card>
                     </div>
+                    
+                    {/* Tipus d'hipoteca */}
                     <Card>
-                        <h3 className="font-bold text-gray-800 mb-4">💡 Consells</h3>
+                        <h3 className="font-bold text-gray-800 mb-4">📋 Tipus d'hipoteca</h3>
+                        <div className="grid md:grid-cols-3 gap-4">
+                            <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                                <h4 className="font-bold text-blue-700 mb-2">🔒 Tipus Fix</h4>
+                                <p className="text-sm text-gray-600 mb-2">L'interès no canvia mai. Pagues sempre el mateix.</p>
+                                <div className="text-xs space-y-1">
+                                    <p className="text-green-600">✓ Estabilitat i seguretat</p>
+                                    <p className="text-green-600">✓ Saps el que pagaràs</p>
+                                    <p className="text-red-600">✗ Sol ser més car inicialment</p>
+                                </div>
+                            </div>
+                            <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                                <h4 className="font-bold text-amber-700 mb-2">📊 Tipus Variable</h4>
+                                <p className="text-sm text-gray-600 mb-2">Euríbor + diferencial. Canvia cada 6-12 mesos.</p>
+                                <div className="text-xs space-y-1">
+                                    <p className="text-green-600">✓ Sol ser més barat inicialment</p>
+                                    <p className="text-red-600">✗ Risc si l'Euríbor puja</p>
+                                    <p className="text-red-600">✗ Quotes imprevisibles</p>
+                                </div>
+                            </div>
+                            <div className="p-4 bg-violet-50 border border-violet-200 rounded-xl">
+                                <h4 className="font-bold text-violet-700 mb-2">⚖️ Tipus Mixt</h4>
+                                <p className="text-sm text-gray-600 mb-2">Fix uns anys, després variable.</p>
+                                <div className="text-xs space-y-1">
+                                    <p className="text-green-600">✓ Seguretat inicial</p>
+                                    <p className="text-green-600">✓ Possibilitat de baixar després</p>
+                                    <p className="text-red-600">✗ Risc a llarg termini</p>
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
+                    
+                    {/* Despeses */}
+                    <Card>
+                        <h3 className="font-bold text-gray-800 mb-4">💸 Despeses de compra (que molts obliden!)</h3>
+                        <p className="text-sm text-gray-600 mb-4">A més del preu de la casa, necessites ~10-12% extra per despeses:</p>
+                        <div className="grid md:grid-cols-2 gap-3">
+                            <div className="p-3 bg-gray-50 rounded-xl">
+                                <div className="flex justify-between mb-1">
+                                    <span className="font-bold text-gray-700">Impostos</span>
+                                    <span className="text-gray-600">6-10%</span>
+                                </div>
+                                <p className="text-xs text-gray-500">ITP (segona mà) o IVA+AJD (obra nova)</p>
+                            </div>
+                            <div className="p-3 bg-gray-50 rounded-xl">
+                                <div className="flex justify-between mb-1">
+                                    <span className="font-bold text-gray-700">Notaria</span>
+                                    <span className="text-gray-600">~600-1.200€</span>
+                                </div>
+                                <p className="text-xs text-gray-500">Escriptures i còpies</p>
+                            </div>
+                            <div className="p-3 bg-gray-50 rounded-xl">
+                                <div className="flex justify-between mb-1">
+                                    <span className="font-bold text-gray-700">Registre</span>
+                                    <span className="text-gray-600">~300-600€</span>
+                                </div>
+                                <p className="text-xs text-gray-500">Inscripció al Registre de la Propietat</p>
+                            </div>
+                            <div className="p-3 bg-gray-50 rounded-xl">
+                                <div className="flex justify-between mb-1">
+                                    <span className="font-bold text-gray-700">Gestoria</span>
+                                    <span className="text-gray-600">~300-500€</span>
+                                </div>
+                                <p className="text-xs text-gray-500">Tramitació de documents</p>
+                            </div>
+                            <div className="p-3 bg-gray-50 rounded-xl">
+                                <div className="flex justify-between mb-1">
+                                    <span className="font-bold text-gray-700">Taxació</span>
+                                    <span className="text-gray-600">~300-500€</span>
+                                </div>
+                                <p className="text-xs text-gray-500">Valoració oficial de l'immoble</p>
+                            </div>
+                            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
+                                <div className="flex justify-between mb-1">
+                                    <span className="font-bold text-emerald-700">Entrada</span>
+                                    <span className="text-emerald-600">~20%</span>
+                                </div>
+                                <p className="text-xs text-emerald-600">El banc sol finançar màx 80%</p>
+                            </div>
+                        </div>
+                    </Card>
+                    
+                    {/* Consells */}
+                    <Card>
+                        <h3 className="font-bold text-gray-800 mb-4">💡 Consells clau</h3>
                         <div className="grid md:grid-cols-2 gap-3">
                             {[
-                                'Quota màx: 30-35% dels ingressos nets',
-                                'Necessites ~20% entrada + 10% despeses',
-                                'Compara sempre diverses entitats',
-                                'Negocia el diferencial i comissions',
-                                'Tipus fixa = estabilitat, Variable = risc',
-                                'Pots amortitzar anticipadament'
+                                { icon: '📊', title: 'Quota màxima', desc: 'No superis el 30-35% dels ingressos nets familiars' },
+                                { icon: '💰', title: 'Entrada + despeses', desc: 'Necessites ~30% del preu estalviat (20% entrada + 10% despeses)' },
+                                { icon: '🔍', title: 'Compara', desc: 'Demana ofertes a 3-4 bancs mínim. Negocia!' },
+                                { icon: '📝', title: 'Llegeix la FEIN', desc: "Fitxa Europea d'Informació Normalitzada: tota la info de l'oferta" },
+                                { icon: '⚖️', title: 'Comissions', desc: "Obertura, amortització anticipada... llegeix la lletra petita" },
+                                { icon: '📅', title: 'Amortització', desc: 'Pots reduir termini o quota pagant més del compte' },
                             ].map((c, i) => (
-                                <div key={i} className="flex items-center gap-2 text-sm">
-                                    <span className="text-emerald-500">✓</span>
-                                    <span className="text-gray-600">{c}</span>
+                                <div key={i} className="flex items-start gap-3 p-3 bg-emerald-50 rounded-xl">
+                                    <span className="text-xl">{c.icon}</span>
+                                    <div>
+                                        <p className="font-bold text-emerald-700">{c.title}</p>
+                                        <p className="text-sm text-gray-600">{c.desc}</p>
+                                    </div>
                                 </div>
                             ))}
                         </div>

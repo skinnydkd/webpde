@@ -56,23 +56,36 @@
 
         function HomePage() {
             const [menuOpen, setMenuOpen] = useState(false);
+            const [idioma, setIdioma] = useState('val');
+            
+            const t = (val, es, en) => idioma === 'val' ? val : idioma === 'es' ? es : en;
+            
+            const LanguageSelector = () => (
+                <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                    {[{ code: 'val', label: 'VAL' }, { code: 'es', label: 'ES' }, { code: 'en', label: 'EN' }].map(lang => (
+                        <button key={lang.code} onClick={() => setIdioma(lang.code)} className={`px-2 py-1 rounded text-xs font-bold transition-all ${idioma === lang.code ? 'bg-pink-500 text-white' : 'text-gray-600 hover:bg-gray-200'}`}>
+                            {lang.label}
+                        </button>
+                    ))}
+                </div>
+            );
 
             const apps = [
                 {
                     id: 'economia',
-                    nom: 'Economia',
-                    subtitol: 'Microeconomia i Macroeconomia',
-                    descripcio: "Aprèn els fonaments de l'economia amb simuladors interactius d'oferta i demanda, elasticitat, costos, mercats, IS-LM, teoria de jocs i molt més.",
+                    nom: t('Economia', 'Economía', 'Economics'),
+                    subtitol: t('Microeconomia i Macroeconomia', 'Microeconomía y Macroeconomía', 'Micro & Macroeconomics'),
+                    descripcio: t("Aprèn els fonaments de l'economia amb simuladors interactius d'oferta i demanda, elasticitat, costos, mercats, IS-LM, teoria de jocs i molt més.", "Aprende los fundamentos de la economía con simuladores interactivos de oferta y demanda, elasticidad, costes, mercados, IS-LM, teoría de juegos y más.", "Learn economics fundamentals with interactive simulators for supply and demand, elasticity, costs, markets, IS-LM, game theory and more."),
                     icon: TrendingUp,
                     gradient: 'from-pink-500 to-rose-500',
                     href: './economia.html',
                     caracteristiques: [
-                        { icon: BarChart3, text: 'Oferta i Demanda interactiu' },
-                        { icon: Calculator, text: "Calculadora d'elasticitat" },
-                        { icon: Brain, text: 'Teoria de Jocs (Nash)' },
+                        { icon: BarChart3, text: t('Oferta i Demanda interactiu', 'Oferta y Demanda interactivo', 'Interactive Supply & Demand') },
+                        { icon: Calculator, text: t("Calculadora d'elasticitat", "Calculadora de elasticidad", "Elasticity Calculator") },
+                        { icon: Brain, text: t('Teoria de Jocs (Nash)', 'Teoría de Juegos (Nash)', 'Game Theory (Nash)') },
                         { icon: Globe, text: 'Model IS-LM' },
                     ],
-                    nivells: ['Batxillerat', 'FP', 'Universitat'],
+                    nivells: ['Batxillerat', 'FP', t('Universitat', 'Universidad', 'University')],
                     simuladors: 8,
                     temes: 15,
                 },
@@ -165,9 +178,12 @@
                                     ))}
                                 </nav>
 
-                                <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
-                                    {menuOpen ? <X size={24} /> : <Menu size={24} />}
-                                </button>
+                                <div className="flex items-center gap-3">
+                                    <LanguageSelector />
+                                    <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
+                                        {menuOpen ? <X size={24} /> : <Menu size={24} />}
+                                    </button>
+                                </div>
                             </div>
 
                             {menuOpen && (

@@ -12,7 +12,6 @@
     <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/recharts@2.1.16/umd/Recharts.js"></script>
-    <script src="https://unpkg.com/lucide-react@0.263.1/dist/umd/lucide-react.min.js"></script>
     <style>
         * { scrollbar-width: thin; scrollbar-color: #e91e63 #fdf6e3; }
         ::-webkit-scrollbar { width: 6px; }
@@ -29,7 +28,68 @@
     <script type="text/babel">
         const { useState, useMemo, useCallback } = React;
         const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, ReferenceLine, Legend, BarChart, Bar, ComposedChart, Scatter } = Recharts;
-        const { TrendingUp, TrendingDown, BookOpen, Users, Building2, Globe, Lightbulb, Calculator, BarChart3, Scale, Landmark, Banknote, ShoppingCart, Factory, GraduationCap, Brain, Target, ChevronDown, ChevronUp, ChevronRight, Check, X, Menu, Search, Zap, Clock, Award, RefreshCw, Info, AlertTriangle, DollarSign, Percent, Activity, Layers, ArrowRight, Play, Gamepad2, FileText, Star, Sparkles, Home, Briefcase, Building, PiggyBank, TrendingUp as TUp, Wallet, CreditCard } = lucideReact;
+        
+        // Sistema d'icones amb emojis
+        const Icon = ({ name, size = 24, className = "" }) => {
+            const icons = {
+                TrendingUp: "📈", TrendingDown: "📉", BookOpen: "📖", Users: "👥", Building2: "🏢", 
+                Globe: "🌍", Lightbulb: "💡", Calculator: "🧮", BarChart3: "📊", Scale: "⚖️", 
+                Landmark: "🏛️", Banknote: "💵", ShoppingCart: "🛒", Factory: "🏭", GraduationCap: "🎓", 
+                Brain: "🧠", Target: "🎯", ChevronDown: "▼", ChevronUp: "▲", ChevronRight: "▶", 
+                Check: "✓", X: "✕", Menu: "☰", Search: "🔍", Zap: "⚡", Clock: "🕐", 
+                Award: "🏆", RefreshCw: "🔄", Info: "ℹ️", AlertTriangle: "⚠️", DollarSign: "$", 
+                Percent: "%", Activity: "📈", Layers: "📚", ArrowRight: "→", Play: "▶", 
+                Gamepad2: "🎮", FileText: "📄", Star: "⭐", Sparkles: "✨", Home: "🏠", 
+                Briefcase: "💼", Building: "🏢", PiggyBank: "🐷", Wallet: "👛", CreditCard: "💳"
+            };
+            return <span style={{fontSize: size * 0.75, lineHeight: 1}} className={className}>{icons[name] || "•"}</span>;
+        };
+        const TrendingUp = (p) => <Icon name="TrendingUp" {...p} />;
+        const TrendingDown = (p) => <Icon name="TrendingDown" {...p} />;
+        const BookOpen = (p) => <Icon name="BookOpen" {...p} />;
+        const Users = (p) => <Icon name="Users" {...p} />;
+        const Building2 = (p) => <Icon name="Building2" {...p} />;
+        const Globe = (p) => <Icon name="Globe" {...p} />;
+        const Lightbulb = (p) => <Icon name="Lightbulb" {...p} />;
+        const Calculator = (p) => <Icon name="Calculator" {...p} />;
+        const BarChart3 = (p) => <Icon name="BarChart3" {...p} />;
+        const Scale = (p) => <Icon name="Scale" {...p} />;
+        const Landmark = (p) => <Icon name="Landmark" {...p} />;
+        const Banknote = (p) => <Icon name="Banknote" {...p} />;
+        const ShoppingCart = (p) => <Icon name="ShoppingCart" {...p} />;
+        const Factory = (p) => <Icon name="Factory" {...p} />;
+        const GraduationCap = (p) => <Icon name="GraduationCap" {...p} />;
+        const Brain = (p) => <Icon name="Brain" {...p} />;
+        const Target = (p) => <Icon name="Target" {...p} />;
+        const ChevronDown = (p) => <Icon name="ChevronDown" {...p} />;
+        const ChevronUp = (p) => <Icon name="ChevronUp" {...p} />;
+        const ChevronRight = (p) => <Icon name="ChevronRight" {...p} />;
+        const Check = (p) => <Icon name="Check" {...p} />;
+        const X = (p) => <Icon name="X" {...p} />;
+        const Menu = (p) => <Icon name="Menu" {...p} />;
+        const Search = (p) => <Icon name="Search" {...p} />;
+        const Zap = (p) => <Icon name="Zap" {...p} />;
+        const Clock = (p) => <Icon name="Clock" {...p} />;
+        const Award = (p) => <Icon name="Award" {...p} />;
+        const RefreshCw = (p) => <Icon name="RefreshCw" {...p} />;
+        const Info = (p) => <Icon name="Info" {...p} />;
+        const AlertTriangle = (p) => <Icon name="AlertTriangle" {...p} />;
+        const DollarSign = (p) => <Icon name="DollarSign" {...p} />;
+        const Percent = (p) => <Icon name="Percent" {...p} />;
+        const Activity = (p) => <Icon name="Activity" {...p} />;
+        const Layers = (p) => <Icon name="Layers" {...p} />;
+        const ArrowRight = (p) => <Icon name="ArrowRight" {...p} />;
+        const Play = (p) => <Icon name="Play" {...p} />;
+        const Gamepad2 = (p) => <Icon name="Gamepad2" {...p} />;
+        const FileText = (p) => <Icon name="FileText" {...p} />;
+        const Star = (p) => <Icon name="Star" {...p} />;
+        const Sparkles = (p) => <Icon name="Sparkles" {...p} />;
+        const Home = (p) => <Icon name="Home" {...p} />;
+        const Briefcase = (p) => <Icon name="Briefcase" {...p} />;
+        const Building = (p) => <Icon name="Building" {...p} />;
+        const PiggyBank = (p) => <Icon name="PiggyBank" {...p} />;
+        const Wallet = (p) => <Icon name="Wallet" {...p} />;
+        const CreditCard = (p) => <Icon name="CreditCard" {...p} />;
 
 // ============================================================================
 // SISTEMA DE TRADUCCIONS COMPLET

@@ -12,7 +12,6 @@
     <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/recharts@2.1.16/umd/Recharts.js"></script>
-    <script src="https://unpkg.com/lucide-react@0.263.1/dist/umd/lucide-react.min.js"></script>
     <style>
         * { scrollbar-width: thin; scrollbar-color: #ec4899 #fdf2f8; }
         ::-webkit-scrollbar { width: 6px; }
@@ -27,7 +26,115 @@
     <script type="text/babel">
         const { useState, useMemo, useCallback } = React;
         const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, ReferenceLine, Legend, BarChart, Bar, PieChart: RePieChart, Pie, Cell } = Recharts;
-        const { Building2, Calculator, TrendingUp, TrendingDown, Users, FileText, Target, Lightbulb, PieChart, BarChart3, Scale, Landmark, Banknote, ShoppingCart, Factory, GraduationCap, Brain, ChevronDown, ChevronUp, ChevronRight, Check, X, Menu, Search, Zap, Clock, Award, RefreshCw, Info, AlertTriangle, DollarSign, Percent, Activity, Layers, ArrowRight, Briefcase, Settings, Package, Megaphone, Truck, BookOpen, CircleDollarSign, Receipt, Building, Coins, HandCoins, Wallet, Rocket, Sparkles, Globe, Heart, Shield, Wrench, Eye, MessageSquare, Share2, Box, CreditCard, PiggyBank, BarChart2, FileCheck, ClipboardList, UserCheck, Store, Compass, Map, Flag, Star, Home, ArrowUpRight, ArrowDownRight, Repeat, Network, GitBranch, Gauge, Timer, Warehouse, MapPin, Mail, MousePointer, Hash, Video, Smartphone, Share, ThumbsUp } = lucideReact;
+        
+        // Sistema d'icones amb emojis
+        const Icon = ({ name, size = 24, className = "" }) => {
+            const icons = {
+                Building2: "🏢", Calculator: "🧮", TrendingUp: "📈", TrendingDown: "📉", Users: "👥",
+                FileText: "📄", Target: "🎯", Lightbulb: "💡", PieChart: "🥧", BarChart3: "📊",
+                Scale: "⚖️", Landmark: "🏛️", Banknote: "💵", ShoppingCart: "🛒", Factory: "🏭",
+                GraduationCap: "🎓", Brain: "🧠", ChevronDown: "▼", ChevronUp: "▲", ChevronRight: "▶",
+                Check: "✓", X: "✕", Menu: "☰", Search: "🔍", Zap: "⚡", Clock: "🕐",
+                Award: "🏆", RefreshCw: "🔄", Info: "ℹ️", AlertTriangle: "⚠️", DollarSign: "$",
+                Percent: "%", Activity: "📈", Layers: "📚", ArrowRight: "→", Briefcase: "💼",
+                Settings: "⚙️", Package: "📦", Megaphone: "📣", Truck: "🚚", BookOpen: "📖",
+                CircleDollarSign: "💲", Receipt: "🧾", Building: "🏢", Coins: "🪙", HandCoins: "🤲",
+                Wallet: "👛", Rocket: "🚀", Sparkles: "✨", Globe: "🌍", Heart: "❤️",
+                Shield: "🛡️", Wrench: "🔧", Eye: "👁️", MessageSquare: "💬", Share2: "🔗",
+                Box: "📦", CreditCard: "💳", PiggyBank: "🐷", BarChart2: "📊", FileCheck: "✅",
+                ClipboardList: "📋", UserCheck: "✓", Store: "🏪", Compass: "🧭", Map: "🗺️",
+                Flag: "🚩", Star: "⭐", Home: "🏠", ArrowUpRight: "↗️", ArrowDownRight: "↘️",
+                Repeat: "🔁", Network: "🔗", GitBranch: "🌿", Gauge: "🎛️", Timer: "⏱️",
+                Warehouse: "🏭", MapPin: "📍", Mail: "📧", MousePointer: "🖱️", Hash: "#",
+                Video: "🎥", Smartphone: "📱", Share: "🔗", ThumbsUp: "👍"
+            };
+            return <span style={{fontSize: size * 0.75, lineHeight: 1}} className={className}>{icons[name] || "•"}</span>;
+        };
+        const Building2 = (p) => <Icon name="Building2" {...p} />;
+        const Calculator = (p) => <Icon name="Calculator" {...p} />;
+        const TrendingUp = (p) => <Icon name="TrendingUp" {...p} />;
+        const TrendingDown = (p) => <Icon name="TrendingDown" {...p} />;
+        const Users = (p) => <Icon name="Users" {...p} />;
+        const FileText = (p) => <Icon name="FileText" {...p} />;
+        const Target = (p) => <Icon name="Target" {...p} />;
+        const Lightbulb = (p) => <Icon name="Lightbulb" {...p} />;
+        const PieChart = (p) => <Icon name="PieChart" {...p} />;
+        const BarChart3 = (p) => <Icon name="BarChart3" {...p} />;
+        const Scale = (p) => <Icon name="Scale" {...p} />;
+        const Landmark = (p) => <Icon name="Landmark" {...p} />;
+        const Banknote = (p) => <Icon name="Banknote" {...p} />;
+        const ShoppingCart = (p) => <Icon name="ShoppingCart" {...p} />;
+        const Factory = (p) => <Icon name="Factory" {...p} />;
+        const GraduationCap = (p) => <Icon name="GraduationCap" {...p} />;
+        const Brain = (p) => <Icon name="Brain" {...p} />;
+        const ChevronDown = (p) => <Icon name="ChevronDown" {...p} />;
+        const ChevronUp = (p) => <Icon name="ChevronUp" {...p} />;
+        const ChevronRight = (p) => <Icon name="ChevronRight" {...p} />;
+        const Check = (p) => <Icon name="Check" {...p} />;
+        const X = (p) => <Icon name="X" {...p} />;
+        const Menu = (p) => <Icon name="Menu" {...p} />;
+        const Search = (p) => <Icon name="Search" {...p} />;
+        const Zap = (p) => <Icon name="Zap" {...p} />;
+        const Clock = (p) => <Icon name="Clock" {...p} />;
+        const Award = (p) => <Icon name="Award" {...p} />;
+        const RefreshCw = (p) => <Icon name="RefreshCw" {...p} />;
+        const Info = (p) => <Icon name="Info" {...p} />;
+        const AlertTriangle = (p) => <Icon name="AlertTriangle" {...p} />;
+        const DollarSign = (p) => <Icon name="DollarSign" {...p} />;
+        const Percent = (p) => <Icon name="Percent" {...p} />;
+        const Activity = (p) => <Icon name="Activity" {...p} />;
+        const Layers = (p) => <Icon name="Layers" {...p} />;
+        const ArrowRight = (p) => <Icon name="ArrowRight" {...p} />;
+        const Briefcase = (p) => <Icon name="Briefcase" {...p} />;
+        const Settings = (p) => <Icon name="Settings" {...p} />;
+        const Package = (p) => <Icon name="Package" {...p} />;
+        const Megaphone = (p) => <Icon name="Megaphone" {...p} />;
+        const Truck = (p) => <Icon name="Truck" {...p} />;
+        const BookOpen = (p) => <Icon name="BookOpen" {...p} />;
+        const CircleDollarSign = (p) => <Icon name="CircleDollarSign" {...p} />;
+        const Receipt = (p) => <Icon name="Receipt" {...p} />;
+        const Building = (p) => <Icon name="Building" {...p} />;
+        const Coins = (p) => <Icon name="Coins" {...p} />;
+        const HandCoins = (p) => <Icon name="HandCoins" {...p} />;
+        const Wallet = (p) => <Icon name="Wallet" {...p} />;
+        const Rocket = (p) => <Icon name="Rocket" {...p} />;
+        const Sparkles = (p) => <Icon name="Sparkles" {...p} />;
+        const Globe = (p) => <Icon name="Globe" {...p} />;
+        const Heart = (p) => <Icon name="Heart" {...p} />;
+        const Shield = (p) => <Icon name="Shield" {...p} />;
+        const Wrench = (p) => <Icon name="Wrench" {...p} />;
+        const Eye = (p) => <Icon name="Eye" {...p} />;
+        const MessageSquare = (p) => <Icon name="MessageSquare" {...p} />;
+        const Share2 = (p) => <Icon name="Share2" {...p} />;
+        const Box = (p) => <Icon name="Box" {...p} />;
+        const CreditCard = (p) => <Icon name="CreditCard" {...p} />;
+        const PiggyBank = (p) => <Icon name="PiggyBank" {...p} />;
+        const BarChart2 = (p) => <Icon name="BarChart2" {...p} />;
+        const FileCheck = (p) => <Icon name="FileCheck" {...p} />;
+        const ClipboardList = (p) => <Icon name="ClipboardList" {...p} />;
+        const UserCheck = (p) => <Icon name="UserCheck" {...p} />;
+        const Store = (p) => <Icon name="Store" {...p} />;
+        const Compass = (p) => <Icon name="Compass" {...p} />;
+        const Map = (p) => <Icon name="Map" {...p} />;
+        const Flag = (p) => <Icon name="Flag" {...p} />;
+        const Star = (p) => <Icon name="Star" {...p} />;
+        const Home = (p) => <Icon name="Home" {...p} />;
+        const ArrowUpRight = (p) => <Icon name="ArrowUpRight" {...p} />;
+        const ArrowDownRight = (p) => <Icon name="ArrowDownRight" {...p} />;
+        const Repeat = (p) => <Icon name="Repeat" {...p} />;
+        const Network = (p) => <Icon name="Network" {...p} />;
+        const GitBranch = (p) => <Icon name="GitBranch" {...p} />;
+        const Gauge = (p) => <Icon name="Gauge" {...p} />;
+        const Timer = (p) => <Icon name="Timer" {...p} />;
+        const Warehouse = (p) => <Icon name="Warehouse" {...p} />;
+        const MapPin = (p) => <Icon name="MapPin" {...p} />;
+        const Mail = (p) => <Icon name="Mail" {...p} />;
+        const MousePointer = (p) => <Icon name="MousePointer" {...p} />;
+        const Hash = (p) => <Icon name="Hash" {...p} />;
+        const Video = (p) => <Icon name="Video" {...p} />;
+        const Smartphone = (p) => <Icon name="Smartphone" {...p} />;
+        const Share = (p) => <Icon name="Share" {...p} />;
+        const ThumbsUp = (p) => <Icon name="ThumbsUp" {...p} />;
 
 
 // ============================================================================
