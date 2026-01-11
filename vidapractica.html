@@ -70,6 +70,36 @@
             const [feDespesesMes, setFeDespesesMes] = useState(1500);
             const [feMesos, setFeMesos] = useState(6);
 
+            // Pressupost Personal
+            const [presIngressos, setPresIngressos] = useState(2000);
+            const [presHabitatge, setPresHabitatge] = useState(600);
+            const [presAlimentacio, setPresAlimentacio] = useState(300);
+            const [presTransport, setPresTransport] = useState(150);
+            const [presSubministres, setPresSubministres] = useState(100);
+            const [presOci, setPresOci] = useState(150);
+            const [presAltres, setPresAltres] = useState(100);
+            const [presEstalvi, setPresEstalvi] = useState(200);
+
+            // Càlcul Pressupost
+            const calculPressupost = useMemo(() => {
+                const totalDespeses = presHabitatge + presAlimentacio + presTransport + presSubministres + presOci + presAltres;
+                const disponible = presIngressos - totalDespeses;
+                const percentEstalvi = ((presEstalvi / presIngressos) * 100).toFixed(1);
+                const percentHabitatge = ((presHabitatge / presIngressos) * 100).toFixed(1);
+                const saludFinanciera = disponible >= presEstalvi ? (disponible >= presEstalvi * 1.5 ? 'excel·lent' : 'bona') : (disponible >= 0 ? 'ajustada' : 'crítica');
+                return { totalDespeses, disponible, percentEstalvi, percentHabitatge, saludFinanciera };
+            }, [presIngressos, presHabitatge, presAlimentacio, presTransport, presSubministres, presOci, presAltres, presEstalvi]);
+
+            const dadesPressupost = [
+                { nom: 'Habitatge', valor: presHabitatge, color: '#ec4899', emoji: '🏠' },
+                { nom: 'Alimentació', valor: presAlimentacio, color: '#f97316', emoji: '🍽️' },
+                { nom: 'Transport', valor: presTransport, color: '#eab308', emoji: '🚗' },
+                { nom: 'Subministres', valor: presSubministres, color: '#22c55e', emoji: '💡' },
+                { nom: 'Oci', valor: presOci, color: '#3b82f6', emoji: '🎬' },
+                { nom: 'Altres', valor: presAltres, color: '#8b5cf6', emoji: '📦' },
+                { nom: 'Estalvi', valor: presEstalvi, color: '#14b8a6', emoji: '🐷' },
+            ];
+
             // Càlcul Nòmina
             const calculNomina = useMemo(() => {
                 const brutAnual = salarioBrut * pagues;
@@ -380,6 +410,153 @@
                 </div>
             );
 
+            const Pressupost = () => (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-black text-gray-800">💰 Pressupost Personal</h2>
+                    
+                    {/* Introducció teòrica */}
+                    <Card className="bg-gradient-to-r from-violet-50 to-purple-50 border-violet-200">
+                        <h3 className="font-bold text-gray-800 mb-3">📚 Què és un pressupost personal?</h3>
+                        <p className="text-gray-600 text-sm mb-3">
+                            Un pressupost és un <strong>pla per als teus diners</strong>. Et permet saber exactament on van els teus ingressos, 
+                            identificar on pots reduir despeses i assegurar-te que estàs estalviant per al futur.
+                        </p>
+                        <div className="grid md:grid-cols-3 gap-3 text-sm">
+                            <div className="p-3 bg-white rounded-lg">
+                                <p className="font-bold text-violet-600">📊 Regla 50/30/20</p>
+                                <p className="text-gray-500">50% necessitats, 30% desitjos, 20% estalvi</p>
+                            </div>
+                            <div className="p-3 bg-white rounded-lg">
+                                <p className="font-bold text-violet-600">🏠 Regla del 30%</p>
+                                <p className="text-gray-500">L'habitatge no hauria de superar el 30% dels ingressos</p>
+                            </div>
+                            <div className="p-3 bg-white rounded-lg">
+                                <p className="font-bold text-violet-600">🎯 Paga't primer</p>
+                                <p className="text-gray-500">Estalvia en rebre el sou, no el que sobra</p>
+                            </div>
+                        </div>
+                    </Card>
+
+                    {/* Simulador */}
+                    <div className="grid lg:grid-cols-2 gap-6">
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">⚙️ Els teus ingressos i despeses</h3>
+                            <div className="space-y-4">
+                                <Slider label="💵 Ingressos mensuals" value={presIngressos} onChange={setPresIngressos} min={800} max={8000} step={50} suffix="€" />
+                                <div className="border-t border-gray-100 pt-4">
+                                    <p className="text-xs text-gray-400 mb-3">DESPESES FIXES</p>
+                                    <div className="space-y-3">
+                                        <Slider label="🏠 Habitatge (lloguer/hipoteca)" value={presHabitatge} onChange={setPresHabitatge} min={0} max={2500} step={25} suffix="€" />
+                                        <Slider label="💡 Subministres (llum, gas, aigua)" value={presSubministres} onChange={setPresSubministres} min={0} max={500} step={10} suffix="€" />
+                                        <Slider label="🚗 Transport" value={presTransport} onChange={setPresTransport} min={0} max={500} step={10} suffix="€" />
+                                    </div>
+                                </div>
+                                <div className="border-t border-gray-100 pt-4">
+                                    <p className="text-xs text-gray-400 mb-3">DESPESES VARIABLES</p>
+                                    <div className="space-y-3">
+                                        <Slider label="🍽️ Alimentació" value={presAlimentacio} onChange={setPresAlimentacio} min={100} max={1000} step={25} suffix="€" />
+                                        <Slider label="🎬 Oci i entreteniment" value={presOci} onChange={setPresOci} min={0} max={500} step={10} suffix="€" />
+                                        <Slider label="📦 Altres despeses" value={presAltres} onChange={setPresAltres} min={0} max={500} step={10} suffix="€" />
+                                    </div>
+                                </div>
+                                <div className="border-t border-gray-100 pt-4">
+                                    <Slider label="🐷 Objectiu d'estalvi" value={presEstalvi} onChange={setPresEstalvi} min={0} max={2000} step={25} suffix="€" />
+                                </div>
+                            </div>
+                        </Card>
+
+                        <div className="space-y-4">
+                            {/* Resum visual */}
+                            <Card className={`border-2 ${calculPressupost.saludFinanciera === 'excel·lent' ? 'bg-green-50 border-green-300' : calculPressupost.saludFinanciera === 'bona' ? 'bg-blue-50 border-blue-300' : calculPressupost.saludFinanciera === 'ajustada' ? 'bg-amber-50 border-amber-300' : 'bg-red-50 border-red-300'}`}>
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="font-bold text-gray-800">📊 Resum</h3>
+                                    <span className={`px-3 py-1 rounded-full text-sm font-bold ${calculPressupost.saludFinanciera === 'excel·lent' ? 'bg-green-500 text-white' : calculPressupost.saludFinanciera === 'bona' ? 'bg-blue-500 text-white' : calculPressupost.saludFinanciera === 'ajustada' ? 'bg-amber-500 text-white' : 'bg-red-500 text-white'}`}>
+                                        Salut: {calculPressupost.saludFinanciera}
+                                    </span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3 mb-4">
+                                    <div className="p-3 bg-white rounded-xl text-center">
+                                        <p className="text-xs text-gray-400">Ingressos</p>
+                                        <p className="font-black text-xl text-gray-800">{presIngressos.toLocaleString()}€</p>
+                                    </div>
+                                    <div className="p-3 bg-white rounded-xl text-center">
+                                        <p className="text-xs text-gray-400">Despeses</p>
+                                        <p className="font-black text-xl text-gray-800">{calculPressupost.totalDespeses.toLocaleString()}€</p>
+                                    </div>
+                                    <div className="p-3 bg-white rounded-xl text-center">
+                                        <p className="text-xs text-gray-400">Disponible</p>
+                                        <p className={`font-black text-xl ${calculPressupost.disponible >= 0 ? 'text-green-600' : 'text-red-600'}`}>{calculPressupost.disponible >= 0 ? '+' : ''}{calculPressupost.disponible.toLocaleString()}€</p>
+                                    </div>
+                                    <div className="p-3 bg-white rounded-xl text-center">
+                                        <p className="text-xs text-gray-400">Taxa d'estalvi</p>
+                                        <p className="font-black text-xl text-violet-600">{calculPressupost.percentEstalvi}%</p>
+                                    </div>
+                                </div>
+                                {calculPressupost.disponible < presEstalvi && (
+                                    <div className="p-3 bg-white rounded-xl text-sm">
+                                        <p className="text-amber-700">⚠️ No arribes al teu objectiu d'estalvi. Et falten <strong>{(presEstalvi - calculPressupost.disponible).toLocaleString()}€</strong></p>
+                                    </div>
+                                )}
+                            </Card>
+
+                            {/* Distribució */}
+                            <Card>
+                                <h3 className="font-bold text-gray-800 mb-4">📈 Distribució de despeses</h3>
+                                <div className="space-y-2">
+                                    {dadesPressupost.map((cat, i) => (
+                                        <div key={i} className="flex items-center gap-3">
+                                            <span className="text-lg">{cat.emoji}</span>
+                                            <div className="flex-1">
+                                                <div className="flex justify-between text-sm mb-1">
+                                                    <span className="text-gray-600">{cat.nom}</span>
+                                                    <span className="font-bold">{cat.valor}€ ({((cat.valor/presIngressos)*100).toFixed(0)}%)</span>
+                                                </div>
+                                                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                                    <div className="h-full rounded-full" style={{width: `${Math.min((cat.valor/presIngressos)*100, 100)}%`, backgroundColor: cat.color}}></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </Card>
+                        </div>
+                    </div>
+
+                    {/* Consells */}
+                    <Card>
+                        <h3 className="font-bold text-gray-800 mb-4">💡 Consells per millorar el teu pressupost</h3>
+                        <div className="grid md:grid-cols-2 gap-4 text-sm">
+                            {Number(calculPressupost.percentHabitatge) > 30 && (
+                                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                                    <p className="font-bold text-red-700">🏠 Habitatge massa alt ({calculPressupost.percentHabitatge}%)</p>
+                                    <p className="text-red-600">Hauria de ser màxim 30%. Considera compartir pis o buscar alternatives.</p>
+                                </div>
+                            )}
+                            {Number(calculPressupost.percentEstalvi) < 10 && (
+                                <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                                    <p className="font-bold text-amber-700">🐷 Estalvi insuficient ({calculPressupost.percentEstalvi}%)</p>
+                                    <p className="text-amber-600">Intenta arribar al 20% dels ingressos. Revisa despeses d'oci i altres.</p>
+                                </div>
+                            )}
+                            {Number(calculPressupost.percentEstalvi) >= 20 && (
+                                <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                                    <p className="font-bold text-green-700">🎉 Excel·lent taxa d'estalvi!</p>
+                                    <p className="text-green-600">Estàs estalviant més del 20%. Considera invertir els excedents.</p>
+                                </div>
+                            )}
+                            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                <p className="font-bold text-blue-700">📱 Automatitza l'estalvi</p>
+                                <p className="text-blue-600">Configura una transferència automàtica el dia que cobres.</p>
+                            </div>
+                            <div className="p-3 bg-violet-50 border border-violet-200 rounded-lg">
+                                <p className="font-bold text-violet-700">📝 Revisa mensualment</p>
+                                <p className="text-violet-600">Dedica 15 minuts al mes per revisar i ajustar el pressupost.</p>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+            );
+
             const Contractes = () => (
                 <div className="space-y-6">
                     <h2 className="text-2xl font-black text-gray-800">📋 Tipus de Contractes</h2>
@@ -514,6 +691,7 @@
                                     <NavBtn sec="nomina" label="Nòmina" emoji="💳" />
                                     <NavBtn sec="hipoteca" label="Hipoteca" emoji="🏠" />
                                     <NavBtn sec="estalvi" label="Estalvi" emoji="🐷" />
+                                    <NavBtn sec="pressupost" label="Pressupost" emoji="💰" />
                                     <NavBtn sec="prestec" label="Préstec" emoji="💸" />
                                     <NavBtn sec="contractes" label="Contractes" emoji="📋" />
                                     <NavBtn sec="cv" label="CV" emoji="📄" />
@@ -527,6 +705,7 @@
                                     <NavBtn sec="nomina" label="Nòmina" emoji="💳" />
                                     <NavBtn sec="hipoteca" label="Hipoteca" emoji="🏠" />
                                     <NavBtn sec="estalvi" label="Estalvi" emoji="🐷" />
+                                    <NavBtn sec="pressupost" label="Pressupost" emoji="💰" />
                                     <NavBtn sec="prestec" label="Préstec" emoji="💸" />
                                     <NavBtn sec="contractes" label="Contractes" emoji="📋" />
                                     <NavBtn sec="cv" label="CV" emoji="📄" />
@@ -540,6 +719,7 @@
                         {section === 'nomina' && <Nomina />}
                         {section === 'hipoteca' && <Hipoteca />}
                         {section === 'estalvi' && <Estalvi />}
+                        {section === 'pressupost' && <Pressupost />}
                         {section === 'prestec' && <Prestec />}
                         {section === 'contractes' && <Contractes />}
                         {section === 'cv' && <CV />}

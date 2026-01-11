@@ -24,7 +24,7 @@
         const { useState } = React;
         // Emoji Icons
         const Icon = ({ name, size = 24, className = "" }) => {
-            const icons = { GraduationCap: "🎓", TrendingUp: "📈", Building2: "🏢", Wallet: "👛", BookOpen: "📖", Brain: "🧠", Calculator: "🧮", Target: "🎯", Users: "👥", ChevronRight: "▶", Sparkles: "✨", Globe: "🌍", BarChart3: "📊", PieChart: "🥧", Lightbulb: "💡", Award: "🏆", Rocket: "🚀", Star: "⭐", Heart: "❤️", PlayCircle: "▶️", ArrowRight: "→", Menu: "☰", X: "✕", ArrowUpRight: "↗️" };
+            const icons = { GraduationCap: "🎓", TrendingUp: "📈", Building2: "🏢", Wallet: "👛", BookOpen: "📖", Brain: "🧠", Calculator: "🧮", Target: "🎯", Users: "👥", ChevronRight: "▶", Sparkles: "✨", Globe: "🌍", BarChart3: "📊", PieChart: "🥧", Lightbulb: "💡", Award: "🏆", Rocket: "🚀", Star: "⭐", Heart: "❤️", PlayCircle: "▶️", ArrowRight: "→", Menu: "☰", X: "✕", ArrowUpRight: "↗️", Briefcase: "💼", Home: "🏠" };
             return <span style={{fontSize: size * 0.75, lineHeight: 1}} className={className}>{icons[name] || "•"}</span>;
         };
         const GraduationCap = (p) => <Icon name="GraduationCap" {...p} />;
@@ -51,6 +51,8 @@
         const Menu = (p) => <Icon name="Menu" {...p} />;
         const X = (p) => <Icon name="X" {...p} />;
         const ArrowUpRight = (p) => <Icon name="ArrowUpRight" {...p} />;
+        const Briefcase = (p) => <Icon name="Briefcase" {...p} />;
+        const Home = (p) => <Icon name="Home" {...p} />;
 
         function HomePage() {
             const [menuOpen, setMenuOpen] = useState(false);
@@ -111,13 +113,32 @@
                     simuladors: 5,
                     temes: 10,
                 },
+                {
+                    id: 'vidapractica',
+                    nom: 'Vida Pràctica',
+                    subtitol: 'Educació Financera Quotidiana',
+                    descripcio: "Tot el que mai t'han ensenyat: com llegir una nòmina, hipoteques, pressupost personal, estalvi, contractes, CV i més.",
+                    icon: Briefcase,
+                    gradient: 'from-violet-500 to-purple-500',
+                    href: './vidapractica.html',
+                    caracteristiques: [
+                        { icon: Calculator, text: 'Pressupost Personal' },
+                        { icon: Home, text: 'Guia de la Hipoteca' },
+                        { icon: Target, text: 'Entendre la Nòmina' },
+                        { icon: BookOpen, text: 'Contractes i CV' },
+                    ],
+                    nivells: ['ESO', 'Batxillerat', 'FP', 'General'],
+                    simuladors: 8,
+                    temes: 12,
+                    nou: true,
+                },
             ];
 
             const stats = [
-                { valor: '25+', label: 'Simuladors', icon: PlayCircle },
-                { valor: '45+', label: 'Temes', icon: BookOpen },
+                { valor: '33+', label: 'Simuladors', icon: PlayCircle },
+                { valor: '57+', label: 'Temes', icon: BookOpen },
                 { valor: '3', label: 'Idiomes', icon: Globe },
-                { valor: '100+', label: 'Conceptes', icon: Lightbulb },
+                { valor: '150+', label: 'Conceptes', icon: Lightbulb },
             ];
 
             return (
@@ -206,12 +227,17 @@
                         <div className="max-w-6xl mx-auto px-4">
                             <div className="text-center mb-12">
                                 <h2 className="text-3xl md:text-4xl font-black text-gray-800 mb-4">Les nostres Apps Educatives</h2>
-                                <p className="text-gray-500 max-w-xl mx-auto">Tres aplicacions completes per dominar l'economia, l'empresa i les finances personals.</p>
+                                <p className="text-gray-500 max-w-xl mx-auto">Quatre aplicacions completes per dominar l'economia, l'empresa, les finances personals i la vida pràctica.</p>
                             </div>
 
-                            <div className="grid md:grid-cols-3 gap-6">
+                            <div className="grid md:grid-cols-2 gap-6">
                                 {apps.map((app) => (
-                                    <a key={app.id} href={app.href} className="group bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-pink-200 transition-all duration-300 overflow-hidden">
+                                    <a key={app.id} href={app.href} className="group bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-pink-200 transition-all duration-300 overflow-hidden relative">
+                                        {app.nou && (
+                                            <div className="absolute top-4 right-4 z-10 px-3 py-1 bg-violet-500 text-white text-xs font-bold rounded-full flex items-center gap-1">
+                                                <Sparkles size={12} /> NOU
+                                            </div>
+                                        )}
                                         <div className={`p-6 bg-gradient-to-br ${app.gradient} text-white`}>
                                             <div className="flex items-start justify-between mb-4">
                                                 <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm"><app.icon size={32} /></div>
