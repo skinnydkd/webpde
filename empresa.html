@@ -11,7 +11,6 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/recharts@2.1.16/umd/Recharts.js"></script>
     <style>
         * { scrollbar-width: thin; scrollbar-color: #ec4899 #fdf2f8; }
         ::-webkit-scrollbar { width: 6px; }
@@ -25,7 +24,39 @@
     <div id="root"></div>
     <script type="text/babel">
         const { useState, useMemo, useCallback } = React;
-        const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, ReferenceLine, Legend, BarChart, Bar, PieChart: RePieChart, Pie, Cell } = Recharts;
+        
+        // Gràfic de barres CSS (sense Recharts)
+        const SimpleBarChart = ({ data, height = 150 }) => {
+            const max = Math.max(...data.map(d => d.value));
+            return (
+                <div className="flex items-end gap-2 justify-center p-4" style={{height}}>
+                    {data.map((d, i) => (
+                        <div key={i} className="flex flex-col items-center flex-1">
+                            <div className="text-xs font-bold mb-1">{d.value >= 1000 ? `${(d.value/1000).toFixed(0)}k` : d.value.toFixed ? d.value.toFixed(0) : d.value}</div>
+                            <div className="rounded-t transition-all w-full max-w-12" style={{ height: Math.max(8, (d.value / max) * (height - 50)), backgroundColor: d.color || '#ec4899' }} />
+                            <div className="text-xs mt-1 text-gray-500 text-center truncate w-full">{d.label}</div>
+                        </div>
+                    ))}
+                </div>
+            );
+        };
+        
+        // Gràfic de línies CSS
+        const SimpleLineChart = ({ data, height = 120, color = '#ec4899' }) => {
+            const max = Math.max(...data.map(d => d.value));
+            const min = Math.min(...data.map(d => d.value));
+            const range = max - min || 1;
+            return (
+                <div className="relative p-4" style={{height}}>
+                    <svg className="w-full h-full" viewBox={`0 0 ${data.length * 40} 100`} preserveAspectRatio="none">
+                        <polyline fill="none" stroke={color} strokeWidth="2" points={data.map((d, i) => `${i * 40 + 20},${100 - ((d.value - min) / range) * 80}`).join(' ')} />
+                        {data.map((d, i) => (
+                            <circle key={i} cx={i * 40 + 20} cy={100 - ((d.value - min) / range) * 80} r="4" fill={color} />
+                        ))}
+                    </svg>
+                </div>
+            );
+        };
         
         // Sistema d'icones amb emojis
         const Icon = ({ name, size = 24, className = "" }) => {
@@ -1284,19 +1315,38 @@ function EmpresaApp() {
 
         <Card>
           <h3 className="font-bold text-gray-800 mb-4">📊 {idioma === 'en' ? 'Chart' : 'Gràfic'}</h3>
-          <div className="h-64">
-            <ResponsiveContainer>
-              <LineChart data={dadesPuntMort} margin={{ top: 10, right: 30, left: 0, bottom: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="unitats" stroke="#6b7280" label={{ value: 'Q', position: 'bottom', fontSize: 12 }} />
-                <YAxis stroke="#6b7280" />
-                <Tooltip formatter={(v) => `${v.toLocaleString()}€`} />
-                <Line type="monotone" dataKey="ingressos" stroke="#14b8a6" strokeWidth={2} name="IT" dot={false} />
-                <Line type="monotone" dataKey="costos" stroke="#f59e0b" strokeWidth={2} name="CT" dot={false} />
-                <ReferenceLine x={puntMortUnitats} stroke="#ec4899" strokeDasharray="5 5" label={{ value: 'PM', fill: '#ec4899' }} />
-                <Legend />
-              </LineChart>
-            </ResponsiveContainer>
+          <div className="h-64 flex items-center justify-center">
+            <div className="w-full">
+              <div className="flex justify-between text-xs text-gray-500 mb-2">
+                <span>0</span>
+                <span>{(puntMortUnitats * 2).toLocaleString()} {t('ui', 'unitats')}</span>
+              </div>
+              <div className="relative h-40 bg-gray-50 rounded-lg overflow-hidden">
+                {/* Línia CT (costos) */}
+                <div className="absolute bottom-0 left-0 w-full h-full">
+                  <svg className="w-full h-full" preserveAspectRatio="none">
+                    <line x1="0" y1="80%" x2="100%" y2="20%" stroke="#f59e0b" strokeWidth="3" />
+                    <text x="90%" y="25%" fill="#f59e0b" fontSize="12">CT</text>
+                  </svg>
+                </div>
+                {/* Línia IT (ingressos) */}
+                <div className="absolute bottom-0 left-0 w-full h-full">
+                  <svg className="w-full h-full" preserveAspectRatio="none">
+                    <line x1="0" y1="100%" x2="100%" y2="10%" stroke="#14b8a6" strokeWidth="3" />
+                    <text x="90%" y="15%" fill="#14b8a6" fontSize="12">IT</text>
+                  </svg>
+                </div>
+                {/* Punt mort */}
+                <div className="absolute bottom-0 h-full border-l-2 border-dashed border-pink-500" style={{left: '50%'}}>
+                  <span className="absolute -top-5 -left-3 text-xs text-pink-500 font-bold">PM</span>
+                </div>
+              </div>
+              <div className="flex justify-center gap-6 mt-3 text-sm">
+                <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-teal-500"></span> IT</span>
+                <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-amber-500"></span> CT</span>
+                <span className="flex items-center gap-1"><span className="w-3 h-1 bg-pink-500"></span> PM</span>
+              </div>
+            </div>
           </div>
           <InfoBox color="pink" className="mt-4">
             <p className="text-sm">
@@ -1342,18 +1392,25 @@ function EmpresaApp() {
 
         <Card>
           <h3 className="font-bold text-gray-800 mb-4">{idioma === 'en' ? 'Cost Curves' : 'Corbes de Costos'}</h3>
-          <div className="h-64">
-            <ResponsiveContainer>
-              <LineChart data={dadesCostos} margin={{ top: 10, right: 30, left: 0, bottom: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="q" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip />
-                <Line type="monotone" dataKey="CMe" stroke="#ec4899" strokeWidth={2} name="CMe" dot={false} />
-                <Line type="monotone" dataKey="CMg" stroke="#14b8a6" strokeWidth={2} name="CMg" dot={false} />
-                <Legend />
-              </LineChart>
-            </ResponsiveContainer>
+          <div className="h-64 flex items-center justify-center">
+            <div className="w-full">
+              <div className="relative h-40 bg-gray-50 rounded-lg overflow-hidden p-4">
+                {/* Corba CMe (forma de U) */}
+                <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <path d="M 5 20 Q 30 90, 50 50 T 95 30" fill="none" stroke="#ec4899" strokeWidth="2" />
+                  <text x="85" y="25" fill="#ec4899" fontSize="8">CMe</text>
+                  {/* Corba CMg */}
+                  <path d="M 5 80 Q 25 95, 40 50 T 95 10" fill="none" stroke="#14b8a6" strokeWidth="2" />
+                  <text x="85" y="8" fill="#14b8a6" fontSize="8">CMg</text>
+                  {/* Punt mínim */}
+                  <circle cx="50" cy="50" r="3" fill="#f59e0b" />
+                </svg>
+              </div>
+              <div className="flex justify-center gap-6 mt-3 text-sm">
+                <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-pink-500"></span> CMe</span>
+                <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-teal-500"></span> CMg</span>
+              </div>
+            </div>
           </div>
           <InfoBox color="gray" className="mt-4">
             <p className="text-sm">
@@ -1978,15 +2035,17 @@ function EmpresaApp() {
             </div>
           ))}
         </div>
-        <div className="h-32">
-          <ResponsiveContainer>
-            <AreaChart data={[
-              { t: 1, v: 5 }, { t: 2, v: 20 }, { t: 3, v: 50 }, { t: 4, v: 80 }, { t: 5, v: 95 }, 
-              { t: 6, v: 100 }, { t: 7, v: 95 }, { t: 8, v: 80 }, { t: 9, v: 60 }, { t: 10, v: 30 }
-            ]} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-              <Area type="monotone" dataKey="v" stroke="#ec4899" fill="#fce7f3" />
-            </AreaChart>
-          </ResponsiveContainer>
+        <div className="h-32 bg-gradient-to-r from-blue-50 via-emerald-50 via-amber-50 to-red-50 rounded-lg overflow-hidden">
+          <svg className="w-full h-full" viewBox="0 0 100 50" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#ec4899" stopOpacity="0.3"/>
+                <stop offset="100%" stopColor="#ec4899" stopOpacity="0.05"/>
+              </linearGradient>
+            </defs>
+            <path d="M 0 45 Q 10 40, 20 30 T 40 15 T 60 10 T 70 15 T 85 30 T 100 45" fill="url(#areaGradient)" stroke="none" />
+            <path d="M 0 45 Q 10 40, 20 30 T 40 15 T 60 10 T 70 15 T 85 30 T 100 45" fill="none" stroke="#ec4899" strokeWidth="1.5" />
+          </svg>
         </div>
       </Card>
 

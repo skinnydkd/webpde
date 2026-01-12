@@ -185,6 +185,11 @@
                             { id: 'hipoteca', emoji: '🏠', title: 'Hipoteca', desc: 'Quota mensual i interessos' },
                             { id: 'estalvi', emoji: '🐷', title: 'Estalvi', desc: 'Interès compost' },
                             { id: 'prestec', emoji: '💸', title: 'Préstec', desc: 'Calculadora de quotes' },
+                            { id: 'pressupost', emoji: '💰', title: 'Pressupost', desc: 'Gestiona els teus diners' },
+                            { id: 'renda', emoji: '🧾', title: 'Declaració Renda', desc: 'IRPF i deduccions' },
+                            { id: 'impostos', emoji: '🏛️', title: 'On van els impostos', desc: 'Pressupostos de l\'Estat' },
+                            { id: 'factures', emoji: '🔌', title: 'Factures', desc: 'Llum, gas i aigua' },
+                            { id: 'lloguer', emoji: '🏘️', title: 'Lloguer', desc: 'Contractes i drets' },
                             { id: 'contractes', emoji: '📋', title: 'Contractes', desc: 'Tipus i drets laborals' },
                             { id: 'cv', emoji: '📄', title: 'CV', desc: 'Com fer un bon currículum' },
                             { id: 'glossari', emoji: '📖', title: 'Glossari', desc: 'Termes financers' }
@@ -782,6 +787,861 @@
                 </div>
             );
 
+            // ===== SECCIÓ DECLARACIÓ DE LA RENDA =====
+            const Renda = () => {
+                const [ingressos, setIngressos] = useState(25000);
+                const [deduccions, setDeduccions] = useState(2000);
+                const [retencions, setRetencions] = useState(4000);
+                
+                const calculRenda = useMemo(() => {
+                    const baseImposable = Math.max(0, ingressos - deduccions);
+                    // Trams IRPF 2024 simplificats
+                    let quota = 0;
+                    if (baseImposable > 0) quota += Math.min(baseImposable, 12450) * 0.19;
+                    if (baseImposable > 12450) quota += Math.min(baseImposable - 12450, 7750) * 0.24;
+                    if (baseImposable > 20200) quota += Math.min(baseImposable - 20200, 15000) * 0.30;
+                    if (baseImposable > 35200) quota += Math.min(baseImposable - 35200, 24800) * 0.37;
+                    if (baseImposable > 60000) quota += (baseImposable - 60000) * 0.45;
+                    
+                    const resultat = retencions - quota;
+                    return { baseImposable, quota: Math.round(quota), resultat: Math.round(resultat) };
+                }, [ingressos, deduccions, retencions]);
+                
+                return (
+                    <div className="space-y-6">
+                        <h2 className="text-2xl font-black text-gray-800">🧾 Declaració de la Renda (IRPF)</h2>
+                        
+                        {/* Introducció */}
+                        <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
+                            <h3 className="font-bold text-gray-800 mb-3">📚 Què és la Declaració de la Renda?</h3>
+                            <p className="text-gray-600 text-sm mb-3">
+                                L'IRPF (Impost sobre la Renda de les Persones Físiques) és un impost que grava els ingressos 
+                                que has obtingut durant l'any. La declaració és el document on calcules si has pagat de més 
+                                (et tornen diners) o de menys (has de pagar) segons les <strong>retencions</strong> que t'han 
+                                fet a les nòmines.
+                            </p>
+                            <div className="p-3 bg-white rounded-lg text-sm text-center">
+                                <span className="font-bold text-amber-600">RESULTAT = RETENCIONS - QUOTA A PAGAR</span>
+                                <p className="text-xs text-gray-500 mt-1">Positiu = Et tornen | Negatiu = Has de pagar</p>
+                            </div>
+                        </Card>
+                        
+                        {/* Simulador */}
+                        <div className="grid lg:grid-cols-2 gap-6">
+                            <Card>
+                                <h3 className="font-bold text-gray-800 mb-4">🧮 Simulador bàsic</h3>
+                                <div className="space-y-4">
+                                    <Slider label="Ingressos bruts anuals" value={ingressos} onChange={setIngressos} min={10000} max={100000} step={1000} suffix="€" />
+                                    <Slider label="Deduccions (hipoteca, donacions...)" value={deduccions} onChange={setDeduccions} min={0} max={10000} step={100} suffix="€" />
+                                    <Slider label="Retencions ja pagades" value={retencions} onChange={setRetencions} min={0} max={30000} step={100} suffix="€" />
+                                </div>
+                            </Card>
+                            <Card className={`border-0 text-white ${calculRenda.resultat >= 0 ? 'bg-gradient-to-br from-emerald-500 to-teal-500' : 'bg-gradient-to-br from-red-500 to-rose-500'}`}>
+                                <h3 className="font-bold mb-4">📊 Resultat estimat</h3>
+                                <div className="space-y-3">
+                                    <div className="flex justify-between py-2 border-b border-white/20">
+                                        <span>Base imposable</span>
+                                        <span className="font-bold">{calculRenda.baseImposable.toLocaleString()}€</span>
+                                    </div>
+                                    <div className="flex justify-between py-2 border-b border-white/20">
+                                        <span>Quota a pagar</span>
+                                        <span className="font-bold">{calculRenda.quota.toLocaleString()}€</span>
+                                    </div>
+                                    <div className="flex justify-between py-2 border-b border-white/20">
+                                        <span>Ja has pagat (retencions)</span>
+                                        <span className="font-bold">{retencions.toLocaleString()}€</span>
+                                    </div>
+                                    <div className="flex justify-between py-3 bg-white/20 rounded-xl px-3">
+                                        <span className="font-bold">{calculRenda.resultat >= 0 ? 'ET TORNEN' : 'A PAGAR'}</span>
+                                        <span className="font-black text-2xl">{Math.abs(calculRenda.resultat).toLocaleString()}€</span>
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+                        
+                        {/* Trams IRPF */}
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">📊 Trams IRPF 2024 (estatal + autonòmic)</h3>
+                            <p className="text-sm text-gray-600 mb-4">L'IRPF és <strong>progressiu</strong>: només pagues el percentatge alt per la part que supera cada tram.</p>
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                                {[
+                                    { tram: 'Fins 12.450€', percent: '19%', color: 'emerald' },
+                                    { tram: '12.450-20.200€', percent: '24%', color: 'teal' },
+                                    { tram: '20.200-35.200€', percent: '30%', color: 'amber' },
+                                    { tram: '35.200-60.000€', percent: '37%', color: 'orange' },
+                                    { tram: 'Més de 60.000€', percent: '45%', color: 'red' },
+                                ].map((t, i) => (
+                                    <div key={i} className={`p-3 bg-${t.color}-50 border border-${t.color}-200 rounded-lg text-center`}>
+                                        <p className={`font-bold text-${t.color}-700`}>{t.percent}</p>
+                                        <p className="text-xs text-gray-600">{t.tram}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
+                        
+                        {/* Quan és obligatòria */}
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">❓ Quan és obligatòria?</h3>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="p-4 bg-green-50 border border-green-200 rounded-xl">
+                                    <h4 className="font-bold text-green-700 mb-2">✅ NO obligatòria si...</h4>
+                                    <ul className="text-sm text-gray-600 space-y-1">
+                                        <li>• Ingressos &lt; 22.000€/any d'un sol pagador</li>
+                                        <li>• Ingressos &lt; 15.000€/any de diversos pagadors</li>
+                                        <li>• Només rendes exemptes o amb retenció</li>
+                                    </ul>
+                                </div>
+                                <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                                    <h4 className="font-bold text-amber-700 mb-2">⚠️ SÍ obligatòria si...</h4>
+                                    <ul className="text-sm text-gray-600 space-y-1">
+                                        <li>• Més de 22.000€/any</li>
+                                        <li>• Més de 15.000€ amb 2+ pagadors</li>
+                                        <li>• Vols aplicar deduccions (hipoteca, fills...)</li>
+                                        <li>• Et surt a tornar i vols els diners</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </Card>
+                        
+                        {/* Deduccions principals */}
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">💡 Deduccions més comunes</h3>
+                            <div className="grid md:grid-cols-3 gap-3">
+                                {[
+                                    { emoji: '🏠', title: 'Hipoteca habitatge habitual', desc: 'Fins 9.040€/any (compres abans 2013)' },
+                                    { emoji: '👶', title: 'Maternitat/Paternitat', desc: 'Fins 1.200€/any per fill < 3 anys' },
+                                    { emoji: '👴', title: 'Ascendents/Descendents', desc: 'Mínims personals i familiars' },
+                                    { emoji: '💼', title: 'Plans de pensions', desc: 'Fins 1.500€/any' },
+                                    { emoji: '🎓', title: "Deducció per lloguer", desc: 'Segons comunitat autònoma' },
+                                    { emoji: '❤️', title: 'Donacions', desc: '80% primers 150€, 35-40% resta' },
+                                ].map((d, i) => (
+                                    <div key={i} className="p-3 bg-violet-50 rounded-xl">
+                                        <p className="font-bold text-violet-700">{d.emoji} {d.title}</p>
+                                        <p className="text-sm text-gray-600">{d.desc}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
+                        
+                        {/* Consells */}
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">📝 Consells pràctics</h3>
+                            <div className="grid md:grid-cols-2 gap-3">
+                                <div className="p-3 bg-emerald-50 rounded-lg flex items-start gap-2">
+                                    <span>📅</span>
+                                    <div>
+                                        <p className="font-bold text-emerald-700">Termini: abril-juny</p>
+                                        <p className="text-sm text-gray-600">La campanya sol ser abril-juny de l'any següent</p>
+                                    </div>
+                                </div>
+                                <div className="p-3 bg-emerald-50 rounded-lg flex items-start gap-2">
+                                    <span>📱</span>
+                                    <div>
+                                        <p className="font-bold text-emerald-700">Usa el borrador</p>
+                                        <p className="text-sm text-gray-600">Hisenda ja té les teues dades, revisa-les!</p>
+                                    </div>
+                                </div>
+                                <div className="p-3 bg-emerald-50 rounded-lg flex items-start gap-2">
+                                    <span>🔍</span>
+                                    <div>
+                                        <p className="font-bold text-emerald-700">Revisa deduccions</p>
+                                        <p className="text-sm text-gray-600">El borrador no inclou tot, afegeix el que falta</p>
+                                    </div>
+                                </div>
+                                <div className="p-3 bg-emerald-50 rounded-lg flex items-start gap-2">
+                                    <span>💾</span>
+                                    <div>
+                                        <p className="font-bold text-emerald-700">Guarda justificants</p>
+                                        <p className="text-sm text-gray-600">Pot revisar fins 4 anys enrere</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                );
+            };
+
+            // ===== SECCIÓ IMPOSTOS I PRESSUPOSTOS GENERALS DE L'ESTAT =====
+            const Impostos = () => {
+                const [salariAnual, setSalariAnual] = useState(25000);
+                
+                // Dades dels PGE 2023 (últims aprovats)
+                const pressupostTotal = 450721; // milions €
+                const pib = 1462000; // milions € aprox
+                
+                // Distribució de la despesa (en milions €)
+                const despesaData = [
+                    { nom: 'Pensions', valor: 190684, percent: 42.3, color: '#ec4899', emoji: '👴' },
+                    { nom: 'Deute públic', valor: 31171, percent: 6.9, color: '#8b5cf6', emoji: '💳' },
+                    { nom: 'Atur i SS', valor: 21282, percent: 4.7, color: '#f59e0b', emoji: '🏥' },
+                    { nom: 'Defensa', valor: 12312, percent: 2.7, color: '#6b7280', emoji: '🛡️' },
+                    { nom: 'Infraestructures', valor: 14580, percent: 3.2, color: '#10b981', emoji: '🚄' },
+                    { nom: 'Seguretat', valor: 11340, percent: 2.5, color: '#3b82f6', emoji: '👮' },
+                    { nom: 'Educació (estatal)', valor: 5890, percent: 1.3, color: '#14b8a6', emoji: '🎓' },
+                    { nom: 'Altres', valor: 163462, percent: 36.3, color: '#d1d5db', emoji: '📦' },
+                ];
+                
+                // Càlcul dels impostos d'un salari
+                const calculImpostos = useMemo(() => {
+                    // IRPF aproximat (sense deduccions)
+                    let irpf = 0;
+                    if (salariAnual > 0) irpf += Math.min(salariAnual, 12450) * 0.19;
+                    if (salariAnual > 12450) irpf += Math.min(salariAnual - 12450, 7750) * 0.24;
+                    if (salariAnual > 20200) irpf += Math.min(salariAnual - 20200, 15000) * 0.30;
+                    if (salariAnual > 35200) irpf += Math.min(salariAnual - 35200, 24800) * 0.37;
+                    if (salariAnual > 60000) irpf += (salariAnual - 60000) * 0.45;
+                    
+                    const ss = salariAnual * 0.0635; // Cotització treballador ~6.35%
+                    const iva = (salariAnual - irpf - ss) * 0.15; // Estima ~15% del net en IVA (consum)
+                    const total = irpf + ss + iva;
+                    
+                    // Com es distribueix el que pagues
+                    const perPensions = total * 0.423;
+                    const perDeute = total * 0.069;
+                    const perDefensa = total * 0.027;
+                    const perAltre = total - perPensions - perDeute - perDefensa;
+                    
+                    return { irpf, ss, iva, total, perPensions, perDeute, perDefensa, perAltre };
+                }, [salariAnual]);
+                
+                return (
+                    <div className="space-y-6">
+                        <h2 className="text-2xl font-black text-gray-800">🏛️ On van els teus impostos?</h2>
+                        
+                        {/* Introducció */}
+                        <Card className="bg-gradient-to-r from-indigo-50 to-violet-50 border-indigo-200">
+                            <h3 className="font-bold text-gray-800 mb-3">📚 Els Pressupostos Generals de l'Estat</h3>
+                            <p className="text-gray-600 text-sm mb-3">
+                                Els <strong>Pressupostos Generals de l'Estat (PGE)</strong> són el document on es recullen tots els 
+                                ingressos i despeses previstos per a un any. Els elabora el Govern i els aproven les Corts. 
+                                Determinen en què es gastarà el diner públic: sanitat, pensions, educació, infraestructures...
+                            </p>
+                            <div className="grid grid-cols-3 gap-3 text-center">
+                                <div className="p-3 bg-white rounded-lg">
+                                    <p className="text-2xl font-black text-indigo-600">450.721M€</p>
+                                    <p className="text-xs text-gray-500">PGE 2023</p>
+                                </div>
+                                <div className="p-3 bg-white rounded-lg">
+                                    <p className="text-2xl font-black text-indigo-600">~31%</p>
+                                    <p className="text-xs text-gray-500">del PIB</p>
+                                </div>
+                                <div className="p-3 bg-white rounded-lg">
+                                    <p className="text-2xl font-black text-indigo-600">~9.500€</p>
+                                    <p className="text-xs text-gray-500">per habitant</p>
+                                </div>
+                            </div>
+                        </Card>
+                        
+                        {/* Simulador personal */}
+                        <div className="grid lg:grid-cols-2 gap-6">
+                            <Card>
+                                <h3 className="font-bold text-gray-800 mb-4">🧮 On van els TEUS impostos?</h3>
+                                <p className="text-sm text-gray-500 mb-4">Introdueix el teu salari brut anual i veuràs una estimació de quant pagues i a on va.</p>
+                                <Slider label="Salari brut anual" value={salariAnual} onChange={setSalariAnual} min={10000} max={100000} step={1000} suffix="€" />
+                                
+                                <div className="mt-4 space-y-2">
+                                    <div className="flex justify-between p-2 bg-gray-50 rounded">
+                                        <span className="text-sm">IRPF (estimat)</span>
+                                        <span className="font-bold">{calculImpostos.irpf.toFixed(0)}€</span>
+                                    </div>
+                                    <div className="flex justify-between p-2 bg-gray-50 rounded">
+                                        <span className="text-sm">Seguretat Social</span>
+                                        <span className="font-bold">{calculImpostos.ss.toFixed(0)}€</span>
+                                    </div>
+                                    <div className="flex justify-between p-2 bg-gray-50 rounded">
+                                        <span className="text-sm">IVA (estima consum)</span>
+                                        <span className="font-bold">{calculImpostos.iva.toFixed(0)}€</span>
+                                    </div>
+                                    <div className="flex justify-between p-3 bg-indigo-100 rounded-lg font-bold">
+                                        <span>TOTAL IMPOSTOS</span>
+                                        <span className="text-indigo-700">{calculImpostos.total.toFixed(0)}€/any</span>
+                                    </div>
+                                </div>
+                            </Card>
+                            
+                            <Card className="bg-gradient-to-br from-indigo-500 to-violet-600 text-white border-0">
+                                <h3 className="font-bold mb-4">📊 Distribució dels teus {calculImpostos.total.toFixed(0)}€</h3>
+                                <div className="space-y-3">
+                                    <div className="p-3 bg-white/20 rounded-lg">
+                                        <div className="flex justify-between items-center">
+                                            <span>👴 Pensions</span>
+                                            <span className="font-black text-xl">{calculImpostos.perPensions.toFixed(0)}€</span>
+                                        </div>
+                                        <p className="text-xs text-white/70 mt-1">42% del pressupost va a pensions</p>
+                                    </div>
+                                    <div className="p-3 bg-white/10 rounded-lg">
+                                        <div className="flex justify-between items-center">
+                                            <span>💳 Deute públic</span>
+                                            <span className="font-bold">{calculImpostos.perDeute.toFixed(0)}€</span>
+                                        </div>
+                                    </div>
+                                    <div className="p-3 bg-white/10 rounded-lg">
+                                        <div className="flex justify-between items-center">
+                                            <span>🛡️ Defensa</span>
+                                            <span className="font-bold">{calculImpostos.perDefensa.toFixed(0)}€</span>
+                                        </div>
+                                    </div>
+                                    <div className="p-3 bg-white/10 rounded-lg">
+                                        <div className="flex justify-between items-center">
+                                            <span>📦 Resta (sanitat, educació...)</span>
+                                            <span className="font-bold">{calculImpostos.perAltre.toFixed(0)}€</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+                        
+                        {/* Distribució de la despesa */}
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">📊 On es gasta el pressupost? (PGE 2023)</h3>
+                            <p className="text-sm text-gray-500 mb-4">
+                                ⚠️ <strong>Important:</strong> Sanitat i Educació els gestionen principalment les CCAA, per això semblen baixos. 
+                                El gasto REAL en educació a Espanya és ~5% del PIB sumant totes les administracions.
+                            </p>
+                            
+                            {/* Barres de despesa */}
+                            <div className="space-y-3">
+                                {despesaData.map((d, i) => (
+                                    <div key={i} className="flex items-center gap-3">
+                                        <span className="text-xl w-8">{d.emoji}</span>
+                                        <div className="flex-1">
+                                            <div className="flex justify-between text-sm mb-1">
+                                                <span className="font-medium">{d.nom}</span>
+                                                <span className="text-gray-500">{d.valor.toLocaleString()}M€ ({d.percent}%)</span>
+                                            </div>
+                                            <div className="h-4 bg-gray-100 rounded-full overflow-hidden">
+                                                <div className="h-full rounded-full transition-all" style={{width: `${Math.min(d.percent * 2.3, 100)}%`, backgroundColor: d.color}} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
+                        
+                        {/* D'on venen els ingressos */}
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">💰 D'on venen els ingressos?</h3>
+                            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
+                                {[
+                                    { nom: 'IRPF', percent: '~24%', desc: 'Impost sobre la renda de les persones', color: 'pink', emoji: '👤' },
+                                    { nom: 'IVA', percent: '~18%', desc: 'Impost sobre el valor afegit (consum)', color: 'amber', emoji: '🛒' },
+                                    { nom: 'Cotitzacions SS', percent: '~35%', desc: 'Seguretat Social (empresa + treballador)', color: 'emerald', emoji: '🏥' },
+                                    { nom: 'Impost Societats', percent: '~7%', desc: 'Impost sobre beneficis empresarials', color: 'blue', emoji: '🏢' },
+                                    { nom: 'Impostos especials', percent: '~5%', desc: 'Alcohol, tabac, hidrocarburs', color: 'violet', emoji: '⛽' },
+                                    { nom: 'Altres impostos', percent: '~4%', desc: 'Patrimoni, successions, transmissions...', color: 'gray', emoji: '📋' },
+                                    { nom: 'Taxes i preus', percent: '~3%', desc: 'DNI, passaport, taxes judicials...', color: 'teal', emoji: '🎫' },
+                                    { nom: 'Altres ingressos', percent: '~4%', desc: 'Transferències UE, loteries...', color: 'indigo', emoji: '🌍' },
+                                ].map((i, idx) => (
+                                    <div key={idx} className={`p-3 bg-${i.color}-50 border border-${i.color}-200 rounded-xl`}>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <span>{i.emoji}</span>
+                                            <span className={`font-bold text-${i.color}-700`}>{i.nom}</span>
+                                        </div>
+                                        <p className="text-lg font-black text-gray-800">{i.percent}</p>
+                                        <p className="text-xs text-gray-500">{i.desc}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
+                        
+                        {/* Classificació del pressupost */}
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">📚 Com s'organitza el pressupost?</h3>
+                            <p className="text-sm text-gray-600 mb-4">El pressupost es pot veure des de 3 perspectives diferents:</p>
+                            <div className="grid md:grid-cols-3 gap-4">
+                                <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                                    <h4 className="font-bold text-blue-700 mb-2">🏛️ Orgànica</h4>
+                                    <p className="text-sm text-gray-600 mb-2"><strong>QUI</strong> gasta els diners?</p>
+                                    <ul className="text-xs text-gray-500 space-y-1">
+                                        <li>• Ministeri d'Hisenda</li>
+                                        <li>• Ministeri de Defensa</li>
+                                        <li>• Seguretat Social</li>
+                                        <li>• etc.</li>
+                                    </ul>
+                                </div>
+                                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                                    <h4 className="font-bold text-emerald-700 mb-2">🎯 Funcional</h4>
+                                    <p className="text-sm text-gray-600 mb-2"><strong>PER A QUÈ</strong> es gasta?</p>
+                                    <ul className="text-xs text-gray-500 space-y-1">
+                                        <li>• Protecció social</li>
+                                        <li>• Sanitat</li>
+                                        <li>• Educació</li>
+                                        <li>• Defensa</li>
+                                    </ul>
+                                </div>
+                                <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                                    <h4 className="font-bold text-amber-700 mb-2">💰 Econòmica</h4>
+                                    <p className="text-sm text-gray-600 mb-2"><strong>EN QUÈ</strong> es gasta?</p>
+                                    <ul className="text-xs text-gray-500 space-y-1">
+                                        <li>• Personal (sous)</li>
+                                        <li>• Béns i serveis</li>
+                                        <li>• Inversions</li>
+                                        <li>• Transferències</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </Card>
+                        
+                        {/* Dades clau */}
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">📈 Dades clau que has de saber</h3>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl">
+                                    <h4 className="font-bold text-rose-700 mb-2">👴 Pensions: la partida més gran</h4>
+                                    <ul className="text-sm text-gray-600 space-y-1">
+                                        <li>• <strong>42%</strong> del pressupost va a pensions</li>
+                                        <li>• <strong>11,5%</strong> del PIB</li>
+                                        <li>• +10 milions de pensionistes</li>
+                                        <li>• Pensió mitjana: ~1.250€/mes</li>
+                                        <li>• 73% són pensions de jubilació</li>
+                                    </ul>
+                                </div>
+                                <div className="p-4 bg-violet-50 border border-violet-200 rounded-xl">
+                                    <h4 className="font-bold text-violet-700 mb-2">💳 El deute públic</h4>
+                                    <ul className="text-sm text-gray-600 space-y-1">
+                                        <li>• Deute total: ~1,5 bilions € (~110% PIB)</li>
+                                        <li>• Interessos: ~31.000M€/any</li>
+                                        <li>• Si gastem més del que ingressem = dèficit</li>
+                                        <li>• El dèficit s'acumula com a deute</li>
+                                    </ul>
+                                </div>
+                                <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                                    <h4 className="font-bold text-amber-700 mb-2">⚠️ Atenció amb les comparacions</h4>
+                                    <ul className="text-sm text-gray-600 space-y-1">
+                                        <li>• Sanitat i educació van a les CCAA</li>
+                                        <li>• No és cert que "Defensa > Educació"</li>
+                                        <li>• Cal sumar Estat + CCAA + Ajuntaments</li>
+                                    </ul>
+                                </div>
+                                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                                    <h4 className="font-bold text-emerald-700 mb-2">🗳️ El procés pressupostari</h4>
+                                    <ul className="text-sm text-gray-600 space-y-1">
+                                        <li>• El Govern elabora els PGE</li>
+                                        <li>• Les Corts els aproven</li>
+                                        <li>• S'han d'aprovar abans del 31/12</li>
+                                        <li>• Si no, es prorroguen els anteriors</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </Card>
+                        
+                        {/* Recursos */}
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">🔗 Recursos per saber-ne més</h3>
+                            <div className="grid md:grid-cols-2 gap-3">
+                                <div className="p-3 bg-indigo-50 rounded-lg">
+                                    <p className="font-bold text-indigo-700">📊 dondevanmisimpuestos.es</p>
+                                    <p className="text-sm text-gray-600">Visualització interactiva dels PGE (organització sense ànim de lucre)</p>
+                                </div>
+                                <div className="p-3 bg-indigo-50 rounded-lg">
+                                    <p className="font-bold text-indigo-700">🏛️ sepg.pap.hacienda.gob.es</p>
+                                    <p className="text-sm text-gray-600">Web oficial del Ministeri d'Hisenda amb totes les dades</p>
+                                </div>
+                                <div className="p-3 bg-indigo-50 rounded-lg">
+                                    <p className="font-bold text-indigo-700">📰 transparencia.gob.es</p>
+                                    <p className="text-sm text-gray-600">Portal de Transparència del Govern d'Espanya</p>
+                                </div>
+                                <div className="p-3 bg-indigo-50 rounded-lg">
+                                    <p className="font-bold text-indigo-700">📖 Llibre Blau i Llibre Groc</p>
+                                    <p className="text-sm text-gray-600">Documents oficials que expliquen l'estructura dels PGE</p>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                );
+            };
+
+            // ===== SECCIÓ FACTURES I SUBMINISTRAMENTS =====
+            const Factures = () => {
+                const [potenciaKw, setPotenciaKw] = useState(4.6);
+                const [consumKwh, setConsumKwh] = useState(200);
+                
+                const calculLlum = useMemo(() => {
+                    // Preus aproximats 2024 (PVPC)
+                    const preuPotencia = 30.67; // €/kW/any
+                    const preuEnergia = 0.12; // €/kWh mitjà
+                    const costPotencia = (potenciaKw * preuPotencia) / 12;
+                    const costEnergia = consumKwh * preuEnergia;
+                    const subtotal = costPotencia + costEnergia;
+                    const impostElectric = subtotal * 0.051; // 5.1%
+                    const lloguerComptador = 0.81;
+                    const baseIVA = subtotal + impostElectric + lloguerComptador;
+                    const iva = baseIVA * 0.10; // 10% IVA reduït
+                    const total = baseIVA + iva;
+                    return { costPotencia, costEnergia, impostElectric, lloguerComptador, iva, total };
+                }, [potenciaKw, consumKwh]);
+                
+                return (
+                    <div className="space-y-6">
+                        <h2 className="text-2xl font-black text-gray-800">🔌 Factures i Subministraments</h2>
+                        
+                        {/* Introducció */}
+                        <Card className="bg-gradient-to-r from-yellow-50 to-amber-50 border-amber-200">
+                            <h3 className="font-bold text-gray-800 mb-3">📚 Entendre les factures</h3>
+                            <p className="text-gray-600 text-sm">
+                                Les factures de subministraments (llum, gas, aigua) tenen conceptes que molta gent no entén. 
+                                Aprendre a llegir-les et permet <strong>detectar errors</strong>, <strong>optimitzar el consum</strong> 
+                                i <strong>estalviar diners</strong> triant la tarifa adequada.
+                            </p>
+                        </Card>
+                        
+                        {/* FACTURA DE LA LLUM */}
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">💡 Factura de la Llum</h3>
+                            
+                            <div className="grid lg:grid-cols-2 gap-6">
+                                {/* Simulador */}
+                                <div className="space-y-4">
+                                    <h4 className="font-medium text-gray-700">🧮 Simulador</h4>
+                                    <Slider label="Potència contractada (kW)" value={potenciaKw} onChange={setPotenciaKw} min={2.3} max={10} step={0.1} suffix=" kW" />
+                                    <Slider label="Consum mensual (kWh)" value={consumKwh} onChange={setConsumKwh} min={50} max={500} step={10} suffix=" kWh" />
+                                    
+                                    <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                                        <div className="space-y-2 text-sm">
+                                            <div className="flex justify-between"><span>Terme de potència</span><span>{calculLlum.costPotencia.toFixed(2)}€</span></div>
+                                            <div className="flex justify-between"><span>Terme d'energia</span><span>{calculLlum.costEnergia.toFixed(2)}€</span></div>
+                                            <div className="flex justify-between text-gray-500"><span>Impost elèctric (5.1%)</span><span>{calculLlum.impostElectric.toFixed(2)}€</span></div>
+                                            <div className="flex justify-between text-gray-500"><span>Lloguer comptador</span><span>{calculLlum.lloguerComptador.toFixed(2)}€</span></div>
+                                            <div className="flex justify-between text-gray-500"><span>IVA (10%)</span><span>{calculLlum.iva.toFixed(2)}€</span></div>
+                                            <div className="flex justify-between font-bold text-lg pt-2 border-t border-amber-300">
+                                                <span>TOTAL MENSUAL</span>
+                                                <span className="text-amber-700">{calculLlum.total.toFixed(2)}€</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {/* Explicació */}
+                                <div className="space-y-3">
+                                    <h4 className="font-medium text-gray-700">📖 Components</h4>
+                                    <div className="p-3 bg-blue-50 rounded-lg">
+                                        <p className="font-bold text-blue-700">⚡ Terme de potència</p>
+                                        <p className="text-sm text-gray-600">El que pagues per tenir electricitat disponible, independentment del consum. Com una "quota fixa".</p>
+                                    </div>
+                                    <div className="p-3 bg-green-50 rounded-lg">
+                                        <p className="font-bold text-green-700">🔋 Terme d'energia</p>
+                                        <p className="text-sm text-gray-600">El que pagues pel consum real en kWh. Amb discriminació horària pots estalviar consumint en hores vall.</p>
+                                    </div>
+                                    <div className="p-3 bg-violet-50 rounded-lg">
+                                        <p className="font-bold text-violet-700">📊 Peatges i càrrecs</p>
+                                        <p className="text-sm text-gray-600">Costos de transport i distribució. Regulats pel govern, iguals per a totes les comercialitzadores.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                        
+                        {/* Tipus de tarifa */}
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">⏰ Tipus de tarifa elèctrica</h3>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                                    <h4 className="font-bold text-emerald-700 mb-2">🏷️ PVPC (Preu regulat)</h4>
+                                    <p className="text-sm text-gray-600 mb-2">Preu que varia cada hora segons el mercat majorista.</p>
+                                    <ul className="text-xs text-gray-500 space-y-1">
+                                        <li>✓ Pot ser més barat si consumes en hores vall</li>
+                                        <li>✓ Transparent, sense permanència</li>
+                                        <li>✗ Imprevisible, pot pujar molt</li>
+                                    </ul>
+                                </div>
+                                <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                                    <h4 className="font-bold text-blue-700 mb-2">📝 Mercat lliure (Fix)</h4>
+                                    <p className="text-sm text-gray-600 mb-2">Preu pactat amb la comercialitzadora.</p>
+                                    <ul className="text-xs text-gray-500 space-y-1">
+                                        <li>✓ Estabilitat, saps el que pagaràs</li>
+                                        <li>✓ Ofertes i descomptes</li>
+                                        <li>✗ Pot tenir permanència i penalitzacions</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </Card>
+                        
+                        {/* FACTURA DEL GAS */}
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">🔥 Factura del Gas</h3>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <p className="text-sm text-gray-600 mb-3">Similar a la llum, però més senzilla:</p>
+                                    <div className="space-y-2">
+                                        <div className="p-3 bg-orange-50 rounded-lg">
+                                            <p className="font-bold text-orange-700">📋 Terme fix</p>
+                                            <p className="text-sm text-gray-600">Quota mensual per tenir gas disponible</p>
+                                        </div>
+                                        <div className="p-3 bg-orange-50 rounded-lg">
+                                            <p className="font-bold text-orange-700">🔥 Terme variable</p>
+                                            <p className="text-sm text-gray-600">Consum en kWh (no m³ directament)</p>
+                                        </div>
+                                        <div className="p-3 bg-gray-50 rounded-lg">
+                                            <p className="font-bold text-gray-700">💰 Impostos</p>
+                                            <p className="text-sm text-gray-600">Impost hidrocarburs + IVA 21%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                                    <h4 className="font-bold text-amber-700 mb-3">💡 Consells per estalviar</h4>
+                                    <ul className="text-sm text-gray-600 space-y-2">
+                                        <li>• Revisa la potència: molts tenen més del necessari</li>
+                                        <li>• Compara comercialitzadores cada any</li>
+                                        <li>• Calefacció a 20-21°C, cada grau = +7% consum</li>
+                                        <li>• Revisa finestres i aïllament</li>
+                                        <li>• Considera aerotèrmia si tens llum barata</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </Card>
+                        
+                        {/* FACTURA DE L'AIGUA */}
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">💧 Factura de l'Aigua</h3>
+                            <p className="text-sm text-gray-600 mb-4">Gestionada per l'Ajuntament o empresa municipal. Sol tenir trams de consum.</p>
+                            <div className="grid md:grid-cols-3 gap-3">
+                                <div className="p-3 bg-blue-50 rounded-lg text-center">
+                                    <p className="font-bold text-blue-700">🚰 Quota de servei</p>
+                                    <p className="text-xs text-gray-600">Part fixa mensual</p>
+                                </div>
+                                <div className="p-3 bg-blue-50 rounded-lg text-center">
+                                    <p className="font-bold text-blue-700">📊 Consum per trams</p>
+                                    <p className="text-xs text-gray-600">Com més consums, més car per m³</p>
+                                </div>
+                                <div className="p-3 bg-blue-50 rounded-lg text-center">
+                                    <p className="font-bold text-blue-700">🏭 Clavegueram</p>
+                                    <p className="text-xs text-gray-600">Tractament d'aigües residuals</p>
+                                </div>
+                            </div>
+                            <div className="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
+                                <p className="text-sm"><strong>💡 Consum mitjà:</strong> ~100-150 litres/persona/dia. Una família de 4: ~15-20 m³/mes</p>
+                            </div>
+                        </Card>
+                        
+                        {/* Com estalviar */}
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">🌱 Resum: com estalviar</h3>
+                            <div className="grid md:grid-cols-3 gap-4">
+                                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+                                    <p className="font-bold text-yellow-700 mb-2">💡 Llum</p>
+                                    <ul className="text-sm text-gray-600 space-y-1">
+                                        <li>• LED a tot arreu</li>
+                                        <li>• Electrodomèstics A+++</li>
+                                        <li>• Hores vall (nit, caps de setmana)</li>
+                                        <li>• Revisa potència contractada</li>
+                                    </ul>
+                                </div>
+                                <div className="p-4 bg-orange-50 border border-orange-200 rounded-xl">
+                                    <p className="font-bold text-orange-700 mb-2">🔥 Gas</p>
+                                    <ul className="text-sm text-gray-600 space-y-1">
+                                        <li>• Termòstat a 20-21°C</li>
+                                        <li>• Aïlla finestres i portes</li>
+                                        <li>• Caldera eficient</li>
+                                        <li>• Dutxes curtes</li>
+                                    </ul>
+                                </div>
+                                <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                                    <p className="font-bold text-blue-700 mb-2">💧 Aigua</p>
+                                    <ul className="text-sm text-gray-600 space-y-1">
+                                        <li>• Aixetes amb airejadors</li>
+                                        <li>• Cisternes de doble descàrrega</li>
+                                        <li>• Rentadora i rentavaixelles plens</li>
+                                        <li>• Revisa fuites</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                );
+            };
+
+            // ===== SECCIÓ LLOGUER =====
+            const Lloguer = () => {
+                const [lloguerMes, setLloguerMes] = useState(800);
+                const [ingressosNets, setIngressosNets] = useState(1800);
+                
+                const calculLloguer = useMemo(() => {
+                    const percentatge = (lloguerMes / ingressosNets) * 100;
+                    const fianca = lloguerMes; // 1 mes mínim
+                    const despesesEntrada = lloguerMes * 2 + 200; // fiança + 1r mes + gestió
+                    const saludable = percentatge <= 30;
+                    return { percentatge, fianca, despesesEntrada, saludable };
+                }, [lloguerMes, ingressosNets]);
+                
+                return (
+                    <div className="space-y-6">
+                        <h2 className="text-2xl font-black text-gray-800">🏘️ Tot sobre el Lloguer</h2>
+                        
+                        {/* Introducció */}
+                        <Card className="bg-gradient-to-r from-rose-50 to-pink-50 border-rose-200">
+                            <h3 className="font-bold text-gray-800 mb-3">📚 Llogar un pis</h3>
+                            <p className="text-gray-600 text-sm">
+                                El lloguer és sovint el primer pas cap a la independència. Entendre els teus <strong>drets</strong>, 
+                                les <strong>obligacions</strong> i el <strong>contracte</strong> et protegeix de problemes i abusos.
+                            </p>
+                        </Card>
+                        
+                        {/* Calculadora */}
+                        <div className="grid lg:grid-cols-2 gap-6">
+                            <Card>
+                                <h3 className="font-bold text-gray-800 mb-4">🧮 És assumible aquest lloguer?</h3>
+                                <div className="space-y-4">
+                                    <Slider label="Lloguer mensual" value={lloguerMes} onChange={setLloguerMes} min={300} max={2000} step={50} suffix="€" />
+                                    <Slider label="Ingressos nets mensuals" value={ingressosNets} onChange={setIngressosNets} min={1000} max={5000} step={100} suffix="€" />
+                                </div>
+                            </Card>
+                            <Card className={`border-0 text-white ${calculLloguer.saludable ? 'bg-gradient-to-br from-emerald-500 to-teal-500' : 'bg-gradient-to-br from-amber-500 to-orange-500'}`}>
+                                <h3 className="font-bold mb-4">📊 Anàlisi</h3>
+                                <div className="space-y-3">
+                                    <div className="flex justify-between py-2 border-b border-white/20">
+                                        <span>% dels ingressos</span>
+                                        <span className="font-black text-2xl">{calculLloguer.percentatge.toFixed(0)}%</span>
+                                    </div>
+                                    <div className="p-3 bg-white/20 rounded-xl text-center">
+                                        {calculLloguer.saludable ? (
+                                            <p>✅ <strong>Saludable!</strong> Recomanat: màx 30-35%</p>
+                                        ) : (
+                                            <p>⚠️ <strong>Atenció!</strong> Superes el 30% recomanat</p>
+                                        )}
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2 text-sm mt-2">
+                                        <div className="p-2 bg-white/10 rounded-lg text-center">
+                                            <p className="text-white/70">Fiança mínima</p>
+                                            <p className="font-bold">{calculLloguer.fianca}€</p>
+                                        </div>
+                                        <div className="p-2 bg-white/10 rounded-lg text-center">
+                                            <p className="text-white/70">Entrada estimada</p>
+                                            <p className="font-bold">{calculLloguer.despesesEntrada}€</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+                        
+                        {/* El contracte */}
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">📝 El contracte de lloguer</h3>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="space-y-3">
+                                    <div className="p-3 bg-violet-50 rounded-lg">
+                                        <p className="font-bold text-violet-700">📅 Durada</p>
+                                        <p className="text-sm text-gray-600">Mínim legal: 5 anys (7 si propietari és empresa). El propietari no pot fer-te fora abans.</p>
+                                    </div>
+                                    <div className="p-3 bg-violet-50 rounded-lg">
+                                        <p className="font-bold text-violet-700">💰 Fiança</p>
+                                        <p className="text-sm text-gray-600">Màxim legal: <strong>1 mes</strong> de lloguer (habitatge). Es diposita a l'organisme oficial.</p>
+                                    </div>
+                                    <div className="p-3 bg-violet-50 rounded-lg">
+                                        <p className="font-bold text-violet-700">🔒 Garanties addicionals</p>
+                                        <p className="text-sm text-gray-600">Màxim 2 mesos addicionals. Total: fins a 3 mesos entre tot.</p>
+                                    </div>
+                                </div>
+                                <div className="space-y-3">
+                                    <div className="p-3 bg-amber-50 rounded-lg">
+                                        <p className="font-bold text-amber-700">📈 Actualització renda</p>
+                                        <p className="text-sm text-gray-600">Màxim IPC (o índex legal). No poden pujar el que vulguin.</p>
+                                    </div>
+                                    <div className="p-3 bg-amber-50 rounded-lg">
+                                        <p className="font-bold text-amber-700">🚪 Desistiment inquilí</p>
+                                        <p className="text-sm text-gray-600">Pots marxar als 6 mesos amb 30 dies d'avís. Pot haver penalització pactada.</p>
+                                    </div>
+                                    <div className="p-3 bg-amber-50 rounded-lg">
+                                        <p className="font-bold text-amber-700">🔧 Reparacions</p>
+                                        <p className="text-sm text-gray-600">Habitabilitat = propietari. Ús diari (&lt;150€) = inquilí.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                        
+                        {/* Drets inquilí */}
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">⚖️ Drets de l'inquilí</h3>
+                            <div className="grid md:grid-cols-2 gap-3">
+                                {[
+                                    { icon: '🏠', dret: 'Habitatge en condicions', desc: "L'habitatge ha de ser habitable i segur" },
+                                    { icon: '🔒', dret: 'Estabilitat', desc: "No et poden fer fora sense causa justificada" },
+                                    { icon: '📝', dret: 'Contracte per escrit', desc: "Sempre demana'l, és la teua protecció" },
+                                    { icon: '🧾', dret: 'Rebuts de pagament', desc: "Guarda tots els rebuts del lloguer" },
+                                    { icon: '🔧', dret: 'Reparacions necessàries', desc: "El propietari ha de mantenir l'habitatge" },
+                                    { icon: '💰', dret: 'Recuperar fiança', desc: "Si deixes el pis bé, te la tornen (màx 30 dies)" },
+                                ].map((d, i) => (
+                                    <div key={i} className="flex items-start gap-3 p-3 bg-emerald-50 rounded-lg">
+                                        <span className="text-xl">{d.icon}</span>
+                                        <div>
+                                            <p className="font-bold text-emerald-700">{d.dret}</p>
+                                            <p className="text-sm text-gray-600">{d.desc}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
+                        
+                        {/* Obligacions inquilí */}
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">📋 Obligacions de l'inquilí</h3>
+                            <div className="grid md:grid-cols-3 gap-3">
+                                {[
+                                    { icon: '💵', title: 'Pagar el lloguer', desc: 'Puntualment, en la forma acordada' },
+                                    { icon: '🏠', title: 'Cuidar el pis', desc: "Mantenir-lo en bon estat, com si fos teu" },
+                                    { icon: '🔔', title: 'Comunicar desperfectes', desc: 'Avisa el propietari de problemes greus' },
+                                    { icon: '🙅', title: 'No fer obres', desc: 'Sense permís escrit del propietari' },
+                                    { icon: '👥', title: 'No subarrendar', desc: 'Llevat que el contracte ho permeti' },
+                                    { icon: '📅', title: 'Retornar al final', desc: 'En les mateixes condicions (ús normal)' },
+                                ].map((o, i) => (
+                                    <div key={i} className="p-3 bg-rose-50 rounded-lg text-center">
+                                        <p className="text-xl mb-1">{o.icon}</p>
+                                        <p className="font-bold text-rose-700 text-sm">{o.title}</p>
+                                        <p className="text-xs text-gray-600">{o.desc}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
+                        
+                        {/* Consells abans de firmar */}
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">✅ Checklist abans de firmar</h3>
+                            <div className="grid md:grid-cols-2 gap-3">
+                                {[
+                                    'Visita el pis de dia i comprova tot',
+                                    'Demana nota simple del Registre (qui és el propietari)',
+                                    'Verifica el certificat energètic',
+                                    'Fes fotos de l\'estat actual',
+                                    'Llegeix TOT el contracte abans de firmar',
+                                    'Comprova que la fiança va al dipòsit oficial',
+                                    'Acorda per escrit qui paga cada despesa',
+                                    'Demana còpia firmada del contracte',
+                                ].map((c, i) => (
+                                    <div key={i} className="flex items-center gap-2 p-2 bg-violet-50 rounded-lg">
+                                        <span className="text-violet-500 font-bold">☐</span>
+                                        <span className="text-sm text-gray-700">{c}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
+                        
+                        {/* Despeses */}
+                        <Card>
+                            <h3 className="font-bold text-gray-800 mb-4">💸 Qui paga què?</h3>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl">
+                                    <h4 className="font-bold text-rose-700 mb-2">👤 INQUILÍ paga</h4>
+                                    <ul className="text-sm text-gray-600 space-y-1">
+                                        <li>• Lloguer mensual</li>
+                                        <li>• Subministraments (llum, gas, aigua)</li>
+                                        <li>• Petites reparacions d'ús (&lt;150€)</li>
+                                        <li>• Taxa d'escombraries (si s'acorda)</li>
+                                    </ul>
+                                </div>
+                                <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                                    <h4 className="font-bold text-blue-700 mb-2">🏠 PROPIETARI paga</h4>
+                                    <ul className="text-sm text-gray-600 space-y-1">
+                                        <li>• IBI (Impost de Béns Immobles)</li>
+                                        <li>• Comunitat de veïns</li>
+                                        <li>• Assegurança de l'edifici</li>
+                                        <li>• Reparacions d'habitabilitat</li>
+                                        <li>• Despeses de formalització contracte</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                );
+            };
+
             const Contractes = () => (
                 <div className="space-y-6">
                     <h2 className="text-2xl font-black text-gray-800">📋 Tipus de Contractes</h2>
@@ -918,6 +1778,10 @@
                                     <NavBtn sec="estalvi" label="Estalvi" emoji="🐷" />
                                     <NavBtn sec="pressupost" label="Pressupost" emoji="💰" />
                                     <NavBtn sec="prestec" label="Préstec" emoji="💸" />
+                                    <NavBtn sec="renda" label="Renda" emoji="🧾" />
+                                    <NavBtn sec="impostos" label="Impostos" emoji="🏛️" />
+                                    <NavBtn sec="factures" label="Factures" emoji="🔌" />
+                                    <NavBtn sec="lloguer" label="Lloguer" emoji="🏘️" />
                                     <NavBtn sec="contractes" label="Contractes" emoji="📋" />
                                     <NavBtn sec="cv" label="CV" emoji="📄" />
                                     <NavBtn sec="glossari" label="Glossari" emoji="📖" />
@@ -932,6 +1796,10 @@
                                     <NavBtn sec="estalvi" label="Estalvi" emoji="🐷" />
                                     <NavBtn sec="pressupost" label="Pressupost" emoji="💰" />
                                     <NavBtn sec="prestec" label="Préstec" emoji="💸" />
+                                    <NavBtn sec="renda" label="Renda" emoji="🧾" />
+                                    <NavBtn sec="impostos" label="Impostos" emoji="🏛️" />
+                                    <NavBtn sec="factures" label="Factures" emoji="🔌" />
+                                    <NavBtn sec="lloguer" label="Lloguer" emoji="🏘️" />
                                     <NavBtn sec="contractes" label="Contractes" emoji="📋" />
                                     <NavBtn sec="cv" label="CV" emoji="📄" />
                                     <NavBtn sec="glossari" label="Glossari" emoji="📖" />
@@ -946,6 +1814,10 @@
                         {section === 'estalvi' && <Estalvi />}
                         {section === 'pressupost' && <Pressupost />}
                         {section === 'prestec' && <Prestec />}
+                        {section === 'renda' && <Renda />}
+                        {section === 'impostos' && <Impostos />}
+                        {section === 'factures' && <Factures />}
+                        {section === 'lloguer' && <Lloguer />}
                         {section === 'contractes' && <Contractes />}
                         {section === 'cv' && <CV />}
                         {section === 'glossari' && <Glossari />}
