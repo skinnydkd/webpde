@@ -6,10 +6,12 @@
     <title>Economia de l'Empresa - Guia Completa Interactiva</title>
     <meta name="description" content="Aprèn economia de l'empresa amb simuladors interactius.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏢</text></svg>">
-    <link href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.1.16/umd/Recharts.js"></script>
     <style>
         * { scrollbar-width: thin; scrollbar-color: #ec4899 #fdf2f8; }
         ::-webkit-scrollbar { width: 6px; }
@@ -17,43 +19,15 @@
         ::-webkit-scrollbar-thumb { background-color: #ec4899; border-radius: 3px; }
         input[type="range"] { -webkit-appearance: none; appearance: none; height: 8px; border-radius: 4px; background: #fce4ec; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #ec4899; cursor: pointer; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .bg-gradient-to-br { background: linear-gradient(to bottom right, #fffbeb, #ffffff, #fdf2f8); }
-        .bg-gradient-to-r { background: linear-gradient(to right, var(--tw-gradient-stops)); }
-        /* Colors addicionals Tailwind 3 */
-        .bg-emerald-50 { background-color: #ecfdf5; }
-        .bg-emerald-100 { background-color: #d1fae5; }
-        .bg-emerald-500 { background-color: #10b981; }
-        .text-emerald-500 { color: #10b981; }
-        .text-emerald-600 { color: #059669; }
-        .text-emerald-700 { color: #047857; }
-        .border-emerald-200 { border-color: #a7f3d0; }
-        .bg-amber-50 { background-color: #fffbeb; }
-        .bg-amber-100 { background-color: #fef3c7; }
-        .text-amber-600 { color: #d97706; }
-        .text-amber-700 { color: #b45309; }
-        .border-amber-200 { border-color: #fde68a; }
-        .bg-rose-50 { background-color: #fff1f2; }
-        .text-rose-600 { color: #e11d48; }
-        .text-rose-700 { color: #be123c; }
-        .border-rose-200 { border-color: #fecdd3; }
-        .bg-violet-50 { background-color: #f5f3ff; }
-        .bg-violet-500 { background-color: #8b5cf6; }
-        .text-violet-600 { color: #7c3aed; }
-        .text-violet-700 { color: #6d28d9; }
-        .border-violet-200 { border-color: #ddd6fe; }
-        .bg-slate-50 { background-color: #f8fafc; }
-        .bg-slate-800 { background-color: #1e293b; }
-        .text-slate-600 { color: #475569; }
-        .rounded-xl { border-radius: 0.75rem; }
-        .rounded-2xl { border-radius: 1rem; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-amber-50 via-white to-pink-50">
     <div id="root"></div>
     <script type="text/babel">
         const { useState, useMemo, useCallback } = React;
+        const { AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart: RechartsBarChart, Bar, Legend } = Recharts;
         
-        // Gràfic de barres CSS (sense Recharts)
+        // Gràfic de barres CSS (alternatiu)
         const SimpleBarChart = ({ data, height = 150 }) => {
             const max = Math.max(...data.map(d => d.value));
             return (

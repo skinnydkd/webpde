@@ -24,6 +24,189 @@
         const { useState, useMemo } = React;
         const { AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart: RechartsBarChart, Bar, Legend } = Recharts;
 
+        // ============================================================================
+        // TRADUCCIONS VAL/ES
+        // ============================================================================
+        const translations = {
+            // Títol i descripció
+            title: { val: 'Vida Pràctica', es: 'Vida Práctica' },
+            subtitle: { val: "Tot el que mai t'han ensenyat sobre la vida adulta", es: "Todo lo que nunca te enseñaron sobre la vida adulta" },
+            
+            // Navegació
+            nav: {
+                inicio: { val: 'Inici', es: 'Inicio' },
+                nomina: { val: 'Nòmina', es: 'Nómina' },
+                hipoteca: { val: 'Hipoteca', es: 'Hipoteca' },
+                estalvi: { val: 'Estalvi', es: 'Ahorro' },
+                pressupost: { val: 'Pressupost', es: 'Presupuesto' },
+                prestec: { val: 'Préstec', es: 'Préstamo' },
+                renda: { val: 'Renda', es: 'Renta' },
+                impostos: { val: 'Impostos', es: 'Impuestos' },
+                factures: { val: 'Factures', es: 'Facturas' },
+                lloguer: { val: 'Lloguer', es: 'Alquiler' },
+                contractes: { val: 'Contractes', es: 'Contratos' },
+                cv: { val: 'CV', es: 'CV' },
+                glossari: { val: 'Glossari', es: 'Glosario' },
+            },
+            
+            // Cards de l'inici
+            cards: {
+                nomina: { val: 'Calcula el teu salari net', es: 'Calcula tu salario neto' },
+                hipoteca: { val: 'Quota mensual i interessos', es: 'Cuota mensual e intereses' },
+                estalvi: { val: 'Interès compost', es: 'Interés compuesto' },
+                prestec: { val: 'Calculadora de quotes', es: 'Calculadora de cuotas' },
+                pressupost: { val: 'Gestiona els teus diners', es: 'Gestiona tu dinero' },
+                renda: { val: 'IRPF i deduccions', es: 'IRPF y deducciones' },
+                impostos: { val: "Pressupostos de l'Estat", es: 'Presupuestos del Estado' },
+                factures: { val: 'Llum, gas i aigua', es: 'Luz, gas y agua' },
+                lloguer: { val: 'Contractes i drets', es: 'Contratos y derechos' },
+                contractes: { val: 'Tipus i drets laborals', es: 'Tipos y derechos laborales' },
+                cv: { val: 'Com fer un bon currículum', es: 'Cómo hacer un buen currículum' },
+                glossari: { val: 'Termes financers', es: 'Términos financieros' },
+            },
+            
+            // Nòmina
+            nomina: {
+                title: { val: '💳 Calculadora de Nòmina', es: '💳 Calculadora de Nómina' },
+                salarioBrut: { val: 'Salari Brut Mensual', es: 'Salario Bruto Mensual' },
+                pagues: { val: 'Pagues anuals', es: 'Pagas anuales' },
+                situacio: { val: 'Situació personal', es: 'Situación personal' },
+                solter: { val: 'Solter/a', es: 'Soltero/a' },
+                casat: { val: 'Casat/da', es: 'Casado/a' },
+                fills: { val: 'Amb fills', es: 'Con hijos' },
+                salariNet: { val: 'SALARI NET', es: 'SALARIO NETO' },
+                ssLabel: { val: 'Seguretat Social (~6.35%)', es: 'Seguridad Social (~6.35%)' },
+                irpfLabel: { val: 'Retenció IRPF', es: 'Retención IRPF' },
+                anual: { val: 'anual', es: 'anual' },
+                teoria: { val: '📚 Entén la teua nòmina', es: '📚 Entiende tu nómina' },
+                teoriaDesc: { val: "La nòmina és el document que reflecteix el teu salari i les deduccions. Entendre-la és fonamental per controlar les teues finances.", es: "La nómina es el documento que refleja tu salario y las deducciones. Entenderla es fundamental para controlar tus finanzas." },
+                formula: { val: 'SALARI NET = SALARI BRUT - SEGURETAT SOCIAL - IRPF', es: 'SALARIO NETO = SALARIO BRUTO - SEGURIDAD SOCIAL - IRPF' },
+            },
+            
+            // Hipoteca
+            hipoteca: {
+                title: { val: '🏠 Simulador d\'Hipoteca', es: '🏠 Simulador de Hipoteca' },
+                capital: { val: 'Capital a demanar', es: 'Capital a solicitar' },
+                interes: { val: 'Tipus d\'interès anual', es: 'Tipo de interés anual' },
+                anys: { val: 'Anys', es: 'Años' },
+                quotaMensual: { val: 'QUOTA MENSUAL', es: 'CUOTA MENSUAL' },
+                totalPagar: { val: 'Total a pagar', es: 'Total a pagar' },
+                totalInteressos: { val: 'Total interessos', es: 'Total intereses' },
+                teoria: { val: '📚 Què és una hipoteca?', es: '📚 ¿Qué es una hipoteca?' },
+                teoriaDesc: { val: "Una hipoteca és un préstec a llarg termini per comprar un habitatge, garantit per l'immoble mateix.", es: "Una hipoteca es un préstamo a largo plazo para comprar una vivienda, garantizado por el inmueble mismo." },
+            },
+            
+            // Estalvi
+            estalvi: {
+                title: { val: '🐷 Calculadora d\'Estalvi', es: '🐷 Calculadora de Ahorro' },
+                capInicial: { val: 'Capital inicial', es: 'Capital inicial' },
+                aportacioMensual: { val: 'Aportació mensual', es: 'Aportación mensual' },
+                interes: { val: 'Interès anual', es: 'Interés anual' },
+                anys: { val: 'Anys', es: 'Años' },
+                totalFinal: { val: 'TOTAL FINAL', es: 'TOTAL FINAL' },
+                aportat: { val: 'Total aportat', es: 'Total aportado' },
+                guanys: { val: 'Guanys per interès', es: 'Ganancias por interés' },
+            },
+            
+            // Préstec
+            prestec: {
+                title: { val: '💸 Calculadora de Préstec', es: '💸 Calculadora de Préstamo' },
+                capital: { val: 'Capital', es: 'Capital' },
+                interes: { val: 'Interès anual (TIN)', es: 'Interés anual (TIN)' },
+                mesos: { val: 'Mesos', es: 'Meses' },
+                quotaMensual: { val: 'QUOTA MENSUAL', es: 'CUOTA MENSUAL' },
+                tae: { val: 'TAE equivalent', es: 'TAE equivalente' },
+            },
+            
+            // Pressupost
+            pressupost: {
+                title: { val: '💰 Gestor de Pressupost', es: '💰 Gestor de Presupuesto' },
+                ingressos: { val: 'Ingressos mensuals', es: 'Ingresos mensuales' },
+                habitatge: { val: 'Habitatge', es: 'Vivienda' },
+                menjar: { val: 'Menjar', es: 'Comida' },
+                transport: { val: 'Transport', es: 'Transporte' },
+                serveis: { val: 'Serveis', es: 'Servicios' },
+                oci: { val: 'Oci', es: 'Ocio' },
+                altres: { val: 'Altres', es: 'Otros' },
+                disponible: { val: 'DISPONIBLE PER ESTALVIAR', es: 'DISPONIBLE PARA AHORRAR' },
+            },
+            
+            // Renda
+            renda: {
+                title: { val: '🧾 Declaració de la Renda (IRPF)', es: '🧾 Declaración de la Renta (IRPF)' },
+                queEs: { val: '📚 Què és la Declaració de la Renda?', es: '📚 ¿Qué es la Declaración de la Renta?' },
+                ingressos: { val: 'Ingressos bruts anuals', es: 'Ingresos brutos anuales' },
+                deduccions: { val: 'Deduccions (hipoteca, donacions...)', es: 'Deducciones (hipoteca, donaciones...)' },
+                retencions: { val: 'Retencions ja pagades', es: 'Retenciones ya pagadas' },
+                baseImposable: { val: 'Base imposable', es: 'Base imponible' },
+                quotaPagar: { val: 'Quota a pagar', es: 'Cuota a pagar' },
+                jaPagat: { val: 'Ja has pagat (retencions)', es: 'Ya has pagado (retenciones)' },
+                etTornen: { val: 'ET TORNEN', es: 'TE DEVUELVEN' },
+                aPagar: { val: 'A PAGAR', es: 'A PAGAR' },
+            },
+            
+            // Impostos
+            impostos: {
+                title: { val: '🏛️ On van els teus impostos?', es: '🏛️ ¿Dónde van tus impuestos?' },
+                salariAnual: { val: 'Salari brut anual', es: 'Salario bruto anual' },
+                totalImpostos: { val: 'TOTAL IMPOSTOS', es: 'TOTAL IMPUESTOS' },
+                pensions: { val: 'Pensions', es: 'Pensiones' },
+                deute: { val: 'Deute públic', es: 'Deuda pública' },
+                defensa: { val: 'Defensa', es: 'Defensa' },
+            },
+            
+            // Factures
+            factures: {
+                title: { val: '🔌 Factures i Subministraments', es: '🔌 Facturas y Suministros' },
+                potencia: { val: 'Potència contractada (kW)', es: 'Potencia contratada (kW)' },
+                consum: { val: 'Consum mensual (kWh)', es: 'Consumo mensual (kWh)' },
+                totalMensual: { val: 'TOTAL MENSUAL', es: 'TOTAL MENSUAL' },
+            },
+            
+            // Lloguer
+            lloguer: {
+                title: { val: '🏘️ Tot sobre el Lloguer', es: '🏘️ Todo sobre el Alquiler' },
+                lloguerMes: { val: 'Lloguer mensual', es: 'Alquiler mensual' },
+                ingressosNets: { val: 'Ingressos nets mensuals', es: 'Ingresos netos mensuales' },
+                percentatge: { val: '% dels ingressos', es: '% de los ingresos' },
+                saludable: { val: 'Saludable!', es: '¡Saludable!' },
+                atencio: { val: 'Atenció!', es: '¡Atención!' },
+                recomanat: { val: 'Recomanat: màx 30-35%', es: 'Recomendado: máx 30-35%' },
+                superes: { val: 'Superes el 30% recomanat', es: 'Superas el 30% recomendado' },
+            },
+            
+            // Contractes
+            contractes: {
+                title: { val: '📋 Tipus de Contractes', es: '📋 Tipos de Contratos' },
+                indefinit: { val: 'Indefinit', es: 'Indefinido' },
+                temporal: { val: 'Temporal', es: 'Temporal' },
+                formacio: { val: 'Formació', es: 'Formación' },
+                practiques: { val: 'Pràctiques', es: 'Prácticas' },
+            },
+            
+            // CV
+            cv: {
+                title: { val: '📄 Com fer un bon CV', es: '📄 Cómo hacer un buen CV' },
+            },
+            
+            // Glossari
+            glossari: {
+                title: { val: '📖 Glossari Financer', es: '📖 Glosario Financiero' },
+                cerca: { val: 'Cercar terme...', es: 'Buscar término...' },
+            },
+            
+            // Comuns
+            common: {
+                simulador: { val: 'Simulador', es: 'Simulador' },
+                resultat: { val: 'Resultat', es: 'Resultado' },
+                analisi: { val: 'Anàlisi', es: 'Análisis' },
+                consells: { val: 'Consells', es: 'Consejos' },
+                important: { val: 'Important', es: 'Importante' },
+                mes: { val: 'mes', es: 'mes' },
+                any: { val: 'any', es: 'año' },
+            },
+        };
+
         // Gràfic de barres simple
         const BarChart = ({ data, height = 120 }) => {
             const max = Math.max(...data.map(d => d.value));
@@ -44,7 +227,30 @@
             const [section, setSection] = useState('inicio');
             const [menuOpen, setMenuOpen] = useState(false);
             const [searchTerm, setSearchTerm] = useState('');
-
+            const [idioma, setIdioma] = useState('val');
+            
+            // Funció de traducció
+            const t = (category, key) => {
+                try {
+                    if (key) return translations[category][key][idioma] || translations[category][key]['val'];
+                    return translations[category][idioma] || translations[category]['val'];
+                } catch { return key || category; }
+            };
+            
+            // Selector d'idioma (només VAL/ES)
+            const LanguageSelector = () => (
+                <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                    {[{ code: 'val', label: 'VAL' }, { code: 'es', label: 'ES' }].map(lang => (
+                        <button 
+                            key={lang.code} 
+                            onClick={() => setIdioma(lang.code)} 
+                            className={`px-2 py-1 rounded text-xs font-bold transition-all ${idioma === lang.code ? 'bg-violet-500 text-white' : 'text-gray-600 hover:bg-gray-200'}`}
+                        >
+                            {lang.label}
+                        </button>
+                    ))}
+                </div>
+            );
             // Simulador Nòmina
             const [salarioBrut, setSalarioBrut] = useState(2000);
             const [pagues, setPagues] = useState(14);
@@ -176,23 +382,23 @@
             const Inicio = () => (
                 <div className="space-y-8">
                     <div className="text-center">
-                        <h2 className="text-3xl font-black text-gray-800 mb-2">💼 Vida Pràctica</h2>
-                        <p className="text-gray-500">Tot el que mai t'han ensenyat sobre la vida adulta</p>
+                        <h2 className="text-3xl font-black text-gray-800 mb-2">💼 {t('title')}</h2>
+                        <p className="text-gray-500">{t('subtitle')}</p>
                     </div>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         {[
-                            { id: 'nomina', emoji: '💳', title: 'Nòmina', desc: 'Calcula el teu salari net' },
-                            { id: 'hipoteca', emoji: '🏠', title: 'Hipoteca', desc: 'Quota mensual i interessos' },
-                            { id: 'estalvi', emoji: '🐷', title: 'Estalvi', desc: 'Interès compost' },
-                            { id: 'prestec', emoji: '💸', title: 'Préstec', desc: 'Calculadora de quotes' },
-                            { id: 'pressupost', emoji: '💰', title: 'Pressupost', desc: 'Gestiona els teus diners' },
-                            { id: 'renda', emoji: '🧾', title: 'Declaració Renda', desc: 'IRPF i deduccions' },
-                            { id: 'impostos', emoji: '🏛️', title: 'On van els impostos', desc: 'Pressupostos de l\'Estat' },
-                            { id: 'factures', emoji: '🔌', title: 'Factures', desc: 'Llum, gas i aigua' },
-                            { id: 'lloguer', emoji: '🏘️', title: 'Lloguer', desc: 'Contractes i drets' },
-                            { id: 'contractes', emoji: '📋', title: 'Contractes', desc: 'Tipus i drets laborals' },
-                            { id: 'cv', emoji: '📄', title: 'CV', desc: 'Com fer un bon currículum' },
-                            { id: 'glossari', emoji: '📖', title: 'Glossari', desc: 'Termes financers' }
+                            { id: 'nomina', emoji: '💳', title: t('nav', 'nomina'), desc: t('cards', 'nomina') },
+                            { id: 'hipoteca', emoji: '🏠', title: t('nav', 'hipoteca'), desc: t('cards', 'hipoteca') },
+                            { id: 'estalvi', emoji: '🐷', title: t('nav', 'estalvi'), desc: t('cards', 'estalvi') },
+                            { id: 'prestec', emoji: '💸', title: t('nav', 'prestec'), desc: t('cards', 'prestec') },
+                            { id: 'pressupost', emoji: '💰', title: t('nav', 'pressupost'), desc: t('cards', 'pressupost') },
+                            { id: 'renda', emoji: '🧾', title: t('nav', 'renda'), desc: t('cards', 'renda') },
+                            { id: 'impostos', emoji: '🏛️', title: t('nav', 'impostos'), desc: t('cards', 'impostos') },
+                            { id: 'factures', emoji: '🔌', title: t('nav', 'factures'), desc: t('cards', 'factures') },
+                            { id: 'lloguer', emoji: '🏘️', title: t('nav', 'lloguer'), desc: t('cards', 'lloguer') },
+                            { id: 'contractes', emoji: '📋', title: t('nav', 'contractes'), desc: t('cards', 'contractes') },
+                            { id: 'cv', emoji: '📄', title: t('nav', 'cv'), desc: t('cards', 'cv') },
+                            { id: 'glossari', emoji: '📖', title: t('nav', 'glossari'), desc: t('cards', 'glossari') }
                         ].map(card => (
                             <button key={card.id} onClick={() => setSection(card.id)} className="group p-5 bg-white rounded-2xl border border-gray-100 hover:border-violet-300 hover:shadow-lg transition-all text-left">
                                 <div className="text-3xl mb-2">{card.emoji}</div>
@@ -1768,40 +1974,44 @@
                                     <a href="./index.html" className="p-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-xl">🏠</a>
                                     <button onClick={() => setSection('inicio')} className="flex items-center gap-2">
                                         <div className="p-2 bg-violet-500 rounded-xl text-xl">💼</div>
-                                        <span className="font-bold hidden sm:block">Vida Pràctica</span>
+                                        <span className="font-bold hidden sm:block">{t('title')}</span>
                                     </button>
                                 </div>
-                                <nav className="hidden xl:flex gap-1">
-                                    <NavBtn sec="inicio" label="Inici" emoji="🏠" />
-                                    <NavBtn sec="nomina" label="Nòmina" emoji="💳" />
-                                    <NavBtn sec="hipoteca" label="Hipoteca" emoji="🏠" />
-                                    <NavBtn sec="estalvi" label="Estalvi" emoji="🐷" />
-                                    <NavBtn sec="pressupost" label="Pressupost" emoji="💰" />
-                                    <NavBtn sec="prestec" label="Préstec" emoji="💸" />
-                                    <NavBtn sec="renda" label="Renda" emoji="🧾" />
-                                    <NavBtn sec="impostos" label="Impostos" emoji="🏛️" />
-                                    <NavBtn sec="factures" label="Factures" emoji="🔌" />
-                                    <NavBtn sec="lloguer" label="Lloguer" emoji="🏘️" />
-                                    <NavBtn sec="contractes" label="Contractes" emoji="📋" />
-                                    <NavBtn sec="cv" label="CV" emoji="📄" />
-                                    <NavBtn sec="glossari" label="Glossari" emoji="📖" />
-                                </nav>
+                                <div className="flex items-center gap-2">
+                                    <LanguageSelector />
+                                    <nav className="hidden xl:flex gap-1">
+                                        <NavBtn sec="inicio" label={t('nav', 'inicio')} emoji="🏠" />
+                                        <NavBtn sec="nomina" label={t('nav', 'nomina')} emoji="💳" />
+                                        <NavBtn sec="hipoteca" label={t('nav', 'hipoteca')} emoji="🏠" />
+                                        <NavBtn sec="estalvi" label={t('nav', 'estalvi')} emoji="🐷" />
+                                        <NavBtn sec="pressupost" label={t('nav', 'pressupost')} emoji="💰" />
+                                        <NavBtn sec="prestec" label={t('nav', 'prestec')} emoji="💸" />
+                                        <NavBtn sec="renda" label={t('nav', 'renda')} emoji="🧾" />
+                                        <NavBtn sec="impostos" label={t('nav', 'impostos')} emoji="🏛️" />
+                                        <NavBtn sec="factures" label={t('nav', 'factures')} emoji="🔌" />
+                                        <NavBtn sec="lloguer" label={t('nav', 'lloguer')} emoji="🏘️" />
+                                        <NavBtn sec="contractes" label={t('nav', 'contractes')} emoji="📋" />
+                                        <NavBtn sec="cv" label={t('nav', 'cv')} emoji="📄" />
+                                        <NavBtn sec="glossari" label={t('nav', 'glossari')} emoji="📖" />
+                                    </nav>
+                                </div>
                                 <button onClick={() => setMenuOpen(!menuOpen)} className="xl:hidden p-2 hover:bg-gray-100 rounded-lg text-xl">{menuOpen ? '✕' : '☰'}</button>
                             </div>
                             {menuOpen && (
                                 <nav className="xl:hidden flex flex-wrap gap-2 mt-3 pb-2">
-                                    <NavBtn sec="inicio" label="Inici" emoji="🏠" />
-                                    <NavBtn sec="nomina" label="Nòmina" emoji="💳" />
-                                    <NavBtn sec="hipoteca" label="Hipoteca" emoji="🏠" />
-                                    <NavBtn sec="estalvi" label="Estalvi" emoji="🐷" />
-                                    <NavBtn sec="pressupost" label="Pressupost" emoji="💰" />
-                                    <NavBtn sec="prestec" label="Préstec" emoji="💸" />
-                                    <NavBtn sec="renda" label="Renda" emoji="🧾" />
-                                    <NavBtn sec="impostos" label="Impostos" emoji="🏛️" />
-                                    <NavBtn sec="factures" label="Factures" emoji="🔌" />
-                                    <NavBtn sec="lloguer" label="Lloguer" emoji="🏘️" />
-                                    <NavBtn sec="contractes" label="Contractes" emoji="📋" />
-                                    <NavBtn sec="cv" label="CV" emoji="📄" />
+                                    <NavBtn sec="inicio" label={t('nav', 'inicio')} emoji="🏠" />
+                                    <NavBtn sec="nomina" label={t('nav', 'nomina')} emoji="💳" />
+                                    <NavBtn sec="hipoteca" label={t('nav', 'hipoteca')} emoji="🏠" />
+                                    <NavBtn sec="estalvi" label={t('nav', 'estalvi')} emoji="🐷" />
+                                    <NavBtn sec="pressupost" label={t('nav', 'pressupost')} emoji="💰" />
+                                    <NavBtn sec="prestec" label={t('nav', 'prestec')} emoji="💸" />
+                                    <NavBtn sec="renda" label={t('nav', 'renda')} emoji="🧾" />
+                                    <NavBtn sec="impostos" label={t('nav', 'impostos')} emoji="🏛️" />
+                                    <NavBtn sec="factures" label={t('nav', 'factures')} emoji="🔌" />
+                                    <NavBtn sec="lloguer" label={t('nav', 'lloguer')} emoji="🏘️" />
+                                    <NavBtn sec="contractes" label={t('nav', 'contractes')} emoji="📋" />
+                                    <NavBtn sec="cv" label={t('nav', 'cv')} emoji="📄" />
+                                    <NavBtn sec="glossari" label={t('nav', 'glossari')} emoji="📖" />
                                     <NavBtn sec="glossari" label="Glossari" emoji="📖" />
                                 </nav>
                             )}

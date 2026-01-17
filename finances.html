@@ -28,6 +28,149 @@
         const { useState, useMemo } = React;
         const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } = Recharts;
         
+        // ============================================================================
+        // TRADUCCIONS VAL/ES/EN
+        // ============================================================================
+        const translations = {
+            // Títol
+            title: { val: 'Finances', es: 'Finanzas', en: 'Finance' },
+            subtitle: { val: 'Guia Completa d\'Inversió', es: 'Guía Completa de Inversión', en: 'Complete Investment Guide' },
+            
+            // Navegació
+            nav: {
+                inicio: { val: 'Inici', es: 'Inicio', en: 'Home' },
+                gestion: { val: 'Gestió', es: 'Gestión', en: 'Management' },
+                activos: { val: 'Actius', es: 'Activos', en: 'Assets' },
+                calc: { val: 'Calculadora', es: 'Calculadora', en: 'Calculator' },
+                cartera: { val: 'Cartera', es: 'Cartera', en: 'Portfolio' },
+                estrategias: { val: 'Estratègies', es: 'Estrategias', en: 'Strategies' },
+                psicologia: { val: 'Psicologia', es: 'Psicología', en: 'Psychology' },
+                brokers: { val: 'Brokers', es: 'Brokers', en: 'Brokers' },
+                quiz: { val: 'Quiz', es: 'Quiz', en: 'Quiz' },
+                test: { val: 'Test', es: 'Test', en: 'Test' },
+            },
+            
+            // Inici
+            inicio: {
+                heroTitle: { val: 'Finances i Inversió', es: 'Finanzas e Inversión', en: 'Finance & Investment' },
+                heroSubtitle: { val: 'Tot el que necessites saber per gestionar els teus diners i invertir amb cap', es: 'Todo lo que necesitas saber para gestionar tu dinero e invertir con cabeza', en: 'Everything you need to know to manage your money and invest wisely' },
+                card1Title: { val: 'Interès Compost', es: 'Interés Compuesto', en: 'Compound Interest' },
+                card1Desc: { val: 'Pressupost i estalvi', es: 'Presupuesto y ahorro', en: 'Budget and savings' },
+                card2Title: { val: 'Tipus d\'Actius', es: 'Tipos de Activos', en: 'Asset Types' },
+                card2Desc: { val: 'Tipus d\'inversió', es: 'Tipos de inversión', en: 'Investment types' },
+                card3Title: { val: 'Test de Perfil', es: 'Test de Perfil', en: 'Profile Test' },
+                card3Desc: { val: 'Posa\'t a prova', es: 'Ponte a prueba', en: 'Test yourself' },
+                card4Title: { val: 'Simulador', es: 'Simulador', en: 'Simulator' },
+                card4Desc: { val: 'Simula la teua cartera', es: 'Simula tu cartera', en: 'Simulate your portfolio' },
+            },
+            
+            // Gestió
+            gestion: {
+                title: { val: 'Gestió del Diner', es: 'Gestión del Dinero', en: 'Money Management' },
+                regla: { val: 'Regla 50/30/20', es: 'Regla 50/30/20', en: '50/30/20 Rule' },
+                necesidades: { val: 'Necessitats', es: 'Necesidades', en: 'Needs' },
+                deseos: { val: 'Desitjos', es: 'Deseos', en: 'Wants' },
+                ahorro: { val: 'Estalvi', es: 'Ahorro', en: 'Savings' },
+                fondoEmergencia: { val: 'Fons d\'Emergència', es: 'Fondo de Emergencia', en: 'Emergency Fund' },
+                meses: { val: 'mesos de despeses', es: 'meses de gastos', en: 'months of expenses' },
+            },
+            
+            // Actius
+            activos: {
+                title: { val: 'Tipus d\'Actius', es: 'Tipos de Activos', en: 'Asset Types' },
+                acciones: { val: 'Accions', es: 'Acciones', en: 'Stocks' },
+                bonos: { val: 'Bons', es: 'Bonos', en: 'Bonds' },
+                etfs: { val: 'ETFs', es: 'ETFs', en: 'ETFs' },
+                inmuebles: { val: 'Immobles', es: 'Inmuebles', en: 'Real Estate' },
+                cripto: { val: 'Criptomonedes', es: 'Criptomonedas', en: 'Cryptocurrencies' },
+                oro: { val: 'Or', es: 'Oro', en: 'Gold' },
+                riesgo: { val: 'Risc', es: 'Riesgo', en: 'Risk' },
+                rentabilidad: { val: 'Rendibilitat', es: 'Rentabilidad', en: 'Return' },
+                liquidez: { val: 'Liquiditat', es: 'Liquidez', en: 'Liquidity' },
+            },
+            
+            // Calculadora
+            calc: {
+                title: { val: 'Calculadora d\'Interès Compost', es: 'Calculadora de Interés Compuesto', en: 'Compound Interest Calculator' },
+                capitalInicial: { val: 'Capital inicial', es: 'Capital inicial', en: 'Initial capital' },
+                aportacionMensual: { val: 'Aportació mensual', es: 'Aportación mensual', en: 'Monthly contribution' },
+                rentabilidadAnual: { val: 'Rendibilitat anual', es: 'Rentabilidad anual', en: 'Annual return' },
+                plazo: { val: 'Termini', es: 'Plazo', en: 'Term' },
+                anos: { val: 'anys', es: 'años', en: 'years' },
+                totalFinal: { val: 'Total Final', es: 'Total Final', en: 'Final Total' },
+                aportado: { val: 'Aportat', es: 'Aportado', en: 'Contributed' },
+                beneficios: { val: 'Beneficis', es: 'Beneficios', en: 'Profits' },
+            },
+            
+            // Cartera
+            cartera: {
+                title: { val: 'Simulador de Cartera', es: 'Simulador de Cartera', en: 'Portfolio Simulator' },
+                rentaVariable: { val: 'Renda Variable', es: 'Renta Variable', en: 'Equities' },
+                rentaFija: { val: 'Renda Fixa', es: 'Renta Fija', en: 'Fixed Income' },
+                oro: { val: 'Or', es: 'Oro', en: 'Gold' },
+                efectivo: { val: 'Efectiu', es: 'Efectivo', en: 'Cash' },
+                rentabilidadEsperada: { val: 'Rendibilitat esperada', es: 'Rentabilidad esperada', en: 'Expected return' },
+                riesgoEstimado: { val: 'Risc estimat', es: 'Riesgo estimado', en: 'Estimated risk' },
+            },
+            
+            // Estratègies
+            estrategias: {
+                title: { val: 'Estratègies d\'Inversió', es: 'Estrategias de Inversión', en: 'Investment Strategies' },
+                dca: { val: 'DCA (Aportacions periòdiques)', es: 'DCA (Aportaciones periódicas)', en: 'DCA (Dollar Cost Averaging)' },
+                indexada: { val: 'Inversió Indexada', es: 'Inversión Indexada', en: 'Index Investing' },
+                dividendos: { val: 'Dividends', es: 'Dividendos', en: 'Dividends' },
+                value: { val: 'Value Investing', es: 'Value Investing', en: 'Value Investing' },
+            },
+            
+            // Psicologia
+            psicologia: {
+                title: { val: 'Psicologia de l\'Inversor', es: 'Psicología del Inversor', en: 'Investor Psychology' },
+                sesgos: { val: 'Biaixos Cognitius', es: 'Sesgos Cognitivos', en: 'Cognitive Biases' },
+                emociones: { val: 'Control Emocional', es: 'Control Emocional', en: 'Emotional Control' },
+            },
+            
+            // Brokers
+            brokers: {
+                title: { val: 'Comparador de Brokers', es: 'Comparador de Brokers', en: 'Broker Comparison' },
+                comisiones: { val: 'Comissions', es: 'Comisiones', en: 'Fees' },
+                productos: { val: 'Productes', es: 'Productos', en: 'Products' },
+                todos: { val: 'Tots', es: 'Todos', en: 'All' },
+                acciones: { val: 'Accions', es: 'Acciones', en: 'Stocks' },
+                etfs: { val: 'ETFs', es: 'ETFs', en: 'ETFs' },
+                cripto: { val: 'Cripto', es: 'Cripto', en: 'Crypto' },
+            },
+            
+            // Quiz
+            quiz: {
+                title: { val: 'Quiz de Finances', es: 'Quiz de Finanzas', en: 'Finance Quiz' },
+                comenzar: { val: 'Començar', es: 'Comenzar', en: 'Start' },
+                pregunta: { val: 'Pregunta', es: 'Pregunta', en: 'Question' },
+                siguiente: { val: 'Següent', es: 'Siguiente', en: 'Next' },
+                resultados: { val: 'Resultats', es: 'Resultados', en: 'Results' },
+                aciertos: { val: 'Encerts', es: 'Aciertos', en: 'Correct' },
+                reiniciar: { val: 'Reiniciar', es: 'Reiniciar', en: 'Restart' },
+            },
+            
+            // Test
+            test: {
+                title: { val: 'Test de Perfil Inversor', es: 'Test de Perfil Inversor', en: 'Investor Profile Test' },
+                conservador: { val: 'Conservador', es: 'Conservador', en: 'Conservative' },
+                moderado: { val: 'Moderat', es: 'Moderado', en: 'Moderate' },
+                agresivo: { val: 'Agressiu', es: 'Agresivo', en: 'Aggressive' },
+                comenzar: { val: 'Començar Test', es: 'Comenzar Test', en: 'Start Test' },
+                verResultados: { val: 'Veure Resultats', es: 'Ver Resultados', en: 'See Results' },
+            },
+            
+            // Comuns
+            common: {
+                alta: { val: 'Alta', es: 'Alta', en: 'High' },
+                media: { val: 'Mitjana', es: 'Media', en: 'Medium' },
+                baja: { val: 'Baixa', es: 'Baja', en: 'Low' },
+                verMas: { val: 'Veure més', es: 'Ver más', en: 'See more' },
+                cerrar: { val: 'Tancar', es: 'Cerrar', en: 'Close' },
+            },
+        };
+
         // Sistema d'icones amb emojis
         const Icon = ({ name, size = 24, className = "" }) => {
             const icons = {
@@ -88,6 +231,30 @@
             const [menuOpen, setMenuOpen] = useState(false);
             const [showGlosario, setShowGlosario] = useState(false);
             const [searchTerm, setSearchTerm] = useState('');
+            const [idioma, setIdioma] = useState('val');
+            
+            // Funció de traducció
+            const t = (category, key) => {
+                try {
+                    if (key) return translations[category][key][idioma] || translations[category][key]['val'];
+                    return translations[category][idioma] || translations[category]['val'];
+                } catch { return key || category; }
+            };
+            
+            // Selector d'idioma
+            const LanguageSelector = () => (
+                <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                    {[{ code: 'val', label: 'VAL' }, { code: 'es', label: 'ES' }, { code: 'en', label: 'EN' }].map(lang => (
+                        <button 
+                            key={lang.code} 
+                            onClick={() => setIdioma(lang.code)} 
+                            className={`px-2 py-1 rounded text-xs font-bold transition-all ${idioma === lang.code ? 'bg-emerald-500 text-white' : 'text-gray-600 hover:bg-gray-200'}`}
+                        >
+                            {lang.label}
+                        </button>
+                    ))}
+                </div>
+            );
             
             const [calcCapital, setCalcCapital] = useState(10000);
             const [calcMensual, setCalcMensual] = useState(200);
@@ -333,32 +500,32 @@
                 <div className="space-y-8">
                     <div className="text-center py-8">
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-pink-100 rounded-full text-pink-500 text-sm font-medium mb-6 border border-pink-200">
-                            <Zap size={16} /> Versión 3.0 — Guía Definitiva
+                            <Zap size={16} /> {t('subtitle')}
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 mb-4">Finanzas e Inversión</h1>
-                        <p className="text-lg text-gray-500 max-w-xl mx-auto mb-8">Todo lo que necesitas saber para gestionar tu dinero e invertir con cabeza</p>
+                        <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 mb-4">{t('inicio', 'heroTitle')}</h1>
+                        <p className="text-lg text-gray-500 max-w-xl mx-auto mb-8">{t('inicio', 'heroSubtitle')}</p>
                         <div className="flex flex-wrap justify-center gap-3">
-                            <button onClick={() => setSection('test')} className="px-6 py-3 bg-gradient-to-r from-pink-500 to-rose-500 rounded-xl font-bold text-white shadow-lg shadow-pink-300/50 hover:scale-105 transition-all flex items-center gap-2"><Target size={18} /> Test de perfil</button>
-                            <button onClick={() => setSection('calc')} className="px-6 py-3 bg-pink-50 rounded-xl font-bold text-gray-800 border border-pink-200 hover:bg-pink-100 transition-all flex items-center gap-2"><Calculator size={18} /> Calculadora</button>
-                            <button onClick={() => setSection('quiz')} className="px-6 py-3 bg-purple-50 rounded-xl font-bold text-purple-600 border border-purple-200 hover:bg-purple-100 transition-all flex items-center gap-2"><GraduationCap size={18} /> Quiz</button>
+                            <button onClick={() => setSection('test')} className="px-6 py-3 bg-gradient-to-r from-pink-500 to-rose-500 rounded-xl font-bold text-white shadow-lg shadow-pink-300/50 hover:scale-105 transition-all flex items-center gap-2"><Target size={18} /> {t('test', 'title')}</button>
+                            <button onClick={() => setSection('calc')} className="px-6 py-3 bg-pink-50 rounded-xl font-bold text-gray-800 border border-pink-200 hover:bg-pink-100 transition-all flex items-center gap-2"><Calculator size={18} /> {t('nav', 'calc')}</button>
+                            <button onClick={() => setSection('quiz')} className="px-6 py-3 bg-purple-50 rounded-xl font-bold text-purple-600 border border-purple-200 hover:bg-purple-100 transition-all flex items-center gap-2"><GraduationCap size={18} /> {t('nav', 'quiz')}</button>
                         </div>
                     </div>
                     <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-200">
                         <div className="flex items-center gap-4">
                             <AlertTriangle className="text-amber-600 flex-shrink-0" size={40} />
-                            <div><p className="text-xl font-bold text-gray-800">Invertir no es para hacerse rico rápido</p><p className="text-gray-600">Es para <span className="text-amber-600 font-bold">proteger tu patrimonio</span> de la inflación y hacerlo crecer a largo plazo.</p></div>
+                            <div><p className="text-xl font-bold text-gray-800">{idioma === 'val' ? "Invertir no és per fer-se ric ràpid" : idioma === 'es' ? "Invertir no es para hacerse rico rápido" : "Investing is not for getting rich quick"}</p><p className="text-gray-600">{idioma === 'val' ? "És per " : idioma === 'es' ? "Es para " : "It's to "}<span className="text-amber-600 font-bold">{idioma === 'val' ? "protegir el teu patrimoni" : idioma === 'es' ? "proteger tu patrimonio" : "protect your wealth"}</span> {idioma === 'val' ? "de la inflació i fer-lo créixer a llarg termini." : idioma === 'es' ? "de la inflación y hacerlo crecer a largo plazo." : "from inflation and grow it long term."}</p></div>
                         </div>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         {[
-                            { icono: Wallet, titulo: 'Gestión', sec: 'gestion', desc: 'Presupuesto y ahorro' },
-                            { icono: BarChart3, titulo: 'Activos', sec: 'activos', desc: 'Tipos de inversión' },
-                            { icono: Calculator, titulo: 'Calculadora', sec: 'calc', desc: 'Interés compuesto' },
-                            { icono: PieChartIcon, titulo: 'Cartera', sec: 'cartera', desc: 'Simula tu cartera' },
-                            { icono: Target, titulo: 'Estrategias', sec: 'estrategias', desc: 'Cómo invertir' },
-                            { icono: Brain, titulo: 'Psicología', sec: 'psicologia', desc: 'Sesgos cognitivos' },
-                            { icono: Building, titulo: 'Brokers', sec: 'brokers', desc: 'Dónde invertir' },
-                            { icono: GraduationCap, titulo: 'Quiz', sec: 'quiz', desc: 'Pon a prueba' }
+                            { icono: Wallet, titulo: t('nav', 'gestion'), sec: 'gestion', desc: t('inicio', 'card1Desc') },
+                            { icono: BarChart3, titulo: t('nav', 'activos'), sec: 'activos', desc: t('inicio', 'card2Desc') },
+                            { icono: Calculator, titulo: t('nav', 'calc'), sec: 'calc', desc: t('inicio', 'card1Title') },
+                            { icono: PieChartIcon, titulo: t('nav', 'cartera'), sec: 'cartera', desc: t('inicio', 'card4Desc') },
+                            { icono: Target, titulo: t('nav', 'estrategias'), sec: 'estrategias', desc: idioma === 'val' ? 'Com invertir' : idioma === 'es' ? 'Cómo invertir' : 'How to invest' },
+                            { icono: Brain, titulo: t('nav', 'psicologia'), sec: 'psicologia', desc: idioma === 'val' ? 'Biaixos cognitius' : idioma === 'es' ? 'Sesgos cognitivos' : 'Cognitive biases' },
+                            { icono: Building, titulo: t('nav', 'brokers'), sec: 'brokers', desc: idioma === 'val' ? 'On invertir' : idioma === 'es' ? 'Dónde invertir' : 'Where to invest' },
+                            { icono: GraduationCap, titulo: t('nav', 'quiz'), sec: 'quiz', desc: t('inicio', 'card3Desc') }
                         ].map((item, i) => (
                             <button key={i} onClick={() => setSection(item.sec)} className="p-4 bg-white rounded-xl border border-gray-200 hover:border-pink-300 hover:bg-white transition-all text-left group">
                                 <item.icono className="text-pink-500 mb-2 group-hover:scale-110 transition-transform" size={28} />
@@ -473,22 +640,22 @@
 
             const Calculadora = () => (
                 <div className="space-y-6">
-                    <div><h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2"><Calculator className="text-pink-500" /> Calculadora de Interés Compuesto</h2><p className="text-gray-500">Modifica los valores para ver cómo crece tu dinero con el tiempo. El interés compuesto es la octava maravilla del mundo.</p></div>
+                    <div><h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2"><Calculator className="text-pink-500" /> {t('calc', 'title')}</h2><p className="text-gray-500">{idioma === 'val' ? "Modifica els valors per veure com creixen els teus diners amb el temps. L'interès compost és la vuitena meravella del món." : idioma === 'es' ? "Modifica los valores para ver cómo crece tu dinero con el tiempo. El interés compuesto es la octava maravilla del mundo." : "Modify the values to see how your money grows over time. Compound interest is the eighth wonder of the world."}</p></div>
                     <div className="grid lg:grid-cols-2 gap-6">
                         <div className="bg-white rounded-xl p-6 border border-gray-200 space-y-6">
-                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">💰 Capital inicial</span><span className="text-gray-800 font-bold text-lg">{calcCapital.toLocaleString()}€</span></label><input type="range" min="0" max="100000" step="1000" value={calcCapital} onChange={(e) => setCalcCapital(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-400 mt-1"><span>0€</span><span>100.000€</span></div></div>
-                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">📅 Aportación mensual</span><span className="text-gray-800 font-bold text-lg">{calcMensual}€/mes</span></label><input type="range" min="0" max="2000" step="50" value={calcMensual} onChange={(e) => setCalcMensual(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-400 mt-1"><span>0€</span><span>2.000€</span></div></div>
-                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">📈 Rentabilidad anual esperada</span><span className="text-gray-800 font-bold text-lg">{calcRent}%</span></label><input type="range" min="1" max="15" step="0.5" value={calcRent} onChange={(e) => setCalcRent(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-400 mt-1"><span>1%</span><span>15%</span></div></div>
-                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">⏱️ Horizonte temporal</span><span className="text-gray-800 font-bold text-lg">{calcAnios} años</span></label><input type="range" min="1" max="40" step="1" value={calcAnios} onChange={(e) => setCalcAnios(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-400 mt-1"><span>1 año</span><span>40 años</span></div></div>
+                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">💰 {t('calc', 'capitalInicial')}</span><span className="text-gray-800 font-bold text-lg">{calcCapital.toLocaleString()}€</span></label><input type="range" min="0" max="100000" step="1000" value={calcCapital} onChange={(e) => setCalcCapital(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-400 mt-1"><span>0€</span><span>100.000€</span></div></div>
+                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">📅 {t('calc', 'aportacionMensual')}</span><span className="text-gray-800 font-bold text-lg">{calcMensual}€/{idioma === 'en' ? 'month' : 'mes'}</span></label><input type="range" min="0" max="2000" step="50" value={calcMensual} onChange={(e) => setCalcMensual(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-400 mt-1"><span>0€</span><span>2.000€</span></div></div>
+                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">📈 {t('calc', 'rentabilidadAnual')}</span><span className="text-gray-800 font-bold text-lg">{calcRent}%</span></label><input type="range" min="1" max="15" step="0.5" value={calcRent} onChange={(e) => setCalcRent(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-400 mt-1"><span>1%</span><span>15%</span></div></div>
+                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">⏱️ {t('calc', 'plazo')}</span><span className="text-gray-800 font-bold text-lg">{calcAnios} {t('calc', 'anos')}</span></label><input type="range" min="1" max="40" step="1" value={calcAnios} onChange={(e) => setCalcAnios(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-400 mt-1"><span>1 {idioma === 'en' ? 'year' : 'año'}</span><span>40 {t('calc', 'anos')}</span></div></div>
                             <div className="grid grid-cols-2 gap-3 pt-4 border-t border-gray-200">
-                                <div className="text-center p-4 bg-gray-50 rounded-xl"><p className="text-xs text-gray-500 mb-1">Total aportado</p><p className="text-xl font-bold text-gray-600">{totalAportado.toLocaleString()}€</p></div>
-                                <div className="text-center p-4 bg-pink-50 rounded-xl border border-pink-200"><p className="text-xs text-gray-500 mb-1">Capital final</p><p className="text-xl font-bold text-pink-500">{capitalFinal.toLocaleString()}€</p></div>
-                                <div className="text-center p-4 bg-purple-50 rounded-xl border border-purple-200"><p className="text-xs text-gray-500 mb-1">Ganancia total</p><p className="text-xl font-bold text-purple-600">+{gananciaTotal.toLocaleString()}€</p></div>
-                                <div className="text-center p-4 bg-amber-50 rounded-xl border border-amber-200"><p className="text-xs text-gray-500 mb-1">Multiplicador</p><p className="text-xl font-bold text-amber-600">x{multiplicador}</p></div>
+                                <div className="text-center p-4 bg-gray-50 rounded-xl"><p className="text-xs text-gray-500 mb-1">{t('calc', 'aportado')}</p><p className="text-xl font-bold text-gray-600">{totalAportado.toLocaleString()}€</p></div>
+                                <div className="text-center p-4 bg-pink-50 rounded-xl border border-pink-200"><p className="text-xs text-gray-500 mb-1">{t('calc', 'totalFinal')}</p><p className="text-xl font-bold text-pink-500">{capitalFinal.toLocaleString()}€</p></div>
+                                <div className="text-center p-4 bg-purple-50 rounded-xl border border-purple-200"><p className="text-xs text-gray-500 mb-1">{t('calc', 'beneficios')}</p><p className="text-xl font-bold text-purple-600">+{gananciaTotal.toLocaleString()}€</p></div>
+                                <div className="text-center p-4 bg-amber-50 rounded-xl border border-amber-200"><p className="text-xs text-gray-500 mb-1">{idioma === 'val' ? 'Multiplicador' : idioma === 'es' ? 'Multiplicador' : 'Multiplier'}</p><p className="text-xl font-bold text-amber-600">x{multiplicador}</p></div>
                             </div>
                         </div>
                         <div className="bg-white rounded-xl p-6 border border-gray-200">
-                            <h3 className="font-bold text-gray-800 mb-4">📊 Evolución del capital</h3>
+                            <h3 className="font-bold text-gray-800 mb-4">📊 {idioma === 'val' ? 'Evolució del capital' : idioma === 'es' ? 'Evolución del capital' : 'Capital evolution'}</h3>
                             <div className="h-72">
                                 <ResponsiveContainer>
                                     <AreaChart data={datosCalculadora}>
@@ -497,12 +664,12 @@
                                         <XAxis dataKey="año" stroke="#9ca3af" tick={{fill: '#6b7280'}} tickFormatter={(v) => `${v}a`} />
                                         <YAxis stroke="#9ca3af" tick={{fill: '#6b7280'}} tickFormatter={(v) => `${(v/1000).toFixed(0)}k`} />
                                         <Tooltip contentStyle={{backgroundColor: '#fff', border: '1px solid #fce7f3', borderRadius: '8px'}} labelStyle={{color: '#374151'}} formatter={(value) => [`${value.toLocaleString()}€`]} />
-                                        <Area type="monotone" dataKey="aportado" stroke="#9ca3af" fill="url(#colorAportado)" name="Aportado" />
+                                        <Area type="monotone" dataKey="aportado" stroke="#9ca3af" fill="url(#colorAportado)" name={t('calc', 'aportado')} />
                                         <Area type="monotone" dataKey="capital" stroke="#10b981" fill="url(#colorCapital)" name="Capital" strokeWidth={2} />
                                     </AreaChart>
                                 </ResponsiveContainer>
                             </div>
-                            <p className="text-sm text-gray-500 mt-4 p-4 bg-pink-50 rounded-xl border border-pink-200">💡 Con <strong className="text-gray-800">{calcCapital.toLocaleString()}€</strong> iniciales y aportaciones de <strong className="text-gray-800">{calcMensual}€/mes</strong> al <strong className="text-gray-800">{calcRent}%</strong> durante <strong className="text-gray-800">{calcAnios} años</strong>, tu dinero se multiplica por <strong className="text-pink-500">{multiplicador}x</strong>.</p>
+                            <p className="text-sm text-gray-500 mt-4 p-4 bg-pink-50 rounded-xl border border-pink-200">💡 {idioma === 'val' ? 'Amb' : idioma === 'es' ? 'Con' : 'With'} <strong className="text-gray-800">{calcCapital.toLocaleString()}€</strong> {idioma === 'val' ? 'inicials i aportacions de' : idioma === 'es' ? 'iniciales y aportaciones de' : 'initial and contributions of'} <strong className="text-gray-800">{calcMensual}€/{idioma === 'en' ? 'month' : 'mes'}</strong> {idioma === 'val' ? 'al' : idioma === 'es' ? 'al' : 'at'} <strong className="text-gray-800">{calcRent}%</strong> {idioma === 'val' ? 'durant' : idioma === 'es' ? 'durante' : 'for'} <strong className="text-gray-800">{calcAnios} {t('calc', 'anos')}</strong>, {idioma === 'val' ? 'els teus diners es multipliquen per' : idioma === 'es' ? 'tu dinero se multiplica por' : 'your money multiplies by'} <strong className="text-pink-500">{multiplicador}x</strong>.</p>
                         </div>
                     </div>
                 </div>
@@ -776,11 +943,14 @@
                     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-gray-200">
                         <div className="max-w-6xl mx-auto px-4 py-3">
                             <div className="flex items-center justify-between">
-                                <button onClick={() => setSection('inicio')} className="flex items-center gap-2"><div className="p-2 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl"><TrendingUp size={20} /></div><span className="font-bold text-lg hidden sm:block">Finanzas 101</span></button>
-                                <nav className="hidden lg:flex gap-1"><NavBtn sec="inicio" icono={Zap} label="Inicio" /><NavBtn sec="gestion" icono={Wallet} label="Gestión" /><NavBtn sec="activos" icono={BarChart3} label="Activos" /><NavBtn sec="calc" icono={Calculator} label="Calculadora" /><NavBtn sec="cartera" icono={PieChartIcon} label="Cartera" /><NavBtn sec="estrategias" icono={Target} label="Estrategias" /><NavBtn sec="psicologia" icono={Brain} label="Psicología" /><NavBtn sec="brokers" icono={Building} label="Brokers" /><NavBtn sec="quiz" icono={GraduationCap} label="Quiz" /><NavBtn sec="test" icono={Award} label="Test" /></nav>
+                                <button onClick={() => setSection('inicio')} className="flex items-center gap-2"><div className="p-2 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl"><TrendingUp size={20} /></div><span className="font-bold text-lg hidden sm:block">{t('title')} 101</span></button>
+                                <div className="flex items-center gap-2">
+                                    <LanguageSelector />
+                                    <nav className="hidden lg:flex gap-1"><NavBtn sec="inicio" icono={Zap} label={t('nav', 'inicio')} /><NavBtn sec="gestion" icono={Wallet} label={t('nav', 'gestion')} /><NavBtn sec="activos" icono={BarChart3} label={t('nav', 'activos')} /><NavBtn sec="calc" icono={Calculator} label={t('nav', 'calc')} /><NavBtn sec="cartera" icono={PieChartIcon} label={t('nav', 'cartera')} /><NavBtn sec="estrategias" icono={Target} label={t('nav', 'estrategias')} /><NavBtn sec="psicologia" icono={Brain} label={t('nav', 'psicologia')} /><NavBtn sec="brokers" icono={Building} label={t('nav', 'brokers')} /><NavBtn sec="quiz" icono={GraduationCap} label={t('nav', 'quiz')} /><NavBtn sec="test" icono={Award} label={t('nav', 'test')} /></nav>
+                                </div>
                                 <div className="flex items-center gap-2"><a href="./index.html" className="p-2 text-gray-600 hover:text-pink-500 hover:bg-pink-50 rounded-lg transition-all" title="Tornar a l'inici"><Home size={20} /></a><button onClick={() => setMenuOpen(!menuOpen)} className="lg:hidden p-2 hover:bg-white rounded-lg">{menuOpen ? <X size={24} /> : <Menu size={24} />}</button></div>
                             </div>
-                            {menuOpen && (<nav className="lg:hidden flex flex-wrap gap-2 mt-3 pb-2"><NavBtn sec="inicio" icono={Zap} label="Inicio" /><NavBtn sec="gestion" icono={Wallet} label="Gestión" /><NavBtn sec="activos" icono={BarChart3} label="Activos" /><NavBtn sec="calc" icono={Calculator} label="Calc" /><NavBtn sec="cartera" icono={PieChartIcon} label="Cartera" /><NavBtn sec="estrategias" icono={Target} label="Estrategias" /><NavBtn sec="psicologia" icono={Brain} label="Psicología" /><NavBtn sec="brokers" icono={Building} label="Brokers" /><NavBtn sec="quiz" icono={GraduationCap} label="Quiz" /><NavBtn sec="test" icono={Award} label="Test" /></nav>)}
+                            {menuOpen && (<nav className="lg:hidden flex flex-wrap gap-2 mt-3 pb-2"><NavBtn sec="inicio" icono={Zap} label={t('nav', 'inicio')} /><NavBtn sec="gestion" icono={Wallet} label={t('nav', 'gestion')} /><NavBtn sec="activos" icono={BarChart3} label={t('nav', 'activos')} /><NavBtn sec="calc" icono={Calculator} label={t('nav', 'calc')} /><NavBtn sec="cartera" icono={PieChartIcon} label={t('nav', 'cartera')} /><NavBtn sec="estrategias" icono={Target} label={t('nav', 'estrategias')} /><NavBtn sec="psicologia" icono={Brain} label={t('nav', 'psicologia')} /><NavBtn sec="brokers" icono={Building} label={t('nav', 'brokers')} /><NavBtn sec="quiz" icono={GraduationCap} label={t('nav', 'quiz')} /><NavBtn sec="test" icono={Award} label={t('nav', 'test')} /></nav>)}
                         </div>
                     </header>
                     <main className="relative z-10 max-w-6xl mx-auto px-4 py-8">
