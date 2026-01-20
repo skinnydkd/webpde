@@ -110,55 +110,20 @@
         <button id="numeric-submit-btn" type="button">COMPROVAR</button>
     </div>
     
-    <!-- DEBUG PANEL - ELIMINAR QUAN FUNCIONI -->
-    <div id="debug-panel" style="display:none;position:fixed;top:0;left:0;right:0;background:rgba(0,0,0,0.9);color:#0f0;font-family:monospace;font-size:11px;padding:8px;z-index:99999;max-height:150px;overflow-y:auto;">
-        <div><strong>🔍 DEBUG MODE</strong> <button onclick="document.getElementById('debug-panel').style.display='none'" style="float:right;background:#f00;color:#fff;border:none;padding:2px 8px;cursor:pointer;">X</button></div>
-        <div id="debug-log"></div>
-    </div>
-    
     <!-- SCRIPT PER L'INPUT FLOTANT - 100% INDEPENDENT DE REACT! -->
     <script>
     (function() {
         var container = document.getElementById('numeric-input-container');
         var input = document.getElementById('numeric-input-field');
         var btn = document.getElementById('numeric-submit-btn');
-        var debugLog = document.getElementById('debug-log');
         var isShowing = false;
-        var logCount = 0;
-        
-        function log(msg) {
-            logCount++;
-            var time = new Date().toLocaleTimeString();
-            var entry = document.createElement('div');
-            entry.innerHTML = '<span style="color:#888">' + logCount + ' [' + time + ']</span> ' + msg;
-            debugLog.insertBefore(entry, debugLog.firstChild);
-            // Mantenir només últims 20 logs
-            while (debugLog.children.length > 20) {
-                debugLog.removeChild(debugLog.lastChild);
-            }
-        }
-        
-        // Monitoritzar TOTS els events de l'input
-        input.addEventListener('focus', function(e) {
-            log('📥 <span style="color:#0ff">INPUT FOCUS</span>');
-        });
-        
-        input.addEventListener('blur', function(e) {
-            log('📤 <span style="color:#f80">INPUT BLUR</span> - relatedTarget: ' + (e.relatedTarget ? e.relatedTarget.id || e.relatedTarget.tagName : 'null'));
-        });
-        
-        input.addEventListener('input', function(e) {
-            log('⌨️ INPUT VALUE: "' + input.value + '"');
-        });
         
         // Submit amb el botó
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            log('🔘 <span style="color:#ff0">BTN CLICK</span>');
             var value = input.value.trim();
             if (value && window.submitNumericAnswer) {
-                log('✅ Enviant resposta: ' + value);
                 window.submitNumericAnswer(value);
             }
         });
@@ -168,49 +133,33 @@
             if (e.key === 'Enter') {
                 e.preventDefault();
                 e.stopPropagation();
-                log('⏎ <span style="color:#ff0">ENTER PRESS</span>');
                 var value = input.value.trim();
                 if (value && window.submitNumericAnswer) {
-                    log('✅ Enviant resposta: ' + value);
                     window.submitNumericAnswer(value);
                 }
             }
         });
         
-        // API MOLT SIMPLE - només show/hide
+        // API per controlar l'input
         window.numericInputAPI = {
             show: function(placeholder, lang) {
-                log('📞 <span style="color:#0f0">API.show()</span> isShowing=' + isShowing);
-                
-                // SEMPRE activar el container i fer focus
                 input.value = '';
                 container.classList.add('active');
                 isShowing = true;
-                
-                log('   → Container activat');
-                
-                // Focus IMMEDIAT sense setTimeout
                 input.focus();
-                log('   → Focus immediat executat');
             },
             hide: function() {
-                log('📞 <span style="color:#f00">API.hide()</span> isShowing=' + isShowing);
                 if (isShowing) {
                     container.classList.remove('active');
                     isShowing = false;
-                    log('   → Container desactivat');
                 }
             },
             reset: function() {
-                log('📞 <span style="color:#f0f">API.reset()</span>');
                 input.value = '';
                 container.classList.remove('active');
                 isShowing = false;
             }
         };
-        
-        log('🚀 Script inicialitzat');
-        window.debugLog = true; // Activar logs de React
     })();
     </script>
     
@@ -365,6 +314,96 @@ function ConcursApp() {
     const [respostaUsuari, setRespostaUsuari] = useState(null);
     const [mostrarResultat, setMostrarResultat] = useState(false);
     const [ranking, setRanking] = useState([]);
+    const [rankingFilter, setRankingFilter] = useState({ temps: 'etern', categoria: 'general' });
+    const [rankingLoading, setRankingLoading] = useState(false);
+    
+    // FUNCIONS DE RANKING GLOBAL AMB STORAGE COMPARTIT
+    const guardarAlRanking = async (entry) => {
+        if (!window.storage) {
+            // Fallback a localStorage si no hi ha storage compartit
+            const saved = localStorage.getItem('pde_concurs_ranking_v4') || '[]';
+            const all = JSON.parse(saved);
+            all.push(entry);
+            localStorage.setItem('pde_concurs_ranking_v4', JSON.stringify(all));
+            return;
+        }
+        
+        try {
+            const key = `ranking:${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+            await window.storage.set(key, JSON.stringify(entry), true); // shared: true
+        } catch (e) {
+            console.error('Error guardant ranking:', e);
+        }
+    };
+    
+    const carregarRanking = async (filtreTemps, filtreCategoria) => {
+        setRankingLoading(true);
+        let entries = [];
+        
+        if (!window.storage) {
+            // Fallback a localStorage
+            const saved = localStorage.getItem('pde_concurs_ranking_v4') || '[]';
+            entries = JSON.parse(saved);
+        } else {
+            try {
+                const result = await window.storage.list('ranking:', true); // shared: true
+                if (result && result.keys) {
+                    for (const key of result.keys) {
+                        try {
+                            const data = await window.storage.get(key, true);
+                            if (data && data.value) {
+                                entries.push(JSON.parse(data.value));
+                            }
+                        } catch (e) {
+                            // Ignorar entrades corruptes
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('Error carregant ranking:', e);
+                // Fallback a localStorage
+                const saved = localStorage.getItem('pde_concurs_ranking_v4') || '[]';
+                entries = JSON.parse(saved);
+            }
+        }
+        
+        // Filtrar per temps (etern o mensual)
+        const ara = new Date();
+        const mesActual = `${ara.getFullYear()}-${String(ara.getMonth() + 1).padStart(2, '0')}`;
+        
+        if (filtreTemps === 'mensual') {
+            entries = entries.filter(e => e.mes === mesActual);
+        }
+        
+        // Filtrar per categoria
+        if (filtreCategoria !== 'general') {
+            entries = entries.filter(e => e.categoria === filtreCategoria);
+        }
+        
+        // Ordenar per punts (descendent)
+        entries.sort((a, b) => b.punts - a.punts);
+        
+        // Limitar a màxim 3 entrades per nom
+        const comptador = {};
+        entries = entries.filter(e => {
+            const nom = e.nom.toLowerCase();
+            comptador[nom] = (comptador[nom] || 0) + 1;
+            return comptador[nom] <= 3;
+        });
+        
+        // Top 10
+        entries = entries.slice(0, 10);
+        
+        setRanking(entries);
+        setRankingLoading(false);
+    };
+    
+    // Carregar ranking quan canvien els filtres o s'obre la pantalla
+    useEffect(() => {
+        if (fase === 'ranking') {
+            carregarRanking(rankingFilter.temps, rankingFilter.categoria);
+        }
+    }, [fase, rankingFilter]);
     const [ordreUsuari, setOrdreUsuari] = useState([]);
     const [timerKey, setTimerKey] = useState(0);
     const [timerActive, setTimerActive] = useState(false);
@@ -430,14 +469,6 @@ function ConcursApp() {
         const shouldShow = fase === 'jugant' && p && p.tipus === 'numeric' && !mostrarResultat;
         const preguntaChanged = preguntaActual !== prevPreguntaRef.current;
         
-        // DEBUG LOG
-        const debugLog = document.getElementById('debug-log');
-        if (debugLog) {
-            const entry = document.createElement('div');
-            entry.innerHTML = '🔄 <span style="color:#ff0">useEffect</span> pregunta=' + preguntaActual + ' shouldShow=' + shouldShow + ' changed=' + preguntaChanged;
-            debugLog.insertBefore(entry, debugLog.firstChild);
-        }
-        
         if (window.numericInputAPI) {
             // Si la pregunta ha canviat
             if (preguntaChanged) {
@@ -445,22 +476,15 @@ function ConcursApp() {
                 
                 // Només fem reset si ABANS teníem l'input obert
                 if (prevShowNumericRef.current) {
-                    if (debugLog) {
-                        const entry = document.createElement('div');
-                        entry.innerHTML = '   → <span style="color:#f0f">Reset perquè abans era numèric</span>';
-                        debugLog.insertBefore(entry, debugLog.firstChild);
-                    }
                     window.numericInputAPI.reset();
                 }
             }
             
             // Ara decidim si mostrar o amagar
             if (shouldShow && !prevShowNumericRef.current) {
-                // Hem de mostrar l'input (no estava mostrant abans)
                 const placeholder = idioma === 'val' ? 'Resultat numèric...' : idioma === 'es' ? 'Resultado numérico...' : 'Numeric result...';
                 window.numericInputAPI.show(placeholder, idioma);
             } else if (!shouldShow && prevShowNumericRef.current) {
-                // Hem d'amagar l'input (estava mostrant abans)
                 window.numericInputAPI.hide();
             }
             
@@ -512,6 +536,83 @@ function ConcursApp() {
             { id: 'eg3', tipus: 'identify', dificultat: 'dificil', pregunta: t("Corba que relaciona impostos i recaptació:", "Curva que relaciona impuestos y recaudación:", "Curve relating taxes and revenue:"), imatge: "laffer", opcions: ["Phillips", "Lorenz", "Laffer", "Engel"], correcta: 2 },
             { id: 'ev1', tipus: 'truefalse', dificultat: 'facil', pregunta: t("La inflació és la pujada generalitzada i sostinguda dels preus", "La inflación es la subida generalizada y sostenida de los precios", "Inflation is the general sustained rise in prices"), correcta: true },
             { id: 'ev2', tipus: 'truefalse', dificultat: 'mitjana', pregunta: t("La corba de Phillips mostra relació DIRECTA inflació-atur", "La curva de Phillips muestra relación DIRECTA inflación-paro", "Phillips curve shows DIRECT inflation-unemployment relation"), correcta: false },
+            
+            // ========== PREGUNTES APLICADES A SITUACIONS QUOTIDIANES ==========
+            // ELASTICITAT APLICADA
+            { id: 'ea1', tipus: 'multiple', dificultat: 'facil',
+              pregunta: t("☕ Una cafeteria ven 100 cafès/dia a 2€. Pugen a 2,50€ i venen 70. La demanda és...", "☕ Una cafetería vende 100 cafés/día a 2€. Suben a 2,50€ y venden 70. La demanda es...", "☕ A café sells 100 coffees/day at €2. Raise to €2.50, sell 70. Demand is..."),
+              opcions: [t("Elàstica (sensible al preu)", "Elástica (sensible al precio)", "Elastic"), t("Inelàstica", "Inelástica", "Inelastic"), t("Unitària", "Unitaria", "Unitary"), t("No es pot saber", "No se puede saber", "Can't tell")], correcta: 0, pista: "%ΔQ=-30%, %ΔP=+25%, |Ed|>1" },
+            
+            { id: 'ea2', tipus: 'multiple', dificultat: 'mitjana',
+              pregunta: t("💊 Per què les farmacèutiques poden pujar preus de medicines essencials sense perdre vendes?", "💊 ¿Por qué las farmacéuticas pueden subir precios de medicinas esenciales sin perder ventas?", "💊 Why can pharma raise essential medicine prices without losing sales?"),
+              opcions: [t("Demanda inelàstica", "Demanda inelástica", "Inelastic demand"), t("Demanda elàstica", "Demanda elástica", "Elastic demand"), t("Monopoli", "Monopolio", "Monopoly"), t("Publicitat", "Publicidad", "Advertising")], correcta: 0 },
+            
+            // COST D'OPORTUNITAT
+            { id: 'ea3', tipus: 'multiple', dificultat: 'facil',
+              pregunta: t("🎓 La Marta dubta entre estudiar o treballar (1.200€/mes). Si estudia, quin és el cost d'oportunitat?", "🎓 Marta duda entre estudiar o trabajar (1.200€/mes). Si estudia, ¿cuál es el coste de oportunidad?", "🎓 Marta debates studying or working (€1,200/mo). Opportunity cost of studying?"),
+              opcions: [t("Els 1.200€/mes no guanyats", "Los 1.200€/mes no ganados", "€1,200/mo foregone"), t("La matrícula", "La matrícula", "Tuition"), t("El temps", "El tiempo", "Time"), t("No n'hi ha", "No hay", "None")], correcta: 0 },
+            
+            // OFERTA I DEMANDA
+            { id: 'ea4', tipus: 'multiple', dificultat: 'facil',
+              pregunta: t("🍊 Una gelada destrueix el 40% de la collita de taronges. Què passarà amb el preu?", "🍊 Una helada destruye el 40% de la cosecha de naranjas. ¿Qué pasará con el precio?", "🍊 Frost destroys 40% of orange harvest. What happens to price?"),
+              opcions: [t("Pujarà (menys oferta)", "Subirá (menos oferta)", "Rises (less supply)"), t("Baixarà", "Bajará", "Falls"), t("Es manté", "Se mantiene", "Stays same"), t("Depèn", "Depende", "Depends")], correcta: 0 },
+            
+            { id: 'ea5', tipus: 'truefalse', dificultat: 'mitjana', 
+              pregunta: t("📱 Si Samsung treu un mòbil millor, la demanda d'iPhone baixarà perquè són substitutius", "📱 Si Samsung saca un móvil mejor, la demanda de iPhone bajará porque son sustitutivos", "📱 If Samsung releases a better phone, iPhone demand falls (substitutes)"), 
+              correcta: true },
+            
+            // EXTERNALITATS
+            { id: 'ea6', tipus: 'multiple', dificultat: 'mitjana',
+              pregunta: t("🏭 Una fàbrica contamina un riu i els pescadors perden diners. Això és...", "🏭 Una fábrica contamina un río y los pescadores pierden dinero. Esto es...", "🏭 A factory pollutes a river, fishermen lose money. This is..."),
+              opcions: [t("Externalitat negativa", "Externalidad negativa", "Negative externality"), t("Externalitat positiva", "Externalidad positiva", "Positive externality"), t("Bé públic", "Bien público", "Public good"), t("Monopoli", "Monopolio", "Monopoly")], correcta: 0 },
+            
+            { id: 'ea7', tipus: 'multiple', dificultat: 'facil',
+              pregunta: t("🐝 El teu veí té abelles i el teu jardí floreix més. Això és una externalitat...", "🐝 Tu vecino tiene abejas y tu jardín florece más. Esto es una externalidad...", "🐝 Neighbor has bees, your garden blooms more. Externality is..."),
+              opcions: [t("Positiva", "Positiva", "Positive"), t("Negativa", "Negativa", "Negative"), t("Neutra", "Neutra", "Neutral"), t("No és externalitat", "No es externalidad", "Not externality")], correcta: 0 },
+            
+            // MONOPOLI NATURAL
+            { id: 'ea8', tipus: 'multiple', dificultat: 'mitjana',
+              pregunta: t("🚰 Per què l'aigua la proporciona una sola empresa a cada ciutat?", "🚰 ¿Por qué el agua la proporciona una sola empresa en cada ciudad?", "🚰 Why is water provided by one company per city?"),
+              opcions: [t("Monopoli natural (alts CF)", "Monopolio natural (altos CF)", "Natural monopoly (high FC)"), t("Acord empreses", "Acuerdo empresas", "Company agreement"), t("Llei govern", "Ley gobierno", "Gov law"), t("Poca demanda", "Poca demanda", "Low demand")], correcta: 0 },
+            
+            // INFLACIÓ
+            { id: 'ea9', tipus: 'multiple', dificultat: 'facil',
+              pregunta: t("💵 En 1990 un cafè costava 0,30€, ara costa 1,50€. Què ha passat?", "💵 En 1990 un café costaba 0,30€, ahora cuesta 1,50€. ¿Qué ha pasado?", "💵 In 1990 coffee cost €0.30, now €1.50. What happened?"),
+              opcions: [t("Inflació", "Inflación", "Inflation"), t("El cafè és millor", "El café es mejor", "Coffee is better"), t("Hi ha menys cafè", "Hay menos café", "Less coffee"), t("Error de càlcul", "Error de cálculo", "Calculation error")], correcta: 0 },
+            
+            // PIB
+            { id: 'ea10', tipus: 'truefalse', dificultat: 'mitjana', 
+              pregunta: t("🏠 Si pintem la casa nosaltres, compta al PIB igual que si contractem un pintor", "🏠 Si pintamos la casa nosotros, cuenta al PIB igual que si contratamos un pintor", "🏠 DIY house painting counts for GDP same as hiring a painter"), 
+              correcta: false },
+            
+            { id: 'ea11', tipus: 'multiple', dificultat: 'mitjana',
+              pregunta: t("🚗 Compres un cotxe de segona mà per 5.000€. Afecta el PIB d'enguany?", "🚗 Compras un coche de segunda mano por 5.000€. ¿Afecta al PIB de este año?", "🚗 Buy used car for €5,000. Affects this year's GDP?"),
+              opcions: [t("No, ja es va comptar", "No, ya se contó", "No, already counted"), t("Sí, 5.000€ més", "Sí, 5.000€ más", "Yes, €5,000 more"), t("Sí, descomptant", "Sí, descontando", "Yes, minus deprec."), t("Depèn del venedor", "Depende del vendedor", "Depends on seller")], correcta: 0 },
+            
+            // POLÍTICA MONETÀRIA
+            { id: 'ea12', tipus: 'multiple', dificultat: 'mitjana',
+              pregunta: t("🏛️ El BCE puja els tipus d'interès. Què passarà probablement?", "🏛️ El BCE sube los tipos de interés. ¿Qué pasará probablemente?", "🏛️ ECB raises interest rates. What probably happens?"),
+              opcions: [t("Hipoteques més cares", "Hipotecas más caras", "Pricier mortgages"), t("Més consum", "Más consumo", "More consumption"), t("Més inversió", "Más inversión", "More investment"), t("Més inflació", "Más inflación", "More inflation")], correcta: 0 },
+            
+            // COMERÇ INTERNACIONAL
+            { id: 'ea13', tipus: 'multiple', dificultat: 'dificil',
+              pregunta: t("🌍 Espanya fa vi bo, Alemanya fa cotxes bons. Segons l'avantatge comparatiu...", "🌍 España hace vino bueno, Alemania hace coches buenos. Según la ventaja comparativa...", "🌍 Spain makes good wine, Germany makes good cars. Comparative advantage says..."),
+              opcions: [t("Especialitzar-se i comerciar", "Especializarse y comerciar", "Specialize and trade"), t("Cadascú fa tot", "Cada uno hace todo", "Each makes all"), t("No comerciar", "No comerciar", "Don't trade"), t("Posar aranzels", "Poner aranceles", "Set tariffs")], correcta: 0 },
+            
+            // BÉNS PÚBLICS
+            { id: 'ea14', tipus: 'multiple', dificultat: 'facil',
+              pregunta: t("🚒 Els bombers apaguen l'incendi del veí i tu també et beneficies. Els bombers són...", "🚒 Los bomberos apagan el incendio del vecino y tú también te beneficias. Los bomberos son...", "🚒 Firefighters put out neighbor's fire, you benefit too. Firefighters are..."),
+              opcions: [t("Bé públic", "Bien público", "Public good"), t("Bé privat", "Bien privado", "Private good"), t("Externalitat", "Externalidad", "Externality"), t("Monopoli", "Monopolio", "Monopoly")], correcta: 0 },
+            
+            // TEORIA DE JOCS
+            { id: 'ea15', tipus: 'multiple', dificultat: 'dificil',
+              pregunta: t("🛒 Mercadona i Carrefour es fan guerra de preus. Si tots dos baixen, tots perden marge. Quin és l'equilibri de Nash?", "🛒 Mercadona y Carrefour guerra de precios. Si ambos bajan, pierden margen. ¿Equilibrio de Nash?", "🛒 Mercadona & Carrefour price war. If both lower, both lose margin. Nash equilibrium?"),
+              opcions: [t("Tots dos baixen", "Ambos bajan", "Both lower"), t("Tots dos mantenen", "Ambos mantienen", "Both maintain"), t("Un baixa, altre no", "Uno baja, otro no", "One lowers, other not"), t("Depèn", "Depende", "Depends")], correcta: 0, pista: t("Com el dilema del presoner", "Como el dilema del prisionero", "Like prisoner's dilemma") },
+            
+            // PUNT MORT APLICAT
+            { id: 'ea16', tipus: 'numeric', dificultat: 'mitjana', 
+              pregunta: t("🍕 Pizzeria: CF=2.000€/mes, cada pizza costa 3€ fer-la, es ven a 10€. Quantes pizzes ha de vendre per cobrir costos?", "🍕 Pizzería: CF=2.000€/mes, cada pizza cuesta 3€ hacerla, se vende a 10€. ¿Cuántas pizzas debe vender para cubrir costes?", "🍕 Pizzeria: FC=€2,000/mo, each pizza costs €3 to make, sells for €10. Pizzas to break even?"), 
+              correcta: 286, tolerancia: 5, pista: "PM = CF / (P - CVu) = 2000 / 7" },
         ],
         finances: [
             // TIPUS INTERACTIU: click_chart - Clica on comprar/vendre
@@ -649,6 +750,57 @@ function ConcursApp() {
               pista: t("Busca on la tendència canvia de baixista a alcista", "Busca donde la tendencia cambia de bajista a alcista", "Find where the trend changes from bearish to bullish") },
             { id: 'fo1', tipus: 'order', dificultat: 'facil', pregunta: t("Risc de menor a major:", "Riesgo de menor a mayor:", "Risk from low to high:"), elements: [t("Dipòsit", "Depósito", "Deposit"), t("Bons", "Bonos", "Bonds"), t("Fons indexat", "Fondo indexado", "Index fund"), t("Cripto", "Cripto", "Crypto")], ordreCorrecte: [0, 1, 2, 3] },
             { id: 'fo2', tipus: 'order', dificultat: 'mitjana', pregunta: t("Horitzó inversor típic (curt→llarg):", "Horizonte inversor típico (corto→largo):", "Typical investment horizon (short→long):"), elements: [t("Dipòsit", "Depósito", "Deposit"), t("Bons curt termini", "Bonos corto plazo", "Short bonds"), t("Fons mixt", "Fondo mixto", "Mixed fund"), t("Accions growth", "Acciones growth", "Growth stocks")], ordreCorrecte: [0, 1, 2, 3] },
+            
+            // ========== PREGUNTES APLICADES FINANCES - SITUACIONS QUOTIDIANES ==========
+            // PRESSUPOST I ESTALVI
+            { id: 'fap1', tipus: 'numeric', dificultat: 'facil', 
+              pregunta: t("💰 La Laura cobra 1.500€/mes. Segons la regla 50/30/20, quant hauria d'estalviar?", "💰 Laura cobra 1.500€/mes. Según la regla 50/30/20, ¿cuánto debería ahorrar?", "💰 Laura earns €1,500/mo. Per 50/30/20 rule, how much to save?"), 
+              correcta: 300, tolerancia: 0, pista: "20% de 1.500€" },
+            
+            { id: 'fap2', tipus: 'numeric', dificultat: 'facil', 
+              pregunta: t("🆘 En Marc gasta 1.200€/mes. Quant hauria de tenir al fons d'emergència mínim (3 mesos)?", "🆘 Marc gasta 1.200€/mes. ¿Cuánto debería tener en fondo de emergencia mínimo (3 meses)?", "🆘 Marc spends €1,200/mo. Minimum emergency fund (3 months)?"), 
+              correcta: 3600, tolerancia: 0, pista: "3 × despeses mensuals" },
+            
+            // DEUTES
+            { id: 'fap3', tipus: 'multiple', dificultat: 'mitjana',
+              pregunta: t("💳 Tens deute de targeta al 20% TAE i préstec cotxe al 6% TAE. Quin pagues PRIMER?", "💳 Tienes deuda de tarjeta al 20% TAE y préstamo coche al 6% TAE. ¿Cuál pagas PRIMERO?", "💳 Credit card debt at 20% APR and car loan at 6%. Which pay FIRST?"),
+              opcions: [t("Targeta (20%)", "Tarjeta (20%)", "Credit card (20%)"), t("Cotxe (6%)", "Coche (6%)", "Car loan (6%)"), t("A parts iguals", "A partes iguales", "Split equally"), t("Invertir", "Invertir", "Invest")], correcta: 0 },
+            
+            // INTERÈS COMPOST
+            { id: 'fap4', tipus: 'numeric', dificultat: 'mitjana', 
+              pregunta: t("📈 Regla del 72: Inverteixes al 7% anual. En quants anys duplicaràs el capital?", "📈 Regla del 72: Inviertes al 7% anual. ¿En cuántos años duplicarás?", "📈 Rule of 72: Invest at 7% annual. Years to double?"), 
+              correcta: 10, tolerancia: 1, pista: "72 / tipus interès" },
+            
+            // DIVERSIFICACIÓ
+            { id: 'fap5', tipus: 'truefalse', dificultat: 'facil', 
+              pregunta: t("🎰 Posar tots els estalvis en accions d'una sola empresa és una bona estratègia de diversificació", "🎰 Poner todos los ahorros en acciones de una sola empresa es buena diversificación", "🎰 Putting all savings in one company's stock is good diversification"), 
+              correcta: false },
+            
+            // FRAUS
+            { id: 'fap6', tipus: 'truefalse', dificultat: 'facil', 
+              pregunta: t("🚨 Si algú et promet 20% anual 'garantit i sense risc', probablement és un frau", "🚨 Si alguien te promete 20% anual 'garantizado y sin riesgo', probablemente es fraude", "🚨 If someone promises 20% annual 'guaranteed risk-free', it's probably fraud"), 
+              correcta: true },
+            
+            // HIPOTEQUES
+            { id: 'fap7', tipus: 'multiple', dificultat: 'mitjana',
+              pregunta: t("🏠 Vols comprar pis de 200.000€. El banc demana 20% entrada. Quant necessites MÍNIM (amb impostos ~10%)?", "🏠 Quieres comprar piso de 200.000€. El banco pide 20% entrada. ¿Cuánto necesitas MÍNIMO (con impuestos ~10%)?", "🏠 Want to buy €200k flat. Bank asks 20% down. Minimum needed (with ~10% taxes)?"),
+              opcions: [t("~50-60.000€", "~50-60.000€", "~€50-60k"), t("40.000€ exacte", "40.000€ exacto", "Exactly €40k"), t("20.000€", "20.000€", "€20k"), t("200.000€", "200.000€", "€200k")], correcta: 0, pista: t("Entrada + impostos + despeses", "Entrada + impuestos + gastos", "Down payment + taxes + fees") },
+            
+            // INFLACIÓ
+            { id: 'fap8', tipus: 'numeric', dificultat: 'facil', 
+              pregunta: t("💸 Tens 10.000€ al banc al 1%. Inflació del 3%. Rendiment REAL?", "💸 Tienes 10.000€ en banco al 1%. Inflación del 3%. ¿Rendimiento REAL?", "💸 €10,000 in bank at 1%. Inflation 3%. REAL return?"), 
+              correcta: -2, tolerancia: 0, pista: "Real ≈ Nominal - Inflació" },
+            
+            // ETFs
+            { id: 'fap9', tipus: 'multiple', dificultat: 'mitjana',
+              pregunta: t("📊 Avantatge principal dels ETFs indexats vs fons gestió activa?", "📊 ¿Ventaja principal de ETFs indexados vs fondos gestión activa?", "📊 Main advantage of index ETFs vs active funds?"),
+              opcions: [t("Comissions més baixes", "Comisiones más bajas", "Lower fees"), t("Sempre guanyen més", "Siempre ganan más", "Always earn more"), t("Menys risc", "Menos riesgo", "Less risk"), t("Garantia capital", "Garantía capital", "Capital guarantee")], correcta: 0 },
+            
+            // PLANIFICACIÓ
+            { id: 'fap10', tipus: 'order', dificultat: 'facil', 
+              pregunta: t("📋 Ordena els passos per sanear finances:", "📋 Ordena los pasos para sanear finanzas:", "📋 Order steps to fix finances:"), 
+              elements: [t("Fer pressupost", "Hacer presupuesto", "Make budget"), t("Pagar deutes cars", "Pagar deudas caras", "Pay expensive debts"), t("Fons emergència", "Fondo emergencia", "Emergency fund"), t("Invertir", "Invertir", "Invest")], 
+              ordreCorrecte: [0, 1, 2, 3] },
         ],
         empresa: [
             { id: 'emc1', tipus: 'numeric', dificultat: 'facil', pregunta: t("Punt Mort: CF=15.000€, P=60€, CVu=30€. Unitats?", "Punto Muerto: CF=15.000€, P=60€, CVu=30€. ¿Unidades?", "Break-even: FC=€15,000, P=€60, VCu=€30. Units?"), correcta: 500, tolerancia: 0, pista: "CF/(P-CVu)" },
@@ -696,13 +848,71 @@ function ConcursApp() {
             { id: 'emo6', tipus: 'order', dificultat: 'dificil', pregunta: t("Grau control directiu (menys→més):", "Grado control directivo (menos→más):", "Management control (less→more):"), elements: [t("Laissez-faire", "Laissez-faire", "Laissez-faire"), t("Democràtic", "Democrático", "Democratic"), t("Paternalista", "Paternalista", "Paternalistic"), t("Autoritari", "Autoritario", "Authoritarian")], ordreCorrecte: [0, 1, 2, 3] },
             { id: 'emf5', tipus: 'formula', dificultat: 'facil', pregunta: t("Benefici = Ingressos - ___", "Beneficio = Ingresos - ___", "Profit = Revenue - ___"), opcions: [t("Costos", "Costes", "Costs"), t("Actiu", "Activo", "Assets"), t("Passiu", "Pasivo", "Liabilities"), t("Capital", "Capital", "Capital")], correcta: 0 },
             { id: 'emf6', tipus: 'formula', dificultat: 'mitjana', pregunta: t("ROI = (Benefici / ___) × 100", "ROI = (Beneficio / ___) × 100", "ROI = (Profit / ___) × 100"), opcions: [t("Inversió", "Inversión", "Investment"), t("Vendes", "Ventas", "Sales"), t("Actiu", "Activo", "Assets"), t("Passiu", "Pasivo", "Liabilities")], correcta: 0 },
+            
+            // ========== PREGUNTES APLICADES EMPRESA - SITUACIONS QUOTIDIANES ==========
+            // PUNT MORT REAL
+            { id: 'eap1', tipus: 'multiple', dificultat: 'facil',
+              pregunta: t("🍰 Pastisseria: 1.500€/mes lloguer, cada pastís costa 2€ i es ven a 5€. Ven 400 pastissos/mes. Té beneficis o pèrdues?", "🍰 Pastelería: 1.500€/mes alquiler, cada pastel cuesta 2€ y se vende a 5€. Vende 400/mes. ¿Beneficios o pérdidas?", "🍰 Bakery: €1,500/mo rent, cake costs €2 sells for €5. Sells 400/mo. Profit or loss?"),
+              opcions: [t("Pèrdues 300€", "Pérdidas 300€", "€300 loss"), t("Benefici 300€", "Beneficio 300€", "€300 profit"), t("Benefici 700€", "Beneficio 700€", "€700 profit"), t("Ni guanya ni perd", "Ni gana ni pierde", "Break-even")], correcta: 0, pista: "(5-2)×400 - 1500 = -300€" },
+            
+            // FORMES JURÍDIQUES
+            { id: 'eap2', tipus: 'multiple', dificultat: 'facil',
+              pregunta: t("👥 Volen obrir negoci amb responsabilitat limitada però no tenen 60.000€. Quina forma jurídica?", "👥 Quieren abrir negocio con responsabilidad limitada pero no tienen 60.000€. ¿Forma jurídica?", "👥 Want limited liability business but don't have €60k. Legal form?"),
+              opcions: [t("SL (Societat Limitada)", "SL (Sociedad Limitada)", "LLC"), t("SA (Anònima)", "SA (Anónima)", "Corp (SA)"), t("Comunitat Béns", "Comunidad Bienes", "Partnership"), t("Autònom", "Autónomo", "Self-employed")], correcta: 0 },
+            
+            // MARKETING
+            { id: 'eap3', tipus: 'multiple', dificultat: 'mitjana',
+              pregunta: t("📱 Apple ven l'iPhone més car però la gent el compra igual. Quina estratègia de preu és?", "📱 Apple vende el iPhone más caro pero la gente lo compra igual. ¿Estrategia de precio?", "📱 Apple sells iPhone pricier but people buy anyway. Pricing strategy?"),
+              opcions: [t("Preu Premium", "Precio Premium", "Premium pricing"), t("Penetració", "Penetración", "Penetration"), t("Competitiu", "Competitivo", "Competitive"), t("Psicològic", "Psicológico", "Psychological")], correcta: 0 },
+            
+            // DAFO
+            { id: 'eap4', tipus: 'multiple', dificultat: 'facil',
+              pregunta: t("📊 Una empresa té 'bons treballadors'. Al DAFO això és una...", "📊 Una empresa tiene 'buenos trabajadores'. En el DAFO esto es una...", "📊 Company has 'good workers'. In SWOT this is a..."),
+              opcions: [t("Fortalesa (intern +)", "Fortaleza (interno +)", "Strength (internal +)"), t("Debilitat", "Debilidad", "Weakness"), t("Oportunitat", "Oportunidad", "Opportunity"), t("Amenaça", "Amenaza", "Threat")], correcta: 0 },
+            
+            // LIDERATGE
+            { id: 'eap5', tipus: 'multiple', dificultat: 'mitjana',
+              pregunta: t("👔 Un cap consulta l'equip abans de decidir i anima a participar. Estil de lideratge?", "👔 Un jefe consulta al equipo antes de decidir y anima a participar. ¿Estilo de liderazgo?", "👔 Boss consults team before deciding, encourages participation. Leadership style?"),
+              opcions: [t("Democràtic", "Democrático", "Democratic"), t("Autoritari", "Autoritario", "Authoritarian"), t("Laissez-faire", "Laissez-faire", "Laissez-faire"), t("Transaccional", "Transaccional", "Transactional")], correcta: 0 },
+            
+            // NÒMINA
+            { id: 'eap6', tipus: 'numeric', dificultat: 'facil', 
+              pregunta: t("💰 Sou brut 2.000€. Retenen 127€ SS i 250€ IRPF. Sou net?", "💰 Sueldo bruto 2.000€. Retienen 127€ SS y 250€ IRPF. ¿Sueldo neto?", "💰 Gross €2,000. Withhold €127 SS, €250 tax. Net?"), 
+              correcta: 1623, tolerancia: 0, pista: "Brut - SS - IRPF" },
+            
+            // PRODUCTIVITAT
+            { id: 'eap7', tipus: 'multiple', dificultat: 'mitjana',
+              pregunta: t("🏭 Fàbrica: 1.000u amb 10 treballadors. Contracten 5 més, ara fan 1.200u. La productivitat ha...", "🏭 Fábrica: 1.000u con 10 trabajadores. Contratan 5 más, ahora hacen 1.200u. La productividad ha...", "🏭 Factory: 1,000u with 10 workers. Hire 5 more, now make 1,200u. Productivity has..."),
+              opcions: [t("Baixat (de 100 a 80)", "Bajado (de 100 a 80)", "Dropped (100 to 80)"), t("Pujat", "Subido", "Risen"), t("Igual", "Igual", "Same"), t("No es pot saber", "No se puede saber", "Can't tell")], correcta: 0, pista: "Productivitat = Producció/Treballadors" },
+            
+            // PORTER
+            { id: 'eap8', tipus: 'multiple', dificultat: 'mitjana',
+              pregunta: t("🏪 Al barri hi havia 1 fruiteria, ara n'hi ha 3. Segons Porter, quina força ha augmentat?", "🏪 En el barrio había 1 frutería, ahora hay 3. Según Porter, ¿qué fuerza ha aumentado?", "🏪 Neighborhood had 1 fruit shop, now 3. Per Porter, which force increased?"),
+              opcions: [t("Rivalitat competidors", "Rivalidad competidores", "Competitor rivalry"), t("Nous entrants", "Nuevos entrantes", "New entrants"), t("Poder clients", "Poder clientes", "Customer power"), t("Poder proveïdors", "Poder proveedores", "Supplier power")], correcta: 0 },
+            
+            // HERZBERG
+            { id: 'eap9', tipus: 'multiple', dificultat: 'dificil',
+              pregunta: t("🎁 Segons Herzberg, quin factor MOTIVA realment (no només evita insatisfacció)?", "🎁 Según Herzberg, ¿qué factor MOTIVA realmente (no solo evita insatisfacción)?", "🎁 Per Herzberg, which factor truly MOTIVATES (not just prevents dissatisfaction)?"),
+              opcions: [t("Reconeixement i èxits", "Reconocimiento y logros", "Recognition & achievements"), t("Bon sou", "Buen sueldo", "Good salary"), t("Condicions laborals", "Condiciones laborales", "Working conditions"), t("Seguretat laboral", "Seguridad laboral", "Job security")], correcta: 0 },
+            
+            // JIT
+            { id: 'eap10', tipus: 'truefalse', dificultat: 'facil', 
+              pregunta: t("📦 El sistema Just-in-Time busca tenir el MÀXIM d'estocs per no quedar-se sense productes", "📦 El sistema Just-in-Time busca tener el MÁXIMO de stocks para no quedarse sin productos", "📦 Just-in-Time aims to have MAXIMUM stock to never run out"), 
+              correcta: false },
+            
+            // BCG
+            { id: 'eap11', tipus: 'multiple', dificultat: 'mitjana',
+              pregunta: t("⭐ Producte amb ALTA quota però mercat que JA NO CREIX. A la matriu BCG és...", "⭐ Producto con ALTA cuota pero mercado que YA NO CRECE. En matriz BCG es...", "⭐ Product with HIGH share but market NOT GROWING. In BCG matrix it's a..."),
+              opcions: [t("Vaca (genera efectiu)", "Vaca (genera efectivo)", "Cash Cow"), t("Estrella", "Estrella", "Star"), t("Interrogant", "Interrogante", "Question mark"), t("Gos", "Perro", "Dog")], correcta: 0, pista: t("Alta quota + baix creixement", "Alta cuota + bajo crecimiento", "High share + low growth") },
+            
+            // CANVAS
+            { id: 'eap12', tipus: 'multiple', dificultat: 'dificil',
+              pregunta: t("🎯 Al Business Model Canvas, 'Per què ens trien els clients?' correspon a...", "🎯 En el Canvas, '¿Por qué nos eligen los clientes?' corresponde a...", "🎯 In Canvas, 'Why do customers choose us?' corresponds to..."),
+              opcions: [t("Proposta de Valor", "Propuesta de Valor", "Value Proposition"), t("Segments Clients", "Segmentos Clientes", "Customer Segments"), t("Relacions Clients", "Relaciones Clientes", "Customer Relations"), t("Canals", "Canales", "Channels")], correcta: 0 },
         ]
     }), [idioma]);
 
-    useEffect(() => {
-        const saved = localStorage.getItem('pde_concurs_ranking_v3');
-        if (saved) setRanking(JSON.parse(saved));
-    }, []);
+    // El ranking es carrega amb carregarRanking() quan s'obre la pantalla
 
     // Inicialitzar estats segons el tipus de pregunta
     useEffect(() => {
@@ -837,10 +1047,17 @@ function ConcursApp() {
     const seguentPregunta = () => {
         setOpcionsEliminades([]);
         if (preguntaActual + 1 >= preguntesPartida.length) {
-            const entry = { nom: nomJugador, punts: puntuacio, data: new Date().toLocaleDateString('ca-ES'), correctes: respostes.filter(r => r.correcta).length, categoria, maxRatxa };
-            const nouRanking = [...ranking, entry].sort((a, b) => b.punts - a.punts).slice(0, 10);
-            setRanking(nouRanking);
-            localStorage.setItem('pde_concurs_ranking_v3', JSON.stringify(nouRanking));
+            const ara = new Date();
+            const entry = { 
+                nom: nomJugador, 
+                punts: puntuacio, 
+                data: ara.toLocaleDateString('ca-ES'), 
+                mes: `${ara.getFullYear()}-${String(ara.getMonth() + 1).padStart(2, '0')}`,
+                correctes: respostes.filter(r => r.correcta).length, 
+                categoria, 
+                maxRatxa 
+            };
+            guardarAlRanking(entry);
             setShowConfetti(true);
             setTimeout(() => setShowConfetti(false), 4000);
             playSound('bonus');
@@ -994,6 +1211,110 @@ function ConcursApp() {
         return grafics[tipus] || null;
     };
 
+    // COMPONENT RANKING PREVIEW PER A LA PANTALLA D'INICI
+    const RankingPreview = () => {
+        const [previewRanking, setPreviewRanking] = useState([]);
+        const [loading, setLoading] = useState(true);
+        
+        useEffect(() => {
+            const carregarPreview = async () => {
+                setLoading(true);
+                let entries = [];
+                
+                if (!window.storage) {
+                    const saved = localStorage.getItem('pde_concurs_ranking_v4') || '[]';
+                    entries = JSON.parse(saved);
+                } else {
+                    try {
+                        const result = await window.storage.list('ranking:', true);
+                        if (result && result.keys) {
+                            for (const key of result.keys.slice(0, 50)) { // Limitar per rendiment
+                                try {
+                                    const data = await window.storage.get(key, true);
+                                    if (data && data.value) {
+                                        entries.push(JSON.parse(data.value));
+                                    }
+                                } catch (e) {}
+                            }
+                        }
+                    } catch (e) {
+                        const saved = localStorage.getItem('pde_concurs_ranking_v4') || '[]';
+                        entries = JSON.parse(saved);
+                    }
+                }
+                
+                // Ordenar i agafar top 3
+                entries.sort((a, b) => b.punts - a.punts);
+                const comptador = {};
+                entries = entries.filter(e => {
+                    const nom = e.nom.toLowerCase();
+                    comptador[nom] = (comptador[nom] || 0) + 1;
+                    return comptador[nom] <= 3;
+                }).slice(0, 3);
+                
+                setPreviewRanking(entries);
+                setLoading(false);
+            };
+            
+            carregarPreview();
+        }, []);
+        
+        if (loading) {
+            return (
+                <div className="flex justify-center items-center py-4">
+                    <span className="text-2xl animate-spin">⏳</span>
+                </div>
+            );
+        }
+        
+        if (previewRanking.length === 0) {
+            return (
+                <div className="text-center py-4 text-yellow-200/70">
+                    <span className="text-3xl block mb-2">🎮</span>
+                    <p className="text-sm">{t("Encara no hi ha campions!", "¡Aún no hay campeones!", "No champions yet!")}</p>
+                    <p className="text-xs">{t("Sigues el primer!", "¡Sé el primero!", "Be the first!")}</p>
+                </div>
+            );
+        }
+        
+        return (
+            <div className="flex justify-center items-end gap-3 py-2">
+                {/* 2n lloc */}
+                {previewRanking[1] && (
+                    <div className="flex flex-col items-center">
+                        <span className="text-2xl">🥈</span>
+                        <div className="w-16 h-16 bg-gradient-to-b from-slate-300 to-slate-400 rounded-lg flex flex-col items-center justify-center">
+                            <p className="text-xs font-bold text-slate-800 truncate max-w-14">{previewRanking[1].nom}</p>
+                            <p className="text-sm font-black text-slate-900">{previewRanking[1].punts}</p>
+                        </div>
+                    </div>
+                )}
+                
+                {/* 1r lloc */}
+                {previewRanking[0] && (
+                    <div className="flex flex-col items-center -mt-4">
+                        <span className="text-3xl animate-bounce">👑</span>
+                        <div className="w-20 h-20 gold-gradient rounded-lg flex flex-col items-center justify-center animate-glow">
+                            <p className="text-xs font-bold text-slate-800 truncate max-w-18">{previewRanking[0].nom}</p>
+                            <p className="text-lg font-black text-slate-900">{previewRanking[0].punts}</p>
+                        </div>
+                    </div>
+                )}
+                
+                {/* 3r lloc */}
+                {previewRanking[2] && (
+                    <div className="flex flex-col items-center">
+                        <span className="text-2xl">🥉</span>
+                        <div className="w-16 h-14 bg-gradient-to-b from-orange-400 to-orange-500 rounded-lg flex flex-col items-center justify-center">
+                            <p className="text-xs font-bold text-orange-900 truncate max-w-14">{previewRanking[2].nom}</p>
+                            <p className="text-sm font-black text-orange-900">{previewRanking[2].punts}</p>
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
     // PANTALLA INICI
     const PantallaInici = () => (
         <div className="max-w-2xl mx-auto space-y-6 animate-fade">
@@ -1054,8 +1375,29 @@ function ConcursApp() {
                 </div>
             </Card>
             
+            {/* SECCIÓ RANKING DESTACADA */}
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-yellow-500/20 via-amber-500/10 to-orange-500/20 border-2 border-yellow-400/30 p-4">
+                <div className="absolute top-0 right-0 text-8xl opacity-10">🏆</div>
+                
+                <div className="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 className="text-xl font-black text-yellow-400 flex items-center gap-2">
+                            🏆 {t("Ranking Global", "Ranking Global", "Global Ranking")}
+                        </h3>
+                        <p className="text-xs text-yellow-200/70">{t("Competeix amb jugadors de tot el món!", "¡Compite con jugadores de todo el mundo!", "Compete with players worldwide!")}</p>
+                    </div>
+                    <button 
+                        onClick={() => setFase('ranking')} 
+                        className="px-4 py-2 bg-yellow-400 text-slate-900 font-bold rounded-lg hover:bg-yellow-300 transition-all text-sm">
+                        {t("Veure tot", "Ver todo", "See all")} →
+                    </button>
+                </div>
+                
+                {/* Mini pòdium preview */}
+                <RankingPreview />
+            </div>
+            
             <div className="flex gap-3">
-                <button onClick={() => setFase('ranking')} className="flex-1 py-4 bg-white/10 border border-white/30 text-white font-bold rounded-xl hover:bg-white/20 transition-all">🏆 Ranking</button>
                 <a href="./index.html" className="flex-1 py-4 bg-white/10 border border-white/30 text-white font-bold rounded-xl hover:bg-white/20 text-center transition-all">🏠 {t("Inici", "Inicio", "Home")}</a>
             </div>
             
@@ -1474,7 +1816,6 @@ function ConcursApp() {
         const pct = ((correctes / respostes.length) * 100).toFixed(0);
         const tempsTotal = respostes.reduce((acc, r) => acc + r.temps, 0);
         const mitjana = (tempsTotal / respostes.length).toFixed(1);
-        const posRanking = ranking.findIndex(r => r.nom === nomJugador && r.punts === puntuacio) + 1;
         
         let emoji, msg, color;
         if (pct >= 90) { emoji = '🏆'; msg = t('EXCEL·LENT!', '¡EXCELENTE!', 'EXCELLENT!'); color = 'from-yellow-400 to-amber-500'; }
@@ -1513,12 +1854,11 @@ function ConcursApp() {
                         </div>
                     </div>
                     
-                    {posRanking > 0 && posRanking <= 10 && (
-                        <div className="mt-6 p-5 gold-gradient rounded-xl text-center animate-glow">
-                            <span className="text-4xl">🏆</span>
-                            <p className="font-black text-2xl text-slate-900">{t(`TOP ${posRanking}!`, `¡TOP ${posRanking}!`, `TOP ${posRanking}!`)}</p>
-                        </div>
-                    )}
+                    <div className="mt-6 p-4 bg-purple-500/20 rounded-xl text-center border border-purple-400/30">
+                        <span className="text-2xl">📊</span>
+                        <p className="text-purple-200 font-medium mt-1">{t("Resultat enviat al ranking global!", "¡Resultado enviado al ranking global!", "Result sent to global ranking!")}</p>
+                        <p className="text-purple-300/60 text-sm">{t("Mira el ranking per veure la teua posició", "Mira el ranking para ver tu posición", "Check ranking to see your position")}</p>
+                    </div>
                 </Card>
                 
                 <div className="flex gap-3">
@@ -1533,49 +1873,145 @@ function ConcursApp() {
         );
     };
 
-    // PANTALLA RANKING
-    const PantallaRanking = () => (
-        <div className="max-w-2xl mx-auto space-y-6 animate-fade">
-            <div className="text-center py-8">
-                <span className="text-6xl mb-4 block animate-bounce">🏆</span>
-                <h2 className="text-4xl font-black text-white">TOP 10</h2>
-                <p className="text-purple-300">{t("Els millors jugadors", "Los mejores jugadores", "Top players")}</p>
-            </div>
-            
-            <Card>
-                {ranking.length === 0 ? (
-                    <div className="text-center py-10 text-purple-300">
-                        <span className="text-5xl block mb-3">📭</span>
-                        <p className="text-lg">{t("Encara no hi ha puntuacions", "Aún no hay puntuaciones", "No scores yet")}</p>
-                        <p className="text-sm mt-1">{t("Sigues el primer!", "¡Sé el primero!", "Be the first!")}</p>
+    // PANTALLA RANKING - AMB PÒDIUM I FILTRES
+    const PantallaRanking = () => {
+        const categoriaLabels = {
+            general: { icon: '🎯', label: t('General', 'General', 'General') },
+            economia: { icon: '📈', label: t('Economia', 'Economía', 'Economics') },
+            finances: { icon: '💰', label: t('Finances', 'Finanzas', 'Finance') },
+            empresa: { icon: '🏢', label: t('Empresa', 'Empresa', 'Business') }
+        };
+        
+        const top3 = ranking.slice(0, 3);
+        const rest = ranking.slice(3, 10);
+        
+        return (
+            <div className="max-w-2xl mx-auto space-y-4 animate-fade">
+                {/* Header */}
+                <div className="text-center py-4">
+                    <span className="text-5xl mb-2 block">🏆</span>
+                    <h2 className="text-3xl font-black text-white">RANKING</h2>
+                    <p className="text-purple-300 text-sm">{t("Competeix per ser el millor!", "¡Compite por ser el mejor!", "Compete to be the best!")}</p>
+                </div>
+                
+                {/* Filtres de temps */}
+                <div className="flex gap-2 justify-center">
+                    <button 
+                        onClick={() => setRankingFilter(f => ({ ...f, temps: 'etern' }))}
+                        className={`px-4 py-2 rounded-lg font-bold transition-all ${rankingFilter.temps === 'etern' ? 'bg-yellow-400 text-slate-900' : 'bg-white/10 text-white hover:bg-white/20'}`}>
+                        🌟 {t("Etern", "Eterno", "All-time")}
+                    </button>
+                    <button 
+                        onClick={() => setRankingFilter(f => ({ ...f, temps: 'mensual' }))}
+                        className={`px-4 py-2 rounded-lg font-bold transition-all ${rankingFilter.temps === 'mensual' ? 'bg-yellow-400 text-slate-900' : 'bg-white/10 text-white hover:bg-white/20'}`}>
+                        📅 {t("Mensual", "Mensual", "Monthly")}
+                    </button>
+                </div>
+                
+                {/* Filtres de categoria */}
+                <div className="flex gap-2 justify-center flex-wrap">
+                    {Object.entries(categoriaLabels).map(([key, val]) => (
+                        <button 
+                            key={key}
+                            onClick={() => setRankingFilter(f => ({ ...f, categoria: key }))}
+                            className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${rankingFilter.categoria === key ? 'bg-purple-500 text-white' : 'bg-white/10 text-white/70 hover:bg-white/20'}`}>
+                            {val.icon} {val.label}
+                        </button>
+                    ))}
+                </div>
+                
+                {rankingLoading ? (
+                    <div className="text-center py-10">
+                        <span className="text-4xl animate-spin inline-block">⏳</span>
+                        <p className="text-purple-300 mt-2">{t("Carregant...", "Cargando...", "Loading...")}</p>
                     </div>
+                ) : ranking.length === 0 ? (
+                    <Card>
+                        <div className="text-center py-10 text-purple-300">
+                            <span className="text-5xl block mb-3">📭</span>
+                            <p className="text-lg">{t("Encara no hi ha puntuacions", "Aún no hay puntuaciones", "No scores yet")}</p>
+                            <p className="text-sm mt-1">{t("Sigues el primer!", "¡Sé el primero!", "Be the first!")}</p>
+                        </div>
+                    </Card>
                 ) : (
-                    <div className="space-y-3">
-                        {ranking.map((entry, i) => (
-                            <div key={i} className={`flex items-center gap-4 p-4 rounded-xl transition-all hover:scale-[1.02] ${i === 0 ? 'gold-gradient animate-glow' : i === 1 ? 'bg-slate-300/20' : i === 2 ? 'bg-orange-400/20' : 'bg-white/5'}`}>
-                                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-xl ${i === 0 ? 'bg-yellow-600 text-yellow-100' : i === 1 ? 'bg-slate-400 text-slate-100' : i === 2 ? 'bg-orange-600 text-orange-100' : 'bg-white/20 text-white'}`}>
-                                    {i === 0 ? '👑' : i + 1}
+                    <>
+                        {/* PÒDIUM - Top 3 */}
+                        <div className="flex justify-center items-end gap-2 py-4 px-2">
+                            {/* 2n lloc - Plata */}
+                            {top3[1] && (
+                                <div className="flex flex-col items-center animate-fade" style={{animationDelay: '0.1s'}}>
+                                    <div className="text-3xl mb-1">🥈</div>
+                                    <div className="w-24 bg-gradient-to-b from-slate-300 to-slate-400 rounded-t-xl p-3 text-center" style={{height: '100px'}}>
+                                        <p className="font-black text-slate-800 text-sm truncate">{top3[1].nom}</p>
+                                        <p className="text-2xl font-black text-slate-900">{top3[1].punts}</p>
+                                        <p className="text-xs text-slate-600">{top3[1].correctes}/20</p>
+                                    </div>
+                                    <div className="w-24 bg-slate-400 text-slate-100 font-black text-2xl py-2 text-center">2</div>
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className={`font-bold text-lg truncate ${i === 0 ? 'text-slate-900' : 'text-white'}`}>{entry.nom}</p>
-                                    <p className={`text-xs truncate ${i === 0 ? 'text-slate-700' : 'text-purple-300'}`}>
-                                        {entry.data} · {entry.correctes}/20 · 🔥{entry.maxRatxa || 0}
-                                    </p>
+                            )}
+                            
+                            {/* 1r lloc - Or */}
+                            {top3[0] && (
+                                <div className="flex flex-col items-center animate-fade">
+                                    <div className="text-4xl mb-1 animate-bounce">👑</div>
+                                    <div className="w-28 gold-gradient rounded-t-xl p-3 text-center animate-glow" style={{height: '130px'}}>
+                                        <p className="font-black text-slate-800 truncate">{top3[0].nom}</p>
+                                        <p className="text-3xl font-black text-slate-900">{top3[0].punts}</p>
+                                        <p className="text-xs text-slate-700">{top3[0].correctes}/20 · 🔥{top3[0].maxRatxa}</p>
+                                    </div>
+                                    <div className="w-28 bg-yellow-500 text-yellow-900 font-black text-2xl py-2 text-center">1</div>
                                 </div>
-                                <div className="text-right">
-                                    <p className={`text-2xl font-black ${i === 0 ? 'text-slate-900' : 'text-yellow-400'}`}>{entry.punts}</p>
+                            )}
+                            
+                            {/* 3r lloc - Bronze */}
+                            {top3[2] && (
+                                <div className="flex flex-col items-center animate-fade" style={{animationDelay: '0.2s'}}>
+                                    <div className="text-3xl mb-1">🥉</div>
+                                    <div className="w-24 bg-gradient-to-b from-orange-400 to-orange-500 rounded-t-xl p-3 text-center" style={{height: '80px'}}>
+                                        <p className="font-black text-orange-900 text-sm truncate">{top3[2].nom}</p>
+                                        <p className="text-2xl font-black text-orange-900">{top3[2].punts}</p>
+                                        <p className="text-xs text-orange-700">{top3[2].correctes}/20</p>
+                                    </div>
+                                    <div className="w-24 bg-orange-600 text-orange-100 font-black text-2xl py-2 text-center">3</div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            )}
+                        </div>
+                        
+                        {/* Resta del ranking (4-10) */}
+                        {rest.length > 0 && (
+                            <Card>
+                                <div className="space-y-2">
+                                    {rest.map((entry, i) => (
+                                        <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all">
+                                            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-white">
+                                                {i + 4}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-bold text-white truncate">{entry.nom}</p>
+                                                <p className="text-xs text-purple-300">{entry.data} · {entry.correctes}/20 · 🔥{entry.maxRatxa || 0}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-xl font-black text-yellow-400">{entry.punts}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </Card>
+                        )}
+                    </>
                 )}
-            </Card>
-            
-            <button onClick={() => setFase('inici')} className="w-full py-4 bg-white/10 border border-white/30 text-white font-bold rounded-xl hover:bg-white/20 active:scale-95 transition-all">
-                ← {t("Tornar", "Volver", "Back")}
-            </button>
-        </div>
-    );
+                
+                {/* Info */}
+                <div className="text-center text-xs text-purple-400/60 px-4">
+                    {t("Màxim 3 entrades per jugador. Competeix per pujar!", "Máximo 3 entradas por jugador. ¡Compite para subir!", "Max 3 entries per player. Compete to climb!")}
+                </div>
+                
+                <button onClick={() => setFase('inici')} className="w-full py-4 bg-white/10 border border-white/30 text-white font-bold rounded-xl hover:bg-white/20 active:scale-95 transition-all">
+                    ← {t("Tornar", "Volver", "Back")}
+                </button>
+            </div>
+        );
+    };
 
     return (
         <div className="min-h-screen py-6 px-4">
