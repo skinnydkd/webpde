@@ -36,14 +36,79 @@
         input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
         /* IMPORTANT: Evitar problemes amb el teclat en mòbil */
-        html { height: 100%; overflow: hidden; }
-        body { height: 100%; overflow: auto; -webkit-overflow-scrolling: touch; }
+        html { height: -webkit-fill-available; }
+        body { 
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            overflow-x: hidden;
+        }
         input, textarea, select { font-size: 16px !important; } /* Evita zoom automàtic en iOS */
-        /* Evitar que el focus es perdi */
         input:focus { outline: none; }
+        
+        /* Input flotant fix per mòbil */
+        #numeric-input-container {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(30, 27, 75, 0.98), rgba(30, 27, 75, 0.95));
+            padding: 16px;
+            padding-bottom: max(16px, env(safe-area-inset-bottom));
+            z-index: 9999;
+            border-top: 2px solid rgba(250, 204, 21, 0.5);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
+        }
+        #numeric-input-container.active { display: block; }
+        #numeric-input-field {
+            width: 100%;
+            padding: 16px;
+            font-size: 24px !important;
+            font-weight: bold;
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 12px;
+        }
+        #numeric-input-field:focus {
+            border-color: #facc15;
+            background: rgba(255,255,255,0.15);
+        }
+        #numeric-input-field::placeholder { color: rgba(255,255,255,0.5); }
+        #numeric-submit-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+        }
+        #numeric-submit-btn:active { transform: scale(0.98); }
+        #numeric-submit-btn:disabled { opacity: 0.5; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 min-h-screen">
+    <!-- INPUT NUMÈRIC FORA DE REACT - NO ES RE-RENDERITZA MAI! -->
+    <div id="numeric-input-container">
+        <input 
+            type="text" 
+            id="numeric-input-field" 
+            inputmode="decimal" 
+            pattern="[0-9.,\-]*"
+            placeholder="Resultat numèric..."
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+        />
+        <button id="numeric-submit-btn" type="button">COMPROVAR</button>
+    </div>
+    
     <div id="root"></div>
     <script type="text/babel">
 const { useState, useEffect, useMemo, useRef, useCallback, memo } = React;
@@ -140,74 +205,6 @@ function TimerDirect({ timerKey, onTimeUp, isActive }) {
     );
 }
 
-// INPUT NUMÈRIC AÏLLAT - NO ES RE-RENDERITZA MAI PEL PARE!
-const NumericInput = memo(function NumericInput({ onSubmit, disabled, placeholder }) {
-    const [value, setValue] = useState('');
-    const inputRef = useRef(null);
-    
-    // Focus automàtic quan es monta
-    useEffect(() => {
-        if (inputRef.current && !disabled) {
-            // Petit delay per assegurar que el DOM està llest
-            const timer = setTimeout(() => {
-                inputRef.current.focus();
-            }, 100);
-            return () => clearTimeout(timer);
-        }
-    }, [disabled]);
-    
-    const handleSubmit = useCallback(() => {
-        if (value && !disabled) {
-            onSubmit(value);
-        }
-    }, [value, disabled, onSubmit]);
-    
-    const handleKeyDown = useCallback((e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            handleSubmit();
-        }
-    }, [handleSubmit]);
-    
-    // Reset value quan es torna a habilitar (nova pregunta)
-    useEffect(() => {
-        if (!disabled) {
-            setValue('');
-        }
-    }, [disabled]);
-    
-    return (
-        <div className="space-y-4">
-            <input 
-                ref={inputRef}
-                type="text"
-                inputMode="decimal"
-                pattern="[0-9.,\-]*"
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                disabled={disabled}
-                placeholder={placeholder}
-                className="w-full p-4 text-2xl font-bold text-center bg-white/10 border-2 border-white/30 rounded-xl text-white placeholder-white/50 focus:border-yellow-400"
-                onKeyDown={handleKeyDown}
-                autoComplete="off"
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck={false}
-                style={{ fontSize: '24px' }}
-            />
-            {!disabled && (
-                <button 
-                    onClick={handleSubmit}
-                    disabled={!value}
-                    className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:opacity-90 active:scale-95 disabled:opacity-50"
-                >
-                    COMPROVAR
-                </button>
-            )}
-        </div>
-    );
-});
-
 // Efecte confetti
 const Confetti = ({ show }) => {
     if (!show) return null;
@@ -263,7 +260,6 @@ function ConcursApp() {
     const [mostrarResultat, setMostrarResultat] = useState(false);
     const [ranking, setRanking] = useState([]);
     const [ordreUsuari, setOrdreUsuari] = useState([]);
-    const [inputNumeric, setInputNumeric] = useState('');
     const [timerKey, setTimerKey] = useState(0);
     const [timerActive, setTimerActive] = useState(false);
     const [showConfetti, setShowConfetti] = useState(false);
@@ -273,33 +269,33 @@ function ConcursApp() {
     const [opcionsEliminades, setOpcionsEliminades] = useState([]);
     const [soundEnabled, setSoundEnabled] = useState(true);
     
-    const inputRef = useRef(null);
-    
     const t = (val, es, en) => idioma === 'val' ? val : idioma === 'es' ? es : en;
     
     // Efectes de so
     const playSound = useCallback((type) => {
         if (!soundEnabled) return;
-        const sounds = {
-            correct: [523.25, 659.25, 783.99], // Do-Mi-Sol
-            wrong: [311.13, 293.66], // Mi♭-Re
-            tick: [800],
-            bonus: [523.25, 659.25, 783.99, 1046.50], // Do-Mi-Sol-Do'
-        };
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const notes = sounds[type] || [440];
-        notes.forEach((freq, i) => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.frequency.value = freq;
-            osc.type = 'sine';
-            gain.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.1);
-            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.1 + 0.3);
-            osc.start(ctx.currentTime + i * 0.1);
-            osc.stop(ctx.currentTime + i * 0.1 + 0.3);
-        });
+        try {
+            const sounds = {
+                correct: [523.25, 659.25, 783.99], // Do-Mi-Sol
+                wrong: [311.13, 293.66], // Mi♭-Re
+                tick: [800],
+                bonus: [523.25, 659.25, 783.99, 1046.50], // Do-Mi-Sol-Do'
+            };
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const notes = sounds[type] || [440];
+            notes.forEach((freq, i) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.1 + 0.3);
+                osc.start(ctx.currentTime + i * 0.1);
+                osc.stop(ctx.currentTime + i * 0.1 + 0.3);
+            });
+        } catch(e) {}
     }, [soundEnabled]);
     
     // Vibrar en mòbil
@@ -312,6 +308,37 @@ function ConcursApp() {
         setToast({ show: true, message, type });
         setTimeout(() => setToast({ show: false, message: '', type: '' }), 2000);
     }, []);
+    
+    // GESTIÓ INPUT HTML FLOTANT - Mostrar/amagar segons l'estat
+    useEffect(() => {
+        const p = preguntesPartida[preguntaActual];
+        const esNumeric = p && p.tipus === 'numeric';
+        const mostrar = fase === 'jugant' && esNumeric && !mostrarResultat;
+        
+        const container = document.getElementById('numeric-input-container');
+        const input = document.getElementById('numeric-input-field');
+        const btn = document.getElementById('numeric-submit-btn');
+        
+        if (mostrar) {
+            if (container) container.classList.add('active');
+            if (input) {
+                input.value = '';
+                input.placeholder = idioma === 'val' ? 'Resultat numèric...' : idioma === 'es' ? 'Resultado numérico...' : 'Numeric result...';
+                // Focus amb delay per assegurar estabilitat
+                setTimeout(() => {
+                    if (input && document.activeElement !== input) {
+                        input.focus();
+                    }
+                }, 100);
+            }
+            if (btn) {
+                btn.textContent = idioma === 'val' ? 'COMPROVAR' : idioma === 'es' ? 'COMPROBAR' : 'CHECK';
+            }
+        } else {
+            if (container) container.classList.remove('active');
+            if (input) input.blur();
+        }
+    }, [fase, preguntaActual, mostrarResultat, preguntesPartida, idioma]);
 
     // BANC DE PREGUNTES
     const bancPreguntes = useMemo(() => ({
@@ -408,7 +435,7 @@ function ConcursApp() {
         setPreguntesPartida(obtenirPreguntes(categoria));
         setPreguntaActual(0); setPuntuacio(0); setRespostes([]); setRatxa(0); setMaxRatxa(0);
         setRespostaUsuari(null); setMostrarResultat(false);
-        setOrdreUsuari([]); setInputNumeric(''); setTimerKey(k => k + 1); setTimerActive(true);
+        setOrdreUsuari([]); setTimerKey(k => k + 1); setTimerActive(true);
         setAjudes({ cinquanta: 1, temps: 1, saltar: 1 }); setOpcionsEliminades([]);
         setFase('jugant');
         playSound('bonus');
@@ -453,6 +480,44 @@ function ConcursApp() {
         setPuntuacio(s => Math.max(0, s + punts));
         setRespostes(r => [...r, { pregunta: p.id, correcta: ok, punts, temps: tempsUsed }]);
     }, [preguntesPartida, preguntaActual, ordreUsuari, ratxa, maxRatxa, playSound, vibrate, showToast, t]);
+    
+    // EXPOSAR handleResposta GLOBALMENT per l'input HTML flotant
+    useEffect(() => {
+        window.submitNumericAnswer = (value) => {
+            if (fase === 'jugant' && !mostrarResultat) {
+                handleResposta(value);
+            }
+        };
+        return () => { delete window.submitNumericAnswer; };
+    }, [fase, mostrarResultat, handleResposta]);
+    
+    // SETUP EVENT LISTENERS per l'input flotant (una sola vegada)
+    useEffect(() => {
+        const input = document.getElementById('numeric-input-field');
+        const btn = document.getElementById('numeric-submit-btn');
+        
+        const handleSubmit = () => {
+            const value = input?.value?.trim();
+            if (value && window.submitNumericAnswer) {
+                window.submitNumericAnswer(value);
+            }
+        };
+        
+        const handleKeyDown = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSubmit();
+            }
+        };
+        
+        if (btn) btn.addEventListener('click', handleSubmit);
+        if (input) input.addEventListener('keydown', handleKeyDown);
+        
+        return () => {
+            if (btn) btn.removeEventListener('click', handleSubmit);
+            if (input) input.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
 
     const handleTimeUp = useCallback(() => {
         if (!mostrarResultat) handleResposta(null);
@@ -472,7 +537,7 @@ function ConcursApp() {
         } else {
             setPreguntaActual(p => p + 1);
             setRespostaUsuari(null); setMostrarResultat(false);
-            setOrdreUsuari([]); setInputNumeric('');
+            setOrdreUsuari([]);
             setTimerKey(k => k + 1); setTimerActive(true);
         }
     };
@@ -703,16 +768,14 @@ function ConcursApp() {
                         </div>
                     )}
                     
-                    {/* Numèric */}
+                    {/* Numèric - L'input real està fixat a baix de la pantalla */}
                     {p.tipus === 'numeric' && (
                         <div className="space-y-4">
                             {!mostrarResultat ? (
-                                <NumericInput 
-                                    key={preguntaActual}
-                                    onSubmit={handleResposta}
-                                    disabled={mostrarResultat}
-                                    placeholder={t("Resultat numèric...", "Resultado numérico...", "Numeric result...")}
-                                />
+                                <div className="text-center py-8 text-purple-300">
+                                    <span className="text-4xl block mb-3">⬇️</span>
+                                    <p className="text-lg">{t("Escriu la resposta a baix", "Escribe la respuesta abajo", "Type your answer below")}</p>
+                                </div>
                             ) : (
                                 <div className="text-center py-4">
                                     <p className="text-lg text-white">{t("Resposta:", "Respuesta:", "Answer:")} <strong className="text-green-400 text-2xl">{p.correcta}</strong></p>
