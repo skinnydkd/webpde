@@ -195,7 +195,42 @@ function EconomiaApp() {
             return { q1: q1Opt.toFixed(2), q2: q2Opt.toFixed(2), u: (Math.pow(q1Opt, alpha) * Math.pow(q2Opt, 1 - alpha)).toFixed(2) };
         }, [alpha, renda, p1, p2]);
         
-        const txt = { val: { title: 'Teoria del Consumidor', utilitat: 'Utilitat', pref: 'Preferències', optim: 'Elecció Òptima', efectes: 'Efectes Renda/Substitució' }, es: { title: 'Teoría del Consumidor', utilitat: 'Utilidad', pref: 'Preferencias', optim: 'Elección Óptima', efectes: 'Efectos Renta/Sustitución' }, en: { title: 'Consumer Theory', utilitat: 'Utility', pref: 'Preferences', optim: 'Optimal Choice', efectes: 'Income/Substitution Effects' } }[idioma];
+        // Dades per gràfic d'utilitat marginal decreixent
+        const dadesUMg = useMemo(() => {
+            const dades = [];
+            for (let q = 1; q <= 15; q++) {
+                const uTotal = Math.pow(q, alpha) * Math.pow(5, 1 - alpha);
+                const uMg = q > 1 ? uTotal - Math.pow(q-1, alpha) * Math.pow(5, 1 - alpha) : uTotal;
+                dades.push({ q, uTotal: parseFloat(uTotal.toFixed(2)), uMg: parseFloat(uMg.toFixed(2)) });
+            }
+            return dades;
+        }, [alpha]);
+        
+        // Dades per gràfic de corbes d'indiferència i restricció pressupostària
+        const dadesCI = useMemo(() => {
+            const dades = [];
+            const q1Opt = (alpha * renda) / p1;
+            const q2Opt = ((1 - alpha) * renda) / p2;
+            const uOpt = Math.pow(q1Opt, alpha) * Math.pow(q2Opt, 1 - alpha);
+            const maxQ1 = renda / p1 + 2;
+            
+            for (let x = 0.5; x <= maxQ1; x += 0.5) {
+                const rpQ2 = Math.max(0, (renda - p1 * x) / p2);
+                let ciOpt = null, ciLow = null, ciHigh = null;
+                if (x > 0.1) {
+                    ciOpt = Math.pow(uOpt / Math.pow(x, alpha), 1 / (1 - alpha));
+                    ciLow = Math.pow(uOpt * 0.5 / Math.pow(x, alpha), 1 / (1 - alpha));
+                    ciHigh = Math.pow(uOpt * 1.5 / Math.pow(x, alpha), 1 / (1 - alpha));
+                    if (ciOpt > 25) ciOpt = null;
+                    if (ciLow > 25) ciLow = null;
+                    if (ciHigh > 25) ciHigh = null;
+                }
+                dades.push({ q1: x, rp: rpQ2 > 0 ? rpQ2 : null, ciOpt, ciLow, ciHigh });
+            }
+            return { dades, q1Opt, q2Opt };
+        }, [p1, p2, renda, alpha]);
+        
+        const txt = { val: { title: 'Teoria del Consumidor', utilitat: 'Utilitat', corbes: 'Corbes Indif.', optim: 'Elecció Òptima', efectes: 'Efectes Renda/Subst.' }, es: { title: 'Teoría del Consumidor', utilitat: 'Utilidad', corbes: 'Curvas Indif.', optim: 'Elección Óptima', efectes: 'Efectos Renta/Sust.' }, en: { title: 'Consumer Theory', utilitat: 'Utility', corbes: 'Indiff. Curves', optim: 'Optimal Choice', efectes: 'Income/Subst. Effects' } }[idioma];
         
         return (
             <div className="space-y-6">
@@ -203,31 +238,107 @@ function EconomiaApp() {
                 
                 <Tabs tabs={[
                     { id: 'utilitat', label: '📊 ' + txt.utilitat },
+                    { id: 'corbes', label: '📈 ' + txt.corbes },
                     { id: 'optim', label: '🎯 ' + txt.optim },
                     { id: 'efectes', label: '🔄 ' + txt.efectes },
                 ]} active={tab} onChange={setTab} />
                 
                 {tab === 'utilitat' && (
                     <div className="space-y-6">
-                        <Card title={idioma === 'val' ? "📚 Teoria: Utilitat" : idioma === 'es' ? "📚 Teoría: Utilidad" : "📚 Theory: Utility"} icon="📖">
-                            <div className="grid md:grid-cols-2 gap-6">
+                        <Card title={idioma === 'val' ? "📊 Utilitat i Utilitat Marginal Decreixent" : "📊 Utility and Diminishing Marginal Utility"}>
+                            <div className="bg-gradient-to-r from-pink-50 to-rose-50 p-4 rounded-xl mb-4">
+                                <p className="text-pink-700">{idioma === 'val' ? "💡 Imagina't menjant pizzes: la primera és deliciosa (utilitat alta), però cada pizza addicional et satisfà menys. Això és la UTILITAT MARGINAL DECREIXENT!" : "💡 Imagine eating pizzas: the first is delicious (high utility), but each additional pizza satisfies you less. This is DIMINISHING MARGINAL UTILITY!"}</p>
+                            </div>
+                            <div className="grid lg:grid-cols-2 gap-6">
                                 <div>
-                                    <p className="text-gray-700 mb-4">{idioma === 'val' ? "La utilitat mesura la satisfacció del consum. És ordinal (ordena preferències)." : idioma === 'es' ? "La utilidad mide la satisfacción del consumo. Es ordinal (ordena preferencias)." : "Utility measures consumption satisfaction. It's ordinal (ranks preferences)."}</p>
-                                    <ConceptBox title={idioma === 'val' ? "Utilitat Marginal (UMg)" : idioma === 'es' ? "Utilidad Marginal (UMg)" : "Marginal Utility (MU)"} color="pink">
-                                        <FormulaBox formula="UMg = ∂U/∂Q" />
-                                        {idioma === 'val' ? "Generalment DECREIXENT (llei de la utilitat marginal decreixent)." : idioma === 'es' ? "Generalmente DECRECIENTE (ley de la utilidad marginal decreciente)." : "Generally DECREASING (law of diminishing marginal utility)."}
+                                    <ConceptBox title={idioma === 'val' ? "Utilitat Marginal (UMg)" : "Marginal Utility (MU)"} color="pink">
+                                        <FormulaBox formula="UMg = ΔU/ΔQ = ∂U/∂Q" />
+                                        <p className="text-sm">{idioma === 'val' ? "La satisfacció ADDICIONAL d'una unitat més. Generalment DECREIXENT." : "The ADDITIONAL satisfaction from one more unit. Generally DECREASING."}</p>
                                     </ConceptBox>
                                     <ConceptBox title="Cobb-Douglas" color="violet">
                                         <FormulaBox formula="U = Q₁ᵅ · Q₂⁽¹⁻ᵅ⁾" />
+                                        <p className="text-sm">{idioma === 'val' ? "Funció molt usada. α indica preferència relativa pel bé 1." : "Widely used function. α indicates relative preference for good 1."}</p>
+                                    </ConceptBox>
+                                    <div className="space-y-2 mt-4">
+                                        <Slider label="α (preferència bé 1)" value={alpha} onChange={setAlpha} min={0.1} max={0.9} step={0.05} />
+                                    </div>
+                                    <div className="p-4 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl text-white text-center mt-4">
+                                        <p className="text-white/70 text-sm">{idioma === 'val' ? 'Utilitat amb Q₁=5, Q₂=5' : 'Utility with Q₁=5, Q₂=5'}</p>
+                                        <p className="text-3xl font-black">{(Math.pow(5, alpha) * Math.pow(5, 1-alpha)).toFixed(2)}</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-gray-600 mb-2">{idioma === 'val' ? "📈 Gràfic: Utilitat Total vs Marginal (fixant Q₂=5)" : "📈 Graph: Total vs Marginal Utility (fixing Q₂=5)"}</p>
+                                    <div className="h-64">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <ComposedChart data={dadesUMg}>
+                                                <CartesianGrid strokeDasharray="3 3" />
+                                                <XAxis dataKey="q" label={{ value: 'Q₁', position: 'bottom' }} />
+                                                <YAxis yAxisId="left" label={{ value: idioma === 'val' ? 'U Total' : 'Total U', angle: -90, position: 'insideLeft' }} />
+                                                <YAxis yAxisId="right" orientation="right" label={{ value: 'UMg', angle: 90, position: 'insideRight' }} />
+                                                <Tooltip />
+                                                <Legend />
+                                                <Bar yAxisId="left" dataKey="uTotal" fill="#ec4899" name={idioma === 'val' ? "Utilitat Total" : "Total Utility"} opacity={0.7} />
+                                                <Line yAxisId="right" type="monotone" dataKey="uMg" stroke="#8b5cf6" strokeWidth={3} dot={{ fill: '#8b5cf6' }} name={idioma === 'val' ? "Utilitat Marginal" : "Marginal Utility"} />
+                                            </ComposedChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-2 text-center">{idioma === 'val' ? "Observa com l'UMg (línia morada) decreix mentre la U Total (barres) creix cada cop més lentament" : "Notice how MU (purple line) decreases while Total U (bars) grows increasingly slowly"}</p>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+                
+                {tab === 'corbes' && (
+                    <div className="space-y-6">
+                        <Card title={idioma === 'val' ? "📈 Corbes d'Indiferència i Restricció Pressupostària" : "📈 Indifference Curves and Budget Constraint"}>
+                            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl mb-4">
+                                <p className="text-blue-700">{idioma === 'val' ? "💡 Una corba d'indiferència connecta totes les combinacions de béns que et donen la MATEIXA satisfacció. La restricció pressupostària mostra el que et pots permetre." : "💡 An indifference curve connects all combinations of goods that give you the SAME satisfaction. The budget constraint shows what you can afford."}</p>
+                            </div>
+                            <div className="grid lg:grid-cols-2 gap-6">
+                                <div className="space-y-3">
+                                    <Slider label={idioma === 'val' ? "💰 Renda (R)" : "💰 Income (R)"} value={renda} onChange={setRenda} min={100} max={400} step={10} suffix="€" />
+                                    <Slider label={idioma === 'val' ? "🏷️ Preu Bé 1 (P₁)" : "🏷️ Price Good 1 (P₁)"} value={p1} onChange={setP1} min={5} max={30} suffix="€" />
+                                    <Slider label={idioma === 'val' ? "🏷️ Preu Bé 2 (P₂)" : "🏷️ Price Good 2 (P₂)"} value={p2} onChange={setP2} min={5} max={40} suffix="€" />
+                                    <Slider label="α" value={alpha} onChange={setAlpha} min={0.1} max={0.9} step={0.05} />
+                                    
+                                    <div className="grid grid-cols-2 gap-3 mt-4">
+                                        <div className="p-3 bg-green-50 rounded-xl text-center">
+                                            <p className="text-xs text-green-600">{idioma === 'val' ? "Òptim Q₁*" : "Optimal Q₁*"}</p>
+                                            <p className="text-xl font-bold text-green-700">{optim.q1}</p>
+                                        </div>
+                                        <div className="p-3 bg-green-50 rounded-xl text-center">
+                                            <p className="text-xs text-green-600">{idioma === 'val' ? "Òptim Q₂*" : "Optimal Q₂*"}</p>
+                                            <p className="text-xl font-bold text-green-700">{optim.q2}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <ConceptBox title={idioma === 'val' ? "Punt Òptim" : "Optimal Point"} color="green">
+                                        <p className="text-sm">{idioma === 'val' ? "On la restricció pressupostària és TANGENT a la corba d'indiferència més alta possible." : "Where the budget constraint is TANGENT to the highest possible indifference curve."}</p>
+                                        <FormulaBox formula="RMS = P₁/P₂" />
                                     </ConceptBox>
                                 </div>
-                                <div className="space-y-4">
-                                    <Slider label="Q₁" value={q1} onChange={setQ1} min={1} max={20} />
-                                    <Slider label="Q₂" value={q2} onChange={setQ2} min={1} max={20} />
-                                    <Slider label="α" value={alpha} onChange={setAlpha} min={0.1} max={0.9} step={0.05} />
-                                    <div className="p-6 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl text-white text-center">
-                                        <p className="text-white/70">{idioma === 'val' ? 'Utilitat Total' : idioma === 'es' ? 'Utilidad Total' : 'Total Utility'}</p>
-                                        <p className="text-4xl font-black">{utilitat.toFixed(2)}</p>
+                                <div>
+                                    <div className="h-72">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <ComposedChart data={dadesCI.dades}>
+                                                <CartesianGrid strokeDasharray="3 3" />
+                                                <XAxis dataKey="q1" label={{ value: 'Q₁', position: 'bottom' }} domain={[0, 'auto']} />
+                                                <YAxis label={{ value: 'Q₂', angle: -90, position: 'insideLeft' }} domain={[0, 25]} />
+                                                <Tooltip />
+                                                <Legend />
+                                                <Line type="monotone" dataKey="rp" stroke="#3b82f6" strokeWidth={3} dot={false} name={idioma === 'val' ? "Restricció Pressupostària" : "Budget Constraint"} />
+                                                <Line type="monotone" dataKey="ciLow" stroke="#fda4af" strokeWidth={2} strokeDasharray="3 3" dot={false} name={idioma === 'val' ? "CI baixa" : "Low IC"} />
+                                                <Line type="monotone" dataKey="ciOpt" stroke="#ec4899" strokeWidth={3} dot={false} name={idioma === 'val' ? "CI òptima" : "Optimal IC"} />
+                                                <Line type="monotone" dataKey="ciHigh" stroke="#fda4af" strokeWidth={2} strokeDasharray="3 3" dot={false} name={idioma === 'val' ? "CI alta" : "High IC"} />
+                                                <Scatter data={[{q1: dadesCI.q1Opt, q2: dadesCI.q2Opt}]} fill="#10b981" shape="circle" name={idioma === 'val' ? "Punt Òptim" : "Optimal Point"} />
+                                            </ComposedChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                    <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                                        <div className="p-2 bg-blue-50 rounded"><span className="inline-block w-3 h-1 bg-blue-500 mr-1"></span>{idioma === 'val' ? "Restricció Pressupostària" : "Budget Line"}</div>
+                                        <div className="p-2 bg-pink-50 rounded"><span className="inline-block w-3 h-1 bg-pink-500 mr-1"></span>{idioma === 'val' ? "Corbes Indiferència" : "Indiff. Curves"}</div>
                                     </div>
                                 </div>
                             </div>
@@ -303,6 +414,12 @@ function EconomiaApp() {
         const [elastQ1, setElastQ1] = useState(100);
         const [elastQ2, setElastQ2] = useState(80);
         
+        // Intervencions governamentals
+        const [intervencio, setIntervencio] = useState('cap');
+        const [impost, setImpost] = useState(5);
+        const [preuMax, setPreuMax] = useState(20);
+        const [preuMin, setPreuMin] = useState(30);
+        
         const equilibri = useMemo(() => {
             const pEq = (demandaA - ofertaC) / (demandaB + ofertaD);
             const qEq = demandaA - demandaB * pEq;
@@ -310,6 +427,31 @@ function EconomiaApp() {
             const excProd = 0.5 * qEq * (pEq - (ofertaC/ofertaD > 0 ? ofertaC/ofertaD : 0));
             return { p: Math.max(0, pEq).toFixed(2), q: Math.max(0, qEq).toFixed(2), excCons: Math.max(0, excCons).toFixed(0), excProd: Math.max(0, excProd).toFixed(0) };
         }, [demandaA, demandaB, ofertaC, ofertaD]);
+        
+        // Càlculs d'intervencions
+        const intervResult = useMemo(() => {
+            const pEq = parseFloat(equilibri.p);
+            const qEq = parseFloat(equilibri.q);
+            if (intervencio === 'impost') {
+                const pCons = (demandaA - ofertaC + ofertaD * impost) / (demandaB + ofertaD);
+                const pProd = pCons - impost;
+                const qNou = Math.max(0, demandaA - demandaB * pCons);
+                const recaptacio = impost * qNou;
+                const dwl = 0.5 * impost * Math.abs(qEq - qNou);
+                return { pCons: pCons.toFixed(2), pProd: pProd.toFixed(2), q: qNou.toFixed(2), recaptacio: recaptacio.toFixed(0), dwl: dwl.toFixed(0) };
+            }
+            if (intervencio === 'pmax' && preuMax < pEq) {
+                const qD = demandaA - demandaB * preuMax;
+                const qS = Math.max(0, ofertaC + ofertaD * preuMax);
+                return { efectiu: true, qD: qD.toFixed(2), qS: qS.toFixed(2), escassetat: (qD - qS).toFixed(2) };
+            }
+            if (intervencio === 'pmin' && preuMin > pEq) {
+                const qD = demandaA - demandaB * preuMin;
+                const qS = ofertaC + ofertaD * preuMin;
+                return { efectiu: true, qD: qD.toFixed(2), qS: qS.toFixed(2), excedent: (qS - qD).toFixed(2) };
+            }
+            return null;
+        }, [intervencio, impost, preuMax, preuMin, demandaA, demandaB, ofertaC, ofertaD, equilibri]);
         
         const elasticitat = useMemo(() => {
             const deltaQ = elastQ2 - elastQ1, deltaP = elastP2 - elastP1;
@@ -322,13 +464,14 @@ function EconomiaApp() {
         
         const dadesOD = useMemo(() => {
             const dades = [];
-            for (let q = 0; q <= 100; q += 5) {
+            for (let q = 0; q <= 100; q += 2) {
                 const pD = Math.max(0, (demandaA - q) / demandaB);
                 const pS = q >= ofertaC ? Math.max(0, (q - ofertaC) / ofertaD) : null;
-                dades.push({ q, demanda: pD, oferta: pS });
+                const pSImpost = intervencio === 'impost' && q >= ofertaC ? Math.max(0, (q - ofertaC) / ofertaD + impost) : null;
+                dades.push({ q, demanda: pD, oferta: pS, ofertaImpost: pSImpost });
             }
             return dades;
-        }, [demandaA, demandaB, ofertaC, ofertaD]);
+        }, [demandaA, demandaB, ofertaC, ofertaD, intervencio, impost]);
         
         return (
             <div className="space-y-6">
@@ -336,6 +479,7 @@ function EconomiaApp() {
                 
                 <Tabs tabs={[
                     { id: 'equilibri', label: '⚖️ ' + (idioma === 'val' ? 'Equilibri' : 'Equilibrium') },
+                    { id: 'intervencions', label: '🏛️ ' + (idioma === 'val' ? 'Intervencions' : 'Interventions') },
                     { id: 'elasticitat', label: '📏 ' + (idioma === 'val' ? 'Elasticitat' : 'Elasticity') },
                 ]} active={tab} onChange={setTab} />
                 
@@ -380,6 +524,102 @@ function EconomiaApp() {
                             <ResultCard title={idioma === 'val' ? "Exc. Consumidor" : "Consumer Surplus"} value={equilibri.excCons + "€"} color="pink" />
                             <ResultCard title={idioma === 'val' ? "Exc. Productor" : "Producer Surplus"} value={equilibri.excProd + "€"} color="blue" />
                         </div>
+                    </div>
+                )}
+                
+                {tab === 'intervencions' && (
+                    <div className="space-y-6">
+                        <Card title={idioma === 'val' ? "🏛️ Intervencions Governamentals" : "🏛️ Government Interventions"}>
+                            <div className="grid lg:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <div className="flex flex-wrap gap-2">
+                                        <button onClick={() => setIntervencio('cap')} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${intervencio === 'cap' ? 'bg-gray-700 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}>{idioma === 'val' ? '🔓 Cap' : '🔓 None'}</button>
+                                        <button onClick={() => setIntervencio('impost')} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${intervencio === 'impost' ? 'bg-pink-500 text-white' : 'bg-pink-100 hover:bg-pink-200'}`}>💰 {idioma === 'val' ? 'Impost' : 'Tax'}</button>
+                                        <button onClick={() => setIntervencio('pmax')} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${intervencio === 'pmax' ? 'bg-blue-500 text-white' : 'bg-blue-100 hover:bg-blue-200'}`}>⬇️ {idioma === 'val' ? 'Preu Màxim' : 'Price Ceiling'}</button>
+                                        <button onClick={() => setIntervencio('pmin')} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${intervencio === 'pmin' ? 'bg-green-500 text-white' : 'bg-green-100 hover:bg-green-200'}`}>⬆️ {idioma === 'val' ? 'Preu Mínim' : 'Price Floor'}</button>
+                                    </div>
+                                    {intervencio === 'impost' && <Slider label={idioma === 'val' ? "💰 Impost per unitat" : "💰 Tax per unit"} value={impost} onChange={setImpost} min={1} max={20} suffix="€" />}
+                                    {intervencio === 'pmax' && <Slider label={idioma === 'val' ? "⬇️ Preu màxim (sostre)" : "⬇️ Price ceiling"} value={preuMax} onChange={setPreuMax} min={5} max={40} suffix="€" />}
+                                    {intervencio === 'pmin' && <Slider label={idioma === 'val' ? "⬆️ Preu mínim (terra)" : "⬆️ Price floor"} value={preuMin} onChange={setPreuMin} min={15} max={50} suffix="€" />}
+                                    
+                                    <div className="p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl">
+                                        <p className="text-sm"><strong>⚖️ {idioma === 'val' ? 'Equilibri lliure:' : 'Free equilibrium:'}</strong> P = {equilibri.p}€, Q = {equilibri.q}</p>
+                                    </div>
+                                    
+                                    {intervencio === 'impost' && intervResult && (
+                                        <div className="p-4 bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl border border-pink-200">
+                                            <h4 className="font-bold text-pink-700 mb-2">💰 {idioma === 'val' ? "Efectes de l'Impost" : "Tax Effects"}</h4>
+                                            <div className="grid grid-cols-2 gap-2 text-sm">
+                                                <p>👤 {idioma === 'val' ? 'Preu consumidor:' : 'Consumer price:'} <strong>{intervResult.pCons}€</strong></p>
+                                                <p>🏭 {idioma === 'val' ? 'Preu productor:' : 'Producer price:'} <strong>{intervResult.pProd}€</strong></p>
+                                                <p>📦 {idioma === 'val' ? 'Nova quantitat:' : 'New quantity:'} <strong>{intervResult.q}</strong></p>
+                                                <p>🏛️ {idioma === 'val' ? 'Recaptació:' : 'Tax revenue:'} <strong className="text-green-600">{intervResult.recaptacio}€</strong></p>
+                                            </div>
+                                            <p className="mt-2 text-red-600 font-medium">⚠️ {idioma === 'val' ? 'Pèrdua Eficiència (DWL):' : 'Deadweight Loss:'} {intervResult.dwl}€</p>
+                                        </div>
+                                    )}
+                                    {intervencio === 'pmax' && intervResult?.efectiu && (
+                                        <div className="p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
+                                            <h4 className="font-bold text-blue-700 mb-2">⬇️ {idioma === 'val' ? 'Preu Màxim Efectiu' : 'Effective Price Ceiling'}</h4>
+                                            <p className="text-sm mb-2">{idioma === 'val' ? '⚠️ Crea ESCASSETAT: més gent vol comprar que el que es produeix!' : '⚠️ Creates SHORTAGE: more people want to buy than is produced!'}</p>
+                                            <div className="grid grid-cols-2 gap-2 text-sm">
+                                                <p>📈 Qd = <strong>{intervResult.qD}</strong></p>
+                                                <p>📉 Qs = <strong>{intervResult.qS}</strong></p>
+                                            </div>
+                                            <p className="mt-2 text-red-600 font-bold">🚨 {idioma === 'val' ? 'Escassetat:' : 'Shortage:'} {intervResult.escassetat} {idioma === 'val' ? 'unitats' : 'units'}</p>
+                                            <p className="text-xs mt-2 text-gray-500">{idioma === 'val' ? 'Conseqüències: cues, mercats negres, racionament' : 'Consequences: queues, black markets, rationing'}</p>
+                                        </div>
+                                    )}
+                                    {intervencio === 'pmax' && preuMax >= parseFloat(equilibri.p) && (
+                                        <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
+                                            <p className="text-amber-700">⚠️ {idioma === 'val' ? "Preu màxim per SOBRE d'equilibri → No té efecte! Baixa'l per veure l'impacte." : "Price ceiling ABOVE equilibrium → No effect! Lower it to see impact."}</p>
+                                        </div>
+                                    )}
+                                    {intervencio === 'pmin' && intervResult?.efectiu && (
+                                        <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200">
+                                            <h4 className="font-bold text-green-700 mb-2">⬆️ {idioma === 'val' ? 'Preu Mínim Efectiu' : 'Effective Price Floor'}</h4>
+                                            <p className="text-sm mb-2">{idioma === 'val' ? '⚠️ Crea EXCEDENT: es produeix més del que es compra!' : '⚠️ Creates SURPLUS: more is produced than bought!'}</p>
+                                            <div className="grid grid-cols-2 gap-2 text-sm">
+                                                <p>📉 Qd = <strong>{intervResult.qD}</strong></p>
+                                                <p>📈 Qs = <strong>{intervResult.qS}</strong></p>
+                                            </div>
+                                            <p className="mt-2 text-red-600 font-bold">🚨 {idioma === 'val' ? 'Excedent:' : 'Surplus:'} {intervResult.excedent} {idioma === 'val' ? 'unitats' : 'units'}</p>
+                                            <p className="text-xs mt-2 text-gray-500">{idioma === 'val' ? '💼 Exemple: Salari mínim per sobre equilibri → pot crear atur' : '💼 Example: Minimum wage above equilibrium → may create unemployment'}</p>
+                                        </div>
+                                    )}
+                                    {intervencio === 'pmin' && preuMin <= parseFloat(equilibri.p) && (
+                                        <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
+                                            <p className="text-amber-700">⚠️ {idioma === 'val' ? "Preu mínim per SOTA d'equilibri → No té efecte! Puja'l per veure l'impacte." : "Price floor BELOW equilibrium → No effect! Raise it to see impact."}</p>
+                                        </div>
+                                    )}
+                                </div>
+                                <div>
+                                    <div className="h-72">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <LineChart data={dadesOD}>
+                                                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                                <XAxis dataKey="q" label={{ value: 'Q', position: 'bottom' }} />
+                                                <YAxis domain={[0, 60]} label={{ value: 'P', angle: -90, position: 'insideLeft' }} />
+                                                <Tooltip formatter={(v) => v?.toFixed(2)} />
+                                                <Legend />
+                                                <Line type="monotone" dataKey="demanda" stroke="#ec4899" strokeWidth={3} dot={false} name={idioma === 'val' ? "Demanda" : "Demand"} />
+                                                <Line type="monotone" dataKey="oferta" stroke="#3b82f6" strokeWidth={3} dot={false} name={idioma === 'val' ? "Oferta" : "Supply"} />
+                                                {intervencio === 'impost' && <Line type="monotone" dataKey="ofertaImpost" stroke="#f97316" strokeWidth={3} strokeDasharray="5 5" dot={false} name={idioma === 'val' ? "Oferta + Impost" : "Supply + Tax"} />}
+                                                <ReferenceLine x={Number(equilibri.q)} stroke="#10b981" strokeDasharray="3 3" label={{ value: 'Q*', position: 'top' }} />
+                                                <ReferenceLine y={Number(equilibri.p)} stroke="#10b981" strokeDasharray="3 3" label={{ value: 'P*', position: 'right' }} />
+                                                {intervencio === 'pmax' && <ReferenceLine y={preuMax} stroke="#3b82f6" strokeWidth={2} label={{ value: idioma === 'val' ? 'P màx' : 'P ceil', fill: '#3b82f6' }} />}
+                                                {intervencio === 'pmin' && <ReferenceLine y={preuMin} stroke="#10b981" strokeWidth={2} label={{ value: idioma === 'val' ? 'P mín' : 'P floor', fill: '#10b981' }} />}
+                                            </LineChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                    <div className="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-600">
+                                        <p><span className="inline-block w-3 h-1 bg-pink-500 mr-1"></span> {idioma === 'val' ? 'Demanda (pendent negatiu)' : 'Demand (negative slope)'}</p>
+                                        <p><span className="inline-block w-3 h-1 bg-blue-500 mr-1"></span> {idioma === 'val' ? 'Oferta (pendent positiu)' : 'Supply (positive slope)'}</p>
+                                        {intervencio === 'impost' && <p><span className="inline-block w-3 h-1 bg-orange-500 mr-1" style={{borderStyle: 'dashed'}}></span> {idioma === 'val' ? "Oferta desplaçada per l'impost" : 'Supply shifted by tax'}</p>}
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
                     </div>
                 )}
                 
@@ -598,6 +838,24 @@ function EconomiaApp() {
             return d;
         }, [monA, monB, monCMg]);
         
+        // Dades funcions de reacció Cournot
+        const dadesCournot = useMemo(() => {
+            const d = [];
+            const maxQ = (oligA - Math.min(oligC1, oligC2)) / oligB;
+            for (let q2 = 0; q2 <= maxQ * 0.6; q2 += 1) {
+                const r1 = Math.max(0, (oligA - oligC1 - oligB * q2) / (2 * oligB));
+                d.push({ q2, r1 });
+            }
+            const d2 = [];
+            for (let q1 = 0; q1 <= maxQ * 0.6; q1 += 1) {
+                const r2 = Math.max(0, (oligA - oligC2 - oligB * q1) / (2 * oligB));
+                d2.push({ q1, r2 });
+            }
+            const q1Eq = parseFloat(cournot.q1);
+            const q2Eq = parseFloat(cournot.q2);
+            return { r1: d, r2: d2, eq: { q1: q1Eq, q2: q2Eq } };
+        }, [oligA, oligB, oligC1, oligC2, cournot]);
+        
         const txt = { val: { cp: 'Comp. Perfecta', mon: 'Monopoli', olig: 'Oligopoli', comp: 'Comparació' }, es: { cp: 'Comp. Perfecta', mon: 'Monopolio', olig: 'Oligopolio', comp: 'Comparación' }, en: { cp: 'Perfect Comp.', mon: 'Monopoly', olig: 'Oligopoly', comp: 'Comparison' } }[idioma];
         
         return (
@@ -777,17 +1035,39 @@ function EconomiaApp() {
                             </Card>
                         </div>
                         
-                        <Card title={idioma === 'val' ? "📐 Funcions de Reacció Cournot" : "📐 Cournot Reaction Functions"} icon="📐">
-                            <div className="grid md:grid-cols-2 gap-6">
+                        <Card title={idioma === 'val' ? "📐 Funcions de Reacció Cournot" : "📐 Cournot Reaction Functions"}>
+                            <div className="grid lg:grid-cols-2 gap-6">
                                 <div>
-                                    <FormulaBox formula="q₁(q₂) = (a - c₁ - b·q₂) / 2b" desc={idioma === 'val' ? "Funció reacció empresa 1" : "Firm 1 reaction function"} />
-                                    <FormulaBox formula="q₂(q₁) = (a - c₂ - b·q₁) / 2b" desc={idioma === 'val' ? "Funció reacció empresa 2" : "Firm 2 reaction function"} />
-                                    <p className="text-sm text-gray-600 mt-4">{idioma === 'val' ? "L'equilibri Nash-Cournot és la intersecció de les dues funcions de reacció." : "The Nash-Cournot equilibrium is the intersection of both reaction functions."}</p>
+                                    <div className="bg-blue-50 p-4 rounded-xl mb-4">
+                                        <p className="text-blue-700 text-sm">{idioma === 'val' ? "💡 Cada empresa decideix quant produir donada la quantitat de l'altra. La intersecció és l'equilibri de Nash!" : "💡 Each firm decides how much to produce given the other's quantity. The intersection is the Nash equilibrium!"}</p>
+                                    </div>
+                                    <FormulaBox formula="R₁(q₂) = (a - c₁ - b·q₂) / 2b" desc={idioma === 'val' ? "Funció reacció empresa 1" : "Firm 1 reaction function"} />
+                                    <FormulaBox formula="R₂(q₁) = (a - c₂ - b·q₁) / 2b" desc={idioma === 'val' ? "Funció reacció empresa 2" : "Firm 2 reaction function"} />
+                                    <div className="mt-4 p-3 bg-green-50 rounded-xl">
+                                        <p className="text-sm font-bold text-green-700">{idioma === 'val' ? "Equilibri Nash-Cournot:" : "Nash-Cournot Equilibrium:"}</p>
+                                        <p className="text-sm">q₁* = {cournot.q1}, q₂* = {cournot.q2}</p>
+                                        <p className="text-sm">P* = {cournot.P}€</p>
+                                    </div>
                                 </div>
-                                <div className="bg-gray-100 rounded-xl p-4 flex items-center justify-center">
-                                    <div className="text-center">
-                                        <p className="text-4xl mb-2">📊</p>
-                                        <p className="text-sm text-gray-600">{idioma === 'val' ? 'Les funcions de reacció tenen pendent negatiu' : 'Reaction functions have negative slope'}</p>
+                                <div>
+                                    <div className="h-64">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <ComposedChart>
+                                                <CartesianGrid strokeDasharray="3 3" />
+                                                <XAxis type="number" dataKey="q2" name="q₂" domain={[0, 'auto']} label={{ value: 'q₂', position: 'bottom' }} />
+                                                <YAxis type="number" domain={[0, 'auto']} label={{ value: 'q₁', angle: -90, position: 'insideLeft' }} />
+                                                <Tooltip />
+                                                <Legend />
+                                                <Line data={dadesCournot.r1} type="monotone" dataKey="r1" stroke="#ec4899" strokeWidth={3} dot={false} name="R₁(q₂)" />
+                                                <Line data={dadesCournot.r2.map(d => ({q2: d.r2, r1: d.q1}))} type="monotone" dataKey="r1" stroke="#3b82f6" strokeWidth={3} dot={false} name="R₂(q₁)" />
+                                                <Scatter data={[{q2: dadesCournot.eq.q2, r1: dadesCournot.eq.q1}]} fill="#10b981" shape="star" name={idioma === 'val' ? "Equilibri Nash" : "Nash Equilibrium"} />
+                                            </ComposedChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                    <div className="mt-2 grid grid-cols-3 gap-2 text-xs">
+                                        <div className="p-2 bg-pink-50 rounded text-center">R₁(q₂) - {idioma === 'val' ? "Emp. 1" : "Firm 1"}</div>
+                                        <div className="p-2 bg-blue-50 rounded text-center">R₂(q₁) - {idioma === 'val' ? "Emp. 2" : "Firm 2"}</div>
+                                        <div className="p-2 bg-green-50 rounded text-center">⭐ Nash</div>
                                     </div>
                                 </div>
                             </div>
@@ -961,6 +1241,8 @@ function EconomiaApp() {
         // AD-AS
         const [adY, setAdY] = useState(1000);
         const [adP, setAdP] = useState(100);
+        const [adShift, setAdShift] = useState(0); // -1 contractiu, 0 normal, 1 expansiu
+        const [asShift, setAsShift] = useState(0); // -1 shock positiu, 0 normal, 1 shock negatiu
         
         const pib = useMemo(() => {
             const total = pibC + pibI + pibG + (pibX - pibM);
@@ -982,6 +1264,23 @@ function EconomiaApp() {
             return { Y: Ystar.toFixed(0), r: (rstar * 100).toFixed(1), mult: mult.toFixed(2), dades };
         }, [isC0, isPMC, isI0, isb, isG, lmM, lmk, lmh]);
         
+        // Dades AD-AS
+        const dadesADAS = useMemo(() => {
+            const dades = [];
+            const potencial = 1000;
+            for (let Y = 400; Y <= 1400; Y += 25) {
+                const adBase = 180 - 0.12 * Y + adShift * 25;
+                const srasBase = 40 + 0.08 * Y + asShift * 20;
+                dades.push({ 
+                    Y, 
+                    AD: Math.max(20, adBase), 
+                    SRAS: Math.max(20, srasBase),
+                    LRAS: Y === potencial ? 180 : null 
+                });
+            }
+            return dades;
+        }, [adShift, asShift]);
+        
         return (
             <div className="space-y-6">
                 <div><h1 className="text-3xl font-black text-gray-800">Macroeconomia</h1></div>
@@ -995,26 +1294,54 @@ function EconomiaApp() {
                 
                 {tab === 'pib' && (
                     <div className="space-y-6">
-                        <Card title={idioma === 'val' ? "📊 Producte Interior Brut" : "📊 Gross Domestic Product"} icon="📊">
+                        <Card title={idioma === 'val' ? "📊 Producte Interior Brut" : "📊 Gross Domestic Product"}>
+                            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-4 rounded-xl mb-4">
+                                <p className="text-emerald-700">{idioma === 'val' ? "💡 El PIB és com el 'salari' d'un país: mesura tot el que produïm en un any." : "💡 GDP is like a country's 'salary': it measures everything we produce in a year."}</p>
+                            </div>
                             <FormulaBox formula="PIB = C + I + G + (X - M)" desc={idioma === 'val' ? "Mètode de la Despesa" : "Expenditure Method"} />
-                            <div className="grid md:grid-cols-2 gap-6 mt-4">
+                            <div className="grid lg:grid-cols-3 gap-6 mt-4">
                                 <div className="space-y-3">
-                                    <Slider label={idioma === 'val' ? "Consum (C)" : "Consumption (C)"} value={pibC} onChange={setPibC} min={200} max={1000} step={10} suffix="M€" />
-                                    <Slider label={idioma === 'val' ? "Inversió (I)" : "Investment (I)"} value={pibI} onChange={setPibI} min={50} max={500} step={10} suffix="M€" />
-                                    <Slider label={idioma === 'val' ? "Despesa Pública (G)" : "Government (G)"} value={pibG} onChange={setPibG} min={50} max={400} step={10} suffix="M€" />
-                                    <Slider label={idioma === 'val' ? "Exportacions (X)" : "Exports (X)"} value={pibX} onChange={setPibX} min={0} max={300} step={10} suffix="M€" />
-                                    <Slider label={idioma === 'val' ? "Importacions (M)" : "Imports (M)"} value={pibM} onChange={setPibM} min={0} max={300} step={10} suffix="M€" />
+                                    <Slider label={idioma === 'val' ? "🛒 Consum (C)" : "🛒 Consumption (C)"} value={pibC} onChange={setPibC} min={200} max={1000} step={10} suffix="M€" />
+                                    <Slider label={idioma === 'val' ? "🏭 Inversió (I)" : "🏭 Investment (I)"} value={pibI} onChange={setPibI} min={50} max={500} step={10} suffix="M€" />
+                                    <Slider label={idioma === 'val' ? "🏛️ Despesa Pública (G)" : "🏛️ Government (G)"} value={pibG} onChange={setPibG} min={50} max={400} step={10} suffix="M€" />
+                                    <Slider label={idioma === 'val' ? "📤 Exportacions (X)" : "📤 Exports (X)"} value={pibX} onChange={setPibX} min={0} max={300} step={10} suffix="M€" />
+                                    <Slider label={idioma === 'val' ? "📥 Importacions (M)" : "📥 Imports (M)"} value={pibM} onChange={setPibM} min={0} max={300} step={10} suffix="M€" />
                                 </div>
-                                <div className="bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl p-6 text-white">
-                                    <p className="text-white/70">PIB</p>
-                                    <p className="text-5xl font-black">{pib.total}M€</p>
-                                    <div className="grid grid-cols-4 gap-2 mt-4 text-sm">
-                                        <div className="bg-white/20 p-2 rounded text-center"><span className="text-white/70">C</span><br/>{pib.percC}%</div>
-                                        <div className="bg-white/20 p-2 rounded text-center"><span className="text-white/70">I</span><br/>{pib.percI}%</div>
-                                        <div className="bg-white/20 p-2 rounded text-center"><span className="text-white/70">G</span><br/>{pib.percG}%</div>
-                                        <div className="bg-white/20 p-2 rounded text-center"><span className="text-white/70">XN</span><br/>{pib.xn}M€</div>
+                                <div className="h-56">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <PieChart>
+                                            <Pie
+                                                data={[
+                                                    { name: 'C', value: pibC, fill: '#ec4899' },
+                                                    { name: 'I', value: pibI, fill: '#3b82f6' },
+                                                    { name: 'G', value: pibG, fill: '#10b981' },
+                                                    { name: 'X-M', value: Math.max(0, pibX - pibM), fill: '#f59e0b' }
+                                                ]}
+                                                cx="50%" cy="50%" outerRadius={80}
+                                                dataKey="value" label={({name, percent}) => `${name} ${(percent*100).toFixed(0)}%`}
+                                            />
+                                            <Tooltip />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                <div className="bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl p-6 text-white flex flex-col justify-center">
+                                    <p className="text-white/70 text-sm">PIB Total</p>
+                                    <p className="text-4xl font-black">{pib.total}M€</p>
+                                    <div className="grid grid-cols-2 gap-2 mt-4 text-sm">
+                                        <div className="bg-white/20 p-2 rounded text-center">🛒 C: {pib.percC}%</div>
+                                        <div className="bg-white/20 p-2 rounded text-center">🏭 I: {pib.percI}%</div>
+                                        <div className="bg-white/20 p-2 rounded text-center">🏛️ G: {pib.percG}%</div>
+                                        <div className="bg-white/20 p-2 rounded text-center">🌍 XN: {pib.xn}M€</div>
                                     </div>
                                 </div>
+                            </div>
+                        </Card>
+                        <Card title={idioma === 'val' ? "📚 Components del PIB" : "📚 GDP Components"}>
+                            <div className="grid md:grid-cols-4 gap-3">
+                                <div className="p-3 bg-pink-50 rounded-xl"><p className="font-bold text-pink-700">🛒 Consum (C)</p><p className="text-xs text-pink-600">{idioma === 'val' ? "Despesa famílies: menjar, roba, serveis..." : "Household spending: food, clothing, services..."}</p></div>
+                                <div className="p-3 bg-blue-50 rounded-xl"><p className="font-bold text-blue-700">🏭 Inversió (I)</p><p className="text-xs text-blue-600">{idioma === 'val' ? "Maquinària, edificis, inventaris empreses" : "Machinery, buildings, business inventories"}</p></div>
+                                <div className="p-3 bg-green-50 rounded-xl"><p className="font-bold text-green-700">🏛️ Govern (G)</p><p className="text-xs text-green-600">{idioma === 'val' ? "Despesa pública: sanitat, educació, defensa" : "Public spending: healthcare, education, defense"}</p></div>
+                                <div className="p-3 bg-amber-50 rounded-xl"><p className="font-bold text-amber-700">🌍 Exp. Netes</p><p className="text-xs text-amber-600">{idioma === 'val' ? "X - M: el que venem fora menys el que comprem" : "X - M: what we sell abroad minus what we buy"}</p></div>
                             </div>
                         </Card>
                     </div>
@@ -1085,53 +1412,124 @@ function EconomiaApp() {
                 )}
                 
                 {tab === 'adas' && (
-                    <Card title={idioma === 'val' ? "📈 Model AD-AS" : "📈 AD-AS Model"} icon="📈">
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <div>
-                                <ConceptBox title={idioma === 'val' ? "Demanda Agregada (DA)" : "Aggregate Demand (AD)"} color="pink">
-                                    <p>{idioma === 'val' ? "Combinacions P,Y on mercats béns i diner en equilibri simultàniament." : "P,Y combinations where goods and money markets in simultaneous equilibrium."}</p>
-                                    <p className="text-sm mt-2">{idioma === 'val' ? "Pendent negatiu: P↑ → r↑ → I↓ → Y↓" : "Negative slope: P↑ → r↑ → I↓ → Y↓"}</p>
-                                </ConceptBox>
-                                <ConceptBox title={idioma === 'val' ? "Oferta Agregada Curt Termini (OACT)" : "Short-Run Aggregate Supply (SRAS)"} color="blue">
-                                    <p>{idioma === 'val' ? "Pendent positiu: alguns preus/salaris rígids." : "Positive slope: some prices/wages sticky."}</p>
-                                </ConceptBox>
-                                <ConceptBox title={idioma === 'val' ? "Oferta Agregada Llarg Termini (OALT)" : "Long-Run Aggregate Supply (LRAS)"} color="green">
-                                    <p>{idioma === 'val' ? "VERTICAL al PIB potencial. Tots preus flexibles." : "VERTICAL at potential GDP. All prices flexible."}</p>
-                                </ConceptBox>
-                            </div>
-                            <div className="bg-amber-50 p-4 rounded-xl">
-                                <h4 className="font-bold text-amber-800 mb-4">{idioma === 'val' ? "Shocks i Polítiques" : "Shocks and Policies"}</h4>
-                                <div className="space-y-3 text-sm">
-                                    <div className="p-2 bg-white rounded">
-                                        <strong>{idioma === 'val' ? "Expansió Fiscal/Monetària:" : "Fiscal/Monetary Expansion:"}</strong>
-                                        <p>{idioma === 'val' ? "DA→ (CT: Y↑, P↑) (LT: només P↑)" : "AD→ (SR: Y↑, P↑) (LR: only P↑)"}</p>
+                    <div className="space-y-6">
+                        <Card title={idioma === 'val' ? "📈 Simulador AD-AS Interactiu" : "📈 Interactive AD-AS Simulator"}>
+                            <div className="grid lg:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <div className="p-4 bg-pink-50 rounded-xl">
+                                        <p className="text-sm font-bold text-pink-600 mb-2">📉 {idioma === 'val' ? "Desplaçar Demanda Agregada (DA)" : "Shift Aggregate Demand (AD)"}</p>
+                                        <div className="flex gap-2">
+                                            <button onClick={() => setAdShift(-1)} className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${adShift === -1 ? 'bg-pink-500 text-white' : 'bg-white hover:bg-pink-100'}`}>← {idioma === 'val' ? "Contracció" : "Contract"}</button>
+                                            <button onClick={() => setAdShift(0)} className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${adShift === 0 ? 'bg-pink-500 text-white' : 'bg-white hover:bg-pink-100'}`}>{idioma === 'val' ? "Normal" : "Normal"}</button>
+                                            <button onClick={() => setAdShift(1)} className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${adShift === 1 ? 'bg-pink-500 text-white' : 'bg-white hover:bg-pink-100'}`}>{idioma === 'val' ? "Expansió" : "Expand"} →</button>
+                                        </div>
+                                        <p className="text-xs mt-2 text-pink-500">{idioma === 'val' ? "Expansió: ↑G, ↑M, ↓impostos | Contracció: ↓G, ↓M, ↑impostos" : "Expansion: ↑G, ↑M, ↓taxes | Contraction: ↓G, ↓M, ↑taxes"}</p>
                                     </div>
-                                    <div className="p-2 bg-white rounded">
-                                        <strong>{idioma === 'val' ? "Shock Oferta Negatiu:" : "Negative Supply Shock:"}</strong>
-                                        <p>{idioma === 'val' ? "OA← (Y↓, P↑) Estagflació!" : "AS← (Y↓, P↑) Stagflation!"}</p>
+                                    <div className="p-4 bg-blue-50 rounded-xl">
+                                        <p className="text-sm font-bold text-blue-600 mb-2">📈 {idioma === 'val' ? "Desplaçar Oferta Agregada (OA)" : "Shift Aggregate Supply (AS)"}</p>
+                                        <div className="flex gap-2">
+                                            <button onClick={() => setAsShift(1)} className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${asShift === 1 ? 'bg-blue-500 text-white' : 'bg-white hover:bg-blue-100'}`}>↑ {idioma === 'val' ? "Shock -" : "Shock -"}</button>
+                                            <button onClick={() => setAsShift(0)} className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${asShift === 0 ? 'bg-blue-500 text-white' : 'bg-white hover:bg-blue-100'}`}>{idioma === 'val' ? "Normal" : "Normal"}</button>
+                                            <button onClick={() => setAsShift(-1)} className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${asShift === -1 ? 'bg-blue-500 text-white' : 'bg-white hover:bg-blue-100'}`}>{idioma === 'val' ? "Shock +" : "Shock +"} ↓</button>
+                                        </div>
+                                        <p className="text-xs mt-2 text-blue-500">{idioma === 'val' ? "Shock -: ↑petroli, guerra | Shock +: ↑productivitat, ↓costos" : "Shock -: ↑oil, war | Shock +: ↑productivity, ↓costs"}</p>
+                                    </div>
+                                    <div className={`p-4 rounded-xl ${adShift === 1 && asShift === 0 ? 'bg-green-100 border-2 border-green-400' : adShift === -1 && asShift === 0 ? 'bg-red-100 border-2 border-red-400' : asShift === 1 ? 'bg-orange-100 border-2 border-orange-400' : 'bg-gray-100'}`}>
+                                        <h4 className="font-bold mb-2">{idioma === 'val' ? "🎯 Efecte Previst:" : "🎯 Expected Effect:"}</h4>
+                                        {adShift === 0 && asShift === 0 && <p className="text-sm">{idioma === 'val' ? "Equilibri inicial sense canvis" : "Initial equilibrium, no changes"}</p>}
+                                        {adShift === 1 && asShift === 0 && <p className="text-sm text-green-700">{idioma === 'val' ? "DA→ dreta: PIB↑, Preus↑ (curt termini)" : "AD→ right: GDP↑, Prices↑ (short run)"}</p>}
+                                        {adShift === -1 && asShift === 0 && <p className="text-sm text-red-700">{idioma === 'val' ? "DA→ esquerra: PIB↓, Preus↓ (recessió)" : "AD→ left: GDP↓, Prices↓ (recession)"}</p>}
+                                        {asShift === 1 && adShift === 0 && <p className="text-sm text-orange-700">{idioma === 'val' ? "OA→ amunt: PIB↓, Preus↑ (ESTAGFLACIÓ!)" : "AS→ up: GDP↓, Prices↑ (STAGFLATION!)"}</p>}
+                                        {asShift === -1 && adShift === 0 && <p className="text-sm text-blue-700">{idioma === 'val' ? "OA→ avall: PIB↑, Preus↓ (creixement sa)" : "AS→ down: GDP↑, Prices↓ (healthy growth)"}</p>}
+                                        {adShift !== 0 && asShift !== 0 && <p className="text-sm text-purple-700">{idioma === 'val' ? "Efectes combinats - resultats depenen de magnituds" : "Combined effects - results depend on magnitudes"}</p>}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="h-72">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <LineChart data={dadesADAS}>
+                                                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                                <XAxis dataKey="Y" label={{ value: idioma === 'val' ? 'PIB (Y)' : 'GDP (Y)', position: 'bottom' }} domain={[400, 1400]} />
+                                                <YAxis label={{ value: idioma === 'val' ? 'Nivell Preus (P)' : 'Price Level (P)', angle: -90, position: 'insideLeft' }} domain={[0, 180]} />
+                                                <Tooltip />
+                                                <Legend />
+                                                <Line type="monotone" dataKey="AD" stroke="#ec4899" strokeWidth={3} dot={false} name={idioma === 'val' ? "Demanda Agregada" : "Agg. Demand"} />
+                                                <Line type="monotone" dataKey="SRAS" stroke="#3b82f6" strokeWidth={3} dot={false} name={idioma === 'val' ? "Oferta CT" : "SR Supply"} />
+                                                <ReferenceLine x={1000} stroke="#10b981" strokeWidth={3} strokeDasharray="5 5" label={{ value: idioma === 'val' ? 'Y*' : 'Y*', position: 'top', fill: '#10b981' }} />
+                                            </LineChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                    <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
+                                        <div className="p-2 bg-pink-50 rounded text-center"><span className="inline-block w-3 h-1 bg-pink-500 mr-1"></span>DA</div>
+                                        <div className="p-2 bg-blue-50 rounded text-center"><span className="inline-block w-3 h-1 bg-blue-500 mr-1"></span>OACT</div>
+                                        <div className="p-2 bg-green-50 rounded text-center"><span className="inline-block w-3 h-1 bg-green-500 mr-1" style={{borderStyle: 'dashed'}}></span>OALT (Y*)</div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </Card>
+                        </Card>
+                        <Card title={idioma === 'val' ? "📚 Conceptes AD-AS" : "📚 AD-AS Concepts"}>
+                            <div className="grid md:grid-cols-3 gap-4">
+                                <ConceptBox title={idioma === 'val' ? "Demanda Agregada (DA)" : "Aggregate Demand (AD)"} color="pink">
+                                    <p className="text-sm">{idioma === 'val' ? "Despesa total planificada a cada nivell de preus." : "Total planned spending at each price level."}</p>
+                                    <p className="text-xs mt-1 font-medium">{idioma === 'val' ? "Pendent NEGATIU: P↑ → r↑ → I↓ → Y↓" : "NEGATIVE slope: P↑ → r↑ → I↓ → Y↓"}</p>
+                                </ConceptBox>
+                                <ConceptBox title={idioma === 'val' ? "Oferta Agregada CT" : "Short-Run AS"} color="blue">
+                                    <p className="text-sm">{idioma === 'val' ? "Producció a curt termini (salaris rígids)." : "Short-run output (sticky wages)."}</p>
+                                    <p className="text-xs mt-1 font-medium">{idioma === 'val' ? "Pendent POSITIU: P↑ → més rendible produir" : "POSITIVE slope: P↑ → more profitable to produce"}</p>
+                                </ConceptBox>
+                                <ConceptBox title={idioma === 'val' ? "Oferta Agregada LT" : "Long-Run AS"} color="green">
+                                    <p className="text-sm">{idioma === 'val' ? "PIB potencial (plena ocupació recursos)." : "Potential GDP (full resource employment)."}</p>
+                                    <p className="text-xs mt-1 font-medium">{idioma === 'val' ? "VERTICAL: a llarg termini, Y torna a Y*" : "VERTICAL: long-run, Y returns to Y*"}</p>
+                                </ConceptBox>
+                            </div>
+                        </Card>
+                    </div>
                 )}
                 
                 {tab === 'phillips' && (
-                    <Card title={idioma === 'val' ? "📊 Corba de Phillips" : "📊 Phillips Curve"} icon="📊">
-                        <div className="grid md:grid-cols-2 gap-6">
+                    <Card title={idioma === 'val' ? "📊 Corba de Phillips: El dilema inflació-atur" : "📊 Phillips Curve: Inflation-Unemployment Trade-off"}>
+                        <div className="grid lg:grid-cols-2 gap-6">
                             <div>
-                                <ConceptBox title={idioma === 'val' ? "Phillips Original" : "Original Phillips"} color="pink">
-                                    <p>{idioma === 'val' ? "Relació inversa inflació-atur a curt termini." : "Inverse inflation-unemployment relationship in short run."}</p>
+                                <div className="bg-rose-50 p-4 rounded-xl mb-4">
+                                    <p className="text-rose-700">{idioma === 'val' ? "A CURT TERMINI, menys atur sol implicar més inflació. Els governs han de triar!" : "In the SHORT RUN, less unemployment usually means more inflation. Governments must choose!"}</p>
+                                </div>
+                                <ConceptBox title={idioma === 'val' ? "Phillips Original (Curt Termini)" : "Original Phillips (Short Run)"} color="pink">
+                                    <p>{idioma === 'val' ? "Relació INVERSA inflació-atur." : "INVERSE inflation-unemployment relationship."}</p>
                                     <FormulaBox formula="π = πᵉ - β(u - uₙ)" />
+                                    <p className="text-xs mt-2">{idioma === 'val' ? "Si atur < natural → Inflació puja" : "If unemployment < natural → Inflation rises"}</p>
                                 </ConceptBox>
                                 <ConceptBox title="NAIRU" color="blue">
-                                    <p>{idioma === 'val' ? "Taxa d'atur no acceleradora d'inflació. A llarg termini, no hi ha trade-off." : "Non-Accelerating Inflation Rate of Unemployment. No long-run trade-off."}</p>
+                                    <p>{idioma === 'val' ? "Taxa Natural d'Atur: A LLARG TERMINI no hi ha trade-off permanent." : "Natural Rate of Unemployment: In the LONG RUN there's no permanent trade-off."}</p>
                                 </ConceptBox>
+                                <div className="p-3 bg-amber-50 rounded-xl mt-4">
+                                    <p className="text-sm text-amber-700"><strong>{idioma === 'val' ? "Estagflació (1970s):" : "Stagflation (1970s):"}</strong> {idioma === 'val' ? "Atur ALT + Inflació ALTA simultàniament. Trenca la Phillips tradicional!" : "HIGH unemployment + HIGH inflation simultaneously. Breaks traditional Phillips!"}</p>
+                                </div>
                             </div>
-                            <div className="bg-violet-50 p-4 rounded-xl">
-                                <h4 className="font-bold text-violet-700 mb-3">{idioma === 'val' ? "Expectatives" : "Expectations"}</h4>
-                                <p className="text-sm text-violet-600 mb-2"><strong>{idioma === 'val' ? "Adaptatives:" : "Adaptive:"}</strong> {idioma === 'val' ? "Basades en passat" : "Based on past"}</p>
-                                <p className="text-sm text-violet-600"><strong>{idioma === 'val' ? "Racionals:" : "Rational:"}</strong> {idioma === 'val' ? "Utilitzen tota info disponible" : "Use all available info"}</p>
+                            <div>
+                                <div className="h-64">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <LineChart data={[
+                                            { u: 2, pi: 10 }, { u: 3, pi: 6 }, { u: 4, pi: 4 }, { u: 5, pi: 2.5 }, { u: 6, pi: 2 }, { u: 7, pi: 1.5 }, { u: 8, pi: 1.2 }, { u: 9, pi: 1 }
+                                        ]}>
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="u" label={{ value: idioma === 'val' ? 'Taxa atur (%)' : 'Unemployment (%)', position: 'bottom' }} />
+                                            <YAxis label={{ value: idioma === 'val' ? 'Inflació (%)' : 'Inflation (%)', angle: -90, position: 'insideLeft' }} domain={[0, 12]} />
+                                            <Tooltip />
+                                            <Line type="monotone" dataKey="pi" stroke="#ec4899" strokeWidth={3} dot={{ fill: '#ec4899' }} name={idioma === 'val' ? "Inflació" : "Inflation"} />
+                                            <ReferenceLine x={5} stroke="#3b82f6" strokeWidth={2} strokeDasharray="5 5" label={{ value: 'NAIRU', position: 'top', fill: '#3b82f6' }} />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                <div className="mt-4 grid grid-cols-2 gap-3">
+                                    <div className="p-3 bg-green-50 rounded-xl text-center">
+                                        <p className="text-xs text-green-600">{idioma === 'val' ? "Pol. Expansiva" : "Expansionary"}</p>
+                                        <p className="font-bold text-green-700">u↓ π↑</p>
+                                    </div>
+                                    <div className="p-3 bg-red-50 rounded-xl text-center">
+                                        <p className="text-xs text-red-600">{idioma === 'val' ? "Pol. Restrictiva" : "Contractionary"}</p>
+                                        <p className="font-bold text-red-700">u↑ π↓</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </Card>
