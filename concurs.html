@@ -2,7 +2,7 @@
 <html lang="ca">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🏆 Concurs PDE - Economia, Finances i Empresa</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -13,17 +13,117 @@
         * { font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-10px); } 40% { transform: translateX(10px); } 60% { transform: translateX(-10px); } 80% { transform: translateX(10px); } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes glow { 0%, 100% { box-shadow: 0 0 5px #fbbf24; } 50% { box-shadow: 0 0 20px #fbbf24, 0 0 30px #f59e0b; } }
+        @keyframes confetti { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes popIn { 0% { transform: scale(0); } 80% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        @keyframes correctPulse { 0% { background-color: rgba(74, 222, 128, 0.3); } 50% { background-color: rgba(74, 222, 128, 0.6); } 100% { background-color: rgba(74, 222, 128, 0.3); } }
+        @keyframes wrongShake { 0%, 100% { transform: translateX(0); background-color: rgba(248, 113, 113, 0.3); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
         .animate-fade { animation: fadeIn 0.4s ease-out; }
         .animate-pulse-custom { animation: pulse 0.5s ease-in-out; }
-        .animate-shake { animation: shake 0.3s ease-in-out; }
+        .animate-shake { animation: shake 0.5s ease-in-out; }
+        .animate-bounce { animation: bounce 0.5s ease-in-out; }
+        .animate-glow { animation: glow 1s ease-in-out infinite; }
+        .animate-slideIn { animation: slideIn 0.3s ease-out; }
+        .animate-popIn { animation: popIn 0.3s ease-out; }
+        .animate-correct { animation: correctPulse 0.5s ease-in-out; }
+        .animate-wrong { animation: wrongShake 0.5s ease-in-out; }
         .gold-gradient { background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); }
+        .confetti { position: fixed; width: 10px; height: 10px; top: -10px; animation: confetti 3s linear forwards; pointer-events: none; z-index: 1000; }
+        .streak-fire { text-shadow: 0 0 10px #f97316, 0 0 20px #ea580c, 0 0 30px #dc2626; }
+        input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 min-h-screen">
     <div id="root"></div>
     <script type="text/babel">
-const { useState, useEffect, useMemo } = React;
+const { useState, useEffect, useMemo, useRef, useCallback, memo } = React;
+
+// Component Timer separat amb useRef per evitar re-renders
+const Timer = memo(({ temps, onTimeUp, isActive }) => {
+    const [display, setDisplay] = useState(temps);
+    const intervalRef = useRef(null);
+    const tempsRef = useRef(temps);
+    
+    useEffect(() => {
+        tempsRef.current = temps;
+        setDisplay(temps);
+    }, [temps]);
+    
+    useEffect(() => {
+        if (!isActive) {
+            if (intervalRef.current) clearInterval(intervalRef.current);
+            return;
+        }
+        
+        intervalRef.current = setInterval(() => {
+            tempsRef.current -= 1;
+            setDisplay(tempsRef.current);
+            if (tempsRef.current <= 0) {
+                clearInterval(intervalRef.current);
+                onTimeUp();
+            }
+        }, 1000);
+        
+        return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+    }, [isActive, onTimeUp]);
+    
+    const color = display > 30 ? 'text-white' : display > 10 ? 'text-amber-400' : 'text-red-400 animate-pulse';
+    const pct = (display / 60) * 100;
+    const barColor = display > 30 ? 'bg-green-500' : display > 10 ? 'bg-amber-500' : 'bg-red-500';
+    
+    return (
+        <div className="flex items-center gap-3">
+            <div className="flex-1 h-2 bg-white/20 rounded-full overflow-hidden">
+                <div className={`h-full ${barColor} transition-all duration-1000`} style={{ width: `${pct}%` }}></div>
+            </div>
+            <span className={`text-2xl font-black ${color} min-w-[50px] text-right`}>{display}s</span>
+        </div>
+    );
+});
+
+// Efecte confetti
+const Confetti = ({ show }) => {
+    if (!show) return null;
+    const colors = ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6', '#ef4444'];
+    return (
+        <>
+            {[...Array(50)].map((_, i) => (
+                <div key={i} className="confetti" style={{
+                    left: `${Math.random() * 100}%`,
+                    backgroundColor: colors[Math.floor(Math.random() * colors.length)],
+                    animationDelay: `${Math.random() * 2}s`,
+                    borderRadius: Math.random() > 0.5 ? '50%' : '0',
+                }}></div>
+            ))}
+        </>
+    );
+};
+
+// Toast notifications
+const Toast = ({ message, type, show }) => {
+    if (!show) return null;
+    const bg = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+    return (
+        <div className={`fixed top-4 right-4 ${bg} text-white px-6 py-3 rounded-xl font-bold shadow-lg animate-slideIn z-50`}>
+            {message}
+        </div>
+    );
+};
+
+// Component per mostrar punts guanyats/perduts
+const PointsPopup = ({ points, show }) => {
+    if (!show) return null;
+    const isPositive = points > 0;
+    return (
+        <div className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-6xl font-black animate-popIn z-50 ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+            {isPositive ? '+' : ''}{points}
+        </div>
+    );
+};
 
 function ConcursApp() {
     const [idioma, setIdioma] = useState('val');
@@ -32,129 +132,139 @@ function ConcursApp() {
     const [nomJugador, setNomJugador] = useState('');
     const [preguntaActual, setPreguntaActual] = useState(0);
     const [puntuacio, setPuntuacio] = useState(0);
-    const [tempsRestant, setTempsRestant] = useState(60);
     const [respostes, setRespostes] = useState([]);
     const [ratxa, setRatxa] = useState(0);
+    const [maxRatxa, setMaxRatxa] = useState(0);
     const [preguntesPartida, setPreguntesPartida] = useState([]);
     const [respostaUsuari, setRespostaUsuari] = useState(null);
     const [mostrarResultat, setMostrarResultat] = useState(false);
     const [ranking, setRanking] = useState([]);
     const [ordreUsuari, setOrdreUsuari] = useState([]);
     const [inputNumeric, setInputNumeric] = useState('');
-
+    const [timerKey, setTimerKey] = useState(0);
+    const [timerActive, setTimerActive] = useState(false);
+    const [showConfetti, setShowConfetti] = useState(false);
+    const [toast, setToast] = useState({ show: false, message: '', type: '' });
+    const [pointsPopup, setPointsPopup] = useState({ show: false, points: 0 });
+    const [ajudes, setAjudes] = useState({ cinquanta: 1, temps: 1, saltar: 1 });
+    const [opcionsEliminades, setOpcionsEliminades] = useState([]);
+    const [soundEnabled, setSoundEnabled] = useState(true);
+    
+    const inputRef = useRef(null);
+    
     const t = (val, es, en) => idioma === 'val' ? val : idioma === 'es' ? es : en;
+    
+    // Efectes de so
+    const playSound = useCallback((type) => {
+        if (!soundEnabled) return;
+        const sounds = {
+            correct: [523.25, 659.25, 783.99], // Do-Mi-Sol
+            wrong: [311.13, 293.66], // Mi♭-Re
+            tick: [800],
+            bonus: [523.25, 659.25, 783.99, 1046.50], // Do-Mi-Sol-Do'
+        };
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const notes = sounds[type] || [440];
+        notes.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = freq;
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.1 + 0.3);
+            osc.start(ctx.currentTime + i * 0.1);
+            osc.stop(ctx.currentTime + i * 0.1 + 0.3);
+        });
+    }, [soundEnabled]);
+    
+    // Vibrar en mòbil
+    const vibrate = useCallback((pattern) => {
+        if (navigator.vibrate) navigator.vibrate(pattern);
+    }, []);
+    
+    // Toast helper
+    const showToast = useCallback((message, type = 'info') => {
+        setToast({ show: true, message, type });
+        setTimeout(() => setToast({ show: false, message: '', type: '' }), 2000);
+    }, []);
 
-    // BANC DE PREGUNTES AMPLIAT - Més càlculs, gràfics, ordenar i fórmules
+    // BANC DE PREGUNTES
     const bancPreguntes = useMemo(() => ({
         economia: [
-            // CÀLCULS (7)
-            { id: 'ec1', tipus: 'numeric', dificultat: 'facil', pregunta: t("Si el preu puja de 10€ a 12€ i la demanda baixa de 100 a 80 unitats, quina és l'elasticitat-preu? (valor absolut)", "Si el precio sube de 10€ a 12€ y la demanda baja de 100 a 80 unidades, ¿cuál es la elasticidad-precio? (valor absoluto)", "If price rises from €10 to €12 and demand drops from 100 to 80 units, what's the price elasticity? (absolute value)"), correcta: 1, tolerancia: 0.1 },
-            { id: 'ec2', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("PIB = C + I + G + (X-M). Si C=500, I=200, G=150, X=100, M=80. Quin és el PIB?", "PIB = C + I + G + (X-M). Si C=500, I=200, G=150, X=100, M=80. ¿Cuál es el PIB?", "GDP = C + I + G + (X-M). If C=500, I=200, G=150, X=100, M=80. What's GDP?"), correcta: 870, tolerancia: 0 },
-            { id: 'ec3', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Taxa d'atur: 2M d'aturats, 18M d'ocupats. Calcula la taxa en %.", "Tasa de paro: 2M parados, 18M ocupados. Calcula la tasa en %.", "Unemployment rate: 2M unemployed, 18M employed. Calculate rate in %."), correcta: 10, tolerancia: 0 },
-            { id: 'ec4', tipus: 'numeric', dificultat: 'dificil', pregunta: t("Multiplicador keynesià: PMC=0.8. Quin és el multiplicador? (1/(1-PMC))", "Multiplicador keynesiano: PMC=0.8. ¿Cuál es el multiplicador?", "Keynesian multiplier: MPC=0.8. What's the multiplier?"), correcta: 5, tolerancia: 0 },
-            { id: 'ec5', tipus: 'numeric', dificultat: 'facil', pregunta: t("Inflació: IPC any passat=100, IPC actual=103. Quina és la inflació en %?", "Inflación: IPC año pasado=100, IPC actual=103. ¿Cuál es la inflación en %?", "Inflation: CPI last year=100, current CPI=103. What's inflation in %?"), correcta: 3, tolerancia: 0 },
-            { id: 'ec6', tipus: 'numeric', dificultat: 'dificil', pregunta: t("Creixement real: PIB nominal creix 7%, inflació 4%. Quin és el creixement real aproximat?", "Crecimiento real: PIB nominal crece 7%, inflación 4%. ¿Cuál es el crecimiento real aproximado?", "Real growth: Nominal GDP grows 7%, inflation 4%. What's approx real growth?"), correcta: 3, tolerancia: 0.5 },
-            { id: 'ec7', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Balança comercial: Exportacions=50.000M€, Importacions=65.000M€. Saldo en M€?", "Balanza comercial: Exportaciones=50.000M€, Importaciones=65.000M€. ¿Saldo en M€?", "Trade balance: Exports=€50,000M, Imports=€65,000M. Balance in M€?"), correcta: -15000, tolerancia: 0 },
-            
-            // ORDENAR (4)
-            { id: 'eo1', tipus: 'order', dificultat: 'mitjana', pregunta: t("Ordena les fases del cicle econòmic:", "Ordena las fases del ciclo económico:", "Order the business cycle phases:"), elements: [t("Expansió", "Expansión", "Expansion"), t("Cim/Auge", "Cima/Auge", "Peak"), t("Recessió", "Recesión", "Recession"), t("Fons/Depressió", "Valle/Depresión", "Trough")], ordreCorrecte: [0, 1, 2, 3] },
-            { id: 'eo2', tipus: 'order', dificultat: 'dificil', pregunta: t("Ordena cronològicament les escoles econòmiques:", "Ordena cronológicamente las escuelas económicas:", "Order economic schools chronologically:"), elements: [t("Mercantilisme", "Mercantilismo", "Mercantilism"), t("Fisiocràcia", "Fisiocracia", "Physiocracy"), t("Clàssica (Smith)", "Clásica (Smith)", "Classical (Smith)"), t("Keynesianisme", "Keynesianismo", "Keynesianism")], ordreCorrecte: [0, 1, 2, 3] },
-            { id: 'eo3', tipus: 'order', dificultat: 'mitjana', pregunta: t("Ordena de menys a més intervenció estatal:", "Ordena de menos a más intervención estatal:", "Order from least to most state intervention:"), elements: [t("Liberalisme", "Liberalismo", "Liberalism"), t("Economia mixta", "Economía mixta", "Mixed economy"), t("Socialisme", "Socialismo", "Socialism"), t("Economia planificada", "Economía planificada", "Planned economy")], ordreCorrecte: [0, 1, 2, 3] },
-            { id: 'eo4', tipus: 'order', dificultat: 'facil', pregunta: t("Ordena els sectors econòmics per ordre clàssic:", "Ordena los sectores económicos por orden clásico:", "Order economic sectors classically:"), elements: [t("Primari", "Primario", "Primary"), t("Secundari", "Secundario", "Secondary"), t("Terciari", "Terciario", "Tertiary")], ordreCorrecte: [0, 1, 2] },
-            
-            // FÓRMULES (4)
-            { id: 'ef1', tipus: 'formula', dificultat: 'facil', pregunta: t("PIB = C + I + G + ___", "PIB = C + I + G + ___", "GDP = C + I + G + ___"), opcions: ["(X-M)", "(M-X)", "T", "S"], correcta: 0 },
-            { id: 'ef2', tipus: 'formula', dificultat: 'mitjana', pregunta: t("Taxa d'atur = Aturats / ___ × 100", "Tasa de paro = Parados / ___ × 100", "Unemployment rate = Unemployed / ___ × 100"), opcions: [t("Població activa", "Población activa", "Labor force"), t("Població total", "Población total", "Total population"), t("Ocupats", "Ocupados", "Employed"), "PIB"], correcta: 0 },
-            { id: 'ef3', tipus: 'formula', dificultat: 'mitjana', pregunta: t("Inflació = (IPC actual - IPC anterior) / ___ × 100", "Inflación = (IPC actual - IPC anterior) / ___ × 100", "Inflation = (Current CPI - Previous CPI) / ___ × 100"), opcions: ["IPC anterior", "IPC actual", "100", "PIB"], correcta: 0 },
-            { id: 'ef4', tipus: 'formula', dificultat: 'dificil', pregunta: t("Multiplicador keynesià = 1 / (1 - ___)", "Multiplicador keynesiano = 1 / (1 - ___)", "Keynesian multiplier = 1 / (1 - ___)"), opcions: ["PMC", "PMA", "i", "G"], correcta: 0 },
-            
-            // GRÀFICS/IDENTIFICAR (3)
-            { id: 'eg1', tipus: 'identify', dificultat: 'facil', pregunta: t("Quin gràfic representa l'equilibri entre oferta i demanda?", "¿Qué gráfico representa el equilibrio entre oferta y demanda?", "Which graph shows supply-demand equilibrium?"), imatge: "oferta_demanda", opcions: [t("Corba de Phillips", "Curva de Phillips", "Phillips Curve"), t("Oferta-Demanda", "Oferta-Demanda", "Supply-Demand"), t("IS-LM", "IS-LM", "IS-LM"), t("Corba de Laffer", "Curva de Laffer", "Laffer Curve")], correcta: 1 },
-            { id: 'eg2', tipus: 'identify', dificultat: 'mitjana', pregunta: t("Identifica el model macroeconòmic:", "Identifica el modelo macroeconómico:", "Identify the macro model:"), imatge: "islm", opcions: ["AD-AS", "IS-LM", t("Flux circular", "Flujo circular", "Circular flow"), "Phillips"], correcta: 1 },
-            { id: 'eg3', tipus: 'identify', dificultat: 'dificil', pregunta: t("Aquesta corba mostra la relació entre impostos i recaptació:", "Esta curva muestra la relación entre impuestos y recaudación:", "This curve shows the tax-revenue relationship:"), imatge: "laffer", opcions: ["Phillips", "Lorenz", "Laffer", "Engel"], correcta: 2 },
-            
-            // VERTADER/FALS (2)
-            { id: 'ev1', tipus: 'truefalse', dificultat: 'facil', pregunta: t("La inflació és la pujada generalitzada i sostinguda dels preus", "La inflación es la subida generalizada y sostenida de los precios", "Inflation is the general and sustained rise in prices"), correcta: true },
-            { id: 'ev2', tipus: 'truefalse', dificultat: 'mitjana', pregunta: t("Segons la corba de Phillips, hi ha una relació directa entre inflació i atur", "Según la curva de Phillips, hay una relación directa entre inflación y paro", "According to Phillips curve, there's a direct relation between inflation and unemployment"), correcta: false },
+            { id: 'ec1', tipus: 'numeric', dificultat: 'facil', pregunta: t("Elasticitat: Preu puja 10→12€, Demanda baixa 100→80u. Elasticitat? (absolut)", "Elasticidad: Precio sube 10→12€, Demanda baja 100→80u. ¿Elasticidad? (absoluto)", "Elasticity: Price rises 10→12€, Demand drops 100→80u. Elasticity? (absolute)"), correcta: 1, tolerancia: 0.1, pista: "Ed = (%ΔQ) / (%ΔP)" },
+            { id: 'ec2', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("PIB = C+I+G+(X-M). C=500, I=200, G=150, X=100, M=80. PIB?", "PIB = C+I+G+(X-M). C=500, I=200, G=150, X=100, M=80. ¿PIB?", "GDP = C+I+G+(X-M). C=500, I=200, G=150, X=100, M=80. GDP?"), correcta: 870, tolerancia: 0, pista: "Suma tots els components" },
+            { id: 'ec3', tipus: 'numeric', dificultat: 'facil', pregunta: t("Taxa d'atur: 2M aturats, 18M ocupats. Taxa en %?", "Tasa de paro: 2M parados, 18M ocupados. ¿Tasa en %?", "Unemployment: 2M unemployed, 18M employed. Rate %?"), correcta: 10, tolerancia: 0, pista: "Atur/(Atur+Ocupats)×100" },
+            { id: 'ec4', tipus: 'numeric', dificultat: 'dificil', pregunta: t("Multiplicador keynesià amb PMC=0.8?", "Multiplicador keynesiano con PMC=0.8?", "Keynesian multiplier with MPC=0.8?"), correcta: 5, tolerancia: 0, pista: "1/(1-PMC)" },
+            { id: 'ec5', tipus: 'numeric', dificultat: 'facil', pregunta: t("Inflació: IPC anterior=100, IPC actual=103. Inflació %?", "Inflación: IPC anterior=100, IPC actual=103. ¿Inflación %?", "Inflation: Previous CPI=100, Current CPI=103. Inflation %?"), correcta: 3, tolerancia: 0, pista: "(IPCnew-IPCold)/IPCold×100" },
+            { id: 'ec6', tipus: 'numeric', dificultat: 'dificil', pregunta: t("Creixement real: PIB nominal +7%, inflació 4%. Creixement real aprox?", "Crecimiento real: PIB nominal +7%, inflación 4%. ¿Crecimiento real aprox?", "Real growth: Nominal GDP +7%, inflation 4%. Approx real growth?"), correcta: 3, tolerancia: 0.5, pista: "Nominal - Inflació" },
+            { id: 'ec7', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Balança comercial: X=50.000M€, M=65.000M€. Saldo?", "Balanza comercial: X=50.000M€, M=65.000M€. ¿Saldo?", "Trade balance: X=€50,000M, M=€65,000M. Balance?"), correcta: -15000, tolerancia: 0, pista: "X - M" },
+            { id: 'eo1', tipus: 'order', dificultat: 'mitjana', pregunta: t("Fases del cicle econòmic:", "Fases del ciclo económico:", "Business cycle phases:"), elements: [t("Expansió", "Expansión", "Expansion"), t("Cim", "Cima", "Peak"), t("Recessió", "Recesión", "Recession"), t("Fons", "Valle", "Trough")], ordreCorrecte: [0, 1, 2, 3] },
+            { id: 'eo2', tipus: 'order', dificultat: 'dificil', pregunta: t("Escoles econòmiques cronològicament:", "Escuelas económicas cronológicamente:", "Economic schools chronologically:"), elements: [t("Mercantilisme", "Mercantilismo", "Mercantilism"), t("Fisiocràcia", "Fisiocracia", "Physiocracy"), t("Clàssica", "Clásica", "Classical"), t("Keynesiana", "Keynesiana", "Keynesian")], ordreCorrecte: [0, 1, 2, 3] },
+            { id: 'eo3', tipus: 'order', dificultat: 'facil', pregunta: t("Sectors econòmics (ordre clàssic):", "Sectores económicos (orden clásico):", "Economic sectors (classic order):"), elements: [t("Primari", "Primario", "Primary"), t("Secundari", "Secundario", "Secondary"), t("Terciari", "Terciario", "Tertiary")], ordreCorrecte: [0, 1, 2] },
+            { id: 'ef1', tipus: 'formula', dificultat: 'facil', pregunta: "PIB = C + I + G + ___", opcions: ["(X-M)", "(M-X)", "T", "S"], correcta: 0 },
+            { id: 'ef2', tipus: 'formula', dificultat: 'mitjana', pregunta: t("Taxa d'atur = Aturats / ___ × 100", "Tasa de paro = Parados / ___ × 100", "Unemployment = Unemployed / ___ × 100"), opcions: [t("Població activa", "Población activa", "Labor force"), t("Població total", "Población total", "Total pop."), t("Ocupats", "Ocupados", "Employed"), "PIB"], correcta: 0 },
+            { id: 'ef3', tipus: 'formula', dificultat: 'dificil', pregunta: t("Multiplicador = 1 / (1 - ___)", "Multiplicador = 1 / (1 - ___)", "Multiplier = 1 / (1 - ___)"), opcions: ["PMC", "PMA", "i", "t"], correcta: 0 },
+            { id: 'eg1', tipus: 'identify', dificultat: 'facil', pregunta: t("Identifica el gràfic d'equilibri de mercat:", "Identifica el gráfico de equilibrio de mercado:", "Identify market equilibrium graph:"), imatge: "oferta_demanda", opcions: ["Phillips", t("Oferta-Demanda", "Oferta-Demanda", "Supply-Demand"), "IS-LM", "Laffer"], correcta: 1 },
+            { id: 'eg2', tipus: 'identify', dificultat: 'mitjana', pregunta: t("Quin model macroeconòmic és aquest?", "¿Qué modelo macroeconómico es este?", "Which macro model is this?"), imatge: "islm", opcions: ["AD-AS", "IS-LM", t("Flux circular", "Flujo circular", "Circular flow"), "Phillips"], correcta: 1 },
+            { id: 'eg3', tipus: 'identify', dificultat: 'dificil', pregunta: t("Corba que relaciona impostos i recaptació:", "Curva que relaciona impuestos y recaudación:", "Curve relating taxes and revenue:"), imatge: "laffer", opcions: ["Phillips", "Lorenz", "Laffer", "Engel"], correcta: 2 },
+            { id: 'ev1', tipus: 'truefalse', dificultat: 'facil', pregunta: t("La inflació és la pujada generalitzada i sostinguda dels preus", "La inflación es la subida generalizada y sostenida de los precios", "Inflation is the general sustained rise in prices"), correcta: true },
+            { id: 'ev2', tipus: 'truefalse', dificultat: 'mitjana', pregunta: t("La corba de Phillips mostra relació DIRECTA inflació-atur", "La curva de Phillips muestra relación DIRECTA inflación-paro", "Phillips curve shows DIRECT inflation-unemployment relation"), correcta: false },
         ],
         finances: [
-            // CÀLCULS (10)
-            { id: 'fc1', tipus: 'numeric', dificultat: 'facil', pregunta: t("Marge brut: Compres per 80€, vens per 120€. Marge en %?", "Margen bruto: Compras por 80€, vendes por 120€. ¿Margen en %?", "Gross margin: Buy for €80, sell for €120. Margin %?"), correcta: 50, tolerancia: 0 },
-            { id: 'fc2', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("ROE: Benefici Net 30.000€, Patrimoni Net 150.000€. ROE en %?", "ROE: Beneficio Neto 30.000€, Patrimonio Neto 150.000€. ¿ROE en %?", "ROE: Net Profit €30,000, Equity €150,000. ROE %?"), correcta: 20, tolerancia: 0 },
-            { id: 'fc3', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("ROA: Benefici Net 25.000€, Actiu Total 500.000€. ROA en %?", "ROA: Beneficio Neto 25.000€, Activo Total 500.000€. ¿ROA en %?", "ROA: Net Profit €25,000, Total Assets €500,000. ROA %?"), correcta: 5, tolerancia: 0 },
-            { id: 'fc4', tipus: 'numeric', dificultat: 'facil', pregunta: t("Liquiditat: AC=90.000€, PC=45.000€. Ràtio de liquiditat?", "Liquidez: AC=90.000€, PC=45.000€. ¿Ratio de liquidez?", "Liquidity: CA=€90,000, CL=€45,000. Current ratio?"), correcta: 2, tolerancia: 0 },
-            { id: 'fc5', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Endeutament: Passiu=120.000€, Actiu Total=200.000€. Ràtio en %?", "Endeudamiento: Pasivo=120.000€, Activo Total=200.000€. ¿Ratio en %?", "Debt ratio: Liabilities=€120,000, Total Assets=€200,000. Ratio %?"), correcta: 60, tolerancia: 0 },
-            { id: 'fc6', tipus: 'numeric', dificultat: 'dificil', pregunta: t("VAN: I₀=10.000€, FC₁=6.000€, FC₂=6.000€, k=10%. VAN arrodonit?", "VAN: I₀=10.000€, FC₁=6.000€, FC₂=6.000€, k=10%. ¿VAN redondeado?", "NPV: I₀=€10,000, CF₁=€6,000, CF₂=€6,000, k=10%. Rounded NPV?"), correcta: 412, tolerancia: 20 },
-            { id: 'fc7', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Fons de Maniobra: AC=80.000€, PC=50.000€. FM?", "Fondo de Maniobra: AC=80.000€, PC=50.000€. ¿FM?", "Working Capital: CA=€80,000, CL=€50,000. WC?"), correcta: 30000, tolerancia: 0 },
-            { id: 'fc8', tipus: 'numeric', dificultat: 'facil', pregunta: t("Payback: Inversió=12.000€, FC anual=4.000€. Anys de recuperació?", "Payback: Inversión=12.000€, FC anual=4.000€. ¿Años de recuperación?", "Payback: Investment=€12,000, annual CF=€4,000. Recovery years?"), correcta: 3, tolerancia: 0 },
-            { id: 'fc9', tipus: 'numeric', dificultat: 'dificil', pregunta: t("Interès compost: 10.000€ al 5% anual durant 2 anys. Capital final arrodonit?", "Interés compuesto: 10.000€ al 5% anual durante 2 años. ¿Capital final redondeado?", "Compound interest: €10,000 at 5% annual for 2 years. Rounded final capital?"), correcta: 11025, tolerancia: 5 },
-            { id: 'fc10', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Test àcid: (AC-Existències)/PC. AC=100.000€, Exist.=30.000€, PC=50.000€. Ràtio?", "Test ácido: (AC-Existencias)/PC. AC=100.000€, Exist.=30.000€, PC=50.000€. ¿Ratio?", "Acid test: (CA-Inventory)/CL. CA=€100,000, Inv.=€30,000, CL=€50,000. Ratio?"), correcta: 1.4, tolerancia: 0.01 },
-            
-            // FÓRMULES (5)
-            { id: 'ff1', tipus: 'formula', dificultat: 'facil', pregunta: t("Fons de Maniobra = AC - ___", "Fondo de Maniobra = AC - ___", "Working Capital = CA - ___"), opcions: ["PC", "PN", "ANC", "PNC"], correcta: 0 },
+            { id: 'fc1', tipus: 'numeric', dificultat: 'facil', pregunta: t("Marge brut: Compra 80€, Venda 120€. Marge %?", "Margen bruto: Compra 80€, Venta 120€. ¿Margen %?", "Gross margin: Buy €80, Sell €120. Margin %?"), correcta: 50, tolerancia: 0, pista: "(V-C)/C×100" },
+            { id: 'fc2', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("ROE: Benefici 30.000€, PN 150.000€. ROE %?", "ROE: Beneficio 30.000€, PN 150.000€. ¿ROE %?", "ROE: Profit €30,000, Equity €150,000. ROE %?"), correcta: 20, tolerancia: 0, pista: "Benefici/PN×100" },
+            { id: 'fc3', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("ROA: Benefici 25.000€, Actiu 500.000€. ROA %?", "ROA: Beneficio 25.000€, Activo 500.000€. ¿ROA %?", "ROA: Profit €25,000, Assets €500,000. ROA %?"), correcta: 5, tolerancia: 0, pista: "Benefici/Actiu×100" },
+            { id: 'fc4', tipus: 'numeric', dificultat: 'facil', pregunta: t("Liquiditat: AC=90.000€, PC=45.000€. Ràtio?", "Liquidez: AC=90.000€, PC=45.000€. ¿Ratio?", "Liquidity: CA=€90,000, CL=€45,000. Ratio?"), correcta: 2, tolerancia: 0, pista: "AC/PC" },
+            { id: 'fc5', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Endeutament: Passiu=120.000€, Actiu=200.000€. Ràtio %?", "Endeudamiento: Pasivo=120.000€, Activo=200.000€. ¿Ratio %?", "Debt: Liabilities=€120,000, Assets=€200,000. Ratio %?"), correcta: 60, tolerancia: 0, pista: "Passiu/Actiu×100" },
+            { id: 'fc6', tipus: 'numeric', dificultat: 'dificil', pregunta: t("VAN: I₀=10.000€, FC₁=6.000€, FC₂=6.000€, k=10%. VAN?", "VAN: I₀=10.000€, FC₁=6.000€, FC₂=6.000€, k=10%. ¿VAN?", "NPV: I₀=€10,000, CF₁=€6,000, CF₂=€6,000, k=10%. NPV?"), correcta: 412, tolerancia: 20, pista: "ΣFC/(1+k)^n - I₀" },
+            { id: 'fc7', tipus: 'numeric', dificultat: 'facil', pregunta: t("Fons Maniobra: AC=80.000€, PC=50.000€. FM?", "Fondo Maniobra: AC=80.000€, PC=50.000€. ¿FM?", "Working Capital: CA=€80,000, CL=€50,000. WC?"), correcta: 30000, tolerancia: 0, pista: "AC - PC" },
+            { id: 'fc8', tipus: 'numeric', dificultat: 'facil', pregunta: t("Payback: Inversió=12.000€, FC anual=4.000€. Anys?", "Payback: Inversión=12.000€, FC anual=4.000€. ¿Años?", "Payback: Investment=€12,000, annual CF=€4,000. Years?"), correcta: 3, tolerancia: 0, pista: "Inversió/FC" },
+            { id: 'fc9', tipus: 'numeric', dificultat: 'dificil', pregunta: t("Interès compost: 10.000€ al 5% durant 2 anys. Capital final?", "Interés compuesto: 10.000€ al 5% durante 2 años. ¿Capital final?", "Compound: €10,000 at 5% for 2 years. Final capital?"), correcta: 11025, tolerancia: 5, pista: "C×(1+i)^n" },
+            { id: 'fc10', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Test àcid: AC=100.000€, Exist.=30.000€, PC=50.000€. Ràtio?", "Test ácido: AC=100.000€, Exist.=30.000€, PC=50.000€. ¿Ratio?", "Acid test: CA=€100,000, Inv.=€30,000, CL=€50,000. Ratio?"), correcta: 1.4, tolerancia: 0.01, pista: "(AC-Existències)/PC" },
+            { id: 'ff1', tipus: 'formula', dificultat: 'facil', pregunta: t("Fons Maniobra = AC - ___", "Fondo Maniobra = AC - ___", "Working Capital = CA - ___"), opcions: ["PC", "PN", "ANC", "PNC"], correcta: 0 },
             { id: 'ff2', tipus: 'formula', dificultat: 'mitjana', pregunta: t("ROE = Benefici Net / ___", "ROE = Beneficio Neto / ___", "ROE = Net Profit / ___"), opcions: [t("Patrimoni Net", "Patrimonio Neto", "Equity"), t("Actiu Total", "Activo Total", "Total Assets"), t("Vendes", "Ventas", "Sales"), "Passiu"], correcta: 0 },
-            { id: 'ff3', tipus: 'formula', dificultat: 'mitjana', pregunta: t("VAN = Σ FC/(1+k)^n - ___", "VAN = Σ FC/(1+k)^n - ___", "NPV = Σ CF/(1+k)^n - ___"), opcions: ["I₀", "TIR", "k", "n"], correcta: 0 },
-            { id: 'ff4', tipus: 'formula', dificultat: 'dificil', pregunta: t("TIR és la taxa k que fa que el VAN sigui igual a ___", "TIR es la tasa k que hace que el VAN sea igual a ___", "IRR is the rate k that makes NPV equal to ___"), opcions: ["0", "1", "I₀", "∞"], correcta: 0 },
-            { id: 'ff5', tipus: 'formula', dificultat: 'facil', pregunta: t("Ràtio de Liquiditat = ___ / PC", "Ratio de Liquidez = ___ / PC", "Current Ratio = ___ / CL"), opcions: ["AC", "ANC", "FM", "PN"], correcta: 0 },
-            
-            // IDENTIFICAR (3)
-            { id: 'fi1', tipus: 'identify', dificultat: 'facil', pregunta: t("Aquest document mostra l'estructura patrimonial:", "Este documento muestra la estructura patrimonial:", "This document shows the asset structure:"), imatge: "balanc", opcions: [t("Balanç", "Balance", "Balance Sheet"), t("Compte de PiG", "Cuenta de PyG", "P&L Statement"), t("Estat de fluxos", "Estado de flujos", "Cash Flow"), "DAFO"], correcta: 0 },
-            { id: 'fi2', tipus: 'identify', dificultat: 'mitjana', pregunta: t("Quin tipus de finançament és el LEASING?", "¿Qué tipo de financiación es el LEASING?", "What type of financing is LEASING?"), imatge: "leasing", opcions: [t("Propi", "Propio", "Own"), t("Aliè a llarg termini", "Ajeno a largo plazo", "Long-term external"), t("Aliè a curt termini", "Ajeno a corto plazo", "Short-term external"), t("Autofinançament", "Autofinanciación", "Self-financing")], correcta: 1 },
-            { id: 'fi3', tipus: 'identify', dificultat: 'mitjana', pregunta: t("El FACTORING serveix per...", "El FACTORING sirve para...", "FACTORING is used for..."), imatge: "factoring", opcions: [t("Comprar maquinària", "Comprar maquinaria", "Buy machinery"), t("Avançar cobraments", "Adelantar cobros", "Advance collections"), t("Finançar exportacions", "Financiar exportaciones", "Finance exports"), t("Pagar impostos", "Pagar impuestos", "Pay taxes")], correcta: 1 },
-            
-            // VERTADER/FALS (2)
-            { id: 'fv1', tipus: 'truefalse', dificultat: 'facil', pregunta: t("Un VAN positiu indica que el projecte és rendible", "Un VAN positivo indica que el proyecto es rentable", "Positive NPV indicates a profitable project"), correcta: true },
-            { id: 'fv2', tipus: 'truefalse', dificultat: 'mitjana', pregunta: t("El Payback descomptat té en compte el valor temporal dels diners", "El Payback descontado tiene en cuenta el valor temporal del dinero", "Discounted Payback considers time value of money"), correcta: true },
+            { id: 'ff3', tipus: 'formula', dificultat: 'mitjana', pregunta: "VAN = Σ FC/(1+k)^n - ___", opcions: ["I₀", "TIR", "k", "n"], correcta: 0 },
+            { id: 'ff4', tipus: 'formula', dificultat: 'dificil', pregunta: t("TIR és la taxa on VAN = ___", "TIR es la tasa donde VAN = ___", "IRR is rate where NPV = ___"), opcions: ["0", "1", "I₀", "∞"], correcta: 0 },
+            { id: 'fi1', tipus: 'identify', dificultat: 'facil', pregunta: t("Document que mostra estructura patrimonial:", "Documento que muestra estructura patrimonial:", "Document showing asset structure:"), imatge: "balanc", opcions: [t("Balanç", "Balance", "Balance Sheet"), t("Compte PiG", "Cuenta PyG", "P&L"), t("Fluxos", "Flujos", "Cash Flow"), "DAFO"], correcta: 0 },
+            { id: 'fi2', tipus: 'identify', dificultat: 'mitjana', pregunta: t("LEASING és finançament...", "LEASING es financiación...", "LEASING is financing..."), imatge: "leasing", opcions: [t("Propi", "Propio", "Own"), t("Aliè llarg termini", "Ajeno largo plazo", "Long-term external"), t("Aliè curt termini", "Ajeno corto plazo", "Short-term external"), t("Autofinançament", "Autofinanciación", "Self-financing")], correcta: 1 },
+            { id: 'fi3', tipus: 'identify', dificultat: 'mitjana', pregunta: t("FACTORING serveix per...", "FACTORING sirve para...", "FACTORING is for..."), imatge: "factoring", opcions: [t("Comprar maquinària", "Comprar maquinaria", "Buy machinery"), t("Avançar cobraments", "Adelantar cobros", "Advance collections"), t("Exportacions", "Exportaciones", "Exports"), t("Impostos", "Impuestos", "Taxes")], correcta: 1 },
+            { id: 'fv1', tipus: 'truefalse', dificultat: 'facil', pregunta: t("VAN positiu = projecte rendible", "VAN positivo = proyecto rentable", "Positive NPV = profitable project"), correcta: true },
+            { id: 'fv2', tipus: 'truefalse', dificultat: 'mitjana', pregunta: t("El Payback simple NO considera el valor temporal dels diners", "El Payback simple NO considera el valor temporal del dinero", "Simple Payback does NOT consider time value of money"), correcta: true },
         ],
         empresa: [
-            // CÀLCULS (8)
-            { id: 'emc1', tipus: 'numeric', dificultat: 'facil', pregunta: t("Punt Mort: CF=15.000€, Preu=60€, CVu=30€. Unitats d'equilibri?", "Punto Muerto: CF=15.000€, Precio=60€, CVu=30€. ¿Unidades de equilibrio?", "Break-even: FC=€15,000, Price=€60, VCu=€30. Break-even units?"), correcta: 500, tolerancia: 0 },
-            { id: 'emc2', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Cost Total: CF=8.000€, CVu=15€, Q=400. Cost Total?", "Coste Total: CF=8.000€, CVu=15€, Q=400. ¿Coste Total?", "Total Cost: FC=€8,000, VCu=€15, Q=400. Total Cost?"), correcta: 14000, tolerancia: 0 },
-            { id: 'emc3', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Productivitat: Producció=10.000u, Treballadors=25. Productivitat per treballador?", "Productividad: Producción=10.000u, Trabajadores=25. ¿Productividad por trabajador?", "Productivity: Output=10,000u, Workers=25. Productivity per worker?"), correcta: 400, tolerancia: 0 },
-            { id: 'emc4', tipus: 'numeric', dificultat: 'facil', pregunta: t("Marge de contribució unitari: Preu=100€, CVu=60€. MCu?", "Margen de contribución unitario: Precio=100€, CVu=60€. ¿MCu?", "Unit contribution margin: Price=€100, VCu=€60. UCM?"), correcta: 40, tolerancia: 0 },
-            { id: 'emc5', tipus: 'numeric', dificultat: 'dificil', pregunta: t("EOQ (Wilson): D=10.000u/any, Cp=50€/comanda, Ca=2€/u·any. Lot òptim arrodonit?", "EOQ (Wilson): D=10.000u/año, Cp=50€/pedido, Ca=2€/u·año. ¿Lote óptimo redondeado?", "EOQ (Wilson): D=10,000u/year, Cp=€50/order, Ca=€2/u·year. Rounded optimal lot?"), correcta: 707, tolerancia: 15 },
-            { id: 'emc6', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Benefici: Ingressos=200.000€, Costos=150.000€. Benefici?", "Beneficio: Ingresos=200.000€, Costes=150.000€. ¿Beneficio?", "Profit: Revenue=€200,000, Costs=€150,000. Profit?"), correcta: 50000, tolerancia: 0 },
-            { id: 'emc7', tipus: 'numeric', dificultat: 'facil', pregunta: t("Salari net: Brut=2.000€, SS treballador=127€, IRPF=300€. Net?", "Salario neto: Bruto=2.000€, SS trabajador=127€, IRPF=300€. ¿Neto?", "Net salary: Gross=€2,000, Worker SS=€127, Tax=€300. Net?"), correcta: 1573, tolerancia: 0 },
-            { id: 'emc8', tipus: 'numeric', dificultat: 'dificil', pregunta: t("Apalancament operatiu: MC=50.000€, BAII=20.000€. Grau d'apalancament?", "Apalancamiento operativo: MC=50.000€, BAII=20.000€. ¿Grado de apalancamiento?", "Operating leverage: CM=€50,000, EBIT=€20,000. Leverage degree?"), correcta: 2.5, tolerancia: 0.1 },
-            
-            // ORDENAR (5)
-            { id: 'emo1', tipus: 'order', dificultat: 'facil', pregunta: t("Piràmide de Maslow (de baix a dalt):", "Pirámide de Maslow (de abajo a arriba):", "Maslow's pyramid (bottom to top):"), elements: [t("Fisiològiques", "Fisiológicas", "Physiological"), t("Seguretat", "Seguridad", "Safety"), t("Socials", "Sociales", "Social"), t("Estima", "Estima", "Esteem"), t("Autorealització", "Autorrealización", "Self-actualization")], ordreCorrecte: [0, 1, 2, 3, 4] },
-            { id: 'emo2', tipus: 'order', dificultat: 'mitjana', pregunta: t("Cicle de vida del producte:", "Ciclo de vida del producto:", "Product life cycle:"), elements: [t("Introducció", "Introducción", "Introduction"), t("Creixement", "Crecimiento", "Growth"), t("Maduresa", "Madurez", "Maturity"), t("Declivi", "Declive", "Decline")], ordreCorrecte: [0, 1, 2, 3] },
-            { id: 'emo3', tipus: 'order', dificultat: 'mitjana', pregunta: t("Procés de selecció de personal:", "Proceso de selección de personal:", "Staff selection process:"), elements: [t("Anàlisi del lloc", "Análisis del puesto", "Job analysis"), t("Reclutament", "Reclutamiento", "Recruitment"), t("Entrevistes", "Entrevistas", "Interviews"), t("Contractació", "Contratación", "Hiring")], ordreCorrecte: [0, 1, 2, 3] },
-            { id: 'emo4', tipus: 'order', dificultat: 'dificil', pregunta: t("Etapes del pla d'empresa:", "Etapas del plan de empresa:", "Business plan stages:"), elements: [t("Idea", "Idea", "Idea"), t("Pla de màrqueting", "Plan de marketing", "Marketing plan"), t("Pla financer", "Plan financiero", "Financial plan"), t("Viabilitat", "Viabilidad", "Viability")], ordreCorrecte: [0, 1, 2, 3] },
-            { id: 'emo5', tipus: 'order', dificultat: 'facil', pregunta: t("Ordena de menys a més capital mínim (Espanya):", "Ordena de menos a más capital mínimo (España):", "Order from least to most minimum capital (Spain):"), elements: [t("Autònom", "Autónomo", "Self-employed"), "SL (1€)", "SL (3.000€)", "SA (60.000€)"], ordreCorrecte: [0, 1, 2, 3] },
-            
-            // IDENTIFICAR GRÀFICS (6)
-            { id: 'emi1', tipus: 'identify', dificultat: 'facil', pregunta: t("Identifica aquesta matriu:", "Identifica esta matriz:", "Identify this matrix:"), imatge: "bcg", opcions: ["DAFO", "Ansoff", "BCG", "Porter"], correcta: 2 },
-            { id: 'emi2', tipus: 'identify', dificultat: 'mitjana', pregunta: t("Quin quadrant de la BCG té alta quota i alt creixement?", "¿Qué cuadrante de la BCG tiene alta cuota y alto crecimiento?", "Which BCG quadrant has high share and high growth?"), imatge: "bcg", opcions: [t("Vaca", "Vaca", "Cash Cow"), t("Estrella", "Estrella", "Star"), t("Interrogant", "Interrogante", "Question Mark"), t("Gos", "Perro", "Dog")], correcta: 1 },
-            { id: 'emi3', tipus: 'identify', dificultat: 'mitjana', pregunta: t("A Ansoff: Producte NOU + Mercat NOU =", "En Ansoff: Producto NUEVO + Mercado NUEVO =", "In Ansoff: NEW Product + NEW Market ="), imatge: "ansoff", opcions: [t("Penetració", "Penetración", "Penetration"), t("Desenv. mercat", "Desarrollo mercado", "Market dev."), t("Desenv. producte", "Desarrollo producto", "Product dev."), t("Diversificació", "Diversificación", "Diversification")], correcta: 3 },
-            { id: 'emi4', tipus: 'identify', dificultat: 'dificil', pregunta: t("Al Canvas, 'per què ens trien els clients' és:", "En Canvas, 'por qué nos eligen los clientes' es:", "In Canvas, 'why customers choose us' is:"), imatge: "canvas", opcions: [t("Segments", "Segmentos", "Segments"), t("Proposta de valor", "Propuesta de valor", "Value proposition"), t("Canals", "Canales", "Channels"), t("Recursos clau", "Recursos clave", "Key resources")], correcta: 1 },
-            { id: 'emi5', tipus: 'identify', dificultat: 'facil', pregunta: t("DAFO: Les Amenaces són factors...", "DAFO: Las Amenazas son factores...", "SWOT: Threats are factors..."), imatge: "dafo", opcions: [t("Interns positius", "Internos positivos", "Internal positive"), t("Interns negatius", "Internos negativos", "Internal negative"), t("Externs positius", "Externos positivos", "External positive"), t("Externs negatius", "Externos negativos", "External negative")], correcta: 3 },
-            { id: 'emi6', tipus: 'identify', dificultat: 'mitjana', pregunta: t("Segons Porter, quantes forces competitives hi ha?", "Según Porter, ¿cuántas fuerzas competitivas hay?", "According to Porter, how many competitive forces?"), imatge: "porter", opcions: ["3", "4", "5", "6"], correcta: 2 },
-            
-            // FÓRMULES (4)
-            { id: 'emf1', tipus: 'formula', dificultat: 'facil', pregunta: t("Punt Mort (Q*) = CF / (P - ___)", "Punto Muerto (Q*) = CF / (P - ___)", "Break-even (Q*) = FC / (P - ___)"), opcions: ["CVu", "CT", "CF", "MC"], correcta: 0 },
+            { id: 'emc1', tipus: 'numeric', dificultat: 'facil', pregunta: t("Punt Mort: CF=15.000€, P=60€, CVu=30€. Unitats?", "Punto Muerto: CF=15.000€, P=60€, CVu=30€. ¿Unidades?", "Break-even: FC=€15,000, P=€60, VCu=€30. Units?"), correcta: 500, tolerancia: 0, pista: "CF/(P-CVu)" },
+            { id: 'emc2', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Cost Total: CF=8.000€, CVu=15€, Q=400. CT?", "Coste Total: CF=8.000€, CVu=15€, Q=400. ¿CT?", "Total Cost: FC=€8,000, VCu=€15, Q=400. TC?"), correcta: 14000, tolerancia: 0, pista: "CF + CVu×Q" },
+            { id: 'emc3', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Productivitat: 10.000u, 25 treballadors. Prod/treballador?", "Productividad: 10.000u, 25 trabajadores. ¿Prod/trabajador?", "Productivity: 10,000u, 25 workers. Prod/worker?"), correcta: 400, tolerancia: 0, pista: "Producció/Treballadors" },
+            { id: 'emc4', tipus: 'numeric', dificultat: 'facil', pregunta: t("Marge contribució: P=100€, CVu=60€. MCu?", "Margen contribución: P=100€, CVu=60€. ¿MCu?", "Contribution margin: P=€100, VCu=€60. UCM?"), correcta: 40, tolerancia: 0, pista: "P - CVu" },
+            { id: 'emc5', tipus: 'numeric', dificultat: 'dificil', pregunta: t("EOQ: D=10.000u/any, Cp=50€, Ca=2€/u·any. Lot òptim?", "EOQ: D=10.000u/año, Cp=50€, Ca=2€/u·año. ¿Lote óptimo?", "EOQ: D=10,000u/yr, Cp=€50, Ca=€2/u·yr. Optimal lot?"), correcta: 707, tolerancia: 15, pista: "√(2×D×Cp/Ca)" },
+            { id: 'emc6', tipus: 'numeric', dificultat: 'facil', pregunta: t("Benefici: Ingressos=200.000€, Costos=150.000€. Benefici?", "Beneficio: Ingresos=200.000€, Costes=150.000€. ¿Beneficio?", "Profit: Revenue=€200,000, Costs=€150,000. Profit?"), correcta: 50000, tolerancia: 0, pista: "Ingressos - Costos" },
+            { id: 'emc7', tipus: 'numeric', dificultat: 'facil', pregunta: t("Salari net: Brut=2.000€, SS=127€, IRPF=300€. Net?", "Salario neto: Bruto=2.000€, SS=127€, IRPF=300€. ¿Neto?", "Net salary: Gross=€2,000, SS=€127, Tax=€300. Net?"), correcta: 1573, tolerancia: 0, pista: "Brut - SS - IRPF" },
+            { id: 'emc8', tipus: 'numeric', dificultat: 'dificil', pregunta: t("Apalancament operatiu: MC=50.000€, BAII=20.000€. Grau?", "Apalancamiento operativo: MC=50.000€, BAII=20.000€. ¿Grado?", "Operating leverage: CM=€50,000, EBIT=€20,000. Degree?"), correcta: 2.5, tolerancia: 0.1, pista: "MC/BAII" },
+            { id: 'emo1', tipus: 'order', dificultat: 'facil', pregunta: t("Piràmide Maslow (baix→dalt):", "Pirámide Maslow (abajo→arriba):", "Maslow pyramid (bottom→top):"), elements: [t("Fisiològiques", "Fisiológicas", "Physiological"), t("Seguretat", "Seguridad", "Safety"), t("Socials", "Sociales", "Social"), t("Estima", "Estima", "Esteem"), t("Autorealització", "Autorrealización", "Self-actualization")], ordreCorrecte: [0, 1, 2, 3, 4] },
+            { id: 'emo2', tipus: 'order', dificultat: 'mitjana', pregunta: t("Cicle vida producte:", "Ciclo vida producto:", "Product life cycle:"), elements: [t("Introducció", "Introducción", "Introduction"), t("Creixement", "Crecimiento", "Growth"), t("Maduresa", "Madurez", "Maturity"), t("Declivi", "Declive", "Decline")], ordreCorrecte: [0, 1, 2, 3] },
+            { id: 'emo3', tipus: 'order', dificultat: 'mitjana', pregunta: t("Procés selecció personal:", "Proceso selección personal:", "Staff selection process:"), elements: [t("Anàlisi lloc", "Análisis puesto", "Job analysis"), t("Reclutament", "Reclutamiento", "Recruitment"), t("Entrevistes", "Entrevistas", "Interviews"), t("Contractació", "Contratación", "Hiring")], ordreCorrecte: [0, 1, 2, 3] },
+            { id: 'emo4', tipus: 'order', dificultat: 'facil', pregunta: t("Capital mínim (Espanya) menor→major:", "Capital mínimo (España) menor→mayor:", "Min capital (Spain) low→high:"), elements: [t("Autònom", "Autónomo", "Self-empl."), "SL (1€)", "SL (3.000€)", "SA (60.000€)"], ordreCorrecte: [0, 1, 2, 3] },
+            { id: 'emi1', tipus: 'identify', dificultat: 'facil', pregunta: t("Identifica la matriu:", "Identifica la matriz:", "Identify the matrix:"), imatge: "bcg", opcions: ["DAFO", "Ansoff", "BCG", "Porter"], correcta: 2 },
+            { id: 'emi2', tipus: 'identify', dificultat: 'mitjana', pregunta: t("BCG: Alta quota + Alt creixement =", "BCG: Alta cuota + Alto crecimiento =", "BCG: High share + High growth ="), imatge: "bcg", opcions: [t("Vaca", "Vaca", "Cash Cow"), t("Estrella", "Estrella", "Star"), t("Interrogant", "Interrogante", "Question"), t("Gos", "Perro", "Dog")], correcta: 1 },
+            { id: 'emi3', tipus: 'identify', dificultat: 'mitjana', pregunta: t("Ansoff: Producte NOU + Mercat NOU =", "Ansoff: Producto NUEVO + Mercado NUEVO =", "Ansoff: NEW Product + NEW Market ="), imatge: "ansoff", opcions: [t("Penetració", "Penetración", "Penetration"), t("Desenv. mercat", "Desarrollo mercado", "Market dev."), t("Desenv. producte", "Desarrollo producto", "Product dev."), t("Diversificació", "Diversificación", "Diversification")], correcta: 3 },
+            { id: 'emi4', tipus: 'identify', dificultat: 'dificil', pregunta: t("Canvas: 'Per què ens trien' =", "Canvas: 'Por qué nos eligen' =", "Canvas: 'Why they choose us' ="), imatge: "canvas", opcions: [t("Segments", "Segmentos", "Segments"), t("Proposta valor", "Propuesta valor", "Value prop."), t("Canals", "Canales", "Channels"), t("Recursos", "Recursos", "Resources")], correcta: 1 },
+            { id: 'emi5', tipus: 'identify', dificultat: 'facil', pregunta: t("DAFO: Amenaces són factors...", "DAFO: Amenazas son factores...", "SWOT: Threats are factors..."), imatge: "dafo", opcions: [t("Interns +", "Internos +", "Internal +"), t("Interns -", "Internos -", "Internal -"), t("Externs +", "Externos +", "External +"), t("Externs -", "Externos -", "External -")], correcta: 3 },
+            { id: 'emi6', tipus: 'identify', dificultat: 'mitjana', pregunta: t("Porter: Quantes forces?", "Porter: ¿Cuántas fuerzas?", "Porter: How many forces?"), imatge: "porter", opcions: ["3", "4", "5", "6"], correcta: 2 },
+            { id: 'emf1', tipus: 'formula', dificultat: 'facil', pregunta: t("Punt Mort = CF / (P - ___)", "Punto Muerto = CF / (P - ___)", "Break-even = FC / (P - ___)"), opcions: ["CVu", "CT", "CF", "MC"], correcta: 0 },
             { id: 'emf2', tipus: 'formula', dificultat: 'mitjana', pregunta: t("Productivitat = ___ / Recursos", "Productividad = ___ / Recursos", "Productivity = ___ / Resources"), opcions: [t("Producció", "Producción", "Output"), t("Benefici", "Beneficio", "Profit"), t("Vendes", "Ventas", "Sales"), t("Costos", "Costes", "Costs")], correcta: 0 },
             { id: 'emf3', tipus: 'formula', dificultat: 'mitjana', pregunta: t("Cost Total = CF + CVu × ___", "Coste Total = CF + CVu × ___", "Total Cost = FC + VCu × ___"), opcions: ["Q", "P", "MC", "CT"], correcta: 0 },
-            { id: 'emf4', tipus: 'formula', dificultat: 'dificil', pregunta: t("EOQ = √(2×D×Cp / ___)", "EOQ = √(2×D×Cp / ___)", "EOQ = √(2×D×Cp / ___)"), opcions: ["Ca", "Cv", "CF", "P"], correcta: 0 },
-            
-            // VERTADER/FALS (2)
-            { id: 'emv1', tipus: 'truefalse', dificultat: 'facil', pregunta: t("En una SL la responsabilitat dels socis es limita al capital aportat", "En una SL la responsabilidad de los socios se limita al capital aportado", "In an LLC partners' liability is limited to contributed capital"), correcta: true },
-            { id: 'emv2', tipus: 'truefalse', dificultat: 'mitjana', pregunta: t("Segons Herzberg, el salari és un factor motivador", "Según Herzberg, el salario es un factor motivador", "According to Herzberg, salary is a motivating factor"), correcta: false },
+            { id: 'emf4', tipus: 'formula', dificultat: 'dificil', pregunta: "EOQ = √(2×D×Cp / ___)", opcions: ["Ca", "Cv", "CF", "P"], correcta: 0 },
+            { id: 'emv1', tipus: 'truefalse', dificultat: 'facil', pregunta: t("SL: responsabilitat limitada al capital aportat", "SL: responsabilidad limitada al capital aportado", "LLC: liability limited to contributed capital"), correcta: true },
+            { id: 'emv2', tipus: 'truefalse', dificultat: 'mitjana', pregunta: t("Herzberg: el salari és factor MOTIVADOR", "Herzberg: el salario es factor MOTIVADOR", "Herzberg: salary is a MOTIVATING factor"), correcta: false },
         ]
     }), [idioma]);
 
     useEffect(() => {
-        const saved = localStorage.getItem('pde_concurs_ranking_v2');
+        const saved = localStorage.getItem('pde_concurs_ranking_v3');
         if (saved) setRanking(JSON.parse(saved));
     }, []);
-
-    useEffect(() => {
-        if (fase !== 'jugant' || mostrarResultat) return;
-        if (tempsRestant <= 0) { handleResposta(null); return; }
-        const timer = setTimeout(() => setTempsRestant(t => t - 1), 1000);
-        return () => clearTimeout(timer);
-    }, [tempsRestant, fase, mostrarResultat]);
 
     useEffect(() => {
         if (fase === 'jugant' && preguntesPartida[preguntaActual]?.tipus === 'order') {
@@ -162,6 +272,13 @@ function ConcursApp() {
             setOrdreUsuari(elements.map((_, i) => i).sort(() => Math.random() - 0.5));
         }
     }, [preguntaActual, fase, preguntesPartida]);
+    
+    // Mantenir focus a l'input
+    useEffect(() => {
+        if (fase === 'jugant' && preguntesPartida[preguntaActual]?.tipus === 'numeric' && !mostrarResultat && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [fase, preguntaActual, mostrarResultat]);
 
     const obtenirPreguntes = (cat) => {
         let pool = cat === 'totes' 
@@ -171,22 +288,27 @@ function ConcursApp() {
     };
 
     const iniciarPartida = () => {
-        if (!nomJugador.trim()) { alert(t("Introdueix el teu nom!", "¡Introduce tu nombre!", "Enter your name!")); return; }
+        if (!nomJugador.trim()) { showToast(t("Introdueix el teu nom!", "¡Introduce tu nombre!", "Enter your name!"), 'error'); return; }
         setPreguntesPartida(obtenirPreguntes(categoria));
-        setPreguntaActual(0); setPuntuacio(0); setRespostes([]); setRatxa(0);
-        setTempsRestant(60); setRespostaUsuari(null); setMostrarResultat(false);
-        setOrdreUsuari([]); setInputNumeric(''); setFase('jugant');
+        setPreguntaActual(0); setPuntuacio(0); setRespostes([]); setRatxa(0); setMaxRatxa(0);
+        setRespostaUsuari(null); setMostrarResultat(false);
+        setOrdreUsuari([]); setInputNumeric(''); setTimerKey(k => k + 1); setTimerActive(true);
+        setAjudes({ cinquanta: 1, temps: 1, saltar: 1 }); setOpcionsEliminades([]);
+        setFase('jugant');
+        playSound('bonus');
     };
 
-    const calcularPunts = (correcta, temps, dificultat, ratxaActual) => {
+    const calcularPunts = (correcta, tempsUsed, dificultat, ratxaActual) => {
         if (!correcta) return -25;
-        let base = dificultat === 'facil' ? 80 : dificultat === 'mitjana' ? 100 : 150;
-        const bonusVelocitat = temps > 40 ? Math.floor((temps - 40) * 2.5) : 0;
-        let mult = ratxaActual >= 5 ? 2 : ratxaActual >= 3 ? 1.5 : 1;
+        let base = dificultat === 'facil' ? 100 : dificultat === 'mitjana' ? 150 : 200;
+        const tempsRestant = 60 - tempsUsed;
+        const bonusVelocitat = tempsRestant > 40 ? Math.floor((tempsRestant - 40) * 3) : 0;
+        let mult = ratxaActual >= 7 ? 3 : ratxaActual >= 5 ? 2.5 : ratxaActual >= 3 ? 2 : ratxaActual >= 1 ? 1.5 : 1;
         return Math.floor((base + bonusVelocitat) * mult);
     };
 
-    const handleResposta = (resposta) => {
+    const handleResposta = useCallback((resposta) => {
+        setTimerActive(false);
         const p = preguntesPartida[preguntaActual];
         let ok = false;
         if (p.tipus === 'multiple' || p.tipus === 'identify' || p.tipus === 'formula') ok = resposta === p.correcta;
@@ -194,24 +316,80 @@ function ConcursApp() {
         else if (p.tipus === 'numeric') ok = Math.abs(parseFloat(resposta) - p.correcta) <= (p.tolerancia || 0);
         else if (p.tipus === 'order') ok = JSON.stringify(ordreUsuari) === JSON.stringify(p.ordreCorrecte);
         
+        const tempsUsed = 60 - (document.querySelector('.timer-display')?.textContent?.replace('s','') || 30);
         const novaRatxa = ok ? ratxa + 1 : 0;
-        const punts = calcularPunts(ok, tempsRestant, p.dificultat, ratxa);
+        const punts = calcularPunts(ok, tempsUsed, p.dificultat, ratxa);
+        
+        if (ok) {
+            playSound('correct');
+            vibrate([100]);
+            if (novaRatxa >= 3) showToast(`🔥 ${t('Ratxa', 'Racha', 'Streak')} x${novaRatxa}!`, 'success');
+        } else {
+            playSound('wrong');
+            vibrate([100, 50, 100]);
+        }
+        
+        setPointsPopup({ show: true, points: punts });
+        setTimeout(() => setPointsPopup({ show: false, points: 0 }), 1000);
+        
         setRespostaUsuari(resposta); setMostrarResultat(true); setRatxa(novaRatxa);
+        if (novaRatxa > maxRatxa) setMaxRatxa(novaRatxa);
         setPuntuacio(s => Math.max(0, s + punts));
-        setRespostes([...respostes, { pregunta: p.id, correcta: ok, punts, temps: 60 - tempsRestant }]);
-    };
+        setRespostes(r => [...r, { pregunta: p.id, correcta: ok, punts, temps: tempsUsed }]);
+    }, [preguntesPartida, preguntaActual, ordreUsuari, ratxa, maxRatxa, playSound, vibrate, showToast, t]);
+
+    const handleTimeUp = useCallback(() => {
+        if (!mostrarResultat) handleResposta(null);
+    }, [mostrarResultat, handleResposta]);
 
     const seguentPregunta = () => {
+        setOpcionsEliminades([]);
         if (preguntaActual + 1 >= preguntesPartida.length) {
-            const entry = { nom: nomJugador, punts: puntuacio, data: new Date().toLocaleDateString('ca-ES'), correctes: respostes.filter(r => r.correcta).length, categoria };
+            const entry = { nom: nomJugador, punts: puntuacio, data: new Date().toLocaleDateString('ca-ES'), correctes: respostes.filter(r => r.correcta).length, categoria, maxRatxa };
             const nouRanking = [...ranking, entry].sort((a, b) => b.punts - a.punts).slice(0, 10);
             setRanking(nouRanking);
-            localStorage.setItem('pde_concurs_ranking_v2', JSON.stringify(nouRanking));
+            localStorage.setItem('pde_concurs_ranking_v3', JSON.stringify(nouRanking));
+            setShowConfetti(true);
+            setTimeout(() => setShowConfetti(false), 4000);
+            playSound('bonus');
             setFase('resultats');
         } else {
-            setPreguntaActual(p => p + 1); setTempsRestant(60); setRespostaUsuari(null);
-            setMostrarResultat(false); setOrdreUsuari([]); setInputNumeric('');
+            setPreguntaActual(p => p + 1);
+            setRespostaUsuari(null); setMostrarResultat(false);
+            setOrdreUsuari([]); setInputNumeric('');
+            setTimerKey(k => k + 1); setTimerActive(true);
         }
+    };
+
+    // AJUDES
+    const usarAjuda50 = () => {
+        if (ajudes.cinquanta <= 0 || mostrarResultat) return;
+        const p = preguntesPartida[preguntaActual];
+        if (p.tipus !== 'multiple' && p.tipus !== 'identify' && p.tipus !== 'formula') {
+            showToast(t("Només per preguntes tipus test!", "¡Solo para preguntas tipo test!", "Only for multiple choice!"), 'error');
+            return;
+        }
+        const incorrectes = p.opcions.map((_, i) => i).filter(i => i !== p.correcta);
+        const aEliminar = incorrectes.sort(() => Math.random() - 0.5).slice(0, 2);
+        setOpcionsEliminades(aEliminar);
+        setAjudes(a => ({ ...a, cinquanta: a.cinquanta - 1 }));
+        showToast(t("50:50 activat!", "¡50:50 activado!", "50:50 activated!"), 'success');
+        playSound('tick');
+    };
+    
+    const usarAjudaTemps = () => {
+        if (ajudes.temps <= 0 || mostrarResultat) return;
+        setTimerKey(k => k + 1); // Reset timer to 60
+        setAjudes(a => ({ ...a, temps: a.temps - 1 }));
+        showToast(t("+60 segons!", "¡+60 segundos!", "+60 seconds!"), 'success');
+        playSound('bonus');
+    };
+    
+    const usarAjudaSaltar = () => {
+        if (ajudes.saltar <= 0 || mostrarResultat) return;
+        setAjudes(a => ({ ...a, saltar: a.saltar - 1 }));
+        showToast(t("Pregunta saltada!", "¡Pregunta saltada!", "Question skipped!"), 'info');
+        seguentPregunta();
     };
 
     const moureElement = (index, dir) => {
@@ -220,6 +398,7 @@ function ConcursApp() {
         if (newIdx < 0 || newIdx >= nou.length) return;
         [nou[index], nou[newIdx]] = [nou[newIdx], nou[index]];
         setOrdreUsuari(nou);
+        playSound('tick');
     };
 
     const Card = ({ children, className = "" }) => (
@@ -228,68 +407,17 @@ function ConcursApp() {
 
     const renderGrafic = (tipus) => {
         const grafics = {
-            bcg: (
-                <div className="grid grid-cols-2 gap-2 w-52 mx-auto my-4 text-xs">
-                    <div className="p-3 bg-yellow-400/30 rounded-lg text-center border border-yellow-400/50">⭐ Stars</div>
-                    <div className="p-3 bg-purple-400/30 rounded-lg text-center border border-purple-400/50">❓ ?</div>
-                    <div className="p-3 bg-green-400/30 rounded-lg text-center border border-green-400/50">🐄 Cash Cows</div>
-                    <div className="p-3 bg-slate-400/30 rounded-lg text-center border border-slate-400/50">🐕 Dogs</div>
-                    <div className="col-span-2 text-center text-purple-300 text-[10px] mt-1">← {t("Quota mercat", "Cuota mercado", "Market share")} →</div>
-                </div>
-            ),
-            ansoff: (
-                <div className="w-56 mx-auto my-4 text-xs">
-                    <div className="grid grid-cols-3 gap-1">
-                        <div></div><div className="text-center text-purple-300 text-[10px]">{t("Producte actual", "Producto actual", "Current product")}</div><div className="text-center text-purple-300 text-[10px]">{t("Producte nou", "Producto nuevo", "New product")}</div>
-                        <div className="text-purple-300 text-[10px] flex items-center">{t("Mercat actual", "Mercado actual", "Current market")}</div>
-                        <div className="p-2 bg-green-400/30 rounded border border-green-400/50 text-center">{t("Penetració", "Penetración", "Penetration")}</div>
-                        <div className="p-2 bg-amber-400/30 rounded border border-amber-400/50 text-center">{t("Desenv. prod.", "Desarrollo prod.", "Prod. dev.")}</div>
-                        <div className="text-purple-300 text-[10px] flex items-center">{t("Mercat nou", "Mercado nuevo", "New market")}</div>
-                        <div className="p-2 bg-blue-400/30 rounded border border-blue-400/50 text-center">{t("Desenv. mercat", "Desarrollo mercado", "Market dev.")}</div>
-                        <div className="p-2 bg-red-400/30 rounded border border-red-400/50 text-center">{t("Diversificació", "Diversificación", "Diversification")}</div>
-                    </div>
-                </div>
-            ),
-            canvas: (
-                <div className="grid grid-cols-5 gap-1 w-72 mx-auto my-4 text-[10px]">
-                    <div className="row-span-2 p-2 bg-violet-400/30 rounded border border-violet-400/50 text-center">🤝<br/>{t("Socis", "Socios", "Partners")}</div>
-                    <div className="p-2 bg-blue-400/30 rounded border border-blue-400/50 text-center">⚙️ {t("Activ.", "Activ.", "Activ.")}</div>
-                    <div className="row-span-2 p-2 bg-pink-400/30 rounded border border-pink-400/50 text-center">💎<br/>{t("Proposta", "Propuesta", "Value")}</div>
-                    <div className="p-2 bg-green-400/30 rounded border border-green-400/50 text-center">❤️ {t("Relac.", "Relac.", "Relat.")}</div>
-                    <div className="row-span-2 p-2 bg-emerald-400/30 rounded border border-emerald-400/50 text-center">👥<br/>{t("Clients", "Clientes", "Customers")}</div>
-                    <div className="p-2 bg-cyan-400/30 rounded border border-cyan-400/50 text-center">🏗️ {t("Recurs.", "Recurs.", "Resourc.")}</div>
-                    <div className="p-2 bg-amber-400/30 rounded border border-amber-400/50 text-center">📢 {t("Canals", "Canales", "Channels")}</div>
-                    <div className="col-span-2 p-2 bg-red-400/30 rounded border border-red-400/50 text-center">💸 {t("Costos", "Costes", "Costs")}</div>
-                    <div className="col-span-3 p-2 bg-green-400/30 rounded border border-green-400/50 text-center">💰 {t("Ingressos", "Ingresos", "Revenue")}</div>
-                </div>
-            ),
-            dafo: (
-                <div className="grid grid-cols-2 gap-2 w-56 mx-auto my-4 text-xs">
-                    <div className="p-2 bg-green-400/30 rounded border border-green-400/50 text-center">💪 {t("Fortaleses", "Fortalezas", "Strengths")}</div>
-                    <div className="p-2 bg-red-400/30 rounded border border-red-400/50 text-center">😰 {t("Debilitats", "Debilidades", "Weaknesses")}</div>
-                    <div className="p-2 bg-blue-400/30 rounded border border-blue-400/50 text-center">🎯 {t("Oportunitats", "Oportunidades", "Opportunities")}</div>
-                    <div className="p-2 bg-orange-400/30 rounded border border-orange-400/50 text-center">⚠️ {t("Amenaces", "Amenazas", "Threats")}</div>
-                    <div className="text-center text-purple-300 text-[10px]">{t("Intern", "Interno", "Internal")}</div>
-                    <div className="text-center text-purple-300 text-[10px]">{t("Extern", "Externo", "External")}</div>
-                </div>
-            ),
-            porter: (
-                <div className="w-56 mx-auto my-4 text-[10px] text-center">
-                    <div className="p-2 bg-red-400/30 rounded border border-red-400/50 mb-1">⬆️ {t("Nous entrants", "Nuevos entrantes", "New entrants")}</div>
-                    <div className="flex gap-1">
-                        <div className="p-2 bg-blue-400/30 rounded border border-blue-400/50 flex-1">⬅️ {t("Proveïdors", "Proveedores", "Suppliers")}</div>
-                        <div className="p-2 bg-purple-400/30 rounded border border-purple-400/50 flex-1">⚔️ {t("Rivalitat", "Rivalidad", "Rivalry")}</div>
-                        <div className="p-2 bg-green-400/30 rounded border border-green-400/50 flex-1">{t("Clients", "Clientes", "Buyers")} ➡️</div>
-                    </div>
-                    <div className="p-2 bg-amber-400/30 rounded border border-amber-400/50 mt-1">⬇️ {t("Substitutius", "Sustitutivos", "Substitutes")}</div>
-                </div>
-            ),
-            oferta_demanda: (<div className="w-48 h-32 mx-auto my-4 relative bg-white/5 rounded-lg border border-white/20"><div className="absolute bottom-4 left-4 w-32 h-20 border-l-2 border-b-2 border-purple-400"></div><div className="absolute bottom-6 left-6 w-24 h-1 bg-blue-400 transform -rotate-45 origin-left"></div><div className="absolute bottom-6 left-6 w-24 h-1 bg-red-400 transform rotate-45 origin-left"></div><div className="absolute bottom-2 right-4 text-[10px] text-purple-300">Q</div><div className="absolute top-2 left-2 text-[10px] text-purple-300">P</div></div>),
-            islm: (<div className="w-48 h-32 mx-auto my-4 relative bg-white/5 rounded-lg border border-white/20"><div className="absolute bottom-4 left-4 w-32 h-20 border-l-2 border-b-2 border-purple-400"></div><div className="absolute bottom-8 left-8 w-20 h-1 bg-blue-400 transform -rotate-30 origin-left" style={{transform:'rotate(-30deg)'}}></div><div className="absolute bottom-12 left-6 w-24 h-1 bg-green-400 transform rotate-30 origin-left" style={{transform:'rotate(30deg)'}}></div><div className="absolute top-2 left-8 text-[10px] text-blue-300">IS</div><div className="absolute top-6 right-8 text-[10px] text-green-300">LM</div><div className="absolute bottom-2 right-4 text-[10px] text-purple-300">Y</div><div className="absolute top-2 left-2 text-[10px] text-purple-300">i</div></div>),
-            laffer: (<div className="w-48 h-32 mx-auto my-4 relative bg-white/5 rounded-lg border border-white/20"><div className="absolute bottom-4 left-4 w-32 h-20 border-l-2 border-b-2 border-purple-400"></div><svg className="absolute bottom-6 left-6 w-28 h-16" viewBox="0 0 100 60"><path d="M 0 60 Q 50 -20 100 60" stroke="#f59e0b" strokeWidth="3" fill="none"/></svg><div className="absolute bottom-2 right-4 text-[10px] text-purple-300">{t("Tipus", "Tipo", "Rate")}</div><div className="absolute top-2 left-2 text-[10px] text-purple-300">{t("Recapt.", "Recaud.", "Revenue")}</div></div>),
-            balanc: (<div className="w-56 mx-auto my-4 text-[10px]"><div className="flex gap-1"><div className="flex-1 p-2 bg-blue-400/30 rounded-t border border-blue-400/50 text-center font-bold">{t("ACTIU", "ACTIVO", "ASSETS")}</div><div className="flex-1 p-2 bg-green-400/30 rounded-t border border-green-400/50 text-center font-bold">{t("PASSIU+PN", "PASIVO+PN", "LIAB.+EQ.")}</div></div><div className="flex gap-1"><div className="flex-1 p-1 bg-blue-400/20 border-x border-blue-400/50">ANC</div><div className="flex-1 p-1 bg-green-400/20 border-x border-green-400/50">PN</div></div><div className="flex gap-1"><div className="flex-1 p-1 bg-blue-400/20 border-x border-b rounded-b border-blue-400/50">AC</div><div className="flex-1"><div className="p-1 bg-green-400/20 border-x border-green-400/50">PNC</div><div className="p-1 bg-green-400/20 border-x border-b rounded-b border-green-400/50">PC</div></div></div></div>),
-            leasing: (<div className="w-48 mx-auto my-4 p-4 bg-blue-400/20 rounded-xl border border-blue-400/50 text-center"><span className="text-3xl">🏦➡️📦</span><p className="text-sm mt-2 text-blue-200">LEASING</p><p className="text-[10px] text-blue-300">{t("Arrendament financer amb opció de compra", "Arrendamiento financiero con opción de compra", "Financial lease with purchase option")}</p></div>),
-            factoring: (<div className="w-48 mx-auto my-4 p-4 bg-green-400/20 rounded-xl border border-green-400/50 text-center"><span className="text-3xl">📄➡️💵</span><p className="text-sm mt-2 text-green-200">FACTORING</p><p className="text-[10px] text-green-300">{t("Venda de factures per avançar cobraments", "Venta de facturas para adelantar cobros", "Selling invoices to advance collections")}</p></div>),
+            bcg: (<div className="grid grid-cols-2 gap-2 w-52 mx-auto my-4 text-xs"><div className="p-3 bg-yellow-400/30 rounded-lg text-center border border-yellow-400/50 animate-pulse">⭐ Stars</div><div className="p-3 bg-purple-400/30 rounded-lg text-center border border-purple-400/50">❓ ?</div><div className="p-3 bg-green-400/30 rounded-lg text-center border border-green-400/50">🐄 Cash Cows</div><div className="p-3 bg-slate-400/30 rounded-lg text-center border border-slate-400/50">🐕 Dogs</div><div className="col-span-2 text-center text-purple-300 text-[10px] mt-1">← {t("Quota", "Cuota", "Share")} →</div></div>),
+            ansoff: (<div className="w-56 mx-auto my-4 text-xs"><div className="grid grid-cols-3 gap-1"><div></div><div className="text-center text-purple-300 text-[10px]">{t("Prod. actual", "Prod. actual", "Current prod.")}</div><div className="text-center text-purple-300 text-[10px]">{t("Prod. nou", "Prod. nuevo", "New prod.")}</div><div className="text-purple-300 text-[10px]">{t("Mercat actual", "Mercado actual", "Current mkt")}</div><div className="p-2 bg-green-400/30 rounded border border-green-400/50 text-center">{t("Penetr.", "Penetr.", "Penetr.")}</div><div className="p-2 bg-amber-400/30 rounded border border-amber-400/50 text-center">{t("Des.Prod", "Des.Prod", "Prod.Dev")}</div><div className="text-purple-300 text-[10px]">{t("Mercat nou", "Mercado nuevo", "New mkt")}</div><div className="p-2 bg-blue-400/30 rounded border border-blue-400/50 text-center">{t("Des.Mkt", "Des.Mkt", "Mkt.Dev")}</div><div className="p-2 bg-red-400/30 rounded border border-red-400/50 text-center animate-pulse">{t("Divers.", "Divers.", "Divers.")}</div></div></div>),
+            canvas: (<div className="grid grid-cols-5 gap-1 w-72 mx-auto my-4 text-[10px]"><div className="row-span-2 p-2 bg-violet-400/30 rounded border border-violet-400/50 text-center">🤝</div><div className="p-2 bg-blue-400/30 rounded border border-blue-400/50 text-center">⚙️</div><div className="row-span-2 p-2 bg-pink-400/30 rounded border border-pink-400/50 text-center animate-pulse">💎</div><div className="p-2 bg-green-400/30 rounded border border-green-400/50 text-center">❤️</div><div className="row-span-2 p-2 bg-emerald-400/30 rounded border border-emerald-400/50 text-center">👥</div><div className="p-2 bg-cyan-400/30 rounded border border-cyan-400/50 text-center">🏗️</div><div className="p-2 bg-amber-400/30 rounded border border-amber-400/50 text-center">📢</div><div className="col-span-2 p-2 bg-red-400/30 rounded border border-red-400/50 text-center">💸</div><div className="col-span-3 p-2 bg-green-400/30 rounded border border-green-400/50 text-center">💰</div></div>),
+            dafo: (<div className="grid grid-cols-2 gap-2 w-56 mx-auto my-4 text-xs"><div className="p-2 bg-green-400/30 rounded border border-green-400/50 text-center">💪 {t("F", "F", "S")}</div><div className="p-2 bg-red-400/30 rounded border border-red-400/50 text-center">😰 {t("D", "D", "W")}</div><div className="p-2 bg-blue-400/30 rounded border border-blue-400/50 text-center">🎯 {t("O", "O", "O")}</div><div className="p-2 bg-orange-400/30 rounded border border-orange-400/50 text-center animate-pulse">⚠️ {t("A", "A", "T")}</div></div>),
+            porter: (<div className="w-56 mx-auto my-4 text-[10px] text-center"><div className="p-2 bg-red-400/30 rounded border border-red-400/50 mb-1">⬆️ {t("Entrants", "Entrantes", "Entrants")}</div><div className="flex gap-1"><div className="p-2 bg-blue-400/30 rounded border border-blue-400/50 flex-1">⬅️</div><div className="p-2 bg-purple-400/30 rounded border border-purple-400/50 flex-1">⚔️</div><div className="p-2 bg-green-400/30 rounded border border-green-400/50 flex-1">➡️</div></div><div className="p-2 bg-amber-400/30 rounded border border-amber-400/50 mt-1">⬇️ {t("Substituts", "Sustitutos", "Substitutes")}</div></div>),
+            oferta_demanda: (<div className="w-48 h-32 mx-auto my-4 relative bg-white/5 rounded-lg border border-white/20"><div className="absolute bottom-4 left-4 w-32 h-20 border-l-2 border-b-2 border-purple-400"></div><div className="absolute bottom-6 left-6 w-24 h-1 bg-blue-400 transform -rotate-45 origin-left"></div><div className="absolute bottom-6 left-6 w-24 h-1 bg-red-400 transform rotate-45 origin-left"></div><div className="absolute bottom-2 right-4 text-[10px] text-purple-300">Q</div><div className="absolute top-2 left-2 text-[10px] text-purple-300">P</div><div className="absolute top-1/2 left-1/2 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div></div>),
+            islm: (<div className="w-48 h-32 mx-auto my-4 relative bg-white/5 rounded-lg border border-white/20"><div className="absolute bottom-4 left-4 w-32 h-20 border-l-2 border-b-2 border-purple-400"></div><div className="absolute bottom-8 left-8 w-20 h-1 bg-blue-400" style={{transform:'rotate(-25deg)'}}></div><div className="absolute bottom-16 left-10 w-20 h-1 bg-green-400" style={{transform:'rotate(25deg)'}}></div><div className="absolute top-4 left-10 text-[10px] text-blue-300 font-bold">IS</div><div className="absolute top-8 right-8 text-[10px] text-green-300 font-bold">LM</div></div>),
+            laffer: (<div className="w-48 h-32 mx-auto my-4 relative bg-white/5 rounded-lg border border-white/20"><div className="absolute bottom-4 left-4 w-32 h-20 border-l-2 border-b-2 border-purple-400"></div><svg className="absolute bottom-6 left-6 w-28 h-16" viewBox="0 0 100 60"><path d="M 0 60 Q 50 -20 100 60" stroke="#f59e0b" strokeWidth="3" fill="none"/><circle cx="50" cy="10" r="4" fill="#fbbf24" className="animate-pulse"/></svg></div>),
+            balanc: (<div className="w-56 mx-auto my-4 text-[10px]"><div className="flex gap-1"><div className="flex-1 p-2 bg-blue-400/30 rounded-t border border-blue-400/50 text-center font-bold">{t("ACTIU", "ACTIVO", "ASSETS")}</div><div className="flex-1 p-2 bg-green-400/30 rounded-t border border-green-400/50 text-center font-bold">{t("P+PN", "P+PN", "L+E")}</div></div><div className="flex gap-1"><div className="flex-1 p-1 bg-blue-400/20 border-x border-blue-400/50">ANC</div><div className="flex-1 p-1 bg-green-400/20 border-x border-green-400/50">PN</div></div><div className="flex gap-1"><div className="flex-1 p-1 bg-blue-400/20 border border-blue-400/50 rounded-b">AC</div><div className="flex-1"><div className="p-1 bg-green-400/20 border-x border-green-400/50">PNC</div><div className="p-1 bg-green-400/20 border border-green-400/50 rounded-b">PC</div></div></div></div>),
+            leasing: (<div className="w-48 mx-auto my-4 p-4 bg-blue-400/20 rounded-xl border border-blue-400/50 text-center"><span className="text-3xl">🏦➡️📦</span><p className="text-sm mt-2 text-blue-200 font-bold">LEASING</p></div>),
+            factoring: (<div className="w-48 mx-auto my-4 p-4 bg-green-400/20 rounded-xl border border-green-400/50 text-center"><span className="text-3xl">📄➡️💵</span><p className="text-sm mt-2 text-green-200 font-bold">FACTORING</p></div>),
         };
         return grafics[tipus] || null;
     };
@@ -298,14 +426,12 @@ function ConcursApp() {
     const PantallaInici = () => (
         <div className="max-w-2xl mx-auto space-y-6 animate-fade">
             <div className="text-center py-8">
-                <span className="text-7xl mb-6 block animate-pulse-custom">🏆</span>
+                <span className="text-7xl mb-6 block animate-bounce">🏆</span>
                 <h1 className="text-5xl font-black text-white mb-3">{t("Concurs PDE", "Concurso PDE", "PDE Contest")}</h1>
                 <p className="text-xl text-purple-200">{t("Economia · Finances · Empresa", "Economía · Finanzas · Empresa", "Economics · Finance · Business")}</p>
-                <p className="text-sm text-purple-300 mt-2">{t("Més de 60 preguntes de càlcul, gràfics i teoria!", "¡Más de 60 preguntas de cálculo, gráficos y teoría!", "60+ calculation, graphics and theory questions!")}</p>
             </div>
             
             <Card>
-                <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2"><span>⚙️</span> {t("Configura", "Configura", "Setup")}</h3>
                 <div className="space-y-5">
                     <div>
                         <label className="block text-sm font-semibold text-purple-200 mb-2">{t("El teu nom", "Tu nombre", "Your name")}</label>
@@ -316,60 +442,48 @@ function ConcursApp() {
                         <label className="block text-sm font-semibold text-purple-200 mb-3">{t("Categoria", "Categoría", "Category")}</label>
                         <div className="grid grid-cols-2 gap-3">
                             {[
-                                { id: 'economia', icon: '📈', label: t('Economia', 'Economía', 'Economics'), color: 'from-blue-500 to-cyan-500', q: '20' },
-                                { id: 'finances', icon: '💰', label: t('Finances', 'Finanzas', 'Finance'), color: 'from-green-500 to-emerald-500', q: '20' },
-                                { id: 'empresa', icon: '🏢', label: t('Empresa', 'Empresa', 'Business'), color: 'from-orange-500 to-red-500', q: '25' },
-                                { id: 'totes', icon: '🎯', label: t('Totes', 'Todas', 'All'), color: 'from-purple-500 to-pink-500', q: '65' },
+                                { id: 'economia', icon: '📈', label: t('Economia', 'Economía', 'Economics'), color: 'from-blue-500 to-cyan-500' },
+                                { id: 'finances', icon: '💰', label: t('Finances', 'Finanzas', 'Finance'), color: 'from-green-500 to-emerald-500' },
+                                { id: 'empresa', icon: '🏢', label: t('Empresa', 'Empresa', 'Business'), color: 'from-orange-500 to-red-500' },
+                                { id: 'totes', icon: '🎯', label: t('Totes', 'Todas', 'All'), color: 'from-purple-500 to-pink-500' },
                             ].map(cat => (
-                                <button key={cat.id} onClick={() => setCategoria(cat.id)} className={`p-4 rounded-xl border-2 transition-all transform hover:scale-105 ${categoria === cat.id ? 'border-yellow-400 bg-gradient-to-r ' + cat.color + ' shadow-lg shadow-yellow-400/30' : 'border-white/30 bg-white/5 hover:bg-white/10'}`}>
+                                <button key={cat.id} onClick={() => { setCategoria(cat.id); playSound('tick'); }} className={`p-4 rounded-xl border-2 transition-all transform hover:scale-105 ${categoria === cat.id ? 'border-yellow-400 bg-gradient-to-r ' + cat.color + ' shadow-lg shadow-yellow-400/30 animate-glow' : 'border-white/30 bg-white/5 hover:bg-white/10'}`}>
                                     <span className="text-3xl block mb-2">{cat.icon}</span>
-                                    <span className="font-bold text-white block">{cat.label}</span>
-                                    <span className="text-xs text-white/60">{cat.q} {t("preguntes", "preguntas", "questions")}</span>
+                                    <span className="font-bold text-white">{cat.label}</span>
                                 </button>
                             ))}
                         </div>
                     </div>
                     
-                    <button onClick={iniciarPartida} className="w-full py-5 gold-gradient text-slate-900 font-black text-xl rounded-xl hover:opacity-90 transition-all shadow-lg shadow-yellow-500/30 transform hover:scale-[1.02]">
+                    <button onClick={iniciarPartida} className="w-full py-5 gold-gradient text-slate-900 font-black text-xl rounded-xl hover:opacity-90 transition-all shadow-lg shadow-yellow-500/30 transform hover:scale-[1.02] animate-glow">
                         🚀 {t("COMENÇAR!", "¡EMPEZAR!", "START!")}
                     </button>
                 </div>
             </Card>
             
-            <Card className="text-center">
-                <p className="text-sm text-purple-300 mb-3">{t("Tipus de preguntes:", "Tipos de preguntas:", "Question types:")}</p>
-                <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-                    {[
-                        { icon: '🧮', label: t('Càlculs', 'Cálculos', 'Calcs') },
-                        { icon: '📊', label: t('Gràfics', 'Gráficos', 'Graphics') },
-                        { icon: '📝', label: t('Fórmules', 'Fórmulas', 'Formulas') },
-                        { icon: '🔢', label: t('Ordenar', 'Ordenar', 'Order') },
-                        { icon: '✓✗', label: 'V/F' },
-                        { icon: '🔘', label: 'Test' },
-                    ].map((t, i) => (
-                        <div key={i} className="p-2 bg-white/5 rounded-lg">
-                            <span className="text-xl block">{t.icon}</span>
-                            <span className="text-[10px] text-purple-300">{t.label}</span>
-                        </div>
-                    ))}
+            <Card>
+                <p className="text-sm text-purple-300 mb-3 text-center font-semibold">{t("Ajudes disponibles:", "Ayudas disponibles:", "Available helps:")}</p>
+                <div className="grid grid-cols-3 gap-3 text-center">
+                    <div className="p-3 bg-blue-500/20 rounded-xl border border-blue-400/50"><span className="text-2xl block mb-1">5️⃣0️⃣</span><span className="text-xs text-blue-300">50:50</span></div>
+                    <div className="p-3 bg-green-500/20 rounded-xl border border-green-400/50"><span className="text-2xl block mb-1">⏱️</span><span className="text-xs text-green-300">+60s</span></div>
+                    <div className="p-3 bg-amber-500/20 rounded-xl border border-amber-400/50"><span className="text-2xl block mb-1">⏭️</span><span className="text-xs text-amber-300">{t("Saltar", "Saltar", "Skip")}</span></div>
                 </div>
             </Card>
             
             <div className="flex gap-3">
-                <button onClick={() => setFase('ranking')} className="flex-1 py-4 bg-white/10 border border-white/30 text-white font-bold rounded-xl hover:bg-white/20">
-                    🏆 {t("Ranking", "Ranking", "Ranking")}
-                </button>
-                <a href="./index.html" className="flex-1 py-4 bg-white/10 border border-white/30 text-white font-bold rounded-xl hover:bg-white/20 text-center">
-                    🏠 {t("Inici", "Inicio", "Home")}
-                </a>
+                <button onClick={() => setFase('ranking')} className="flex-1 py-4 bg-white/10 border border-white/30 text-white font-bold rounded-xl hover:bg-white/20 transition-all">🏆 Ranking</button>
+                <a href="./index.html" className="flex-1 py-4 bg-white/10 border border-white/30 text-white font-bold rounded-xl hover:bg-white/20 text-center transition-all">🏠 {t("Inici", "Inicio", "Home")}</a>
             </div>
             
-            <div className="flex justify-center gap-2">
-                {['val', 'es', 'en'].map(lang => (
-                    <button key={lang} onClick={() => setIdioma(lang)} className={`px-4 py-2 rounded-lg font-bold transition-all ${idioma === lang ? 'bg-yellow-400 text-slate-900' : 'bg-white/10 text-white hover:bg-white/20'}`}>
-                        {lang.toUpperCase()}
-                    </button>
-                ))}
+            <div className="flex justify-center items-center gap-4">
+                <div className="flex gap-2">
+                    {['val', 'es', 'en'].map(lang => (
+                        <button key={lang} onClick={() => setIdioma(lang)} className={`px-4 py-2 rounded-lg font-bold transition-all ${idioma === lang ? 'bg-yellow-400 text-slate-900' : 'bg-white/10 text-white hover:bg-white/20'}`}>{lang.toUpperCase()}</button>
+                    ))}
+                </div>
+                <button onClick={() => setSoundEnabled(!soundEnabled)} className={`p-2 rounded-lg ${soundEnabled ? 'bg-green-500/30 text-green-300' : 'bg-red-500/30 text-red-300'}`}>
+                    {soundEnabled ? '🔊' : '🔇'}
+                </button>
             </div>
         </div>
     );
@@ -379,60 +493,91 @@ function ConcursApp() {
         const p = preguntesPartida[preguntaActual];
         if (!p) return null;
         const progressPct = ((preguntaActual + 1) / preguntesPartida.length) * 100;
-        const tempsPct = (tempsRestant / 60) * 100;
-        const tempsCol = tempsRestant > 30 ? 'bg-green-500' : tempsRestant > 10 ? 'bg-amber-500' : 'bg-red-500';
-        const tipusLabel = { multiple: 'TEST', numeric: t('CÀLCUL', 'CÁLCULO', 'CALC'), truefalse: 'V/F', identify: t('GRÀFIC', 'GRÁFICO', 'GRAPHIC'), formula: t('FÓRMULA', 'FÓRMULA', 'FORMULA'), order: t('ORDENA', 'ORDENA', 'ORDER') };
+        const tipusIcons = { numeric: '🧮', order: '🔢', formula: '📝', identify: '📊', truefalse: '✓✗', multiple: '🔘' };
         
         return (
             <div className="max-w-3xl mx-auto space-y-4 animate-fade">
-                <div className="flex items-center justify-between bg-white/10 backdrop-blur rounded-xl p-4 border border-white/20">
-                    <div className="flex items-center gap-3">
-                        <span className="text-lg font-bold text-white bg-white/20 px-3 py-1 rounded-lg">{preguntaActual + 1}/{preguntesPartida.length}</span>
-                        <div className="flex items-center gap-1 bg-yellow-400/20 text-yellow-400 px-3 py-1 rounded-lg"><span>🏆</span><span className="font-bold">{puntuacio}</span></div>
-                        {ratxa >= 3 && <div className="flex items-center gap-1 bg-red-400/20 text-red-400 px-3 py-1 rounded-lg animate-pulse"><span>🔥</span><span className="font-bold">x{ratxa >= 5 ? '2' : '1.5'}</span></div>}
+                {/* Header */}
+                <div className="flex items-center justify-between bg-white/10 backdrop-blur rounded-xl p-3 border border-white/20">
+                    <div className="flex items-center gap-2">
+                        <span className="font-bold text-white bg-white/20 px-3 py-1 rounded-lg">{preguntaActual + 1}/{preguntesPartida.length}</span>
+                        <div className="flex items-center gap-1 bg-yellow-400/20 text-yellow-400 px-3 py-1 rounded-lg">
+                            <span>🏆</span><span className="font-bold">{puntuacio}</span>
+                        </div>
+                        {ratxa >= 1 && (
+                            <div className={`flex items-center gap-1 px-3 py-1 rounded-lg ${ratxa >= 5 ? 'bg-red-500/30 text-red-400 streak-fire' : ratxa >= 3 ? 'bg-orange-400/30 text-orange-400' : 'bg-amber-400/20 text-amber-400'}`}>
+                                <span>{ratxa >= 5 ? '🔥🔥' : ratxa >= 3 ? '🔥' : '✨'}</span>
+                                <span className="font-bold">x{ratxa >= 7 ? '3' : ratxa >= 5 ? '2.5' : ratxa >= 3 ? '2' : '1.5'}</span>
+                            </div>
+                        )}
                     </div>
-                    <div className={`text-3xl font-black ${tempsRestant <= 10 ? 'text-red-400 animate-pulse' : 'text-white'}`}>{tempsRestant}s</div>
                 </div>
                 
-                <div className="space-y-1">
-                    <div className="h-2 bg-white/20 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300" style={{ width: `${progressPct}%` }}></div></div>
-                    <div className="h-1.5 bg-white/20 rounded-full overflow-hidden"><div className={`h-full ${tempsCol} transition-all duration-1000`} style={{ width: `${tempsPct}%` }}></div></div>
+                {/* Timer i Progrés */}
+                <div className="space-y-2">
+                    <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300" style={{ width: `${progressPct}%` }}></div>
+                    </div>
+                    <Timer key={timerKey} temps={60} onTimeUp={handleTimeUp} isActive={timerActive && !mostrarResultat} />
                 </div>
                 
-                <Card>
+                {/* Ajudes */}
+                {!mostrarResultat && (
+                    <div className="flex justify-center gap-2">
+                        <button onClick={usarAjuda50} disabled={ajudes.cinquanta <= 0} className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${ajudes.cinquanta > 0 ? 'bg-blue-500/30 text-blue-300 hover:bg-blue-500/50' : 'bg-white/10 text-white/30 cursor-not-allowed'}`}>
+                            5️⃣0️⃣ ({ajudes.cinquanta})
+                        </button>
+                        <button onClick={usarAjudaTemps} disabled={ajudes.temps <= 0} className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${ajudes.temps > 0 ? 'bg-green-500/30 text-green-300 hover:bg-green-500/50' : 'bg-white/10 text-white/30 cursor-not-allowed'}`}>
+                            ⏱️ +60s ({ajudes.temps})
+                        </button>
+                        <button onClick={usarAjudaSaltar} disabled={ajudes.saltar <= 0} className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${ajudes.saltar > 0 ? 'bg-amber-500/30 text-amber-300 hover:bg-amber-500/50' : 'bg-white/10 text-white/30 cursor-not-allowed'}`}>
+                            ⏭️ ({ajudes.saltar})
+                        </button>
+                    </div>
+                )}
+                
+                {/* Pregunta */}
+                <Card className={mostrarResultat ? (respostes[respostes.length - 1]?.correcta ? 'animate-correct' : 'animate-wrong') : ''}>
                     <div className="flex items-center gap-2 mb-4">
                         <span className={`px-3 py-1 rounded-lg text-xs font-bold ${p.dificultat === 'facil' ? 'bg-green-400/30 text-green-300' : p.dificultat === 'mitjana' ? 'bg-amber-400/30 text-amber-300' : 'bg-red-400/30 text-red-300'}`}>
                             {p.dificultat === 'facil' ? '⭐' : p.dificultat === 'mitjana' ? '⭐⭐' : '⭐⭐⭐'}
                         </span>
-                        <span className="text-xs text-purple-300 uppercase font-semibold">{tipusLabel[p.tipus]}</span>
+                        <span className="text-lg">{tipusIcons[p.tipus]}</span>
                     </div>
                     
                     <h3 className="text-xl md:text-2xl font-bold text-white mb-6">{p.pregunta}</h3>
                     
                     {p.imatge && renderGrafic(p.imatge)}
                     
+                    {/* Opcions múltiples/identify/formula */}
                     {(p.tipus === 'multiple' || p.tipus === 'identify' || p.tipus === 'formula') && (
                         <div className="grid gap-3">
-                            {p.opcions.map((op, i) => (
-                                <button key={i} onClick={() => !mostrarResultat && handleResposta(i)} disabled={mostrarResultat}
-                                    className={`p-4 text-left rounded-xl border-2 transition-all font-medium text-white ${
-                                        mostrarResultat ? i === p.correcta ? 'border-green-400 bg-green-400/30' : respostaUsuari === i ? 'border-red-400 bg-red-400/30 animate-shake' : 'border-white/20 opacity-40'
-                                        : 'border-white/30 hover:border-yellow-400 hover:bg-white/10 cursor-pointer'
-                                    }`}>
-                                    <span className="font-bold mr-3 text-purple-300">{String.fromCharCode(65 + i)}.</span>{op}
-                                    {mostrarResultat && i === p.correcta && <span className="float-right text-green-400">✓</span>}
-                                    {mostrarResultat && respostaUsuari === i && i !== p.correcta && <span className="float-right text-red-400">✗</span>}
-                                </button>
-                            ))}
+                            {p.opcions.map((op, i) => {
+                                if (opcionsEliminades.includes(i)) return (
+                                    <div key={i} className="p-4 rounded-xl border-2 border-white/10 bg-white/5 opacity-30 line-through text-white/50">{op}</div>
+                                );
+                                return (
+                                    <button key={i} onClick={() => !mostrarResultat && handleResposta(i)} disabled={mostrarResultat}
+                                        className={`p-4 text-left rounded-xl border-2 transition-all font-medium text-white ${
+                                            mostrarResultat ? i === p.correcta ? 'border-green-400 bg-green-400/30' : respostaUsuari === i ? 'border-red-400 bg-red-400/30' : 'border-white/20 opacity-40'
+                                            : 'border-white/30 hover:border-yellow-400 hover:bg-white/10 cursor-pointer active:scale-95'
+                                        }`}>
+                                        <span className="font-bold mr-3 text-purple-300">{String.fromCharCode(65 + i)}.</span>{op}
+                                        {mostrarResultat && i === p.correcta && <span className="float-right text-green-400 text-xl">✓</span>}
+                                        {mostrarResultat && respostaUsuari === i && i !== p.correcta && <span className="float-right text-red-400 text-xl">✗</span>}
+                                    </button>
+                                );
+                            })}
                         </div>
                     )}
                     
+                    {/* Vertader/Fals */}
                     {p.tipus === 'truefalse' && (
                         <div className="grid grid-cols-2 gap-4">
                             {[true, false].map(val => (
                                 <button key={String(val)} onClick={() => !mostrarResultat && handleResposta(val)} disabled={mostrarResultat}
-                                    className={`p-6 rounded-xl border-2 transition-all font-bold text-xl text-white ${
-                                        mostrarResultat ? val === p.correcta ? 'border-green-400 bg-green-400/30' : respostaUsuari === val ? 'border-red-400 bg-red-400/30 animate-shake' : 'border-white/20 opacity-40'
+                                    className={`p-6 rounded-xl border-2 transition-all font-bold text-xl text-white active:scale-95 ${
+                                        mostrarResultat ? val === p.correcta ? 'border-green-400 bg-green-400/30' : respostaUsuari === val ? 'border-red-400 bg-red-400/30' : 'border-white/20 opacity-40'
                                         : 'border-white/30 hover:border-yellow-400 hover:bg-white/10 cursor-pointer'
                                     }`}>
                                     {val ? '✓ ' + t('VERTADER', 'VERDADERO', 'TRUE') : '✗ ' + t('FALS', 'FALSO', 'FALSE')}
@@ -441,45 +586,50 @@ function ConcursApp() {
                         </div>
                     )}
                     
+                    {/* Numèric */}
                     {p.tipus === 'numeric' && (
                         <div className="space-y-4">
-                            <input type="number" step="any" value={inputNumeric} onChange={e => setInputNumeric(e.target.value)} disabled={mostrarResultat}
-                                placeholder={t("Escriu el resultat numèric...", "Escribe el resultado numérico...", "Enter numeric result...")}
+                            <input ref={inputRef} type="number" step="any" value={inputNumeric} onChange={e => setInputNumeric(e.target.value)} disabled={mostrarResultat}
+                                placeholder={t("Resultat numèric...", "Resultado numérico...", "Numeric result...")}
                                 className="w-full p-4 text-2xl font-bold text-center bg-white/10 border-2 border-white/30 rounded-xl text-white placeholder-white/50 outline-none focus:border-yellow-400"
-                                onKeyDown={e => e.key === 'Enter' && !mostrarResultat && inputNumeric && handleResposta(inputNumeric)} />
-                            {!mostrarResultat && <button onClick={() => inputNumeric && handleResposta(inputNumeric)} className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:opacity-90">{t("COMPROVAR", "COMPROBAR", "CHECK")}</button>}
-                            {mostrarResultat && <p className="text-center text-lg text-white">{t("Resposta correcta:", "Respuesta correcta:", "Correct answer:")} <strong className="text-green-400">{p.correcta}</strong> {p.tolerancia > 0 && <span className="text-purple-300">(±{p.tolerancia})</span>}</p>}
+                                onKeyDown={e => e.key === 'Enter' && !mostrarResultat && inputNumeric && handleResposta(inputNumeric)}
+                                autoComplete="off" inputMode="decimal" />
+                            {!mostrarResultat && <button onClick={() => inputNumeric && handleResposta(inputNumeric)} className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:opacity-90 active:scale-95">{t("COMPROVAR", "COMPROBAR", "CHECK")}</button>}
+                            {mostrarResultat && (
+                                <div className="text-center">
+                                    <p className="text-lg text-white">{t("Resposta:", "Respuesta:", "Answer:")} <strong className="text-green-400 text-2xl">{p.correcta}</strong></p>
+                                    {p.pista && <p className="text-sm text-purple-300 mt-2">💡 {p.pista}</p>}
+                                </div>
+                            )}
                         </div>
                     )}
                     
+                    {/* Ordenar */}
                     {p.tipus === 'order' && (
                         <div className="space-y-4">
                             <div className="space-y-2">
                                 {ordreUsuari.map((elemIdx, pos) => (
-                                    <div key={pos} className={`flex items-center gap-3 p-4 rounded-xl border-2 ${mostrarResultat ? pos === p.ordreCorrecte.indexOf(elemIdx) ? 'border-green-400 bg-green-400/20' : 'border-red-400 bg-red-400/20' : 'border-white/30 bg-white/5'}`}>
-                                        <span className="font-bold text-purple-300 w-8">{pos + 1}.</span>
+                                    <div key={pos} className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${mostrarResultat ? pos === p.ordreCorrecte.indexOf(elemIdx) ? 'border-green-400 bg-green-400/20' : 'border-red-400 bg-red-400/20' : 'border-white/30 bg-white/5'}`}>
+                                        <span className="font-bold text-purple-300 w-8 text-lg">{pos + 1}.</span>
                                         <span className="flex-1 font-medium text-white">{p.elements[elemIdx]}</span>
                                         {!mostrarResultat && (
                                             <div className="flex gap-2">
-                                                <button onClick={() => moureElement(pos, -1)} disabled={pos === 0} className="w-10 h-10 rounded-lg bg-white/20 hover:bg-white/30 disabled:opacity-30 text-white font-bold">▲</button>
-                                                <button onClick={() => moureElement(pos, 1)} disabled={pos === ordreUsuari.length - 1} className="w-10 h-10 rounded-lg bg-white/20 hover:bg-white/30 disabled:opacity-30 text-white font-bold">▼</button>
+                                                <button onClick={() => moureElement(pos, -1)} disabled={pos === 0} className="w-12 h-12 rounded-lg bg-white/20 hover:bg-white/30 disabled:opacity-30 text-white font-bold text-xl active:scale-90">▲</button>
+                                                <button onClick={() => moureElement(pos, 1)} disabled={pos === ordreUsuari.length - 1} className="w-12 h-12 rounded-lg bg-white/20 hover:bg-white/30 disabled:opacity-30 text-white font-bold text-xl active:scale-90">▼</button>
                                             </div>
                                         )}
                                     </div>
                                 ))}
                             </div>
-                            {!mostrarResultat && <button onClick={() => handleResposta('order')} className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:opacity-90">{t("CONFIRMAR", "CONFIRMAR", "CONFIRM")}</button>}
+                            {!mostrarResultat && <button onClick={() => handleResposta('order')} className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:opacity-90 active:scale-95">{t("CONFIRMAR", "CONFIRMAR", "CONFIRM")}</button>}
                         </div>
                     )}
                     
+                    {/* Botó següent */}
                     {mostrarResultat && (
                         <div className="mt-6 pt-6 border-t border-white/20">
-                            <div className={`text-center p-5 rounded-xl mb-4 ${respostes[respostes.length - 1]?.correcta ? 'bg-green-400/20' : 'bg-red-400/20'}`}>
-                                <span className="text-5xl block mb-2">{respostes[respostes.length - 1]?.correcta ? '🎉' : '😔'}</span>
-                                <p className="font-bold text-2xl text-white">{respostes[respostes.length - 1]?.correcta ? `+${respostes[respostes.length - 1]?.punts}` : respostes[respostes.length - 1]?.punts} {t('punts', 'puntos', 'points')}</p>
-                            </div>
-                            <button onClick={seguentPregunta} className="w-full py-5 gold-gradient text-slate-900 font-black text-lg rounded-xl hover:opacity-90 transform hover:scale-[1.02] transition-all">
-                                {preguntaActual + 1 >= preguntesPartida.length ? t('🏆 VEURE RESULTATS', '🏆 VER RESULTADOS', '🏆 SEE RESULTS') : t('SEGÜENT →', 'SIGUIENTE →', 'NEXT →')}
+                            <button onClick={seguentPregunta} className="w-full py-5 gold-gradient text-slate-900 font-black text-lg rounded-xl hover:opacity-90 transform hover:scale-[1.02] transition-all active:scale-95">
+                                {preguntaActual + 1 >= preguntesPartida.length ? `🏆 ${t('RESULTATS', 'RESULTADOS', 'RESULTS')}` : `${t('SEGÜENT', 'SIGUIENTE', 'NEXT')} →`}
                             </button>
                         </div>
                     )}
@@ -497,63 +647,57 @@ function ConcursApp() {
         const posRanking = ranking.findIndex(r => r.nom === nomJugador && r.punts === puntuacio) + 1;
         
         let emoji, msg, color;
-        if (pct >= 90) { emoji = '🏆'; msg = t('Excel·lent!', '¡Excelente!', 'Excellent!'); color = 'from-yellow-400 to-amber-500'; }
-        else if (pct >= 70) { emoji = '🎉'; msg = t('Molt bé!', '¡Muy bien!', 'Very good!'); color = 'from-green-400 to-emerald-500'; }
-        else if (pct >= 50) { emoji = '👍'; msg = t('Bé!', '¡Bien!', 'Good!'); color = 'from-blue-400 to-cyan-500'; }
-        else { emoji = '💪'; msg = t('Continua practicant!', '¡Sigue practicando!', 'Keep practicing!'); color = 'from-purple-400 to-pink-500'; }
-        
-        // Estadístiques per tipus
-        const statsTipus = {};
-        respostes.forEach(r => {
-            const p = preguntesPartida.find(pr => pr.id === r.pregunta);
-            if (p) {
-                if (!statsTipus[p.tipus]) statsTipus[p.tipus] = { total: 0, correctes: 0 };
-                statsTipus[p.tipus].total++;
-                if (r.correcta) statsTipus[p.tipus].correctes++;
-            }
-        });
+        if (pct >= 90) { emoji = '🏆'; msg = t('EXCEL·LENT!', '¡EXCELENTE!', 'EXCELLENT!'); color = 'from-yellow-400 to-amber-500'; }
+        else if (pct >= 70) { emoji = '🎉'; msg = t('MOLT BÉ!', '¡MUY BIEN!', 'VERY GOOD!'); color = 'from-green-400 to-emerald-500'; }
+        else if (pct >= 50) { emoji = '👍'; msg = t('BÉ!', '¡BIEN!', 'GOOD!'); color = 'from-blue-400 to-cyan-500'; }
+        else { emoji = '💪'; msg = t('CONTINUA!', '¡SIGUE!', 'KEEP GOING!'); color = 'from-purple-400 to-pink-500'; }
         
         return (
             <div className="max-w-2xl mx-auto space-y-6 animate-fade">
-                <div className={`text-center py-10 bg-gradient-to-r ${color} rounded-3xl`}>
-                    <span className="text-8xl block mb-4 animate-pulse-custom">{emoji}</span>
-                    <h2 className="text-4xl font-black text-white mb-2">{msg}</h2>
-                    <p className="text-xl text-white/80">{nomJugador}</p>
+                <Confetti show={showConfetti} />
+                
+                <div className={`text-center py-10 bg-gradient-to-r ${color} rounded-3xl relative overflow-hidden`}>
+                    <div className="absolute inset-0 bg-white/10"></div>
+                    <span className="text-8xl block mb-4 animate-bounce relative z-10">{emoji}</span>
+                    <h2 className="text-4xl font-black text-white mb-2 relative z-10">{msg}</h2>
+                    <p className="text-xl text-white/80 relative z-10">{nomJugador}</p>
                 </div>
                 
                 <Card>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                        <div className="p-4 bg-yellow-400/20 rounded-xl"><p className="text-4xl font-black text-yellow-400">{puntuacio}</p><p className="text-sm text-purple-300">{t("Punts", "Puntos", "Points")}</p></div>
-                        <div className="p-4 bg-green-400/20 rounded-xl"><p className="text-4xl font-black text-green-400">{correctes}/{respostes.length}</p><p className="text-sm text-purple-300">{t("Encerts", "Aciertos", "Correct")}</p></div>
-                        <div className="p-4 bg-blue-400/20 rounded-xl"><p className="text-4xl font-black text-blue-400">{pct}%</p><p className="text-sm text-purple-300">{t("Precisió", "Precisión", "Accuracy")}</p></div>
-                        <div className="p-4 bg-purple-400/20 rounded-xl"><p className="text-4xl font-black text-purple-400">{mitjana}s</p><p className="text-sm text-purple-300">{t("Temps mitjà", "Tiempo medio", "Avg time")}</p></div>
+                        <div className="p-4 bg-yellow-400/20 rounded-xl">
+                            <p className="text-4xl font-black text-yellow-400">{puntuacio}</p>
+                            <p className="text-sm text-purple-300">{t("Punts", "Puntos", "Points")}</p>
+                        </div>
+                        <div className="p-4 bg-green-400/20 rounded-xl">
+                            <p className="text-4xl font-black text-green-400">{correctes}/{respostes.length}</p>
+                            <p className="text-sm text-purple-300">{t("Encerts", "Aciertos", "Correct")}</p>
+                        </div>
+                        <div className="p-4 bg-blue-400/20 rounded-xl">
+                            <p className="text-4xl font-black text-blue-400">{pct}%</p>
+                            <p className="text-sm text-purple-300">{t("Precisió", "Precisión", "Accuracy")}</p>
+                        </div>
+                        <div className="p-4 bg-orange-400/20 rounded-xl">
+                            <p className="text-4xl font-black text-orange-400">🔥{maxRatxa}</p>
+                            <p className="text-sm text-purple-300">{t("Max ratxa", "Max racha", "Max streak")}</p>
+                        </div>
                     </div>
                     
-                    {Object.keys(statsTipus).length > 0 && (
-                        <div className="mt-6 pt-4 border-t border-white/20">
-                            <p className="text-sm text-purple-300 mb-3 text-center">{t("Resultats per tipus:", "Resultados por tipo:", "Results by type:")}</p>
-                            <div className="grid grid-cols-3 md:grid-cols-6 gap-2 text-center text-xs">
-                                {Object.entries(statsTipus).map(([tipus, stats]) => (
-                                    <div key={tipus} className="p-2 bg-white/5 rounded-lg">
-                                        <p className="font-bold text-white">{stats.correctes}/{stats.total}</p>
-                                        <p className="text-purple-300">{tipus === 'numeric' ? '🧮' : tipus === 'identify' ? '📊' : tipus === 'formula' ? '📝' : tipus === 'order' ? '🔢' : tipus === 'truefalse' ? '✓✗' : '🔘'}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                    
                     {posRanking > 0 && posRanking <= 10 && (
-                        <div className="mt-6 p-5 gold-gradient rounded-xl text-center">
-                            <span className="text-3xl">🏆</span>
-                            <p className="font-black text-xl text-slate-900">{t(`Estàs al Top ${posRanking}!`, `¡Estás en el Top ${posRanking}!`, `You're in Top ${posRanking}!`)}</p>
+                        <div className="mt-6 p-5 gold-gradient rounded-xl text-center animate-glow">
+                            <span className="text-4xl">🏆</span>
+                            <p className="font-black text-2xl text-slate-900">{t(`TOP ${posRanking}!`, `¡TOP ${posRanking}!`, `TOP ${posRanking}!`)}</p>
                         </div>
                     )}
                 </Card>
                 
                 <div className="flex gap-3">
-                    <button onClick={() => { setFase('inici'); setPuntuacio(0); setRespostes([]); }} className="flex-1 py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:opacity-90">🔄 {t("Tornar a jugar", "Volver a jugar", "Play again")}</button>
-                    <button onClick={() => setFase('ranking')} className="flex-1 py-4 gold-gradient text-slate-900 font-bold rounded-xl hover:opacity-90">🏆 Ranking</button>
+                    <button onClick={() => { setFase('inici'); setPuntuacio(0); setRespostes([]); setMaxRatxa(0); }} className="flex-1 py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:opacity-90 active:scale-95 transition-all">
+                        🔄 {t("Tornar a jugar", "Volver a jugar", "Play again")}
+                    </button>
+                    <button onClick={() => setFase('ranking')} className="flex-1 py-4 gold-gradient text-slate-900 font-bold rounded-xl hover:opacity-90 active:scale-95 transition-all">
+                        🏆 Ranking
+                    </button>
                 </div>
             </div>
         );
@@ -563,7 +707,7 @@ function ConcursApp() {
     const PantallaRanking = () => (
         <div className="max-w-2xl mx-auto space-y-6 animate-fade">
             <div className="text-center py-8">
-                <span className="text-6xl mb-4 block">🏆</span>
+                <span className="text-6xl mb-4 block animate-bounce">🏆</span>
                 <h2 className="text-4xl font-black text-white">TOP 10</h2>
                 <p className="text-purple-300">{t("Els millors jugadors", "Los mejores jugadores", "Top players")}</p>
             </div>
@@ -578,15 +722,18 @@ function ConcursApp() {
                 ) : (
                     <div className="space-y-3">
                         {ranking.map((entry, i) => (
-                            <div key={i} className={`flex items-center gap-4 p-4 rounded-xl ${i === 0 ? 'gold-gradient' : i === 1 ? 'bg-slate-300/20' : i === 2 ? 'bg-orange-400/20' : 'bg-white/5'}`}>
-                                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-xl ${i === 0 ? 'bg-yellow-600 text-yellow-100' : i === 1 ? 'bg-slate-400 text-slate-100' : i === 2 ? 'bg-orange-600 text-orange-100' : 'bg-white/20 text-white'}`}>{i + 1}</div>
-                                <div className="flex-1">
-                                    <p className={`font-bold text-lg ${i === 0 ? 'text-slate-900' : 'text-white'}`}>{entry.nom}</p>
-                                    <p className={`text-xs ${i === 0 ? 'text-slate-700' : 'text-purple-300'}`}>{entry.data} · {entry.correctes}/20 · {entry.categoria}</p>
+                            <div key={i} className={`flex items-center gap-4 p-4 rounded-xl transition-all hover:scale-[1.02] ${i === 0 ? 'gold-gradient animate-glow' : i === 1 ? 'bg-slate-300/20' : i === 2 ? 'bg-orange-400/20' : 'bg-white/5'}`}>
+                                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-xl ${i === 0 ? 'bg-yellow-600 text-yellow-100' : i === 1 ? 'bg-slate-400 text-slate-100' : i === 2 ? 'bg-orange-600 text-orange-100' : 'bg-white/20 text-white'}`}>
+                                    {i === 0 ? '👑' : i + 1}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className={`font-bold text-lg truncate ${i === 0 ? 'text-slate-900' : 'text-white'}`}>{entry.nom}</p>
+                                    <p className={`text-xs truncate ${i === 0 ? 'text-slate-700' : 'text-purple-300'}`}>
+                                        {entry.data} · {entry.correctes}/20 · 🔥{entry.maxRatxa || 0}
+                                    </p>
                                 </div>
                                 <div className="text-right">
                                     <p className={`text-2xl font-black ${i === 0 ? 'text-slate-900' : 'text-yellow-400'}`}>{entry.punts}</p>
-                                    <p className={`text-xs ${i === 0 ? 'text-slate-700' : 'text-purple-300'}`}>{t("punts", "puntos", "pts")}</p>
                                 </div>
                             </div>
                         ))}
@@ -594,18 +741,24 @@ function ConcursApp() {
                 )}
             </Card>
             
-            <button onClick={() => setFase('inici')} className="w-full py-4 bg-white/10 border border-white/30 text-white font-bold rounded-xl hover:bg-white/20">← {t("Tornar", "Volver", "Back")}</button>
+            <button onClick={() => setFase('inici')} className="w-full py-4 bg-white/10 border border-white/30 text-white font-bold rounded-xl hover:bg-white/20 active:scale-95 transition-all">
+                ← {t("Tornar", "Volver", "Back")}
+            </button>
         </div>
     );
 
     return (
-        <div className="min-h-screen py-8 px-4">
+        <div className="min-h-screen py-6 px-4">
+            <Toast {...toast} />
+            <PointsPopup {...pointsPopup} />
             <div className="max-w-4xl mx-auto">
                 {fase === 'inici' && <PantallaInici />}
                 {fase === 'jugant' && <PantallaJoc />}
                 {fase === 'resultats' && <PantallaResultats />}
                 {fase === 'ranking' && <PantallaRanking />}
-                <footer className="mt-12 text-center text-purple-400/60 text-sm"><p>Concurs PDE · profedeeconomia.es · 2025</p></footer>
+                <footer className="mt-8 text-center text-purple-400/60 text-sm">
+                    <p>Concurs PDE · profedeeconomia.es · 2025</p>
+                </footer>
             </div>
         </div>
     );
