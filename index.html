@@ -90,6 +90,15 @@
             concursFeat3: { val: 'Ordenar seqüències', es: 'Ordenar secuencias', en: 'Order sequences' },
             concursFeat4: { val: 'Ranking TOP 10', es: 'Ranking TOP 10', en: 'TOP 10 Ranking' },
             
+            // App: Playground (NOU!)
+            playgroundNom: { val: 'Playground', es: 'Playground', en: 'Playground' },
+            playgroundSubtitol: { val: 'Aprèn economia jugant!', es: '¡Aprende economía jugando!', en: 'Learn economics by playing!' },
+            playgroundDesc: { val: "Jocs educatius per a 2 jugadors: teoria de jocs, diversificació, interès compost, oferta i demanda, inflació, escassetat (or i Bitcoin), estalvi, risc i borsa. Mode fàcil i difícil amb rànquing!", es: "Juegos educativos para 2 jugadores: teoría de juegos, diversificación, interés compuesto, oferta y demanda, inflación, escasez (oro y Bitcoin), ahorro, riesgo y bolsa. ¡Modo fácil y difícil con ranking!", en: "Educational games for 2 players: game theory, diversification, compound interest, supply and demand, inflation, scarcity (gold and Bitcoin), savings, risk and stock market. Easy and hard mode with leaderboard!" },
+            playgroundFeat1: { val: '10 jocs educatius', es: '10 juegos educativos', en: '10 educational games' },
+            playgroundFeat2: { val: 'Mode fàcil i difícil', es: 'Modo fácil y difícil', en: 'Easy and hard mode' },
+            playgroundFeat3: { val: 'Rànquing persistent', es: 'Ranking persistente', en: 'Persistent leaderboard' },
+            playgroundFeat4: { val: 'Or, Bitcoin i escassetat', es: 'Oro, Bitcoin y escasez', en: 'Gold, Bitcoin and scarcity' },
+            
             // App: Acadèmia (NOU!)
             academiaNom: { val: 'Acadèmia', es: 'Academia', en: 'Academy' },
             academiaSubtitol: { val: 'Papers i investigadors contemporanis', es: 'Papers e investigadores contemporáneos', en: 'Contemporary papers & researchers' },
@@ -127,7 +136,7 @@
             const t = (key) => translations[key]?.[idioma] || translations[key]?.['val'] || key;
             
             const Icon = ({ name, size = 24, className = "" }) => {
-                const icons = { GraduationCap: "🎓", TrendingUp: "📈", Building2: "🏢", Wallet: "👛", BookOpen: "📖", Brain: "🧠", Calculator: "🧮", Target: "🎯", Users: "👥", ChevronRight: "▶", Sparkles: "✨", Globe: "🌍", BarChart3: "📊", PieChart: "🥧", Lightbulb: "💡", Award: "🏆", Rocket: "🚀", Star: "⭐", Heart: "❤️", PlayCircle: "▶️", ArrowRight: "→", Menu: "☰", X: "✕", ArrowUpRight: "↗️", Briefcase: "💼", Home: "🏠", Trophy: "🏆" };
+                const icons = { GraduationCap: "🎓", TrendingUp: "📈", Building2: "🏢", Wallet: "👛", BookOpen: "📖", Brain: "🧠", Calculator: "🧮", Target: "🎯", Users: "👥", ChevronRight: "▶", Sparkles: "✨", Globe: "🌍", BarChart3: "📊", PieChart: "🥧", Lightbulb: "💡", Award: "🏆", Rocket: "🚀", Star: "⭐", Heart: "❤️", PlayCircle: "▶️", ArrowRight: "→", Menu: "☰", X: "✕", ArrowUpRight: "↗️", Briefcase: "💼", Home: "🏠", Trophy: "🏆", Gamepad: "🎮" };
                 return <span style={{fontSize: size * 0.75, lineHeight: 1}} className={className}>{icons[name] || "•"}</span>;
             };
             
@@ -150,6 +159,7 @@
             const PlayCircle = (p) => <Icon name="PlayCircle" {...p} />;
             const Briefcase = (p) => <Icon name="Briefcase" {...p} />;
             const Trophy = (p) => <Icon name="Trophy" {...p} />;
+            const Gamepad = (p) => <Icon name="Gamepad" {...p} />;
             
             const LanguageSelector = () => (
                 <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
@@ -253,6 +263,26 @@
                     temes: 8,
                 },
                 {
+                    id: 'playground',
+                    nom: t('playgroundNom'),
+                    subtitol: t('playgroundSubtitol'),
+                    descripcio: t('playgroundDesc'),
+                    icon: Gamepad,
+                    gradient: 'from-yellow-400 via-pink-500 to-purple-500',
+                    href: './playground.html',
+                    destacat: true,
+                    esPlayground: true,
+                    caracteristiques: [
+                        { icon: Gamepad, text: t('playgroundFeat1') },
+                        { icon: Target, text: t('playgroundFeat2') },
+                        { icon: Trophy, text: t('playgroundFeat3') },
+                        { icon: Calculator, text: t('playgroundFeat4') },
+                    ],
+                    nivells: [t('batxillerat'), t('fp')],
+                    simuladors: 10,
+                    temes: 10,
+                },
+                {
                     id: 'concurs',
                     nom: t('concursNom'),
                     subtitol: t('concursSubtitol'),
@@ -323,10 +353,10 @@
                             
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {apps.map(app => (
-                                    <a key={app.id} href={app.href} className={`group bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col relative ${app.destacat ? 'border-2 border-yellow-400 shadow-lg shadow-yellow-400/20 ring-2 ring-yellow-400/30 gold-glow' : 'border border-gray-100 hover:shadow-pink-500/10 hover:border-pink-200'}`}>
+                                    <a key={app.id} href={app.href} className={`group bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col relative ${app.esPlayground ? 'md:col-span-2 lg:col-span-3 bg-gradient-to-r from-yellow-50 via-pink-50 to-purple-50' : ''} ${app.destacat ? 'border-2 border-yellow-400 shadow-lg shadow-yellow-400/20 ring-2 ring-yellow-400/30 gold-glow' : 'border border-gray-100 hover:shadow-pink-500/10 hover:border-pink-200'}`}>
                                         {app.destacat && (
-                                            <div className="absolute -top-1 -right-1 bg-gradient-to-r from-yellow-400 to-amber-500 text-white text-xs font-black px-3 py-1 rounded-bl-xl rounded-tr-xl shadow-lg z-10">
-                                                🔥 HOT!
+                                            <div className={`absolute -top-1 -right-1 text-white text-xs font-black px-3 py-1 rounded-bl-xl rounded-tr-xl shadow-lg z-10 ${app.esPlayground ? 'bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500' : 'bg-gradient-to-r from-yellow-400 to-amber-500'}`}>
+                                                {app.esPlayground ? '🎮 JOCS!' : '🔥 HOT!'}
                                             </div>
                                         )}
                                         <div className={`h-3 bg-gradient-to-r ${app.gradient}`}></div>
