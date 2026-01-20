@@ -268,6 +268,11 @@ function ConcursApp() {
     const [ajudes, setAjudes] = useState({ cinquanta: 1, temps: 1, saltar: 1 });
     const [opcionsEliminades, setOpcionsEliminades] = useState([]);
     const [soundEnabled, setSoundEnabled] = useState(true);
+    // Nous estats per tipus interactius
+    const [clickedPoint, setClickedPoint] = useState(null);
+    const [allocations, setAllocations] = useState([]);
+    const [sliderValue, setSliderValue] = useState(25);
+    const [selectedOptions, setSelectedOptions] = useState([]);
     
     const t = (val, es, en) => idioma === 'val' ? val : idioma === 'es' ? es : en;
     
@@ -363,25 +368,114 @@ function ConcursApp() {
             { id: 'ev2', tipus: 'truefalse', dificultat: 'mitjana', pregunta: t("La corba de Phillips mostra relació DIRECTA inflació-atur", "La curva de Phillips muestra relación DIRECTA inflación-paro", "Phillips curve shows DIRECT inflation-unemployment relation"), correcta: false },
         ],
         finances: [
-            { id: 'fc1', tipus: 'numeric', dificultat: 'facil', pregunta: t("Marge brut: Compra 80€, Venda 120€. Marge %?", "Margen bruto: Compra 80€, Venta 120€. ¿Margen %?", "Gross margin: Buy €80, Sell €120. Margin %?"), correcta: 50, tolerancia: 0, pista: "(V-C)/C×100" },
-            { id: 'fc2', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("ROE: Benefici 30.000€, PN 150.000€. ROE %?", "ROE: Beneficio 30.000€, PN 150.000€. ¿ROE %?", "ROE: Profit €30,000, Equity €150,000. ROE %?"), correcta: 20, tolerancia: 0, pista: "Benefici/PN×100" },
-            { id: 'fc3', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("ROA: Benefici 25.000€, Actiu 500.000€. ROA %?", "ROA: Beneficio 25.000€, Activo 500.000€. ¿ROA %?", "ROA: Profit €25,000, Assets €500,000. ROA %?"), correcta: 5, tolerancia: 0, pista: "Benefici/Actiu×100" },
-            { id: 'fc4', tipus: 'numeric', dificultat: 'facil', pregunta: t("Liquiditat: AC=90.000€, PC=45.000€. Ràtio?", "Liquidez: AC=90.000€, PC=45.000€. ¿Ratio?", "Liquidity: CA=€90,000, CL=€45,000. Ratio?"), correcta: 2, tolerancia: 0, pista: "AC/PC" },
-            { id: 'fc5', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Endeutament: Passiu=120.000€, Actiu=200.000€. Ràtio %?", "Endeudamiento: Pasivo=120.000€, Activo=200.000€. ¿Ratio %?", "Debt: Liabilities=€120,000, Assets=€200,000. Ratio %?"), correcta: 60, tolerancia: 0, pista: "Passiu/Actiu×100" },
-            { id: 'fc6', tipus: 'numeric', dificultat: 'dificil', pregunta: t("VAN: I₀=10.000€, FC₁=6.000€, FC₂=6.000€, k=10%. VAN?", "VAN: I₀=10.000€, FC₁=6.000€, FC₂=6.000€, k=10%. ¿VAN?", "NPV: I₀=€10,000, CF₁=€6,000, CF₂=€6,000, k=10%. NPV?"), correcta: 412, tolerancia: 20, pista: "ΣFC/(1+k)^n - I₀" },
-            { id: 'fc7', tipus: 'numeric', dificultat: 'facil', pregunta: t("Fons Maniobra: AC=80.000€, PC=50.000€. FM?", "Fondo Maniobra: AC=80.000€, PC=50.000€. ¿FM?", "Working Capital: CA=€80,000, CL=€50,000. WC?"), correcta: 30000, tolerancia: 0, pista: "AC - PC" },
-            { id: 'fc8', tipus: 'numeric', dificultat: 'facil', pregunta: t("Payback: Inversió=12.000€, FC anual=4.000€. Anys?", "Payback: Inversión=12.000€, FC anual=4.000€. ¿Años?", "Payback: Investment=€12,000, annual CF=€4,000. Years?"), correcta: 3, tolerancia: 0, pista: "Inversió/FC" },
-            { id: 'fc9', tipus: 'numeric', dificultat: 'dificil', pregunta: t("Interès compost: 10.000€ al 5% durant 2 anys. Capital final?", "Interés compuesto: 10.000€ al 5% durante 2 años. ¿Capital final?", "Compound: €10,000 at 5% for 2 years. Final capital?"), correcta: 11025, tolerancia: 5, pista: "C×(1+i)^n" },
-            { id: 'fc10', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Test àcid: AC=100.000€, Exist.=30.000€, PC=50.000€. Ràtio?", "Test ácido: AC=100.000€, Exist.=30.000€, PC=50.000€. ¿Ratio?", "Acid test: CA=€100,000, Inv.=€30,000, CL=€50,000. Ratio?"), correcta: 1.4, tolerancia: 0.01, pista: "(AC-Existències)/PC" },
-            { id: 'ff1', tipus: 'formula', dificultat: 'facil', pregunta: t("Fons Maniobra = AC - ___", "Fondo Maniobra = AC - ___", "Working Capital = CA - ___"), opcions: ["PC", "PN", "ANC", "PNC"], correcta: 0 },
-            { id: 'ff2', tipus: 'formula', dificultat: 'mitjana', pregunta: t("ROE = Benefici Net / ___", "ROE = Beneficio Neto / ___", "ROE = Net Profit / ___"), opcions: [t("Patrimoni Net", "Patrimonio Neto", "Equity"), t("Actiu Total", "Activo Total", "Total Assets"), t("Vendes", "Ventas", "Sales"), "Passiu"], correcta: 0 },
-            { id: 'ff3', tipus: 'formula', dificultat: 'mitjana', pregunta: "VAN = Σ FC/(1+k)^n - ___", opcions: ["I₀", "TIR", "k", "n"], correcta: 0 },
-            { id: 'ff4', tipus: 'formula', dificultat: 'dificil', pregunta: t("TIR és la taxa on VAN = ___", "TIR es la tasa donde VAN = ___", "IRR is rate where NPV = ___"), opcions: ["0", "1", "I₀", "∞"], correcta: 0 },
-            { id: 'fi1', tipus: 'identify', dificultat: 'facil', pregunta: t("Document que mostra estructura patrimonial:", "Documento que muestra estructura patrimonial:", "Document showing asset structure:"), imatge: "balanc", opcions: [t("Balanç", "Balance", "Balance Sheet"), t("Compte PiG", "Cuenta PyG", "P&L"), t("Fluxos", "Flujos", "Cash Flow"), "DAFO"], correcta: 0 },
-            { id: 'fi2', tipus: 'identify', dificultat: 'mitjana', pregunta: t("LEASING és finançament...", "LEASING es financiación...", "LEASING is financing..."), imatge: "leasing", opcions: [t("Propi", "Propio", "Own"), t("Aliè llarg termini", "Ajeno largo plazo", "Long-term external"), t("Aliè curt termini", "Ajeno corto plazo", "Short-term external"), t("Autofinançament", "Autofinanciación", "Self-financing")], correcta: 1 },
-            { id: 'fi3', tipus: 'identify', dificultat: 'mitjana', pregunta: t("FACTORING serveix per...", "FACTORING sirve para...", "FACTORING is for..."), imatge: "factoring", opcions: [t("Comprar maquinària", "Comprar maquinaria", "Buy machinery"), t("Avançar cobraments", "Adelantar cobros", "Advance collections"), t("Exportacions", "Exportaciones", "Exports"), t("Impostos", "Impuestos", "Taxes")], correcta: 1 },
-            { id: 'fv1', tipus: 'truefalse', dificultat: 'facil', pregunta: t("VAN positiu = projecte rendible", "VAN positivo = proyecto rentable", "Positive NPV = profitable project"), correcta: true },
-            { id: 'fv2', tipus: 'truefalse', dificultat: 'mitjana', pregunta: t("El Payback simple NO considera el valor temporal dels diners", "El Payback simple NO considera el valor temporal del dinero", "Simple Payback does NOT consider time value of money"), correcta: true },
+            // TIPUS INTERACTIU: click_chart - Clica on comprar/vendre
+            { id: 'fi1', tipus: 'click_chart', dificultat: 'facil', 
+              pregunta: t("📈 Clica on COMPRAR (punt més baix)", "📈 Haz clic donde COMPRAR (punto más bajo)", "📈 Click where to BUY (lowest point)"),
+              chartData: [100, 95, 88, 82, 78, 75, 80, 85, 92, 98, 105, 110],
+              correctZone: { min: 4, max: 6 }, // índexs correctes
+              pista: t("Compra baix, ven alt!", "¡Compra bajo, vende alto!", "Buy low, sell high!") },
+            { id: 'fi2', tipus: 'click_chart', dificultat: 'facil',
+              pregunta: t("📉 Clica on VENDRE (punt més alt)", "📉 Haz clic donde VENDER (punto más alto)", "📉 Click where to SELL (highest point)"),
+              chartData: [50, 55, 62, 70, 78, 85, 82, 75, 68, 60, 55, 52],
+              correctZone: { min: 4, max: 6 },
+              pista: t("Busca el màxim!", "¡Busca el máximo!", "Find the peak!") },
+            { id: 'fi3', tipus: 'click_chart', dificultat: 'mitjana',
+              pregunta: t("🎯 Identifica el SUPORT (on el preu rebota)", "🎯 Identifica el SOPORTE (donde el precio rebota)", "🎯 Identify SUPPORT (where price bounces)"),
+              chartData: [100, 92, 85, 80, 82, 88, 84, 80, 83, 90, 86, 80, 85],
+              correctZone: { min: 2, max: 4 },
+              pista: t("El suport és un nivell on el preu no baixa més", "El soporte es un nivel donde el precio no baja más", "Support is a level where price doesn't fall further") },
+              
+            // TIPUS INTERACTIU: allocate - Distribueix la cartera
+            { id: 'fa1', tipus: 'allocate', dificultat: 'mitjana',
+              pregunta: t("💼 Perfil CONSERVADOR (60 anys, jubilació propera). Distribueix la cartera:", "💼 Perfil CONSERVADOR (60 años, jubilación cercana). Distribuye la cartera:", "💼 CONSERVATIVE profile (60yo, near retirement). Allocate portfolio:"),
+              assets: [
+                { nom: t("Renda Fixa", "Renta Fija", "Bonds"), icon: "🏦", color: "blue" },
+                { nom: t("Accions", "Acciones", "Stocks"), icon: "📈", color: "green" },
+                { nom: t("Liquiditat", "Liquidez", "Cash"), icon: "💵", color: "amber" }
+              ],
+              correctRanges: { 0: [50, 70], 1: [15, 35], 2: [10, 25] },
+              pista: t("Conservador = més renda fixa, menys risc", "Conservador = más renta fija, menos riesgo", "Conservative = more bonds, less risk") },
+            { id: 'fa2', tipus: 'allocate', dificultat: 'facil',
+              pregunta: t("💼 Perfil AGRESSIU (25 anys, horitzó llarg). Distribueix la cartera:", "💼 Perfil AGRESIVO (25 años, horizonte largo). Distribuye la cartera:", "💼 AGGRESSIVE profile (25yo, long horizon). Allocate portfolio:"),
+              assets: [
+                { nom: t("Renda Fixa", "Renta Fija", "Bonds"), icon: "🏦", color: "blue" },
+                { nom: t("Accions", "Acciones", "Stocks"), icon: "📈", color: "green" },
+                { nom: t("Liquiditat", "Liquidez", "Cash"), icon: "💵", color: "amber" }
+              ],
+              correctRanges: { 0: [5, 25], 1: [60, 85], 2: [5, 20] },
+              pista: t("Jove = més temps per recuperar pèrdues", "Joven = más tiempo para recuperar pérdidas", "Young = more time to recover losses") },
+              
+            // TIPUS INTERACTIU: scenario - Escenaris de decisió
+            { id: 'fs1', tipus: 'scenario', dificultat: 'mitjana',
+              pregunta: t("🏠 Tens 30.000€ estalviats. Vols comprar pis (entrada 40.000€). Què fas?", "🏠 Tienes 30.000€ ahorrados. Quieres comprar piso (entrada 40.000€). ¿Qué haces?", "🏠 You have €30,000 saved. Want to buy flat (down payment €40,000). What do you do?"),
+              opcions: [
+                { text: t("Esperar i estalviar més", "Esperar y ahorrar más", "Wait and save more"), icon: "⏳", correcta: true },
+                { text: t("Demanar préstec personal per la diferència", "Pedir préstamo personal por la diferencia", "Get personal loan for difference"), icon: "💳", correcta: false },
+                { text: t("Invertir els 30.000€ en cripto per duplicar-los", "Invertir los 30.000€ en cripto para duplicarlos", "Invest €30,000 in crypto to double it"), icon: "🎰", correcta: false },
+                { text: t("Comprar pis més barat amb menys entrada", "Comprar piso más barato con menos entrada", "Buy cheaper flat with less down payment"), icon: "🏘️", correcta: true }
+              ],
+              multipleCorrect: true,
+              pista: t("Evita endeutar-te amb préstecs cars!", "¡Evita endeudarte con préstamos caros!", "Avoid expensive debt!") },
+            { id: 'fs2', tipus: 'scenario', dificultat: 'facil',
+              pregunta: t("💸 Reps 5.000€ inesperats. Tens deute de targeta al 20% TAE. Què fas PRIMER?", "💸 Recibes 5.000€ inesperados. Tienes deuda de tarjeta al 20% TAE. ¿Qué haces PRIMERO?", "💸 You receive unexpected €5,000. Have credit card debt at 20% APR. What do you do FIRST?"),
+              opcions: [
+                { text: t("Pagar el deute de la targeta", "Pagar la deuda de la tarjeta", "Pay off credit card debt"), icon: "💳", correcta: true },
+                { text: t("Invertir en borsa", "Invertir en bolsa", "Invest in stocks"), icon: "📈", correcta: false },
+                { text: t("Anar de vacances", "Ir de vacaciones", "Go on vacation"), icon: "✈️", correcta: false },
+                { text: t("Guardar-ho tot al banc", "Guardarlo todo en el banco", "Keep it all in bank"), icon: "🏦", correcta: false }
+              ],
+              pista: t("El 20% és molt difícil de superar invertint!", "¡El 20% es muy difícil de superar invirtiendo!", "20% is very hard to beat by investing!") },
+            { id: 'fs3', tipus: 'scenario', dificultat: 'dificil',
+              pregunta: t("📊 Mercat cau 30%. La teua cartera també. Què fas?", "📊 El mercado cae 30%. Tu cartera también. ¿Qué haces?", "📊 Market drops 30%. Your portfolio too. What do you do?"),
+              opcions: [
+                { text: t("Vendre tot per evitar més pèrdues", "Vender todo para evitar más pérdidas", "Sell everything to avoid more losses"), icon: "🏃", correcta: false },
+                { text: t("Mantenir i esperar la recuperació", "Mantener y esperar la recuperación", "Hold and wait for recovery"), icon: "🧘", correcta: true },
+                { text: t("Comprar més aprofitant els preus baixos", "Comprar más aprovechando los precios bajos", "Buy more taking advantage of low prices"), icon: "🛒", correcta: true },
+                { text: t("Moure-ho tot a cripto", "Moverlo todo a cripto", "Move everything to crypto"), icon: "🪙", correcta: false }
+              ],
+              multipleCorrect: true,
+              pista: t("Vendre en pànic cristal·litza les pèrdues!", "¡Vender en pánico cristaliza las pérdidas!", "Panic selling locks in losses!") },
+              
+            // TIPUS: slider_value - Ajusta per trobar el valor correcte
+            { id: 'fsl1', tipus: 'slider_value', dificultat: 'facil',
+              pregunta: t("🎚️ Regla del 50/30/20: Quin % del sou hauries de destinar a ESTALVI?", "🎚️ Regla del 50/30/20: ¿Qué % del sueldo deberías destinar a AHORRO?", "🎚️ 50/30/20 Rule: What % of salary should go to SAVINGS?"),
+              min: 0, max: 50, correcta: 20, tolerancia: 2,
+              labels: { left: "0%", right: "50%" },
+              pista: "50% necessitats, 30% desitjos, 20% estalvi" },
+            { id: 'fsl2', tipus: 'slider_value', dificultat: 'mitjana',
+              pregunta: t("🎚️ Fons d'emergència: Quants MESOS de despeses hauries de tenir?", "🎚️ Fondo de emergencia: ¿Cuántos MESES de gastos deberías tener?", "🎚️ Emergency fund: How many MONTHS of expenses should you have?"),
+              min: 1, max: 12, correcta: 6, tolerancia: 1,
+              labels: { left: "1 mes", right: "12 mesos" },
+              pista: t("Entre 3 i 6 mesos és l'estàndard", "Entre 3 y 6 meses es el estándar", "3-6 months is standard") },
+              
+            // TIPUS: match_risk - Relaciona producte amb nivell de risc
+            { id: 'fm1', tipus: 'match_risk', dificultat: 'mitjana',
+              pregunta: t("🎯 Ordena de MENYS a MÉS risc:", "🎯 Ordena de MENOS a MÁS riesgo:", "🎯 Order from LESS to MORE risk:"),
+              elements: [
+                { nom: t("Dipòsit bancari", "Depósito bancario", "Bank deposit"), icon: "🏦" },
+                { nom: t("Bons govern", "Bonos gobierno", "Gov bonds"), icon: "📜" },
+                { nom: t("Fons indexat", "Fondo indexado", "Index fund"), icon: "📊" },
+                { nom: t("Accions individuals", "Acciones individuales", "Individual stocks"), icon: "📈" },
+                { nom: t("Criptomonedes", "Criptomonedas", "Crypto"), icon: "🪙" }
+              ],
+              ordreCorrecte: [0, 1, 2, 3, 4] },
+              
+            // Preguntes més tradicionals però amb context pràctic
+            { id: 'ft1', tipus: 'truefalse', dificultat: 'facil', 
+              pregunta: t("💡 Si inverteixes 10.000€ al 7% anual, en 10 anys tindràs aproximadament 20.000€ (regla del 72)", "💡 Si inviertes 10.000€ al 7% anual, en 10 años tendrás aproximadamente 20.000€ (regla del 72)", "💡 If you invest €10,000 at 7% annually, in 10 years you'll have approximately €20,000 (rule of 72)"), 
+              correcta: true },
+            { id: 'ft2', tipus: 'truefalse', dificultat: 'mitjana', 
+              pregunta: t("💡 Un ETF és més arriscat que una acció individual perquè té més volatilitat", "💡 Un ETF es más arriesgado que una acción individual porque tiene más volatilidad", "💡 An ETF is riskier than an individual stock because it has more volatility"), 
+              correcta: false },
+            { id: 'ft3', tipus: 'truefalse', dificultat: 'facil', 
+              pregunta: t("💡 Si la inflació és del 3% i el teu compte et dona 1%, estàs perdent poder adquisitiu", "💡 Si la inflación es del 3% y tu cuenta te da 1%, estás perdiendo poder adquisitivo", "💡 If inflation is 3% and your account gives 1%, you're losing purchasing power"), 
+              correcta: true },
+            { id: 'fn1', tipus: 'numeric', dificultat: 'facil', 
+              pregunta: t("🧮 Regla del 72: A quin % anual es duplica el capital en 12 anys?", "🧮 Regla del 72: ¿A qué % anual se duplica el capital en 12 años?", "🧮 Rule of 72: At what annual % does capital double in 12 years?"), 
+              correcta: 6, tolerancia: 0, pista: "72 / anys = interès" },
+            { id: 'fn2', tipus: 'numeric', dificultat: 'mitjana', 
+              pregunta: t("🧮 Estalvies 200€/mes durant 5 anys sense interessos. Total?", "🧮 Ahorras 200€/mes durante 5 años sin intereses. ¿Total?", "🧮 Save €200/month for 5 years with no interest. Total?"), 
+              correcta: 12000, tolerancia: 0, pista: "200 × 12 × 5" },
         ],
         empresa: [
             { id: 'emc1', tipus: 'numeric', dificultat: 'facil', pregunta: t("Punt Mort: CF=15.000€, P=60€, CVu=30€. Unitats?", "Punto Muerto: CF=15.000€, P=60€, CVu=30€. ¿Unidades?", "Break-even: FC=€15,000, P=€60, VCu=€30. Units?"), correcta: 500, tolerancia: 0, pista: "CF/(P-CVu)" },
@@ -416,10 +510,30 @@ function ConcursApp() {
         if (saved) setRanking(JSON.parse(saved));
     }, []);
 
+    // Inicialitzar estats segons el tipus de pregunta
     useEffect(() => {
-        if (fase === 'jugant' && preguntesPartida[preguntaActual]?.tipus === 'order') {
-            const elements = preguntesPartida[preguntaActual].elements;
+        if (fase !== 'jugant' || !preguntesPartida[preguntaActual]) return;
+        const p = preguntesPartida[preguntaActual];
+        
+        if (p.tipus === 'order' || p.tipus === 'match_risk') {
+            const elements = p.elements;
             setOrdreUsuari(elements.map((_, i) => i).sort(() => Math.random() - 0.5));
+        }
+        if (p.tipus === 'allocate') {
+            // Inicialitzar amb distribució igual
+            const n = p.assets.length;
+            const equalShare = Math.floor(100 / n);
+            const remainder = 100 - (equalShare * n);
+            setAllocations(p.assets.map((_, i) => i === 0 ? equalShare + remainder : equalShare));
+        }
+        if (p.tipus === 'slider_value') {
+            setSliderValue(Math.floor((p.min + p.max) / 2));
+        }
+        if (p.tipus === 'scenario') {
+            setSelectedOptions([]);
+        }
+        if (p.tipus === 'click_chart') {
+            setClickedPoint(null);
         }
     }, [preguntaActual, fase, preguntesPartida]);
     
@@ -437,6 +551,8 @@ function ConcursApp() {
         setRespostaUsuari(null); setMostrarResultat(false);
         setOrdreUsuari([]); setTimerKey(k => k + 1); setTimerActive(true);
         setAjudes({ cinquanta: 1, temps: 1, saltar: 1 }); setOpcionsEliminades([]);
+        // Resetejar nous estats
+        setClickedPoint(null); setAllocations([]); setSliderValue(25); setSelectedOptions([]);
         setFase('jugant');
         playSound('bonus');
     };
@@ -454,10 +570,36 @@ function ConcursApp() {
         setTimerActive(false);
         const p = preguntesPartida[preguntaActual];
         let ok = false;
+        
+        // Tipus tradicionals
         if (p.tipus === 'multiple' || p.tipus === 'identify' || p.tipus === 'formula') ok = resposta === p.correcta;
         else if (p.tipus === 'truefalse') ok = resposta === p.correcta;
         else if (p.tipus === 'numeric') ok = Math.abs(parseFloat(resposta) - p.correcta) <= (p.tolerancia || 0);
-        else if (p.tipus === 'order') ok = JSON.stringify(ordreUsuari) === JSON.stringify(p.ordreCorrecte);
+        else if (p.tipus === 'order' || p.tipus === 'match_risk') ok = JSON.stringify(ordreUsuari) === JSON.stringify(p.ordreCorrecte);
+        
+        // Nous tipus interactius
+        else if (p.tipus === 'click_chart') {
+            ok = resposta >= p.correctZone.min && resposta <= p.correctZone.max;
+        }
+        else if (p.tipus === 'allocate') {
+            // Validar que cada assignació està dins del rang correcte
+            ok = allocations.every((val, i) => {
+                const range = p.correctRanges[i];
+                return val >= range[0] && val <= range[1];
+            }) && allocations.reduce((a, b) => a + b, 0) === 100;
+        }
+        else if (p.tipus === 'scenario') {
+            // Validar opcions seleccionades
+            const correctes = p.opcions.map((o, i) => o.correcta ? i : -1).filter(i => i >= 0);
+            if (p.multipleCorrect) {
+                ok = selectedOptions.length > 0 && selectedOptions.every(i => correctes.includes(i));
+            } else {
+                ok = selectedOptions.length === 1 && correctes.includes(selectedOptions[0]);
+            }
+        }
+        else if (p.tipus === 'slider_value') {
+            ok = Math.abs(sliderValue - p.correcta) <= (p.tolerancia || 0);
+        }
         
         const tempsUsed = 60 - (document.querySelector('.timer-display')?.textContent?.replace('s','') || 30);
         const novaRatxa = ok ? ratxa + 1 : 0;
@@ -479,7 +621,7 @@ function ConcursApp() {
         if (novaRatxa > maxRatxa) setMaxRatxa(novaRatxa);
         setPuntuacio(s => Math.max(0, s + punts));
         setRespostes(r => [...r, { pregunta: p.id, correcta: ok, punts, temps: tempsUsed }]);
-    }, [preguntesPartida, preguntaActual, ordreUsuari, ratxa, maxRatxa, playSound, vibrate, showToast, t]);
+    }, [preguntesPartida, preguntaActual, ordreUsuari, allocations, selectedOptions, sliderValue, ratxa, maxRatxa, playSound, vibrate, showToast, t]);
     
     // EXPOSAR handleResposta GLOBALMENT per l'input HTML flotant
     useEffect(() => {
@@ -538,6 +680,11 @@ function ConcursApp() {
             setPreguntaActual(p => p + 1);
             setRespostaUsuari(null); setMostrarResultat(false);
             setOrdreUsuari([]);
+            // Resetejar nous estats interactius
+            setClickedPoint(null);
+            setAllocations([]);
+            setSliderValue(25);
+            setSelectedOptions([]);
             setTimerKey(k => k + 1); setTimerActive(true);
         }
     };
@@ -675,7 +822,10 @@ function ConcursApp() {
         const p = preguntesPartida[preguntaActual];
         if (!p) return null;
         const progressPct = ((preguntaActual + 1) / preguntesPartida.length) * 100;
-        const tipusIcons = { numeric: '🧮', order: '🔢', formula: '📝', identify: '📊', truefalse: '✓✗', multiple: '🔘' };
+        const tipusIcons = { 
+            numeric: '🧮', order: '🔢', formula: '📝', identify: '📊', truefalse: '✓✗', multiple: '🔘',
+            click_chart: '📈', allocate: '💼', scenario: '🎭', slider_value: '🎚️', match_risk: '🎯'
+        };
         
         return (
             <div className="max-w-3xl mx-auto space-y-4 animate-fade">
@@ -803,6 +953,207 @@ function ConcursApp() {
                                 ))}
                             </div>
                             {!mostrarResultat && <button onClick={() => handleResposta('order')} className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:opacity-90 active:scale-95">{t("CONFIRMAR", "CONFIRMAR", "CONFIRM")}</button>}
+                        </div>
+                    )}
+                    
+                    {/* CLICK_CHART - Gràfic clicable */}
+                    {p.tipus === 'click_chart' && (
+                        <div className="space-y-4">
+                            <div className="bg-white/5 rounded-xl p-4 border border-white/20">
+                                <div className="relative h-48">
+                                    {/* Eix Y */}
+                                    <div className="absolute left-0 top-0 bottom-8 w-8 flex flex-col justify-between text-xs text-purple-300">
+                                        <span>{Math.max(...p.chartData)}</span>
+                                        <span>{Math.min(...p.chartData)}</span>
+                                    </div>
+                                    {/* Gràfic */}
+                                    <div className="ml-10 h-40 flex items-end gap-1">
+                                        {p.chartData.map((val, i) => {
+                                            const height = ((val - Math.min(...p.chartData)) / (Math.max(...p.chartData) - Math.min(...p.chartData))) * 100;
+                                            const isClicked = clickedPoint === i;
+                                            const isCorrect = i >= p.correctZone.min && i <= p.correctZone.max;
+                                            return (
+                                                <button key={i} onClick={() => !mostrarResultat && setClickedPoint(i)} disabled={mostrarResultat}
+                                                    className={`flex-1 rounded-t-lg transition-all relative group ${
+                                                        mostrarResultat 
+                                                            ? isCorrect ? 'bg-green-500' : isClicked ? 'bg-red-500' : 'bg-blue-500/50'
+                                                            : isClicked ? 'bg-yellow-400 ring-2 ring-yellow-300' : 'bg-blue-500 hover:bg-blue-400'
+                                                    }`}
+                                                    style={{ height: `${Math.max(height, 10)}%` }}>
+                                                    {isClicked && !mostrarResultat && <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-yellow-400">📍</span>}
+                                                    <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-purple-300 opacity-0 group-hover:opacity-100">{val}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            {!mostrarResultat && clickedPoint !== null && (
+                                <button onClick={() => handleResposta(clickedPoint)} className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:opacity-90 active:scale-95">
+                                    {t("CONFIRMAR SELECCIÓ", "CONFIRMAR SELECCIÓN", "CONFIRM SELECTION")}
+                                </button>
+                            )}
+                            {mostrarResultat && p.pista && <p className="text-sm text-purple-300 text-center">💡 {p.pista}</p>}
+                        </div>
+                    )}
+                    
+                    {/* ALLOCATE - Distribuir cartera */}
+                    {p.tipus === 'allocate' && (
+                        <div className="space-y-4">
+                            {p.assets.map((asset, i) => (
+                                <div key={i} className={`p-4 rounded-xl border-2 transition-all ${
+                                    mostrarResultat 
+                                        ? (allocations[i] >= p.correctRanges[i][0] && allocations[i] <= p.correctRanges[i][1]) 
+                                            ? 'border-green-400 bg-green-400/20' 
+                                            : 'border-red-400 bg-red-400/20'
+                                        : 'border-white/30 bg-white/5'
+                                }`}>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-lg">
+                                            <span className="mr-2">{asset.icon}</span>
+                                            <span className="text-white font-medium">{asset.nom}</span>
+                                        </span>
+                                        <span className="text-2xl font-black text-white">{allocations[i] || 0}%</span>
+                                    </div>
+                                    {!mostrarResultat ? (
+                                        <input type="range" min="0" max="100" value={allocations[i] || 0}
+                                            onChange={(e) => {
+                                                const newVal = parseInt(e.target.value);
+                                                const newAllocs = [...allocations];
+                                                const diff = newVal - (newAllocs[i] || 0);
+                                                newAllocs[i] = newVal;
+                                                // Ajustar altres per sumar 100
+                                                const others = newAllocs.map((v, j) => j !== i ? j : -1).filter(j => j >= 0);
+                                                if (others.length > 0) {
+                                                    const perOther = Math.floor(diff / others.length);
+                                                    others.forEach(j => { newAllocs[j] = Math.max(0, Math.min(100, (newAllocs[j] || 0) - perOther)); });
+                                                }
+                                                setAllocations(newAllocs);
+                                            }}
+                                            className="w-full h-3 bg-white/20 rounded-lg appearance-none cursor-pointer accent-yellow-400" />
+                                    ) : (
+                                        <div className="text-sm text-purple-300">
+                                            {t("Rang correcte:", "Rango correcto:", "Correct range:")} {p.correctRanges[i][0]}-{p.correctRanges[i][1]}%
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                            <div className={`text-center text-lg font-bold ${allocations.reduce((a, b) => a + b, 0) === 100 ? 'text-green-400' : 'text-red-400'}`}>
+                                {t("Total:", "Total:", "Total:")} {allocations.reduce((a, b) => a + b, 0)}% {allocations.reduce((a, b) => a + b, 0) === 100 ? '✓' : `(${t("ha de ser 100%", "debe ser 100%", "must be 100%")})`}
+                            </div>
+                            {!mostrarResultat && allocations.reduce((a, b) => a + b, 0) === 100 && (
+                                <button onClick={() => handleResposta('allocate')} className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:opacity-90 active:scale-95">
+                                    {t("CONFIRMAR", "CONFIRMAR", "CONFIRM")}
+                                </button>
+                            )}
+                            {mostrarResultat && p.pista && <p className="text-sm text-purple-300 text-center">💡 {p.pista}</p>}
+                        </div>
+                    )}
+                    
+                    {/* SCENARIO - Escenaris de decisió */}
+                    {p.tipus === 'scenario' && (
+                        <div className="space-y-3">
+                            {p.multipleCorrect && !mostrarResultat && (
+                                <p className="text-sm text-amber-300 text-center">⚠️ {t("Pots seleccionar múltiples opcions", "Puedes seleccionar múltiples opciones", "You can select multiple options")}</p>
+                            )}
+                            {p.opcions.map((op, i) => {
+                                const isSelected = selectedOptions.includes(i);
+                                const isCorrect = op.correcta;
+                                return (
+                                    <button key={i} 
+                                        onClick={() => {
+                                            if (mostrarResultat) return;
+                                            if (p.multipleCorrect) {
+                                                setSelectedOptions(isSelected ? selectedOptions.filter(x => x !== i) : [...selectedOptions, i]);
+                                            } else {
+                                                setSelectedOptions([i]);
+                                            }
+                                            playSound('tick');
+                                        }}
+                                        disabled={mostrarResultat}
+                                        className={`w-full p-4 text-left rounded-xl border-2 transition-all ${
+                                            mostrarResultat 
+                                                ? isCorrect ? 'border-green-400 bg-green-400/30' : isSelected ? 'border-red-400 bg-red-400/30' : 'border-white/20 opacity-40'
+                                                : isSelected ? 'border-yellow-400 bg-yellow-400/20' : 'border-white/30 hover:border-white/50'
+                                        }`}>
+                                        <span className="text-2xl mr-3">{op.icon}</span>
+                                        <span className="text-white font-medium">{op.text}</span>
+                                        {isSelected && !mostrarResultat && <span className="float-right text-yellow-400">✓</span>}
+                                        {mostrarResultat && isCorrect && <span className="float-right text-green-400">✓</span>}
+                                        {mostrarResultat && isSelected && !isCorrect && <span className="float-right text-red-400">✗</span>}
+                                    </button>
+                                );
+                            })}
+                            {!mostrarResultat && selectedOptions.length > 0 && (
+                                <button onClick={() => handleResposta('scenario')} className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:opacity-90 active:scale-95">
+                                    {t("CONFIRMAR", "CONFIRMAR", "CONFIRM")}
+                                </button>
+                            )}
+                            {mostrarResultat && p.pista && <p className="text-sm text-purple-300 text-center mt-4">💡 {p.pista}</p>}
+                        </div>
+                    )}
+                    
+                    {/* SLIDER_VALUE - Ajusta el valor */}
+                    {p.tipus === 'slider_value' && (
+                        <div className="space-y-6">
+                            <div className="bg-white/5 rounded-xl p-6 border border-white/20">
+                                <div className="text-center mb-4">
+                                    <span className={`text-6xl font-black ${mostrarResultat ? (Math.abs(sliderValue - p.correcta) <= (p.tolerancia || 0) ? 'text-green-400' : 'text-red-400') : 'text-yellow-400'}`}>
+                                        {sliderValue}
+                                    </span>
+                                </div>
+                                {!mostrarResultat ? (
+                                    <input type="range" min={p.min} max={p.max} value={sliderValue}
+                                        onChange={(e) => setSliderValue(parseInt(e.target.value))}
+                                        className="w-full h-4 bg-white/20 rounded-lg appearance-none cursor-pointer accent-yellow-400" />
+                                ) : (
+                                    <div className="text-center text-lg text-purple-300">
+                                        {t("Resposta correcta:", "Respuesta correcta:", "Correct answer:")} <strong className="text-green-400">{p.correcta}</strong>
+                                    </div>
+                                )}
+                                <div className="flex justify-between text-sm text-purple-300 mt-2">
+                                    <span>{p.labels?.left || p.min}</span>
+                                    <span>{p.labels?.right || p.max}</span>
+                                </div>
+                            </div>
+                            {!mostrarResultat && (
+                                <button onClick={() => handleResposta(sliderValue)} className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:opacity-90 active:scale-95">
+                                    {t("CONFIRMAR", "CONFIRMAR", "CONFIRM")}
+                                </button>
+                            )}
+                            {mostrarResultat && p.pista && <p className="text-sm text-purple-300 text-center">💡 {p.pista}</p>}
+                        </div>
+                    )}
+                    
+                    {/* MATCH_RISK - Ordenar per risc (reutilitza ordre) */}
+                    {p.tipus === 'match_risk' && (
+                        <div className="space-y-4">
+                            <div className="flex justify-between text-sm text-purple-300 px-2">
+                                <span>🛡️ {t("Menys risc", "Menos riesgo", "Less risk")}</span>
+                                <span>{t("Més risc", "Más riesgo", "More risk")} 🎢</span>
+                            </div>
+                            <div className="space-y-2">
+                                {ordreUsuari.map((elemIdx, pos) => (
+                                    <div key={pos} className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                                        mostrarResultat 
+                                            ? p.ordreCorrecte[pos] === elemIdx ? 'border-green-400 bg-green-400/20' : 'border-red-400 bg-red-400/20' 
+                                            : 'border-white/30 bg-white/5'
+                                    }`}>
+                                        <span className="text-2xl">{p.elements[elemIdx].icon}</span>
+                                        <span className="flex-1 font-medium text-white">{p.elements[elemIdx].nom}</span>
+                                        <span className={`text-sm px-2 py-1 rounded ${pos < 2 ? 'bg-green-500/30 text-green-300' : pos < 4 ? 'bg-yellow-500/30 text-yellow-300' : 'bg-red-500/30 text-red-300'}`}>
+                                            {pos + 1}
+                                        </span>
+                                        {!mostrarResultat && (
+                                            <div className="flex gap-1">
+                                                <button onClick={() => moureElement(pos, -1)} disabled={pos === 0} className="w-10 h-10 rounded-lg bg-white/20 hover:bg-white/30 disabled:opacity-30 text-white font-bold active:scale-90">▲</button>
+                                                <button onClick={() => moureElement(pos, 1)} disabled={pos === ordreUsuari.length - 1} className="w-10 h-10 rounded-lg bg-white/20 hover:bg-white/30 disabled:opacity-30 text-white font-bold active:scale-90">▼</button>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                            {!mostrarResultat && <button onClick={() => handleResposta('match_risk')} className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:opacity-90 active:scale-95">{t("CONFIRMAR", "CONFIRMAR", "CONFIRM")}</button>}
                         </div>
                     )}
                     
