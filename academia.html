@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎓 Acadèmia PDE - Papers Contemporanis</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-serif { font-family: 'Merriweather', serif; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+        .animate-slide { animation: slideIn 0.3s ease-out; }
+        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-white to-amber-50 min-h-screen">
+    <div id="root"></div>
+    <script type="text/babel">
+const { useState, useMemo } = React;
+
+function AcademiaApp() {
+    const [idioma, setIdioma] = useState('val');
+    const [anySeleccionat, setAnySeleccionat] = useState(2024);
+    const [temaFiltre, setTemaFiltre] = useState('tots');
+    const [paperSeleccionat, setPaperSeleccionat] = useState(null);
+    const [cercador, setCercador] = useState('');
+
+    const t = (val, es, en) => idioma === 'val' ? val : idioma === 'es' ? es : en;
+
+    const temes = [
+        { id: 'tots', icon: '📚', label: t('Tots', 'Todos', 'All'), color: 'gray' },
+        { id: 'ia', icon: '🤖', label: t('IA i Automatització', 'IA y Automatización', 'AI & Automation'), color: 'purple' },
+        { id: 'desigualtat', icon: '📊', label: t('Desigualtat', 'Desigualdad', 'Inequality'), color: 'red' },
+        { id: 'institucions', icon: '🏛️', label: t('Institucions', 'Instituciones', 'Institutions'), color: 'blue' },
+        { id: 'conductual', icon: '🧠', label: t('Ec. Conductual', 'Ec. Conductual', 'Behavioral'), color: 'pink' },
+        { id: 'clima', icon: '🌍', label: t('Clima i Energia', 'Clima y Energía', 'Climate & Energy'), color: 'green' },
+        { id: 'finances', icon: '💰', label: t('Finances', 'Finanzas', 'Finance'), color: 'amber' },
+        { id: 'treball', icon: '💼', label: t('Mercat Laboral', 'Mercado Laboral', 'Labor Market'), color: 'cyan' },
+    ];
+
+    // BASE DE DADES DE PAPERS
+    const papers = useMemo(() => [
+        // 2024-2025
+        { id: 1, any: 2024, tema: 'ia', autors: 'Daron Acemoglu', institucio: 'MIT', titol: 'The Simple Macroeconomics of AI', revista: 'NBER Working Paper / Economic Policy', cites: '500+', 
+          resum: t("Analitza l'impacte macroeconòmic de la IA en els pròxims 10 anys. Prediu un augment modest del PIB (0.5-1.5%) però adverteix sobre els efectes en la desigualtat.", "Analiza el impacto macroeconómico de la IA en los próximos 10 años. Predice un aumento modesto del PIB (0.5-1.5%) pero advierte sobre efectos en la desigualdad.", "Analyzes AI's macroeconomic impact over 10 years. Predicts modest GDP increase (0.5-1.5%) but warns about inequality effects."),
+          importancia: t("Paper clau del Nobel 2024. Ofereix un marc rigorós per avaluar les promeses i perills de la IA, qüestionant les prediccions més optimistes.", "Paper clave del Nobel 2024. Ofrece un marco riguroso para evaluar promesas y peligros de la IA, cuestionando predicciones optimistas.", "Key paper from 2024 Nobel laureate. Provides rigorous framework to evaluate AI promises and dangers."),
+          link: 'https://economics.mit.edu/sites/default/files/2024-04/The%20Simple%20Macroeconomics%20of%20AI.pdf' },
+        
+        { id: 2, any: 2024, tema: 'institucions', autors: 'Acemoglu, Johnson, Robinson', institucio: 'MIT / LSE / U. Chicago', titol: 'Institutions, Technology and Prosperity', revista: 'Nobel Prize Lecture', cites: 'Nobel 2024', 
+          resum: t("Síntesi de 20 anys de recerca sobre com les institucions polítiques i econòmiques determinen la prosperitat de les nacions a llarg termini.", "Síntesis de 20 años de investigación sobre cómo las instituciones políticas y económicas determinan la prosperidad de las naciones.", "Synthesis of 20 years of research on how political and economic institutions determine long-term prosperity."),
+          importancia: t("Discurs del Nobel que explica per què alguns països són rics i altres pobres: la clau són les institucions inclusives vs. extractives.", "Discurso del Nobel que explica por qué algunos países son ricos y otros pobres: la clave son las instituciones inclusivas vs. extractivas.", "Nobel lecture explaining why some countries are rich and others poor: inclusive vs. extractive institutions."),
+          link: 'https://www.nobelprize.org/prizes/economic-sciences/2024/' },
+        
+        { id: 3, any: 2024, tema: 'ia', autors: 'Acemoglu, Autor, Hazell, Restrepo', institucio: 'MIT', titol: 'AI and Jobs: Evidence from Online Vacancies', revista: 'Journal of Labor Economics', cites: '150+',
+          resum: t("Estudi empíric de com la IA està canviant la demanda de competències al mercat laboral, amb dades d'ofertes de feina online.", "Estudio empírico de cómo la IA está cambiando la demanda de competencias en el mercado laboral, con datos de ofertas de empleo online.", "Empirical study of how AI is changing skill demand in labor markets, using online job postings data."),
+          importancia: t("Evidència real sobre quines feines estan sent més afectades per la IA: tasques rutinàries cognitives són les més exposades.", "Evidencia real sobre qué trabajos están siendo más afectados por la IA: tareas rutinarias cognitivas son las más expuestas.", "Real evidence on which jobs are most affected by AI: routine cognitive tasks are most exposed."),
+          link: 'https://economics.mit.edu/people/faculty/daron-acemoglu/publications' },
+
+        { id: 4, any: 2024, tema: 'ia', autors: 'David Autor', institucio: 'MIT', titol: 'Applying AI to Rebuild Middle Class Jobs', revista: 'NBER Working Paper', cites: '200+',
+          resum: t("Proposa que la IA generativa podria democratitzar l'expertesa i ajudar a reconstruir la classe mitjana, revertint dècades de polarització laboral.", "Propone que la IA generativa podría democratizar la expertise y ayudar a reconstruir la clase media, revirtiendo décadas de polarización laboral.", "Proposes generative AI could democratize expertise and help rebuild middle class, reversing decades of labor polarization."),
+          importancia: t("Visió optimista: la IA podria ser diferent de l'automatització anterior i beneficiar treballadors de qualificació mitjana.", "Visión optimista: la IA podría ser diferente de la automatización anterior y beneficiar a trabajadores de cualificación media.", "Optimistic vision: AI could differ from previous automation and benefit middle-skill workers."),
+          link: 'https://economics.mit.edu/people/faculty/david-autor' },
+
+        { id: 5, any: 2024, tema: 'desigualtat', autors: 'Chancel, Piketty et al.', institucio: 'World Inequality Lab', titol: 'World Inequality Report 2024', revista: 'WID.world', cites: '300+',
+          resum: t("Actualització de les dades globals de desigualtat: el 10% més ric posseeix el 76% de la riquesa mundial. La desigualtat entre països disminueix però dins dels països augmenta.", "Actualización de datos globales de desigualdad: el 10% más rico posee el 76% de la riqueza mundial. La desigualdad entre países disminuye pero dentro de los países aumenta.", "Global inequality data update: top 10% owns 76% of world wealth. Between-country inequality decreases but within-country increases."),
+          importancia: t("Referència fonamental per entendre l'estat actual de la desigualtat al món amb dades comparables.", "Referencia fundamental para entender el estado actual de la desigualdad en el mundo con datos comparables.", "Key reference for understanding current state of global inequality with comparable data."),
+          link: 'https://wid.world/' },
+
+        // 2023
+        { id: 6, any: 2023, tema: 'ia', autors: 'Eloundou, Manning, Mishkin, Rock', institucio: 'OpenAI / U. Pennsylvania', titol: 'GPTs are GPTs: An Early Look at Labor Market Impact', revista: 'Working Paper', cites: '1000+',
+          resum: t("Estima que el 80% dels treballadors als EUA podrien veure almenys el 10% de les seves tasques afectades per GPT. El 19% podrien veure el 50%+ afectat.", "Estima que el 80% de trabajadores en EEUU podrían ver al menos el 10% de sus tareas afectadas por GPT. El 19% podrían ver el 50%+ afectado.", "Estimates 80% of US workers could see at least 10% of tasks affected by GPT. 19% could see 50%+ affected."),
+          importancia: t("Primer estudi sistemàtic sobre l'exposició laboral als LLMs. Metodologia innovadora per avaluar l'impacte per ocupació.", "Primer estudio sistemático sobre la exposición laboral a los LLMs. Metodología innovadora para evaluar el impacto por ocupación.", "First systematic study on labor exposure to LLMs. Innovative methodology to assess impact by occupation."),
+          link: 'https://arxiv.org/abs/2303.10130' },
+
+        { id: 7, any: 2023, tema: 'conductual', autors: 'DellaVigna, Linos', institucio: 'UC Berkeley', titol: 'RCTs to Scale: Comprehensive Evidence from Two Nudge Units', revista: 'Econometrica', cites: '400+',
+          resum: t("Meta-anàlisi de 126 experiments aleatoris de les Nudge Units del govern. Els nudges funcionen però amb efectes més petits del que es pensava (1.4% de mitjana).", "Meta-análisis de 126 experimentos aleatorios de las Nudge Units del gobierno. Los nudges funcionan pero con efectos más pequeños de lo esperado (1.4% de media).", "Meta-analysis of 126 RCTs from government Nudge Units. Nudges work but with smaller effects than expected (1.4% average)."),
+          importancia: t("Avaluació rigorosa de l'economia conductual aplicada a polítiques públiques. Modera l'entusiasme inicial sobre els nudges.", "Evaluación rigurosa de la economía conductual aplicada a políticas públicas. Modera el entusiasmo inicial sobre los nudges.", "Rigorous evaluation of behavioral economics in public policy. Moderates initial enthusiasm about nudges."),
+          link: 'https://www.econometricsociety.org/publications/econometrica/2022/01/01/rcts-scale-comprehensive-evidence-two-nudge-units' },
+
+        { id: 8, any: 2023, tema: 'clima', autors: 'Nordhaus, Barrage et al.', institucio: 'Yale', titol: 'Climate Economics: Progress and Challenges', revista: 'Annual Review of Economics', cites: '250+',
+          resum: t("Revisió de l'estat de l'economia del canvi climàtic: models integrats, cost social del carboni, i polítiques d'adaptació.", "Revisión del estado de la economía del cambio climático: modelos integrados, coste social del carbono, y políticas de adaptación.", "Review of climate economics: integrated models, social cost of carbon, and adaptation policies."),
+          importancia: t("Síntesi del Nobel de Nordhaus (2018) amb actualitzacions. Referència per entendre l'economia climàtica.", "Síntesis del Nobel de Nordhaus (2018) con actualizaciones. Referencia para entender la economía climática.", "Synthesis from Nordhaus's Nobel (2018) with updates. Key reference for climate economics."),
+          link: 'https://www.annualreviews.org/journal/economics' },
+
+        // 2022
+        { id: 9, any: 2022, tema: 'ia', autors: 'Acemoglu, Restrepo', institucio: 'MIT / Boston U.', titol: 'Tasks, Automation, and the Rise in US Wage Inequality', revista: 'Econometrica', cites: '800+',
+          resum: t("Demostra que l'automatització explica el 50-70% de l'augment de la desigualtat salarial als EUA des de 1980. Proposa el model de tasques.", "Demuestra que la automatización explica el 50-70% del aumento de la desigualdad salarial en EEUU desde 1980. Propone el modelo de tareas.", "Shows automation explains 50-70% of US wage inequality increase since 1980. Proposes task-based model."),
+          importancia: t("Paper fonamental que connecta tecnologia, automatització i desigualtat amb evidència empírica robusta.", "Paper fundamental que conecta tecnología, automatización y desigualdad con evidencia empírica robusta.", "Foundational paper connecting technology, automation and inequality with robust empirical evidence."),
+          link: 'https://www.econometricsociety.org/publications/econometrica' },
+
+        { id: 10, any: 2022, tema: 'finances', autors: 'Brunnermeier, James, Landau', institucio: 'Princeton / BIS', titol: 'The Digitalization of Money', revista: 'NBER Working Paper', cites: '350+',
+          resum: t("Anàlisi de les monedes digitals dels bancs centrals (CBDC) i les seves implicacions per al sistema financer i la política monetària.", "Análisis de las monedas digitales de los bancos centrales (CBDC) y sus implicaciones para el sistema financiero y la política monetaria.", "Analysis of central bank digital currencies (CBDC) and implications for financial system and monetary policy."),
+          importancia: t("Marc teòric per entendre el futur dels diners digitals i com podrien transformar la banca.", "Marco teórico para entender el futuro del dinero digital y cómo podría transformar la banca.", "Theoretical framework for understanding digital money's future and how it could transform banking."),
+          link: 'https://www.nber.org/papers' },
+
+        // 2021
+        { id: 11, any: 2021, tema: 'desigualtat', autors: 'Chetty, Friedman, Hendren, Jones', institucio: 'Harvard / Brown', titol: 'The Opportunity Atlas', revista: 'American Economic Review', cites: '1500+',
+          resum: t("Mapa interactiu de la mobilitat social als EUA: on neixes determina les teves oportunitats. Gran variació entre barris.", "Mapa interactivo de la movilidad social en EEUU: dónde naces determina tus oportunidades. Gran variación entre barrios.", "Interactive map of US social mobility: where you're born determines opportunities. Huge variation across neighborhoods."),
+          importancia: t("Eina revolucionària que permet veure com la geografia afecta les oportunitats de vida amb una precisió sense precedents.", "Herramienta revolucionaria que permite ver cómo la geografía afecta las oportunidades de vida con precisión sin precedentes.", "Revolutionary tool showing how geography affects life opportunities with unprecedented precision."),
+          link: 'https://opportunityatlas.org/' },
+
+        { id: 12, any: 2021, tema: 'conductual', autors: 'Kahneman, Sibony, Sunstein', institucio: 'Princeton / HEC / Harvard', titol: 'Noise: A Flaw in Human Judgment', revista: 'Little, Brown (Book)', cites: '2000+',
+          resum: t("Més enllà dels biaixos: el 'soroll' (variabilitat aleatòria en els judicis) és un problema tan greu com el biaix però menys estudiat.", "Más allá de los sesgos: el 'ruido' (variabilidad aleatoria en los juicios) es un problema tan grave como el sesgo pero menos estudiado.", "Beyond biases: 'noise' (random variability in judgments) is as serious a problem as bias but less studied."),
+          importancia: t("Últim llibre de Kahneman (Nobel 2002). Canvia com entenem els errors de judici: no només biaixos sinó també inconsistència.", "Último libro de Kahneman (Nobel 2002). Cambia cómo entendemos los errores de juicio: no solo sesgos sino también inconsistencia.", "Kahneman's last book (Nobel 2002). Changes how we understand judgment errors: not just biases but inconsistency too."),
+          link: 'https://www.penguinrandomhouse.com/books/576919/noise-by-daniel-kahneman-olivier-sibony-and-cass-r-sunstein/' },
+
+        // 2020
+        { id: 13, any: 2020, tema: 'desigualtat', autors: 'Saez, Zucman', institucio: 'UC Berkeley', titol: 'The Rise of Income and Wealth Inequality in America', revista: 'Journal of Economic Perspectives', cites: '1200+',
+          resum: t("Documentació completa de com el 0.1% més ric ha triplicat la seva quota de riquesa des de 1980: del 7% al 20%.", "Documentación completa de cómo el 0.1% más rico ha triplicado su cuota de riqueza desde 1980: del 7% al 20%.", "Complete documentation of how top 0.1% tripled their wealth share since 1980: from 7% to 20%."),
+          importancia: t("Evidència definitiva sobre l'augment de la concentració de riquesa als EUA, amb implicacions per a la política fiscal.", "Evidencia definitiva sobre el aumento de la concentración de riqueza en EEUU, con implicaciones para la política fiscal.", "Definitive evidence on rising US wealth concentration, with implications for tax policy."),
+          link: 'https://gabriel-zucman.eu/files/SaezZucman2020JEP.pdf' },
+
+        { id: 14, any: 2020, tema: 'clima', autors: 'Hsiang, Kopp et al.', institucio: 'UC Berkeley / Rutgers', titol: 'Estimating Economic Damage from Climate Change in the US', revista: 'Science', cites: '1800+',
+          resum: t("Primera estimació completa dels costos econòmics del canvi climàtic per comtat als EUA: el sud perdria fins al 20% del PIB.", "Primera estimación completa de los costes económicos del cambio climático por condado en EEUU: el sur perdería hasta el 20% del PIB.", "First complete estimate of climate change economic costs by US county: the South could lose up to 20% of GDP."),
+          importancia: t("Metodologia innovadora que combina ciència climàtica i economia per mostrar la distribució geogràfica dels impactes.", "Metodología innovadora que combina ciencia climática y economía para mostrar la distribución geográfica de los impactos.", "Innovative methodology combining climate science and economics to show geographic distribution of impacts."),
+          link: 'https://www.science.org/doi/10.1126/science.aal4369' },
+
+        // 2019
+        { id: 15, any: 2019, tema: 'desigualtat', autors: 'Banerjee, Duflo, Kremer', institucio: 'MIT / Harvard', titol: 'A New Approach to Fighting Poverty (Nobel)', revista: 'Nobel Prize Lecture', cites: 'Nobel 2019',
+          resum: t("Síntesi de 20 anys de RCTs per combatre la pobresa: què funciona realment? Microfinançament sí, però efectes modestos. Deworming molt efectiu.", "Síntesis de 20 años de RCTs para combatir la pobreza: ¿qué funciona realmente? Microfinanzas sí, pero efectos modestos. Desparasitación muy efectiva.", "Synthesis of 20 years of RCTs to fight poverty: what really works? Microfinance yes, but modest effects. Deworming very effective."),
+          importancia: t("Nobel per l'ús d'experiments aleatoris en economia del desenvolupament. Ha transformat com avaluem polítiques anti-pobresa.", "Nobel por el uso de experimentos aleatorios en economía del desarrollo. Ha transformado cómo evaluamos políticas anti-pobreza.", "Nobel for using RCTs in development economics. Transformed how we evaluate anti-poverty policies."),
+          link: 'https://www.nobelprize.org/prizes/economic-sciences/2019/' },
+
+        { id: 16, any: 2019, tema: 'desigualtat', autors: 'Piketty, Yang, Zucman', institucio: 'PSE / UC Berkeley', titol: 'Capital Accumulation, Private Property, and Inequality in China', revista: 'American Economic Review', cites: '900+',
+          resum: t("Primera estimació completa de la desigualtat a la Xina: el 10% més ric té el 67% de la riquesa. La Xina ja és tant desigual com Europa.", "Primera estimación completa de la desigualdad en China: el 10% más rico tiene el 67% de la riqueza. China ya es tan desigual como Europa.", "First complete estimate of China inequality: top 10% owns 67% of wealth. China is now as unequal as Europe."),
+          importancia: t("Revela com la transició al capitalisme a la Xina ha generat nivells de desigualtat similars als occidentals.", "Revela cómo la transición al capitalismo en China ha generado niveles de desigualdad similares a los occidentales.", "Reveals how China's transition to capitalism generated inequality levels similar to the West."),
+          link: 'https://www.aeaweb.org/articles?id=10.1257/aer.20170973' },
+
+        // 2018
+        { id: 17, any: 2018, tema: 'clima', autors: 'William Nordhaus', institucio: 'Yale', titol: 'Climate Change: The Ultimate Challenge for Economics', revista: 'Nobel Prize Lecture', cites: 'Nobel 2018',
+          resum: t("Model DICE per integrar economia i clima. Proposa un impost al carboni de $40/tona com a solució òptima.", "Modelo DICE para integrar economía y clima. Propone un impuesto al carbono de $40/tonelada como solución óptima.", "DICE model integrating economics and climate. Proposes $40/ton carbon tax as optimal solution."),
+          importancia: t("Nobel per modelar l'economia del canvi climàtic. El model DICE és la base de moltes polítiques climàtiques.", "Nobel por modelar la economía del cambio climático. El modelo DICE es la base de muchas políticas climáticas.", "Nobel for modeling climate change economics. DICE model is the basis for many climate policies."),
+          link: 'https://www.nobelprize.org/prizes/economic-sciences/2018/' },
+
+        { id: 18, any: 2018, tema: 'ia', autors: 'Brynjolfsson, Mitchell, Rock', institucio: 'MIT / Stanford', titol: 'What Can Machines Learn, and What Does It Mean for Workers?', revista: 'AEA Papers & Proceedings', cites: '700+',
+          resum: t("Marc per avaluar quines tasques poden ser automatitzades per machine learning: 'Suitability for Machine Learning' (SML).", "Marco para evaluar qué tareas pueden ser automatizadas por machine learning: 'Suitability for Machine Learning' (SML).", "Framework to assess which tasks can be automated by ML: 'Suitability for Machine Learning' (SML)."),
+          importancia: t("Metodologia que després han usat altres estudis per predir l'impacte de la IA al mercat laboral.", "Metodología que después han usado otros estudios para predecir el impacto de la IA en el mercado laboral.", "Methodology later used by other studies to predict AI's labor market impact."),
+          link: 'https://www.aeaweb.org/articles?id=10.1257/pandp.20181019' },
+
+        // 2017
+        { id: 19, any: 2017, tema: 'conductual', autors: 'Richard Thaler', institucio: 'U. Chicago', titol: 'Behavioral Economics: Past, Present, and Future', revista: 'Nobel Prize Lecture', cites: 'Nobel 2017',
+          resum: t("Història de l'economia conductual: de les 'anomalies' a la corrent principal. Com els nudges han canviat les polítiques públiques.", "Historia de la economía conductual: de las 'anomalías' a la corriente principal. Cómo los nudges han cambiado las políticas públicas.", "History of behavioral economics: from 'anomalies' to mainstream. How nudges have changed public policy."),
+          importancia: t("Nobel per integrar psicologia i economia. Els seus nudges han influït governs de tot el món.", "Nobel por integrar psicología y economía. Sus nudges han influido gobiernos de todo el mundo.", "Nobel for integrating psychology and economics. His nudges have influenced governments worldwide."),
+          link: 'https://www.nobelprize.org/prizes/economic-sciences/2017/' },
+
+        { id: 20, any: 2017, tema: 'finances', autors: 'Shiller, Case, Thompson', institucio: 'Yale', titol: 'What Have They Been Thinking? Homebuyer Behavior', revista: 'NBER Working Paper', cites: '400+',
+          resum: t("Anàlisi psicològica de les bombolles immobiliàries: els compradors ignoren els fonamentals i segueixen expectatives irreals.", "Análisis psicológico de las burbujas inmobiliarias: los compradores ignoran los fundamentales y siguen expectativas irreales.", "Psychological analysis of housing bubbles: buyers ignore fundamentals and follow unrealistic expectations."),
+          importancia: t("Connecta finances conductuals amb el mercat immobiliari. Explica per què les bombolles es repeteixen.", "Conecta finanzas conductuales con el mercado inmobiliario. Explica por qué las burbujas se repiten.", "Connects behavioral finance with housing market. Explains why bubbles keep recurring."),
+          link: 'https://www.nber.org/papers' },
+
+        // 2016
+        { id: 21, any: 2016, tema: 'desigualtat', autors: 'Saez, Zucman', institucio: 'UC Berkeley', titol: 'Wealth Inequality in the United States since 1913', revista: 'Quarterly Journal of Economics', cites: '2500+',
+          resum: t("Reconstrucció històrica de la desigualtat de riquesa als EUA: el 0.1% més ric té ara tanta riquesa com a 1929.", "Reconstrucción histórica de la desigualdad de riqueza en EEUU: el 0.1% más rico tiene ahora tanta riqueza como en 1929.", "Historical reconstruction of US wealth inequality: top 0.1% now owns as much wealth as in 1929."),
+          importancia: t("Paper seminal que ha definit el debat sobre desigualtat de riquesa. Metodologia copiada mundialment.", "Paper seminal que ha definido el debate sobre desigualdad de riqueza. Metodología copiada mundialmente.", "Seminal paper that defined wealth inequality debate. Methodology copied worldwide."),
+          link: 'https://gabriel-zucman.eu/uswealth/' },
+
+        // 2015
+        { id: 22, any: 2015, tema: 'institucions', autors: 'Acemoglu, Robinson', institucio: 'MIT / Harvard', titol: 'The Rise and Decline of General Laws of Capitalism', revista: 'Journal of Economic Perspectives', cites: '1200+',
+          resum: t("Crítica a Piketty i Marx: no hi ha 'lleis generals' del capitalisme. Les institucions i la política determinen els resultats.", "Crítica a Piketty y Marx: no hay 'leyes generales' del capitalismo. Las instituciones y la política determinan los resultados.", "Critique of Piketty and Marx: no 'general laws' of capitalism exist. Institutions and politics determine outcomes."),
+          importancia: t("Debat clau sobre si la desigualtat és inevitable o depèn de les decisions polítiques.", "Debate clave sobre si la desigualdad es inevitable o depende de las decisiones políticas.", "Key debate on whether inequality is inevitable or depends on political choices."),
+          link: 'https://www.aeaweb.org/articles?id=10.1257/jep.29.1.3' },
+
+        // 2014
+        { id: 23, any: 2014, tema: 'desigualtat', autors: 'Thomas Piketty', institucio: 'PSE', titol: 'Capital in the Twenty-First Century', revista: 'Harvard University Press (Book)', cites: '15000+',
+          resum: t("r>g: quan el retorn del capital supera el creixement econòmic, la desigualtat augmenta inevitablement. Cal un impost global sobre la riquesa.", "r>g: cuando el retorno del capital supera el crecimiento económico, la desigualdad aumenta inevitablemente. Hace falta un impuesto global sobre la riqueza.", "r>g: when return on capital exceeds economic growth, inequality inevitably increases. Global wealth tax needed."),
+          importancia: t("El llibre d'economia més influent del segle XXI. Ha transformat el debat públic sobre desigualtat.", "El libro de economía más influyente del siglo XXI. Ha transformado el debate público sobre desigualdad.", "Most influential economics book of 21st century. Transformed public debate on inequality."),
+          link: 'https://www.hup.harvard.edu/catalog.php?isbn=9780674430006' },
+
+        { id: 24, any: 2014, tema: 'finances', autors: 'Piketty, Zucman', institucio: 'PSE / UC Berkeley', titol: 'Capital is Back: Wealth-Income Ratios in Rich Countries', revista: 'Quarterly Journal of Economics', cites: '2000+',
+          resum: t("El ratio capital/renda ha tornat als nivells de 1900-1910 a Europa: de 200-300% el 1950 a 500-600% avui.", "El ratio capital/renta ha vuelto a los niveles de 1900-1910 en Europa: de 200-300% en 1950 a 500-600% hoy.", "Capital/income ratio has returned to 1900-1910 levels in Europe: from 200-300% in 1950 to 500-600% today."),
+          importancia: t("Base empírica per 'El Capital al Segle XXI'. Demostra el retorn del capitalisme patrimonial.", "Base empírica para 'El Capital en el Siglo XXI'. Demuestra el retorno del capitalismo patrimonial.", "Empirical basis for 'Capital in the 21st Century'. Shows return of patrimonial capitalism."),
+          link: 'https://academic.oup.com/qje/article/129/3/1255/1818714' },
+
+        // 2013
+        { id: 25, any: 2013, tema: 'treball', autors: 'Autor, Dorn', institucio: 'MIT / CEMFI', titol: 'The Growth of Low-Skill Service Jobs', revista: 'American Economic Review', cites: '3000+',
+          resum: t("Polarització del mercat laboral: desapareixen les feines de qualificació mitjana, creixen les altes i baixes simultàniament.", "Polarización del mercado laboral: desaparecen los empleos de cualificación media, crecen los altos y bajos simultáneamente.", "Labor market polarization: middle-skill jobs disappear, high and low-skill jobs grow simultaneously."),
+          importancia: t("Explica per què la classe mitjana s'està buidant: la tecnologia automatitza les tasques de qualificació mitjana.", "Explica por qué la clase media se está vaciando: la tecnología automatiza las tareas de cualificación media.", "Explains why middle class is hollowing out: technology automates middle-skill tasks."),
+          link: 'https://www.aeaweb.org/articles?id=10.1257/aer.103.5.1553' },
+
+        // 2012
+        { id: 26, any: 2012, tema: 'institucions', autors: 'Acemoglu, Robinson', institucio: 'MIT / Harvard', titol: 'Why Nations Fail', revista: 'Crown Business (Book)', cites: '20000+',
+          resum: t("Per què alguns països són rics i altres pobres? No és geografia ni cultura, són les institucions: inclusives vs. extractives.", "¿Por qué algunos países son ricos y otros pobres? No es geografía ni cultura, son las instituciones: inclusivas vs. extractivas.", "Why are some countries rich and others poor? Not geography or culture, but institutions: inclusive vs. extractive."),
+          importancia: t("Llibre que ha portat la recerca acadèmica sobre institucions al gran públic. Base del Nobel 2024.", "Libro que ha llevado la investigación académica sobre instituciones al gran público. Base del Nobel 2024.", "Book that brought academic research on institutions to the public. Basis for 2024 Nobel."),
+          link: 'http://whynationsfail.com/' },
+
+        // CLÀSSICS (pre-2012 però fonamentals)
+        { id: 27, any: 'classic', tema: 'conductual', autors: 'Kahneman, Tversky', institucio: 'Princeton / Stanford', titol: 'Prospect Theory: An Analysis of Decision under Risk', revista: 'Econometrica (1979)', cites: '80000+',
+          resum: t("Les persones avaluen guanys i pèrdues de manera asimètrica: una pèrdua de 100€ es sent el doble que un guany de 100€.", "Las personas evalúan ganancias y pérdidas de manera asimétrica: una pérdida de 100€ se siente el doble que una ganancia de 100€.", "People evaluate gains and losses asymmetrically: a €100 loss feels twice as bad as a €100 gain feels good."),
+          importancia: t("El paper més citat en economia. Ha fundat l'economia conductual i guanyat el Nobel 2002.", "El paper más citado en economía. Ha fundado la economía conductual y ganado el Nobel 2002.", "Most cited paper in economics. Founded behavioral economics and won the 2002 Nobel."),
+          link: 'https://www.jstor.org/stable/1914185' },
+
+        { id: 28, any: 'classic', tema: 'finances', autors: 'Akerlof', institucio: 'UC Berkeley', titol: 'The Market for Lemons', revista: 'QJE (1970)', cites: '40000+',
+          resum: t("Informació asimètrica: quan els venedors saben més que els compradors, el mercat pot col·lapsar. Exemple: cotxes usats.", "Información asimétrica: cuando los vendedores saben más que los compradores, el mercado puede colapsar. Ejemplo: coches usados.", "Asymmetric information: when sellers know more than buyers, markets can collapse. Example: used cars."),
+          importancia: t("Ha fundat l'economia de la informació. Nobel 2001. Explica per què alguns mercats funcionen malament.", "Ha fundado la economía de la información. Nobel 2001. Explica por qué algunos mercados funcionan mal.", "Founded information economics. Nobel 2001. Explains why some markets work poorly."),
+          link: 'https://www.jstor.org/stable/1879431' },
+
+        { id: 29, any: 'classic', tema: 'conductual', autors: 'Thaler, Sunstein', institucio: 'U. Chicago / Harvard', titol: 'Nudge: Improving Decisions About Health, Wealth, and Happiness', revista: 'Yale UP (2008)', cites: '25000+',
+          resum: t("Paternalisme llibertari: es pot ajudar les persones a prendre millors decisions sense restringir la seva llibertat, canviant l'arquitectura de l'elecció.", "Paternalismo libertario: se puede ayudar a las personas a tomar mejores decisiones sin restringir su libertad, cambiando la arquitectura de la elección.", "Libertarian paternalism: you can help people make better decisions without restricting freedom, by changing choice architecture."),
+          importancia: t("Ha canviat les polítiques públiques a tot el món. Governs del RU, EUA i altres han creat 'Nudge Units'.", "Ha cambiado las políticas públicas en todo el mundo. Gobiernos del RU, EEUU y otros han creado 'Nudge Units'.", "Changed public policy worldwide. UK, US and other governments created 'Nudge Units'."),
+          link: 'https://yalebooks.yale.edu/book/9780300122237/nudge' },
+
+        { id: 30, any: 'classic', tema: 'finances', autors: 'Fama, French', institucio: 'U. Chicago', titol: 'The Cross-Section of Expected Stock Returns', revista: 'Journal of Finance (1992)', cites: '30000+',
+          resum: t("El model de 3 factors: a més del beta del CAPM, el tamany i el valor (book-to-market) expliquen els retorns de les accions.", "El modelo de 3 factores: además del beta del CAPM, el tamaño y el valor (book-to-market) explican los retornos de las acciones.", "The 3-factor model: beyond CAPM beta, size and value (book-to-market) explain stock returns."),
+          importancia: t("Ha revolucionat la gestió de carteres i la investigació en finances. Fama va guanyar el Nobel 2013.", "Ha revolucionado la gestión de carteras y la investigación en finanzas. Fama ganó el Nobel 2013.", "Revolutionized portfolio management and finance research. Fama won the 2013 Nobel."),
+          link: 'https://www.jstor.org/stable/2329112' },
+    ], [idioma]);
+
+    // ANYS DISPONIBLES
+    const anys = ['classic', 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
+
+    // FILTRAR PAPERS
+    const papersFiltrats = useMemo(() => {
+        return papers.filter(p => {
+            const matchAny = anySeleccionat === 'tots' || p.any === anySeleccionat;
+            const matchTema = temaFiltre === 'tots' || p.tema === temaFiltre;
+            const matchCerca = cercador === '' || 
+                p.titol.toLowerCase().includes(cercador.toLowerCase()) ||
+                p.autors.toLowerCase().includes(cercador.toLowerCase()) ||
+                p.resum.toLowerCase().includes(cercador.toLowerCase());
+            return matchAny && matchTema && matchCerca;
+        });
+    }, [papers, anySeleccionat, temaFiltre, cercador]);
+
+    // OBTENIR COLOR DEL TEMA
+    const getColorClasses = (tema) => {
+        const colors = {
+            ia: { bg: 'bg-purple-100', text: 'text-purple-700', border: 'border-purple-300' },
+            desigualtat: { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-300' },
+            institucions: { bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-300' },
+            conductual: { bg: 'bg-pink-100', text: 'text-pink-700', border: 'border-pink-300' },
+            clima: { bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-300' },
+            finances: { bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-300' },
+            treball: { bg: 'bg-cyan-100', text: 'text-cyan-700', border: 'border-cyan-300' },
+        };
+        return colors[tema] || { bg: 'bg-gray-100', text: 'text-gray-700', border: 'border-gray-300' };
+    };
+
+    const getTemaIcon = (tema) => {
+        const icons = { ia: '🤖', desigualtat: '📊', institucions: '🏛️', conductual: '🧠', clima: '🌍', finances: '💰', treball: '💼' };
+        return icons[tema] || '📄';
+    };
+
+    // COMPONENT TARGETA PAPER
+    const PaperCard = ({ paper, onClick }) => {
+        const colors = getColorClasses(paper.tema);
+        return (
+            <div 
+                onClick={() => onClick(paper)}
+                className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 hover:shadow-lg hover:border-amber-300 transition-all cursor-pointer group animate-fade"
+            >
+                <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                        <span className={`text-xs font-semibold px-2 py-1 rounded-full ${colors.bg} ${colors.text}`}>
+                            {getTemaIcon(paper.tema)} {temes.find(t => t.id === paper.tema)?.label}
+                        </span>
+                        {paper.cites?.includes('Nobel') && (
+                            <span className="text-xs font-semibold px-2 py-1 rounded-full bg-yellow-100 text-yellow-700">🏆 Nobel</span>
+                        )}
+                    </div>
+                    <span className="text-xs text-slate-400 font-medium">{paper.any === 'classic' ? '📜 Clàssic' : paper.any}</span>
+                </div>
+                
+                <h3 className="font-serif font-bold text-slate-800 text-lg mb-2 group-hover:text-amber-700 transition-colors line-clamp-2">
+                    {paper.titol}
+                </h3>
+                
+                <p className="text-sm text-slate-600 mb-3">
+                    <span className="font-semibold">{paper.autors}</span>
+                    <span className="text-slate-400"> · {paper.institucio}</span>
+                </p>
+                
+                <p className="text-sm text-slate-500 line-clamp-3 mb-4">{paper.resum}</p>
+                
+                <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                    <span className="text-xs text-slate-400">{paper.revista}</span>
+                    <span className="text-xs font-medium text-amber-600">📖 {paper.cites} cites</span>
+                </div>
+            </div>
+        );
+    };
+
+    // MODAL DETALL PAPER
+    const PaperModal = ({ paper, onClose }) => {
+        if (!paper) return null;
+        const colors = getColorClasses(paper.tema);
+        
+        return (
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+                <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-slide" onClick={e => e.stopPropagation()}>
+                    <div className={`p-6 border-b ${colors.bg} ${colors.border}`}>
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <span className={`text-sm font-semibold px-3 py-1 rounded-full bg-white/80 ${colors.text}`}>
+                                    {getTemaIcon(paper.tema)} {temes.find(t => t.id === paper.tema)?.label}
+                                </span>
+                                <span className="text-sm text-slate-600 bg-white/60 px-2 py-1 rounded-full">
+                                    {paper.any === 'classic' ? '📜 Clàssic' : paper.any}
+                                </span>
+                                {paper.cites?.includes('Nobel') && (
+                                    <span className="text-sm font-semibold px-3 py-1 rounded-full bg-yellow-400 text-yellow-900">🏆 Nobel</span>
+                                )}
+                            </div>
+                            <button onClick={onClose} className="text-2xl text-slate-400 hover:text-slate-600">×</button>
+                        </div>
+                        <h2 className="font-serif font-bold text-2xl text-slate-800 mb-3">{paper.titol}</h2>
+                        <p className="text-slate-700">
+                            <span className="font-semibold">{paper.autors}</span>
+                            <span className="text-slate-500"> · {paper.institucio}</span>
+                        </p>
+                    </div>
+                    
+                    <div className="p-6 space-y-6">
+                        <div>
+                            <h4 className="font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                                <span className="text-lg">📝</span> {t('Resum', 'Resumen', 'Summary')}
+                            </h4>
+                            <p className="text-slate-600 leading-relaxed">{paper.resum}</p>
+                        </div>
+                        
+                        <div className={`p-4 rounded-xl ${colors.bg} border ${colors.border}`}>
+                            <h4 className={`font-semibold ${colors.text} mb-2 flex items-center gap-2`}>
+                                <span className="text-lg">💡</span> {t('Per què és important?', '¿Por qué es importante?', 'Why does it matter?')}
+                            </h4>
+                            <p className={`${colors.text} opacity-80`}>{paper.importancia}</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div className="p-3 bg-slate-50 rounded-lg">
+                                <span className="text-slate-500">{t('Publicat a', 'Publicado en', 'Published in')}</span>
+                                <p className="font-medium text-slate-700">{paper.revista}</p>
+                            </div>
+                            <div className="p-3 bg-slate-50 rounded-lg">
+                                <span className="text-slate-500">{t('Citacions', 'Citaciones', 'Citations')}</span>
+                                <p className="font-medium text-amber-600">{paper.cites}</p>
+                            </div>
+                        </div>
+                        
+                        <a 
+                            href={paper.link} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="block w-full py-3 px-6 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-xl text-center hover:from-amber-600 hover:to-orange-600 transition-all"
+                        >
+                            🔗 {t('Llegir el paper complet', 'Leer el paper completo', 'Read the full paper')}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <div className="min-h-screen">
+            {/* HEADER */}
+            <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
+                <div className="max-w-7xl mx-auto px-4 py-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <span className="text-3xl">🎓</span>
+                            <div>
+                                <h1 className="font-serif font-bold text-xl text-slate-800">Acadèmia PDE</h1>
+                                <p className="text-xs text-slate-500">{t('Papers que estan canviant l\'economia', 'Papers que están cambiando la economía', 'Papers changing economics')}</p>
+                            </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-3">
+                            <a href="./index.html" className="text-sm text-slate-500 hover:text-amber-600">← {t('Inici', 'Inicio', 'Home')}</a>
+                            <div className="flex gap-1 bg-slate-100 rounded-lg p-1">
+                                {['val', 'es', 'en'].map(lang => (
+                                    <button 
+                                        key={lang} 
+                                        onClick={() => setIdioma(lang)} 
+                                        className={`px-2 py-1 text-xs font-medium rounded ${idioma === lang ? 'bg-white shadow text-amber-600' : 'text-slate-500'}`}
+                                    >
+                                        {lang.toUpperCase()}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main className="max-w-7xl mx-auto px-4 py-6">
+                {/* SELECTOR D'ANY */}
+                <div className="mb-6 overflow-x-auto pb-2">
+                    <div className="flex gap-2 min-w-max">
+                        <button
+                            onClick={() => setAnySeleccionat('tots')}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${anySeleccionat === 'tots' ? 'bg-amber-500 text-white shadow' : 'bg-white text-slate-600 hover:bg-amber-50 border border-slate-200'}`}
+                        >
+                            {t('Tots els anys', 'Todos los años', 'All years')}
+                        </button>
+                        {anys.slice().reverse().map(any => (
+                            <button
+                                key={any}
+                                onClick={() => setAnySeleccionat(any)}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${anySeleccionat === any ? 'bg-amber-500 text-white shadow' : 'bg-white text-slate-600 hover:bg-amber-50 border border-slate-200'}`}
+                            >
+                                {any === 'classic' ? '📜 Clàssics' : any}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* FILTRES I CERCA */}
+                <div className="mb-6 flex flex-col md:flex-row gap-4">
+                    {/* Cerca */}
+                    <div className="flex-1">
+                        <input
+                            type="text"
+                            value={cercador}
+                            onChange={(e) => setCercador(e.target.value)}
+                            placeholder={t("🔍 Cercar per títol, autor o tema...", "🔍 Buscar por título, autor o tema...", "🔍 Search by title, author or topic...")}
+                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 outline-none"
+                        />
+                    </div>
+                    
+                    {/* Filtres de tema */}
+                    <div className="flex flex-wrap gap-2">
+                        {temes.map(tema => (
+                            <button
+                                key={tema.id}
+                                onClick={() => setTemaFiltre(tema.id)}
+                                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${
+                                    temaFiltre === tema.id 
+                                        ? 'bg-amber-500 text-white shadow' 
+                                        : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
+                                }`}
+                            >
+                                <span>{tema.icon}</span>
+                                <span className="hidden sm:inline">{tema.label}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* COMPTADOR */}
+                <div className="mb-4 text-sm text-slate-500">
+                    {papersFiltrats.length} {t('papers trobats', 'papers encontrados', 'papers found')}
+                    {anySeleccionat !== 'tots' && <span> · {anySeleccionat === 'classic' ? t('Clàssics', 'Clásicos', 'Classics') : anySeleccionat}</span>}
+                </div>
+
+                {/* GRID DE PAPERS */}
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {papersFiltrats.map(paper => (
+                        <PaperCard key={paper.id} paper={paper} onClick={setPaperSeleccionat} />
+                    ))}
+                </div>
+
+                {papersFiltrats.length === 0 && (
+                    <div className="text-center py-16">
+                        <span className="text-6xl mb-4 block">📚</span>
+                        <h3 className="text-xl font-semibold text-slate-600 mb-2">{t('No s\'han trobat papers', 'No se encontraron papers', 'No papers found')}</h3>
+                        <p className="text-slate-400">{t('Prova a canviar els filtres', 'Prueba a cambiar los filtros', 'Try changing the filters')}</p>
+                    </div>
+                )}
+
+                {/* INFO SECCIÓ */}
+                <div className="mt-12 p-6 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-200">
+                    <h3 className="font-serif font-bold text-xl text-amber-800 mb-3">📖 {t('Sobre aquesta col·lecció', 'Sobre esta colección', 'About this collection')}</h3>
+                    <p className="text-amber-700 text-sm leading-relaxed mb-4">
+                        {t(
+                            'Aquesta selecció inclou els papers més influents en economia, empresa i finances dels últims anys. Hem prioritzat treballs que han canviat com pensem sobre IA, desigualtat, institucions i comportament econòmic. Tots els papers estan seleccionats per la seva rellevància acadèmica (citacions) i impacte en polítiques públiques.',
+                            'Esta selección incluye los papers más influyentes en economía, empresa y finanzas de los últimos años. Hemos priorizado trabajos que han cambiado cómo pensamos sobre IA, desigualdad, instituciones y comportamiento económico. Todos los papers están seleccionados por su relevancia académica (citaciones) e impacto en políticas públicas.',
+                            'This selection includes the most influential papers in economics, business and finance from recent years. We prioritized works that changed how we think about AI, inequality, institutions and economic behavior. All papers are selected for their academic relevance (citations) and public policy impact.'
+                        )}
+                    </p>
+                    <div className="flex flex-wrap gap-4 text-xs text-amber-600">
+                        <span>📊 {papers.length} papers</span>
+                        <span>🏆 {papers.filter(p => p.cites?.includes('Nobel')).length} {t('Premis Nobel', 'Premios Nobel', 'Nobel Prizes')}</span>
+                        <span>📅 2012-2025 + Clàssics</span>
+                    </div>
+                </div>
+            </main>
+
+            <footer className="mt-12 py-8 bg-slate-100 border-t border-slate-200">
+                <div className="max-w-7xl mx-auto px-4 text-center text-slate-500 text-sm">
+                    <p>Acadèmia PDE · profedeeconomia.es · 2025</p>
+                    <p className="mt-1 text-xs">{t('Fonts: RePEc, Google Scholar, Nobel Prize Committee', 'Fuentes: RePEc, Google Scholar, Nobel Prize Committee', 'Sources: RePEc, Google Scholar, Nobel Prize Committee')}</p>
+                </div>
+            </footer>
+
+            {/* MODAL */}
+            <PaperModal paper={paperSeleccionat} onClose={() => setPaperSeleccionat(null)} />
+        </div>
+    );
+}
+
+ReactDOM.render(<AcademiaApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
