@@ -140,6 +140,74 @@ function TimerDirect({ timerKey, onTimeUp, isActive }) {
     );
 }
 
+// INPUT NUMÈRIC AÏLLAT - NO ES RE-RENDERITZA MAI PEL PARE!
+const NumericInput = memo(function NumericInput({ onSubmit, disabled, placeholder }) {
+    const [value, setValue] = useState('');
+    const inputRef = useRef(null);
+    
+    // Focus automàtic quan es monta
+    useEffect(() => {
+        if (inputRef.current && !disabled) {
+            // Petit delay per assegurar que el DOM està llest
+            const timer = setTimeout(() => {
+                inputRef.current.focus();
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [disabled]);
+    
+    const handleSubmit = useCallback(() => {
+        if (value && !disabled) {
+            onSubmit(value);
+        }
+    }, [value, disabled, onSubmit]);
+    
+    const handleKeyDown = useCallback((e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSubmit();
+        }
+    }, [handleSubmit]);
+    
+    // Reset value quan es torna a habilitar (nova pregunta)
+    useEffect(() => {
+        if (!disabled) {
+            setValue('');
+        }
+    }, [disabled]);
+    
+    return (
+        <div className="space-y-4">
+            <input 
+                ref={inputRef}
+                type="text"
+                inputMode="decimal"
+                pattern="[0-9.,\-]*"
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                disabled={disabled}
+                placeholder={placeholder}
+                className="w-full p-4 text-2xl font-bold text-center bg-white/10 border-2 border-white/30 rounded-xl text-white placeholder-white/50 focus:border-yellow-400"
+                onKeyDown={handleKeyDown}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+                style={{ fontSize: '24px' }}
+            />
+            {!disabled && (
+                <button 
+                    onClick={handleSubmit}
+                    disabled={!value}
+                    className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:opacity-90 active:scale-95 disabled:opacity-50"
+                >
+                    COMPROVAR
+                </button>
+            )}
+        </div>
+    );
+});
+
 // Efecte confetti
 const Confetti = ({ show }) => {
     if (!show) return null;
@@ -328,13 +396,6 @@ function ConcursApp() {
         }
     }, [preguntaActual, fase, preguntesPartida]);
     
-    // Mantenir focus a l'input
-    useEffect(() => {
-        if (fase === 'jugant' && preguntesPartida[preguntaActual]?.tipus === 'numeric' && !mostrarResultat && inputRef.current) {
-            inputRef.current.focus();
-        }
-    }, [fase, preguntaActual, mostrarResultat]);
-
     const obtenirPreguntes = (cat) => {
         let pool = cat === 'totes' 
             ? [...bancPreguntes.economia, ...bancPreguntes.finances, ...bancPreguntes.empresa]
@@ -645,27 +706,15 @@ function ConcursApp() {
                     {/* Numèric */}
                     {p.tipus === 'numeric' && (
                         <div className="space-y-4">
-                            <input 
-                                key="numeric-input-stable"
-                                ref={inputRef} 
-                                type="text" 
-                                inputMode="decimal"
-                                pattern="[0-9.,\-]*"
-                                value={inputNumeric} 
-                                onChange={e => setInputNumeric(e.target.value)} 
-                                disabled={mostrarResultat}
-                                placeholder={t("Resultat numèric...", "Resultado numérico...", "Numeric result...")}
-                                className="w-full p-4 text-2xl font-bold text-center bg-white/10 border-2 border-white/30 rounded-xl text-white placeholder-white/50 focus:border-yellow-400"
-                                onKeyDown={e => e.key === 'Enter' && !mostrarResultat && inputNumeric && handleResposta(inputNumeric)}
-                                autoComplete="off"
-                                autoCorrect="off"
-                                autoCapitalize="off"
-                                spellCheck="false"
-                                style={{ fontSize: '24px' }}
-                            />
-                            {!mostrarResultat && <button onClick={() => inputNumeric && handleResposta(inputNumeric)} className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:opacity-90 active:scale-95">{t("COMPROVAR", "COMPROBAR", "CHECK")}</button>}
-                            {mostrarResultat && (
-                                <div className="text-center">
+                            {!mostrarResultat ? (
+                                <NumericInput 
+                                    key={preguntaActual}
+                                    onSubmit={handleResposta}
+                                    disabled={mostrarResultat}
+                                    placeholder={t("Resultat numèric...", "Resultado numérico...", "Numeric result...")}
+                                />
+                            ) : (
+                                <div className="text-center py-4">
                                     <p className="text-lg text-white">{t("Resposta:", "Respuesta:", "Answer:")} <strong className="text-green-400 text-2xl">{p.correcta}</strong></p>
                                     {p.pista && <p className="text-sm text-purple-300 mt-2">💡 {p.pista}</p>}
                                 </div>
