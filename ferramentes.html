@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Caixa de Ferramentes - Pren millors decisions</title>
+    <meta name="description" content="Eines pràctiques per pensar millor i prendre decisions: probabilitats, valor esperat, biaixos cognitius, negociació i més.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * { scrollbar-width: thin; scrollbar-color: #64748b #f1f5f9; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background-color: #64748b; border-radius: 3px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        .tool-card:hover { transform: translateY(-4px); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-white to-zinc-100 min-h-screen">
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useMemo } = React;
+
+        const translations = {
+            title: { val: 'Caixa de Ferramentes', es: 'Caja de Herramientas', en: 'Decision Toolbox' },
+            subtitle: { val: 'Eines pràctiques per pensar millor i prendre decisions', es: 'Herramientas prácticas para pensar mejor y tomar decisiones', en: 'Practical tools to think better and make decisions' },
+            backHome: { val: '← Tornar a PDE', es: '← Volver a PDE', en: '← Back to PDE' },
+            tools: { val: 'ferramentes', es: 'herramientas', en: 'tools' },
+            openTool: { val: 'Obrir ferramenta', es: 'Abrir herramienta', en: 'Open tool' },
+            close: { val: 'Tancar', es: 'Cerrar', en: 'Close' },
+            calculate: { val: 'Calcular', es: 'Calcular', en: 'Calculate' },
+            reset: { val: 'Reiniciar', es: 'Reiniciar', en: 'Reset' },
+            result: { val: 'Resultat', es: 'Resultado', en: 'Result' },
+            example: { val: 'Exemple', es: 'Ejemplo', en: 'Example' },
+            howItWorks: { val: 'Com funciona?', es: '¿Cómo funciona?', en: 'How does it work?' },
+            whenToUse: { val: 'Quan usar-la?', es: '¿Cuándo usarla?', en: 'When to use it?' },
+            tryIt: { val: 'Prova-la!', es: '¡Pruébala!', en: 'Try it!' },
+            add: { val: 'Afegir', es: 'Añadir', en: 'Add' },
+            remove: { val: 'Eliminar', es: 'Eliminar', en: 'Remove' },
+            option: { val: 'Opció', es: 'Opción', en: 'Option' },
+            probability: { val: 'Probabilitat', es: 'Probabilidad', en: 'Probability' },
+            value: { val: 'Valor', es: 'Valor', en: 'Value' },
+            weight: { val: 'Pes', es: 'Peso', en: 'Weight' },
+            pro: { val: 'A favor', es: 'A favor', en: 'Pro' },
+            con: { val: 'En contra', es: 'En contra', en: 'Con' },
+            urgent: { val: 'Urgent', es: 'Urgente', en: 'Urgent' },
+            important: { val: 'Important', es: 'Importante', en: 'Important' },
+            task: { val: 'Tasca', es: 'Tarea', en: 'Task' },
+            yes: { val: 'Sí', es: 'Sí', en: 'Yes' },
+            no: { val: 'No', es: 'No', en: 'No' },
+            categories: {
+                all: { val: 'Totes', es: 'Todas', en: 'All' },
+                calcul: { val: '🧮 Càlcul', es: '🧮 Cálculo', en: '🧮 Calculation' },
+                biaixos: { val: '🧠 Biaixos', es: '🧠 Sesgos', en: '🧠 Biases' },
+                estrategia: { val: '🎯 Estratègia', es: '🎯 Estrategia', en: '🎯 Strategy' },
+                prioritzacio: { val: '📋 Priorització', es: '📋 Priorización', en: '📋 Prioritization' },
+            }
+        };
+
+        // ============================================
+        // DEFINICIÓ DE LES 14 FERRAMENTES
+        // ============================================
+        const toolsData = {
+            probabilitats: {
+                id: 'probabilitats',
+                icon: '🎲',
+                category: 'calcul',
+                nom: { val: 'Calculadora de Probabilitats', es: 'Calculadora de Probabilidades', en: 'Probability Calculator' },
+                subtitol: { val: 'Quantes possibilitats tens realment?', es: '¿Cuántas posibilidades tienes realmente?', en: 'What are your real chances?' },
+                descripcio: { val: 'Calcula la probabilitat real de que passe alguna cosa combinant diferents factors. Molt útil per no sobreestimar ni subestimar els riscos.', es: 'Calcula la probabilidad real de que pase algo combinando diferentes factores. Muy útil para no sobreestimar ni subestimar los riesgos.', en: 'Calculate the real probability of something happening by combining different factors. Very useful to avoid overestimating or underestimating risks.' },
+                exemple: { val: "Si tens un 70% de possibilitats de passar un examen i un 80% d'aprovar un altre, la probabilitat de passar els dos és 70% × 80% = 56%", es: "Si tienes un 70% de posibilidades de aprobar un examen y un 80% de aprobar otro, la probabilidad de aprobar los dos es 70% × 80% = 56%", en: "If you have a 70% chance of passing one exam and 80% of passing another, the probability of passing both is 70% × 80% = 56%" },
+                quanUsar: { val: "Quan necessites estimar les possibilitats d'èxit d'un pla que depèn de vàries coses que han de passar", es: "Cuando necesitas estimar las posibilidades de éxito de un plan que depende de varias cosas que deben pasar", en: "When you need to estimate the chances of success of a plan that depends on several things that must happen" },
+            },
+            valorEsperat: {
+                id: 'valorEsperat',
+                icon: '⚖️',
+                category: 'calcul',
+                nom: { val: 'Valor Esperat', es: 'Valor Esperado', en: 'Expected Value' },
+                subtitol: { val: "Quant val realment aquesta decisió?", es: "¿Cuánto vale realmente esta decisión?", en: "What is this decision really worth?" },
+                descripcio: { val: "Combina el que pots guanyar o perdre amb la probabilitat de que passe per saber si una decisió és bona 'de mitjana'.", es: "Combina lo que puedes ganar o perder con la probabilidad de que pase para saber si una decisión es buena 'de media'.", en: "Combine what you can win or lose with the probability of it happening to know if a decision is good 'on average'." },
+                exemple: { val: "Una loteria costa 2€ i té un 10% de donar-te 15€. Valor esperat = (10% × 15€) - 2€ = 1.5€ - 2€ = -0.50€. Perds diners a la llarga!", es: "Una lotería cuesta 2€ y tiene un 10% de darte 15€. Valor esperado = (10% × 15€) - 2€ = 1.5€ - 2€ = -0.50€. ¡Pierdes dinero a la larga!", en: "A lottery costs €2 and has a 10% chance of giving you €15. Expected value = (10% × €15) - €2 = €1.5 - €2 = -€0.50. You lose money in the long run!" },
+                quanUsar: { val: "Quan dubtes si una inversió, aposta o decisió amb risc val la pena econòmicament", es: "Cuando dudas si una inversión, apuesta o decisión con riesgo vale la pena económicamente", en: "When you doubt whether an investment, bet or risky decision is worth it economically" },
+            },
+            costOportunitat: {
+                id: 'costOportunitat',
+                icon: '🚪',
+                category: 'calcul',
+                nom: { val: "Cost d'Oportunitat", es: "Coste de Oportunidad", en: "Opportunity Cost" },
+                subtitol: { val: "A què estàs renunciant?", es: "¿A qué estás renunciando?", en: "What are you giving up?" },
+                descripcio: { val: "Cada decisió té un cost ocult: el valor del que deixes de fer. Si tries A, el cost és el valor de B (la millor alternativa).", es: "Cada decisión tiene un coste oculto: el valor de lo que dejas de hacer. Si eliges A, el coste es el valor de B (la mejor alternativa).", en: "Every decision has a hidden cost: the value of what you stop doing. If you choose A, the cost is the value of B (the best alternative)." },
+                exemple: { val: "Si dediques el dissabte a treballar per 100€ en lloc d'estudiar per un examen important, el cost d'oportunitat és el que perdries si suspens (repetir, temps, estrès...)", es: "Si dedicas el sábado a trabajar por 100€ en lugar de estudiar para un examen importante, el coste de oportunidad es lo que perderías si suspendes (repetir, tiempo, estrés...)", en: "If you spend Saturday working for €100 instead of studying for an important exam, the opportunity cost is what you'd lose if you fail (retaking, time, stress...)" },
+                quanUsar: { val: "Quan tens diverses opcions i vols assegurar-te que tries la que realment aporta més valor", es: "Cuando tienes varias opciones y quieres asegurarte de elegir la que realmente aporta más valor", en: "When you have several options and want to make sure you choose the one that really adds the most value" },
+            },
+            sunkCosts: {
+                id: 'sunkCosts',
+                icon: '🕳️',
+                category: 'biaixos',
+                nom: { val: 'Detector de Costos Hundidos', es: 'Detector de Costes Hundidos', en: 'Sunk Cost Detector' },
+                subtitol: { val: "Estàs llençant diners bons darrere de diners perduts?", es: "¿Estás tirando dinero bueno detrás de dinero perdido?", en: "Are you throwing good money after bad?" },
+                descripcio: { val: "Un cost hundit és el que ja has gastat i NO pots recuperar. L'error és continuar amb una mala decisió 'perquè ja hi has invertit molt'. El passat és irreversible!", es: "Un coste hundido es lo que ya has gastado y NO puedes recuperar. El error es continuar con una mala decisión 'porque ya has invertido mucho'. ¡El pasado es irreversible!", en: "A sunk cost is what you've already spent and CANNOT recover. The mistake is continuing with a bad decision 'because you've already invested a lot'. The past is irreversible!" },
+                exemple: { val: "Has pagat 50€ per una entrada de concert però estàs malalt. Anar no et tornarà els 50€. La pregunta correcta és: 'Ara mateix, prefereixo anar malalt o descansar?' Els 50€ ja estan perduts igual.", es: "Has pagado 50€ por una entrada de concierto pero estás enfermo. Ir no te devolverá los 50€. La pregunta correcta es: '¿Ahora mismo, prefiero ir enfermo o descansar?' Los 50€ ya están perdidos igual.", en: "You paid €50 for a concert ticket but you're sick. Going won't get you the €50 back. The right question is: 'Right now, do I prefer going sick or resting?' The €50 is lost either way." },
+                quanUsar: { val: "Quan et trobes pensant 'ja que hi he invertit tant, no puc parar ara' - això és una alarma!", es: "Cuando te encuentras pensando 'ya que he invertido tanto, no puedo parar ahora' - ¡eso es una alarma!", en: "When you find yourself thinking 'since I've invested so much, I can't stop now' - that's an alarm!" },
+            },
+            biaixos: {
+                id: 'biaixos',
+                icon: '🧠',
+                category: 'biaixos',
+                nom: { val: 'Detector de Biaixos Cognitius', es: 'Detector de Sesgos Cognitivos', en: 'Cognitive Bias Detector' },
+                subtitol: { val: "El teu cervell t'està enganyant?", es: "¿Tu cerebro te está engañando?", en: "Is your brain tricking you?" },
+                descripcio: { val: "El cervell pren dreceres mentals que sovint ens porten a errors. Conèixer els biaixos més comuns t'ajuda a detectar-los abans de decidir.", es: "El cerebro toma atajos mentales que a menudo nos llevan a errores. Conocer los sesgos más comunes te ayuda a detectarlos antes de decidir.", en: "The brain takes mental shortcuts that often lead us to errors. Knowing the most common biases helps you detect them before deciding." },
+                exemple: { val: "Biaix de confirmació: Només busques informació que confirma el que ja creus. Si penses que 'els polítics són corruptes', només recordaràs les notícies que ho confirmen.", es: "Sesgo de confirmación: Solo buscas información que confirma lo que ya crees. Si piensas que 'los políticos son corruptos', solo recordarás las noticias que lo confirman.", en: "Confirmation bias: You only look for information that confirms what you already believe. If you think 'politicians are corrupt', you'll only remember news that confirms it." },
+                quanUsar: { val: "Abans de qualsevol decisió important, revisa si algun biaix pot estar influint en el teu judici", es: "Antes de cualquier decisión importante, revisa si algún sesgo puede estar influyendo en tu juicio", en: "Before any important decision, check if any bias might be influencing your judgment" },
+            },
+            marginal: {
+                id: 'marginal',
+                icon: '📊',
+                category: 'calcul',
+                nom: { val: 'Raonament Marginal', es: 'Razonamiento Marginal', en: 'Marginal Thinking' },
+                subtitol: { val: "Val la pena UNA unitat més?", es: "¿Vale la pena UNA unidad más?", en: "Is ONE more unit worth it?" },
+                descripcio: { val: "No et preguntis 'he de fer això?' sinó '¿m'aporta valor fer UNA UNITAT MÉS?'. El que importa és el benefici i cost de la pròxima acció, no del total.", es: "No te preguntes '¿debo hacer esto?' sino '¿me aporta valor hacer UNA UNIDAD MÁS?'. Lo que importa es el beneficio y coste de la próxima acción, no del total.", en: "Don't ask 'should I do this?' but 'does ONE MORE UNIT add value?'. What matters is the benefit and cost of the next action, not the total." },
+                exemple: { val: "Estudiar 8 hores segudes: les primeres 2h són molt productives, però l'hora 8 probablement no aporta quasi res. El benefici marginal de cada hora baixa!", es: "Estudiar 8 horas seguidas: las primeras 2h son muy productivas, pero la hora 8 probablemente no aporta casi nada. ¡El beneficio marginal de cada hora baja!", en: "Studying 8 hours straight: the first 2h are very productive, but hour 8 probably adds almost nothing. The marginal benefit of each hour decreases!" },
+                quanUsar: { val: "Quan has de decidir si fer més d'alguna cosa (estudiar més, gastar més, treballar més...)", es: "Cuando tienes que decidir si hacer más de algo (estudiar más, gastar más, trabajar más...)", en: "When you have to decide whether to do more of something (study more, spend more, work more...)" },
+            },
+            prosContres: {
+                id: 'prosContres',
+                icon: '⚖️',
+                category: 'estrategia',
+                nom: { val: 'Comparador de Decisions', es: 'Comparador de Decisiones', en: 'Decision Comparator' },
+                subtitol: { val: "Pros i contres amb pesos", es: "Pros y contras con pesos", en: "Weighted pros and cons" },
+                descripcio: { val: "La típica llista de pros i contres però millorada: cada punt té un PES (importància). Així no és el mateix '5 pros vs 3 contres' si els contres són molt més importants.", es: "La típica lista de pros y contras pero mejorada: cada punto tiene un PESO (importancia). Así no es lo mismo '5 pros vs 3 contras' si los contras son mucho más importantes.", en: "The typical pros and cons list but improved: each point has a WEIGHT (importance). So '5 pros vs 3 cons' isn't the same if the cons are much more important." },
+                exemple: { val: "Acceptar una feina: Pro 'més sou' (pes 8), Pro 'prestigi' (pes 3). Contra 'menys temps lliure' (pes 9). Total pros: 11, Total contres: 9. Però atenció, són molt propers!", es: "Aceptar un trabajo: Pro 'más sueldo' (peso 8), Pro 'prestigio' (peso 3). Contra 'menos tiempo libre' (peso 9). Total pros: 11, Total contras: 9. ¡Pero atención, están muy cerca!", en: "Accept a job: Pro 'higher salary' (weight 8), Pro 'prestige' (weight 3). Con 'less free time' (weight 9). Total pros: 11, Total cons: 9. But watch out, they're very close!" },
+                quanUsar: { val: "Quan tens una decisió important i vols pensar-la de forma estructurada i objectiva", es: "Cuando tienes una decisión importante y quieres pensarla de forma estructurada y objetiva", en: "When you have an important decision and want to think about it in a structured and objective way" },
+            },
+            regret: {
+                id: 'regret',
+                icon: '👴',
+                category: 'estrategia',
+                nom: { val: 'Test del Penediment', es: 'Test del Arrepentimiento', en: 'Regret Minimization Test' },
+                subtitol: { val: "Què pensaràs als 80 anys?", es: "¿Qué pensarás a los 80 años?", en: "What will you think at 80?" },
+                descripcio: { val: "Imagina't amb 80 anys mirant enrere. De què et penediràs més: d'haver-ho intentat i haver fracassat, o de no haver-ho intentat mai? Aquest framework l'usa Jeff Bezos.", es: "Imagínate con 80 años mirando atrás. ¿De qué te arrepentirás más: de haberlo intentado y haber fracasado, o de no haberlo intentado nunca? Este framework lo usa Jeff Bezos.", en: "Imagine yourself at 80 looking back. What will you regret more: having tried and failed, or never having tried? This framework is used by Jeff Bezos." },
+                exemple: { val: "Bezos va deixar un treball ben pagat per crear Amazon. Va pensar: 'Als 80, em penediré de no haver provat aquesta idea d'Internet'. El risc de no fer-ho era major que el de fracassar.", es: "Bezos dejó un trabajo bien pagado para crear Amazon. Pensó: 'A los 80, me arrepentiré de no haber probado esta idea de Internet'. El riesgo de no hacerlo era mayor que el de fracasar.", en: "Bezos left a well-paid job to create Amazon. He thought: 'At 80, I'll regret not having tried this Internet idea'. The risk of not doing it was greater than failing." },
+                quanUsar: { val: "Per a decisions vitals importants: canviar de carrera, mudar-te, iniciar un projecte, dir el que sents...", es: "Para decisiones vitales importantes: cambiar de carrera, mudarte, iniciar un proyecto, decir lo que sientes...", en: "For important life decisions: changing careers, moving, starting a project, saying what you feel..." },
+            },
+            eisenhower: {
+                id: 'eisenhower',
+                icon: '📋',
+                category: 'prioritzacio',
+                nom: { val: "Matriu d'Eisenhower", es: "Matriz de Eisenhower", en: "Eisenhower Matrix" },
+                subtitol: { val: "Urgent ≠ Important", es: "Urgente ≠ Importante", en: "Urgent ≠ Important" },
+                descripcio: { val: "Classifica les tasques en 4 quadrants segons si són urgents i/o importants. La clau: el que és URGENT rarament és IMPORTANT, i viceversa. Eisenhower ho usava per governar EUA.", es: "Clasifica las tareas en 4 cuadrantes según si son urgentes y/o importantes. La clave: lo URGENTE raramente es IMPORTANTE, y viceversa. Eisenhower lo usaba para gobernar EEUU.", en: "Classify tasks into 4 quadrants based on whether they're urgent and/or important. The key: what's URGENT is rarely IMPORTANT, and vice versa. Eisenhower used it to govern the USA." },
+                exemple: { val: "Urgent + Important: Crisis, deadlines. Important + No urgent: Estudiar, exercici, relacions. Urgent + No important: Interrupcions, alguns emails. Ni urgent ni important: Xarxes socials sense fi.", es: "Urgente + Importante: Crisis, deadlines. Importante + No urgente: Estudiar, ejercicio, relaciones. Urgente + No importante: Interrupciones, algunos emails. Ni urgente ni importante: Redes sociales sin fin.", en: "Urgent + Important: Crises, deadlines. Important + Not urgent: Studying, exercise, relationships. Urgent + Not important: Interruptions, some emails. Neither: Endless social media." },
+                quanUsar: { val: "Quan et sents desbordat i no saps per on començar. O quan sempre estàs 'apagant focs' però no avances en el que importa.", es: "Cuando te sientes desbordado y no sabes por dónde empezar. O cuando siempre estás 'apagando fuegos' pero no avanzas en lo que importa.", en: "When you feel overwhelmed and don't know where to start. Or when you're always 'putting out fires' but not advancing in what matters." },
+            },
+            preMortem: {
+                id: 'preMortem',
+                icon: '💀',
+                category: 'estrategia',
+                nom: { val: 'Anàlisi Pre-Mortem', es: 'Análisis Pre-Mortem', en: 'Pre-Mortem Analysis' },
+                subtitol: { val: "I si tot surt malament...?", es: "¿Y si todo sale mal...?", en: "What if everything goes wrong...?" },
+                descripcio: { val: "Abans de començar un projecte, imagina que JA HA FRACASSAT. Ara pregunta't: 'Per què va fracassar?'. Això et fa veure riscos que no havies considerat.", es: "Antes de empezar un proyecto, imagina que YA HA FRACASADO. Ahora pregúntate: '¿Por qué fracasó?'. Esto te hace ver riesgos que no habías considerado.", en: "Before starting a project, imagine it HAS ALREADY FAILED. Now ask yourself: 'Why did it fail?'. This makes you see risks you hadn't considered." },
+                exemple: { val: "Vas a obrir una cafeteria. Pre-mortem: 'La cafeteria va tancar perquè... no hi havia aparcament, el lloguer era massa alt, la competència era massa forta, no teníem prou capital per aguantar 6 mesos...'", es: "Vas a abrir una cafetería. Pre-mortem: 'La cafetería cerró porque... no había aparcamiento, el alquiler era demasiado alto, la competencia era muy fuerte, no teníamos suficiente capital para aguantar 6 meses...'", en: "You're going to open a coffee shop. Pre-mortem: 'The coffee shop closed because... there was no parking, rent was too high, competition was too strong, we didn't have enough capital for 6 months...'" },
+                quanUsar: { val: "Abans de començar qualsevol projecte, inversió o decisió important. Especialment si estàs molt entusiasmat (l'entusiasme oculta riscos).", es: "Antes de empezar cualquier proyecto, inversión o decisión importante. Especialmente si estás muy entusiasmado (el entusiasmo oculta riesgos).", en: "Before starting any project, investment or important decision. Especially if you're very enthusiastic (enthusiasm hides risks)." },
+            },
+            pareto: {
+                id: 'pareto',
+                icon: '📈',
+                category: 'prioritzacio',
+                nom: { val: 'Principi de Pareto 80/20', es: 'Principio de Pareto 80/20', en: 'Pareto Principle 80/20' },
+                subtitol: { val: "El 20% que genera el 80%", es: "El 20% que genera el 80%", en: "The 20% that generates 80%" },
+                descripcio: { val: "En quasi tot, el 20% dels inputs genera el 80% dels resultats. Identifica aquest 20% i centra't en ell. La resta és soroll.", es: "En casi todo, el 20% de los inputs genera el 80% de los resultados. Identifica ese 20% y céntrate en él. El resto es ruido.", en: "In almost everything, 20% of inputs generate 80% of results. Identify that 20% and focus on it. The rest is noise." },
+                exemple: { val: "El 20% dels clients generen el 80% dels ingressos. El 20% de l'estudiat apareix en el 80% de l'examen. El 20% de la teua roba la portes el 80% del temps.", es: "El 20% de los clientes generan el 80% de los ingresos. El 20% de lo estudiado aparece en el 80% del examen. El 20% de tu ropa la llevas el 80% del tiempo.", en: "20% of customers generate 80% of revenue. 20% of what you studied appears in 80% of the exam. 20% of your clothes you wear 80% of the time." },
+                quanUsar: { val: "Quan tens recursos limitats (temps, diners, energia) i vols maximitzar resultats. Pregunta't: 'Què és el 20% que realment importa?'", es: "Cuando tienes recursos limitados (tiempo, dinero, energía) y quieres maximizar resultados. Pregúntate: '¿Qué es el 20% que realmente importa?'", en: "When you have limited resources (time, money, energy) and want to maximize results. Ask yourself: 'What's the 20% that really matters?'" },
+            },
+            batna: {
+                id: 'batna',
+                icon: '🤝',
+                category: 'estrategia',
+                nom: { val: 'BATNA - Negociació', es: 'BATNA - Negociación', en: 'BATNA - Negotiation' },
+                subtitol: { val: "Quina és la teua alternativa?", es: "¿Cuál es tu alternativa?", en: "What's your alternative?" },
+                descripcio: { val: "BATNA = Best Alternative To Negotiated Agreement (Millor Alternativa a l'Acord). Abans de negociar, sàpigues què faràs si NO hi ha acord. Això et dona poder.", es: "BATNA = Best Alternative To Negotiated Agreement (Mejor Alternativa al Acuerdo). Antes de negociar, sabe qué harás si NO hay acuerdo. Eso te da poder.", en: "BATNA = Best Alternative To Negotiated Agreement. Before negotiating, know what you'll do if there's NO agreement. This gives you power." },
+                exemple: { val: "Negocies el sou amb una empresa. Si tens una altra oferta de 35.000€, aquest és el teu BATNA. No acceptaràs menys de 35.000€ perquè tens alternativa. Sense BATNA, estàs en desavantatge.", es: "Negocias el sueldo con una empresa. Si tienes otra oferta de 35.000€, ese es tu BATNA. No aceptarás menos de 35.000€ porque tienes alternativa. Sin BATNA, estás en desventaja.", en: "You're negotiating salary with a company. If you have another offer of €35,000, that's your BATNA. You won't accept less than €35,000 because you have an alternative. Without BATNA, you're at a disadvantage." },
+                quanUsar: { val: "Abans de qualsevol negociació: sou, preu, contracte, lloguer... Primer, millora el teu BATNA. Després, negocia.", es: "Antes de cualquier negociación: sueldo, precio, contrato, alquiler... Primero, mejora tu BATNA. Después, negocia.", en: "Before any negotiation: salary, price, contract, rent... First, improve your BATNA. Then negotiate." },
+            },
+            cercles: {
+                id: 'cercles',
+                icon: '🎯',
+                category: 'biaixos',
+                nom: { val: 'Cercles de Competència', es: 'Círculos de Competencia', en: 'Circles of Competence' },
+                subtitol: { val: "On saps i on creus que saps?", es: "¿Dónde sabes y dónde crees que sabes?", en: "Where do you know and where do you think you know?" },
+                descripcio: { val: "Tothom té àrees on és expert i àrees on només CREU que ho és. L'error és actuar fora del teu cercle pensant que hi estàs dins. Warren Buffett només inverteix en el que entén.", es: "Todos tienen áreas donde son expertos y áreas donde solo CREEN que lo son. El error es actuar fuera de tu círculo pensando que estás dentro. Warren Buffett solo invierte en lo que entiende.", en: "Everyone has areas where they're experts and areas where they only THINK they are. The mistake is acting outside your circle thinking you're inside. Warren Buffett only invests in what he understands." },
+                exemple: { val: "Ets bon programador (dins del cercle). Veus una 'oportunitat' en criptomonedes (fora del cercle). El perill: creus que entens de finances perquè entens de tecnologia. No és el mateix!", es: "Eres buen programador (dentro del círculo). Ves una 'oportunidad' en criptomonedas (fuera del círculo). El peligro: crees que entiendes de finanzas porque entiendes de tecnología. ¡No es lo mismo!", en: "You're a good programmer (inside the circle). You see an 'opportunity' in crypto (outside the circle). The danger: you think you understand finance because you understand technology. Not the same!" },
+                quanUsar: { val: "Abans de prendre decisions en àrees noves. Pregunta't: 'Realment entenc això o només crec que ho entenc?'", es: "Antes de tomar decisiones en áreas nuevas. Pregúntate: '¿Realmente entiendo esto o solo creo que lo entiendo?'", en: "Before making decisions in new areas. Ask yourself: 'Do I really understand this or do I just think I do?'" },
+            },
+            inversio: {
+                id: 'inversio',
+                icon: '🔄',
+                category: 'estrategia',
+                nom: { val: 'Inversió de Problemes', es: 'Inversión de Problemas', en: 'Problem Inversion' },
+                subtitol: { val: "Com fracassaria segur?", es: "¿Cómo fracasaría seguro?", en: "How would I definitely fail?" },
+                descripcio: { val: "En lloc de preguntar 'com tinc èxit?', pregunta 'com fracassaria segur?' i després evita-ho. És més fàcil identificar el que NO s'ha de fer. Tècnica de Charlie Munger.", es: "En lugar de preguntar '¿cómo tengo éxito?', pregunta '¿cómo fracasaría seguro?' y luego evítalo. Es más fácil identificar lo que NO se debe hacer. Técnica de Charlie Munger.", en: "Instead of asking 'how do I succeed?', ask 'how would I definitely fail?' and then avoid it. It's easier to identify what NOT to do. Charlie Munger's technique." },
+                exemple: { val: "Vols tenir una relació feliç. Inversió: 'Com destruiria una relació segur? No escoltant, sent egoista, mentint, no dedicant temps...' Ara ja saps què evitar!", es: "Quieres tener una relación feliz. Inversión: '¿Cómo destruiría una relación seguro? No escuchando, siendo egoísta, mintiendo, no dedicando tiempo...' ¡Ahora ya sabes qué evitar!", en: "You want a happy relationship. Inversion: 'How would I definitely destroy a relationship? Not listening, being selfish, lying, not spending time...' Now you know what to avoid!" },
+                quanUsar: { val: "Quan estàs bloquejat intentant trobar 'la manera correcta'. Gira-ho: 'quina seria la manera incorrecta segura?' I evita-la.", es: "Cuando estás bloqueado intentando encontrar 'la manera correcta'. Dale la vuelta: '¿cuál sería la manera incorrecta segura?' Y evítala.", en: "When you're stuck trying to find 'the right way'. Flip it: 'what would definitely be the wrong way?' And avoid it." },
+            },
+        };
+
+        // ============================================
+        // COMPONENTS INTERACTIUS PER A CADA FERRAMENTA
+        // ============================================
+
+        // Component per a Calculadora de Probabilitats
+        function ProbabilityCalculator({ t }) {
+            const [events, setEvents] = useState([{ name: 'Esdeveniment 1', prob: 70 }, { name: 'Esdeveniment 2', prob: 80 }]);
+            
+            const addEvent = () => setEvents([...events, { name: `Esdeveniment ${events.length + 1}`, prob: 50 }]);
+            const removeEvent = (i) => setEvents(events.filter((_, idx) => idx !== i));
+            const updateEvent = (i, field, value) => {
+                const newEvents = [...events];
+                newEvents[i][field] = field === 'prob' ? Math.min(100, Math.max(0, Number(value))) : value;
+                setEvents(newEvents);
+            };
+            
+            const combined = events.reduce((acc, e) => acc * (e.prob / 100), 1) * 100;
+            
+            return (
+                <div className="space-y-4">
+                    <p className="text-sm text-slate-600">Afegeix els esdeveniments que HAN DE PASSAR TOTS per a que el teu pla funcione:</p>
+                    
+                    {events.map((e, i) => (
+                        <div key={i} className="flex gap-2 items-center">
+                            <input
+                                type="text"
+                                value={e.name}
+                                onChange={(ev) => updateEvent(i, 'name', ev.target.value)}
+                                className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                                placeholder="Nom de l'esdeveniment"
+                            />
+                            <div className="flex items-center gap-1">
+                                <input
+                                    type="number"
+                                    value={e.prob}
+                                    onChange={(ev) => updateEvent(i, 'prob', ev.target.value)}
+                                    className="w-16 px-2 py-2 border border-slate-200 rounded-lg text-sm text-center"
+                                    min="0"
+                                    max="100"
+                                />
+                                <span className="text-slate-500">%</span>
+                            </div>
+                            {events.length > 1 && (
+                                <button onClick={() => removeEvent(i)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg">✕</button>
+                            )}
+                        </div>
+                    ))}
+                    
+                    <button onClick={addEvent} className="w-full py-2 border-2 border-dashed border-slate-300 rounded-lg text-slate-500 hover:border-slate-400 hover:text-slate-600 transition-colors">
+                        + Afegir esdeveniment
+                    </button>
+                    
+                    <div className="mt-6 p-4 bg-slate-800 text-white rounded-xl">
+                        <p className="text-sm text-slate-300 mb-1">Probabilitat de que passen TOTS:</p>
+                        <p className="text-3xl font-bold">{combined.toFixed(1)}%</p>
+                        <p className="text-xs text-slate-400 mt-2">
+                            {combined > 70 ? '✅ Bona probabilitat!' : combined > 40 ? '⚠️ Probabilitat moderada' : '❌ Probabilitat baixa - considera alternatives'}
+                        </p>
+                    </div>
+                </div>
+            );
+        }
+
+        // Component per a Valor Esperat
+        function ExpectedValueCalculator({ t }) {
+            const [outcomes, setOutcomes] = useState([
+                { name: 'Guanyar', prob: 30, value: 100 },
+                { name: 'Perdre', prob: 70, value: -20 }
+            ]);
+            const [cost, setCost] = useState(0);
+            
+            const addOutcome = () => setOutcomes([...outcomes, { name: `Resultat ${outcomes.length + 1}`, prob: 0, value: 0 }]);
+            const removeOutcome = (i) => setOutcomes(outcomes.filter((_, idx) => idx !== i));
+            const updateOutcome = (i, field, value) => {
+                const newOutcomes = [...outcomes];
+                newOutcomes[i][field] = field === 'name' ? value : Number(value);
+                setOutcomes(newOutcomes);
+            };
+            
+            const expectedValue = outcomes.reduce((acc, o) => acc + (o.prob / 100) * o.value, 0) - cost;
+            const totalProb = outcomes.reduce((acc, o) => acc + o.prob, 0);
+            
+            return (
+                <div className="space-y-4">
+                    <p className="text-sm text-slate-600">Defineix els possibles resultats amb les seues probabilitats i valors:</p>
+                    
+                    {outcomes.map((o, i) => (
+                        <div key={i} className="flex gap-2 items-center flex-wrap">
+                            <input
+                                type="text"
+                                value={o.name}
+                                onChange={(ev) => updateOutcome(i, 'name', ev.target.value)}
+                                className="flex-1 min-w-32 px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                                placeholder="Resultat"
+                            />
+                            <div className="flex items-center gap-1">
+                                <input
+                                    type="number"
+                                    value={o.prob}
+                                    onChange={(ev) => updateOutcome(i, 'prob', ev.target.value)}
+                                    className="w-16 px-2 py-2 border border-slate-200 rounded-lg text-sm text-center"
+                                />
+                                <span className="text-slate-500 text-sm">%</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <input
+                                    type="number"
+                                    value={o.value}
+                                    onChange={(ev) => updateOutcome(i, 'value', ev.target.value)}
+                                    className="w-20 px-2 py-2 border border-slate-200 rounded-lg text-sm text-center"
+                                />
+                                <span className="text-slate-500 text-sm">€</span>
+                            </div>
+                            {outcomes.length > 1 && (
+                                <button onClick={() => removeOutcome(i)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg">✕</button>
+                            )}
+                        </div>
+                    ))}
+                    
+                    <button onClick={addOutcome} className="w-full py-2 border-2 border-dashed border-slate-300 rounded-lg text-slate-500 hover:border-slate-400 hover:text-slate-600 transition-colors">
+                        + Afegir resultat
+                    </button>
+                    
+                    <div className="flex items-center gap-2 p-3 bg-slate-100 rounded-lg">
+                        <span className="text-sm text-slate-600">Cost inicial:</span>
+                        <input
+                            type="number"
+                            value={cost}
+                            onChange={(e) => setCost(Number(e.target.value))}
+                            className="w-24 px-2 py-1 border border-slate-200 rounded text-sm text-center"
+                        />
+                        <span className="text-slate-500 text-sm">€</span>
+                    </div>
+                    
+                    {totalProb !== 100 && (
+                        <p className="text-amber-600 text-sm">⚠️ Les probabilitats sumen {totalProb}%, haurien de sumar 100%</p>
+                    )}
+                    
+                    <div className={`mt-4 p-4 rounded-xl ${expectedValue >= 0 ? 'bg-emerald-600' : 'bg-red-600'} text-white`}>
+                        <p className="text-sm opacity-80 mb-1">Valor Esperat:</p>
+                        <p className="text-3xl font-bold">{expectedValue >= 0 ? '+' : ''}{expectedValue.toFixed(2)}€</p>
+                        <p className="text-xs opacity-70 mt-2">
+                            {expectedValue > 0 ? '✅ De mitjana, guanyaràs diners!' : expectedValue === 0 ? '⚖️ Ni guanyes ni perds de mitjana' : '❌ De mitjana, perdràs diners!'}
+                        </p>
+                    </div>
+                </div>
+            );
+        }
+
+        // Component per a Cost d'Oportunitat
+        function OpportunityCostCalculator({ t }) {
+            const [options, setOptions] = useState([
+                { name: 'Opció A', value: '', benefits: '' },
+                { name: 'Opció B', value: '', benefits: '' }
+            ]);
+            const [chosen, setChosen] = useState(null);
+            
+            const updateOption = (i, field, value) => {
+                const newOptions = [...options];
+                newOptions[i][field] = value;
+                setOptions(newOptions);
+            };
+            
+            const getOpportunityCost = () => {
+                if (chosen === null) return null;
+                const notChosen = options.filter((_, i) => i !== chosen);
+                return notChosen.reduce((max, opt) => {
+                    const val = Number(opt.value) || 0;
+                    return val > max.value ? { name: opt.name, value: val, benefits: opt.benefits } : max;
+                }, { name: '', value: 0, benefits: '' });
+            };
+            
+            const oppCost = getOpportunityCost();
+            
+            return (
+                <div className="space-y-4">
+                    <p className="text-sm text-slate-600">Defineix les teues opcions i el seu valor estimat:</p>
+                    
+                    {options.map((opt, i) => (
+                        <div key={i} className={`p-4 rounded-xl border-2 transition-all ${chosen === i ? 'border-emerald-500 bg-emerald-50' : 'border-slate-200'}`}>
+                            <div className="flex gap-2 items-center mb-2">
+                                <input
+                                    type="text"
+                                    value={opt.name}
+                                    onChange={(e) => updateOption(i, 'name', e.target.value)}
+                                    className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm font-medium"
+                                    placeholder="Nom de l'opció"
+                                />
+                                <div className="flex items-center gap-1">
+                                    <span className="text-sm text-slate-500">Valor:</span>
+                                    <input
+                                        type="number"
+                                        value={opt.value}
+                                        onChange={(e) => updateOption(i, 'value', e.target.value)}
+                                        className="w-20 px-2 py-2 border border-slate-200 rounded-lg text-sm text-center"
+                                        placeholder="0"
+                                    />
+                                    <span className="text-slate-500">€</span>
+                                </div>
+                            </div>
+                            <input
+                                type="text"
+                                value={opt.benefits}
+                                onChange={(e) => updateOption(i, 'benefits', e.target.value)}
+                                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                                placeholder="Beneficis d'aquesta opció..."
+                            />
+                            <button
+                                onClick={() => setChosen(i)}
+                                className={`mt-2 w-full py-2 rounded-lg text-sm font-medium transition-all ${chosen === i ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                            >
+                                {chosen === i ? '✓ Opció triada' : 'Triar aquesta opció'}
+                            </button>
+                        </div>
+                    ))}
+                    
+                    <button 
+                        onClick={() => setOptions([...options, { name: `Opció ${options.length + 1}`, value: '', benefits: '' }])}
+                        className="w-full py-2 border-2 border-dashed border-slate-300 rounded-lg text-slate-500 hover:border-slate-400 hover:text-slate-600 transition-colors"
+                    >
+                        + Afegir opció
+                    </button>
+                    
+                    {chosen !== null && oppCost && oppCost.value > 0 && (
+                        <div className="mt-4 p-4 bg-amber-50 border-2 border-amber-200 rounded-xl">
+                            <p className="text-sm text-amber-800 mb-1">⚠️ Cost d'Oportunitat:</p>
+                            <p className="text-2xl font-bold text-amber-700">{oppCost.value}€</p>
+                            <p className="text-sm text-amber-600 mt-2">
+                                Renúncies a "{oppCost.name}"{oppCost.benefits && `: ${oppCost.benefits}`}
+                            </p>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Component per a Detector de Costos Hundidos
+        function SunkCostDetector({ t }) {
+            const [questions, setQuestions] = useState({
+                invested: '',
+                canRecover: null,
+                continueWorth: null,
+                ifStartNow: null
+            });
+            
+            const getVerdict = () => {
+                if (questions.canRecover === null || questions.continueWorth === null || questions.ifStartNow === null) return null;
+                
+                if (questions.canRecover === false && questions.continueWorth === false) {
+                    return { type: 'danger', message: "🚨 ESTÀS CAIENT EN LA TRAMPA! El que has invertit no es pot recuperar. Si continuar no val la pena per si mateix, PARA." };
+                }
+                if (questions.canRecover === false && questions.ifStartNow === false) {
+                    return { type: 'warning', message: "⚠️ CUIDADO: Si no començaries ara des de zero, potser estàs continuant només per no 'perdre' la inversió passada." };
+                }
+                if (questions.continueWorth === true && questions.ifStartNow === true) {
+                    return { type: 'success', message: "✅ BON SENYAL: Continuar té sentit independentment del que ja has invertit." };
+                }
+                return { type: 'neutral', message: "🤔 Situació ambigua. Reflexiona: oblida el passat i pensa només en el futur." };
+            };
+            
+            const verdict = getVerdict();
+            
+            return (
+                <div className="space-y-4">
+                    <div className="p-4 bg-slate-100 rounded-xl">
+                        <label className="text-sm text-slate-600 block mb-2">Quant has invertit ja (temps, diners, esforç)?</label>
+                        <input
+                            type="text"
+                            value={questions.invested}
+                            onChange={(e) => setQuestions({...questions, invested: e.target.value})}
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg"
+                            placeholder="Ex: 6 mesos de treball, 5.000€..."
+                        />
+                    </div>
+                    
+                    <div className="space-y-3">
+                        <div className="p-4 bg-white border border-slate-200 rounded-xl">
+                            <p className="text-sm font-medium text-slate-700 mb-3">Pots recuperar el que has invertit si deixes ara?</p>
+                            <div className="flex gap-2">
+                                <button 
+                                    onClick={() => setQuestions({...questions, canRecover: true})}
+                                    className={`flex-1 py-2 rounded-lg font-medium transition-all ${questions.canRecover === true ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'}`}
+                                >Sí</button>
+                                <button 
+                                    onClick={() => setQuestions({...questions, canRecover: false})}
+                                    className={`flex-1 py-2 rounded-lg font-medium transition-all ${questions.canRecover === false ? 'bg-red-600 text-white' : 'bg-slate-100 text-slate-600'}`}
+                                >No</button>
+                            </div>
+                        </div>
+                        
+                        <div className="p-4 bg-white border border-slate-200 rounded-xl">
+                            <p className="text-sm font-medium text-slate-700 mb-3">Ignorant el passat: continuar aporta valor per si mateix?</p>
+                            <div className="flex gap-2">
+                                <button 
+                                    onClick={() => setQuestions({...questions, continueWorth: true})}
+                                    className={`flex-1 py-2 rounded-lg font-medium transition-all ${questions.continueWorth === true ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'}`}
+                                >Sí</button>
+                                <button 
+                                    onClick={() => setQuestions({...questions, continueWorth: false})}
+                                    className={`flex-1 py-2 rounded-lg font-medium transition-all ${questions.continueWorth === false ? 'bg-red-600 text-white' : 'bg-slate-100 text-slate-600'}`}
+                                >No</button>
+                            </div>
+                        </div>
+                        
+                        <div className="p-4 bg-white border border-slate-200 rounded-xl">
+                            <p className="text-sm font-medium text-slate-700 mb-3">Si pogueres tornar enrere, començaries aquest projecte avui?</p>
+                            <div className="flex gap-2">
+                                <button 
+                                    onClick={() => setQuestions({...questions, ifStartNow: true})}
+                                    className={`flex-1 py-2 rounded-lg font-medium transition-all ${questions.ifStartNow === true ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'}`}
+                                >Sí</button>
+                                <button 
+                                    onClick={() => setQuestions({...questions, ifStartNow: false})}
+                                    className={`flex-1 py-2 rounded-lg font-medium transition-all ${questions.ifStartNow === false ? 'bg-red-600 text-white' : 'bg-slate-100 text-slate-600'}`}
+                                >No</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {verdict && (
+                        <div className={`p-4 rounded-xl ${verdict.type === 'danger' ? 'bg-red-100 border-2 border-red-300' : verdict.type === 'warning' ? 'bg-amber-100 border-2 border-amber-300' : verdict.type === 'success' ? 'bg-emerald-100 border-2 border-emerald-300' : 'bg-slate-100 border-2 border-slate-300'}`}>
+                            <p className={`font-medium ${verdict.type === 'danger' ? 'text-red-800' : verdict.type === 'warning' ? 'text-amber-800' : verdict.type === 'success' ? 'text-emerald-800' : 'text-slate-800'}`}>
+                                {verdict.message}
+                            </p>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Component per a Detector de Biaixos
+        function BiasDetector({ t }) {
+            const biases = [
+                { id: 'confirmacio', name: 'Confirmació', icon: '🔍', desc: 'Només busques info que confirma el que ja creus', question: 'Has buscat activament informació que contradiga la teua opinió?' },
+                { id: 'ancoratge', name: 'Ancoratge', icon: '⚓', desc: "Et deixes influir pel primer número/dada que veus", question: "La primera xifra que vas sentir està influint massa en la teua decisió?" },
+                { id: 'disponibilitat', name: 'Disponibilitat', icon: '📰', desc: 'Sobreestimes el que és fàcil de recordar (notícies recents)', question: 'Estàs donant massa pes a esdeveniments recents o impactants?' },
+                { id: 'aversioLoss', name: 'Aversió a la pèrdua', icon: '😰', desc: 'Tem perdre més del que desitges guanyar', question: "Estàs evitant una decisió per por a perdre, encara que pugues guanyar més?" },
+                { id: 'social', name: 'Prova social', icon: '👥', desc: "Fas el que fan els altres sense qüestionar-ho", question: 'Estàs fent això perquè els altres ho fan, o perquè realment és bo per a tu?' },
+                { id: 'optimisme', name: 'Excés d\'optimisme', icon: '🌈', desc: 'Creus que a tu no et passarà el dolent', question: 'Estàs subestimant els riscos perquè creus que "a mi no em passarà"?' },
+            ];
+            
+            const [responses, setResponses] = useState({});
+            
+            const detectedBiases = biases.filter(b => responses[b.id] === false);
+            
+            return (
+                <div className="space-y-4">
+                    <p className="text-sm text-slate-600">Respon sincerament a aquestes preguntes sobre la teua decisió actual:</p>
+                    
+                    {biases.map(bias => (
+                        <div key={bias.id} className={`p-4 rounded-xl border-2 transition-all ${responses[bias.id] === false ? 'border-red-300 bg-red-50' : responses[bias.id] === true ? 'border-emerald-300 bg-emerald-50' : 'border-slate-200 bg-white'}`}>
+                            <div className="flex items-start gap-3">
+                                <span className="text-2xl">{bias.icon}</span>
+                                <div className="flex-1">
+                                    <p className="font-medium text-slate-800">{bias.name}</p>
+                                    <p className="text-xs text-slate-500 mb-2">{bias.desc}</p>
+                                    <p className="text-sm text-slate-700 mb-2">{bias.question}</p>
+                                    <div className="flex gap-2">
+                                        <button 
+                                            onClick={() => setResponses({...responses, [bias.id]: true})}
+                                            className={`px-4 py-1 rounded text-sm font-medium transition-all ${responses[bias.id] === true ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'}`}
+                                        >Sí</button>
+                                        <button 
+                                            onClick={() => setResponses({...responses, [bias.id]: false})}
+                                            className={`px-4 py-1 rounded text-sm font-medium transition-all ${responses[bias.id] === false ? 'bg-red-600 text-white' : 'bg-slate-100 text-slate-600'}`}
+                                        >No</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                    
+                    {Object.keys(responses).length > 0 && (
+                        <div className={`p-4 rounded-xl ${detectedBiases.length > 0 ? 'bg-amber-100 border-2 border-amber-300' : 'bg-emerald-100 border-2 border-emerald-300'}`}>
+                            {detectedBiases.length > 0 ? (
+                                <>
+                                    <p className="font-medium text-amber-800 mb-2">⚠️ Possibles biaixos detectats:</p>
+                                    <ul className="space-y-1">
+                                        {detectedBiases.map(b => (
+                                            <li key={b.id} className="text-sm text-amber-700">{b.icon} {b.name}: {b.desc}</li>
+                                        ))}
+                                    </ul>
+                                </>
+                            ) : (
+                                <p className="font-medium text-emerald-800">✅ No s'han detectat biaixos evidents. Però recorda: els biaixos són subtils!</p>
+                            )}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Component per a Raonament Marginal
+        function MarginalThinking({ t }) {
+            const [units, setUnits] = useState([
+                { benefit: 100, cost: 20 },
+                { benefit: 80, cost: 20 },
+                { benefit: 50, cost: 20 },
+                { benefit: 30, cost: 20 },
+                { benefit: 10, cost: 20 },
+            ]);
+            
+            const updateUnit = (i, field, value) => {
+                const newUnits = [...units];
+                newUnits[i][field] = Number(value);
+                setUnits(newUnits);
+            };
+            
+            const optimalPoint = units.findIndex(u => u.benefit < u.cost);
+            const shouldDo = optimalPoint === -1 ? units.length : optimalPoint;
+            
+            return (
+                <div className="space-y-4">
+                    <p className="text-sm text-slate-600">Defineix el benefici i cost de cada unitat addicional (hora d'estudi, producte, etc.):</p>
+                    
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="border-b border-slate-200">
+                                    <th className="text-left py-2 px-2 text-slate-500">Unitat</th>
+                                    <th className="text-center py-2 px-2 text-slate-500">Benefici Marginal</th>
+                                    <th className="text-center py-2 px-2 text-slate-500">Cost Marginal</th>
+                                    <th className="text-center py-2 px-2 text-slate-500">Val la pena?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {units.map((u, i) => (
+                                    <tr key={i} className={`border-b border-slate-100 ${u.benefit >= u.cost ? 'bg-emerald-50' : 'bg-red-50'}`}>
+                                        <td className="py-2 px-2 font-medium">#{i + 1}</td>
+                                        <td className="py-2 px-2">
+                                            <input
+                                                type="number"
+                                                value={u.benefit}
+                                                onChange={(e) => updateUnit(i, 'benefit', e.target.value)}
+                                                className="w-20 px-2 py-1 border border-slate-200 rounded text-center"
+                                            />
+                                        </td>
+                                        <td className="py-2 px-2">
+                                            <input
+                                                type="number"
+                                                value={u.cost}
+                                                onChange={(e) => updateUnit(i, 'cost', e.target.value)}
+                                                className="w-20 px-2 py-1 border border-slate-200 rounded text-center"
+                                            />
+                                        </td>
+                                        <td className="py-2 px-2 text-center">
+                                            {u.benefit >= u.cost ? '✅ Sí' : '❌ No'}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                        <button 
+                            onClick={() => setUnits([...units, { benefit: Math.max(0, units[units.length-1].benefit - 20), cost: 20 }])}
+                            className="flex-1 py-2 bg-slate-100 rounded-lg text-slate-600 hover:bg-slate-200"
+                        >+ Afegir unitat</button>
+                        {units.length > 1 && (
+                            <button 
+                                onClick={() => setUnits(units.slice(0, -1))}
+                                className="px-4 py-2 bg-red-100 rounded-lg text-red-600 hover:bg-red-200"
+                            >Eliminar última</button>
+                        )}
+                    </div>
+                    
+                    <div className="p-4 bg-slate-800 text-white rounded-xl">
+                        <p className="text-sm text-slate-300 mb-1">Punt òptim:</p>
+                        <p className="text-3xl font-bold">{shouldDo} unitats</p>
+                        <p className="text-xs text-slate-400 mt-2">
+                            Després de la unitat {shouldDo}, el cost supera el benefici. Para ahí!
+                        </p>
+                    </div>
+                </div>
+            );
+        }
+
+        // Component per a Comparador de Decisions (Pros/Contres)
+        function ProsConsComparator({ t }) {
+            const [decision, setDecision] = useState('');
+            const [pros, setPros] = useState([{ text: '', weight: 5 }]);
+            const [cons, setCons] = useState([{ text: '', weight: 5 }]);
+            
+            const addItem = (type) => {
+                if (type === 'pro') setPros([...pros, { text: '', weight: 5 }]);
+                else setCons([...cons, { text: '', weight: 5 }]);
+            };
+            
+            const updateItem = (type, i, field, value) => {
+                const list = type === 'pro' ? [...pros] : [...cons];
+                list[i][field] = field === 'weight' ? Number(value) : value;
+                type === 'pro' ? setPros(list) : setCons(list);
+            };
+            
+            const removeItem = (type, i) => {
+                if (type === 'pro') setPros(pros.filter((_, idx) => idx !== i));
+                else setCons(cons.filter((_, idx) => idx !== i));
+            };
+            
+            const totalPros = pros.reduce((acc, p) => acc + (p.text ? p.weight : 0), 0);
+            const totalCons = cons.reduce((acc, c) => acc + (c.text ? c.weight : 0), 0);
+            const difference = totalPros - totalCons;
+            
+            return (
+                <div className="space-y-4">
+                    <input
+                        type="text"
+                        value={decision}
+                        onChange={(e) => setDecision(e.target.value)}
+                        className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl text-lg font-medium"
+                        placeholder="Quina decisió estàs considerant?"
+                    />
+                    
+                    <div className="grid md:grid-cols-2 gap-4">
+                        {/* Pros */}
+                        <div className="p-4 bg-emerald-50 rounded-xl">
+                            <h4 className="font-bold text-emerald-700 mb-3">✅ A FAVOR</h4>
+                            {pros.map((p, i) => (
+                                <div key={i} className="flex gap-2 items-center mb-2">
+                                    <input
+                                        type="text"
+                                        value={p.text}
+                                        onChange={(e) => updateItem('pro', i, 'text', e.target.value)}
+                                        className="flex-1 px-2 py-1 border border-emerald-200 rounded text-sm"
+                                        placeholder="Argument a favor..."
+                                    />
+                                    <select
+                                        value={p.weight}
+                                        onChange={(e) => updateItem('pro', i, 'weight', e.target.value)}
+                                        className="px-2 py-1 border border-emerald-200 rounded text-sm"
+                                    >
+                                        {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}</option>)}
+                                    </select>
+                                    {pros.length > 1 && (
+                                        <button onClick={() => removeItem('pro', i)} className="text-red-500">✕</button>
+                                    )}
+                                </div>
+                            ))}
+                            <button onClick={() => addItem('pro')} className="w-full py-1 text-emerald-600 text-sm hover:bg-emerald-100 rounded">+ Afegir</button>
+                        </div>
+                        
+                        {/* Cons */}
+                        <div className="p-4 bg-red-50 rounded-xl">
+                            <h4 className="font-bold text-red-700 mb-3">❌ EN CONTRA</h4>
+                            {cons.map((c, i) => (
+                                <div key={i} className="flex gap-2 items-center mb-2">
+                                    <input
+                                        type="text"
+                                        value={c.text}
+                                        onChange={(e) => updateItem('con', i, 'text', e.target.value)}
+                                        className="flex-1 px-2 py-1 border border-red-200 rounded text-sm"
+                                        placeholder="Argument en contra..."
+                                    />
+                                    <select
+                                        value={c.weight}
+                                        onChange={(e) => updateItem('con', i, 'weight', e.target.value)}
+                                        className="px-2 py-1 border border-red-200 rounded text-sm"
+                                    >
+                                        {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}</option>)}
+                                    </select>
+                                    {cons.length > 1 && (
+                                        <button onClick={() => removeItem('con', i)} className="text-red-500">✕</button>
+                                    )}
+                                </div>
+                            ))}
+                            <button onClick={() => addItem('con')} className="w-full py-1 text-red-600 text-sm hover:bg-red-100 rounded">+ Afegir</button>
+                        </div>
+                    </div>
+                    
+                    <div className={`p-4 rounded-xl text-white ${difference > 5 ? 'bg-emerald-600' : difference < -5 ? 'bg-red-600' : 'bg-amber-500'}`}>
+                        <div className="flex justify-between items-center mb-2">
+                            <span>A favor: {totalPros}</span>
+                            <span>En contra: {totalCons}</span>
+                        </div>
+                        <p className="text-2xl font-bold text-center">
+                            {difference > 5 ? '✅ Fes-ho!' : difference < -5 ? '❌ No ho faces' : '⚖️ Decisió ajustada - reflexiona més'}
+                        </p>
+                    </div>
+                </div>
+            );
+        }
+
+        // Component per al Test del Penediment
+        function RegretTest({ t }) {
+            const [decision, setDecision] = useState('');
+            const [answers, setAnswers] = useState({
+                ifDo: '',
+                ifDont: '',
+                risk: null
+            });
+            
+            return (
+                <div className="space-y-4">
+                    <div className="p-4 bg-purple-50 rounded-xl">
+                        <p className="text-sm text-purple-700 mb-2">🧓 Imagina't amb 80 anys, mirant enrere a la teua vida...</p>
+                        <input
+                            type="text"
+                            value={decision}
+                            onChange={(e) => setDecision(e.target.value)}
+                            className="w-full px-4 py-3 border-2 border-purple-200 rounded-xl"
+                            placeholder="Quina decisió estàs considerant?"
+                        />
+                    </div>
+                    
+                    <div className="p-4 bg-emerald-50 rounded-xl">
+                        <label className="text-sm font-medium text-emerald-700 block mb-2">
+                            Si ho fas i funciona, com et sentiràs?
+                        </label>
+                        <textarea
+                            value={answers.ifDo}
+                            onChange={(e) => setAnswers({...answers, ifDo: e.target.value})}
+                            className="w-full px-3 py-2 border border-emerald-200 rounded-lg text-sm"
+                            rows={2}
+                            placeholder="Descriu el millor escenari..."
+                        />
+                    </div>
+                    
+                    <div className="p-4 bg-amber-50 rounded-xl">
+                        <label className="text-sm font-medium text-amber-700 block mb-2">
+                            Si NO ho fas, et penediràs? Per què?
+                        </label>
+                        <textarea
+                            value={answers.ifDont}
+                            onChange={(e) => setAnswers({...answers, ifDont: e.target.value})}
+                            className="w-full px-3 py-2 border border-amber-200 rounded-lg text-sm"
+                            rows={2}
+                            placeholder="Imagina que mai ho vas intentar..."
+                        />
+                    </div>
+                    
+                    <div className="p-4 bg-slate-100 rounded-xl">
+                        <p className="text-sm font-medium text-slate-700 mb-3">El pitjor que pot passar si ho intentes i fracasses és...</p>
+                        <div className="flex flex-wrap gap-2">
+                            {['Perdre diners (recuperable)', 'Perdre temps (irrecuperable)', 'Vergonya temporal', 'Aprenentatge valuós', 'Res irreversible'].map(opt => (
+                                <button
+                                    key={opt}
+                                    onClick={() => setAnswers({...answers, risk: opt})}
+                                    className={`px-3 py-2 rounded-lg text-sm transition-all ${answers.risk === opt ? 'bg-slate-700 text-white' : 'bg-white border border-slate-300 text-slate-600'}`}
+                                >
+                                    {opt}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    {decision && answers.ifDont && (
+                        <div className="p-4 bg-purple-100 border-2 border-purple-300 rounded-xl">
+                            <p className="font-medium text-purple-800">💭 Pregunta clau de Bezos:</p>
+                            <p className="text-purple-700 mt-2">
+                                "Als 80 anys, et penediràs més d'haver-ho intentat i fracassat, o de no haver-ho intentat mai?"
+                            </p>
+                            <p className="text-sm text-purple-600 mt-3">
+                                Si el pitjor que pot passar és "{answers.risk}" i no intentar-ho et fa dir "{answers.ifDont.substring(0, 50)}...", potser val la pena el risc.
+                            </p>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Component per a la Matriu d'Eisenhower
+        function EisenhowerMatrix({ t }) {
+            const [tasks, setTasks] = useState([]);
+            const [newTask, setNewTask] = useState({ text: '', urgent: false, important: false });
+            
+            const addTask = () => {
+                if (newTask.text.trim()) {
+                    setTasks([...tasks, { ...newTask, id: Date.now() }]);
+                    setNewTask({ text: '', urgent: false, important: false });
+                }
+            };
+            
+            const removeTask = (id) => setTasks(tasks.filter(t => t.id !== id));
+            
+            const getQuadrant = (task) => {
+                if (task.urgent && task.important) return 'do';
+                if (!task.urgent && task.important) return 'schedule';
+                if (task.urgent && !task.important) return 'delegate';
+                return 'eliminate';
+            };
+            
+            const quadrants = {
+                do: { title: '🔥 FER JA', color: 'red', tasks: tasks.filter(t => getQuadrant(t) === 'do'), desc: 'Urgent + Important' },
+                schedule: { title: '📅 PLANIFICAR', color: 'blue', tasks: tasks.filter(t => getQuadrant(t) === 'schedule'), desc: 'Important + No urgent' },
+                delegate: { title: '🤝 DELEGAR', color: 'amber', tasks: tasks.filter(t => getQuadrant(t) === 'delegate'), desc: 'Urgent + No important' },
+                eliminate: { title: '🗑️ ELIMINAR', color: 'slate', tasks: tasks.filter(t => getQuadrant(t) === 'eliminate'), desc: 'Ni urgent ni important' },
+            };
+            
+            return (
+                <div className="space-y-4">
+                    <div className="p-4 bg-slate-100 rounded-xl">
+                        <div className="flex gap-2 mb-3">
+                            <input
+                                type="text"
+                                value={newTask.text}
+                                onChange={(e) => setNewTask({...newTask, text: e.target.value})}
+                                onKeyPress={(e) => e.key === 'Enter' && addTask()}
+                                className="flex-1 px-3 py-2 border border-slate-200 rounded-lg"
+                                placeholder="Afegir tasca..."
+                            />
+                            <button onClick={addTask} className="px-4 py-2 bg-slate-700 text-white rounded-lg">+</button>
+                        </div>
+                        <div className="flex gap-4">
+                            <label className="flex items-center gap-2 text-sm">
+                                <input type="checkbox" checked={newTask.urgent} onChange={(e) => setNewTask({...newTask, urgent: e.target.checked})} className="rounded" />
+                                Urgent
+                            </label>
+                            <label className="flex items-center gap-2 text-sm">
+                                <input type="checkbox" checked={newTask.important} onChange={(e) => setNewTask({...newTask, important: e.target.checked})} className="rounded" />
+                                Important
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-3">
+                        {Object.entries(quadrants).map(([key, q]) => (
+                            <div key={key} className={`p-3 rounded-xl bg-${q.color}-50 border-2 border-${q.color}-200 min-h-32`}>
+                                <h4 className={`font-bold text-${q.color}-700 text-sm mb-1`}>{q.title}</h4>
+                                <p className={`text-xs text-${q.color}-500 mb-2`}>{q.desc}</p>
+                                <div className="space-y-1">
+                                    {q.tasks.map(task => (
+                                        <div key={task.id} className="flex items-center justify-between p-1.5 bg-white rounded text-xs">
+                                            <span className="truncate">{task.text}</span>
+                                            <button onClick={() => removeTask(task.id)} className="text-red-400 hover:text-red-600 ml-1">✕</button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    
+                    <div className="p-3 bg-blue-50 rounded-lg text-sm text-blue-700">
+                        💡 <strong>Clau:</strong> Dedica la major part del teu temps al quadrant "Planificar" (important però no urgent). Ahí és on es construeixen les coses grans.
+                    </div>
+                </div>
+            );
+        }
+
+        // Component per a Pre-Mortem
+        function PreMortemAnalysis({ t }) {
+            const [project, setProject] = useState('');
+            const [failures, setFailures] = useState(['']);
+            
+            const addFailure = () => setFailures([...failures, '']);
+            const updateFailure = (i, value) => {
+                const newFailures = [...failures];
+                newFailures[i] = value;
+                setFailures(newFailures);
+            };
+            const removeFailure = (i) => setFailures(failures.filter((_, idx) => idx !== i));
+            
+            const validFailures = failures.filter(f => f.trim());
+            
+            return (
+                <div className="space-y-4">
+                    <div className="p-4 bg-red-50 rounded-xl">
+                        <p className="text-sm text-red-700 mb-2">💀 Imagina que estem al FUTUR i el teu projecte HA FRACASSAT completament...</p>
+                        <input
+                            type="text"
+                            value={project}
+                            onChange={(e) => setProject(e.target.value)}
+                            className="w-full px-4 py-3 border-2 border-red-200 rounded-xl"
+                            placeholder="Quin és el teu projecte o decisió?"
+                        />
+                    </div>
+                    
+                    <div className="p-4 bg-slate-100 rounded-xl">
+                        <p className="text-sm font-medium text-slate-700 mb-3">
+                            📝 Escriu totes les raons per les quals podria haver fracassat:
+                        </p>
+                        {failures.map((f, i) => (
+                            <div key={i} className="flex gap-2 items-center mb-2">
+                                <span className="text-slate-400">•</span>
+                                <input
+                                    type="text"
+                                    value={f}
+                                    onChange={(e) => updateFailure(i, e.target.value)}
+                                    className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                                    placeholder={`Raó ${i + 1} del fracàs...`}
+                                />
+                                {failures.length > 1 && (
+                                    <button onClick={() => removeFailure(i)} className="text-red-500">✕</button>
+                                )}
+                            </div>
+                        ))}
+                        <button onClick={addFailure} className="w-full py-2 text-slate-600 text-sm hover:bg-slate-200 rounded-lg">
+                            + Afegir raó
+                        </button>
+                    </div>
+                    
+                    {validFailures.length > 0 && (
+                        <div className="p-4 bg-emerald-50 border-2 border-emerald-200 rounded-xl">
+                            <p className="font-medium text-emerald-700 mb-3">✅ Ara tens un pla de prevenció!</p>
+                            <p className="text-sm text-emerald-600 mb-2">Per a cada risc identificat, pensa com evitar-lo o mitigar-lo:</p>
+                            <ul className="space-y-2">
+                                {validFailures.map((f, i) => (
+                                    <li key={i} className="text-sm text-slate-700">
+                                        <span className="text-red-500">⚠️ Risc:</span> {f}
+                                        <br />
+                                        <span className="text-emerald-500">→ Prevenció:</span> <span className="text-slate-400 italic">Com ho evitaràs?</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Component per a Pareto 80/20
+        function ParetoAnalysis({ t }) {
+            const [items, setItems] = useState([
+                { name: 'Activitat A', result: 40 },
+                { name: 'Activitat B', result: 30 },
+                { name: 'Activitat C', result: 15 },
+                { name: 'Activitat D', result: 10 },
+                { name: 'Activitat E', result: 5 },
+            ]);
+            
+            const total = items.reduce((acc, i) => acc + i.result, 0);
+            const sorted = [...items].sort((a, b) => b.result - a.result);
+            
+            let accumulated = 0;
+            const vital = sorted.filter(item => {
+                if (accumulated < total * 0.8) {
+                    accumulated += item.result;
+                    return true;
+                }
+                return false;
+            });
+            
+            const updateItem = (i, field, value) => {
+                const newItems = [...items];
+                newItems[i][field] = field === 'result' ? Number(value) : value;
+                setItems(newItems);
+            };
+            
+            return (
+                <div className="space-y-4">
+                    <p className="text-sm text-slate-600">Llista les teues activitats/clients/productes i el resultat que generen:</p>
+                    
+                    {items.map((item, i) => (
+                        <div key={i} className={`flex gap-2 items-center p-2 rounded-lg ${vital.includes(item) ? 'bg-emerald-50' : 'bg-slate-50'}`}>
+                            <input
+                                type="text"
+                                value={item.name}
+                                onChange={(e) => updateItem(i, 'name', e.target.value)}
+                                className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                            />
+                            <input
+                                type="number"
+                                value={item.result}
+                                onChange={(e) => updateItem(i, 'result', e.target.value)}
+                                className="w-24 px-2 py-2 border border-slate-200 rounded-lg text-sm text-center"
+                            />
+                            <span className="text-sm text-slate-500 w-12">({total > 0 ? ((item.result / total) * 100).toFixed(0) : 0}%)</span>
+                        </div>
+                    ))}
+                    
+                    <button 
+                        onClick={() => setItems([...items, { name: `Activitat ${items.length + 1}`, result: 0 }])}
+                        className="w-full py-2 border-2 border-dashed border-slate-300 rounded-lg text-slate-500"
+                    >
+                        + Afegir
+                    </button>
+                    
+                    <div className="p-4 bg-emerald-100 border-2 border-emerald-300 rounded-xl">
+                        <p className="font-medium text-emerald-800 mb-2">🎯 El teu 20% vital:</p>
+                        <ul className="space-y-1">
+                            {vital.map((item, i) => (
+                                <li key={i} className="text-sm text-emerald-700">
+                                    ✅ <strong>{item.name}</strong> → {total > 0 ? ((item.result / total) * 100).toFixed(0) : 0}% dels resultats
+                                </li>
+                            ))}
+                        </ul>
+                        <p className="text-xs text-emerald-600 mt-3">
+                            💡 Centra't en {vital.length} de {items.length} activitats ({((vital.length / items.length) * 100).toFixed(0)}%) per aconseguir {(accumulated / total * 100).toFixed(0)}% dels resultats.
+                        </p>
+                    </div>
+                </div>
+            );
+        }
+
+        // Component per a BATNA
+        function BatnaCalculator({ t }) {
+            const [negotiation, setNegotiation] = useState('');
+            const [alternatives, setAlternatives] = useState([{ desc: '', value: '' }]);
+            const [currentOffer, setCurrentOffer] = useState('');
+            
+            const addAlt = () => setAlternatives([...alternatives, { desc: '', value: '' }]);
+            const updateAlt = (i, field, value) => {
+                const newAlts = [...alternatives];
+                newAlts[i][field] = value;
+                setAlternatives(newAlts);
+            };
+            
+            const validAlts = alternatives.filter(a => a.desc && a.value);
+            const batna = validAlts.reduce((best, alt) => {
+                const val = Number(alt.value) || 0;
+                return val > best.value ? { desc: alt.desc, value: val } : best;
+            }, { desc: '', value: 0 });
+            
+            const offerValue = Number(currentOffer) || 0;
+            
+            return (
+                <div className="space-y-4">
+                    <div className="p-4 bg-blue-50 rounded-xl">
+                        <label className="text-sm text-blue-700 block mb-2">🤝 Què estàs negociant?</label>
+                        <input
+                            type="text"
+                            value={negotiation}
+                            onChange={(e) => setNegotiation(e.target.value)}
+                            className="w-full px-4 py-2 border border-blue-200 rounded-lg"
+                            placeholder="Ex: Sou a una nova empresa, preu d'un cotxe..."
+                        />
+                    </div>
+                    
+                    <div className="p-4 bg-slate-100 rounded-xl">
+                        <p className="text-sm font-medium text-slate-700 mb-3">📋 Quines alternatives tens si NO arribes a un acord?</p>
+                        {alternatives.map((alt, i) => (
+                            <div key={i} className="flex gap-2 items-center mb-2">
+                                <input
+                                    type="text"
+                                    value={alt.desc}
+                                    onChange={(e) => updateAlt(i, 'desc', e.target.value)}
+                                    className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                                    placeholder="Alternativa..."
+                                />
+                                <input
+                                    type="number"
+                                    value={alt.value}
+                                    onChange={(e) => updateAlt(i, 'value', e.target.value)}
+                                    className="w-24 px-2 py-2 border border-slate-200 rounded-lg text-sm text-center"
+                                    placeholder="Valor"
+                                />
+                            </div>
+                        ))}
+                        <button onClick={addAlt} className="w-full py-2 text-slate-600 text-sm hover:bg-slate-200 rounded-lg">
+                            + Afegir alternativa
+                        </button>
+                    </div>
+                    
+                    {batna.desc && (
+                        <div className="p-4 bg-amber-100 border-2 border-amber-300 rounded-xl">
+                            <p className="font-medium text-amber-800">🎯 El teu BATNA és:</p>
+                            <p className="text-xl font-bold text-amber-700 mt-1">{batna.desc}</p>
+                            <p className="text-sm text-amber-600">Valor: {batna.value}</p>
+                            <p className="text-xs text-amber-500 mt-2">→ NO acceptes res per sota de {batna.value}!</p>
+                        </div>
+                    )}
+                    
+                    <div className="p-4 bg-slate-100 rounded-xl">
+                        <label className="text-sm text-slate-700 block mb-2">💰 Quina oferta t'estan fent?</label>
+                        <input
+                            type="number"
+                            value={currentOffer}
+                            onChange={(e) => setCurrentOffer(e.target.value)}
+                            className="w-full px-4 py-2 border border-slate-200 rounded-lg"
+                            placeholder="Valor de l'oferta actual"
+                        />
+                    </div>
+                    
+                    {currentOffer && batna.value > 0 && (
+                        <div className={`p-4 rounded-xl ${offerValue > batna.value ? 'bg-emerald-100 border-2 border-emerald-300' : 'bg-red-100 border-2 border-red-300'}`}>
+                            {offerValue > batna.value ? (
+                                <p className="font-medium text-emerald-800">✅ L'oferta ({offerValue}) és MILLOR que el teu BATNA ({batna.value}). Pots acceptar!</p>
+                            ) : (
+                                <p className="font-medium text-red-800">❌ L'oferta ({offerValue}) és PITJOR que el teu BATNA ({batna.value}). Rebutja i usa la teua alternativa!</p>
+                            )}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Component per a Cercles de Competència
+        function CompetenceCircles({ t }) {
+            const [area, setArea] = useState('');
+            const [questions, setQuestions] = useState({
+                explain: null,
+                predict: null,
+                mistakes: null,
+                experts: null,
+                update: null
+            });
+            
+            const answered = Object.values(questions).filter(q => q !== null).length;
+            const yesCount = Object.values(questions).filter(q => q === true).length;
+            
+            const getVerdict = () => {
+                if (answered < 5) return null;
+                if (yesCount >= 4) return { type: 'inside', message: '✅ Probablement estàs DINS del teu cercle de competència en aquest àmbit.' };
+                if (yesCount >= 2) return { type: 'edge', message: '⚠️ Estàs al LÍMIT del teu cercle. Sigues cautelós i busca consell.' };
+                return { type: 'outside', message: '❌ Probablement estàs FORA del teu cercle. Aprèn més abans de decidir o delega.' };
+            };
+            
+            const verdict = getVerdict();
+            
+            const questionsData = [
+                { id: 'explain', text: 'Pots explicar-ho a un nen de 10 anys?' },
+                { id: 'predict', text: "Pots predir què passarà en situacions noves d'aquest camp?" },
+                { id: 'mistakes', text: 'Coneixes els errors típics que comet la gent en aquest àmbit?' },
+                { id: 'experts', text: 'Podries mantenir una conversa tècnica amb un expert?' },
+                { id: 'update', text: 'Actualitzes regularment els teus coneixements en aquest tema?' },
+            ];
+            
+            return (
+                <div className="space-y-4">
+                    <div className="p-4 bg-indigo-50 rounded-xl">
+                        <label className="text-sm text-indigo-700 block mb-2">🎯 Sobre quin tema/àrea vols decidir?</label>
+                        <input
+                            type="text"
+                            value={area}
+                            onChange={(e) => setArea(e.target.value)}
+                            className="w-full px-4 py-2 border border-indigo-200 rounded-lg"
+                            placeholder="Ex: Criptomonedes, inversió immobiliària, programació..."
+                        />
+                    </div>
+                    
+                    <div className="space-y-3">
+                        {questionsData.map(q => (
+                            <div key={q.id} className="p-4 bg-white border border-slate-200 rounded-xl">
+                                <p className="text-sm font-medium text-slate-700 mb-3">{q.text}</p>
+                                <div className="flex gap-2">
+                                    <button 
+                                        onClick={() => setQuestions({...questions, [q.id]: true})}
+                                        className={`flex-1 py-2 rounded-lg font-medium transition-all ${questions[q.id] === true ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'}`}
+                                    >Sí</button>
+                                    <button 
+                                        onClick={() => setQuestions({...questions, [q.id]: false})}
+                                        className={`flex-1 py-2 rounded-lg font-medium transition-all ${questions[q.id] === false ? 'bg-red-600 text-white' : 'bg-slate-100 text-slate-600'}`}
+                                    >No</button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    
+                    {verdict && (
+                        <div className={`p-4 rounded-xl ${verdict.type === 'inside' ? 'bg-emerald-100 border-2 border-emerald-300' : verdict.type === 'edge' ? 'bg-amber-100 border-2 border-amber-300' : 'bg-red-100 border-2 border-red-300'}`}>
+                            <p className={`font-medium ${verdict.type === 'inside' ? 'text-emerald-800' : verdict.type === 'edge' ? 'text-amber-800' : 'text-red-800'}`}>
+                                {verdict.message}
+                            </p>
+                            <p className="text-sm mt-2 text-slate-600">
+                                Puntuació: {yesCount}/5 ({answered}/5 respostes)
+                            </p>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Component per a Inversió de Problemes
+        function ProblemInversion({ t }) {
+            const [goal, setGoal] = useState('');
+            const [failures, setFailures] = useState(['']);
+            
+            const addFailure = () => setFailures([...failures, '']);
+            const updateFailure = (i, value) => {
+                const newFailures = [...failures];
+                newFailures[i] = value;
+                setFailures(newFailures);
+            };
+            const removeFailure = (i) => setFailures(failures.filter((_, idx) => idx !== i));
+            
+            const validFailures = failures.filter(f => f.trim());
+            
+            return (
+                <div className="space-y-4">
+                    <div className="p-4 bg-teal-50 rounded-xl">
+                        <label className="text-sm text-teal-700 block mb-2">🎯 Quin és el teu objectiu?</label>
+                        <input
+                            type="text"
+                            value={goal}
+                            onChange={(e) => setGoal(e.target.value)}
+                            className="w-full px-4 py-2 border border-teal-200 rounded-lg"
+                            placeholder="Ex: Tenir una relació feliç, aprovar l'examen, tenir èxit amb el negoci..."
+                        />
+                    </div>
+                    
+                    {goal && (
+                        <div className="p-4 bg-red-50 rounded-xl">
+                            <p className="text-sm font-medium text-red-700 mb-3">
+                                🔄 Ara la inversió: Com fracassaries SEGUR en "{goal}"?
+                            </p>
+                            <p className="text-xs text-red-500 mb-3">Pensa en totes les maneres garantides de fracassar...</p>
+                            
+                            {failures.map((f, i) => (
+                                <div key={i} className="flex gap-2 items-center mb-2">
+                                    <span className="text-red-400">💀</span>
+                                    <input
+                                        type="text"
+                                        value={f}
+                                        onChange={(e) => updateFailure(i, e.target.value)}
+                                        className="flex-1 px-3 py-2 border border-red-200 rounded-lg text-sm"
+                                        placeholder="Fracassaria si..."
+                                    />
+                                    {failures.length > 1 && (
+                                        <button onClick={() => removeFailure(i)} className="text-red-500">✕</button>
+                                    )}
+                                </div>
+                            ))}
+                            <button onClick={addFailure} className="w-full py-2 text-red-600 text-sm hover:bg-red-100 rounded-lg">
+                                + Afegir manera de fracassar
+                            </button>
+                        </div>
+                    )}
+                    
+                    {validFailures.length > 0 && (
+                        <div className="p-4 bg-emerald-50 border-2 border-emerald-200 rounded-xl">
+                            <p className="font-medium text-emerald-700 mb-3">✅ Ara ja saps què EVITAR!</p>
+                            <p className="text-sm text-emerald-600 mb-2">La teua guia d'èxit (fent el contrari):</p>
+                            <ul className="space-y-2">
+                                {validFailures.map((f, i) => (
+                                    <li key={i} className="text-sm">
+                                        <span className="text-red-500 line-through">❌ {f}</span>
+                                        <br />
+                                        <span className="text-emerald-600">→ ✅ Fes el contrari!</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // ============================================
+        // COMPONENT PRINCIPAL - Modal de Ferramenta
+        // ============================================
+        function ToolModal({ tool, onClose, idioma, t }) {
+            const toolComponents = {
+                probabilitats: ProbabilityCalculator,
+                valorEsperat: ExpectedValueCalculator,
+                costOportunitat: OpportunityCostCalculator,
+                sunkCosts: SunkCostDetector,
+                biaixos: BiasDetector,
+                marginal: MarginalThinking,
+                prosContres: ProsConsComparator,
+                regret: RegretTest,
+                eisenhower: EisenhowerMatrix,
+                preMortem: PreMortemAnalysis,
+                pareto: ParetoAnalysis,
+                batna: BatnaCalculator,
+                cercles: CompetenceCircles,
+                inversio: ProblemInversion,
+            };
+            
+            const ToolComponent = toolComponents[tool.id];
+            
+            return (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={onClose}>
+                    <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto fade-in" onClick={e => e.stopPropagation()}>
+                        {/* Header */}
+                        <div className="sticky top-0 bg-white border-b border-slate-100 p-4 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <span className="text-3xl">{tool.icon}</span>
+                                <div>
+                                    <h2 className="text-xl font-bold text-slate-800">{tool.nom[idioma]}</h2>
+                                    <p className="text-sm text-slate-500">{tool.subtitol[idioma]}</p>
+                                </div>
+                            </div>
+                            <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg text-slate-400">✕</button>
+                        </div>
+                        
+                        {/* Content */}
+                        <div className="p-6">
+                            {/* Descripció */}
+                            <div className="mb-6 p-4 bg-gradient-to-r from-slate-50 to-zinc-50 rounded-xl">
+                                <h3 className="font-bold text-slate-700 mb-2 flex items-center gap-2">
+                                    💡 {t('howItWorks')}
+                                </h3>
+                                <p className="text-sm text-slate-600">{tool.descripcio[idioma]}</p>
+                            </div>
+                            
+                            {/* Exemple */}
+                            <div className="mb-6 p-4 bg-amber-50 rounded-xl border border-amber-100">
+                                <h3 className="font-bold text-amber-700 mb-2 flex items-center gap-2">
+                                    📖 {t('example')}
+                                </h3>
+                                <p className="text-sm text-amber-800">{tool.exemple[idioma]}</p>
+                            </div>
+                            
+                            {/* Quan usar */}
+                            <div className="mb-6 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                                <h3 className="font-bold text-emerald-700 mb-2 flex items-center gap-2">
+                                    ⏰ {t('whenToUse')}
+                                </h3>
+                                <p className="text-sm text-emerald-800">{tool.quanUsar[idioma]}</p>
+                            </div>
+                            
+                            {/* Ferramenta interactiva */}
+                            <div className="border-t border-slate-200 pt-6">
+                                <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                    🔧 {t('tryIt')}
+                                </h3>
+                                {ToolComponent && <ToolComponent t={t} />}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================
+        // APP PRINCIPAL
+        // ============================================
+        function ToolboxApp() {
+            const [idioma, setIdioma] = useState('val');
+            const [selectedTool, setSelectedTool] = useState(null);
+            const [filter, setFilter] = useState('all');
+            
+            const t = (key) => translations[key]?.[idioma] || translations[key]?.['val'] || key;
+            
+            const tools = Object.values(toolsData);
+            const filteredTools = filter === 'all' ? tools : tools.filter(tool => tool.category === filter);
+            
+            const categories = [
+                { id: 'all', label: translations.categories.all },
+                { id: 'calcul', label: translations.categories.calcul },
+                { id: 'biaixos', label: translations.categories.biaixos },
+                { id: 'estrategia', label: translations.categories.estrategia },
+                { id: 'prioritzacio', label: translations.categories.prioritzacio },
+            ];
+            
+            const LanguageSelector = () => (
+                <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
+                    {[{ code: 'val', label: 'VAL' }, { code: 'es', label: 'ES' }, { code: 'en', label: 'EN' }].map(lang => (
+                        <button 
+                            key={lang.code} 
+                            onClick={() => setIdioma(lang.code)} 
+                            className={`px-2 py-1 rounded text-xs font-bold transition-all ${idioma === lang.code ? 'bg-slate-700 text-white' : 'text-slate-600 hover:bg-slate-200'}`}
+                        >
+                            {lang.label}
+                        </button>
+                    ))}
+                </div>
+            );
+            
+            return (
+                <div className="min-h-screen">
+                    {/* Header */}
+                    <header className="bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-40">
+                        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+                            <a href="./index.html" className="text-sm text-slate-500 hover:text-slate-700 flex items-center gap-1">
+                                ← {t('backHome')}
+                            </a>
+                            <LanguageSelector />
+                        </div>
+                    </header>
+                    
+                    {/* Hero */}
+                    <section className="py-12 md:py-16">
+                        <div className="max-w-6xl mx-auto px-4 text-center">
+                            <div className="inline-flex items-center gap-2 bg-slate-100 text-slate-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
+                                🔧 14 {t('tools')}
+                            </div>
+                            <h1 className="text-4xl md:text-5xl font-black text-slate-800 mb-4">{t('title')}</h1>
+                            <p className="text-xl text-slate-500 max-w-2xl mx-auto">{t('subtitle')}</p>
+                        </div>
+                    </section>
+                    
+                    {/* Filters */}
+                    <section className="pb-8">
+                        <div className="max-w-6xl mx-auto px-4">
+                            <div className="flex flex-wrap justify-center gap-2">
+                                {categories.map(cat => (
+                                    <button
+                                        key={cat.id}
+                                        onClick={() => setFilter(cat.id)}
+                                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filter === cat.id ? 'bg-slate-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                                    >
+                                        {cat.label[idioma]}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+                    
+                    {/* Tools Grid */}
+                    <section className="pb-16">
+                        <div className="max-w-6xl mx-auto px-4">
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {filteredTools.map(tool => (
+                                    <button
+                                        key={tool.id}
+                                        onClick={() => setSelectedTool(tool)}
+                                        className="tool-card bg-white rounded-xl p-5 border border-slate-200 hover:border-slate-300 hover:shadow-lg transition-all duration-300 text-left group"
+                                    >
+                                        <div className="flex items-start gap-4">
+                                            <span className="text-4xl">{tool.icon}</span>
+                                            <div className="flex-1">
+                                                <h3 className="font-bold text-slate-800 mb-1 group-hover:text-slate-900">{tool.nom[idioma]}</h3>
+                                                <p className="text-sm text-slate-500 mb-2">{tool.subtitol[idioma]}</p>
+                                                <p className="text-xs text-slate-400 line-clamp-2">{tool.descripcio[idioma]}</p>
+                                            </div>
+                                        </div>
+                                        <div className="mt-4 flex items-center justify-between">
+                                            <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                                tool.category === 'calcul' ? 'bg-blue-100 text-blue-700' :
+                                                tool.category === 'biaixos' ? 'bg-purple-100 text-purple-700' :
+                                                tool.category === 'estrategia' ? 'bg-amber-100 text-amber-700' :
+                                                'bg-emerald-100 text-emerald-700'
+                                            }`}>
+                                                {translations.categories[tool.category][idioma]}
+                                            </span>
+                                            <span className="text-slate-400 group-hover:text-slate-600 text-sm">
+                                                {t('openTool')} →
+                                            </span>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+                    
+                    {/* Footer */}
+                    <footer className="py-8 bg-slate-50 border-t border-slate-100">
+                        <div className="max-w-6xl mx-auto px-4 text-center">
+                            <p className="text-sm text-slate-500">
+                                🔧 {t('title')} · <a href="./index.html" className="text-slate-700 hover:underline">PDE</a> · 2025
+                            </p>
+                        </div>
+                    </footer>
+                    
+                    {/* Modal */}
+                    {selectedTool && (
+                        <ToolModal 
+                            tool={selectedTool} 
+                            onClose={() => setSelectedTool(null)}
+                            idioma={idioma}
+                            t={t}
+                        />
+                    )}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<ToolboxApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
