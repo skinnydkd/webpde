@@ -93,7 +93,7 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 min-h-screen">
-    <!-- INPUT NUMÈRIC FORA DE REACT - NO ES RE-RENDERITZA MAI! -->
+    <!-- INPUT NUMÈRIC FORA DE REACT - COMPLETAMENT INDEPENDENT! -->
     <div id="numeric-input-container">
         <input 
             type="text" 
@@ -105,67 +105,112 @@
             autocorrect="off"
             autocapitalize="off"
             spellcheck="false"
+            enterkeyhint="done"
         />
         <button id="numeric-submit-btn" type="button">COMPROVAR</button>
     </div>
     
-    <!-- SCRIPT PER L'INPUT FLOTANT - COMPLETAMENT FORA DE REACT! -->
+    <!-- DEBUG PANEL - ELIMINAR QUAN FUNCIONI -->
+    <div id="debug-panel" style="display:none;position:fixed;top:0;left:0;right:0;background:rgba(0,0,0,0.9);color:#0f0;font-family:monospace;font-size:11px;padding:8px;z-index:99999;max-height:150px;overflow-y:auto;">
+        <div><strong>🔍 DEBUG MODE</strong> <button onclick="document.getElementById('debug-panel').style.display='none'" style="float:right;background:#f00;color:#fff;border:none;padding:2px 8px;cursor:pointer;">X</button></div>
+        <div id="debug-log"></div>
+    </div>
+    
+    <!-- SCRIPT PER L'INPUT FLOTANT - 100% INDEPENDENT DE REACT! -->
     <script>
     (function() {
-        const container = document.getElementById('numeric-input-container');
-        const input = document.getElementById('numeric-input-field');
-        const btn = document.getElementById('numeric-submit-btn');
-        let isVisible = false;
+        var container = document.getElementById('numeric-input-container');
+        var input = document.getElementById('numeric-input-field');
+        var btn = document.getElementById('numeric-submit-btn');
+        var debugLog = document.getElementById('debug-log');
+        var isShowing = false;
+        var logCount = 0;
         
-        function handleSubmit() {
-            const value = input.value.trim();
-            if (value && window.submitNumericAnswer) {
-                window.submitNumericAnswer(value);
+        function log(msg) {
+            logCount++;
+            var time = new Date().toLocaleTimeString();
+            var entry = document.createElement('div');
+            entry.innerHTML = '<span style="color:#888">' + logCount + ' [' + time + ']</span> ' + msg;
+            debugLog.insertBefore(entry, debugLog.firstChild);
+            // Mantenir només últims 20 logs
+            while (debugLog.children.length > 20) {
+                debugLog.removeChild(debugLog.lastChild);
             }
         }
         
-        btn.addEventListener('click', handleSubmit);
+        // Monitoritzar TOTS els events de l'input
+        input.addEventListener('focus', function(e) {
+            log('📥 <span style="color:#0ff">INPUT FOCUS</span>');
+        });
+        
+        input.addEventListener('blur', function(e) {
+            log('📤 <span style="color:#f80">INPUT BLUR</span> - relatedTarget: ' + (e.relatedTarget ? e.relatedTarget.id || e.relatedTarget.tagName : 'null'));
+        });
+        
+        input.addEventListener('input', function(e) {
+            log('⌨️ INPUT VALUE: "' + input.value + '"');
+        });
+        
+        // Submit amb el botó
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            log('🔘 <span style="color:#ff0">BTN CLICK</span>');
+            var value = input.value.trim();
+            if (value && window.submitNumericAnswer) {
+                log('✅ Enviant resposta: ' + value);
+                window.submitNumericAnswer(value);
+            }
+        });
+        
+        // Submit amb Enter
         input.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                handleSubmit();
+                e.stopPropagation();
+                log('⏎ <span style="color:#ff0">ENTER PRESS</span>');
+                var value = input.value.trim();
+                if (value && window.submitNumericAnswer) {
+                    log('✅ Enviant resposta: ' + value);
+                    window.submitNumericAnswer(value);
+                }
             }
         });
         
-        // Prevenir que React pugui fer res estrany
-        input.addEventListener('input', function(e) {
-            e.stopPropagation();
-        });
-        
-        // API global per controlar l'input des de React
+        // API MOLT SIMPLE - només show/hide
         window.numericInputAPI = {
             show: function(placeholder, lang) {
-                // IMPORTANT: Només netejar si NO estava visible (nova pregunta)
-                if (!isVisible) {
-                    input.value = '';
-                    isVisible = true;
-                }
-                input.placeholder = placeholder || 'Resultat numèric...';
-                btn.textContent = lang === 'val' ? 'COMPROVAR' : lang === 'es' ? 'COMPROBAR' : 'CHECK';
+                log('📞 <span style="color:#0f0">API.show()</span> isShowing=' + isShowing);
+                
+                // SEMPRE activar el container i fer focus
+                input.value = '';
                 container.classList.add('active');
-                // Focus només si no té focus
-                if (document.activeElement !== input) {
-                    setTimeout(function() { input.focus(); }, 150);
-                }
+                isShowing = true;
+                
+                log('   → Container activat');
+                
+                // Focus IMMEDIAT sense setTimeout
+                input.focus();
+                log('   → Focus immediat executat');
             },
             hide: function() {
-                container.classList.remove('active');
-                isVisible = false;
-                // No fer blur si l'usuari està escrivint
-            },
-            clear: function() {
-                input.value = '';
+                log('📞 <span style="color:#f00">API.hide()</span> isShowing=' + isShowing);
+                if (isShowing) {
+                    container.classList.remove('active');
+                    isShowing = false;
+                    log('   → Container desactivat');
+                }
             },
             reset: function() {
+                log('📞 <span style="color:#f0f">API.reset()</span>');
                 input.value = '';
-                isVisible = false;
+                container.classList.remove('active');
+                isShowing = false;
             }
         };
+        
+        log('🚀 Script inicialitzat');
+        window.debugLog = true; // Activar logs de React
     })();
     </script>
     
@@ -310,6 +355,7 @@ function ConcursApp() {
     const [fase, setFase] = useState('inici');
     const [categoria, setCategoria] = useState('totes');
     const [nomJugador, setNomJugador] = useState('');
+    const nomInputRef = useRef(null); // Ref per l'input del nom
     const [preguntaActual, setPreguntaActual] = useState(0);
     const [puntuacio, setPuntuacio] = useState(0);
     const [respostes, setRespostes] = useState([]);
@@ -375,25 +421,50 @@ function ConcursApp() {
     }, []);
     
     // GESTIÓ INPUT HTML FLOTANT - Usar l'API global
+    // CONTROL DE L'INPUT NUMÈRIC - UNIFICAT PER EVITAR RACE CONDITIONS
     const prevPreguntaRef = useRef(-1);
+    const prevShowNumericRef = useRef(false);
+    
     useEffect(() => {
         const p = preguntesPartida[preguntaActual];
-        const esNumeric = p && p.tipus === 'numeric';
-        const mostrar = fase === 'jugant' && esNumeric && !mostrarResultat;
+        const shouldShow = fase === 'jugant' && p && p.tipus === 'numeric' && !mostrarResultat;
+        const preguntaChanged = preguntaActual !== prevPreguntaRef.current;
+        
+        // DEBUG LOG
+        const debugLog = document.getElementById('debug-log');
+        if (debugLog) {
+            const entry = document.createElement('div');
+            entry.innerHTML = '🔄 <span style="color:#ff0">useEffect</span> pregunta=' + preguntaActual + ' shouldShow=' + shouldShow + ' changed=' + preguntaChanged;
+            debugLog.insertBefore(entry, debugLog.firstChild);
+        }
         
         if (window.numericInputAPI) {
-            // Si hem canviat de pregunta, resetejar l'input
-            if (preguntaActual !== prevPreguntaRef.current) {
-                window.numericInputAPI.reset();
+            // Si la pregunta ha canviat
+            if (preguntaChanged) {
                 prevPreguntaRef.current = preguntaActual;
+                
+                // Només fem reset si ABANS teníem l'input obert
+                if (prevShowNumericRef.current) {
+                    if (debugLog) {
+                        const entry = document.createElement('div');
+                        entry.innerHTML = '   → <span style="color:#f0f">Reset perquè abans era numèric</span>';
+                        debugLog.insertBefore(entry, debugLog.firstChild);
+                    }
+                    window.numericInputAPI.reset();
+                }
             }
             
-            if (mostrar) {
+            // Ara decidim si mostrar o amagar
+            if (shouldShow && !prevShowNumericRef.current) {
+                // Hem de mostrar l'input (no estava mostrant abans)
                 const placeholder = idioma === 'val' ? 'Resultat numèric...' : idioma === 'es' ? 'Resultado numérico...' : 'Numeric result...';
                 window.numericInputAPI.show(placeholder, idioma);
-            } else {
+            } else if (!shouldShow && prevShowNumericRef.current) {
+                // Hem d'amagar l'input (estava mostrant abans)
                 window.numericInputAPI.hide();
             }
+            
+            prevShowNumericRef.current = shouldShow;
         }
     }, [fase, preguntaActual, mostrarResultat, preguntesPartida, idioma]);
 
@@ -407,6 +478,29 @@ function ConcursApp() {
             { id: 'ec5', tipus: 'numeric', dificultat: 'facil', pregunta: t("Inflació: IPC anterior=100, IPC actual=103. Inflació %?", "Inflación: IPC anterior=100, IPC actual=103. ¿Inflación %?", "Inflation: Previous CPI=100, Current CPI=103. Inflation %?"), correcta: 3, tolerancia: 0, pista: "(IPCnew-IPCold)/IPCold×100" },
             { id: 'ec6', tipus: 'numeric', dificultat: 'dificil', pregunta: t("Creixement real: PIB nominal +7%, inflació 4%. Creixement real aprox?", "Crecimiento real: PIB nominal +7%, inflación 4%. ¿Crecimiento real aprox?", "Real growth: Nominal GDP +7%, inflation 4%. Approx real growth?"), correcta: 3, tolerancia: 0.5, pista: "Nominal - Inflació" },
             { id: 'ec7', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Balança comercial: X=50.000M€, M=65.000M€. Saldo?", "Balanza comercial: X=50.000M€, M=65.000M€. ¿Saldo?", "Trade balance: X=€50,000M, M=€65,000M. Balance?"), correcta: -15000, tolerancia: 0, pista: "X - M" },
+            // NOVES PREGUNTES ECONOMIA
+            { id: 'ec8', tipus: 'numeric', dificultat: 'facil', pregunta: t("PIB per càpita: PIB=1.000.000M€, Població=50M. Resultat?", "PIB per cápita: PIB=1.000.000M€, Población=50M. ¿Resultado?", "GDP per capita: GDP=€1,000,000M, Pop=50M. Result?"), correcta: 20000, tolerancia: 0, pista: "PIB / Població" },
+            { id: 'ec9', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Velocitat dels diners: PIB=800, M=200. V=?", "Velocidad del dinero: PIB=800, M=200. ¿V?", "Velocity of money: GDP=800, M=200. V=?"), correcta: 4, tolerancia: 0, pista: "V = PIB / M" },
+            { id: 'ec10', tipus: 'numeric', dificultat: 'dificil', pregunta: t("Tipus d'interès real: Nominal=8%, Inflació=3%. Real aprox?", "Tipo de interés real: Nominal=8%, Inflación=3%. ¿Real aprox?", "Real interest: Nominal=8%, Inflation=3%. Approx real?"), correcta: 5, tolerancia: 0.5, pista: "Real ≈ Nominal - Inflació" },
+            { id: 'ec11', tipus: 'numeric', dificultat: 'facil', pregunta: t("IPC any 2: Base=100, Cistella=115€. IPC?", "IPC año 2: Base=100, Cesta=115€. ¿IPC?", "CPI year 2: Base=100, Basket=€115. CPI?"), correcta: 115, tolerancia: 0, pista: "Ja et donen el valor!" },
+            { id: 'ec12', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Taxa d'activitat: Actius=20M, Població 16+=40M. Taxa %?", "Tasa de actividad: Activos=20M, Población 16+=40M. ¿Tasa %?", "Activity rate: Active=20M, Pop 16+=40M. Rate %?"), correcta: 50, tolerancia: 0, pista: "Actius/Població×100" },
+            { id: 'ec13', tipus: 'numeric', dificultat: 'dificil', pregunta: t("Efecte multiplicador: Inversió=100M€, PMC=0.75. Increment PIB?", "Efecto multiplicador: Inversión=100M€, PMC=0.75. ¿Incremento PIB?", "Multiplier effect: Investment=€100M, MPC=0.75. GDP increase?"), correcta: 400, tolerancia: 0, pista: "ΔY = k × ΔI on k=1/(1-PMC)" },
+            { id: 'ec14', tipus: 'numeric', dificultat: 'facil', pregunta: t("Deflactor PIB: PIB nominal=110, PIB real=100. Deflactor?", "Deflactor PIB: PIB nominal=110, PIB real=100. ¿Deflactor?", "GDP deflator: Nominal=110, Real=100. Deflator?"), correcta: 110, tolerancia: 0, pista: "(Nominal/Real)×100" },
+            { id: 'ec15', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Import d'un impost: Base=50.000€, Tipus=21%. Quota?", "Importe de un impuesto: Base=50.000€, Tipo=21%. ¿Cuota?", "Tax amount: Base=€50,000, Rate=21%. Tax?"), correcta: 10500, tolerancia: 0, pista: "Base × Tipus" },
+            { id: 'em1', tipus: 'multiple', dificultat: 'facil', pregunta: t("Quin és un bé públic pur?", "¿Cuál es un bien público puro?", "Which is a pure public good?"), opcions: [t("Defensa nacional", "Defensa nacional", "National defense"), t("Educació", "Educación", "Education"), t("Sanitat", "Sanidad", "Healthcare"), t("Autopistes", "Autopistas", "Highways")], correcta: 0 },
+            { id: 'em2', tipus: 'multiple', dificultat: 'mitjana', pregunta: t("Quin NO és un objectiu macroeconòmic?", "¿Cuál NO es un objetivo macroeconómico?", "Which is NOT a macro objective?"), opcions: [t("Estabilitat de preus", "Estabilidad de precios", "Price stability"), t("Ple ocupació", "Pleno empleo", "Full employment"), t("Maximitzar beneficis", "Maximizar beneficios", "Maximize profits"), t("Creixement", "Crecimiento", "Growth")], correcta: 2 },
+            { id: 'em3', tipus: 'multiple', dificultat: 'dificil', pregunta: t("La política fiscal expansiva implica:", "La política fiscal expansiva implica:", "Expansionary fiscal policy implies:"), opcions: [t("Pujar impostos", "Subir impuestos", "Raise taxes"), t("Reduir despesa", "Reducir gasto", "Cut spending"), t("Augmentar despesa", "Aumentar gasto", "Increase spending"), t("Vendre deute", "Vender deuda", "Sell debt")], correcta: 2 },
+            { id: 'em4', tipus: 'multiple', dificultat: 'facil', pregunta: t("El BCE controla la política...", "El BCE controla la política...", "The ECB controls... policy"), opcions: [t("Fiscal", "Fiscal", "Fiscal"), t("Monetària", "Monetaria", "Monetary"), t("Comercial", "Comercial", "Trade"), t("Industrial", "Industrial", "Industrial")], correcta: 1 },
+            { id: 'em5', tipus: 'multiple', dificultat: 'mitjana', pregunta: t("Un monopoli natural es caracteritza per:", "Un monopolio natural se caracteriza por:", "A natural monopoly is characterized by:"), opcions: [t("Molts competidors", "Muchos competidores", "Many competitors"), t("Alts costos fixos", "Altos costes fijos", "High fixed costs"), t("Productes diferenciats", "Productos diferenciados", "Differentiated products"), t("Lliure entrada", "Libre entrada", "Free entry")], correcta: 1 },
+            { id: 'ev3', tipus: 'truefalse', dificultat: 'facil', pregunta: t("El PIB mesura el valor de la producció d'un país en un any", "El PIB mide el valor de la producción de un país en un año", "GDP measures the value of a country's production in a year"), correcta: true },
+            { id: 'ev4', tipus: 'truefalse', dificultat: 'mitjana', pregunta: t("Una deflació és beneficiosa per a l'economia", "Una deflación es beneficiosa para la economía", "Deflation is good for the economy"), correcta: false },
+            { id: 'ev5', tipus: 'truefalse', dificultat: 'dificil', pregunta: t("El dèficit públic sempre genera inflació", "El déficit público siempre genera inflación", "Public deficit always causes inflation"), correcta: false },
+            { id: 'ev6', tipus: 'truefalse', dificultat: 'facil', pregunta: t("L'atur friccional és voluntari i temporal", "El paro friccional es voluntario y temporal", "Frictional unemployment is voluntary and temporary"), correcta: true },
+            { id: 'ev7', tipus: 'truefalse', dificultat: 'mitjana', pregunta: t("El comerç internacional sempre beneficia tots els països", "El comercio internacional siempre beneficia a todos los países", "International trade always benefits all countries"), correcta: false },
+            { id: 'eo4', tipus: 'order', dificultat: 'facil', pregunta: t("Piràmide de Maslow (de base a cim):", "Pirámide de Maslow (de base a cima):", "Maslow pyramid (base to top):"), elements: [t("Fisiològiques", "Fisiológicas", "Physiological"), t("Seguretat", "Seguridad", "Safety"), t("Socials", "Sociales", "Social"), t("Autoestima", "Autoestima", "Esteem")], ordreCorrecte: [0, 1, 2, 3] },
+            { id: 'eo5', tipus: 'order', dificultat: 'mitjana', pregunta: t("Nivells de renda (menor a major):", "Niveles de renta (menor a mayor):", "Income levels (low to high):"), elements: [t("Baixa", "Baja", "Low"), t("Mitjana-baixa", "Media-baja", "Lower-middle"), t("Mitjana-alta", "Media-alta", "Upper-middle"), t("Alta", "Alta", "High")], ordreCorrecte: [0, 1, 2, 3] },
+            { id: 'ef4', tipus: 'formula', dificultat: 'facil', pregunta: t("Inflació = [(IPC actual - IPC anterior) / ___] × 100", "Inflación = [(IPC actual - IPC anterior) / ___] × 100", "Inflation = [(Current CPI - Previous CPI) / ___] × 100"), opcions: [t("IPC anterior", "IPC anterior", "Previous CPI"), t("IPC actual", "IPC actual", "Current CPI"), "100", "PIB"], correcta: 0 },
+            { id: 'ef5', tipus: 'formula', dificultat: 'mitjana', pregunta: t("Balança comercial = ___ - Importacions", "Balanza comercial = ___ - Importaciones", "Trade balance = ___ - Imports"), opcions: [t("Exportacions", "Exportaciones", "Exports"), t("Consum", "Consumo", "Consumption"), t("Inversió", "Inversión", "Investment"), "PIB"], correcta: 0 },
             { id: 'eo1', tipus: 'order', dificultat: 'mitjana', pregunta: t("Fases del cicle econòmic:", "Fases del ciclo económico:", "Business cycle phases:"), elements: [t("Expansió", "Expansión", "Expansion"), t("Cim", "Cima", "Peak"), t("Recessió", "Recesión", "Recession"), t("Fons", "Valle", "Trough")], ordreCorrecte: [0, 1, 2, 3] },
             { id: 'eo2', tipus: 'order', dificultat: 'dificil', pregunta: t("Escoles econòmiques cronològicament:", "Escuelas económicas cronológicamente:", "Economic schools chronologically:"), elements: [t("Mercantilisme", "Mercantilismo", "Mercantilism"), t("Fisiocràcia", "Fisiocracia", "Physiocracy"), t("Clàssica", "Clásica", "Classical"), t("Keynesiana", "Keynesiana", "Keynesian")], ordreCorrecte: [0, 1, 2, 3] },
             { id: 'eo3', tipus: 'order', dificultat: 'facil', pregunta: t("Sectors econòmics (ordre clàssic):", "Sectores económicos (orden clásico):", "Economic sectors (classic order):"), elements: [t("Primari", "Primario", "Primary"), t("Secundari", "Secundario", "Secondary"), t("Terciari", "Terciario", "Tertiary")], ordreCorrecte: [0, 1, 2] },
@@ -528,6 +622,33 @@ function ConcursApp() {
             { id: 'fn2', tipus: 'numeric', dificultat: 'mitjana', 
               pregunta: t("🧮 Estalvies 200€/mes durant 5 anys sense interessos. Total?", "🧮 Ahorras 200€/mes durante 5 años sin intereses. ¿Total?", "🧮 Save €200/month for 5 years with no interest. Total?"), 
               correcta: 12000, tolerancia: 0, pista: "200 × 12 × 5" },
+            // NOVES PREGUNTES FINANCES
+            { id: 'fn3', tipus: 'numeric', dificultat: 'facil', pregunta: t("🧮 Rendibilitat: Compres per 100€, vens per 120€. Rendib %?", "🧮 Rentabilidad: Compras por 100€, vendes por 120€. ¿Rentab %?", "🧮 Return: Buy for €100, sell for €120. Return %?"), correcta: 20, tolerancia: 0, pista: "((Venda-Compra)/Compra)×100" },
+            { id: 'fn4', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("🧮 Interès simple: Capital 5.000€, 4% anual, 2 anys. Interessos?", "🧮 Interés simple: Capital 5.000€, 4% anual, 2 años. ¿Intereses?", "🧮 Simple interest: €5,000, 4% annual, 2 years. Interest?"), correcta: 400, tolerancia: 0, pista: "C × i × t" },
+            { id: 'fn5', tipus: 'numeric', dificultat: 'dificil', pregunta: t("🧮 Valor futur compost: 1.000€ al 10% durant 3 anys. VF? (arrodonit)", "🧮 Valor futuro compuesto: 1.000€ al 10% durante 3 años. ¿VF? (redondeado)", "🧮 Compound FV: €1,000 at 10% for 3 years. FV? (rounded)"), correcta: 1331, tolerancia: 5, pista: "VF = VA × (1+i)^n" },
+            { id: 'fn6', tipus: 'numeric', dificultat: 'facil', pregunta: t("🧮 Quota préstec simple: 12.000€ en 12 mesos sense interessos. Quota?", "🧮 Cuota préstamo simple: 12.000€ en 12 meses sin intereses. ¿Cuota?", "🧮 Simple loan payment: €12,000 in 12 months, no interest. Payment?"), correcta: 1000, tolerancia: 0, pista: "Capital / Mesos" },
+            { id: 'fn7', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("🧮 PER (Price Earnings Ratio): Preu acció=50€, BPA=5€. PER?", "🧮 PER (Price Earnings Ratio): Precio acción=50€, BPA=5€. ¿PER?", "🧮 P/E Ratio: Share price=€50, EPS=€5. P/E?"), correcta: 10, tolerancia: 0, pista: "Preu / BPA" },
+            { id: 'fn8', tipus: 'numeric', dificultat: 'dificil', pregunta: t("🧮 Dividend yield: Dividend=2€, Preu acció=40€. Yield %?", "🧮 Dividend yield: Dividendo=2€, Precio acción=40€. ¿Yield %?", "🧮 Dividend yield: Dividend=€2, Share price=€40. Yield %?"), correcta: 5, tolerancia: 0, pista: "(Dividend/Preu)×100" },
+            { id: 'fm2', tipus: 'multiple', dificultat: 'facil', pregunta: t("Quin actiu té menys risc?", "¿Qué activo tiene menos riesgo?", "Which asset has less risk?"), opcions: [t("Accions", "Acciones", "Stocks"), t("Dipòsit bancari", "Depósito bancario", "Bank deposit"), t("Criptomonedes", "Criptomonedas", "Crypto"), t("Derivats", "Derivados", "Derivatives")], correcta: 1 },
+            { id: 'fm3', tipus: 'multiple', dificultat: 'mitjana', pregunta: t("Què és un ETF?", "¿Qué es un ETF?", "What is an ETF?"), opcions: [t("Fons que replica un índex", "Fondo que replica un índice", "Index-tracking fund"), t("Deute públic", "Deuda pública", "Public debt"), t("Moneda virtual", "Moneda virtual", "Virtual currency"), t("Assegurança", "Seguro", "Insurance")], correcta: 0 },
+            { id: 'fm4', tipus: 'multiple', dificultat: 'facil', pregunta: t("L'interès compost...", "El interés compuesto...", "Compound interest..."), opcions: [t("Genera interessos sobre interessos", "Genera intereses sobre intereses", "Generates interest on interest"), t("És sempre fix", "Es siempre fijo", "Is always fixed"), t("Només s'aplica a préstecs", "Solo se aplica a préstamos", "Only applies to loans"), t("No existeix", "No existe", "Doesn't exist")], correcta: 0 },
+            { id: 'fm5', tipus: 'multiple', dificultat: 'dificil', pregunta: t("Un bon diversificat té:", "Un bono diversificado tiene:", "A diversified portfolio has:"), opcions: [t("Tot en un actiu", "Todo en un activo", "Everything in one asset"), t("Actius correlacionats", "Activos correlacionados", "Correlated assets"), t("Actius poc correlacionats", "Activos poco correlacionados", "Uncorrelated assets"), t("Només renda fixa", "Solo renta fija", "Only bonds")], correcta: 2 },
+            { id: 'fv1', tipus: 'truefalse', dificultat: 'facil', pregunta: t("💡 Invertir en borsa sempre és arriscat però pot donar rendibilitat", "💡 Invertir en bolsa siempre es arriesgado pero puede dar rentabilidad", "💡 Stock investing is always risky but can provide returns"), correcta: true },
+            { id: 'fv2', tipus: 'truefalse', dificultat: 'mitjana', pregunta: t("💡 Un bono del estat és més segur que una acció", "💡 Un bono del estado es más seguro que una acción", "💡 A government bond is safer than a stock"), correcta: true },
+            { id: 'fv3', tipus: 'truefalse', dificultat: 'facil', pregunta: t("💡 La diversificació elimina tot el risc", "💡 La diversificación elimina todo el riesgo", "💡 Diversification eliminates all risk"), correcta: false },
+            { id: 'fv4', tipus: 'truefalse', dificultat: 'dificil', pregunta: t("💡 El risc sistemàtic es pot eliminar amb diversificació", "💡 El riesgo sistemático se puede eliminar con diversificación", "💡 Systematic risk can be eliminated with diversification"), correcta: false },
+            { id: 'fi4', tipus: 'click_chart', dificultat: 'mitjana',
+              pregunta: t("📊 Identifica la RESISTÈNCIA (on el preu frena pujant)", "📊 Identifica la RESISTENCIA (donde el precio frena subiendo)", "📊 Identify RESISTANCE (where price stops rising)"),
+              chartData: [60, 68, 75, 80, 78, 72, 76, 80, 77, 70, 74, 79, 75],
+              correctZone: { min: 2, max: 4 },
+              pista: t("La resistència és un sostre que el preu no traspassa", "La resistencia es un techo que el precio no traspasa", "Resistance is a ceiling the price doesn't break") },
+            { id: 'fi5', tipus: 'click_chart', dificultat: 'dificil',
+              pregunta: t("📈 Identifica el PUNT D'INFLEXIÓ (canvi de tendència)", "📈 Identifica el PUNTO DE INFLEXIÓN (cambio de tendencia)", "📈 Identify INFLECTION POINT (trend change)"),
+              chartData: [50, 48, 45, 42, 40, 38, 40, 44, 48, 53, 58, 64],
+              correctZone: { min: 4, max: 6 },
+              pista: t("Busca on la tendència canvia de baixista a alcista", "Busca donde la tendencia cambia de bajista a alcista", "Find where the trend changes from bearish to bullish") },
+            { id: 'fo1', tipus: 'order', dificultat: 'facil', pregunta: t("Risc de menor a major:", "Riesgo de menor a mayor:", "Risk from low to high:"), elements: [t("Dipòsit", "Depósito", "Deposit"), t("Bons", "Bonos", "Bonds"), t("Fons indexat", "Fondo indexado", "Index fund"), t("Cripto", "Cripto", "Crypto")], ordreCorrecte: [0, 1, 2, 3] },
+            { id: 'fo2', tipus: 'order', dificultat: 'mitjana', pregunta: t("Horitzó inversor típic (curt→llarg):", "Horizonte inversor típico (corto→largo):", "Typical investment horizon (short→long):"), elements: [t("Dipòsit", "Depósito", "Deposit"), t("Bons curt termini", "Bonos corto plazo", "Short bonds"), t("Fons mixt", "Fondo mixto", "Mixed fund"), t("Accions growth", "Acciones growth", "Growth stocks")], ordreCorrecte: [0, 1, 2, 3] },
         ],
         empresa: [
             { id: 'emc1', tipus: 'numeric', dificultat: 'facil', pregunta: t("Punt Mort: CF=15.000€, P=60€, CVu=30€. Unitats?", "Punto Muerto: CF=15.000€, P=60€, CVu=30€. ¿Unidades?", "Break-even: FC=€15,000, P=€60, VCu=€30. Units?"), correcta: 500, tolerancia: 0, pista: "CF/(P-CVu)" },
@@ -554,6 +675,27 @@ function ConcursApp() {
             { id: 'emf4', tipus: 'formula', dificultat: 'dificil', pregunta: "EOQ = √(2×D×Cp / ___)", opcions: ["Ca", "Cv", "CF", "P"], correcta: 0 },
             { id: 'emv1', tipus: 'truefalse', dificultat: 'facil', pregunta: t("SL: responsabilitat limitada al capital aportat", "SL: responsabilidad limitada al capital aportado", "LLC: liability limited to contributed capital"), correcta: true },
             { id: 'emv2', tipus: 'truefalse', dificultat: 'mitjana', pregunta: t("Herzberg: el salari és factor MOTIVADOR", "Herzberg: el salario es factor MOTIVADOR", "Herzberg: salary is a MOTIVATING factor"), correcta: false },
+            // NOVES PREGUNTES EMPRESA
+            { id: 'emc9', tipus: 'numeric', dificultat: 'facil', pregunta: t("ROI: Benefici=10.000€, Inversió=50.000€. ROI %?", "ROI: Beneficio=10.000€, Inversión=50.000€. ¿ROI %?", "ROI: Profit=€10,000, Investment=€50,000. ROI %?"), correcta: 20, tolerancia: 0, pista: "(Benefici/Inversió)×100" },
+            { id: 'emc10', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Marge Benefici: Vendes=100.000€, Benefici=15.000€. Marge %?", "Margen Beneficio: Ventas=100.000€, Beneficio=15.000€. ¿Margen %?", "Profit Margin: Sales=€100,000, Profit=€15,000. Margin %?"), correcta: 15, tolerancia: 0, pista: "(Benefici/Vendes)×100" },
+            { id: 'emc11', tipus: 'numeric', dificultat: 'facil', pregunta: t("Treballadors necessaris: Producció=6.000u, Productivitat=200u/treb. Quants?", "Trabajadores necesarios: Producción=6.000u, Productividad=200u/trab. ¿Cuántos?", "Workers needed: Output=6,000u, Productivity=200u/worker. How many?"), correcta: 30, tolerancia: 0, pista: "Producció/Productivitat" },
+            { id: 'emc12', tipus: 'numeric', dificultat: 'dificil', pregunta: t("Rotació estoc: Vendes=120.000€, Estoc mitjà=20.000€. Rotació?", "Rotación stock: Ventas=120.000€, Stock medio=20.000€. ¿Rotación?", "Inventory turnover: Sales=€120,000, Avg inventory=€20,000. Turnover?"), correcta: 6, tolerancia: 0, pista: "Vendes/Estoc" },
+            { id: 'emc13', tipus: 'numeric', dificultat: 'mitjana', pregunta: t("Quota mercat: Vendes empresa=50M€, Vendes sector=500M€. Quota %?", "Cuota mercado: Ventas empresa=50M€, Ventas sector=500M€. ¿Cuota %?", "Market share: Company sales=€50M, Sector=€500M. Share %?"), correcta: 10, tolerancia: 0, pista: "(Vendes emp/Vendes sector)×100" },
+            { id: 'emc14', tipus: 'numeric', dificultat: 'facil', pregunta: t("Cost mig: CT=50.000€, Q=1.000u. CMi?", "Coste medio: CT=50.000€, Q=1.000u. ¿CMe?", "Average cost: TC=€50,000, Q=1,000u. AC?"), correcta: 50, tolerancia: 0, pista: "CT/Q" },
+            { id: 'emc15', tipus: 'numeric', dificultat: 'dificil', pregunta: t("VAN: Inversió=10.000€, Flux any 1=6.000€, Flux any 2=6.000€, i=10%. VAN aprox?", "VAN: Inversión=10.000€, Flujo año 1=6.000€, Flujo año 2=6.000€, i=10%. ¿VAN aprox?", "NPV: Investment=€10,000, CF1=€6,000, CF2=€6,000, i=10%. Approx NPV?"), correcta: 413, tolerancia: 50, pista: "VAN = -I + F1/(1+i) + F2/(1+i)²" },
+            { id: 'emm1', tipus: 'multiple', dificultat: 'facil', pregunta: t("Les 4 P del màrqueting són:", "Las 4 P del marketing son:", "The 4 P's of marketing are:"), opcions: [t("Producte, Preu, Promoció, Distribució", "Producto, Precio, Promoción, Distribución", "Product, Price, Promotion, Place"), t("Persona, Procés, Producte, Posició", "Persona, Proceso, Producto, Posición", "Person, Process, Product, Position"), t("Pla, Producció, Personal, Preus", "Plan, Producción, Personal, Precios", "Plan, Production, Personnel, Prices"), t("Cap de les anteriors", "Ninguna de las anteriores", "None of the above")], correcta: 0 },
+            { id: 'emm2', tipus: 'multiple', dificultat: 'mitjana', pregunta: t("El lideratge transformacional es caracteritza per:", "El liderazgo transformacional se caracteriza por:", "Transformational leadership is characterized by:"), opcions: [t("Control estricte", "Control estricto", "Strict control"), t("Inspirar i motivar canvis", "Inspirar y motivar cambios", "Inspire and motivate change"), t("Deixar fer", "Dejar hacer", "Laissez-faire"), t("Premis i càstigs", "Premios y castigos", "Rewards and punishments")], correcta: 1 },
+            { id: 'emm3', tipus: 'multiple', dificultat: 'facil', pregunta: t("Què és el capital social d'una empresa?", "¿Qué es el capital social de una empresa?", "What is a company's share capital?"), opcions: [t("Els diners en caixa", "El dinero en caja", "Cash on hand"), t("L'aportació dels socis", "La aportación de los socios", "Shareholders' contribution"), t("Els préstecs bancaris", "Los préstamos bancarios", "Bank loans"), t("Els beneficis acumulats", "Los beneficios acumulados", "Retained earnings")], correcta: 1 },
+            { id: 'emm4', tipus: 'multiple', dificultat: 'dificil', pregunta: t("La Teoria X de McGregor assumeix que els treballadors:", "La Teoría X de McGregor asume que los trabajadores:", "McGregor's Theory X assumes workers:"), opcions: [t("Busquen responsabilitats", "Buscan responsabilidades", "Seek responsibility"), t("Eviten treballar", "Evitan trabajar", "Avoid work"), t("S'automotiven", "Se automotivan", "Self-motivate"), t("Són creatius", "Son creativos", "Are creative")], correcta: 1 },
+            { id: 'emm5', tipus: 'multiple', dificultat: 'mitjana', pregunta: t("El Just-in-Time (JIT) busca:", "El Just-in-Time (JIT) busca:", "Just-in-Time (JIT) aims to:"), opcions: [t("Maximitzar estocs", "Maximizar stocks", "Maximize inventory"), t("Eliminar malbaratament", "Eliminar desperdicio", "Eliminate waste"), t("Produir per avançat", "Producir por adelantado", "Produce in advance"), t("Augmentar costos", "Aumentar costes", "Increase costs")], correcta: 1 },
+            { id: 'emv3', tipus: 'truefalse', dificultat: 'facil', pregunta: t("L'organigrama mostra l'estructura jeràrquica de l'empresa", "El organigrama muestra la estructura jerárquica de la empresa", "The org chart shows the company's hierarchical structure"), correcta: true },
+            { id: 'emv4', tipus: 'truefalse', dificultat: 'mitjana', pregunta: t("El capital circulant inclou els edificis i maquinària", "El capital circulante incluye los edificios y maquinaria", "Working capital includes buildings and machinery"), correcta: false },
+            { id: 'emv5', tipus: 'truefalse', dificultat: 'dificil', pregunta: t("Un VAN negatiu indica que la inversió és rendible", "Un VAN negativo indica que la inversión es rentable", "A negative NPV indicates the investment is profitable"), correcta: false },
+            { id: 'emv6', tipus: 'truefalse', dificultat: 'facil', pregunta: t("La missió d'una empresa defineix la raó de ser", "La misión de una empresa define la razón de ser", "A company's mission defines its purpose"), correcta: true },
+            { id: 'emo5', tipus: 'order', dificultat: 'mitjana', pregunta: t("Funcions direcció (ordre clàssic):", "Funciones dirección (orden clásico):", "Management functions (classic order):"), elements: [t("Planificar", "Planificar", "Plan"), t("Organitzar", "Organizar", "Organize"), t("Dirigir", "Dirigir", "Direct"), t("Controlar", "Controlar", "Control")], ordreCorrecte: [0, 1, 2, 3] },
+            { id: 'emo6', tipus: 'order', dificultat: 'dificil', pregunta: t("Grau control directiu (menys→més):", "Grado control directivo (menos→más):", "Management control (less→more):"), elements: [t("Laissez-faire", "Laissez-faire", "Laissez-faire"), t("Democràtic", "Democrático", "Democratic"), t("Paternalista", "Paternalista", "Paternalistic"), t("Autoritari", "Autoritario", "Authoritarian")], ordreCorrecte: [0, 1, 2, 3] },
+            { id: 'emf5', tipus: 'formula', dificultat: 'facil', pregunta: t("Benefici = Ingressos - ___", "Beneficio = Ingresos - ___", "Profit = Revenue - ___"), opcions: [t("Costos", "Costes", "Costs"), t("Actiu", "Activo", "Assets"), t("Passiu", "Pasivo", "Liabilities"), t("Capital", "Capital", "Capital")], correcta: 0 },
+            { id: 'emf6', tipus: 'formula', dificultat: 'mitjana', pregunta: t("ROI = (Benefici / ___) × 100", "ROI = (Beneficio / ___) × 100", "ROI = (Profit / ___) × 100"), opcions: [t("Inversió", "Inversión", "Investment"), t("Vendes", "Ventas", "Sales"), t("Actiu", "Activo", "Assets"), t("Passiu", "Pasivo", "Liabilities")], correcta: 0 },
         ]
     }), [idioma]);
 
@@ -597,7 +739,10 @@ function ConcursApp() {
     };
 
     const iniciarPartida = () => {
-        if (!nomJugador.trim()) { showToast(t("Introdueix el teu nom!", "¡Introduce tu nombre!", "Enter your name!"), 'error'); return; }
+        // Llegir el nom del ref (input no controlat)
+        const nom = nomInputRef.current ? nomInputRef.current.value.trim() : nomJugador.trim();
+        if (!nom) { showToast(t("Introdueix el teu nom!", "¡Introduce tu nombre!", "Enter your name!"), 'error'); return; }
+        setNomJugador(nom); // Guardar el nom al state per usar-lo després
         setPreguntesPartida(obtenirPreguntes(categoria));
         setPreguntaActual(0); setPuntuacio(0); setRespostes([]); setRatxa(0); setMaxRatxa(0);
         setRespostaUsuari(null); setMostrarResultat(false);
@@ -765,9 +910,83 @@ function ConcursApp() {
             canvas: (<div className="grid grid-cols-5 gap-1 w-72 mx-auto my-4 text-[10px]"><div className="row-span-2 p-2 bg-violet-400/30 rounded border border-violet-400/50 text-center">🤝</div><div className="p-2 bg-blue-400/30 rounded border border-blue-400/50 text-center">⚙️</div><div className="row-span-2 p-2 bg-pink-400/30 rounded border border-pink-400/50 text-center animate-pulse">💎</div><div className="p-2 bg-green-400/30 rounded border border-green-400/50 text-center">❤️</div><div className="row-span-2 p-2 bg-emerald-400/30 rounded border border-emerald-400/50 text-center">👥</div><div className="p-2 bg-cyan-400/30 rounded border border-cyan-400/50 text-center">🏗️</div><div className="p-2 bg-amber-400/30 rounded border border-amber-400/50 text-center">📢</div><div className="col-span-2 p-2 bg-red-400/30 rounded border border-red-400/50 text-center">💸</div><div className="col-span-3 p-2 bg-green-400/30 rounded border border-green-400/50 text-center">💰</div></div>),
             dafo: (<div className="grid grid-cols-2 gap-2 w-56 mx-auto my-4 text-xs"><div className="p-2 bg-green-400/30 rounded border border-green-400/50 text-center">💪 {t("F", "F", "S")}</div><div className="p-2 bg-red-400/30 rounded border border-red-400/50 text-center">😰 {t("D", "D", "W")}</div><div className="p-2 bg-blue-400/30 rounded border border-blue-400/50 text-center">🎯 {t("O", "O", "O")}</div><div className="p-2 bg-orange-400/30 rounded border border-orange-400/50 text-center animate-pulse">⚠️ {t("A", "A", "T")}</div></div>),
             porter: (<div className="w-56 mx-auto my-4 text-[10px] text-center"><div className="p-2 bg-red-400/30 rounded border border-red-400/50 mb-1">⬆️ {t("Entrants", "Entrantes", "Entrants")}</div><div className="flex gap-1"><div className="p-2 bg-blue-400/30 rounded border border-blue-400/50 flex-1">⬅️</div><div className="p-2 bg-purple-400/30 rounded border border-purple-400/50 flex-1">⚔️</div><div className="p-2 bg-green-400/30 rounded border border-green-400/50 flex-1">➡️</div></div><div className="p-2 bg-amber-400/30 rounded border border-amber-400/50 mt-1">⬇️ {t("Substituts", "Sustitutos", "Substitutes")}</div></div>),
-            oferta_demanda: (<div className="w-48 h-32 mx-auto my-4 relative bg-white/5 rounded-lg border border-white/20"><div className="absolute bottom-4 left-4 w-32 h-20 border-l-2 border-b-2 border-purple-400"></div><div className="absolute bottom-6 left-6 w-24 h-1 bg-blue-400 transform -rotate-45 origin-left"></div><div className="absolute bottom-6 left-6 w-24 h-1 bg-red-400 transform rotate-45 origin-left"></div><div className="absolute bottom-2 right-4 text-[10px] text-purple-300">Q</div><div className="absolute top-2 left-2 text-[10px] text-purple-300">P</div><div className="absolute top-1/2 left-1/2 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div></div>),
-            islm: (<div className="w-48 h-32 mx-auto my-4 relative bg-white/5 rounded-lg border border-white/20"><div className="absolute bottom-4 left-4 w-32 h-20 border-l-2 border-b-2 border-purple-400"></div><div className="absolute bottom-8 left-8 w-20 h-1 bg-blue-400" style={{transform:'rotate(-25deg)'}}></div><div className="absolute bottom-16 left-10 w-20 h-1 bg-green-400" style={{transform:'rotate(25deg)'}}></div><div className="absolute top-4 left-10 text-[10px] text-blue-300 font-bold">IS</div><div className="absolute top-8 right-8 text-[10px] text-green-300 font-bold">LM</div></div>),
-            laffer: (<div className="w-48 h-32 mx-auto my-4 relative bg-white/5 rounded-lg border border-white/20"><div className="absolute bottom-4 left-4 w-32 h-20 border-l-2 border-b-2 border-purple-400"></div><svg className="absolute bottom-6 left-6 w-28 h-16" viewBox="0 0 100 60"><path d="M 0 60 Q 50 -20 100 60" stroke="#f59e0b" strokeWidth="3" fill="none"/><circle cx="50" cy="10" r="4" fill="#fbbf24" className="animate-pulse"/></svg></div>),
+            oferta_demanda: (<div className="w-64 h-44 mx-auto my-4 relative bg-white/5 rounded-lg border border-white/20 p-2">
+                <svg viewBox="0 0 100 80" className="w-full h-full">
+                    {/* Eixos */}
+                    <line x1="15" y1="5" x2="15" y2="70" stroke="#a78bfa" strokeWidth="1.5"/>
+                    <line x1="15" y1="70" x2="95" y2="70" stroke="#a78bfa" strokeWidth="1.5"/>
+                    {/* Fletxes */}
+                    <polygon points="15,5 12,10 18,10" fill="#a78bfa"/>
+                    <polygon points="95,70 90,67 90,73" fill="#a78bfa"/>
+                    {/* Corba Demanda (vermella, decreixent) */}
+                    <path d="M 20 15 Q 45 25 70 55 T 90 65" stroke="#ef4444" strokeWidth="2.5" fill="none"/>
+                    {/* Corba Oferta (blava, creixent) */}
+                    <path d="M 20 65 Q 45 55 70 25 T 90 15" stroke="#3b82f6" strokeWidth="2.5" fill="none"/>
+                    {/* Punt d'equilibri */}
+                    <circle cx="55" cy="40" r="4" fill="#fbbf24" className="animate-pulse"/>
+                    {/* Etiquetes */}
+                    <text x="8" y="12" fill="#a78bfa" fontSize="8" fontWeight="bold">P</text>
+                    <text x="90" y="78" fill="#a78bfa" fontSize="8" fontWeight="bold">Q</text>
+                    <text x="75" y="20" fill="#3b82f6" fontSize="7" fontWeight="bold">O</text>
+                    <text x="75" y="62" fill="#ef4444" fontSize="7" fontWeight="bold">D</text>
+                    <text x="58" y="38" fill="#fbbf24" fontSize="6">E</text>
+                </svg>
+            </div>),
+            islm: (<div className="w-64 h-44 mx-auto my-4 relative bg-white/5 rounded-lg border border-white/20 p-2">
+                <svg viewBox="0 0 100 80" className="w-full h-full">
+                    {/* Eixos */}
+                    <line x1="15" y1="5" x2="15" y2="70" stroke="#a78bfa" strokeWidth="1.5"/>
+                    <line x1="15" y1="70" x2="95" y2="70" stroke="#a78bfa" strokeWidth="1.5"/>
+                    {/* Fletxes */}
+                    <polygon points="15,5 12,10 18,10" fill="#a78bfa"/>
+                    <polygon points="95,70 90,67 90,73" fill="#a78bfa"/>
+                    {/* Corba IS (blava, decreixent) */}
+                    <line x1="20" y1="20" x2="85" y2="60" stroke="#3b82f6" strokeWidth="2.5"/>
+                    {/* Corba LM (verda, creixent) */}
+                    <line x1="20" y1="60" x2="85" y2="20" stroke="#22c55e" strokeWidth="2.5"/>
+                    {/* Punt d'equilibri */}
+                    <circle cx="52" cy="40" r="4" fill="#fbbf24" className="animate-pulse"/>
+                    {/* Etiquetes */}
+                    <text x="8" y="12" fill="#a78bfa" fontSize="8" fontWeight="bold">i</text>
+                    <text x="90" y="78" fill="#a78bfa" fontSize="8" fontWeight="bold">Y</text>
+                    <text x="80" y="65" fill="#3b82f6" fontSize="8" fontWeight="bold">IS</text>
+                    <text x="80" y="18" fill="#22c55e" fontSize="8" fontWeight="bold">LM</text>
+                </svg>
+            </div>),
+            laffer: (<div className="w-64 h-44 mx-auto my-4 relative bg-white/5 rounded-lg border border-white/20 p-2">
+                <svg viewBox="0 0 100 80" className="w-full h-full">
+                    {/* Eixos */}
+                    <line x1="15" y1="5" x2="15" y2="70" stroke="#a78bfa" strokeWidth="1.5"/>
+                    <line x1="15" y1="70" x2="95" y2="70" stroke="#a78bfa" strokeWidth="1.5"/>
+                    {/* Fletxes */}
+                    <polygon points="15,5 12,10 18,10" fill="#a78bfa"/>
+                    <polygon points="95,70 90,67 90,73" fill="#a78bfa"/>
+                    {/* Corba de Laffer (paràbola invertida) */}
+                    <path d="M 20 65 Q 55 0 90 65" stroke="#f59e0b" strokeWidth="2.5" fill="none"/>
+                    {/* Punt òptim */}
+                    <circle cx="55" cy="18" r="4" fill="#fbbf24" className="animate-pulse"/>
+                    <line x1="55" y1="22" x2="55" y2="70" stroke="#fbbf24" strokeWidth="1" strokeDasharray="3"/>
+                    {/* Etiquetes */}
+                    <text x="3" y="40" fill="#a78bfa" fontSize="7" fontWeight="bold">Rec.</text>
+                    <text x="80" y="78" fill="#a78bfa" fontSize="7" fontWeight="bold">Tax %</text>
+                    <text x="48" y="14" fill="#fbbf24" fontSize="6">t*</text>
+                </svg>
+            </div>),
+            phillips: (<div className="w-64 h-44 mx-auto my-4 relative bg-white/5 rounded-lg border border-white/20 p-2">
+                <svg viewBox="0 0 100 80" className="w-full h-full">
+                    {/* Eixos */}
+                    <line x1="15" y1="5" x2="15" y2="70" stroke="#a78bfa" strokeWidth="1.5"/>
+                    <line x1="15" y1="70" x2="95" y2="70" stroke="#a78bfa" strokeWidth="1.5"/>
+                    {/* Fletxes */}
+                    <polygon points="15,5 12,10 18,10" fill="#a78bfa"/>
+                    <polygon points="95,70 90,67 90,73" fill="#a78bfa"/>
+                    {/* Corba de Phillips (hipèrbola) */}
+                    <path d="M 20 15 Q 30 40 50 55 T 90 62" stroke="#ec4899" strokeWidth="2.5" fill="none"/>
+                    {/* Etiquetes */}
+                    <text x="3" y="12" fill="#a78bfa" fontSize="7" fontWeight="bold">Infl.</text>
+                    <text x="75" y="78" fill="#a78bfa" fontSize="7" fontWeight="bold">Atur</text>
+                </svg>
+            </div>),
             balanc: (<div className="w-56 mx-auto my-4 text-[10px]"><div className="flex gap-1"><div className="flex-1 p-2 bg-blue-400/30 rounded-t border border-blue-400/50 text-center font-bold">{t("ACTIU", "ACTIVO", "ASSETS")}</div><div className="flex-1 p-2 bg-green-400/30 rounded-t border border-green-400/50 text-center font-bold">{t("P+PN", "P+PN", "L+E")}</div></div><div className="flex gap-1"><div className="flex-1 p-1 bg-blue-400/20 border-x border-blue-400/50">ANC</div><div className="flex-1 p-1 bg-green-400/20 border-x border-green-400/50">PN</div></div><div className="flex gap-1"><div className="flex-1 p-1 bg-blue-400/20 border border-blue-400/50 rounded-b">AC</div><div className="flex-1"><div className="p-1 bg-green-400/20 border-x border-green-400/50">PNC</div><div className="p-1 bg-green-400/20 border border-green-400/50 rounded-b">PC</div></div></div></div>),
             leasing: (<div className="w-48 mx-auto my-4 p-4 bg-blue-400/20 rounded-xl border border-blue-400/50 text-center"><span className="text-3xl">🏦➡️📦</span><p className="text-sm mt-2 text-blue-200 font-bold">LEASING</p></div>),
             factoring: (<div className="w-48 mx-auto my-4 p-4 bg-green-400/20 rounded-xl border border-green-400/50 text-center"><span className="text-3xl">📄➡️💵</span><p className="text-sm mt-2 text-green-200 font-bold">FACTORING</p></div>),
@@ -788,7 +1007,19 @@ function ConcursApp() {
                 <div className="space-y-5">
                     <div>
                         <label className="block text-sm font-semibold text-purple-200 mb-2">{t("El teu nom", "Tu nombre", "Your name")}</label>
-                        <input type="text" value={nomJugador} onChange={e => setNomJugador(e.target.value)} placeholder={t("Escriu el teu nom...", "Escribe tu nombre...", "Enter your name...")} className="w-full p-4 bg-white/10 border border-white/30 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-yellow-400 outline-none text-lg" maxLength={20} />
+                        <input 
+                            type="text" 
+                            ref={nomInputRef}
+                            defaultValue={nomJugador}
+                            onBlur={e => setNomJugador(e.target.value)}
+                            placeholder={t("Escriu el teu nom...", "Escribe tu nombre...", "Enter your name...")} 
+                            className="w-full p-4 bg-white/10 border border-white/30 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-yellow-400 outline-none text-lg" 
+                            maxLength={20}
+                            autoComplete="off"
+                            autoCorrect="off"
+                            autoCapitalize="off"
+                            spellCheck="false"
+                        />
                     </div>
                     
                     <div>
