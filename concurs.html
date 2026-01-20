@@ -109,6 +109,66 @@
         <button id="numeric-submit-btn" type="button">COMPROVAR</button>
     </div>
     
+    <!-- SCRIPT PER L'INPUT FLOTANT - COMPLETAMENT FORA DE REACT! -->
+    <script>
+    (function() {
+        const container = document.getElementById('numeric-input-container');
+        const input = document.getElementById('numeric-input-field');
+        const btn = document.getElementById('numeric-submit-btn');
+        let isVisible = false;
+        
+        function handleSubmit() {
+            const value = input.value.trim();
+            if (value && window.submitNumericAnswer) {
+                window.submitNumericAnswer(value);
+            }
+        }
+        
+        btn.addEventListener('click', handleSubmit);
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSubmit();
+            }
+        });
+        
+        // Prevenir que React pugui fer res estrany
+        input.addEventListener('input', function(e) {
+            e.stopPropagation();
+        });
+        
+        // API global per controlar l'input des de React
+        window.numericInputAPI = {
+            show: function(placeholder, lang) {
+                // IMPORTANT: Només netejar si NO estava visible (nova pregunta)
+                if (!isVisible) {
+                    input.value = '';
+                    isVisible = true;
+                }
+                input.placeholder = placeholder || 'Resultat numèric...';
+                btn.textContent = lang === 'val' ? 'COMPROVAR' : lang === 'es' ? 'COMPROBAR' : 'CHECK';
+                container.classList.add('active');
+                // Focus només si no té focus
+                if (document.activeElement !== input) {
+                    setTimeout(function() { input.focus(); }, 150);
+                }
+            },
+            hide: function() {
+                container.classList.remove('active');
+                isVisible = false;
+                // No fer blur si l'usuari està escrivint
+            },
+            clear: function() {
+                input.value = '';
+            },
+            reset: function() {
+                input.value = '';
+                isVisible = false;
+            }
+        };
+    })();
+    </script>
+    
     <div id="root"></div>
     <script type="text/babel">
 const { useState, useEffect, useMemo, useRef, useCallback, memo } = React;
@@ -314,34 +374,26 @@ function ConcursApp() {
         setTimeout(() => setToast({ show: false, message: '', type: '' }), 2000);
     }, []);
     
-    // GESTIÓ INPUT HTML FLOTANT - Mostrar/amagar segons l'estat
+    // GESTIÓ INPUT HTML FLOTANT - Usar l'API global
+    const prevPreguntaRef = useRef(-1);
     useEffect(() => {
         const p = preguntesPartida[preguntaActual];
         const esNumeric = p && p.tipus === 'numeric';
         const mostrar = fase === 'jugant' && esNumeric && !mostrarResultat;
         
-        const container = document.getElementById('numeric-input-container');
-        const input = document.getElementById('numeric-input-field');
-        const btn = document.getElementById('numeric-submit-btn');
-        
-        if (mostrar) {
-            if (container) container.classList.add('active');
-            if (input) {
-                input.value = '';
-                input.placeholder = idioma === 'val' ? 'Resultat numèric...' : idioma === 'es' ? 'Resultado numérico...' : 'Numeric result...';
-                // Focus amb delay per assegurar estabilitat
-                setTimeout(() => {
-                    if (input && document.activeElement !== input) {
-                        input.focus();
-                    }
-                }, 100);
+        if (window.numericInputAPI) {
+            // Si hem canviat de pregunta, resetejar l'input
+            if (preguntaActual !== prevPreguntaRef.current) {
+                window.numericInputAPI.reset();
+                prevPreguntaRef.current = preguntaActual;
             }
-            if (btn) {
-                btn.textContent = idioma === 'val' ? 'COMPROVAR' : idioma === 'es' ? 'COMPROBAR' : 'CHECK';
+            
+            if (mostrar) {
+                const placeholder = idioma === 'val' ? 'Resultat numèric...' : idioma === 'es' ? 'Resultado numérico...' : 'Numeric result...';
+                window.numericInputAPI.show(placeholder, idioma);
+            } else {
+                window.numericInputAPI.hide();
             }
-        } else {
-            if (container) container.classList.remove('active');
-            if (input) input.blur();
         }
     }, [fase, preguntaActual, mostrarResultat, preguntesPartida, idioma]);
 
@@ -632,34 +684,6 @@ function ConcursApp() {
         };
         return () => { delete window.submitNumericAnswer; };
     }, [fase, mostrarResultat, handleResposta]);
-    
-    // SETUP EVENT LISTENERS per l'input flotant (una sola vegada)
-    useEffect(() => {
-        const input = document.getElementById('numeric-input-field');
-        const btn = document.getElementById('numeric-submit-btn');
-        
-        const handleSubmit = () => {
-            const value = input?.value?.trim();
-            if (value && window.submitNumericAnswer) {
-                window.submitNumericAnswer(value);
-            }
-        };
-        
-        const handleKeyDown = (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                handleSubmit();
-            }
-        };
-        
-        if (btn) btn.addEventListener('click', handleSubmit);
-        if (input) input.addEventListener('keydown', handleKeyDown);
-        
-        return () => {
-            if (btn) btn.removeEventListener('click', handleSubmit);
-            if (input) input.removeEventListener('keydown', handleKeyDown);
-        };
-    }, []);
 
     const handleTimeUp = useCallback(() => {
         if (!mostrarResultat) handleResposta(null);
@@ -1000,48 +1024,91 @@ function ConcursApp() {
                     {/* ALLOCATE - Distribuir cartera */}
                     {p.tipus === 'allocate' && (
                         <div className="space-y-4">
-                            {p.assets.map((asset, i) => (
-                                <div key={i} className={`p-4 rounded-xl border-2 transition-all ${
-                                    mostrarResultat 
-                                        ? (allocations[i] >= p.correctRanges[i][0] && allocations[i] <= p.correctRanges[i][1]) 
-                                            ? 'border-green-400 bg-green-400/20' 
-                                            : 'border-red-400 bg-red-400/20'
-                                        : 'border-white/30 bg-white/5'
-                                }`}>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="text-lg">
-                                            <span className="mr-2">{asset.icon}</span>
-                                            <span className="text-white font-medium">{asset.nom}</span>
-                                        </span>
-                                        <span className="text-2xl font-black text-white">{allocations[i] || 0}%</span>
-                                    </div>
-                                    {!mostrarResultat ? (
-                                        <input type="range" min="0" max="100" value={allocations[i] || 0}
-                                            onChange={(e) => {
-                                                const newVal = parseInt(e.target.value);
-                                                const newAllocs = [...allocations];
-                                                const diff = newVal - (newAllocs[i] || 0);
-                                                newAllocs[i] = newVal;
-                                                // Ajustar altres per sumar 100
-                                                const others = newAllocs.map((v, j) => j !== i ? j : -1).filter(j => j >= 0);
-                                                if (others.length > 0) {
-                                                    const perOther = Math.floor(diff / others.length);
-                                                    others.forEach(j => { newAllocs[j] = Math.max(0, Math.min(100, (newAllocs[j] || 0) - perOther)); });
-                                                }
-                                                setAllocations(newAllocs);
-                                            }}
-                                            className="w-full h-3 bg-white/20 rounded-lg appearance-none cursor-pointer accent-yellow-400" />
-                                    ) : (
-                                        <div className="text-sm text-purple-300">
-                                            {t("Rang correcte:", "Rango correcto:", "Correct range:")} {p.correctRanges[i][0]}-{p.correctRanges[i][1]}%
+                            {p.assets.map((asset, i) => {
+                                const canDecrease = allocations[i] >= 5;
+                                const canIncrease = allocations.some((val, j) => j !== i && val >= 5);
+                                
+                                return (
+                                    <div key={i} className={`p-4 rounded-xl border-2 transition-all ${
+                                        mostrarResultat 
+                                            ? (allocations[i] >= p.correctRanges[i][0] && allocations[i] <= p.correctRanges[i][1]) 
+                                                ? 'border-green-400 bg-green-400/20' 
+                                                : 'border-red-400 bg-red-400/20'
+                                            : 'border-white/30 bg-white/5'
+                                    }`}>
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-lg">
+                                                <span className="mr-2">{asset.icon}</span>
+                                                <span className="text-white font-medium">{asset.nom}</span>
+                                            </span>
+                                            <div className="flex items-center gap-2">
+                                                {!mostrarResultat && (
+                                                    <button 
+                                                        onClick={() => {
+                                                            if (!canDecrease) return;
+                                                            const newAllocs = [...allocations];
+                                                            newAllocs[i] -= 5;
+                                                            // Afegir 5 al següent que tingui menys de 100
+                                                            for (let j = 0; j < newAllocs.length; j++) {
+                                                                if (j !== i) {
+                                                                    newAllocs[j] += 5;
+                                                                    break;
+                                                                }
+                                                            }
+                                                            setAllocations(newAllocs);
+                                                        }} 
+                                                        disabled={!canDecrease}
+                                                        className={`w-10 h-10 rounded-lg font-bold text-xl active:scale-90 transition-all ${canDecrease ? 'bg-red-500/30 text-red-300 hover:bg-red-500/50' : 'bg-white/10 text-white/30 cursor-not-allowed'}`}>
+                                                        −
+                                                    </button>
+                                                )}
+                                                <span className="text-2xl font-black text-white min-w-[70px] text-center">{allocations[i]}%</span>
+                                                {!mostrarResultat && (
+                                                    <button 
+                                                        onClick={() => {
+                                                            if (!canIncrease) return;
+                                                            const newAllocs = [...allocations];
+                                                            newAllocs[i] += 5;
+                                                            // Treure 5 del primer que tingui >=5
+                                                            for (let j = 0; j < newAllocs.length; j++) {
+                                                                if (j !== i && newAllocs[j] >= 5) {
+                                                                    newAllocs[j] -= 5;
+                                                                    break;
+                                                                }
+                                                            }
+                                                            setAllocations(newAllocs);
+                                                        }}
+                                                        disabled={!canIncrease}
+                                                        className={`w-10 h-10 rounded-lg font-bold text-xl active:scale-90 transition-all ${canIncrease ? 'bg-green-500/30 text-green-300 hover:bg-green-500/50' : 'bg-white/10 text-white/30 cursor-not-allowed'}`}>
+                                                        +
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
-                                    )}
-                                </div>
-                            ))}
-                            <div className={`text-center text-lg font-bold ${allocations.reduce((a, b) => a + b, 0) === 100 ? 'text-green-400' : 'text-red-400'}`}>
-                                {t("Total:", "Total:", "Total:")} {allocations.reduce((a, b) => a + b, 0)}% {allocations.reduce((a, b) => a + b, 0) === 100 ? '✓' : `(${t("ha de ser 100%", "debe ser 100%", "must be 100%")})`}
+                                        {/* Barra visual */}
+                                        <div className="h-4 bg-white/10 rounded-full overflow-hidden">
+                                            <div 
+                                                className={`h-full transition-all duration-200 ${
+                                                    mostrarResultat 
+                                                        ? (allocations[i] >= p.correctRanges[i][0] && allocations[i] <= p.correctRanges[i][1]) 
+                                                            ? 'bg-green-500' : 'bg-red-500'
+                                                        : 'bg-gradient-to-r from-yellow-400 to-amber-500'
+                                                }`}
+                                                style={{ width: `${allocations[i]}%` }}
+                                            ></div>
+                                        </div>
+                                        {mostrarResultat && (
+                                            <div className="text-sm text-purple-300 mt-1">
+                                                {t("Rang correcte:", "Rango correcto:", "Correct range:")} {p.correctRanges[i][0]}-{p.correctRanges[i][1]}%
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                            <div className="text-center text-lg font-bold text-green-400">
+                                {t("Total:", "Total:", "Total:")} {allocations.reduce((a, b) => a + b, 0)}% ✓
                             </div>
-                            {!mostrarResultat && allocations.reduce((a, b) => a + b, 0) === 100 && (
+                            {!mostrarResultat && (
                                 <button onClick={() => handleResposta('allocate')} className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:opacity-90 active:scale-95">
                                     {t("CONFIRMAR", "CONFIRMAR", "CONFIRM")}
                                 </button>
