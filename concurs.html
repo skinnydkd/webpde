@@ -35,6 +35,12 @@
         .streak-fire { text-shadow: 0 0 10px #f97316, 0 0 20px #ea580c, 0 0 30px #dc2626; }
         input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
+        /* IMPORTANT: Evitar problemes amb el teclat en mòbil */
+        html { height: 100%; overflow: hidden; }
+        body { height: 100%; overflow: auto; -webkit-overflow-scrolling: touch; }
+        input, textarea, select { font-size: 16px !important; } /* Evita zoom automàtic en iOS */
+        /* Evitar que el focus es perdi */
+        input:focus { outline: none; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 min-h-screen">
@@ -42,48 +48,97 @@
     <script type="text/babel">
 const { useState, useEffect, useMemo, useRef, useCallback, memo } = React;
 
-// Component Timer separat amb useRef per evitar re-renders
-const Timer = memo(({ temps, onTimeUp, isActive }) => {
-    const [display, setDisplay] = useState(temps);
+// TIMER AMB DOM DIRECTE - NO CAUSA CAP RE-RENDER DEL PARE!
+function TimerDirect({ timerKey, onTimeUp, isActive }) {
+    const timeRef = useRef(60);
     const intervalRef = useRef(null);
-    const tempsRef = useRef(temps);
+    const barRef = useRef(null);
+    const textRef = useRef(null);
+    const onTimeUpRef = useRef(onTimeUp);
     
+    // Actualitzar la referència del callback sense causar re-render
     useEffect(() => {
-        tempsRef.current = temps;
-        setDisplay(temps);
-    }, [temps]);
+        onTimeUpRef.current = onTimeUp;
+    }, [onTimeUp]);
     
+    // Reset quan canvia timerKey (nova pregunta)
     useEffect(() => {
-        if (!isActive) {
-            if (intervalRef.current) clearInterval(intervalRef.current);
-            return;
+        timeRef.current = 60;
+        if (textRef.current) {
+            textRef.current.textContent = '60s';
+            textRef.current.className = 'text-2xl font-black min-w-[50px] text-right text-white';
+        }
+        if (barRef.current) {
+            barRef.current.style.width = '100%';
+            barRef.current.className = 'h-full bg-green-500 transition-all duration-1000';
+        }
+    }, [timerKey]);
+    
+    // Gestionar interval - actualitza DOM directament
+    useEffect(() => {
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
         }
         
+        if (!isActive) return;
+        
         intervalRef.current = setInterval(() => {
-            tempsRef.current -= 1;
-            setDisplay(tempsRef.current);
-            if (tempsRef.current <= 0) {
+            timeRef.current -= 1;
+            const t = timeRef.current;
+            
+            // ACTUALITZAR DOM DIRECTAMENT - SENSE setState!
+            if (textRef.current) {
+                textRef.current.textContent = t + 's';
+                textRef.current.className = t > 30 
+                    ? 'text-2xl font-black min-w-[50px] text-right text-white'
+                    : t > 10 
+                        ? 'text-2xl font-black min-w-[50px] text-right text-amber-400'
+                        : 'text-2xl font-black min-w-[50px] text-right text-red-400 animate-pulse';
+            }
+            if (barRef.current) {
+                barRef.current.style.width = ((t / 60) * 100) + '%';
+                barRef.current.className = t > 30 
+                    ? 'h-full bg-green-500 transition-all duration-1000'
+                    : t > 10 
+                        ? 'h-full bg-amber-500 transition-all duration-1000'
+                        : 'h-full bg-red-500 transition-all duration-1000';
+            }
+            
+            if (t <= 0) {
                 clearInterval(intervalRef.current);
-                onTimeUp();
+                intervalRef.current = null;
+                if (onTimeUpRef.current) onTimeUpRef.current();
             }
         }, 1000);
         
-        return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-    }, [isActive, onTimeUp]);
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+                intervalRef.current = null;
+            }
+        };
+    }, [isActive, timerKey]);
     
-    const color = display > 30 ? 'text-white' : display > 10 ? 'text-amber-400' : 'text-red-400 animate-pulse';
-    const pct = (display / 60) * 100;
-    const barColor = display > 30 ? 'bg-green-500' : display > 10 ? 'bg-amber-500' : 'bg-red-500';
+    // Exposar funció per afegir temps (per l'ajuda +60s)
+    useEffect(() => {
+        window.addTimerTime = (seconds) => {
+            timeRef.current = Math.min(timeRef.current + seconds, 120);
+            if (textRef.current) textRef.current.textContent = timeRef.current + 's';
+            if (barRef.current) barRef.current.style.width = Math.min((timeRef.current / 60) * 100, 100) + '%';
+        };
+        return () => { delete window.addTimerTime; };
+    }, []);
     
     return (
         <div className="flex items-center gap-3">
             <div className="flex-1 h-2 bg-white/20 rounded-full overflow-hidden">
-                <div className={`h-full ${barColor} transition-all duration-1000`} style={{ width: `${pct}%` }}></div>
+                <div ref={barRef} className="h-full bg-green-500 transition-all duration-1000" style={{width: '100%'}}></div>
             </div>
-            <span className={`text-2xl font-black ${color} min-w-[50px] text-right`}>{display}s</span>
+            <span ref={textRef} className="text-2xl font-black min-w-[50px] text-right text-white">60s</span>
         </div>
     );
-});
+}
 
 // Efecte confetti
 const Confetti = ({ show }) => {
@@ -379,7 +434,8 @@ function ConcursApp() {
     
     const usarAjudaTemps = () => {
         if (ajudes.temps <= 0 || mostrarResultat) return;
-        setTimerKey(k => k + 1); // Reset timer to 60
+        // Afegir 60 segons al temps actual via DOM directe
+        if (window.addTimerTime) window.addTimerTime(60);
         setAjudes(a => ({ ...a, temps: a.temps - 1 }));
         showToast(t("+60 segons!", "¡+60 segundos!", "+60 seconds!"), 'success');
         playSound('bonus');
@@ -518,7 +574,7 @@ function ConcursApp() {
                     <div className="h-2 bg-white/20 rounded-full overflow-hidden">
                         <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300" style={{ width: `${progressPct}%` }}></div>
                     </div>
-                    <Timer key={timerKey} temps={60} onTimeUp={handleTimeUp} isActive={timerActive && !mostrarResultat} />
+                    <TimerDirect timerKey={timerKey} onTimeUp={handleTimeUp} isActive={timerActive && !mostrarResultat} />
                 </div>
                 
                 {/* Ajudes */}
@@ -589,11 +645,24 @@ function ConcursApp() {
                     {/* Numèric */}
                     {p.tipus === 'numeric' && (
                         <div className="space-y-4">
-                            <input ref={inputRef} type="number" step="any" value={inputNumeric} onChange={e => setInputNumeric(e.target.value)} disabled={mostrarResultat}
+                            <input 
+                                key="numeric-input-stable"
+                                ref={inputRef} 
+                                type="text" 
+                                inputMode="decimal"
+                                pattern="[0-9.,\-]*"
+                                value={inputNumeric} 
+                                onChange={e => setInputNumeric(e.target.value)} 
+                                disabled={mostrarResultat}
                                 placeholder={t("Resultat numèric...", "Resultado numérico...", "Numeric result...")}
-                                className="w-full p-4 text-2xl font-bold text-center bg-white/10 border-2 border-white/30 rounded-xl text-white placeholder-white/50 outline-none focus:border-yellow-400"
+                                className="w-full p-4 text-2xl font-bold text-center bg-white/10 border-2 border-white/30 rounded-xl text-white placeholder-white/50 focus:border-yellow-400"
                                 onKeyDown={e => e.key === 'Enter' && !mostrarResultat && inputNumeric && handleResposta(inputNumeric)}
-                                autoComplete="off" inputMode="decimal" />
+                                autoComplete="off"
+                                autoCorrect="off"
+                                autoCapitalize="off"
+                                spellCheck="false"
+                                style={{ fontSize: '24px' }}
+                            />
                             {!mostrarResultat && <button onClick={() => inputNumeric && handleResposta(inputNumeric)} className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:opacity-90 active:scale-95">{t("COMPROVAR", "COMPROBAR", "CHECK")}</button>}
                             {mostrarResultat && (
                                 <div className="text-center">
