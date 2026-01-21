@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Recerca i Lectures - PDE</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-serif { font-family: 'Merriweather', serif; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-white to-amber-50 min-h-screen">
+    <div id="root"></div>
+    <script type="text/babel">
+const { useState, useMemo } = React;
+
+function RecercaApp() {
+    const [idioma, setIdioma] = useState('val');
+    const [seccio, setSeccio] = useState('papers');
+    const [subSeccio, setSubSeccio] = useState(null);
+    const [itemSeleccionat, setItemSeleccionat] = useState(null);
+    const [cercador, setCercador] = useState('');
+    const [filtreCategoria, setFiltreCategoria] = useState('tots');
+    const [filtreAny, setFiltreAny] = useState('tots');
+
+    const t = (val, es, en) => idioma === 'val' ? val : idioma === 'es' ? es : en;
+
+    // ==================== PAPERS ACADÈMICS ====================
+    const papersTemes = [
+        { id: 'tots', icon: '📚', label: t('Tots', 'Todos', 'All') },
+        { id: 'ia', icon: '🤖', label: t('IA i Tecnologia', 'IA y Tecnología', 'AI & Technology') },
+        { id: 'desigualtat', icon: '📊', label: t('Desigualtat', 'Desigualdad', 'Inequality') },
+        { id: 'institucions', icon: '🏛️', label: t('Institucions', 'Instituciones', 'Institutions') },
+        { id: 'conductual', icon: '🧠', label: t('Ec. Conductual', 'Ec. Conductual', 'Behavioral') },
+        { id: 'clima', icon: '🌍', label: t('Clima', 'Clima', 'Climate') },
+        { id: 'finances', icon: '💰', label: t('Finances', 'Finanzas', 'Finance') },
+        { id: 'treball', icon: '💼', label: t('Treball', 'Trabajo', 'Labor') },
+        { id: 'desenvolupament', icon: '🌱', label: t('Desenvolupament', 'Desarrollo', 'Development') },
+    ];
+
+    const papers = [
+        // 2024-2025 - IA i Nobel
+        { id: 1, any: 2024, tema: 'ia', autors: 'Daron Acemoglu', institucio: 'MIT', 
+          titol: 'The Simple Macroeconomics of AI', 
+          revista: 'NBER Working Paper',
+          resum: t(
+            "Analitza l'impacte macroeconòmic de la IA en els pròxims 10 anys. Prediu un augment modest del PIB (0.5-1.5%) però adverteix sobre els efectes en la desigualtat.",
+            "Analiza el impacto macroeconómico de la IA en los próximos 10 años. Predice un aumento modesto del PIB (0.5-1.5%) pero advierte sobre efectos en la desigualdad.",
+            "Analyzes AI's macroeconomic impact over 10 years. Predicts modest GDP increase (0.5-1.5%) but warns about inequality effects."
+          ),
+          perQueImporta: t(
+            "🎓 PER QUÈ T'IMPORTA: Quan sents que la IA ho canviarà tot demà, aquest paper et dóna perspectiva. Acemoglu (Nobel 2024) demostra que l'impacte serà real però gradual. Si estàs decidint què estudiar o en què treballar, aquest paper t'ajuda a entendre que tens temps per adaptar-te, però que has de fer-ho.",
+            "🎓 POR QUÉ TE IMPORTA: Cuando oyes que la IA lo cambiará todo mañana, este paper te da perspectiva. Acemoglu (Nobel 2024) demuestra que el impacto será real pero gradual. Si estás decidiendo qué estudiar o en qué trabajar, este paper te ayuda a entender que tienes tiempo para adaptarte, pero que debes hacerlo.",
+            "🎓 WHY IT MATTERS: When you hear AI will change everything tomorrow, this paper gives perspective. Acemoglu (Nobel 2024) shows the impact will be real but gradual. If you're deciding what to study or work in, this helps you understand you have time to adapt, but you must."
+          ),
+          link: 'https://economics.mit.edu/sites/default/files/2024-04/The%20Simple%20Macroeconomics%20of%20AI.pdf',
+          destacat: true
+        },
+        
+        { id: 2, any: 2024, tema: 'institucions', autors: 'Acemoglu, Johnson, Robinson', institucio: 'MIT / LSE / U. Chicago', 
+          titol: 'Why Nations Fail: The Origins of Power, Prosperity, and Poverty', 
+          revista: 'Nobel Prize Lecture 2024',
+          resum: t(
+            "Síntesi de 20 anys de recerca sobre com les institucions polítiques i econòmiques determinen la prosperitat de les nacions a llarg termini.",
+            "Síntesis de 20 años de investigación sobre cómo las instituciones políticas y económicas determinan la prosperidad de las naciones.",
+            "Synthesis of 20 years of research on how political and economic institutions determine long-term prosperity."
+          ),
+          perQueImporta: t(
+            "🎓 PER QUÈ T'IMPORTA: Per què Espanya és més rica que Marroc però més pobra que Alemanya? No és geografia ni cultura: són les INSTITUCIONS. Aquest treball explica per què la corrupció, la justícia lenta o la burocràcia afecten directament el teu futur econòmic. Entendre-ho t'ajuda a votar millor i a entendre el món.",
+            "🎓 POR QUÉ TE IMPORTA: ¿Por qué España es más rica que Marruecos pero más pobre que Alemania? No es geografía ni cultura: son las INSTITUCIONES. Este trabajo explica por qué la corrupción, la justicia lenta o la burocracia afectan directamente tu futuro económico.",
+            "🎓 WHY IT MATTERS: Why is Spain richer than Morocco but poorer than Germany? It's not geography or culture: it's INSTITUTIONS. This work explains why corruption, slow justice or bureaucracy directly affect your economic future."
+          ),
+          link: 'https://www.nobelprize.org/prizes/economic-sciences/2024/',
+          destacat: true
+        },
+
+        { id: 3, any: 2024, tema: 'ia', autors: 'David Autor', institucio: 'MIT', 
+          titol: 'Applying AI to Rebuild Middle Class Jobs', 
+          revista: 'NBER Working Paper',
+          resum: t(
+            "Proposa que la IA generativa podria democratitzar l'expertesa i ajudar a reconstruir la classe mitjana, revertint dècades de polarització laboral.",
+            "Propone que la IA generativa podría democratizar la expertise y ayudar a reconstruir la clase media, revirtiendo décadas de polarización laboral.",
+            "Proposes generative AI could democratize expertise and help rebuild middle class, reversing decades of labor polarization."
+          ),
+          perQueImporta: t(
+            "🎓 PER QUÈ T'IMPORTA: Visió optimista! Autor argumenta que la IA podria ser l'eina que et permeta fer feines que abans requerien anys de formació especialitzada. Un advocat junior amb IA pot produir com un sènior. Això podria ser una oportunitat enorme per a la teua generació.",
+            "🎓 POR QUÉ TE IMPORTA: ¡Visión optimista! Autor argumenta que la IA podría ser la herramienta que te permita hacer trabajos que antes requerían años de formación especializada. Un abogado junior con IA puede producir como un senior. Esto podría ser una oportunidad enorme para tu generación.",
+            "🎓 WHY IT MATTERS: Optimistic vision! Autor argues AI could be the tool that lets you do jobs that previously required years of specialized training. A junior lawyer with AI can produce like a senior. This could be a huge opportunity for your generation."
+          ),
+          link: 'https://economics.mit.edu/people/faculty/david-autor'
+        },
+
+        { id: 4, any: 2023, tema: 'ia', autors: 'Eloundou, Manning, Mishkin, Rock', institucio: 'OpenAI / U. Pennsylvania', 
+          titol: 'GPTs are GPTs: An Early Look at Labor Market Impact', 
+          revista: 'Working Paper',
+          resum: t(
+            "Estima que el 80% dels treballadors als EUA podrien veure almenys el 10% de les seves tasques afectades per GPT. El 19% podrien veure el 50%+ afectat.",
+            "Estima que el 80% de trabajadores en EEUU podrían ver al menos el 10% de sus tareas afectadas por GPT. El 19% podrían ver el 50%+ afectado.",
+            "Estimates 80% of US workers could see at least 10% of tasks affected by GPT. 19% could see 50%+ affected."
+          ),
+          perQueImporta: t(
+            "🎓 PER QUÈ T'IMPORTA: El primer mapa detallat de quines feines seran més afectades per ChatGPT i similars. Sorpresa: no són les feines manuals, sinó les cognitives rutinàries (comptabilitat, programació bàsica, redacció estàndard). Si estàs triant carrera, LLEGEIX AIXÒ.",
+            "🎓 POR QUÉ TE IMPORTA: El primer mapa detallado de qué trabajos serán más afectados por ChatGPT y similares. Sorpresa: no son los trabajos manuales, sino los cognitivos rutinarios (contabilidad, programación básica, redacción estándar). Si estás eligiendo carrera, LEE ESTO.",
+            "🎓 WHY IT MATTERS: The first detailed map of which jobs will be most affected by ChatGPT and similar. Surprise: it's not manual jobs, but routine cognitive ones (accounting, basic programming, standard writing). If you're choosing a career, READ THIS."
+          ),
+          link: 'https://arxiv.org/abs/2303.10130',
+          destacat: true
+        },
+
+        { id: 5, any: 2024, tema: 'desigualtat', autors: 'Chancel, Piketty et al.', institucio: 'World Inequality Lab', 
+          titol: 'World Inequality Report 2024', 
+          revista: 'WID.world',
+          resum: t(
+            "Actualització de les dades globals de desigualtat: el 10% més ric posseeix el 76% de la riquesa mundial. La desigualtat entre països disminueix però dins dels països augmenta.",
+            "Actualización de datos globales de desigualdad: el 10% más rico posee el 76% de la riqueza mundial. La desigualdad entre países disminuye pero dentro de los países aumenta.",
+            "Global inequality data update: top 10% owns 76% of world wealth. Between-country inequality decreases but within-country increases."
+          ),
+          perQueImporta: t(
+            "🎓 PER QUÈ T'IMPORTA: Dades objectives sobre la desigualtat al món. Quan algú diu que 'abans estàvem pitjor' o 'la desigualtat és inevitable', aquest informe et dóna els fets reals per formar la teua pròpia opinió. Essential per a qualsevol debat informat.",
+            "🎓 POR QUÉ TE IMPORTA: Datos objetivos sobre la desigualdad en el mundo. Cuando alguien dice que 'antes estábamos peor' o 'la desigualdad es inevitable', este informe te da los hechos reales para formar tu propia opinión.",
+            "🎓 WHY IT MATTERS: Objective data on global inequality. When someone says 'we were worse off before' or 'inequality is inevitable', this report gives you real facts to form your own opinion."
+          ),
+          link: 'https://wid.world/'
+        },
+
+        { id: 6, any: 2022, tema: 'ia', autors: 'Acemoglu, Restrepo', institucio: 'MIT / Boston U.', 
+          titol: 'Tasks, Automation, and the Rise in US Wage Inequality', 
+          revista: 'Econometrica',
+          resum: t(
+            "Demostra que l'automatització explica el 50-70% de l'augment de la desigualtat salarial als EUA des de 1980. Proposa el model de tasques.",
+            "Demuestra que la automatización explica el 50-70% del aumento de la desigualdad salarial en EEUU desde 1980. Propone el modelo de tareas.",
+            "Shows automation explains 50-70% of US wage inequality increase since 1980. Proposes task-based model."
+          ),
+          perQueImporta: t(
+            "🎓 PER QUÈ T'IMPORTA: Per què el teu avi podia comprar-se una casa amb un sou de fàbrica i tu potser no podràs? Aquest paper demostra que la tecnologia (robots, ordinadors) ha beneficiat més als altament qualificats. Entendre això t'ajuda a planificar la teua carrera.",
+            "🎓 POR QUÉ TE IMPORTA: ¿Por qué tu abuelo podía comprarse una casa con un sueldo de fábrica y tú quizás no podrás? Este paper demuestra que la tecnología ha beneficiado más a los altamente cualificados. Entender esto te ayuda a planificar tu carrera.",
+            "🎓 WHY IT MATTERS: Why could your grandfather buy a house on a factory salary and you might not? This paper shows technology has benefited highly qualified workers more. Understanding this helps you plan your career."
+          ),
+          link: 'https://www.econometricsociety.org/publications/econometrica'
+        },
+
+        { id: 7, any: 2023, tema: 'conductual', autors: 'DellaVigna, Linos', institucio: 'UC Berkeley', 
+          titol: 'RCTs to Scale: Comprehensive Evidence from Two Nudge Units', 
+          revista: 'Econometrica',
+          resum: t(
+            "Meta-anàlisi de 126 experiments aleatoris de les Nudge Units del govern. Els nudges funcionen però amb efectes més petits del que es pensava (1.4% de mitjana).",
+            "Meta-análisis de 126 experimentos aleatorios de las Nudge Units del gobierno. Los nudges funcionan pero con efectos más pequeños de lo esperado (1.4% de media).",
+            "Meta-analysis of 126 RCTs from government Nudge Units. Nudges work but with smaller effects than expected (1.4% average)."
+          ),
+          perQueImporta: t(
+            "🎓 PER QUÈ T'IMPORTA: Els 'nudges' (empentetes) són canvis subtils que et fan prendre millors decisions (com posar fruita a l'altura dels ulls). Aquest paper mostra que funcionen, però no són màgics. Important per no creure en solucions fàcils a problemes complexos.",
+            "🎓 POR QUÉ TE IMPORTA: Los 'nudges' (empujoncitos) son cambios sutiles que te hacen tomar mejores decisiones (como poner fruta a la altura de los ojos). Este paper muestra que funcionan, pero no son mágicos. Importante para no creer en soluciones fáciles.",
+            "🎓 WHY IT MATTERS: 'Nudges' are subtle changes that help you make better decisions (like putting fruit at eye level). This paper shows they work, but they're not magic. Important for not believing in easy solutions."
+          ),
+          link: 'https://www.econometricsociety.org/publications/econometrica/2022/01/01/rcts-scale'
+        },
+
+        { id: 8, any: 2019, tema: 'desenvolupament', autors: 'Banerjee, Duflo, Kremer', institucio: 'MIT / Harvard', 
+          titol: 'The Experimental Approach to Development Economics', 
+          revista: 'Nobel Prize Lecture 2019',
+          resum: t(
+            "Com utilitzar experiments aleatoris per descobrir què funciona realment per reduir la pobresa. Van revolucionar l'economia del desenvolupament.",
+            "Cómo utilizar experimentos aleatorios para descubrir qué funciona realmente para reducir la pobreza. Revolucionaron la economía del desarrollo.",
+            "How to use randomized experiments to discover what really works to reduce poverty. They revolutionized development economics."
+          ),
+          perQueImporta: t(
+            "🎓 PER QUÈ T'IMPORTA: Abans, els governs gastaven milions en programes contra la pobresa sense saber si funcionaven. Aquests economistes van aplicar el mètode científic: experiments com en medicina. Ara sabem què funciona i què no. Model de com l'economia pot millorar vides reals.",
+            "🎓 POR QUÉ TE IMPORTA: Antes, los gobiernos gastaban millones en programas contra la pobreza sin saber si funcionaban. Estos economistas aplicaron el método científico: experimentos como en medicina. Ahora sabemos qué funciona y qué no.",
+            "🎓 WHY IT MATTERS: Before, governments spent millions on poverty programs without knowing if they worked. These economists applied the scientific method: experiments like in medicine. Now we know what works and what doesn't."
+          ),
+          link: 'https://www.nobelprize.org/prizes/economic-sciences/2019/',
+          destacat: true
+        },
+
+        { id: 9, any: 2021, tema: 'treball', autors: 'Card, Angrist, Imbens', institucio: 'UC Berkeley / MIT / Stanford', 
+          titol: 'Natural Experiments in Economics', 
+          revista: 'Nobel Prize Lecture 2021',
+          resum: t(
+            "Com utilitzar 'experiments naturals' (canvis en lleis, fronteres, esdeveniments aleatoris) per establir relacions causals en economia.",
+            "Cómo utilizar 'experimentos naturales' (cambios en leyes, fronteras, eventos aleatorios) para establecer relaciones causales en economía.",
+            "How to use 'natural experiments' (changes in laws, borders, random events) to establish causal relationships in economics."
+          ),
+          perQueImporta: t(
+            "🎓 PER QUÈ T'IMPORTA: Pujar el salari mínim destrueix llocs de feina? Card va estudiar restaurants a la frontera de Nova Jersey i Pennsylvania quan un estat va pujar el salari i l'altre no. Resultat sorprenent: NO es van perdre llocs de feina. Això canvia el debat polític completament.",
+            "🎓 POR QUÉ TE IMPORTA: ¿Subir el salario mínimo destruye empleos? Card estudió restaurantes en la frontera de Nueva Jersey y Pennsylvania cuando un estado subió el salario y el otro no. Resultado sorprendente: NO se perdieron empleos. Esto cambia el debate político completamente.",
+            "🎓 WHY IT MATTERS: Does raising minimum wage destroy jobs? Card studied restaurants at the New Jersey/Pennsylvania border when one state raised wages and the other didn't. Surprising result: NO jobs were lost. This completely changes the political debate."
+          ),
+          link: 'https://www.nobelprize.org/prizes/economic-sciences/2021/',
+          destacat: true
+        },
+
+        { id: 10, any: 2017, tema: 'conductual', autors: 'Richard Thaler', institucio: 'U. Chicago', 
+          titol: 'Behavioral Economics: Past, Present, and Future', 
+          revista: 'Nobel Prize Lecture 2017',
+          resum: t(
+            "Com la psicologia pot millorar els models econòmics. Els humans no som racionals: cometem errors predictibles que podem corregir.",
+            "Cómo la psicología puede mejorar los modelos económicos. Los humanos no somos racionales: cometemos errores predecibles que podemos corregir.",
+            "How psychology can improve economic models. Humans aren't rational: we make predictable mistakes we can correct."
+          ),
+          perQueImporta: t(
+            "🎓 PER QUÈ T'IMPORTA: Per què gastes més amb targeta que amb efectiu? Per què no estalvies per a la jubilació encara que saps que ho hauries de fer? Thaler explica els biaixos mentals que et fan prendre males decisions financeres. Conèixer-los és el primer pas per evitar-los.",
+            "🎓 POR QUÉ TE IMPORTA: ¿Por qué gastas más con tarjeta que con efectivo? ¿Por qué no ahorras para la jubilación aunque sabes que deberías? Thaler explica los sesgos mentales que te hacen tomar malas decisiones financieras. Conocerlos es el primer paso para evitarlos.",
+            "🎓 WHY IT MATTERS: Why do you spend more with card than cash? Why don't you save for retirement even though you know you should? Thaler explains the mental biases that make you take bad financial decisions. Knowing them is the first step to avoiding them."
+          ),
+          link: 'https://www.nobelprize.org/prizes/economic-sciences/2017/'
+        },
+
+        { id: 11, any: 2002, tema: 'conductual', autors: 'Daniel Kahneman', institucio: 'Princeton', 
+          titol: 'Maps of Bounded Rationality', 
+          revista: 'Nobel Prize Lecture 2002',
+          resum: t(
+            "El Sistema 1 (ràpid, intuïtiu) i Sistema 2 (lent, racional). Com el nostre cervell pren decisions i per què ens equivoquem sistemàticament.",
+            "El Sistema 1 (rápido, intuitivo) y Sistema 2 (lento, racional). Cómo nuestro cerebro toma decisiones y por qué nos equivocamos sistemáticamente.",
+            "System 1 (fast, intuitive) and System 2 (slow, rational). How our brain makes decisions and why we systematically err."
+          ),
+          perQueImporta: t(
+            "🎓 PER QUÈ T'IMPORTA: El teu cervell té dos modes: un de ràpid (intuïció) i un de lent (raonament). El problema és que el ràpid mana la major part del temps i comet errors previsibles. Entendre això millora TOTES les teues decisions: estudis, diners, relacions...",
+            "🎓 POR QUÉ TE IMPORTA: Tu cerebro tiene dos modos: uno rápido (intuición) y uno lento (razonamiento). El problema es que el rápido manda la mayor parte del tiempo y comete errores previsibles. Entender esto mejora TODAS tus decisiones.",
+            "🎓 WHY IT MATTERS: Your brain has two modes: fast (intuition) and slow (reasoning). The problem is the fast one rules most of the time and makes predictable errors. Understanding this improves ALL your decisions."
+          ),
+          link: 'https://www.nobelprize.org/prizes/economic-sciences/2002/',
+          destacat: true
+        },
+
+        { id: 12, any: 2023, tema: 'clima', autors: 'Nordhaus', institucio: 'Yale', 
+          titol: 'Climate Economics: Progress and Challenges', 
+          revista: 'Annual Review of Economics',
+          resum: t(
+            "Revisió de l'economia del canvi climàtic: models integrats, cost social del carboni, i polítiques d'adaptació.",
+            "Revisión de la economía del cambio climático: modelos integrados, coste social del carbono, y políticas de adaptación.",
+            "Review of climate economics: integrated models, social cost of carbon, and adaptation policies."
+          ),
+          perQueImporta: t(
+            "🎓 PER QUÈ T'IMPORTA: Quant costa realment contaminar? Nordhaus va calcular el 'preu social del carboni': el dany que fa cada tona de CO2. Sense aquest número, no podem dissenyar impostos al carboni ni polítiques climàtiques efectives. Economia al servei del planeta.",
+            "🎓 POR QUÉ TE IMPORTA: ¿Cuánto cuesta realmente contaminar? Nordhaus calculó el 'precio social del carbono': el daño que hace cada tonelada de CO2. Sin este número, no podemos diseñar impuestos al carbono ni políticas climáticas efectivas.",
+            "🎓 WHY IT MATTERS: How much does polluting really cost? Nordhaus calculated the 'social cost of carbon': the damage each ton of CO2 causes. Without this number, we can't design carbon taxes or effective climate policies."
+          ),
+          link: 'https://www.annualreviews.org/journal/economics'
+        },
+
+        { id: 13, any: 2022, tema: 'finances', autors: 'Brunnermeier, James, Landau', institucio: 'Princeton / BIS', 
+          titol: 'The Digitalization of Money', 
+          revista: 'NBER Working Paper',
+          resum: t(
+            "Anàlisi de les monedes digitals dels bancs centrals (CBDC) i les seves implicacions per al sistema financer i la política monetària.",
+            "Análisis de las monedas digitales de los bancos centrales (CBDC) y sus implicaciones para el sistema financiero y la política monetaria.",
+            "Analysis of central bank digital currencies (CBDC) and implications for financial system and monetary policy."
+          ),
+          perQueImporta: t(
+            "🎓 PER QUÈ T'IMPORTA: L'euro digital ve en camí. Què significa? Que el BCE podria donar-te diners directament, sense passar pels bancs. Podria canviar completament com funcionen els diners, els préstecs i la privacitat financera. Prepara't per entendre-ho.",
+            "🎓 POR QUÉ TE IMPORTA: El euro digital viene en camino. ¿Qué significa? Que el BCE podría darte dinero directamente, sin pasar por los bancos. Podría cambiar completamente cómo funcionan el dinero, los préstamos y la privacidad financiera.",
+            "🎓 WHY IT MATTERS: The digital euro is coming. What does it mean? The ECB could give you money directly, without going through banks. It could completely change how money, loans and financial privacy work."
+          ),
+          link: 'https://www.nber.org/papers'
+        },
+
+        { id: 14, any: 2020, tema: 'treball', autors: 'Chetty, Friedman, Hendren', institucio: 'Harvard', 
+          titol: 'The Opportunity Atlas: Mapping the Childhood Roots of Social Mobility', 
+          revista: 'Science / Opportunity Insights',
+          resum: t(
+            "Mapa interactiu de la mobilitat social als EUA per codi postal. On creixes determina les teues oportunitats més que el que fas.",
+            "Mapa interactivo de la movilidad social en EEUU por código postal. Donde creces determina tus oportunidades más que lo que haces.",
+            "Interactive map of US social mobility by zip code. Where you grow up determines your opportunities more than what you do."
+          ),
+          perQueImporta: t(
+            "🎓 PER QUÈ T'IMPORTA: El barri on creixes afecta quant guanyaràs de gran, independentment del teu talent. Chetty ho va demostrar amb dades de milions de persones. Implicació brutal: la igualtat d'oportunitats és un mite. El teu codi postal importa més que el teu esforç.",
+            "🎓 POR QUÉ TE IMPORTA: El barrio donde creces afecta cuánto ganarás de mayor, independientemente de tu talento. Chetty lo demostró con datos de millones de personas. Implicación brutal: la igualdad de oportunidades es un mito.",
+            "🎓 WHY IT MATTERS: The neighborhood you grow up in affects how much you'll earn, regardless of talent. Chetty proved this with data from millions of people. Brutal implication: equal opportunity is a myth."
+          ),
+          link: 'https://opportunityatlas.org/',
+          destacat: true
+        },
+
+        { id: 15, any: 2018, tema: 'desigualtat', autors: 'Piketty, Saez, Zucman', institucio: 'Paris / Berkeley', 
+          titol: 'Distributional National Accounts', 
+          revista: 'Quarterly Journal of Economics',
+          resum: t(
+            "Nou mètode per mesurar la desigualtat combinant enquestes, declaracions fiscals i comptabilitat nacional. Dades molt més precises.",
+            "Nuevo método para medir la desigualdad combinando encuestas, declaraciones fiscales y contabilidad nacional. Datos mucho más precisos.",
+            "New method to measure inequality combining surveys, tax returns and national accounts. Much more precise data."
+          ),
+          perQueImporta: t(
+            "🎓 PER QUÈ T'IMPORTA: Abans no sabíem realment quant guanyaven els més rics perquè les enquestes no els capturen bé. Aquests economistes van resoldre el problema. Resultat: la desigualtat és PITJOR del que pensàvem. Ara tenim les dades per debatre seriosament.",
+            "🎓 POR QUÉ TE IMPORTA: Antes no sabíamos realmente cuánto ganaban los más ricos porque las encuestas no los capturan bien. Estos economistas resolvieron el problema. Resultado: la desigualdad es PEOR de lo que pensábamos.",
+            "🎓 WHY IT MATTERS: Before, we didn't really know how much the richest earned because surveys don't capture them well. These economists solved the problem. Result: inequality is WORSE than we thought."
+          ),
+          link: 'https://academic.oup.com/qje'
+        },
+
+        { id: 16, any: 2015, tema: 'desenvolupament', autors: 'Deaton', institucio: 'Princeton', 
+          titol: 'The Great Escape: Health, Wealth, and the Origins of Inequality', 
+          revista: 'Nobel Prize Lecture 2015',
+          resum: t(
+            "Com milions de persones han escapat de la pobresa i la mort prematura. Però l'escapada crea noves desigualtats entre els que s'escapen i els que queden enrere.",
+            "Cómo millones de personas han escapado de la pobreza y la muerte prematura. Pero la escapada crea nuevas desigualdades entre los que escapan y los que quedan atrás.",
+            "How millions escaped poverty and early death. But the escape creates new inequalities between those who escape and those left behind."
+          ),
+          perQueImporta: t(
+            "🎓 PER QUÈ T'IMPORTA: Deaton mostra que el món ha millorat enormement (menys pobresa, més salut), però que el progrés és desigual. Optimisme amb matisos: les coses milloren, però no per a tots igual. Perspectiva equilibrada entre catastrofisme i complaença.",
+            "🎓 POR QUÉ TE IMPORTA: Deaton muestra que el mundo ha mejorado enormemente (menos pobreza, más salud), pero que el progreso es desigual. Optimismo con matices: las cosas mejoran, pero no para todos igual.",
+            "🎓 WHY IT MATTERS: Deaton shows the world has improved enormously (less poverty, more health), but progress is unequal. Optimism with nuance: things improve, but not equally for all."
+          ),
+          link: 'https://www.nobelprize.org/prizes/economic-sciences/2015/'
+        },
+
+        { id: 17, any: 2013, tema: 'finances', autors: 'Fama, Shiller, Hansen', institucio: 'Chicago / Yale', 
+          titol: 'Speculation, Prices and Market Efficiency', 
+          revista: 'Nobel Prize Lecture 2013',
+          resum: t(
+            "Debat sobre si els mercats són eficients. Fama diu que sí (no pots guanyar al mercat), Shiller diu que no (hi ha bombolles previsibles).",
+            "Debate sobre si los mercados son eficientes. Fama dice que sí (no puedes ganar al mercado), Shiller dice que no (hay burbujas previsibles).",
+            "Debate on whether markets are efficient. Fama says yes (you can't beat the market), Shiller says no (there are predictable bubbles)."
+          ),
+          perQueImporta: t(
+            "🎓 PER QUÈ T'IMPORTA: Pots guanyar diners triant accions o és millor invertir en un fons indexat i oblidar-te? Fama diu que no pots guanyar al mercat (per això els fons indexats). Shiller diu que sí hi ha bombolles previsibles. El debat més important per als teus diners.",
+            "🎓 POR QUÉ TE IMPORTA: ¿Puedes ganar dinero eligiendo acciones o es mejor invertir en un fondo indexado? Fama dice que no puedes ganar al mercado (por eso los fondos indexados). Shiller dice que sí hay burbujas previsibles. El debate más importante para tu dinero.",
+            "🎓 WHY IT MATTERS: Can you make money picking stocks or is it better to invest in an index fund? Fama says you can't beat the market (hence index funds). Shiller says there are predictable bubbles. The most important debate for your money."
+          ),
+          link: 'https://www.nobelprize.org/prizes/economic-sciences/2013/'
+        },
+    ];
+
+    // ==================== ARTICLES CURIOSOS ====================
+    const articlesCuriosos = [
+        {
+            id: 'c1',
+            titol: t("L'experiment del Marshmallow", "El experimento del Marshmallow", "The Marshmallow Experiment"),
+            autors: 'Walter Mischel (1972)',
+            categoria: 'psicologia',
+            resum: t(
+                "Nens de 4 anys podien menjar un dolç immediatament o esperar 15 minuts per tenir-ne dos. Els que van esperar van tenir millors resultats acadèmics i vitals dècades després... o no?",
+                "Niños de 4 años podían comer un dulce inmediatamente o esperar 15 minutos para tener dos. Los que esperaron tuvieron mejores resultados académicos y vitales décadas después... ¿o no?",
+                "4-year-olds could eat a treat immediately or wait 15 minutes for two. Those who waited had better academic and life outcomes decades later... or did they?"
+            ),
+            perQueImporta: t(
+                "💡 GIRO INTERESSANT: Replicacions recents mostren que l'efecte és molt menor del que es pensava. La capacitat d'esperar no era força de voluntat, sinó que reflectia la situació econòmica de la família. Nens de famílies pobres havien après que les promeses no es compleixen. LLIÇÓ: Desconfia dels experiments virals fins que es repliquen.",
+                "💡 GIRO INTERESANTE: Replicaciones recientes muestran que el efecto es mucho menor de lo que se pensaba. La capacidad de esperar no era fuerza de voluntad, sino que reflejaba la situación económica familiar. Niños de familias pobres habían aprendido que las promesas no se cumplen.",
+                "💡 INTERESTING TWIST: Recent replications show the effect is much smaller than thought. The ability to wait wasn't willpower, but reflected family economic situation. Poor children had learned promises aren't kept."
+            ),
+            color: 'pink'
+        },
+        {
+            id: 'c2',
+            titol: t("Per què els jugadors de futbol nascuts al gener són millors", "Por qué los futbolistas nacidos en enero son mejores", "Why January-born footballers are better"),
+            autors: 'Gladwell / Estudis diversos',
+            categoria: 'esport',
+            resum: t(
+                "A les acadèmies de futbol, els nens nascuts al gener són molt més nombrosos que els nascuts al desembre. El mateix passa a l'hoquei, el beisbol i molts altres esports.",
+                "En las academias de fútbol, los niños nacidos en enero son mucho más numerosos que los nacidos en diciembre. Lo mismo pasa en hockey, béisbol y muchos otros deportes.",
+                "In football academies, January-born children are much more numerous than December-born. Same happens in hockey, baseball and many other sports."
+            ),
+            perQueImporta: t(
+                "💡 L'EFECTE DE L'EDAT RELATIVA: Si talles el gener, un nen de gener pot tenir quasi un any més que un de desembre. Als 8 anys, és una diferència ENORME. El més gran sembla 'més bo', rep més atenció, entrena més, i la profecia s'autocompleix. El talent és context, no només genètica.",
+                "💡 EL EFECTO DE LA EDAD RELATIVA: Si el corte es en enero, un niño de enero puede tener casi un año más que uno de diciembre. A los 8 años, es una diferencia ENORME. El mayor parece 'mejor', recibe más atención, entrena más, y la profecía se autocumple.",
+                "💡 RELATIVE AGE EFFECT: If cutoff is January, a January child can be almost a year older than a December one. At 8 years old, it's a HUGE difference. The older one seems 'better', gets more attention, trains more, and the prophecy self-fulfills."
+            ),
+            color: 'green'
+        },
+        {
+            id: 'c3',
+            titol: t("L'experiment dels jutges i el dinar", "El experimento de los jueces y el almuerzo", "The judges and lunch experiment"),
+            autors: 'Danziger et al. (2011)',
+            categoria: 'justicia',
+            resum: t(
+                "Jutges israelians que decidien sobre llibertat condicional. Just després de dinar aprovaven el 65% de sol·licituds. Just abans de dinar, quasi 0%. La gana afecta la justícia.",
+                "Jueces israelíes que decidían sobre libertad condicional. Justo después de almorzar aprobaban el 65% de solicitudes. Justo antes de almorzar, casi 0%. El hambre afecta la justicia.",
+                "Israeli judges deciding on parole. Right after lunch they approved 65% of requests. Right before lunch, almost 0%. Hunger affects justice."
+            ),
+            perQueImporta: t(
+                "💡 IMPLICACIONS BRUTALS: El teu futur pot dependre de si el jutge ha menjat. Estem dissenyant sistemes de justícia assumint que els humans som màquines racionals, però no ho som. Caldria programar les vistes després dels descans. La racionalitat humana és fràgil.",
+                "💡 IMPLICACIONES BRUTALES: Tu futuro puede depender de si el juez ha comido. Estamos diseñando sistemas de justicia asumiendo que los humanos somos máquinas racionales, pero no lo somos. Habría que programar las vistas después de los descansos.",
+                "💡 BRUTAL IMPLICATIONS: Your future can depend on whether the judge has eaten. We're designing justice systems assuming humans are rational machines, but we're not. Hearings should be scheduled after breaks."
+            ),
+            color: 'red'
+        },
+        {
+            id: 'c4',
+            titol: t("L'experiment de la presó de Stanford", "El experimento de la cárcel de Stanford", "The Stanford Prison Experiment"),
+            autors: 'Philip Zimbardo (1971)',
+            categoria: 'psicologia',
+            resum: t(
+                "Estudiants universitaris assignats aleatòriament a ser 'guàrdies' o 'presoners'. En 6 dies, els guàrdies es van tornar sàdics i l'experiment es va haver de cancel·lar.",
+                "Estudiantes universitarios asignados aleatoriamente a ser 'guardias' o 'prisioneros'. En 6 días, los guardias se volvieron sádicos y el experimento se tuvo que cancelar.",
+                "College students randomly assigned as 'guards' or 'prisoners'. In 6 days, guards became sadistic and the experiment had to be cancelled."
+            ),
+            perQueImporta: t(
+                "💡 PERÒ ATENCIÓ: Replicacions i investigacions recents suggereixen que Zimbardo va manipular els guàrdies perquè fossin cruels. No va ser 'natural'. LLIÇÓ DOBLE: 1) El poder corromp, però 2) desconfia dels experiments famosos que mai s'han replicat. La ciència requereix escepticisme.",
+                "💡 PERO ATENCIÓN: Replicaciones e investigaciones recientes sugieren que Zimbardo manipuló a los guardias para que fueran crueles. No fue 'natural'. DOBLE LECCIÓN: 1) El poder corrompe, pero 2) desconfía de experimentos famosos que nunca se han replicado.",
+                "💡 BUT BEWARE: Recent replications and investigations suggest Zimbardo manipulated guards to be cruel. It wasn't 'natural'. DOUBLE LESSON: 1) Power corrupts, but 2) distrust famous experiments that were never replicated."
+            ),
+            color: 'purple'
+        },
+        {
+            id: 'c5',
+            titol: t("Per què el preu de les cases a Barcelona explota", "Por qué el precio de las casas en Barcelona explota", "Why Barcelona house prices explode"),
+            autors: 'Glaeser, Gyourko (múltiples estudis)',
+            categoria: 'urbanisme',
+            resum: t(
+                "El cost de construir un pis a Barcelona és ~1.500€/m². Es ven a 4.000-5.000€/m². D'on ve la diferència? De les restriccions a construir més alçada.",
+                "El coste de construir un piso en Barcelona es ~1.500€/m². Se vende a 4.000-5.000€/m². ¿De dónde viene la diferencia? De las restricciones a construir más altura.",
+                "The cost of building an apartment in Barcelona is ~€1,500/m². It sells for €4,000-5,000/m². Where's the difference from? Restrictions on building taller."
+            ),
+            perQueImporta: t(
+                "💡 ECONOMIA URBANA: La regulació urbanística (no deixar construir més pisos) beneficia els propietaris actuals però perjudica els joves que volen comprar. Cada vegada que un veí bloqueja una construcció nova, està protegint el valor del seu pis a costa de la teua generació. Entén qui guanya i qui perd.",
+                "💡 ECONOMÍA URBANA: La regulación urbanística (no dejar construir más pisos) beneficia a los propietarios actuales pero perjudica a los jóvenes que quieren comprar. Cada vez que un vecino bloquea una construcción nueva, está protegiendo el valor de su piso a costa de tu generación.",
+                "💡 URBAN ECONOMICS: Urban regulation (not allowing more apartments) benefits current owners but hurts young people who want to buy. Every time a neighbor blocks new construction, they're protecting their property value at your generation's expense."
+            ),
+            color: 'amber'
+        },
+        {
+            id: 'c6',
+            titol: t("L'efecte cobra: quan la solució empitjora el problema", "El efecto cobra: cuando la solución empeora el problema", "The cobra effect: when the solution worsens the problem"),
+            autors: 'Horst Siebert (2001)',
+            categoria: 'politiques',
+            resum: t(
+                "A l'Índia colonial, el govern va oferir recompenses per cobres morts. La gent va començar a criar cobres per matar-los i cobrar. Quan van cancel·lar el programa, van alliberar les cobres.",
+                "En la India colonial, el gobierno ofreció recompensas por cobras muertas. La gente empezó a criar cobras para matarlas y cobrar. Cuando cancelaron el programa, liberaron las cobras.",
+                "In colonial India, the government offered rewards for dead cobras. People started breeding cobras to kill them and collect. When they cancelled the program, they released the cobras."
+            ),
+            perQueImporta: t(
+                "💡 CONSEQÜÈNCIES NO INTENCIONADES: Cada política crea incentius. La gent respon als incentius de maneres que no esperes. Exemples moderns: subvencions a coches elèctrics que fan pujar els preus, beques que fan pujar matrícules, etc. Pensa sempre en com la gent RESPONDRÀ a una nova norma.",
+                "💡 CONSECUENCIAS NO INTENCIONADAS: Cada política crea incentivos. La gente responde a los incentivos de formas que no esperas. Ejemplos modernos: subvenciones a coches eléctricos que suben los precios, becas que suben matrículas, etc. Piensa siempre en cómo la gente RESPONDERÁ.",
+                "💡 UNINTENDED CONSEQUENCES: Every policy creates incentives. People respond to incentives in ways you don't expect. Modern examples: EV subsidies that raise prices, scholarships that raise tuition, etc. Always think about how people will RESPOND."
+            ),
+            color: 'orange'
+        },
+        {
+            id: 'c7',
+            titol: t("Per què les dones guanyen menys (i no és només discriminació)", "Por qué las mujeres ganan menos (y no es solo discriminación)", "Why women earn less (and it's not just discrimination)"),
+            autors: 'Claudia Goldin (Nobel 2023)',
+            categoria: 'treball',
+            resum: t(
+                "Goldin va demostrar que la major part de la bretxa salarial apareix quan les dones tenen fills. No és discriminació directa: és que les feines 'flexibles' paguen menys.",
+                "Goldin demostró que la mayor parte de la brecha salarial aparece cuando las mujeres tienen hijos. No es discriminación directa: es que los trabajos 'flexibles' pagan menos.",
+                "Goldin showed most of the wage gap appears when women have children. It's not direct discrimination: it's that 'flexible' jobs pay less."
+            ),
+            perQueImporta: t(
+                "💡 MATÍS IMPORTANT: Les feines que paguen més (advocat, consultor, financer) recompensen les hores extres i la disponibilitat 24/7. Quan una parella té fills, algú ha de reduir hores. Quasi sempre ho fa la dona. La solució no és només 'no discriminar', sinó canviar com valorem la flexibilitat.",
+                "💡 MATIZ IMPORTANTE: Los trabajos que pagan más (abogado, consultor, financiero) recompensan las horas extras y la disponibilidad 24/7. Cuando una pareja tiene hijos, alguien tiene que reducir horas. Casi siempre lo hace la mujer. La solución no es solo 'no discriminar', sino cambiar cómo valoramos la flexibilidad.",
+                "💡 IMPORTANT NUANCE: Highest-paying jobs (lawyer, consultant, banker) reward overtime and 24/7 availability. When a couple has kids, someone must reduce hours. Almost always the woman. The solution isn't just 'don't discriminate', but changing how we value flexibility."
+            ),
+            color: 'violet',
+            destacat: true
+        },
+        {
+            id: 'c8',
+            titol: t("L'experiment de Freakonomics: Com els luchadors de sumo fan trampes", "El experimento de Freakonomics: Cómo los luchadores de sumo hacen trampas", "The Freakonomics experiment: How sumo wrestlers cheat"),
+            autors: 'Levitt & Duggan (2002)',
+            categoria: 'esport',
+            resum: t(
+                "Analitzant milers de combats de sumo, van descobrir que els lluitadors amb 7-7 victòries guanyen sospitosament sovint contra els que ja tenen 8-6 (assegurada la plaça).",
+                "Analizando miles de combates de sumo, descubrieron que los luchadores con 7-7 victorias ganan sospechosamente a menudo contra los que ya tienen 8-6 (plaza asegurada).",
+                "Analyzing thousands of sumo matches, they found wrestlers with 7-7 records suspiciously often beat those with 8-6 (already qualified)."
+            ),
+            perQueImporta: t(
+                "💡 ELS INCENTIUS EXPLIQUEN TOT: Si un lluitador necessita UNA victòria per classificar-se i l'altre ja està classificat, què creus que passa? Les dades no menteixen. La corrupció apareix on els incentius la fan rendible. Aplicable a tot: esports, política, empresa.",
+                "💡 LOS INCENTIVOS LO EXPLICAN TODO: Si un luchador necesita UNA victoria para clasificarse y el otro ya está clasificado, ¿qué crees que pasa? Los datos no mienten. La corrupción aparece donde los incentivos la hacen rentable.",
+                "💡 INCENTIVES EXPLAIN EVERYTHING: If a wrestler needs ONE win to qualify and the other is already qualified, what do you think happens? Data doesn't lie. Corruption appears where incentives make it profitable."
+            ),
+            color: 'cyan'
+        },
+        {
+            id: 'c9',
+            titol: t("Per què les gasolineres cobren preus iguals (i no és coincidència)", "Por qué las gasolineras cobran precios iguales (y no es coincidencia)", "Why gas stations charge same prices (and it's not coincidence)"),
+            autors: 'Estudis de col·lusió tàcita',
+            categoria: 'mercats',
+            resum: t(
+                "Alguna vegada has notat que totes les gasolineres d'una zona tenen preus quasi idèntics? No es parlen, però utilitzen estratègies per coordinar preus sense escriure res.",
+                "¿Alguna vez has notado que todas las gasolineras de una zona tienen precios casi idénticos? No se hablan, pero usan estrategias para coordinar precios sin escribir nada.",
+                "Ever noticed all gas stations in an area have almost identical prices? They don't talk, but they use strategies to coordinate prices without writing anything."
+            ),
+            perQueImporta: t(
+                "💡 COL·LUSIÓ TÀCITA: Si puges el preu i l'altre et segueix, bé. Si no et segueix, baixes de nou. Amb el temps, convergiu. No cal conspirar: els incentius us porten allà. Per això la competència perfecta és rara i els mercats necessiten reguladors atents.",
+                "💡 COLUSIÓN TÁCITA: Si subes el precio y el otro te sigue, bien. Si no te sigue, bajas de nuevo. Con el tiempo, convergéis. No hace falta conspirar: los incentivos os llevan allí. Por eso la competencia perfecta es rara.",
+                "💡 TACIT COLLUSION: If you raise price and the other follows, good. If not, you lower again. Over time, you converge. No conspiracy needed: incentives lead you there. That's why perfect competition is rare."
+            ),
+            color: 'slate'
+        },
+        {
+            id: 'c10',
+            titol: t("L'experiment del dictador: Som naturalment generosos?", "El experimento del dictador: ¿Somos naturalmente generosos?", "The dictator game: Are we naturally generous?"),
+            autors: 'Economia experimental (múltiples)',
+            categoria: 'psicologia',
+            resum: t(
+                "Una persona rep 10€ i pot donar el que vulgui a un desconegut (que no pot rebutjar). La teoria econòmica diu que hauria de donar 0€. De mitjana, la gent dóna 2-3€.",
+                "Una persona recibe 10€ y puede dar lo que quiera a un desconocido (que no puede rechazar). La teoría económica dice que debería dar 0€. De media, la gente da 2-3€.",
+                "A person gets €10 and can give whatever they want to a stranger (who can't reject). Economic theory says they should give €0. On average, people give €2-3."
+            ),
+            perQueImporta: t(
+                "💡 L'HOMO ECONOMICUS NO EXISTEIX: Els models clàssics assumeixen egoisme total, però la gent té preferències socials (justícia, reciprocitat, culpa). L'economia conductual incorpora això. No som àngels ni dimonis: som humans complicats.",
+                "💡 EL HOMO ECONOMICUS NO EXISTE: Los modelos clásicos asumen egoísmo total, pero la gente tiene preferencias sociales (justicia, reciprocidad, culpa). La economía conductual incorpora esto. No somos ángeles ni demonios: somos humanos complicados.",
+                "💡 HOMO ECONOMICUS DOESN'T EXIST: Classic models assume total selfishness, but people have social preferences (fairness, reciprocity, guilt). Behavioral economics incorporates this. We're not angels or demons: we're complicated humans."
+            ),
+            color: 'emerald'
+        },
+    ];
+
+    // ==================== LLIBRES RECOMANATS ====================
+    const llibres = [
+        // Economia General
+        { id: 'l1', categoria: 'general', titol: 'Economía para el 99% de la población', autor: 'Ha-Joon Chang', dificultat: 1,
+          desc: t('Introducció perfecta a l\'economia per a principiants. Chang desmunta mites i explica conceptes complexos amb humor.', 'Introducción perfecta a la economía para principiantes. Chang desmonta mitos y explica conceptos complejos con humor.', 'Perfect economics intro for beginners. Chang debunks myths and explains complex concepts with humor.'),
+          perQue: t('📖 COMENÇA AQUÍ si no saps res d\'economia. Llegible en un cap de setmana.', '📖 EMPIEZA AQUÍ si no sabes nada de economía.', '📖 START HERE if you know nothing about economics.')
+        },
+        { id: 'l2', categoria: 'general', titol: 'Homo economicus', autor: 'Anxo Penalonga', dificultat: 1,
+          desc: t('Economia explicada a través de la vida quotidiana. Per què fem cua, per què el cinema és car, per què existeixen els bancs...', 'Economía explicada a través de la vida cotidiana. Por qué hacemos cola, por qué el cine es caro, por qué existen los bancos...', 'Economics through daily life. Why we queue, why cinema is expensive, why banks exist...'),
+          perQue: t('📖 Molt entretingut. Veuràs economia a tot arreu després de llegir-lo.', '📖 Muy entretenido. Verás economía en todas partes después de leerlo.', '📖 Very entertaining. You\'ll see economics everywhere after.')
+        },
+        { id: 'l3', categoria: 'general', titol: 'El cisne negro', autor: 'Nassim Taleb', dificultat: 2,
+          desc: t('Esdeveniments improbables però d\'impacte enorme (crisi 2008, COVID). Per què no podem predir-los i com preparar-nos.', 'Eventos improbables pero de impacto enorme (crisis 2008, COVID). Por qué no podemos predecirlos y cómo prepararnos.', 'Improbable but huge-impact events (2008 crisis, COVID). Why we can\'t predict them and how to prepare.'),
+          perQue: t('📖 Et canviarà com penses sobre risc i incertesa. Lectura obligatòria post-COVID.', '📖 Te cambiará cómo piensas sobre riesgo e incertidumbre.', '📖 Will change how you think about risk and uncertainty.')
+        },
+        { id: 'l4', categoria: 'general', titol: 'Antifrágil', autor: 'Nassim Taleb', dificultat: 2,
+          desc: t('Continuació del Cisne Negro. No només sobreviure als xocs, sinó beneficiar-se\'n. Sistemes que milloren amb l\'estrès.', 'Continuación del Cisne Negro. No solo sobrevivir a los shocks, sino beneficiarse. Sistemas que mejoran con el estrés.', 'Sequel to Black Swan. Not just surviving shocks, but benefiting. Systems that improve with stress.'),
+          perQue: t('📖 Aplicable a inversions, carrera professional i vida. Concepte transformador.', '📖 Aplicable a inversiones, carrera y vida. Concepto transformador.', '📖 Applicable to investments, career and life. Transformative concept.')
+        },
+        { id: 'l5', categoria: 'general', titol: 'La economía en una lección', autor: 'Henry Hazlitt', dificultat: 1,
+          desc: t('Clàssic liberal de 1946. L\'economia és veure les conseqüències no òbvies de les polítiques per a TOTHOM, no només els beneficiaris directes.', 'Clásico liberal de 1946. La economía es ver las consecuencias no obvias de las políticas para TODOS, no solo los beneficiarios directos.', '1946 liberal classic. Economics is seeing non-obvious consequences of policies for EVERYONE, not just direct beneficiaries.'),
+          perQue: t('📖 Perspectiva de lliure mercat. Llegeix-lo i després compara amb Piketty per equilibrar.', '📖 Perspectiva de libre mercado. Léelo y compara con Piketty para equilibrar.', '📖 Free market perspective. Read it then compare with Piketty to balance.')
+        },
+        { id: 'l6', categoria: 'general', titol: 'Doughnut Economics', autor: 'Kate Raworth', dificultat: 2,
+          desc: t('Economia per al segle XXI: cal créixer dins dels límits ecològics i per sobre del mínim social. El \'dònut\' com a model.', 'Economía para el siglo XXI: hay que crecer dentro de los límites ecológicos y por encima del mínimo social. El \'donut\' como modelo.', '21st century economics: grow within ecological limits and above social minimum. The \'doughnut\' as model.'),
+          perQue: t('📖 Alternativa al model de creixement infinit. Visualment poderós i ben argumentat.', '📖 Alternativa al modelo de crecimiento infinito. Visualmente poderoso.', '📖 Alternative to infinite growth model. Visually powerful.')
+        },
+
+        // Micro / Comportament
+        { id: 'l7', categoria: 'micro', titol: 'Freakonomics', autor: 'Levitt & Dubner', dificultat: 1,
+          desc: t('Economia aplicada a preguntes estranyes: per què baixen els delictes? (avortament). Per què fan trampa els luchadors de sumo? (incentius).', 'Economía aplicada a preguntas extrañas: ¿por qué bajan los delitos? (aborto). ¿Por qué hacen trampa los luchadores de sumo? (incentivos).', 'Economics applied to weird questions: why did crime drop? (abortion). Why do sumo wrestlers cheat? (incentives).'),
+          perQue: t('📖 El llibre que va fer l\'economia \'cool\'. Perfecte per començar a pensar com economista.', '📖 El libro que hizo la economía \'cool\'. Perfecto para empezar a pensar como economista.', '📖 The book that made economics \'cool\'. Perfect to start thinking like an economist.')
+        },
+        { id: 'l8', categoria: 'micro', titol: 'El economista camuflado', autor: 'Tim Harford', dificultat: 1,
+          desc: t('Per què Starbucks cobra tant pel cafè? Per què els pobres paguen més? Economia invisible de la vida diària.', '¿Por qué Starbucks cobra tanto por el café? ¿Por qué los pobres pagan más? Economía invisible de la vida diaria.', 'Why does Starbucks charge so much for coffee? Why do poor people pay more? Invisible economics of daily life.'),
+          perQue: t('📖 Descobriràs que tot té un preu i una lògica. Molt amè.', '📖 Descubrirás que todo tiene un precio y una lógica. Muy ameno.', '📖 You\'ll discover everything has a price and logic. Very enjoyable.')
+        },
+        { id: 'l9', categoria: 'micro', titol: 'Poor Economics', autor: 'Banerjee & Duflo (Nobel 2019)', dificultat: 2,
+          desc: t('Per què els pobres prenen decisions que semblen irracionals? Perquè responen als seus incentius reals, no als que nosaltres imaginem.', '¿Por qué los pobres toman decisiones que parecen irracionales? Porque responden a sus incentivos reales, no a los que nosotros imaginamos.', 'Why do poor people make seemingly irrational decisions? Because they respond to their real incentives, not what we imagine.'),
+          perQue: t('📖 Canviarà com veus la pobresa. Rigorós però accessible. OBLIGATORI.', '📖 Cambiará cómo ves la pobreza. Riguroso pero accesible. OBLIGATORIO.', '📖 Will change how you see poverty. Rigorous but accessible. REQUIRED.')
+        },
+        { id: 'l10', categoria: 'micro', titol: 'Las trampas del deseo', autor: 'Dan Ariely', dificultat: 1,
+          desc: t('Experiments sobre com prenem decisions irracionals: comparacions, efecte ancoratge, la trampa del \'gratis\'...', 'Experimentos sobre cómo tomamos decisiones irracionales: comparaciones, efecto ancla, la trampa del \'gratis\'...', 'Experiments on how we make irrational decisions: comparisons, anchoring, the \'free\' trap...'),
+          perQue: t('📖 Entendràs per què compres coses que no necessites. Economia conductual pràctica.', '📖 Entenderás por qué compras cosas que no necesitas. Economía conductual práctica.', '📖 You\'ll understand why you buy things you don\'t need. Practical behavioral economics.')
+        },
+
+        // Psicologia i conducta
+        { id: 'l11', categoria: 'psicologia', titol: 'Pensar rápido, pensar despacio', autor: 'Daniel Kahneman (Nobel 2002)', dificultat: 2,
+          desc: t('El Sistema 1 (intuïció) i Sistema 2 (raó). Com el cervell pren decisions i per què ens equivoquem sistemàticament.', 'El Sistema 1 (intuición) y Sistema 2 (razón). Cómo el cerebro toma decisiones y por qué nos equivocamos sistemáticamente.', 'System 1 (intuition) and System 2 (reason). How the brain makes decisions and why we systematically err.'),
+          perQue: t('📖 OBRA MESTRA. Dens però transformador. T\'entendrás millor a tu mateix.', '📖 OBRA MAESTRA. Denso pero transformador. Te entenderás mejor a ti mismo.', '📖 MASTERPIECE. Dense but transformative. You\'ll understand yourself better.')
+        },
+        { id: 'l12', categoria: 'psicologia', titol: 'Un pequeño empujón (Nudge)', autor: 'Thaler & Sunstein (Nobel 2017)', dificultat: 2,
+          desc: t('Com dissenyar entorns per ajudar la gent a prendre millors decisions sense prohibir res. El \'paternalisme llibertari\'.', 'Cómo diseñar entornos para ayudar a la gente a tomar mejores decisiones sin prohibir nada. El \'paternalismo libertario\'.', 'How to design environments to help people make better decisions without banning anything. \'Libertarian paternalism\'.'),
+          perQue: t('📖 Si vols dissenyar polítiques, productes o simplement entendre\'t, llegeix-lo.', '📖 Si quieres diseñar políticas, productos o simplemente entenderte, léelo.', '📖 If you want to design policies, products or just understand yourself, read it.')
+        },
+        { id: 'l13', categoria: 'psicologia', titol: 'Portarse mal (Misbehaving)', autor: 'Richard Thaler (Nobel 2017)', dificultat: 2,
+          desc: t('Com Thaler va crear l\'economia conductual lluitant contra l\'establishment acadèmic. Anècdotes i ciència.', 'Cómo Thaler creó la economía conductual luchando contra el establishment académico. Anécdotas y ciencia.', 'How Thaler created behavioral economics fighting academic establishment. Anecdotes and science.'),
+          perQue: t('📖 Història de la disciplina contada pel seu creador. Molt amè.', '📖 Historia de la disciplina contada por su creador. Muy ameno.', '📖 History of the discipline told by its creator. Very enjoyable.')
+        },
+        { id: 'l14', categoria: 'psicologia', titol: 'Animal Spirits', autor: 'Akerlof & Shiller', dificultat: 2,
+          desc: t('Per què les crisis existeixen: confiança, justícia, corrupció, il·lusió monetària, històries. La psicologia de l\'economia macro.', 'Por qué las crisis existen: confianza, justicia, corrupción, ilusión monetaria, historias. La psicología de la economía macro.', 'Why crises exist: confidence, fairness, corruption, money illusion, stories. The psychology of macro economics.'),
+          perQue: t('📖 Entén per què 2008 va passar i per què tornarà a passar.', '📖 Entiende por qué 2008 pasó y por qué volverá a pasar.', '📖 Understand why 2008 happened and why it will happen again.')
+        },
+
+        // Finances personals
+        { id: 'l15', categoria: 'finances', titol: 'Un paseo aleatorio por Wall Street', autor: 'Burton Malkiel', dificultat: 2,
+          desc: t('La Bíblia de la inversió passiva. No pots guanyar al mercat, així que compra un fons indexat i oblida\'t.', 'La Biblia de la inversión pasiva. No puedes ganar al mercado, así que compra un fondo indexado y olvídate.', 'The Bible of passive investing. You can\'t beat the market, so buy an index fund and forget it.'),
+          perQue: t('📖 Et pot estalviar milers d\'euros en comissions a gestors que no afegeixen valor.', '📖 Te puede ahorrar miles de euros en comisiones a gestores que no añaden valor.', '📖 Can save you thousands in fees to managers who don\'t add value.')
+        },
+        { id: 'l16', categoria: 'finances', titol: 'La psicología del dinero', autor: 'Morgan Housel', dificultat: 1,
+          desc: t('No és quant guanyes, és com et comportes. Històries sobre diners, estalvi i la bogeria humana.', 'No es cuánto ganas, es cómo te comportas. Historias sobre dinero, ahorro y la locura humana.', 'It\'s not how much you earn, it\'s how you behave. Stories about money, saving and human madness.'),
+          perQue: t('📖 Curt, accessible i memorable. Perfecte per començar amb finances.', '📖 Corto, accesible y memorable. Perfecto para empezar con finanzas.', '📖 Short, accessible and memorable. Perfect to start with finances.')
+        },
+        { id: 'l17', categoria: 'finances', titol: 'El hombre más rico de Babilonia', autor: 'George S. Clason', dificultat: 1,
+          desc: t('Principis de finances personals a través de paràboles babilòniques. Antic però etern: paga\'t primer a tu mateix, evita deutes.', 'Principios de finanzas personales a través de parábolas babilónicas. Antiguo pero eterno: págate primero a ti mismo, evita deudas.', 'Personal finance principles through Babylonian parables. Old but timeless: pay yourself first, avoid debt.'),
+          perQue: t('📖 Es llegeix en 2 hores i els principis són sòlids i atemporals.', '📖 Se lee en 2 horas y los principios son sólidos y atemporales.', '📖 Read in 2 hours and the principles are solid and timeless.')
+        },
+        { id: 'l18', categoria: 'finances', titol: 'Principios', autor: 'Ray Dalio', dificultat: 2,
+          desc: t('El gestor del fons més gran del món comparteix els seus principis de vida i inversió. Meritocràcia d\'idees, radicalitat transparent.', 'El gestor del fondo más grande del mundo comparte sus principios de vida e inversión. Meritocracia de ideas, radicalidad transparente.', 'The world\'s largest fund manager shares his life and investment principles. Idea meritocracy, radical transparency.'),
+          perQue: t('📖 Per a inversors seriosos. Molt de contingut sobre gestió de risc.', '📖 Para inversores serios. Mucho contenido sobre gestión de riesgo.', '📖 For serious investors. Lots of content on risk management.')
+        },
+        { id: 'l19', categoria: 'finances', titol: 'Invierte con poco', autor: 'Natalia Valls', dificultat: 1,
+          desc: t('Guia pràctica per espanyols: on invertir, quins productes, fiscalitat, errors a evitar. Actualitzat.', 'Guía práctica para españoles: dónde invertir, qué productos, fiscalidad, errores a evitar. Actualizado.', 'Practical guide for Spaniards: where to invest, which products, taxes, mistakes to avoid. Updated.'),
+          perQue: t('📖 El més PRÀCTIC per a qui viu a Espanya. Molt recomanat.', '📖 El más PRÁCTICO para quien vive en España. Muy recomendado.', '📖 Most PRACTICAL for those living in Spain. Highly recommended.')
+        },
+
+        // Desigualtat i justícia
+        { id: 'l20', categoria: 'desigualtat', titol: 'El capital en el siglo XXI', autor: 'Thomas Piketty', dificultat: 3,
+          desc: t('L\'obra monumental sobre desigualtat. Dades de 300 anys mostren que el capital creix més que l\'economia (r > g), concentrant riquesa.', 'La obra monumental sobre desigualdad. Datos de 300 años muestran que el capital crece más que la economía (r > g), concentrando riqueza.', 'The monumental work on inequality. 300 years of data show capital grows faster than economy (r > g), concentrating wealth.'),
+          perQue: t('📖 Dens i llarg, però FONAMENTAL. Canvia el debat sobre desigualtat.', '📖 Denso y largo, pero FUNDAMENTAL. Cambia el debate sobre desigualdad.', '📖 Dense and long, but FUNDAMENTAL. Changes the inequality debate.')
+        },
+        { id: 'l21', categoria: 'desigualtat', titol: 'Por qué fracasan los países', autor: 'Acemoglu & Robinson (Nobel 2024)', dificultat: 2,
+          desc: t('Les institucions (inclusives vs. extractives) determinen la prosperitat. Històries de Nogales, Corees, Anglaterra vs. Espanya.', 'Las instituciones (inclusivas vs. extractivas) determinan la prosperidad. Historias de Nogales, Coreas, Inglaterra vs. España.', 'Institutions (inclusive vs. extractive) determine prosperity. Stories of Nogales, Koreas, England vs. Spain.'),
+          perQue: t('📖 OBRA MESTRA recent. Entendràs la història econòmica del món.', '📖 OBRA MAESTRA reciente. Entenderás la historia económica del mundo.', '📖 Recent MASTERPIECE. You\'ll understand world economic history.')
+        },
+        { id: 'l22', categoria: 'desigualtat', titol: 'El precio de la desigualdad', autor: 'Joseph Stiglitz (Nobel 2001)', dificultat: 2,
+          desc: t('La desigualtat no és inevitable: és resultat de decisions polítiques que beneficien el 1%. Crítica al sistema americà.', 'La desigualdad no es inevitable: es resultado de decisiones políticas que benefician al 1%. Crítica al sistema americano.', 'Inequality isn\'t inevitable: it\'s the result of political decisions benefiting the 1%. Critique of the American system.'),
+          perQue: t('📖 Perspectiva progressista ben fonamentada. Contrapès a Hazlitt/Hayek.', '📖 Perspectiva progresista bien fundamentada. Contrapeso a Hazlitt/Hayek.', '📖 Well-founded progressive perspective. Counterweight to Hazlitt/Hayek.')
+        },
+
+        // Història i clàssics
+        { id: 'l23', categoria: 'historia', titol: 'Keynes vs Hayek', autor: 'Nicholas Wapshott', dificultat: 2,
+          desc: t('El debat que va definir l\'economia del segle XX: intervenció estatal (Keynes) vs. lliure mercat (Hayek). Encara rellevant.', 'El debate que definió la economía del siglo XX: intervención estatal (Keynes) vs. libre mercado (Hayek). Aún relevante.', 'The debate that defined 20th century economics: state intervention (Keynes) vs. free market (Hayek). Still relevant.'),
+          perQue: t('📖 Entendràs les dues grans visions econòmiques. Brillantment narrat.', '📖 Entenderás las dos grandes visiones económicas. Brillantemente narrado.', '📖 You\'ll understand the two great economic visions. Brilliantly narrated.')
+        },
+        { id: 'l24', categoria: 'historia', titol: 'Breve historia de la economía', autor: 'Niall Kishtainy', dificultat: 1,
+          desc: t('De Aristòtil a Piketty en 300 pàgines. Totes les escoles de pensament explicades de forma clara.', 'De Aristóteles a Piketty en 300 páginas. Todas las escuelas de pensamiento explicadas de forma clara.', 'From Aristotle to Piketty in 300 pages. All schools of thought explained clearly.'),
+          perQue: t('📖 El millor panorama general. Perfecte per 2n Batxillerat i més.', '📖 El mejor panorama general. Perfecto para 2º Bachillerato y más.', '📖 The best general overview. Perfect for high school and beyond.')
+        },
+
+        // Clàssics
+        { id: 'l25', categoria: 'classics', titol: 'La riqueza de las naciones', autor: 'Adam Smith (1776)', dificultat: 3,
+          desc: t('L\'origen de l\'economia moderna. La mà invisible, la divisió del treball, el lliure comerç.', 'El origen de la economía moderna. La mano invisible, la división del trabajo, el libre comercio.', 'The origin of modern economics. The invisible hand, division of labor, free trade.'),
+          perQue: t('📖 Llegeix almenys un resum. Molts el citen sense haver-lo llegit.', '📖 Lee al menos un resumen. Muchos lo citan sin haberlo leído.', '📖 Read at least a summary. Many cite it without having read it.')
+        },
+        { id: 'l26', categoria: 'classics', titol: 'El capital', autor: 'Karl Marx (1867)', dificultat: 3,
+          desc: t('Crítica del capitalisme: la plusvàlua, l\'alienació, les crisis inherents. Influent encara que et desagradin les conclusions.', 'Crítica del capitalismo: la plusvalía, la alienación, las crisis inherentes. Influyente aunque te desagraden las conclusiones.', 'Critique of capitalism: surplus value, alienation, inherent crises. Influential even if you dislike the conclusions.'),
+          perQue: t('📖 Per entendre la meitat dels debats econòmics, has de conèixer Marx. El Manifest és més curt.', '📖 Para entender la mitad de los debates económicos, debes conocer a Marx. El Manifiesto es más corto.', '📖 To understand half of economic debates, you must know Marx. The Manifesto is shorter.')
+        },
+        { id: 'l27', categoria: 'classics', titol: 'Teoría general del empleo, el interés y el dinero', autor: 'J.M. Keynes (1936)', dificultat: 3,
+          desc: t('Per què les economies cauen en depressió i com la despesa pública pot salvar-les. Va néixer la macroeconomia.', 'Por qué las economías caen en depresión y cómo el gasto público puede salvarlas. Nació la macroeconomía.', 'Why economies fall into depression and how public spending can save them. Macroeconomics was born.'),
+          perQue: t('📖 Cada crisi es debat entre keynesianes i no-keynesianes. Entén l\'original.', '📖 Cada crisis se debate entre keynesianos y no-keynesianos. Entiende el original.', '📖 Every crisis is debated between Keynesians and non-Keynesians. Understand the original.')
+        },
+        { id: 'l28', categoria: 'classics', titol: 'Camino de servidumbre', autor: 'F.A. Hayek (1944)', dificultat: 2,
+          desc: t('Advertència contra la planificació centralitzada: el camí al totalitarisme. Influent en Thatcher i Reagan.', 'Advertencia contra la planificación centralizada: el camino al totalitarismo. Influyente en Thatcher y Reagan.', 'Warning against central planning: the road to totalitarianism. Influential on Thatcher and Reagan.'),
+          perQue: t('📖 La contrapartida intel·lectual a Keynes. Llibre més llegible que la seva economia tècnica.', '📖 La contrapartida intelectual a Keynes. Libro más legible que su economía técnica.', '📖 The intellectual counterpart to Keynes. More readable than his technical economics.')
+        },
+        { id: 'l29', categoria: 'classics', titol: 'Libertad de elegir', autor: 'Milton Friedman', dificultat: 2,
+          desc: t('Defensa del lliure mercat amb exemples pràctics: educació, sanitat, drogues, regulació. Llegible i polèmic.', 'Defensa del libre mercado con ejemplos prácticos: educación, sanidad, drogas, regulación. Legible y polémico.', 'Free market defense with practical examples: education, healthcare, drugs, regulation. Readable and polemic.'),
+          perQue: t('📖 La visió liberal-Chicago. Estiguis d\'acord o no, cal conèixer-la.', '📖 La visión liberal-Chicago. Estés de acuerdo o no, hay que conocerla.', '📖 The Chicago liberal vision. Agree or not, you must know it.')
+        },
+    ];
+
+    const categoriesLlibres = [
+        { id: 'tots', label: t('Tots', 'Todos', 'All'), icon: '📚' },
+        { id: 'general', label: t('Economia General', 'Economía General', 'General Economics'), icon: '🌍' },
+        { id: 'micro', label: t('Micro i Quotidià', 'Micro y Cotidiano', 'Micro & Daily'), icon: '🔍' },
+        { id: 'psicologia', label: t('Psicologia i Conducta', 'Psicología y Conducta', 'Psychology & Behavior'), icon: '🧠' },
+        { id: 'finances', label: t('Finances Personals', 'Finanzas Personales', 'Personal Finance'), icon: '💰' },
+        { id: 'desigualtat', label: t('Desigualtat', 'Desigualdad', 'Inequality'), icon: '⚖️' },
+        { id: 'historia', label: t('Història', 'Historia', 'History'), icon: '📜' },
+        { id: 'classics', label: t('Clàssics', 'Clásicos', 'Classics'), icon: '🏛️' },
+    ];
+
+    // ==================== MÈTODE CIENTÍFIC ====================
+    const metodeCientific = {
+        intro: {
+            titol: t("El Mètode Científic en Ciències Socials", "El Método Científico en Ciencias Sociales", "Scientific Method in Social Sciences"),
+            text: t(
+                "L'economia no és física. No podem posar una economia en un laboratori. Però això no significa que no podem ser científics. En les últimes dècades, l'economia ha viscut una \"revolució empírica\" que l'ha fet molt més rigorosa. Entendre com funciona la ciència econòmica t'ajudarà a detectar bullshit i a pensar millor.",
+                "La economía no es física. No podemos poner una economía en un laboratorio. Pero eso no significa que no podamos ser científicos. En las últimas décadas, la economía ha vivido una \"revolución empírica\" que la ha hecho mucho más rigurosa. Entender cómo funciona la ciencia económica te ayudará a detectar bullshit y a pensar mejor.",
+                "Economics isn't physics. We can't put an economy in a lab. But that doesn't mean we can't be scientific. In recent decades, economics has experienced an \"empirical revolution\" that's made it much more rigorous. Understanding how economic science works will help you detect bullshit and think better."
+            )
+        },
+        seccions: [
+            {
+                id: 'problema',
+                titol: t("El Problema Fonamental: Causalitat vs Correlació", "El Problema Fundamental: Causalidad vs Correlación", "The Fundamental Problem: Causality vs Correlation"),
+                contingut: t(
+                    `El vendes de gelats i les ofegades a la platja estan correlacionats. Significa que els gelats causen ofegades? Òbviament no: ambdós augmenten amb el bon temps.
+
+🔴 CORRELACIÓ: Dues coses passen juntes
+🟢 CAUSALITAT: Una cosa CAUSA l'altra
+
+En economia, això és crucial:
+• Els països rics tenen més democràcia. La riquesa causa democràcia o viceversa?
+• Les persones amb títol universitari guanyen més. El títol causa els ingressos o els qui estudien ja eren més capaços?
+• Les empreses amb bones pràctiques ESG tenen millors resultats. ESG millora els resultats o només les empreses exitoses poden permetre's ESG?
+
+SENSE saber la causalitat, no podem dissenyar polítiques efectives. Si pensem que X causa Y però realment és al revés, gastarem diners en intervencions inútils.`,
+                    `Las ventas de helados y los ahogamientos en la playa están correlacionados. ¿Significa que los helados causan ahogamientos? Obviamente no: ambos aumentan con el buen tiempo.
+
+🔴 CORRELACIÓN: Dos cosas pasan juntas
+🟢 CAUSALIDAD: Una cosa CAUSA la otra
+
+En economía, esto es crucial:
+• Los países ricos tienen más democracia. ¿La riqueza causa democracia o viceversa?
+• Las personas con título universitario ganan más. ¿El título causa los ingresos o los que estudian ya eran más capaces?
+• Las empresas con buenas prácticas ESG tienen mejores resultados. ¿ESG mejora los resultados o solo las empresas exitosas pueden permitirse ESG?
+
+SIN saber la causalidad, no podemos diseñar políticas efectivas.`,
+                    `Ice cream sales and beach drownings are correlated. Does that mean ice cream causes drownings? Obviously not: both increase with good weather.
+
+🔴 CORRELATION: Two things happen together
+🟢 CAUSALITY: One thing CAUSES the other
+
+In economics, this is crucial:
+• Rich countries have more democracy. Does wealth cause democracy or vice versa?
+• People with college degrees earn more. Does the degree cause income or were those who study already more capable?
+• Companies with good ESG practices have better results. Does ESG improve results or can only successful companies afford ESG?
+
+WITHOUT knowing causality, we can't design effective policies.`
+                ),
+                icon: '🎯'
+            },
+            {
+                id: 'experiments',
+                titol: t("Tipus d'Estudis: Del Més Feble al Més Fort", "Tipos de Estudios: Del Más Débil al Más Fuerte", "Types of Studies: From Weakest to Strongest"),
+                contingut: t(
+                    `📊 1. ESTUDIS OBSERVACIONALS (Més febles)
+Simplement observem el que passa sense intervenir.
+Exemple: Comparem els ingressos de qui va a la universitat vs. qui no.
+Problema: No sabem si és la universitat o que els qui hi van ja eren diferents.
+Força: ⭐☆☆☆☆
+
+🔄 2. ESTUDIS LONGITUDINALS (Seguiment en el temps)
+Seguim les mateixes persones durant anys.
+Exemple: El "Framingham Heart Study" va seguir persones durant 70 anys per entendre malalties cardíaques.
+Millora: Podem veure què passa PRIMER.
+Força: ⭐⭐☆☆☆
+
+🧪 3. QUASI-EXPERIMENTS (Experiments Naturals) - Nobel 2021!
+Busquem situacions on la naturalesa o les polítiques van crear grups comparables.
+Exemple: Card va comparar restaurants a Nova Jersey (que va pujar el salari mínim) vs. Pennsylvania (que no).
+Força: ⭐⭐⭐⭐☆
+
+🎲 4. EXPERIMENTS ALEATORIS CONTROLATS (RCT) - El "Gold Standard" - Nobel 2019!
+Assignem aleatòriament persones a un grup de tractament i un grup de control.
+Exemple: Banerjee i Duflo van assignar aleatòriament pobles a rebre microcrèdits o no.
+Força: ⭐⭐⭐⭐⭐
+
+⚠️ PERÒ: Fins i tot els RCT tenen límits:
+- A vegades no són ètics (no pots assignar algú a ser pobre)
+- Els resultats en un lloc poden no aplicar-se en un altre
+- Poden tenir efectes secundaris no mesurats`,
+                    `📊 1. ESTUDIOS OBSERVACIONALES (Más débiles)
+Simplemente observamos lo que pasa sin intervenir.
+Ejemplo: Comparamos los ingresos de quien va a la universidad vs. quien no.
+Problema: No sabemos si es la universidad o que quienes van ya eran diferentes.
+Fuerza: ⭐☆☆☆☆
+
+🔄 2. ESTUDIOS LONGITUDINALES (Seguimiento en el tiempo)
+Seguimos a las mismas personas durante años.
+Mejora: Podemos ver qué pasa PRIMERO.
+Fuerza: ⭐⭐☆☆☆
+
+🧪 3. CUASI-EXPERIMENTOS (Experimentos Naturales) - ¡Nobel 2021!
+Buscamos situaciones donde la naturaleza o las políticas crearon grupos comparables.
+Ejemplo: Card comparó restaurantes en Nueva Jersey (que subió el salario mínimo) vs. Pennsylvania (que no).
+Fuerza: ⭐⭐⭐⭐☆
+
+🎲 4. EXPERIMENTOS ALEATORIOS CONTROLADOS (RCT) - El "Gold Standard" - ¡Nobel 2019!
+Asignamos aleatoriamente personas a un grupo de tratamiento y uno de control.
+Fuerza: ⭐⭐⭐⭐⭐`,
+                    `📊 1. OBSERVATIONAL STUDIES (Weakest)
+We simply observe what happens without intervening.
+Problem: We don't know if it's the university or if those who go were already different.
+Strength: ⭐☆☆☆☆
+
+🔄 2. LONGITUDINAL STUDIES (Time tracking)
+We follow the same people over years.
+Improvement: We can see what happens FIRST.
+Strength: ⭐⭐☆☆☆
+
+🧪 3. QUASI-EXPERIMENTS (Natural Experiments) - Nobel 2021!
+We look for situations where nature or policies created comparable groups.
+Strength: ⭐⭐⭐⭐☆
+
+🎲 4. RANDOMIZED CONTROLLED TRIALS (RCT) - The "Gold Standard" - Nobel 2019!
+We randomly assign people to treatment and control groups.
+Strength: ⭐⭐⭐⭐⭐`
+                ),
+                icon: '🔬'
+            },
+            {
+                id: 'llegir',
+                titol: t("Com Llegir un Paper Acadèmic (Sense Morir)", "Cómo Leer un Paper Académico (Sin Morir)", "How to Read an Academic Paper (Without Dying)"),
+                contingut: t(
+                    `No has de llegir-lo sencer! Els investigadors tampoc ho fan. Aquí tens l'ordre:
+
+1️⃣ TÍTOL I ABSTRACT (2 min)
+Et diu el 80% del que necessites. Si no t'interessa, para.
+
+2️⃣ INTRODUCCIÓ - Últims paràgrafs (5 min)
+Busca: "This paper shows that..." o "We find that..."
+Aquí estan els resultats principals.
+
+3️⃣ GRÀFICS I TAULES (10 min)
+Un bon gràfic val més que 10 pàgines de text.
+Mira els eixos, les unitats, i si l'efecte és GRAN o petit.
+
+4️⃣ CONCLUSIONS (5 min)
+Resum dels resultats i limitacions. Els autors honestos reconeixen què NO han demostrat.
+
+❌ SALTA:
+- La "Literature Review" (important per acadèmics, no per tu)
+- La metodologia detallada (a menys que sospitis trampes)
+- Les regressions amb 47 controls
+
+🚩 RED FLAGS - Desconfia si:
+- No hi ha grup de control
+- La mostra és molt petita (<100 persones)
+- Moltes variables de control que semblen triades per fer el resultat significatiu
+- L'estudi l'ha pagat algú amb interès en el resultat
+- No s'ha replicat mai
+- El resultat és massa bo per ser veritat`,
+                    `¡No tienes que leerlo entero! Los investigadores tampoco lo hacen. Aquí tienes el orden:
+
+1️⃣ TÍTULO Y ABSTRACT (2 min)
+Te dice el 80% de lo que necesitas. Si no te interesa, para.
+
+2️⃣ INTRODUCCIÓN - Últimos párrafos (5 min)
+Busca: "This paper shows that..." o "We find that..."
+Aquí están los resultados principales.
+
+3️⃣ GRÁFICOS Y TABLAS (10 min)
+Un buen gráfico vale más que 10 páginas de texto.
+
+4️⃣ CONCLUSIONES (5 min)
+Resumen de resultados y limitaciones.
+
+🚩 RED FLAGS - Desconfía si:
+- No hay grupo de control
+- La muestra es muy pequeña (<100 personas)
+- El estudio lo ha pagado alguien con interés en el resultado
+- No se ha replicado nunca`,
+                    `You don't have to read it all! Researchers don't either. Here's the order:
+
+1️⃣ TITLE AND ABSTRACT (2 min)
+Tells you 80% of what you need. If not interested, stop.
+
+2️⃣ INTRODUCTION - Last paragraphs (5 min)
+Look for: "This paper shows that..." or "We find that..."
+
+3️⃣ GRAPHS AND TABLES (10 min)
+A good graph is worth 10 pages of text.
+
+4️⃣ CONCLUSIONS (5 min)
+Summary of results and limitations.
+
+🚩 RED FLAGS - Be suspicious if:
+- No control group
+- Very small sample (<100 people)
+- Study paid by someone with interest in the result
+- Never replicated`
+                ),
+                icon: '📖'
+            },
+            {
+                id: 'critiques',
+                titol: t("Crítiques a l'Economia com a Ciència", "Críticas a la Economía como Ciencia", "Critiques of Economics as Science"),
+                contingut: t(
+                    `L'economia té problemes. Ser honest sobre ells és part de la ciència:
+
+🔴 CRISI DE LA REPLICACIÓ
+Molts estudis famosos no es poden replicar. L'experiment del Marshmallow, per exemple, gairebé desapareix quan controles per ingressos familiars.
+
+🔴 BIAIX DE PUBLICACIÓ
+Les revistes publiquen resultats "interessants" (efectes significatius), no els avorrits (efectes nuls). Això distorsiona el que sabem.
+
+🔴 L'ECONOMIA NO VA PREDIR LA CRISI DE 2008
+La majoria de models macroeconòmics no incloïen bombolles ni crisis financeres. Això va fer molt de mal a la credibilitat de la disciplina.
+
+🔴 ELS ECONOMISTES ESTAN ESBIAIXATS
+La majoria són homes, blancs, de països rics, d'universitats d'elit. Això afecta quines preguntes es fan i quines respostes es troben.
+
+🔴 MATEMATITZACIÓ EXCESSIVA
+A vegades es prioritza l'elegància matemàtica sobre la rellevància real. Models precisos sobre mons que no existeixen.
+
+🟢 PERÒ TAMBÉ:
+- L'economia és molt més empírica que fa 30 anys
+- Els RCTs han millorat molt les polítiques de desenvolupament
+- La replicació s'està prenent seriosament
+- Cada vegada més diversitat (lenta)
+
+CONCLUSIÓ: L'economia no és perfecta, però és el millor que tenim per entendre el món social. Consumeix-la amb escepticisme saludable.`,
+                    `La economía tiene problemas. Ser honesto sobre ellos es parte de la ciencia:
+
+🔴 CRISIS DE LA REPLICACIÓN
+Muchos estudios famosos no se pueden replicar.
+
+🔴 SESGO DE PUBLICACIÓN
+Las revistas publican resultados "interesantes", no los aburridos. Esto distorsiona lo que sabemos.
+
+🔴 LA ECONOMÍA NO PREDIJO LA CRISIS DE 2008
+Esto hizo mucho daño a la credibilidad de la disciplina.
+
+🔴 LOS ECONOMISTAS ESTÁN SESGADOS
+La mayoría son hombres, blancos, de países ricos, de universidades de élite.
+
+🟢 PERO TAMBIÉN:
+- La economía es mucho más empírica que hace 30 años
+- Los RCTs han mejorado mucho las políticas de desarrollo
+- La replicación se está tomando en serio
+
+CONCLUSIÓN: La economía no es perfecta, pero es lo mejor que tenemos para entender el mundo social.`,
+                    `Economics has problems. Being honest about them is part of science:
+
+🔴 REPLICATION CRISIS
+Many famous studies can't be replicated.
+
+🔴 PUBLICATION BIAS
+Journals publish "interesting" results, not boring ones. This distorts what we know.
+
+🔴 ECONOMICS DIDN'T PREDICT THE 2008 CRISIS
+This damaged the discipline's credibility.
+
+🔴 ECONOMISTS ARE BIASED
+Most are white men from rich countries and elite universities.
+
+🟢 BUT ALSO:
+- Economics is much more empirical than 30 years ago
+- RCTs have greatly improved development policies
+- Replication is being taken seriously
+
+CONCLUSION: Economics isn't perfect, but it's the best we have to understand the social world.`
+                ),
+                icon: '⚠️'
+            },
+        ]
+    };
+
+    // ==================== FILTRES ====================
+    const papersFiltrats = useMemo(() => {
+        return papers.filter(p => {
+            const passaTema = filtreCategoria === 'tots' || p.tema === filtreCategoria;
+            const passaAny = filtreAny === 'tots' || p.any.toString() === filtreAny;
+            const passaCerca = cercador === '' || 
+                p.titol.toLowerCase().includes(cercador.toLowerCase()) ||
+                p.autors.toLowerCase().includes(cercador.toLowerCase()) ||
+                p.resum.toLowerCase().includes(cercador.toLowerCase());
+            return passaTema && passaAny && passaCerca;
+        });
+    }, [papers, filtreCategoria, filtreAny, cercador]);
+
+    const llibresFiltrats = useMemo(() => {
+        return llibres.filter(l => {
+            const passaCat = filtreCategoria === 'tots' || l.categoria === filtreCategoria;
+            const passaCerca = cercador === '' ||
+                l.titol.toLowerCase().includes(cercador.toLowerCase()) ||
+                l.autor.toLowerCase().includes(cercador.toLowerCase());
+            return passaCat && passaCerca;
+        });
+    }, [llibres, filtreCategoria, cercador]);
+
+    const articlesCuriososFiltrats = useMemo(() => {
+        return articlesCuriosos.filter(a => {
+            const passaCerca = cercador === '' ||
+                a.titol.toLowerCase().includes(cercador.toLowerCase()) ||
+                a.resum.toLowerCase().includes(cercador.toLowerCase());
+            return passaCerca;
+        });
+    }, [articlesCuriosos, cercador]);
+
+    // ==================== COMPONENTS ====================
+    const NavBtn = ({ id, icon, label }) => (
+        <button
+            onClick={() => { setSeccio(id); setFiltreCategoria('tots'); setCercador(''); }}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                seccio === id 
+                    ? 'bg-amber-500 text-white shadow-lg' 
+                    : 'bg-white text-slate-600 hover:bg-amber-50 border border-slate-200'
+            }`}
+        >
+            <span>{icon}</span>
+            <span className="hidden sm:inline">{label}</span>
+        </button>
+    );
+
+    const PaperCard = ({ paper }) => (
+        <div 
+            onClick={() => setItemSeleccionat({ tipus: 'paper', data: paper })}
+            className={`bg-white rounded-xl border ${paper.destacat ? 'border-amber-300 ring-2 ring-amber-100' : 'border-slate-200'} p-5 cursor-pointer hover:shadow-lg transition-all group`}
+        >
+            {paper.destacat && <span className="inline-block bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded mb-2">⭐ {t('Destacat', 'Destacado', 'Featured')}</span>}
+            <h3 className="font-serif font-bold text-slate-800 group-hover:text-amber-600 transition-colors mb-2">{paper.titol}</h3>
+            <p className="text-sm text-slate-500 mb-2">{paper.autors} · {paper.institucio}</p>
+            <p className="text-sm text-slate-600 line-clamp-3 mb-3">{paper.resum}</p>
+            <div className="flex items-center justify-between">
+                <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded">{paper.any}</span>
+                <span className="text-xs text-amber-600 font-medium">{t('Llegir més →', 'Leer más →', 'Read more →')}</span>
+            </div>
+        </div>
+    );
+
+    const LlibreCard = ({ llibre }) => (
+        <div 
+            onClick={() => setItemSeleccionat({ tipus: 'llibre', data: llibre })}
+            className="bg-white rounded-xl border border-slate-200 p-5 cursor-pointer hover:shadow-lg transition-all group"
+        >
+            <div className="flex gap-4">
+                <div className="w-16 h-20 bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">📖</div>
+                <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-slate-800 group-hover:text-amber-600 transition-colors line-clamp-2">{llibre.titol}</h3>
+                    <p className="text-sm text-slate-500">{llibre.autor}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                        <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded">{
+                            llibre.dificultat === 1 ? t('Fàcil', 'Fácil', 'Easy') :
+                            llibre.dificultat === 2 ? t('Mitjà', 'Medio', 'Medium') : t('Avançat', 'Avanzado', 'Advanced')
+                        }</span>
+                        <div className="flex">
+                            {[...Array(llibre.dificultat)].map((_, i) => <span key={i} className="text-amber-400">★</span>)}
+                            {[...Array(3 - llibre.dificultat)].map((_, i) => <span key={i} className="text-slate-200">★</span>)}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    const ArticleCuriosCard = ({ article }) => {
+        const colors = {
+            pink: 'from-pink-50 to-rose-50 border-pink-200',
+            green: 'from-green-50 to-emerald-50 border-green-200',
+            red: 'from-red-50 to-rose-50 border-red-200',
+            purple: 'from-purple-50 to-violet-50 border-purple-200',
+            amber: 'from-amber-50 to-orange-50 border-amber-200',
+            orange: 'from-orange-50 to-amber-50 border-orange-200',
+            violet: 'from-violet-50 to-purple-50 border-violet-200',
+            cyan: 'from-cyan-50 to-sky-50 border-cyan-200',
+            slate: 'from-slate-50 to-gray-50 border-slate-200',
+            emerald: 'from-emerald-50 to-green-50 border-emerald-200',
+        };
+        return (
+            <div 
+                onClick={() => setItemSeleccionat({ tipus: 'curios', data: article })}
+                className={`bg-gradient-to-br ${colors[article.color] || colors.amber} rounded-xl border p-5 cursor-pointer hover:shadow-lg transition-all`}
+            >
+                <h3 className="font-serif font-bold text-slate-800 mb-2">{article.titol}</h3>
+                <p className="text-sm text-slate-500 mb-2">{article.autors}</p>
+                <p className="text-sm text-slate-600 line-clamp-3">{article.resum}</p>
+                {article.destacat && <span className="inline-block mt-2 bg-amber-200 text-amber-800 text-xs font-bold px-2 py-1 rounded">🏆 Nobel 2023</span>}
+            </div>
+        );
+    };
+
+    // Modal
+    const Modal = () => {
+        if (!itemSeleccionat) return null;
+        const { tipus, data } = itemSeleccionat;
+        
+        return (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setItemSeleccionat(null)}>
+                <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-fade" onClick={e => e.stopPropagation()}>
+                    <div className="p-6">
+                        <button onClick={() => setItemSeleccionat(null)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600">✕</button>
+                        
+                        {tipus === 'paper' && (
+                            <>
+                                <span className="text-amber-500 text-sm font-medium">{data.revista} · {data.any}</span>
+                                <h2 className="font-serif font-bold text-2xl text-slate-800 mt-2 mb-3">{data.titol}</h2>
+                                <p className="text-slate-600 mb-2">{data.autors}</p>
+                                <p className="text-sm text-slate-500 mb-4">{data.institucio}</p>
+                                
+                                <div className="bg-slate-50 rounded-xl p-4 mb-4">
+                                    <h4 className="font-bold text-slate-700 mb-2">📝 {t('Resum', 'Resumen', 'Summary')}</h4>
+                                    <p className="text-slate-600">{data.resum}</p>
+                                </div>
+                                
+                                <div className="bg-amber-50 rounded-xl p-4 mb-4 border border-amber-200">
+                                    <h4 className="font-bold text-amber-700 mb-2">{data.perQueImporta.split(':')[0]}:</h4>
+                                    <p className="text-amber-800">{data.perQueImporta.split(':').slice(1).join(':')}</p>
+                                </div>
+                                
+                                {data.link && (
+                                    <a href={data.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600 transition-colors">
+                                        📄 {t('Llegir paper original', 'Leer paper original', 'Read original paper')}
+                                    </a>
+                                )}
+                            </>
+                        )}
+                        
+                        {tipus === 'llibre' && (
+                            <>
+                                <div className="flex gap-4 mb-4">
+                                    <div className="w-24 h-32 bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg flex items-center justify-center text-4xl flex-shrink-0">📖</div>
+                                    <div>
+                                        <h2 className="font-serif font-bold text-2xl text-slate-800">{data.titol}</h2>
+                                        <p className="text-slate-600 mt-1">{data.autor}</p>
+                                        <div className="flex items-center gap-2 mt-2">
+                                            <span className="text-sm bg-slate-100 text-slate-600 px-2 py-1 rounded">{
+                                                data.dificultat === 1 ? t('Fàcil', 'Fácil', 'Easy') :
+                                                data.dificultat === 2 ? t('Mitjà', 'Medio', 'Medium') : t('Avançat', 'Avanzado', 'Advanced')
+                                            }</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="bg-slate-50 rounded-xl p-4 mb-4">
+                                    <h4 className="font-bold text-slate-700 mb-2">📝 {t('Sobre el llibre', 'Sobre el libro', 'About the book')}</h4>
+                                    <p className="text-slate-600">{data.desc}</p>
+                                </div>
+                                
+                                <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+                                    <p className="text-amber-800 font-medium">{data.perQue}</p>
+                                </div>
+                            </>
+                        )}
+                        
+                        {tipus === 'curios' && (
+                            <>
+                                <h2 className="font-serif font-bold text-2xl text-slate-800 mb-2">{data.titol}</h2>
+                                <p className="text-slate-500 mb-4">{data.autors}</p>
+                                
+                                <div className="bg-slate-50 rounded-xl p-4 mb-4">
+                                    <h4 className="font-bold text-slate-700 mb-2">🔍 {t('L\'experiment', 'El experimento', 'The experiment')}</h4>
+                                    <p className="text-slate-600">{data.resum}</p>
+                                </div>
+                                
+                                <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+                                    <p className="text-amber-800 whitespace-pre-line">{data.perQueImporta}</p>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    // ==================== RENDER ====================
+    return (
+        <div className="min-h-screen">
+            {/* Header */}
+            <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
+                <div className="max-w-7xl mx-auto px-4">
+                    <div className="flex items-center justify-between h-16">
+                        <div className="flex items-center gap-3">
+                            <span className="text-3xl">📚</span>
+                            <div>
+                                <h1 className="font-serif font-bold text-xl text-slate-800">{t('Recerca i Lectures', 'Investigación y Lecturas', 'Research & Readings')}</h1>
+                                <p className="text-xs text-slate-500 hidden sm:block">{t('Papers, llibres i mètode científic', 'Papers, libros y método científico', 'Papers, books and scientific method')}</p>
+                            </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                            <a href="./index.html" className="p-2 text-slate-600 hover:text-amber-500 hover:bg-amber-50 rounded-lg" title={t('Tornar', 'Volver', 'Back')}>
+                                🏠
+                            </a>
+                            <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
+                                {['val', 'es', 'en'].map(lang => (
+                                    <button key={lang} onClick={() => setIdioma(lang)} className={`px-2 py-1 rounded text-xs font-bold ${idioma === lang ? 'bg-amber-500 text-white' : 'text-slate-600 hover:bg-slate-200'}`}>
+                                        {lang.toUpperCase()}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main className="max-w-7xl mx-auto px-4 py-8">
+                {/* Navegació seccions */}
+                <div className="flex flex-wrap gap-2 mb-8">
+                    <NavBtn id="papers" icon="📄" label={t('Papers Acadèmics', 'Papers Académicos', 'Academic Papers')} />
+                    <NavBtn id="metode" icon="🔬" label={t('Mètode Científic', 'Método Científico', 'Scientific Method')} />
+                    <NavBtn id="curiosos" icon="💡" label={t('Articles Curiosos', 'Artículos Curiosos', 'Curious Articles')} />
+                    <NavBtn id="llibres" icon="📖" label={t('Llibres', 'Libros', 'Books')} />
+                </div>
+
+                {/* SECCIÓ: PAPERS */}
+                {seccio === 'papers' && (
+                    <div className="animate-fade">
+                        <div className="mb-6">
+                            <h2 className="font-serif font-bold text-2xl text-slate-800 mb-2">📄 {t('Papers Acadèmics', 'Papers Académicos', 'Academic Papers')}</h2>
+                            <p className="text-slate-500">{t('Els estudis més influents en economia, explicats perquè els pugues entendre.', 'Los estudios más influyentes en economía, explicados para que los puedas entender.', 'The most influential studies in economics, explained so you can understand them.')}</p>
+                        </div>
+                        
+                        {/* Filtres */}
+                        <div className="flex flex-col md:flex-row gap-4 mb-6">
+                            <input
+                                type="text"
+                                value={cercador}
+                                onChange={(e) => setCercador(e.target.value)}
+                                placeholder={t("🔍 Cercar per títol, autor...", "🔍 Buscar por título, autor...", "🔍 Search by title, author...")}
+                                className="flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-400 outline-none"
+                            />
+                            <select 
+                                value={filtreCategoria} 
+                                onChange={(e) => setFiltreCategoria(e.target.value)}
+                                className="px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-400 outline-none"
+                            >
+                                {papersTemes.map(t => <option key={t.id} value={t.id}>{t.icon} {t.label}</option>)}
+                            </select>
+                        </div>
+                        
+                        <p className="text-sm text-slate-500 mb-4">{papersFiltrats.length} papers</p>
+                        
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {papersFiltrats.map(paper => <PaperCard key={paper.id} paper={paper} />)}
+                        </div>
+                    </div>
+                )}
+
+                {/* SECCIÓ: MÈTODE CIENTÍFIC */}
+                {seccio === 'metode' && (
+                    <div className="animate-fade">
+                        <div className="mb-8">
+                            <h2 className="font-serif font-bold text-2xl text-slate-800 mb-2">🔬 {metodeCientific.intro.titol}</h2>
+                            <p className="text-slate-600 leading-relaxed">{metodeCientific.intro.text}</p>
+                        </div>
+                        
+                        <div className="space-y-6">
+                            {metodeCientific.seccions.map(sec => (
+                                <div key={sec.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                                    <button 
+                                        onClick={() => setSubSeccio(subSeccio === sec.id ? null : sec.id)}
+                                        className="w-full p-6 text-left flex items-center justify-between hover:bg-slate-50 transition-colors"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <span className="text-3xl">{sec.icon}</span>
+                                            <h3 className="font-serif font-bold text-xl text-slate-800">{sec.titol}</h3>
+                                        </div>
+                                        <span className="text-2xl text-slate-400">{subSeccio === sec.id ? '−' : '+'}</span>
+                                    </button>
+                                    {subSeccio === sec.id && (
+                                        <div className="px-6 pb-6 border-t border-slate-100">
+                                            <div className="mt-4 text-slate-600 whitespace-pre-line leading-relaxed">
+                                                {sec.contingut}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* SECCIÓ: ARTICLES CURIOSOS */}
+                {seccio === 'curiosos' && (
+                    <div className="animate-fade">
+                        <div className="mb-6">
+                            <h2 className="font-serif font-bold text-2xl text-slate-800 mb-2">💡 {t('Articles Curiosos', 'Artículos Curiosos', 'Curious Articles')}</h2>
+                            <p className="text-slate-500">{t('Experiments sorprenents, descobriments contraintuïtius i històries que canvien com veus el món.', 'Experimentos sorprendentes, descubrimientos contraintuitivos e historias que cambian cómo ves el mundo.', 'Surprising experiments, counterintuitive discoveries and stories that change how you see the world.')}</p>
+                        </div>
+                        
+                        <input
+                            type="text"
+                            value={cercador}
+                            onChange={(e) => setCercador(e.target.value)}
+                            placeholder={t("🔍 Cercar...", "🔍 Buscar...", "🔍 Search...")}
+                            className="w-full max-w-md px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-400 outline-none mb-6"
+                        />
+                        
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {articlesCuriososFiltrats.map(article => <ArticleCuriosCard key={article.id} article={article} />)}
+                        </div>
+                    </div>
+                )}
+
+                {/* SECCIÓ: LLIBRES */}
+                {seccio === 'llibres' && (
+                    <div className="animate-fade">
+                        <div className="mb-6">
+                            <h2 className="font-serif font-bold text-2xl text-slate-800 mb-2">📖 {t('Llibres Recomanats', 'Libros Recomendados', 'Recommended Books')}</h2>
+                            <p className="text-slate-500">{t('Una selecció de llibres per entendre economia, finances i comportament humà.', 'Una selección de libros para entender economía, finanzas y comportamiento humano.', 'A selection of books to understand economics, finance and human behavior.')}</p>
+                        </div>
+                        
+                        {/* Filtres */}
+                        <div className="flex flex-col md:flex-row gap-4 mb-6">
+                            <input
+                                type="text"
+                                value={cercador}
+                                onChange={(e) => setCercador(e.target.value)}
+                                placeholder={t("🔍 Cercar per títol, autor...", "🔍 Buscar por título, autor...", "🔍 Search by title, author...")}
+                                className="flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-400 outline-none"
+                            />
+                            <select 
+                                value={filtreCategoria} 
+                                onChange={(e) => setFiltreCategoria(e.target.value)}
+                                className="px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-400 outline-none"
+                            >
+                                {categoriesLlibres.map(c => <option key={c.id} value={c.id}>{c.icon} {c.label}</option>)}
+                            </select>
+                        </div>
+                        
+                        <p className="text-sm text-slate-500 mb-4">{llibresFiltrats.length} {t('llibres', 'libros', 'books')}</p>
+                        
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {llibresFiltrats.map(llibre => <LlibreCard key={llibre.id} llibre={llibre} />)}
+                        </div>
+                    </div>
+                )}
+            </main>
+
+            <footer className="mt-12 py-8 bg-slate-100 border-t border-slate-200">
+                <div className="max-w-7xl mx-auto px-4 text-center text-slate-500 text-sm">
+                    <p>📚 {t('Recerca i Lectures', 'Investigación y Lecturas', 'Research & Readings')} · profedeeconomia.es · 2025</p>
+                </div>
+            </footer>
+
+            <Modal />
+        </div>
+    );
+}
+
+ReactDOM.render(<RecercaApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
