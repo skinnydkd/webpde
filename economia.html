@@ -27,7 +27,7 @@
     <div id="root"></div>
     <script type="text/babel">
         const { useState, useMemo, useCallback } = React;
-        const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, ReferenceLine, Legend, BarChart, Bar, ComposedChart, Scatter, PieChart, Pie, Cell } = Recharts;
+        const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, ReferenceLine, ReferenceDot, Legend, BarChart, Bar, ComposedChart, Scatter, PieChart, Pie, Cell } = Recharts;
         
         // Icons
         const Icon = ({ name, size = 24 }) => {
@@ -294,51 +294,141 @@ function EconomiaApp() {
                     <div className="space-y-6">
                         <Card title={idioma === 'val' ? "📈 Corbes d'Indiferència i Restricció Pressupostària" : "📈 Indifference Curves and Budget Constraint"}>
                             <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl mb-4">
-                                <p className="text-blue-700">{idioma === 'val' ? "💡 Una corba d'indiferència connecta totes les combinacions de béns que et donen la MATEIXA satisfacció. La restricció pressupostària mostra el que et pots permetre." : "💡 An indifference curve connects all combinations of goods that give you the SAME satisfaction. The budget constraint shows what you can afford."}</p>
+                                <p className="text-blue-700">{idioma === 'val' ? "💡 Imagina que tens 200€ per gastar en pizzes i begudes. Una corba d'indiferència connecta totes les combinacions que et fan IGUAL de feliç. El punt òptim és on pots arribar a la corba més alta sense passar-te del pressupost!" : "💡 Imagine you have €200 to spend on pizzas and drinks. An indifference curve connects all combinations that make you EQUALLY happy. The optimal point is where you can reach the highest curve without exceeding your budget!"}</p>
                             </div>
                             <div className="grid lg:grid-cols-2 gap-6">
                                 <div className="space-y-3">
                                     <Slider label={idioma === 'val' ? "💰 Renda (R)" : "💰 Income (R)"} value={renda} onChange={setRenda} min={100} max={400} step={10} suffix="€" />
-                                    <Slider label={idioma === 'val' ? "🏷️ Preu Bé 1 (P₁)" : "🏷️ Price Good 1 (P₁)"} value={p1} onChange={setP1} min={5} max={30} suffix="€" />
-                                    <Slider label={idioma === 'val' ? "🏷️ Preu Bé 2 (P₂)" : "🏷️ Price Good 2 (P₂)"} value={p2} onChange={setP2} min={5} max={40} suffix="€" />
-                                    <Slider label="α" value={alpha} onChange={setAlpha} min={0.1} max={0.9} step={0.05} />
+                                    <Slider label={idioma === 'val' ? "🍕 Preu Bé 1 (P₁)" : "🍕 Price Good 1 (P₁)"} value={p1} onChange={setP1} min={5} max={30} suffix="€" />
+                                    <Slider label={idioma === 'val' ? "🥤 Preu Bé 2 (P₂)" : "🥤 Price Good 2 (P₂)"} value={p2} onChange={setP2} min={5} max={40} suffix="€" />
+                                    <Slider label="α (preferència pel bé 1)" value={alpha} onChange={setAlpha} min={0.1} max={0.9} step={0.05} />
                                     
                                     <div className="grid grid-cols-2 gap-3 mt-4">
                                         <div className="p-3 bg-green-50 rounded-xl text-center">
-                                            <p className="text-xs text-green-600">{idioma === 'val' ? "Òptim Q₁*" : "Optimal Q₁*"}</p>
+                                            <p className="text-xs text-green-600">{idioma === 'val' ? "🍕 Òptim Q₁*" : "🍕 Optimal Q₁*"}</p>
                                             <p className="text-xl font-bold text-green-700">{optim.q1}</p>
                                         </div>
                                         <div className="p-3 bg-green-50 rounded-xl text-center">
-                                            <p className="text-xs text-green-600">{idioma === 'val' ? "Òptim Q₂*" : "Optimal Q₂*"}</p>
+                                            <p className="text-xs text-green-600">{idioma === 'val' ? "🥤 Òptim Q₂*" : "🥤 Optimal Q₂*"}</p>
                                             <p className="text-xl font-bold text-green-700">{optim.q2}</p>
                                         </div>
                                     </div>
                                     
-                                    <ConceptBox title={idioma === 'val' ? "Punt Òptim" : "Optimal Point"} color="green">
-                                        <p className="text-sm">{idioma === 'val' ? "On la restricció pressupostària és TANGENT a la corba d'indiferència més alta possible." : "Where the budget constraint is TANGENT to the highest possible indifference curve."}</p>
-                                        <FormulaBox formula="RMS = P₁/P₂" />
+                                    <ConceptBox title={idioma === 'val' ? "🎯 Per què aquest punt?" : "🎯 Why this point?"} color="green">
+                                        <p className="text-sm">{idioma === 'val' ? "És on la línia del pressupost TOCA (és tangent) la corba d'indiferència més alta possible. Aquí maximitzem la satisfacció sense gastar més del que tenim!" : "It's where the budget line TOUCHES (is tangent to) the highest possible indifference curve. Here we maximize satisfaction without spending more than we have!"}</p>
                                     </ConceptBox>
                                 </div>
                                 <div>
-                                    <div className="h-72">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <ComposedChart data={dadesCI.dades}>
-                                                <CartesianGrid strokeDasharray="3 3" />
-                                                <XAxis dataKey="q1" label={{ value: 'Q₁', position: 'bottom' }} domain={[0, 'auto']} />
-                                                <YAxis label={{ value: 'Q₂', angle: -90, position: 'insideLeft' }} domain={[0, 25]} />
-                                                <Tooltip />
-                                                <Legend />
-                                                <Line type="monotone" dataKey="rp" stroke="#3b82f6" strokeWidth={3} dot={false} name={idioma === 'val' ? "Restricció Pressupostària" : "Budget Constraint"} />
-                                                <Line type="monotone" dataKey="ciLow" stroke="#fda4af" strokeWidth={2} strokeDasharray="3 3" dot={false} name={idioma === 'val' ? "CI baixa" : "Low IC"} />
-                                                <Line type="monotone" dataKey="ciOpt" stroke="#ec4899" strokeWidth={3} dot={false} name={idioma === 'val' ? "CI òptima" : "Optimal IC"} />
-                                                <Line type="monotone" dataKey="ciHigh" stroke="#fda4af" strokeWidth={2} strokeDasharray="3 3" dot={false} name={idioma === 'val' ? "CI alta" : "High IC"} />
-                                                <Scatter data={[{q1: dadesCI.q1Opt, q2: dadesCI.q2Opt}]} fill="#10b981" shape="circle" name={idioma === 'val' ? "Punt Òptim" : "Optimal Point"} />
-                                            </ComposedChart>
-                                        </ResponsiveContainer>
+                                    <div className="h-72 bg-white rounded-xl border p-4">
+                                        <svg viewBox="0 0 300 250" className="w-full h-full">
+                                            <defs>
+                                                <marker id="arrowX" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#666"/></marker>
+                                                <marker id="arrowY" markerWidth="10" markerHeight="10" refX="3" refY="9" orient="auto"><path d="M0,0 L6,0 L3,9 z" fill="#666"/></marker>
+                                            </defs>
+                                            <line x1="40" y1="220" x2="290" y2="220" stroke="#666" strokeWidth="2" markerEnd="url(#arrowX)"/>
+                                            <line x1="40" y1="220" x2="40" y2="10" stroke="#666" strokeWidth="2" markerEnd="url(#arrowY)"/>
+                                            <text x="280" y="240" fontSize="12" fill="#666">Q₁</text>
+                                            <text x="15" y="20" fontSize="12" fill="#666">Q₂</text>
+                                            
+                                            {/* Budget constraint line */}
+                                            <line 
+                                                x1="40" 
+                                                y1={220 - Math.min(200, (renda/p2) * 8)} 
+                                                x2={40 + Math.min(240, (renda/p1) * 10)} 
+                                                y2="220" 
+                                                stroke="#3b82f6" 
+                                                strokeWidth="3"
+                                            />
+                                            
+                                            {/* Low indifference curve */}
+                                            <path 
+                                                d={(() => {
+                                                    const q1Opt = (alpha * renda) / p1;
+                                                    const q2Opt = ((1 - alpha) * renda) / p2;
+                                                    const uLow = Math.pow(q1Opt, alpha) * Math.pow(q2Opt, 1-alpha) * 0.6;
+                                                    let path = "";
+                                                    for(let q1 = 1; q1 <= 25; q1 += 0.5) {
+                                                        const q2 = Math.pow(uLow / Math.pow(q1, alpha), 1/(1-alpha));
+                                                        if(q2 > 0.5 && q2 < 25) {
+                                                            const x = 40 + q1*10;
+                                                            const y = 220 - q2*8;
+                                                            path += (path === "" ? "M" : "L") + x + "," + y + " ";
+                                                        }
+                                                    }
+                                                    return path;
+                                                })()}
+                                                fill="none" stroke="#f9a8d4" strokeWidth="2" strokeDasharray="5,5"
+                                            />
+                                            
+                                            {/* Optimal indifference curve */}
+                                            <path 
+                                                d={(() => {
+                                                    const q1Opt = (alpha * renda) / p1;
+                                                    const q2Opt = ((1 - alpha) * renda) / p2;
+                                                    const uOpt = Math.pow(q1Opt, alpha) * Math.pow(q2Opt, 1-alpha);
+                                                    let path = "";
+                                                    for(let q1 = 1; q1 <= 25; q1 += 0.5) {
+                                                        const q2 = Math.pow(uOpt / Math.pow(q1, alpha), 1/(1-alpha));
+                                                        if(q2 > 0.5 && q2 < 25) {
+                                                            const x = 40 + q1*10;
+                                                            const y = 220 - q2*8;
+                                                            path += (path === "" ? "M" : "L") + x + "," + y + " ";
+                                                        }
+                                                    }
+                                                    return path;
+                                                })()}
+                                                fill="none" stroke="#ec4899" strokeWidth="3"
+                                            />
+                                            
+                                            {/* High indifference curve */}
+                                            <path 
+                                                d={(() => {
+                                                    const q1Opt = (alpha * renda) / p1;
+                                                    const q2Opt = ((1 - alpha) * renda) / p2;
+                                                    const uHigh = Math.pow(q1Opt, alpha) * Math.pow(q2Opt, 1-alpha) * 1.4;
+                                                    let path = "";
+                                                    for(let q1 = 1; q1 <= 25; q1 += 0.5) {
+                                                        const q2 = Math.pow(uHigh / Math.pow(q1, alpha), 1/(1-alpha));
+                                                        if(q2 > 0.5 && q2 < 25) {
+                                                            const x = 40 + q1*10;
+                                                            const y = 220 - q2*8;
+                                                            path += (path === "" ? "M" : "L") + x + "," + y + " ";
+                                                        }
+                                                    }
+                                                    return path;
+                                                })()}
+                                                fill="none" stroke="#f9a8d4" strokeWidth="2" strokeDasharray="5,5"
+                                            />
+                                            
+                                            {/* Optimal point */}
+                                            <circle 
+                                                cx={40 + parseFloat(optim.q1)*10} 
+                                                cy={220 - parseFloat(optim.q2)*8} 
+                                                r="8" 
+                                                fill="#10b981" 
+                                                stroke="white" 
+                                                strokeWidth="2"
+                                            />
+                                            
+                                            {/* Axis labels */}
+                                            {[0,5,10,15,20].map(v => (
+                                                <g key={v}>
+                                                    <line x1={40+v*10} y1="220" x2={40+v*10} y2="225" stroke="#666"/>
+                                                    <text x={40+v*10} y="238" fontSize="10" textAnchor="middle" fill="#666">{v}</text>
+                                                </g>
+                                            ))}
+                                            {[5,10,15,20].map(v => (
+                                                <g key={v}>
+                                                    <line x1="35" y1={220-v*8} x2="40" y2={220-v*8} stroke="#666"/>
+                                                    <text x="25" y={224-v*8} fontSize="10" textAnchor="middle" fill="#666">{v}</text>
+                                                </g>
+                                            ))}
+                                        </svg>
                                     </div>
-                                    <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-                                        <div className="p-2 bg-blue-50 rounded"><span className="inline-block w-3 h-1 bg-blue-500 mr-1"></span>{idioma === 'val' ? "Restricció Pressupostària" : "Budget Line"}</div>
-                                        <div className="p-2 bg-pink-50 rounded"><span className="inline-block w-3 h-1 bg-pink-500 mr-1"></span>{idioma === 'val' ? "Corbes Indiferència" : "Indiff. Curves"}</div>
+                                    <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
+                                        <div className="p-2 bg-blue-100 rounded flex items-center gap-1"><span className="w-4 h-1 bg-blue-500 rounded"></span>{idioma === 'val' ? "Pressupost" : "Budget"}</div>
+                                        <div className="p-2 bg-pink-100 rounded flex items-center gap-1"><span className="w-4 h-1 bg-pink-500 rounded"></span>{idioma === 'val' ? "Corbes Indif." : "Indiff. Curves"}</div>
+                                        <div className="p-2 bg-green-100 rounded flex items-center gap-1"><span className="w-3 h-3 bg-green-500 rounded-full"></span>{idioma === 'val' ? "Òptim" : "Optimal"}</div>
                                     </div>
                                 </div>
                             </div>
@@ -479,9 +569,110 @@ function EconomiaApp() {
                 
                 <Tabs tabs={[
                     { id: 'equilibri', label: '⚖️ ' + (idioma === 'val' ? 'Equilibri' : 'Equilibrium') },
+                    { id: 'excedents', label: '📐 ' + (idioma === 'val' ? 'Excedents' : 'Surplus') },
                     { id: 'intervencions', label: '🏛️ ' + (idioma === 'val' ? 'Intervencions' : 'Interventions') },
                     { id: 'elasticitat', label: '📏 ' + (idioma === 'val' ? 'Elasticitat' : 'Elasticity') },
                 ]} active={tab} onChange={setTab} />
+                
+                {tab === 'excedents' && (
+                    <div className="space-y-6">
+                        <Card title={idioma === 'val' ? "📐 Excedents del Consumidor i Productor" : "📐 Consumer and Producer Surplus"}>
+                            <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl mb-4">
+                                <p className="text-green-700">{idioma === 'val' ? "💡 L'excedent mesura el GUANY que obtenen compradors i venedors per participar al mercat. El consumidor guanya quan paga menys del que estaria disposat. El productor guanya quan ven per més del mínim que acceptaria." : "💡 Surplus measures the GAIN that buyers and sellers get from participating in the market. Consumers gain when they pay less than they'd be willing to. Producers gain when they sell for more than the minimum they'd accept."}</p>
+                            </div>
+                            <div className="grid lg:grid-cols-2 gap-6">
+                                <div>
+                                    <div className="h-72 bg-white rounded-xl border p-2">
+                                        <svg viewBox="0 0 300 250" className="w-full h-full">
+                                            <defs>
+                                                <linearGradient id="csGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                                    <stop offset="0%" stopColor="#10b981" stopOpacity="0.6"/>
+                                                    <stop offset="100%" stopColor="#10b981" stopOpacity="0.2"/>
+                                                </linearGradient>
+                                                <linearGradient id="psGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                                                    <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.6"/>
+                                                    <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.2"/>
+                                                </linearGradient>
+                                            </defs>
+                                            {/* Axes */}
+                                            <line x1="50" y1="200" x2="280" y2="200" stroke="#666" strokeWidth="2"/>
+                                            <line x1="50" y1="200" x2="50" y2="20" stroke="#666" strokeWidth="2"/>
+                                            <text x="270" y="220" fontSize="12" fill="#666">Q</text>
+                                            <text x="30" y="25" fontSize="12" fill="#666">P</text>
+                                            
+                                            {/* Consumer Surplus (green triangle) */}
+                                            <polygon 
+                                                points={`50,${200 - (demandaA/demandaB) * 3} ${50 + parseFloat(equilibri.q) * 2},${200 - parseFloat(equilibri.p) * 3} 50,${200 - parseFloat(equilibri.p) * 3}`}
+                                                fill="url(#csGrad)" stroke="#10b981" strokeWidth="2"
+                                            />
+                                            
+                                            {/* Producer Surplus (blue triangle) */}
+                                            <polygon 
+                                                points={`50,${200 - (ofertaC/ofertaD) * 3} ${50 + parseFloat(equilibri.q) * 2},${200 - parseFloat(equilibri.p) * 3} 50,${200 - parseFloat(equilibri.p) * 3}`}
+                                                fill="url(#psGrad)" stroke="#3b82f6" strokeWidth="2"
+                                            />
+                                            
+                                            {/* Demand curve */}
+                                            <line x1="50" y1={200 - (demandaA/demandaB) * 3} x2={50 + (demandaA/demandaB) * 2} y2="200" stroke="#ec4899" strokeWidth="3"/>
+                                            
+                                            {/* Supply curve */}
+                                            <line x1="50" y1={200 - Math.max(0, -ofertaC/ofertaD) * 3} x2="280" y2={200 - ((280-50)/2 + ofertaC) / ofertaD * 3} stroke="#3b82f6" strokeWidth="3"/>
+                                            
+                                            {/* Equilibrium point */}
+                                            <circle cx={50 + parseFloat(equilibri.q) * 2} cy={200 - parseFloat(equilibri.p) * 3} r="6" fill="#f59e0b" stroke="white" strokeWidth="2"/>
+                                            
+                                            {/* Price line */}
+                                            <line x1="50" y1={200 - parseFloat(equilibri.p) * 3} x2={50 + parseFloat(equilibri.q) * 2} y2={200 - parseFloat(equilibri.p) * 3} stroke="#f59e0b" strokeWidth="1" strokeDasharray="4"/>
+                                            
+                                            {/* Labels */}
+                                            <text x="60" y={200 - parseFloat(equilibri.p) * 3 - 20} fontSize="11" fill="#10b981" fontWeight="bold">{idioma === 'val' ? 'EC' : 'CS'}</text>
+                                            <text x="60" y={200 - parseFloat(equilibri.p) * 3 + 25} fontSize="11" fill="#3b82f6" fontWeight="bold">{idioma === 'val' ? 'EP' : 'PS'}</text>
+                                            <text x={55 + parseFloat(equilibri.q) * 2} y={195 - parseFloat(equilibri.p) * 3} fontSize="10" fill="#f59e0b">E</text>
+                                        </svg>
+                                    </div>
+                                    <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                                        <div className="p-2 bg-green-100 rounded flex items-center gap-2"><div className="w-4 h-4 bg-green-500/50 rounded"></div>{idioma === 'val' ? 'Excedent Consumidor' : 'Consumer Surplus'}</div>
+                                        <div className="p-2 bg-blue-100 rounded flex items-center gap-2"><div className="w-4 h-4 bg-blue-500/50 rounded"></div>{idioma === 'val' ? 'Excedent Productor' : 'Producer Surplus'}</div>
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="p-4 bg-green-50 rounded-xl">
+                                        <h4 className="font-bold text-green-700 mb-2">🛒 {idioma === 'val' ? "Excedent del Consumidor (EC)" : "Consumer Surplus (CS)"}</h4>
+                                        <p className="text-sm text-green-600 mb-2">{idioma === 'val' ? "La diferència entre el que els consumidors ESTARIEN DISPOSATS a pagar i el que REALMENT paguen." : "The difference between what consumers WOULD BE WILLING to pay and what they ACTUALLY pay."}</p>
+                                        <div className="bg-white p-2 rounded">
+                                            <p className="text-2xl font-black text-green-700 text-center">{equilibri.excCons}€</p>
+                                        </div>
+                                        <p className="text-xs mt-2 text-green-500">{idioma === 'val' ? "Àrea triangle VERD al gràfic" : "GREEN triangle area in graph"}</p>
+                                    </div>
+                                    <div className="p-4 bg-blue-50 rounded-xl">
+                                        <h4 className="font-bold text-blue-700 mb-2">🏭 {idioma === 'val' ? "Excedent del Productor (EP)" : "Producer Surplus (PS)"}</h4>
+                                        <p className="text-sm text-blue-600 mb-2">{idioma === 'val' ? "La diferència entre el preu que reben i el MÍNIM que acceptarien per vendre." : "The difference between the price received and the MINIMUM they'd accept to sell."}</p>
+                                        <div className="bg-white p-2 rounded">
+                                            <p className="text-2xl font-black text-blue-700 text-center">{equilibri.excProd}€</p>
+                                        </div>
+                                        <p className="text-xs mt-2 text-blue-500">{idioma === 'val' ? "Àrea triangle BLAU al gràfic" : "BLUE triangle area in graph"}</p>
+                                    </div>
+                                    <div className="p-4 bg-amber-50 rounded-xl">
+                                        <h4 className="font-bold text-amber-700 mb-2">⭐ {idioma === 'val' ? "Benestar Total" : "Total Welfare"}</h4>
+                                        <p className="text-sm text-amber-600 mb-2">{idioma === 'val' ? "EC + EP = Guany total de la societat pel comerç" : "CS + PS = Total gain to society from trade"}</p>
+                                        <div className="bg-white p-2 rounded">
+                                            <p className="text-2xl font-black text-amber-700 text-center">{(parseFloat(equilibri.excCons) + parseFloat(equilibri.excProd)).toFixed(0)}€</p>
+                                        </div>
+                                        <p className="text-xs mt-2 text-amber-500">{idioma === 'val' ? "En equilibri competitiu, el benestar és MÀXIM!" : "In competitive equilibrium, welfare is MAXIMUM!"}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                        <Card title={idioma === 'val' ? "⚠️ Pèrdua d'Eficiència (DWL)" : "⚠️ Deadweight Loss (DWL)"}>
+                            <div className="bg-red-50 p-4 rounded-xl">
+                                <p className="text-red-700">{idioma === 'val' ? "💡 Quan el govern intervé (impostos, preus màxims/mínims), es produeix menys del que és òptim i part del benestar es PERD per sempre. Aquesta pèrdua s'anomena Deadweight Loss (DWL) o Pèrdua Irrecuperable d'Eficiència." : "💡 When government intervenes (taxes, price ceilings/floors), less is produced than optimal and part of welfare is LOST forever. This loss is called Deadweight Loss (DWL)."}</p>
+                            </div>
+                            <div className="mt-4 p-3 bg-violet-50 rounded-xl">
+                                <p className="text-sm text-violet-700">{idioma === 'val' ? "👉 Ves a la pestanya 'Intervencions' per veure com els impostos i controls de preus creen DWL!" : "👉 Go to the 'Interventions' tab to see how taxes and price controls create DWL!"}</p>
+                            </div>
+                        </Card>
+                    </div>
+                )}
                 
                 {tab === 'equilibri' && (
                     <div className="space-y-6">
@@ -625,36 +816,87 @@ function EconomiaApp() {
                 
                 {tab === 'elasticitat' && (
                     <div className="space-y-6">
-                        <Card title={idioma === 'val' ? "📏 Elasticitat Preu-Demanda" : "📏 Price Elasticity of Demand"} icon="📏">
+                        <Card title={idioma === 'val' ? "📏 Elasticitat Preu-Demanda" : "📏 Price Elasticity of Demand"}>
+                            <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-xl mb-4">
+                                <p className="text-purple-700">{idioma === 'val' ? "💡 L'elasticitat mesura com de SENSIBLES són els consumidors als canvis de preu. Si el preu puja un 10%, quant baixa la quantitat demandada?" : "💡 Elasticity measures how SENSITIVE consumers are to price changes. If price rises 10%, how much does quantity demanded fall?"}</p>
+                            </div>
                             <div className="grid md:grid-cols-3 gap-4 mb-4">
-                                <ConceptBox title={idioma === 'val' ? "EPD" : "PED"} color="pink">
+                                <ConceptBox title={idioma === 'val' ? "EPD (Preu)" : "PED (Price)"} color="pink">
                                     <FormulaBox formula="EPD = %ΔQ / %ΔP" />
+                                    <p className="text-xs mt-1">{idioma === 'val' ? "Sempre negativa (llei demanda)" : "Always negative (law of demand)"}</p>
                                 </ConceptBox>
                                 <ConceptBox title={idioma === 'val' ? "Elast. Renda" : "Income Elast."} color="blue">
                                     <FormulaBox formula="ER = %ΔQ / %ΔR" />
-                                    <p className="text-xs">{">0: Normal, <0: Inferior"}</p>
+                                    <p className="text-xs">{idioma === 'val' ? ">0: Normal | <0: Inferior" : ">0: Normal | <0: Inferior"}</p>
                                 </ConceptBox>
                                 <ConceptBox title={idioma === 'val' ? "Elast. Creuada" : "Cross Elast."} color="green">
                                     <FormulaBox formula="EC = %ΔQx / %ΔPy" />
-                                    <p className="text-xs">{">0: Substituts, <0: Complements"}</p>
+                                    <p className="text-xs">{idioma === 'val' ? ">0: Substituts | <0: Complements" : ">0: Substitutes | <0: Complements"}</p>
                                 </ConceptBox>
                             </div>
                         </Card>
+                        
+                        <Card title={idioma === 'val' ? "📊 Demanda Elàstica vs Inelàstica" : "📊 Elastic vs Inelastic Demand"}>
+                            <div className="grid lg:grid-cols-2 gap-6">
+                                <div>
+                                    <div className="h-64">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <LineChart data={[
+                                                { p: 50, qElast: 10, qInelast: 40 },
+                                                { p: 40, qElast: 30, qInelast: 45 },
+                                                { p: 30, qElast: 50, qInelast: 50 },
+                                                { p: 20, qElast: 70, qInelast: 55 },
+                                                { p: 10, qElast: 90, qInelast: 60 }
+                                            ]}>
+                                                <CartesianGrid strokeDasharray="3 3" />
+                                                <XAxis dataKey="p" reversed label={{ value: idioma === 'val' ? 'Preu (€)' : 'Price (€)', position: 'bottom' }} />
+                                                <YAxis label={{ value: 'Q', angle: -90, position: 'insideLeft' }} />
+                                                <Tooltip />
+                                                <Legend />
+                                                <Line type="monotone" dataKey="qElast" stroke="#ec4899" strokeWidth={3} name={idioma === 'val' ? "Elàstica (luxe)" : "Elastic (luxury)"} />
+                                                <Line type="monotone" dataKey="qInelast" stroke="#3b82f6" strokeWidth={3} name={idioma === 'val' ? "Inelàstica (necessitat)" : "Inelastic (necessity)"} />
+                                            </LineChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
+                                <div className="space-y-3">
+                                    <div className="p-4 bg-pink-50 rounded-xl">
+                                        <h4 className="font-bold text-pink-700 mb-2">📈 {idioma === 'val' ? "Demanda ELÀSTICA (|E| > 1)" : "ELASTIC Demand (|E| > 1)"}</h4>
+                                        <p className="text-sm text-pink-600 mb-2">{idioma === 'val' ? "Molt sensible al preu. Petita pujada → gran caiguda Q" : "Very price-sensitive. Small price rise → big Q drop"}</p>
+                                        <p className="text-xs"><strong>{idioma === 'val' ? "Exemples:" : "Examples:"}</strong> {idioma === 'val' ? "Viatges, restaurants, roba de marca, electrònica" : "Travel, restaurants, designer clothes, electronics"}</p>
+                                        <p className="text-xs mt-1 text-pink-700 font-medium">{idioma === 'val' ? "💡 Estratègia: Baixar preus augmenta ingressos!" : "💡 Strategy: Lower prices increase revenue!"}</p>
+                                    </div>
+                                    <div className="p-4 bg-blue-50 rounded-xl">
+                                        <h4 className="font-bold text-blue-700 mb-2">📉 {idioma === 'val' ? "Demanda INELÀSTICA (|E| < 1)" : "INELASTIC Demand (|E| < 1)"}</h4>
+                                        <p className="text-sm text-blue-600 mb-2">{idioma === 'val' ? "Poc sensible al preu. Gran pujada → petita caiguda Q" : "Not price-sensitive. Big price rise → small Q drop"}</p>
+                                        <p className="text-xs"><strong>{idioma === 'val' ? "Exemples:" : "Examples:"}</strong> {idioma === 'val' ? "Gasolina, medicaments, electricitat, tabac" : "Gasoline, medicine, electricity, tobacco"}</p>
+                                        <p className="text-xs mt-1 text-blue-700 font-medium">{idioma === 'val' ? "💡 Estratègia: Pujar preus augmenta ingressos!" : "💡 Strategy: Raise prices increase revenue!"}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                        
                         <div className="grid lg:grid-cols-2 gap-6">
-                            <Card title={idioma === 'val' ? "🧮 Calculadora" : "🧮 Calculator"} icon="🧮">
+                            <Card title={idioma === 'val' ? "🧮 Calculadora d'Elasticitat" : "🧮 Elasticity Calculator"}>
                                 <div className="grid grid-cols-2 gap-3">
-                                    <Slider label="P₁" value={elastP1} onChange={setElastP1} min={1} max={50} suffix="€" />
-                                    <Slider label="P₂" value={elastP2} onChange={setElastP2} min={1} max={50} suffix="€" />
-                                    <Slider label="Q₁" value={elastQ1} onChange={setElastQ1} min={10} max={200} />
-                                    <Slider label="Q₂" value={elastQ2} onChange={setElastQ2} min={10} max={200} />
+                                    <Slider label={idioma === 'val' ? "Preu inicial" : "Initial Price"} value={elastP1} onChange={setElastP1} min={1} max={50} suffix="€" />
+                                    <Slider label={idioma === 'val' ? "Preu final" : "Final Price"} value={elastP2} onChange={setElastP2} min={1} max={50} suffix="€" />
+                                    <Slider label={idioma === 'val' ? "Q inicial" : "Initial Q"} value={elastQ1} onChange={setElastQ1} min={10} max={200} />
+                                    <Slider label={idioma === 'val' ? "Q final" : "Final Q"} value={elastQ2} onChange={setElastQ2} min={10} max={200} />
+                                </div>
+                                <div className="mt-3 p-3 bg-gray-50 rounded-lg text-sm">
+                                    <p><strong>{idioma === 'val' ? "Canvi P:" : "P Change:"}</strong> {elastP1}€ → {elastP2}€ ({((elastP2-elastP1)/elastP1*100).toFixed(1)}%)</p>
+                                    <p><strong>{idioma === 'val' ? "Canvi Q:" : "Q Change:"}</strong> {elastQ1} → {elastQ2} ({((elastQ2-elastQ1)/elastQ1*100).toFixed(1)}%)</p>
                                 </div>
                             </Card>
-                            <Card className={`${Math.abs(Number(elasticitat.absE)) > 1 ? 'bg-pink-50' : 'bg-blue-50'}`}>
+                            <Card className={`${Math.abs(Number(elasticitat.absE)) > 1 ? 'bg-gradient-to-br from-pink-100 to-rose-100' : 'bg-gradient-to-br from-blue-100 to-cyan-100'}`}>
                                 <div className="text-center">
-                                    <p className="text-sm text-gray-500 mb-2">EPD</p>
-                                    <p className="text-5xl font-black text-gray-800">{elasticitat.valor}</p>
-                                    <p className={`text-lg font-bold mt-2 ${Math.abs(Number(elasticitat.absE)) > 1 ? 'text-pink-600' : 'text-blue-600'}`}>{elasticitat.tipus}</p>
-                                    <p className="text-sm text-gray-500 mt-2">{Math.abs(Number(elasticitat.absE)) > 1 ? (idioma === 'val' ? 'Baixar preus ↑ IT' : 'Lower prices ↑ TR') : (idioma === 'val' ? 'Pujar preus ↑ IT' : 'Raise prices ↑ TR')}</p>
+                                    <p className="text-sm text-gray-600 mb-2">{idioma === 'val' ? "Elasticitat Preu-Demanda" : "Price Elasticity of Demand"}</p>
+                                    <p className="text-6xl font-black text-gray-800">{elasticitat.valor}</p>
+                                    <p className={`text-xl font-bold mt-2 ${Math.abs(Number(elasticitat.absE)) > 1 ? 'text-pink-600' : 'text-blue-600'}`}>{elasticitat.tipus}</p>
+                                    <div className="mt-4 p-3 bg-white/50 rounded-lg">
+                                        <p className="text-sm font-medium">{Math.abs(Number(elasticitat.absE)) > 1 ? (idioma === 'val' ? '💡 Baixar preus → Més ingressos totals' : '💡 Lower prices → More total revenue') : (idioma === 'val' ? '💡 Pujar preus → Més ingressos totals' : '💡 Raise prices → More total revenue')}</p>
+                                    </div>
                                 </div>
                             </Card>
                         </div>
@@ -668,10 +910,12 @@ function EconomiaApp() {
     // SECTION: COSTOS DE PRODUCCIÓ
     // ========================================================================
     const CostosProducio = () => {
+        const [tab, setTab] = useState('intro');
         const [costFix, setCostFix] = useState(1000);
         const [costVarA, setCostVarA] = useState(10);
         const [costVarB, setCostVarB] = useState(0.05);
         const [quantitat, setQuantitat] = useState(100);
+        const [preu, setPreu] = useState(25);
         
         const costos = useMemo(() => {
             const CV = costVarA * quantitat + costVarB * quantitat * quantitat;
@@ -680,72 +924,202 @@ function EconomiaApp() {
             const CVMe = CV / quantitat;
             const CFMe = costFix / quantitat;
             const CMg = costVarA + 2 * costVarB * quantitat;
-            return { CV: CV.toFixed(0), CT: CT.toFixed(0), CMe: CMe.toFixed(2), CVMe: CVMe.toFixed(2), CFMe: CFMe.toFixed(2), CMg: CMg.toFixed(2) };
-        }, [costFix, costVarA, costVarB, quantitat]);
+            const IT = preu * quantitat;
+            const benefici = IT - CT;
+            // Punt de tancament (P = CVMe mínim)
+            const qMinCVMe = 0;
+            const minCVMe = costVarA;
+            // Punt mort (P = CMe mínim)
+            const qMinCMe = Math.sqrt(costFix / costVarB);
+            const minCMe = costVarA + 2 * Math.sqrt(costFix * costVarB);
+            return { CV: CV.toFixed(0), CT: CT.toFixed(0), CMe: CMe.toFixed(2), CVMe: CVMe.toFixed(2), CFMe: CFMe.toFixed(2), CMg: CMg.toFixed(2), IT: IT.toFixed(0), benefici: benefici.toFixed(0), minCVMe: minCVMe.toFixed(2), minCMe: minCMe.toFixed(2), qMinCMe: qMinCMe.toFixed(0) };
+        }, [costFix, costVarA, costVarB, quantitat, preu]);
         
         const dadesCostos = useMemo(() => {
             const d = [];
             for (let q = 10; q <= 250; q += 10) {
                 const CV = costVarA * q + costVarB * q * q;
                 const CT = costFix + CV;
-                d.push({ q, CMe: CT/q, CVMe: CV/q, CMg: costVarA + 2*costVarB*q });
+                d.push({ q, CMe: CT/q, CVMe: CV/q, CMg: costVarA + 2*costVarB*q, CF: costFix, CT, CV });
             }
             return d;
         }, [costFix, costVarA, costVarB]);
         
         return (
             <div className="space-y-6">
-                <div><h1 className="text-3xl font-black text-gray-800">{idioma === 'val' ? 'Costos de Producció' : idioma === 'es' ? 'Costes de Producción' : 'Production Costs'}</h1></div>
-                
-                <Card title={idioma === 'val' ? "📚 Teoria" : "📚 Theory"} icon="📖">
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <ConceptBox title="CF" color="blue">
-                            {idioma === 'val' ? 'No varia amb Q: lloguer, amortització' : 'Doesnt vary with Q: rent, depreciation'}
-                        </ConceptBox>
-                        <ConceptBox title="CV" color="pink">
-                            {idioma === 'val' ? 'Varia amb Q: matèries, energia' : 'Varies with Q: materials, energy'}
-                        </ConceptBox>
-                        <ConceptBox title="CMe = CT/Q" color="amber">
-                            {idioma === 'val' ? 'Cost per unitat. Forma U.' : 'Cost per unit. U-shaped.'}
-                        </ConceptBox>
-                        <ConceptBox title="CMg = dCT/dQ" color="violet">
-                            {idioma === 'val' ? 'Cost unitat addicional. Clau decisions.' : 'Additional unit cost. Key for decisions.'}
-                        </ConceptBox>
-                    </div>
-                </Card>
-                
-                <div className="grid lg:grid-cols-2 gap-6">
-                    <Card title="⚙️ Simulador" icon="⚙️">
-                        <div className="space-y-3">
-                            <Slider label="CF" value={costFix} onChange={setCostFix} min={100} max={5000} step={100} suffix="€" />
-                            <Slider label={idioma === 'val' ? "CV lineal (a)" : "Linear VC (a)"} value={costVarA} onChange={setCostVarA} min={1} max={50} suffix="€" />
-                            <Slider label={idioma === 'val' ? "CV quadràtic (b)" : "Quadratic VC (b)"} value={costVarB} onChange={setCostVarB} min={0} max={0.2} step={0.01} />
-                            <Slider label="Q" value={quantitat} onChange={setQuantitat} min={10} max={250} step={10} />
-                        </div>
-                        <div className="grid grid-cols-3 gap-2 mt-4">
-                            <ResultCard title="CT" value={costos.CT + "€"} color="green" />
-                            <ResultCard title="CMe" value={costos.CMe + "€"} color="amber" />
-                            <ResultCard title="CMg" value={costos.CMg + "€"} color="violet" />
-                        </div>
-                    </Card>
-                    <Card>
-                        <div className="h-72">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={dadesCostos}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="q" />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Legend />
-                                    <Line type="monotone" dataKey="CMe" stroke="#f59e0b" strokeWidth={2} dot={false} />
-                                    <Line type="monotone" dataKey="CVMe" stroke="#ec4899" strokeWidth={2} dot={false} />
-                                    <Line type="monotone" dataKey="CMg" stroke="#8b5cf6" strokeWidth={2} dot={false} />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
-                        <p className="text-center text-sm text-gray-500 mt-2">{idioma === 'val' ? 'CMg talla CMe i CVMe als mínims' : 'MC intersects AC and AVC at minimums'}</p>
-                    </Card>
+                <div>
+                    <h1 className="text-3xl font-black text-gray-800">{idioma === 'val' ? 'Costos de Producció' : 'Production Costs'}</h1>
+                    <p className="text-gray-500">{idioma === 'val' ? "Entendre els costos és clau per a les decisions empresarials" : "Understanding costs is key for business decisions"}</p>
                 </div>
+                
+                <Tabs tabs={[
+                    { id: 'intro', label: idioma === 'val' ? '📖 Introducció' : '📖 Introduction' },
+                    { id: 'tipus', label: idioma === 'val' ? '📊 Tipus Costos' : '📊 Cost Types' },
+                    { id: 'simulador', label: '⚙️ Simulador' },
+                    { id: 'decisions', label: idioma === 'val' ? '🎯 Decisions' : '🎯 Decisions' },
+                ]} active={tab} onChange={setTab} />
+                
+                {tab === 'intro' && (
+                    <div className="space-y-6">
+                        <Card title={idioma === 'val' ? "💡 Per què importa entendre els costos?" : "💡 Why does understanding costs matter?"}>
+                            <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-xl mb-4">
+                                <p className="text-amber-700">{idioma === 'val' ? "Imagina que vols obrir una botiga de gelats. Abans de començar, necessites saber: Quant em costarà produir cada gelat? Quin preu he de posar? A partir de quants gelats començaré a guanyar diners? Els COSTOS t'ajuden a respondre aquestes preguntes!" : "Imagine you want to open an ice cream shop. Before starting, you need to know: How much will it cost me to produce each ice cream? What price should I set? How many ice creams do I need to sell to make a profit? COSTS help you answer these questions!"}</p>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="p-4 bg-blue-50 rounded-xl">
+                                    <h4 className="font-bold text-blue-700 mb-2">🏢 {idioma === 'val' ? "Exemple: Botiga de gelats" : "Example: Ice cream shop"}</h4>
+                                    <ul className="text-sm text-blue-600 space-y-1">
+                                        <li>🏠 {idioma === 'val' ? "Lloguer local: 1000€/mes (FIX)" : "Shop rent: €1000/month (FIXED)"}</li>
+                                        <li>🍦 {idioma === 'val' ? "Ingredients per gelat: 0.80€ (VARIABLE)" : "Ingredients per ice cream: €0.80 (VARIABLE)"}</li>
+                                        <li>⚡ {idioma === 'val' ? "Electricitat: depèn de quants fas (VARIABLE)" : "Electricity: depends on how many you make (VARIABLE)"}</li>
+                                        <li>👷 {idioma === 'val' ? "El teu sou: decideix si és fix o variable" : "Your salary: decide if it's fixed or variable"}</li>
+                                    </ul>
+                                </div>
+                                <div className="p-4 bg-green-50 rounded-xl">
+                                    <h4 className="font-bold text-green-700 mb-2">🎯 {idioma === 'val' ? "Preguntes que podem respondre" : "Questions we can answer"}</h4>
+                                    <ul className="text-sm text-green-600 space-y-1">
+                                        <li>✅ {idioma === 'val' ? "Quant em costa cada gelat addicional? (CMg)" : "How much does each additional ice cream cost? (MC)"}</li>
+                                        <li>✅ {idioma === 'val' ? "Quin és el cost mitjà per gelat? (CMe)" : "What's the average cost per ice cream? (AC)"}</li>
+                                        <li>✅ {idioma === 'val' ? "A partir de quants gelats començo a guanyar?" : "How many ice creams until I start profiting?"}</li>
+                                        <li>✅ {idioma === 'val' ? "Val la pena produir un gelat més?" : "Is it worth producing one more ice cream?"}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+                
+                {tab === 'tipus' && (
+                    <div className="space-y-6">
+                        <Card title={idioma === 'val' ? "📊 Tipus de Costos" : "📊 Types of Costs"}>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <ConceptBox title={idioma === 'val' ? "📌 Cost Fix (CF)" : "📌 Fixed Cost (FC)"} color="blue">
+                                        <p className="text-sm mb-2">{idioma === 'val' ? "NO canvia encara que produeixes més o menys." : "Does NOT change whether you produce more or less."}</p>
+                                        <div className="bg-white p-2 rounded text-xs">
+                                            <p><strong>{idioma === 'val' ? "Exemples:" : "Examples:"}</strong> {idioma === 'val' ? "Lloguer, assegurances, sous fixos, amortització maquinària" : "Rent, insurance, fixed salaries, machinery depreciation"}</p>
+                                        </div>
+                                        <p className="text-xs mt-2 text-blue-600">{idioma === 'val' ? "💡 Si tanques 1 mes, encara pagues el lloguer!" : "💡 If you close for 1 month, you still pay rent!"}</p>
+                                    </ConceptBox>
+                                    <ConceptBox title={idioma === 'val' ? "📈 Cost Variable (CV)" : "📈 Variable Cost (VC)"} color="pink">
+                                        <p className="text-sm mb-2">{idioma === 'val' ? "AUGMENTA quan produeixes més." : "INCREASES when you produce more."}</p>
+                                        <div className="bg-white p-2 rounded text-xs">
+                                            <p><strong>{idioma === 'val' ? "Exemples:" : "Examples:"}</strong> {idioma === 'val' ? "Matèries primeres, electricitat, hores extra, comissions" : "Raw materials, electricity, overtime, commissions"}</p>
+                                        </div>
+                                        <p className="text-xs mt-2 text-pink-600">{idioma === 'val' ? "💡 Si no produeixes res, CV = 0€" : "💡 If you produce nothing, VC = €0"}</p>
+                                    </ConceptBox>
+                                </div>
+                                <div className="space-y-4">
+                                    <ConceptBox title={idioma === 'val' ? "➕ Cost Total (CT)" : "➕ Total Cost (TC)"} color="green">
+                                        <FormulaBox formula="CT = CF + CV" />
+                                        <p className="text-sm">{idioma === 'val' ? "Tot el que gastes per produir." : "Everything you spend to produce."}</p>
+                                    </ConceptBox>
+                                    <ConceptBox title={idioma === 'val' ? "📊 Cost Mitjà (CMe)" : "📊 Average Cost (AC)"} color="amber">
+                                        <FormulaBox formula="CMe = CT / Q" />
+                                        <p className="text-sm">{idioma === 'val' ? "Quant costa de mitjana cada unitat. TÉ FORMA DE U perquè al principi els costos fixos es reparteixen entre poques unitats." : "How much each unit costs on average. U-SHAPED because initially fixed costs are spread over few units."}</p>
+                                    </ConceptBox>
+                                    <ConceptBox title={idioma === 'val' ? "⚡ Cost Marginal (CMg)" : "⚡ Marginal Cost (MC)"} color="violet">
+                                        <FormulaBox formula="CMg = ΔCT / ΔQ" />
+                                        <p className="text-sm">{idioma === 'val' ? "El cost de produir UNA unitat més. És el MÉS IMPORTANT per a decisions!" : "The cost of producing ONE more unit. It's the MOST IMPORTANT for decisions!"}</p>
+                                        <p className="text-xs mt-2 text-violet-600">{idioma === 'val' ? "💡 Si CMg < Preu → produeix més!" : "💡 If MC < Price → produce more!"}</p>
+                                    </ConceptBox>
+                                </div>
+                            </div>
+                        </Card>
+                        <Card title={idioma === 'val' ? "📉 Relació entre CMe i CMg" : "📉 Relationship between AC and MC"}>
+                            <div className="bg-violet-50 p-4 rounded-xl">
+                                <p className="text-violet-700 font-medium mb-2">{idioma === 'val' ? "🔑 Regla d'or: El CMg sempre talla el CMe al seu mínim!" : "🔑 Golden rule: MC always intersects AC at its minimum!"}</p>
+                                <p className="text-sm text-violet-600">{idioma === 'val' ? "Pensa-ho així: si el que afegeixes (CMg) és menor que la mitjana (CMe), la mitjana baixa. Si és major, la mitjana puja. Per tant, es creuen quan són iguals, que és just al mínim del CMe." : "Think of it this way: if what you add (MC) is less than the average (AC), the average goes down. If it's higher, the average goes up. So they cross when they're equal, which is exactly at the AC minimum."}</p>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+                
+                {tab === 'simulador' && (
+                    <div className="space-y-6">
+                        <div className="grid lg:grid-cols-2 gap-6">
+                            <Card title={idioma === 'val' ? "⚙️ Configura els Costos" : "⚙️ Configure Costs"}>
+                                <div className="space-y-3">
+                                    <Slider label={idioma === 'val' ? "🏢 Cost Fix (CF)" : "🏢 Fixed Cost (FC)"} value={costFix} onChange={setCostFix} min={100} max={5000} step={100} suffix="€" />
+                                    <Slider label={idioma === 'val' ? "📦 Cost Variable unitari base" : "📦 Base unit variable cost"} value={costVarA} onChange={setCostVarA} min={1} max={50} suffix="€" />
+                                    <Slider label={idioma === 'val' ? "📈 Factor creixent (rendiments decreixents)" : "📈 Increasing factor (diminishing returns)"} value={costVarB} onChange={setCostVarB} min={0} max={0.2} step={0.01} />
+                                    <Slider label={idioma === 'val' ? "🔢 Quantitat produïda (Q)" : "🔢 Quantity produced (Q)"} value={quantitat} onChange={setQuantitat} min={10} max={250} step={10} />
+                                    <Slider label={idioma === 'val' ? "💰 Preu de venda" : "💰 Selling price"} value={preu} onChange={setPreu} min={10} max={50} suffix="€" />
+                                </div>
+                                <div className="grid grid-cols-3 gap-2 mt-4">
+                                    <div className="p-2 bg-blue-50 rounded text-center"><p className="text-xs text-blue-600">CF</p><p className="font-bold text-blue-700">{costFix}€</p></div>
+                                    <div className="p-2 bg-pink-50 rounded text-center"><p className="text-xs text-pink-600">CV</p><p className="font-bold text-pink-700">{costos.CV}€</p></div>
+                                    <div className="p-2 bg-green-50 rounded text-center"><p className="text-xs text-green-600">CT</p><p className="font-bold text-green-700">{costos.CT}€</p></div>
+                                </div>
+                                <div className="grid grid-cols-3 gap-2 mt-2">
+                                    <div className="p-2 bg-amber-50 rounded text-center"><p className="text-xs text-amber-600">CMe</p><p className="font-bold text-amber-700">{costos.CMe}€</p></div>
+                                    <div className="p-2 bg-violet-50 rounded text-center"><p className="text-xs text-violet-600">CMg</p><p className="font-bold text-violet-700">{costos.CMg}€</p></div>
+                                    <div className={`p-2 rounded text-center ${parseFloat(costos.benefici) >= 0 ? 'bg-green-100' : 'bg-red-100'}`}><p className="text-xs">{idioma === 'val' ? 'Benefici' : 'Profit'}</p><p className={`font-bold ${parseFloat(costos.benefici) >= 0 ? 'text-green-700' : 'text-red-700'}`}>{costos.benefici}€</p></div>
+                                </div>
+                            </Card>
+                            <Card title={idioma === 'val' ? "📈 Gràfic de Costos" : "📈 Cost Graph"}>
+                                <div className="h-64">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <LineChart data={dadesCostos}>
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="q" label={{ value: 'Q', position: 'bottom' }} />
+                                            <YAxis domain={[0, 'auto']} />
+                                            <Tooltip />
+                                            <Legend />
+                                            <Line type="monotone" dataKey="CMe" stroke="#f59e0b" strokeWidth={3} dot={false} name="CMe" />
+                                            <Line type="monotone" dataKey="CVMe" stroke="#ec4899" strokeWidth={2} dot={false} name="CVMe" />
+                                            <Line type="monotone" dataKey="CMg" stroke="#8b5cf6" strokeWidth={3} dot={false} name="CMg" />
+                                            <ReferenceLine y={preu} stroke="#10b981" strokeWidth={2} strokeDasharray="5 5" label={{ value: 'Preu', fill: '#10b981' }} />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                <p className="text-center text-sm text-gray-500 mt-2">{idioma === 'val' ? 'Observa com CMg talla CMe i CVMe als seus mínims' : 'Notice how MC intersects AC and AVC at their minimums'}</p>
+                            </Card>
+                        </div>
+                    </div>
+                )}
+                
+                {tab === 'decisions' && (
+                    <div className="space-y-6">
+                        <Card title={idioma === 'val' ? "🎯 Decisions empresarials basades en costos" : "🎯 Business decisions based on costs"}>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <div className="p-4 bg-green-50 rounded-xl border-2 border-green-200">
+                                        <h4 className="font-bold text-green-700 mb-2">✅ {idioma === 'val' ? "Quan produir més?" : "When to produce more?"}</h4>
+                                        <p className="text-sm text-green-600 mb-2">{idioma === 'val' ? "Produeix mentre el preu siga MAJOR que el cost marginal." : "Produce as long as price is GREATER than marginal cost."}</p>
+                                        <div className="bg-white p-2 rounded">
+                                            <p className="text-sm font-mono">P {">"} CMg → {idioma === 'val' ? "Produeix més!" : "Produce more!"}</p>
+                                        </div>
+                                        <p className="text-xs mt-2">{idioma === 'val' ? "💡 Cada unitat addicional et dona benefici si la pots vendre per més del que costa fer-la." : "💡 Each additional unit gives you profit if you can sell it for more than it costs to make."}</p>
+                                    </div>
+                                    <div className="p-4 bg-amber-50 rounded-xl border-2 border-amber-200">
+                                        <h4 className="font-bold text-amber-700 mb-2">⚖️ {idioma === 'val' ? "Punt mort (Break-even)" : "Break-even point"}</h4>
+                                        <p className="text-sm text-amber-600 mb-2">{idioma === 'val' ? "Quan el preu = CMe, no guanyes ni perds." : "When price = AC, you neither gain nor lose."}</p>
+                                        <div className="bg-white p-2 rounded">
+                                            <p className="text-sm">{idioma === 'val' ? "CMe mínim ≈" : "Min AC ≈"} <strong>{costos.minCMe}€</strong></p>
+                                        </div>
+                                        <p className="text-xs mt-2">{idioma === 'val' ? "💡 Si el preu és menor que aquest, tindràs pèrdues." : "💡 If price is lower than this, you'll have losses."}</p>
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="p-4 bg-red-50 rounded-xl border-2 border-red-200">
+                                        <h4 className="font-bold text-red-700 mb-2">🚫 {idioma === 'val' ? "Punt de tancament" : "Shutdown point"}</h4>
+                                        <p className="text-sm text-red-600 mb-2">{idioma === 'val' ? "Si el preu cau per sota del CVMe mínim, és millor tancar temporalment." : "If price falls below minimum AVC, it's better to temporarily shut down."}</p>
+                                        <div className="bg-white p-2 rounded">
+                                            <p className="text-sm">{idioma === 'val' ? "CVMe mínim ≈" : "Min AVC ≈"} <strong>{costos.minCVMe}€</strong></p>
+                                        </div>
+                                        <p className="text-xs mt-2">{idioma === 'val' ? "💡 Si P < CVMe, cada unitat que produeixes et fa perdre més diners!" : "💡 If P < AVC, every unit you produce loses you more money!"}</p>
+                                    </div>
+                                    <div className="p-4 bg-violet-50 rounded-xl border-2 border-violet-200">
+                                        <h4 className="font-bold text-violet-700 mb-2">📊 {idioma === 'val' ? "Economies d'escala" : "Economies of Scale"}</h4>
+                                        <p className="text-sm text-violet-600">{idioma === 'val' ? "Quan produir més FA BAIXAR el cost mitjà. Passa quan els costos fixos es reparteixen entre més unitats." : "When producing more LOWERS average cost. Happens when fixed costs are spread over more units."}</p>
+                                        <p className="text-xs mt-2">{idioma === 'val' ? "💡 Per això les grans empreses sovint tenen avantatge de costos sobre les petites!" : "💡 This is why large companies often have cost advantages over small ones!"}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                )}
             </div>
         );
     };
@@ -1117,16 +1491,25 @@ function EconomiaApp() {
         const [qPrivat, setQPrivat] = useState(100);
         const [costExtern, setCostExtern] = useState(10);
         
-        const txt = { val: { title: 'Fallades de Mercat', ext: 'Externalitats', bens: 'Béns Públics', asim: 'Informació Asimètrica' }, es: { title: 'Fallos de Mercado', ext: 'Externalidades', bens: 'Bienes Públicos', asim: 'Información Asimétrica' }, en: { title: 'Market Failures', ext: 'Externalities', bens: 'Public Goods', asim: 'Asymmetric Information' } }[idioma];
+        const txt = { val: { title: 'Fallades de Mercat', ext: 'Externalitats', bens: 'Béns Públics', asim: 'Info. Asimètrica', desig: 'Desigualtat', poder: 'Poder Mercat' }, es: { title: 'Fallos de Mercado', ext: 'Externalidades', bens: 'Bienes Públicos', asim: 'Info. Asimétrica', desig: 'Desigualdad', poder: 'Poder Mercado' }, en: { title: 'Market Failures', ext: 'Externalities', bens: 'Public Goods', asim: 'Asymm. Info', desig: 'Inequality', poder: 'Market Power' } }[idioma];
         
         return (
             <div className="space-y-6">
-                <div><h1 className="text-3xl font-black text-gray-800">{txt.title}</h1></div>
+                <div>
+                    <h1 className="text-3xl font-black text-gray-800">{txt.title}</h1>
+                    <p className="text-gray-500">{idioma === 'val' ? "Quan el mercat lliure NO aconsegueix l'eficiència" : "When the free market FAILS to achieve efficiency"}</p>
+                </div>
+                
+                <div className="bg-gradient-to-r from-red-50 to-amber-50 p-4 rounded-xl">
+                    <p className="text-red-700">{idioma === 'val' ? "💡 El mercat és molt eficient en moltes coses, però a vegades falla. Aquestes fallades justifiquen la intervenció del govern (impostos, regulacions, serveis públics)." : "💡 The market is very efficient at many things, but sometimes it fails. These failures justify government intervention (taxes, regulations, public services)."}</p>
+                </div>
                 
                 <Tabs tabs={[
                     { id: 'externalitats', label: '🏭 ' + txt.ext },
                     { id: 'bens', label: '🏛️ ' + txt.bens },
                     { id: 'asimetria', label: '👁️ ' + txt.asim },
+                    { id: 'desigualtat', label: '📊 ' + txt.desig },
+                    { id: 'poder', label: '👑 ' + txt.poder },
                 ]} active={tab} onChange={setTab} />
                 
                 {tab === 'externalitats' && (
@@ -1196,20 +1579,145 @@ function EconomiaApp() {
                 )}
                 
                 {tab === 'asimetria' && (
-                    <Card title={idioma === 'val' ? "👁️ Informació Asimètrica" : "👁️ Asymmetric Information"} icon="👁️">
+                    <Card title={idioma === 'val' ? "👁️ Informació Asimètrica" : "👁️ Asymmetric Information"}>
+                        <div className="bg-gradient-to-r from-violet-50 to-purple-50 p-4 rounded-xl mb-4">
+                            <p className="text-violet-700">{idioma === 'val' ? "💡 Quan una part d'una transacció sap més que l'altra, el mercat pot funcionar malament. Pensa en comprar un cotxe usat: el venedor sap si té problemes, tu no!" : "💡 When one party in a transaction knows more than the other, the market can malfunction. Think about buying a used car: the seller knows if it has problems, you don't!"}</p>
+                        </div>
                         <div className="grid md:grid-cols-2 gap-6">
                             <ConceptBox title={idioma === 'val' ? "Selecció Adversa" : "Adverse Selection"} color="red">
-                                <p className="mb-2">{idioma === 'val' ? "ABANS de la transacció. Una part té més informació." : "BEFORE transaction. One party has more information."}</p>
-                                <p className="text-sm">{idioma === 'val' ? "Ex: Cotxes usats (Akerlof), assegurances de salut" : "Ex: Used cars (Akerlof), health insurance"}</p>
-                                <p className="mt-2 font-bold">{idioma === 'val' ? "Solució: Senyalització (garanties, títols)" : "Solution: Signaling (warranties, degrees)"}</p>
+                                <p className="mb-2 font-medium">{idioma === 'val' ? "⏰ ABANS de la transacció" : "⏰ BEFORE the transaction"}</p>
+                                <p className="text-sm mb-2">{idioma === 'val' ? "Una part amaga informació per obtenir millors condicions." : "One party hides information to get better terms."}</p>
+                                <div className="bg-white p-2 rounded mt-2">
+                                    <p className="text-xs"><strong>{idioma === 'val' ? "Exemples:" : "Examples:"}</strong></p>
+                                    <p className="text-xs">• {idioma === 'val' ? "Cotxes usats (Akerlof): venedors de cotxes dolents expulsen els bons" : "Used cars (Akerlof): bad car sellers drive out good ones"}</p>
+                                    <p className="text-xs">• {idioma === 'val' ? "Assegurances: els més malalts són els que més s'asseguren" : "Insurance: the sickest people are most likely to buy"}</p>
+                                </div>
+                                <p className="mt-2 text-sm font-bold text-green-700">✅ {idioma === 'val' ? "Solucions: Garanties, certificacions, historials" : "Solutions: Warranties, certifications, histories"}</p>
                             </ConceptBox>
                             <ConceptBox title={idioma === 'val' ? "Risc Moral" : "Moral Hazard"} color="amber">
-                                <p className="mb-2">{idioma === 'val' ? "DESPRÉS de la transacció. Comportament canvia." : "AFTER transaction. Behavior changes."}</p>
-                                <p className="text-sm">{idioma === 'val' ? "Ex: Assegurat que es descuida, empleat que no s'esforça" : "Ex: Insured person becomes careless, employee doesn't try"}</p>
-                                <p className="mt-2 font-bold">{idioma === 'val' ? "Solució: Incentius, monitoratge, franquícies" : "Solution: Incentives, monitoring, deductibles"}</p>
+                                <p className="mb-2 font-medium">{idioma === 'val' ? "⏰ DESPRÉS de la transacció" : "⏰ AFTER the transaction"}</p>
+                                <p className="text-sm mb-2">{idioma === 'val' ? "El comportament canvia perquè algú altre assumeix el risc." : "Behavior changes because someone else assumes the risk."}</p>
+                                <div className="bg-white p-2 rounded mt-2">
+                                    <p className="text-xs"><strong>{idioma === 'val' ? "Exemples:" : "Examples:"}</strong></p>
+                                    <p className="text-xs">• {idioma === 'val' ? "Assegurat que condueix més temerari" : "Insured person drives more recklessly"}</p>
+                                    <p className="text-xs">• {idioma === 'val' ? "Bancs 'too big to fail' prenen riscos excessius" : "Banks 'too big to fail' take excessive risks"}</p>
+                                </div>
+                                <p className="mt-2 text-sm font-bold text-green-700">✅ {idioma === 'val' ? "Solucions: Franquícies, bonus/malus, supervisió" : "Solutions: Deductibles, bonus/malus, supervision"}</p>
                             </ConceptBox>
                         </div>
                     </Card>
+                )}
+                
+                {tab === 'desigualtat' && (
+                    <div className="space-y-6">
+                        <Card title={idioma === 'val' ? "📊 Desigualtat en la Distribució de la Renda" : "📊 Income Distribution Inequality"}>
+                            <div className="bg-gradient-to-r from-orange-50 to-red-50 p-4 rounded-xl mb-4">
+                                <p className="text-orange-700">{idioma === 'val' ? "💡 El mercat pot ser eficient però INJUST. Pot produir molt però repartir-ho de manera molt desigual. Algunes persones neixen amb avantatges (herències, educació, contactes) i d'altres no." : "💡 The market can be efficient but UNFAIR. It can produce a lot but distribute it very unequally. Some people are born with advantages (inheritance, education, contacts) and others are not."}</p>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <ConceptBox title={idioma === 'val' ? "Per què el mercat genera desigualtat?" : "Why does the market generate inequality?"} color="red">
+                                        <ul className="text-sm space-y-1">
+                                            <li>• {idioma === 'val' ? "Diferències en talents i habilitats" : "Differences in talents and abilities"}</li>
+                                            <li>• {idioma === 'val' ? "Herències i riquesa acumulada" : "Inheritance and accumulated wealth"}</li>
+                                            <li>• {idioma === 'val' ? "Accés desigual a l'educació" : "Unequal access to education"}</li>
+                                            <li>• {idioma === 'val' ? "Discriminació (gènere, raça, origen)" : "Discrimination (gender, race, origin)"}</li>
+                                            <li>• {idioma === 'val' ? "Efecte 'superstar' (uns pocs guanyen molt)" : "'Superstar' effect (few earn a lot)"}</li>
+                                        </ul>
+                                    </ConceptBox>
+                                    <div className="mt-4 p-4 bg-amber-50 rounded-xl">
+                                        <h4 className="font-bold text-amber-700 mb-2">{idioma === 'val' ? "📏 Com es mesura?" : "📏 How is it measured?"}</h4>
+                                        <p className="text-sm mb-2"><strong>{idioma === 'val' ? "Coeficient de Gini:" : "Gini Coefficient:"}</strong> {idioma === 'val' ? "0 = igualtat perfecta, 1 = desigualtat màxima" : "0 = perfect equality, 1 = maximum inequality"}</p>
+                                        <p className="text-sm"><strong>{idioma === 'val' ? "Corba de Lorenz:" : "Lorenz Curve:"}</strong> {idioma === 'val' ? "Gràfic que mostra distribució acumulada" : "Graph showing cumulative distribution"}</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <ConceptBox title={idioma === 'val' ? "🔧 Solucions del govern" : "🔧 Government solutions"} color="green">
+                                        <div className="space-y-2">
+                                            <div className="p-2 bg-white rounded">
+                                                <p className="font-bold text-sm">{idioma === 'val' ? "Impostos progressius" : "Progressive taxes"}</p>
+                                                <p className="text-xs">{idioma === 'val' ? "Qui més té, més paga (% més alt)" : "Those who have more pay more (higher %)"}</p>
+                                            </div>
+                                            <div className="p-2 bg-white rounded">
+                                                <p className="font-bold text-sm">{idioma === 'val' ? "Transferències" : "Transfers"}</p>
+                                                <p className="text-xs">{idioma === 'val' ? "Ajudes, pensions, atur, renda mínima" : "Welfare, pensions, unemployment, basic income"}</p>
+                                            </div>
+                                            <div className="p-2 bg-white rounded">
+                                                <p className="font-bold text-sm">{idioma === 'val' ? "Serveis públics" : "Public services"}</p>
+                                                <p className="text-xs">{idioma === 'val' ? "Educació i sanitat gratuïtes per a tots" : "Free education and healthcare for all"}</p>
+                                            </div>
+                                            <div className="p-2 bg-white rounded">
+                                                <p className="font-bold text-sm">{idioma === 'val' ? "Salari mínim" : "Minimum wage"}</p>
+                                                <p className="text-xs">{idioma === 'val' ? "Preu mínim del treball per garantir ingressos dignes" : "Minimum price of labor to ensure decent income"}</p>
+                                            </div>
+                                        </div>
+                                    </ConceptBox>
+                                </div>
+                            </div>
+                        </Card>
+                        <Card title={idioma === 'val' ? "⚖️ El dilema eficiència vs equitat" : "⚖️ The efficiency vs equity dilemma"}>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="p-4 bg-blue-50 rounded-xl">
+                                    <h4 className="font-bold text-blue-700">{idioma === 'val' ? "Eficiència (fer el pastís més gran)" : "Efficiency (making the pie bigger)"}</h4>
+                                    <p className="text-sm text-blue-600">{idioma === 'val' ? "El mercat maximitza la producció total. Però no garanteix que tothom tingui un tros." : "The market maximizes total production. But it doesn't guarantee everyone gets a slice."}</p>
+                                </div>
+                                <div className="p-4 bg-green-50 rounded-xl">
+                                    <h4 className="font-bold text-green-700">{idioma === 'val' ? "Equitat (repartir el pastís)" : "Equity (dividing the pie)"}</h4>
+                                    <p className="text-sm text-green-600">{idioma === 'val' ? "Redistribuir pot reduir incentius i fer el pastís més petit. Però és més just!" : "Redistribution can reduce incentives and make the pie smaller. But it's more fair!"}</p>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+                
+                {tab === 'poder' && (
+                    <div className="space-y-6">
+                        <Card title={idioma === 'val' ? "👑 Poder de Mercat i Competència Imperfecta" : "👑 Market Power and Imperfect Competition"}>
+                            <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-xl mb-4">
+                                <p className="text-purple-700">{idioma === 'val' ? "💡 Quan una empresa (o poques) dominen el mercat, poden pujar preus i reduir producció per maximitzar beneficis. Els consumidors paguen més i la societat perd eficiència." : "💡 When one firm (or few) dominate the market, they can raise prices and reduce production to maximize profits. Consumers pay more and society loses efficiency."}</p>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <ConceptBox title={idioma === 'val' ? "Problemes del poder de mercat" : "Problems of market power"} color="red">
+                                        <ul className="text-sm space-y-1">
+                                            <li>❌ {idioma === 'val' ? "Preus més alts que en competència" : "Higher prices than in competition"}</li>
+                                            <li>❌ {idioma === 'val' ? "Quantitat produïda menor (escassetat artificial)" : "Lower quantity produced (artificial scarcity)"}</li>
+                                            <li>❌ {idioma === 'val' ? "Pèrdua d'eficiència (DWL)" : "Efficiency loss (DWL)"}</li>
+                                            <li>❌ {idioma === 'val' ? "Menys innovació (sense pressió competitiva)" : "Less innovation (without competitive pressure)"}</li>
+                                            <li>❌ {idioma === 'val' ? "Rent-seeking (gastar en lobbying en lloc de millorar)" : "Rent-seeking (spending on lobbying instead of improving)"}</li>
+                                        </ul>
+                                    </ConceptBox>
+                                    <div className="mt-4 p-4 bg-violet-50 rounded-xl">
+                                        <h4 className="font-bold text-violet-700 mb-2">{idioma === 'val' ? "Tipus de poder de mercat" : "Types of market power"}</h4>
+                                        <p className="text-sm mb-1"><strong>{idioma === 'val' ? "Monopoli:" : "Monopoly:"}</strong> {idioma === 'val' ? "Un sol venedor (ex: aigua, electricitat)" : "Single seller (ex: water, electricity)"}</p>
+                                        <p className="text-sm mb-1"><strong>{idioma === 'val' ? "Oligopoli:" : "Oligopoly:"}</strong> {idioma === 'val' ? "Pocs venedors que poden col·ludir (ex: petroli, telecoms)" : "Few sellers who can collude (ex: oil, telecoms)"}</p>
+                                        <p className="text-sm"><strong>{idioma === 'val' ? "Monopsoni:" : "Monopsony:"}</strong> {idioma === 'val' ? "Un sol comprador (ex: gran empresa en poble petit)" : "Single buyer (ex: big company in small town)"}</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <ConceptBox title={idioma === 'val' ? "🔧 Solucions: Política de Competència" : "🔧 Solutions: Competition Policy"} color="green">
+                                        <div className="space-y-2">
+                                            <div className="p-2 bg-white rounded">
+                                                <p className="font-bold text-sm">{idioma === 'val' ? "Lleis antitrust / antimonopoli" : "Antitrust / antimonopoly laws"}</p>
+                                                <p className="text-xs">{idioma === 'val' ? "Prohibir fusions que creen monopolis, sancionar càrtels" : "Prohibit mergers creating monopolies, sanction cartels"}</p>
+                                            </div>
+                                            <div className="p-2 bg-white rounded">
+                                                <p className="font-bold text-sm">{idioma === 'val' ? "Regulació de monopolis naturals" : "Natural monopoly regulation"}</p>
+                                                <p className="text-xs">{idioma === 'val' ? "Controlar preus d'aigua, gas, electricitat" : "Control prices of water, gas, electricity"}</p>
+                                            </div>
+                                            <div className="p-2 bg-white rounded">
+                                                <p className="font-bold text-sm">{idioma === 'val' ? "Empreses públiques" : "Public companies"}</p>
+                                                <p className="text-xs">{idioma === 'val' ? "L'Estat proveeix serveis essencials sense ànim de lucre" : "State provides essential services without profit motive"}</p>
+                                            </div>
+                                        </div>
+                                    </ConceptBox>
+                                    <div className="mt-4 p-3 bg-amber-50 rounded-xl">
+                                        <p className="text-sm text-amber-700"><strong>{idioma === 'val' ? "🇪🇺 A Europa:" : "🇪🇺 In Europe:"}</strong> {idioma === 'val' ? "La Comissió Europea vigila fusions (va bloquejar Alstom-Siemens) i multa càrtels (Google, Apple)." : "European Commission monitors mergers (blocked Alstom-Siemens) and fines cartels (Google, Apple)."}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
                 )}
             </div>
         );
@@ -1219,7 +1727,7 @@ function EconomiaApp() {
     // SECTION: MACROECONOMIA (PIB, IS-LM, AD-AS)
     // ========================================================================
     const Macroeconomia = () => {
-        const [tab, setTab] = useState('pib');
+        const [tab, setTab] = useState('intro');
         
         // PIB
         const [pibC, setPibC] = useState(600);
@@ -1283,14 +1791,76 @@ function EconomiaApp() {
         
         return (
             <div className="space-y-6">
-                <div><h1 className="text-3xl font-black text-gray-800">Macroeconomia</h1></div>
+                <div>
+                    <h1 className="text-3xl font-black text-gray-800">Macroeconomia</h1>
+                    <p className="text-gray-500">{idioma === 'val' ? "L'estudi de l'economia en el seu conjunt: creixement, atur, inflació" : "The study of the economy as a whole: growth, unemployment, inflation"}</p>
+                </div>
                 
                 <Tabs tabs={[
+                    { id: 'intro', label: idioma === 'val' ? '📖 Introducció' : '📖 Introduction' },
                     { id: 'pib', label: '📊 PIB' },
                     { id: 'islm', label: '📉 IS-LM' },
                     { id: 'adas', label: '📈 AD-AS' },
                     { id: 'phillips', label: '📊 Phillips' },
                 ]} active={tab} onChange={setTab} />
+                
+                {tab === 'intro' && (
+                    <div className="space-y-6">
+                        <Card title={idioma === 'val' ? "🌍 Què és la Macroeconomia?" : "🌍 What is Macroeconomics?"}>
+                            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl mb-4">
+                                <p className="text-blue-700">{idioma === 'val' ? "💡 Si la microeconomia és com estudiar arbres individuals, la macroeconomia és estudiar tot el bosc. Ens preguntem: Per què alguns països són rics i altres pobres? Per què hi ha crisis? Com podem reduir l'atur?" : "💡 If microeconomics is like studying individual trees, macroeconomics is studying the whole forest. We ask: Why are some countries rich and others poor? Why are there crises? How can we reduce unemployment?"}</p>
+                            </div>
+                            <div className="grid md:grid-cols-3 gap-4">
+                                <div className="p-4 bg-green-50 rounded-xl">
+                                    <h4 className="font-bold text-green-700 mb-2">📈 {idioma === 'val' ? "Creixement" : "Growth"}</h4>
+                                    <p className="text-sm text-green-600">{idioma === 'val' ? "Per què l'economia creix alguns anys i es contrau en altres? Com podem fer que creixi de forma sostenible?" : "Why does the economy grow some years and contract in others? How can we make it grow sustainably?"}</p>
+                                </div>
+                                <div className="p-4 bg-red-50 rounded-xl">
+                                    <h4 className="font-bold text-red-700 mb-2">👥 {idioma === 'val' ? "Atur" : "Unemployment"}</h4>
+                                    <p className="text-sm text-red-600">{idioma === 'val' ? "Per què hi ha gent que vol treballar però no troba feina? Quines polítiques poden crear ocupació?" : "Why are there people who want to work but can't find jobs? What policies can create employment?"}</p>
+                                </div>
+                                <div className="p-4 bg-amber-50 rounded-xl">
+                                    <h4 className="font-bold text-amber-700 mb-2">💰 {idioma === 'val' ? "Inflació" : "Inflation"}</h4>
+                                    <p className="text-sm text-amber-600">{idioma === 'val' ? "Per què els preus pugen? Com afecta als nostres estalvis? Quanta inflació és acceptable?" : "Why do prices rise? How does it affect our savings? How much inflation is acceptable?"}</p>
+                                </div>
+                            </div>
+                        </Card>
+                        <Card title={idioma === 'val' ? "🔧 Les eines del govern" : "🔧 Government tools"}>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="p-4 bg-pink-50 rounded-xl">
+                                    <h4 className="font-bold text-pink-700 mb-2">🏛️ {idioma === 'val' ? "Política Fiscal" : "Fiscal Policy"}</h4>
+                                    <p className="text-sm text-pink-600 mb-2">{idioma === 'val' ? "El govern pot GASTAR MÉS (G↑) o BAIXAR IMPOSTOS per estimular l'economia en crisi. O al contrari per 'refredar-la' si hi ha inflació." : "Government can SPEND MORE (G↑) or CUT TAXES to stimulate the economy in crisis. Or the opposite to 'cool it down' if there's inflation."}</p>
+                                    <p className="text-xs text-pink-500">{idioma === 'val' ? "Exemple: Plans d'estímul durant la COVID-19" : "Example: Stimulus packages during COVID-19"}</p>
+                                </div>
+                                <div className="p-4 bg-violet-50 rounded-xl">
+                                    <h4 className="font-bold text-violet-700 mb-2">🏦 {idioma === 'val' ? "Política Monetària" : "Monetary Policy"}</h4>
+                                    <p className="text-sm text-violet-600 mb-2">{idioma === 'val' ? "El Banc Central pot BAIXAR TIPUS D'INTERÈS per fer més fàcil demanar préstecs i estimular inversió. O PUJAR-LOS per frenar inflació." : "Central Bank can LOWER INTEREST RATES to make borrowing easier and stimulate investment. Or RAISE them to curb inflation."}</p>
+                                    <p className="text-xs text-violet-500">{idioma === 'val' ? "Exemple: El BCE pujant tipus el 2022-23 contra la inflació" : "Example: ECB raising rates in 2022-23 against inflation"}</p>
+                                </div>
+                            </div>
+                        </Card>
+                        <Card title={idioma === 'val' ? "📊 Per què estudiar cada model?" : "📊 Why study each model?"}>
+                            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
+                                <div className="p-3 bg-emerald-50 rounded-xl">
+                                    <p className="font-bold text-emerald-700 text-sm">PIB</p>
+                                    <p className="text-xs text-emerald-600">{idioma === 'val' ? "Per mesurar la 'salut' de l'economia i comparar entre països" : "To measure the 'health' of the economy and compare between countries"}</p>
+                                </div>
+                                <div className="p-3 bg-blue-50 rounded-xl">
+                                    <p className="font-bold text-blue-700 text-sm">IS-LM</p>
+                                    <p className="text-xs text-blue-600">{idioma === 'val' ? "Per entendre com interactuen el mercat de béns i el de diners" : "To understand how goods and money markets interact"}</p>
+                                </div>
+                                <div className="p-3 bg-pink-50 rounded-xl">
+                                    <p className="font-bold text-pink-700 text-sm">AD-AS</p>
+                                    <p className="text-xs text-pink-600">{idioma === 'val' ? "Per veure l'efecte de shocks (petroli, pandèmia) i polítiques sobre preus i producció" : "To see the effect of shocks (oil, pandemic) and policies on prices and output"}</p>
+                                </div>
+                                <div className="p-3 bg-amber-50 rounded-xl">
+                                    <p className="font-bold text-amber-700 text-sm">Phillips</p>
+                                    <p className="text-xs text-amber-600">{idioma === 'val' ? "Per entendre el dilema entre inflació i atur que afronten els governs" : "To understand the inflation-unemployment tradeoff governments face"}</p>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                )}
                 
                 {tab === 'pib' && (
                     <div className="space-y-6">
@@ -1964,7 +2534,7 @@ Lluitar  Acomodar
     // SECTION: HISTÒRIA ECONÒMICA (AMPLIADA)
     // ========================================================================
     const HistoriaEconomica = () => {
-        const [tab, setTab] = useState('economistes');
+        const [tab, setTab] = useState('intro');
         
         const economistes = [
             { nom: "Adam Smith", any: "1723-1790", escola: idioma === 'val' ? "Clàssica" : "Classical", idea: idioma === 'val' ? "Mà invisible, divisió del treball, lliure mercat, valor-treball" : "Invisible hand, division of labor, free market, labor value", obra: "The Wealth of Nations (1776)", color: "blue" },
@@ -2004,14 +2574,93 @@ Lluitar  Acomodar
         
         return (
             <div className="space-y-6">
-                <div><h1 className="text-3xl font-black text-gray-800">{idioma === 'val' ? 'Història del Pensament Econòmic' : idioma === 'es' ? 'Historia del Pensamiento Económico' : 'History of Economic Thought'}</h1></div>
+                <div>
+                    <h1 className="text-3xl font-black text-gray-800">{idioma === 'val' ? 'Història del Pensament Econòmic' : 'History of Economic Thought'}</h1>
+                    <p className="text-gray-500">{idioma === 'val' ? "Com han evolucionat les idees sobre l'economia al llarg dels segles" : "How ideas about the economy have evolved over centuries"}</p>
+                </div>
                 
                 <Tabs tabs={[
+                    { id: 'intro', label: idioma === 'val' ? '📖 Introducció' : '📖 Introduction' },
                     { id: 'economistes', label: idioma === 'val' ? '👤 Economistes' : '👤 Economists' },
                     { id: 'escoles', label: idioma === 'val' ? '🏛️ Escoles' : '🏛️ Schools' },
                     { id: 'timeline', label: '📅 Timeline' },
                     { id: 'debats', label: idioma === 'val' ? '⚔️ Grans Debats' : '⚔️ Great Debates' },
                 ]} active={tab} onChange={setTab} />
+                
+                {tab === 'intro' && (
+                    <div className="space-y-6">
+                        <Card title={idioma === 'val' ? "🤔 Per què estudiar la història del pensament econòmic?" : "🤔 Why study the history of economic thought?"}>
+                            <div className="bg-gradient-to-r from-slate-50 to-gray-50 p-4 rounded-xl mb-4">
+                                <p className="text-gray-700">{idioma === 'val' ? "💡 Les idees econòmiques han canviat el món! La idea de la 'mà invisible' de Smith va inspirar el capitalisme. Les teories de Keynes van salvar economies durant la Gran Depressió. Les idees de Friedman van guiar la política dels anys 80. Entendre aquestes idees t'ajuda a entendre el món actual." : "💡 Economic ideas have changed the world! Smith's 'invisible hand' inspired capitalism. Keynes' theories saved economies during the Great Depression. Friedman's ideas guided policy in the 80s. Understanding these ideas helps you understand today's world."}</p>
+                            </div>
+                        </Card>
+                        <Card title={idioma === 'val' ? "🌟 Els 4 Grans: Smith, Marx, Keynes, Friedman" : "🌟 The Big 4: Smith, Marx, Keynes, Friedman"}>
+                            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div className="p-4 bg-blue-50 rounded-xl">
+                                    <h4 className="font-bold text-blue-700 text-lg mb-2">🎩 Adam Smith (1776)</h4>
+                                    <p className="text-sm text-blue-600 mb-2">{idioma === 'val' ? "El pare de l'economia moderna" : "The father of modern economics"}</p>
+                                    <div className="bg-white p-2 rounded text-xs space-y-1">
+                                        <p><strong>{idioma === 'val' ? "Idea principal:" : "Main idea:"}</strong> {idioma === 'val' ? "La 'mà invisible' del mercat guia l'interès individual cap al bé comú." : "The 'invisible hand' of the market guides individual interest toward common good."}</p>
+                                        <p><strong>{idioma === 'val' ? "Impacte:" : "Impact:"}</strong> {idioma === 'val' ? "Base intel·lectual del capitalisme." : "Intellectual foundation of capitalism."}</p>
+                                        <p><strong>{idioma === 'val' ? "Vigència:" : "Relevance:"}</strong> {idioma === 'val' ? "Defensa del lliure mercat i comerç internacional." : "Defense of free market and international trade."}</p>
+                                    </div>
+                                </div>
+                                <div className="p-4 bg-red-50 rounded-xl">
+                                    <h4 className="font-bold text-red-700 text-lg mb-2">✊ Karl Marx (1867)</h4>
+                                    <p className="text-sm text-red-600 mb-2">{idioma === 'val' ? "El crític del capitalisme" : "The critic of capitalism"}</p>
+                                    <div className="bg-white p-2 rounded text-xs space-y-1">
+                                        <p><strong>{idioma === 'val' ? "Idea principal:" : "Main idea:"}</strong> {idioma === 'val' ? "El capitalisme explota els treballadors (plusvàlua) i conté les llavors de la seva pròpia destrucció." : "Capitalism exploits workers (surplus value) and contains the seeds of its own destruction."}</p>
+                                        <p><strong>{idioma === 'val' ? "Impacte:" : "Impact:"}</strong> {idioma === 'val' ? "Revolució Russa, moviments obrers, estat del benestar com a resposta." : "Russian Revolution, labor movements, welfare state as response."}</p>
+                                        <p><strong>{idioma === 'val' ? "Vigència:" : "Relevance:"}</strong> {idioma === 'val' ? "Debats sobre desigualtat, precarietat laboral, poder corporatiu." : "Debates on inequality, labor precarity, corporate power."}</p>
+                                    </div>
+                                </div>
+                                <div className="p-4 bg-pink-50 rounded-xl">
+                                    <h4 className="font-bold text-pink-700 text-lg mb-2">📊 John M. Keynes (1936)</h4>
+                                    <p className="text-sm text-pink-600 mb-2">{idioma === 'val' ? "El salvador de la Gran Depressió" : "The Great Depression savior"}</p>
+                                    <div className="bg-white p-2 rounded text-xs space-y-1">
+                                        <p><strong>{idioma === 'val' ? "Idea principal:" : "Main idea:"}</strong> {idioma === 'val' ? "En crisi, el govern ha de gastar per reactivar l'economia. El mercat sol no sempre funciona." : "In crisis, government must spend to reactivate the economy."}</p>
+                                        <p><strong>{idioma === 'val' ? "Impacte:" : "Impact:"}</strong> {idioma === 'val' ? "New Deal, Estat del Benestar europeu." : "New Deal, European Welfare State."}</p>
+                                        <p><strong>{idioma === 'val' ? "Vigència:" : "Relevance:"}</strong> {idioma === 'val' ? "Plans d'estímul COVID-19." : "COVID-19 stimulus packages."}</p>
+                                    </div>
+                                </div>
+                                <div className="p-4 bg-indigo-50 rounded-xl">
+                                    <h4 className="font-bold text-indigo-700 text-lg mb-2">💰 Milton Friedman (1963)</h4>
+                                    <p className="text-sm text-indigo-600 mb-2">{idioma === 'val' ? "El defensor dels mercats lliures" : "The free markets champion"}</p>
+                                    <div className="bg-white p-2 rounded text-xs space-y-1">
+                                        <p><strong>{idioma === 'val' ? "Idea principal:" : "Main idea:"}</strong> {idioma === 'val' ? "La inflació és un fenomen monetari. Menys govern, més mercat." : "Inflation is a monetary phenomenon. Less government, more market."}</p>
+                                        <p><strong>{idioma === 'val' ? "Impacte:" : "Impact:"}</strong> {idioma === 'val' ? "Reagan, Thatcher, bancs centrals independents." : "Reagan, Thatcher, independent central banks."}</p>
+                                        <p><strong>{idioma === 'val' ? "Vigència:" : "Relevance:"}</strong> {idioma === 'val' ? "Polítiques antiinflacionàries actuals." : "Current anti-inflation policies."}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                        <Card title={idioma === 'val' ? "⚡ El Gran Debat: Mercat vs Govern" : "⚡ The Great Debate: Market vs Government"}>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="p-4 bg-green-50 rounded-xl">
+                                    <h4 className="font-bold text-green-700 mb-2">🏪 {idioma === 'val' ? "Pro-Mercat" : "Pro-Market"}</h4>
+                                    <p className="text-sm text-green-600 mb-2">{idioma === 'val' ? "Smith, Hayek, Friedman, Austríacs" : "Smith, Hayek, Friedman, Austrians"}</p>
+                                    <ul className="text-xs text-green-500 space-y-1">
+                                        <li>• {idioma === 'val' ? "El mercat processa informació millor que cap buròcrata" : "Markets process information better than any bureaucrat"}</li>
+                                        <li>• {idioma === 'val' ? "La intervenció crea distorsions i ineficiències" : "Intervention creates distortions and inefficiencies"}</li>
+                                        <li>• {idioma === 'val' ? "La llibertat econòmica és inseparable de la política" : "Economic freedom is inseparable from political freedom"}</li>
+                                    </ul>
+                                </div>
+                                <div className="p-4 bg-purple-50 rounded-xl">
+                                    <h4 className="font-bold text-purple-700 mb-2">🏛️ {idioma === 'val' ? "Pro-Intervenció" : "Pro-Intervention"}</h4>
+                                    <p className="text-sm text-purple-600 mb-2">{idioma === 'val' ? "Keynes, Stiglitz, Krugman" : "Keynes, Stiglitz, Krugman"}</p>
+                                    <ul className="text-xs text-purple-500 space-y-1">
+                                        <li>• {idioma === 'val' ? "Els mercats fallen (monopolis, externalitats, crisis)" : "Markets fail (monopolies, externalities, crises)"}</li>
+                                        <li>• {idioma === 'val' ? "Cal un govern actiu per estabilitzar l'economia" : "Active government needed to stabilize economy"}</li>
+                                        <li>• {idioma === 'val' ? "La desigualtat excessiva és econòmicament ineficient" : "Excessive inequality is economically inefficient"}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div className="mt-4 p-3 bg-gray-50 rounded-xl">
+                                <p className="text-sm text-gray-600 text-center">{idioma === 'val' ? "💡 Avui dia, la majoria d'economistes accepten que cal un equilibri: mercats lliures amb regulació adequada i xarxes de seguretat." : "💡 Today, most economists accept we need a balance: free markets with adequate regulation and safety nets."}</p>
+                            </div>
+                        </Card>
+                    </div>
+                )}
                 
                 {tab === 'economistes' && (
                     <div className="space-y-4">
@@ -3148,26 +3797,62 @@ Lluitar  Acomodar
                                 {idioma === 'val' ? "El valor de la millor alternativa sacrificada." : idioma === 'es' ? "El valor de la mejor alternativa sacrificada." : "The value of the best alternative foregone."}
                             </ConceptBox>
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="bg-pink-50 p-4 rounded-xl text-center">
-                                <p className="text-3xl mb-2">👥</p>
-                                <p className="font-bold text-pink-700">Micro</p>
-                                <p className="text-xs text-pink-600">{idioma === 'val' ? 'Individus i empreses' : idioma === 'es' ? 'Individuos y empresas' : 'Individuals & firms'}</p>
+                        <div>
+                            <p className="text-sm font-medium text-gray-600 mb-2">{idioma === 'val' ? "📚 Branques de l'Economia" : "📚 Branches of Economics"}</p>
+                            <div className="grid grid-cols-2 gap-2 mb-4">
+                                <div className="bg-pink-50 p-3 rounded-xl text-center">
+                                    <p className="text-2xl mb-1">👥</p>
+                                    <p className="font-bold text-pink-700 text-sm">Micro</p>
+                                    <p className="text-xs text-pink-600">{idioma === 'val' ? 'Individus i empreses' : 'Individuals & firms'}</p>
+                                </div>
+                                <div className="bg-blue-50 p-3 rounded-xl text-center">
+                                    <p className="text-2xl mb-1">🌍</p>
+                                    <p className="font-bold text-blue-700 text-sm">Macro</p>
+                                    <p className="text-xs text-blue-600">{idioma === 'val' ? 'Economia agregada' : 'Aggregate economy'}</p>
+                                </div>
+                                <div className="bg-green-50 p-3 rounded-xl text-center">
+                                    <p className="text-2xl mb-1">📊</p>
+                                    <p className="font-bold text-green-700 text-sm">{idioma === 'val' ? 'Quanti' : 'Quant'}</p>
+                                    <p className="text-xs text-green-600">{idioma === 'val' ? 'Estadística i econometria' : 'Statistics & econometrics'}</p>
+                                </div>
+                                <div className="bg-amber-50 p-3 rounded-xl text-center">
+                                    <p className="text-2xl mb-1">🧮</p>
+                                    <p className="font-bold text-amber-700 text-sm">{idioma === 'val' ? 'Mates' : 'Math'}</p>
+                                    <p className="text-xs text-amber-600">{idioma === 'val' ? 'Eines matemàtiques' : 'Mathematical tools'}</p>
+                                </div>
                             </div>
-                            <div className="bg-blue-50 p-4 rounded-xl text-center">
-                                <p className="text-3xl mb-2">🌍</p>
-                                <p className="font-bold text-blue-700">Macro</p>
-                                <p className="text-xs text-blue-600">{idioma === 'val' ? 'Economia agregada' : idioma === 'es' ? 'Economía agregada' : 'Aggregate economy'}</p>
-                            </div>
-                            <div className="bg-green-50 p-4 rounded-xl text-center">
-                                <p className="text-3xl mb-2">📈</p>
-                                <p className="font-bold text-green-700">{idioma === 'val' ? 'Quanti' : 'Quant'}</p>
-                                <p className="text-xs text-green-600">{idioma === 'val' ? 'Estadística i econometria' : 'Statistics & econometrics'}</p>
-                            </div>
-                            <div className="bg-amber-50 p-4 rounded-xl text-center">
-                                <p className="text-3xl mb-2">🧮</p>
-                                <p className="font-bold text-amber-700">{idioma === 'val' ? 'Mates' : 'Math'}</p>
-                                <p className="text-xs text-amber-600">{idioma === 'val' ? 'Eines matemàtiques' : 'Mathematical tools'}</p>
+                            <p className="text-sm font-medium text-gray-600 mb-2">{idioma === 'val' ? "🔗 Disciplines Relacionades" : "🔗 Related Disciplines"}</p>
+                            <div className="grid grid-cols-3 gap-2">
+                                <div className="bg-violet-50 p-2 rounded-lg text-center">
+                                    <p className="text-lg">🧠</p>
+                                    <p className="font-bold text-violet-700 text-xs">{idioma === 'val' ? 'Psicologia' : 'Psychology'}</p>
+                                    <p className="text-xs text-violet-500">{idioma === 'val' ? 'Decisions, biaixos' : 'Decisions, biases'}</p>
+                                </div>
+                                <div className="bg-orange-50 p-2 rounded-lg text-center">
+                                    <p className="text-lg">👨‍👩‍👧‍👦</p>
+                                    <p className="font-bold text-orange-700 text-xs">{idioma === 'val' ? 'Sociologia' : 'Sociology'}</p>
+                                    <p className="text-xs text-orange-500">{idioma === 'val' ? 'Classes, institucions' : 'Classes, institutions'}</p>
+                                </div>
+                                <div className="bg-slate-50 p-2 rounded-lg text-center">
+                                    <p className="text-lg">🤔</p>
+                                    <p className="font-bold text-slate-700 text-xs">{idioma === 'val' ? 'Filosofia' : 'Philosophy'}</p>
+                                    <p className="text-xs text-slate-500">{idioma === 'val' ? 'Ètica, justícia' : 'Ethics, justice'}</p>
+                                </div>
+                                <div className="bg-cyan-50 p-2 rounded-lg text-center">
+                                    <p className="text-lg">🏛️</p>
+                                    <p className="font-bold text-cyan-700 text-xs">{idioma === 'val' ? 'Política' : 'Politics'}</p>
+                                    <p className="text-xs text-cyan-500">{idioma === 'val' ? 'Poder, govern' : 'Power, government'}</p>
+                                </div>
+                                <div className="bg-teal-50 p-2 rounded-lg text-center">
+                                    <p className="text-lg">📜</p>
+                                    <p className="font-bold text-teal-700 text-xs">{idioma === 'val' ? 'Història' : 'History'}</p>
+                                    <p className="text-xs text-teal-500">{idioma === 'val' ? 'Context, evolució' : 'Context, evolution'}</p>
+                                </div>
+                                <div className="bg-lime-50 p-2 rounded-lg text-center">
+                                    <p className="text-lg">🌱</p>
+                                    <p className="font-bold text-lime-700 text-xs">{idioma === 'val' ? 'Ecologia' : 'Ecology'}</p>
+                                    <p className="text-xs text-lime-500">{idioma === 'val' ? 'Sostenibilitat' : 'Sustainability'}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
