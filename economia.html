@@ -326,25 +326,46 @@ function EconomiaApp() {
                                     </ConceptBox>
                                 </div>
                                 <div>
-                                    <div className="h-72 bg-white rounded-xl border p-4">
-                                        <svg viewBox="0 0 300 250" className="w-full h-full">
+                                    <div className="h-80 bg-gradient-to-br from-gray-50 to-white rounded-xl border-2 border-gray-200 p-3 shadow-inner">
+                                        <svg viewBox="0 0 310 260" className="w-full h-full">
                                             <defs>
-                                                <marker id="arrowX" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#666"/></marker>
-                                                <marker id="arrowY" markerWidth="10" markerHeight="10" refX="3" refY="9" orient="auto"><path d="M0,0 L6,0 L3,9 z" fill="#666"/></marker>
+                                                <marker id="arrowIC" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                                    <polygon points="0 0, 10 3.5, 0 7" fill="#374151"/>
+                                                </marker>
+                                                <linearGradient id="optPointGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                    <stop offset="0%" stopColor="#34d399"/>
+                                                    <stop offset="100%" stopColor="#10b981"/>
+                                                </linearGradient>
+                                                <filter id="glowIC" x="-50%" y="-50%" width="200%" height="200%">
+                                                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                                                    <feMerge>
+                                                        <feMergeNode in="coloredBlur"/>
+                                                        <feMergeNode in="SourceGraphic"/>
+                                                    </feMerge>
+                                                </filter>
                                             </defs>
-                                            <line x1="40" y1="220" x2="290" y2="220" stroke="#666" strokeWidth="2" markerEnd="url(#arrowX)"/>
-                                            <line x1="40" y1="220" x2="40" y2="10" stroke="#666" strokeWidth="2" markerEnd="url(#arrowY)"/>
-                                            <text x="280" y="240" fontSize="12" fill="#666">Q₁</text>
-                                            <text x="15" y="20" fontSize="12" fill="#666">Q₂</text>
+                                            
+                                            {/* Grid */}
+                                            {[0, 5, 10, 15, 20].map(v => (
+                                                <line key={`gridH-${v}`} x1="50" y1={225 - v * 9} x2="295" y2={225 - v * 9} stroke="#e5e7eb" strokeWidth="1"/>
+                                            ))}
+                                            {[0, 5, 10, 15, 20, 25].map(v => (
+                                                <line key={`gridV-${v}`} x1={50 + v * 9.5} y1="20" x2={50 + v * 9.5} y2="225" stroke="#e5e7eb" strokeWidth="1"/>
+                                            ))}
+                                            
+                                            {/* Axes */}
+                                            <line x1="50" y1="225" x2="300" y2="225" stroke="#374151" strokeWidth="2.5" markerEnd="url(#arrowIC)"/>
+                                            <line x1="50" y1="225" x2="50" y2="15" stroke="#374151" strokeWidth="2.5" markerEnd="url(#arrowIC)"/>
                                             
                                             {/* Budget constraint line */}
                                             <line 
-                                                x1="40" 
-                                                y1={220 - Math.min(200, (renda/p2) * 8)} 
-                                                x2={40 + Math.min(240, (renda/p1) * 10)} 
-                                                y2="220" 
+                                                x1="50" 
+                                                y1={225 - Math.min(195, (renda/p2) * 9)} 
+                                                x2={50 + Math.min(240, (renda/p1) * 9.5)} 
+                                                y2="225" 
                                                 stroke="#3b82f6" 
-                                                strokeWidth="3"
+                                                strokeWidth="4"
+                                                strokeLinecap="round"
                                             />
                                             
                                             {/* Low indifference curve */}
@@ -356,15 +377,15 @@ function EconomiaApp() {
                                                     let path = "";
                                                     for(let q1 = 1; q1 <= 25; q1 += 0.5) {
                                                         const q2 = Math.pow(uLow / Math.pow(q1, alpha), 1/(1-alpha));
-                                                        if(q2 > 0.5 && q2 < 25) {
-                                                            const x = 40 + q1*10;
-                                                            const y = 220 - q2*8;
+                                                        if(q2 > 0.5 && q2 < 22) {
+                                                            const x = 50 + q1*9.5;
+                                                            const y = 225 - q2*9;
                                                             path += (path === "" ? "M" : "L") + x + "," + y + " ";
                                                         }
                                                     }
                                                     return path;
                                                 })()}
-                                                fill="none" stroke="#f9a8d4" strokeWidth="2" strokeDasharray="5,5"
+                                                fill="none" stroke="#f9a8d4" strokeWidth="2.5" strokeDasharray="6,4"
                                             />
                                             
                                             {/* Optimal indifference curve */}
@@ -376,15 +397,15 @@ function EconomiaApp() {
                                                     let path = "";
                                                     for(let q1 = 1; q1 <= 25; q1 += 0.5) {
                                                         const q2 = Math.pow(uOpt / Math.pow(q1, alpha), 1/(1-alpha));
-                                                        if(q2 > 0.5 && q2 < 25) {
-                                                            const x = 40 + q1*10;
-                                                            const y = 220 - q2*8;
+                                                        if(q2 > 0.5 && q2 < 22) {
+                                                            const x = 50 + q1*9.5;
+                                                            const y = 225 - q2*9;
                                                             path += (path === "" ? "M" : "L") + x + "," + y + " ";
                                                         }
                                                     }
                                                     return path;
                                                 })()}
-                                                fill="none" stroke="#ec4899" strokeWidth="3"
+                                                fill="none" stroke="#ec4899" strokeWidth="3.5"
                                             />
                                             
                                             {/* High indifference curve */}
@@ -396,46 +417,79 @@ function EconomiaApp() {
                                                     let path = "";
                                                     for(let q1 = 1; q1 <= 25; q1 += 0.5) {
                                                         const q2 = Math.pow(uHigh / Math.pow(q1, alpha), 1/(1-alpha));
-                                                        if(q2 > 0.5 && q2 < 25) {
-                                                            const x = 40 + q1*10;
-                                                            const y = 220 - q2*8;
+                                                        if(q2 > 0.5 && q2 < 22) {
+                                                            const x = 50 + q1*9.5;
+                                                            const y = 225 - q2*9;
                                                             path += (path === "" ? "M" : "L") + x + "," + y + " ";
                                                         }
                                                     }
                                                     return path;
                                                 })()}
-                                                fill="none" stroke="#f9a8d4" strokeWidth="2" strokeDasharray="5,5"
+                                                fill="none" stroke="#f9a8d4" strokeWidth="2.5" strokeDasharray="6,4"
                                             />
                                             
-                                            {/* Optimal point */}
-                                            <circle 
-                                                cx={40 + parseFloat(optim.q1)*10} 
-                                                cy={220 - parseFloat(optim.q2)*8} 
-                                                r="8" 
-                                                fill="#10b981" 
-                                                stroke="white" 
-                                                strokeWidth="2"
+                                            {/* Dashed lines to optimal point */}
+                                            <line 
+                                                x1="50" 
+                                                y1={225 - parseFloat(optim.q2)*9} 
+                                                x2={50 + parseFloat(optim.q1)*9.5} 
+                                                y2={225 - parseFloat(optim.q2)*9} 
+                                                stroke="#10b981" strokeWidth="1.5" strokeDasharray="5,3"
                                             />
+                                            <line 
+                                                x1={50 + parseFloat(optim.q1)*9.5} 
+                                                y1="225" 
+                                                x2={50 + parseFloat(optim.q1)*9.5} 
+                                                y2={225 - parseFloat(optim.q2)*9} 
+                                                stroke="#10b981" strokeWidth="1.5" strokeDasharray="5,3"
+                                            />
+                                            
+                                            {/* Optimal point with glow */}
+                                            <circle 
+                                                cx={50 + parseFloat(optim.q1)*9.5} 
+                                                cy={225 - parseFloat(optim.q2)*9} 
+                                                r="11" 
+                                                fill="url(#optPointGrad)" 
+                                                stroke="white" 
+                                                strokeWidth="3"
+                                                filter="url(#glowIC)"
+                                            />
+                                            <text 
+                                                x={50 + parseFloat(optim.q1)*9.5} 
+                                                y={229 - parseFloat(optim.q2)*9} 
+                                                textAnchor="middle" fontSize="10" fill="white" fontWeight="bold"
+                                            >E*</text>
                                             
                                             {/* Axis labels */}
-                                            {[0,5,10,15,20].map(v => (
-                                                <g key={v}>
-                                                    <line x1={40+v*10} y1="220" x2={40+v*10} y2="225" stroke="#666"/>
-                                                    <text x={40+v*10} y="238" fontSize="10" textAnchor="middle" fill="#666">{v}</text>
-                                                </g>
-                                            ))}
+                                            <text x="295" y="245" fontSize="13" fill="#374151" fontWeight="bold">Q₁</text>
+                                            <text x="30" y="22" fontSize="13" fill="#374151" fontWeight="bold">Q₂</text>
+                                            
+                                            {/* Tick marks */}
                                             {[5,10,15,20].map(v => (
-                                                <g key={v}>
-                                                    <line x1="35" y1={220-v*8} x2="40" y2={220-v*8} stroke="#666"/>
-                                                    <text x="25" y={224-v*8} fontSize="10" textAnchor="middle" fill="#666">{v}</text>
+                                                <g key={`tick-${v}`}>
+                                                    <text x={50+v*9.5} y="242" fontSize="10" textAnchor="middle" fill="#6b7280">{v}</text>
+                                                    <text x="40" y={229-v*9} fontSize="10" textAnchor="end" fill="#6b7280">{v}</text>
                                                 </g>
                                             ))}
+                                            
+                                            {/* Curve labels */}
+                                            <text x="265" y={225 - (renda/p2) * 0.3 * 9} fontSize="11" fill="#3b82f6" fontWeight="bold">{idioma === 'val' ? 'RP' : 'BL'}</text>
+                                            <text x="280" y="160" fontSize="11" fill="#ec4899" fontWeight="bold">U*</text>
                                         </svg>
                                     </div>
-                                    <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
-                                        <div className="p-2 bg-blue-100 rounded flex items-center gap-1"><span className="w-4 h-1 bg-blue-500 rounded"></span>{idioma === 'val' ? "Pressupost" : "Budget"}</div>
-                                        <div className="p-2 bg-pink-100 rounded flex items-center gap-1"><span className="w-4 h-1 bg-pink-500 rounded"></span>{idioma === 'val' ? "Corbes Indif." : "Indiff. Curves"}</div>
-                                        <div className="p-2 bg-green-100 rounded flex items-center gap-1"><span className="w-3 h-3 bg-green-500 rounded-full"></span>{idioma === 'val' ? "Òptim" : "Optimal"}</div>
+                                    <div className="mt-3 grid grid-cols-3 gap-2">
+                                        <div className="p-2 bg-gradient-to-r from-blue-100 to-blue-50 rounded-lg flex items-center gap-2 text-sm">
+                                            <div className="w-5 h-1.5 bg-blue-500 rounded"></div>
+                                            <span className="font-medium text-blue-700">{idioma === 'val' ? "Pressupost" : "Budget"}</span>
+                                        </div>
+                                        <div className="p-2 bg-gradient-to-r from-pink-100 to-pink-50 rounded-lg flex items-center gap-2 text-sm">
+                                            <div className="w-5 h-1.5 bg-pink-500 rounded"></div>
+                                            <span className="font-medium text-pink-700">{idioma === 'val' ? "Corbes Indif." : "Indiff. Curves"}</span>
+                                        </div>
+                                        <div className="p-2 bg-gradient-to-r from-green-100 to-green-50 rounded-lg flex items-center gap-2 text-sm">
+                                            <div className="w-5 h-5 bg-gradient-to-br from-green-400 to-green-500 rounded-full shadow"></div>
+                                            <span className="font-medium text-green-700">{idioma === 'val' ? "Òptim" : "Optimal"}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -589,93 +643,164 @@ function EconomiaApp() {
                             </div>
                             <div className="grid lg:grid-cols-2 gap-6">
                                 <div>
-                                    <div className="h-72 bg-white rounded-xl border p-2">
-                                        <svg viewBox="0 0 300 250" className="w-full h-full">
-                                            <defs>
-                                                <linearGradient id="csGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                                                    <stop offset="0%" stopColor="#10b981" stopOpacity="0.6"/>
-                                                    <stop offset="100%" stopColor="#10b981" stopOpacity="0.2"/>
-                                                </linearGradient>
-                                                <linearGradient id="psGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-                                                    <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.6"/>
-                                                    <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.2"/>
-                                                </linearGradient>
-                                            </defs>
-                                            {/* Axes */}
-                                            <line x1="50" y1="200" x2="280" y2="200" stroke="#666" strokeWidth="2"/>
-                                            <line x1="50" y1="200" x2="50" y2="20" stroke="#666" strokeWidth="2"/>
-                                            <text x="270" y="220" fontSize="12" fill="#666">Q</text>
-                                            <text x="30" y="25" fontSize="12" fill="#666">P</text>
+                                    <div className="h-80 bg-gradient-to-br from-gray-50 to-white rounded-xl border-2 border-gray-200 p-3 shadow-inner">
+                                        {(() => {
+                                            const pEq = parseFloat(equilibri.p);
+                                            const qEq = parseFloat(equilibri.q);
+                                            const pMax = demandaA / demandaB;
+                                            const pMinS = -ofertaC / ofertaD;
+                                            const scale = { x: 2.2, y: 3.5 };
+                                            const offset = { x: 55, y: 220 };
+                                            const toX = (q) => offset.x + q * scale.x;
+                                            const toY = (p) => offset.y - p * scale.y;
                                             
-                                            {/* Consumer Surplus (green triangle) */}
-                                            <polygon 
-                                                points={`50,${200 - (demandaA/demandaB) * 3} ${50 + parseFloat(equilibri.q) * 2},${200 - parseFloat(equilibri.p) * 3} 50,${200 - parseFloat(equilibri.p) * 3}`}
-                                                fill="url(#csGrad)" stroke="#10b981" strokeWidth="2"
-                                            />
-                                            
-                                            {/* Producer Surplus (blue triangle) */}
-                                            <polygon 
-                                                points={`50,${200 - (ofertaC/ofertaD) * 3} ${50 + parseFloat(equilibri.q) * 2},${200 - parseFloat(equilibri.p) * 3} 50,${200 - parseFloat(equilibri.p) * 3}`}
-                                                fill="url(#psGrad)" stroke="#3b82f6" strokeWidth="2"
-                                            />
-                                            
-                                            {/* Demand curve */}
-                                            <line x1="50" y1={200 - (demandaA/demandaB) * 3} x2={50 + (demandaA/demandaB) * 2} y2="200" stroke="#ec4899" strokeWidth="3"/>
-                                            
-                                            {/* Supply curve */}
-                                            <line x1="50" y1={200 - Math.max(0, -ofertaC/ofertaD) * 3} x2="280" y2={200 - ((280-50)/2 + ofertaC) / ofertaD * 3} stroke="#3b82f6" strokeWidth="3"/>
-                                            
-                                            {/* Equilibrium point */}
-                                            <circle cx={50 + parseFloat(equilibri.q) * 2} cy={200 - parseFloat(equilibri.p) * 3} r="6" fill="#f59e0b" stroke="white" strokeWidth="2"/>
-                                            
-                                            {/* Price line */}
-                                            <line x1="50" y1={200 - parseFloat(equilibri.p) * 3} x2={50 + parseFloat(equilibri.q) * 2} y2={200 - parseFloat(equilibri.p) * 3} stroke="#f59e0b" strokeWidth="1" strokeDasharray="4"/>
-                                            
-                                            {/* Labels */}
-                                            <text x="60" y={200 - parseFloat(equilibri.p) * 3 - 20} fontSize="11" fill="#10b981" fontWeight="bold">{idioma === 'val' ? 'EC' : 'CS'}</text>
-                                            <text x="60" y={200 - parseFloat(equilibri.p) * 3 + 25} fontSize="11" fill="#3b82f6" fontWeight="bold">{idioma === 'val' ? 'EP' : 'PS'}</text>
-                                            <text x={55 + parseFloat(equilibri.q) * 2} y={195 - parseFloat(equilibri.p) * 3} fontSize="10" fill="#f59e0b">E</text>
-                                        </svg>
+                                            return (
+                                                <svg viewBox="0 0 320 260" className="w-full h-full">
+                                                    <defs>
+                                                        <linearGradient id="csGradNew" x1="0%" y1="0%" x2="0%" y2="100%">
+                                                            <stop offset="0%" stopColor="#10b981" stopOpacity="0.7"/>
+                                                            <stop offset="100%" stopColor="#34d399" stopOpacity="0.3"/>
+                                                        </linearGradient>
+                                                        <linearGradient id="psGradNew" x1="0%" y1="100%" x2="0%" y2="0%">
+                                                            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.7"/>
+                                                            <stop offset="100%" stopColor="#60a5fa" stopOpacity="0.3"/>
+                                                        </linearGradient>
+                                                        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                                            <feDropShadow dx="1" dy="1" stdDeviation="2" floodOpacity="0.3"/>
+                                                        </filter>
+                                                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                                            <polygon points="0 0, 10 3.5, 0 7" fill="#374151"/>
+                                                        </marker>
+                                                    </defs>
+                                                    
+                                                    {/* Grid lines */}
+                                                    {[0, 10, 20, 30, 40, 50].map(p => (
+                                                        <line key={`grid-p-${p}`} x1={offset.x} y1={toY(p)} x2="300" y2={toY(p)} stroke="#e5e7eb" strokeWidth="1"/>
+                                                    ))}
+                                                    {[0, 20, 40, 60, 80, 100].map(q => (
+                                                        <line key={`grid-q-${q}`} x1={toX(q)} y1="20" x2={toX(q)} y2={offset.y} stroke="#e5e7eb" strokeWidth="1"/>
+                                                    ))}
+                                                    
+                                                    {/* Consumer Surplus Area */}
+                                                    <polygon 
+                                                        points={`${toX(0)},${toY(pMax)} ${toX(qEq)},${toY(pEq)} ${toX(0)},${toY(pEq)}`}
+                                                        fill="url(#csGradNew)" 
+                                                        stroke="#10b981" 
+                                                        strokeWidth="2"
+                                                        filter="url(#shadow)"
+                                                    />
+                                                    
+                                                    {/* Producer Surplus Area */}
+                                                    <polygon 
+                                                        points={`${toX(0)},${toY(Math.max(0, pMinS))} ${toX(qEq)},${toY(pEq)} ${toX(0)},${toY(pEq)}`}
+                                                        fill="url(#psGradNew)" 
+                                                        stroke="#3b82f6" 
+                                                        strokeWidth="2"
+                                                        filter="url(#shadow)"
+                                                    />
+                                                    
+                                                    {/* Axes */}
+                                                    <line x1={offset.x} y1={offset.y} x2="305" y2={offset.y} stroke="#374151" strokeWidth="2.5" markerEnd="url(#arrowhead)"/>
+                                                    <line x1={offset.x} y1={offset.y} x2={offset.x} y2="15" stroke="#374151" strokeWidth="2.5" markerEnd="url(#arrowhead)"/>
+                                                    
+                                                    {/* Demand Curve */}
+                                                    <line 
+                                                        x1={toX(0)} y1={toY(pMax)} 
+                                                        x2={toX(demandaA)} y2={toY(0)} 
+                                                        stroke="#ec4899" strokeWidth="3.5" strokeLinecap="round"
+                                                    />
+                                                    
+                                                    {/* Supply Curve */}
+                                                    <line 
+                                                        x1={toX(0)} y1={toY(Math.max(0, pMinS))} 
+                                                        x2={toX(100)} y2={toY((100 - ofertaC) / ofertaD)} 
+                                                        stroke="#3b82f6" strokeWidth="3.5" strokeLinecap="round"
+                                                    />
+                                                    
+                                                    {/* Equilibrium dashed lines */}
+                                                    <line x1={toX(0)} y1={toY(pEq)} x2={toX(qEq)} y2={toY(pEq)} stroke="#f59e0b" strokeWidth="2" strokeDasharray="6 4"/>
+                                                    <line x1={toX(qEq)} y1={toY(0)} x2={toX(qEq)} y2={toY(pEq)} stroke="#f59e0b" strokeWidth="2" strokeDasharray="6 4"/>
+                                                    
+                                                    {/* Equilibrium Point */}
+                                                    <circle cx={toX(qEq)} cy={toY(pEq)} r="10" fill="#f59e0b" stroke="white" strokeWidth="3" filter="url(#shadow)"/>
+                                                    <text x={toX(qEq)} y={toY(pEq) + 4} textAnchor="middle" fontSize="10" fill="white" fontWeight="bold">E</text>
+                                                    
+                                                    {/* Labels */}
+                                                    <text x="300" y={offset.y + 18} fontSize="14" fill="#374151" fontWeight="bold">Q</text>
+                                                    <text x={offset.x - 12} y="22" fontSize="14" fill="#374151" fontWeight="bold">P</text>
+                                                    
+                                                    {/* Curve Labels */}
+                                                    <text x={toX(demandaA - 15)} y={toY(5)} fontSize="12" fill="#ec4899" fontWeight="bold">D</text>
+                                                    <text x={toX(85)} y={toY((85 - ofertaC) / ofertaD) - 8} fontSize="12" fill="#3b82f6" fontWeight="bold">S</text>
+                                                    
+                                                    {/* Area Labels */}
+                                                    <text x={toX(qEq/4)} y={toY(pEq + (pMax - pEq) / 2)} fontSize="13" fill="#059669" fontWeight="bold">{idioma === 'val' ? 'EC' : 'CS'}</text>
+                                                    <text x={toX(qEq/4)} y={toY(pEq / 2)} fontSize="13" fill="#2563eb" fontWeight="bold">{idioma === 'val' ? 'EP' : 'PS'}</text>
+                                                    
+                                                    {/* Values on axes */}
+                                                    <text x={toX(qEq)} y={offset.y + 16} textAnchor="middle" fontSize="11" fill="#f59e0b" fontWeight="bold">Q*={qEq.toFixed(0)}</text>
+                                                    <text x={offset.x - 8} y={toY(pEq) + 4} textAnchor="end" fontSize="11" fill="#f59e0b" fontWeight="bold">P*={pEq.toFixed(0)}</text>
+                                                    <text x={offset.x - 8} y={toY(pMax) + 4} textAnchor="end" fontSize="10" fill="#ec4899">{pMax.toFixed(0)}</text>
+                                                </svg>
+                                            );
+                                        })()}
                                     </div>
-                                    <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
-                                        <div className="p-2 bg-green-100 rounded flex items-center gap-2"><div className="w-4 h-4 bg-green-500/50 rounded"></div>{idioma === 'val' ? 'Excedent Consumidor' : 'Consumer Surplus'}</div>
-                                        <div className="p-2 bg-blue-100 rounded flex items-center gap-2"><div className="w-4 h-4 bg-blue-500/50 rounded"></div>{idioma === 'val' ? 'Excedent Productor' : 'Producer Surplus'}</div>
+                                    <div className="mt-3 grid grid-cols-3 gap-2">
+                                        <div className="p-2 bg-gradient-to-r from-green-100 to-green-50 rounded-lg flex items-center gap-2 text-sm">
+                                            <div className="w-5 h-5 bg-gradient-to-br from-green-500 to-green-300 rounded shadow"></div>
+                                            <span className="font-medium text-green-700">{idioma === 'val' ? 'Exc. Cons.' : 'Cons. Surp.'}</span>
+                                        </div>
+                                        <div className="p-2 bg-gradient-to-r from-blue-100 to-blue-50 rounded-lg flex items-center gap-2 text-sm">
+                                            <div className="w-5 h-5 bg-gradient-to-br from-blue-500 to-blue-300 rounded shadow"></div>
+                                            <span className="font-medium text-blue-700">{idioma === 'val' ? 'Exc. Prod.' : 'Prod. Surp.'}</span>
+                                        </div>
+                                        <div className="p-2 bg-gradient-to-r from-amber-100 to-amber-50 rounded-lg flex items-center gap-2 text-sm">
+                                            <div className="w-5 h-5 bg-amber-500 rounded-full shadow"></div>
+                                            <span className="font-medium text-amber-700">{idioma === 'val' ? 'Equilibri' : 'Equilibrium'}</span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="space-y-4">
-                                    <div className="p-4 bg-green-50 rounded-xl">
-                                        <h4 className="font-bold text-green-700 mb-2">🛒 {idioma === 'val' ? "Excedent del Consumidor (EC)" : "Consumer Surplus (CS)"}</h4>
-                                        <p className="text-sm text-green-600 mb-2">{idioma === 'val' ? "La diferència entre el que els consumidors ESTARIEN DISPOSATS a pagar i el que REALMENT paguen." : "The difference between what consumers WOULD BE WILLING to pay and what they ACTUALLY pay."}</p>
-                                        <div className="bg-white p-2 rounded">
-                                            <p className="text-2xl font-black text-green-700 text-center">{equilibri.excCons}€</p>
+                                    <div className="p-5 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border border-green-200 shadow-sm">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-400 rounded-xl flex items-center justify-center text-white text-xl shadow">🛒</div>
+                                            <h4 className="font-bold text-green-700 text-lg">{idioma === 'val' ? "Excedent del Consumidor" : "Consumer Surplus"}</h4>
                                         </div>
-                                        <p className="text-xs mt-2 text-green-500">{idioma === 'val' ? "Àrea triangle VERD al gràfic" : "GREEN triangle area in graph"}</p>
-                                    </div>
-                                    <div className="p-4 bg-blue-50 rounded-xl">
-                                        <h4 className="font-bold text-blue-700 mb-2">🏭 {idioma === 'val' ? "Excedent del Productor (EP)" : "Producer Surplus (PS)"}</h4>
-                                        <p className="text-sm text-blue-600 mb-2">{idioma === 'val' ? "La diferència entre el preu que reben i el MÍNIM que acceptarien per vendre." : "The difference between the price received and the MINIMUM they'd accept to sell."}</p>
-                                        <div className="bg-white p-2 rounded">
-                                            <p className="text-2xl font-black text-blue-700 text-center">{equilibri.excProd}€</p>
+                                        <p className="text-sm text-green-600 mb-3">{idioma === 'val' ? "La diferència entre el que els consumidors ESTARIEN DISPOSATS a pagar i el que REALMENT paguen." : "The difference between what consumers WOULD BE WILLING to pay and what they ACTUALLY pay."}</p>
+                                        <div className="bg-white p-3 rounded-xl shadow-inner">
+                                            <p className="text-3xl font-black text-green-600 text-center">{equilibri.excCons}€</p>
                                         </div>
-                                        <p className="text-xs mt-2 text-blue-500">{idioma === 'val' ? "Àrea triangle BLAU al gràfic" : "BLUE triangle area in graph"}</p>
                                     </div>
-                                    <div className="p-4 bg-amber-50 rounded-xl">
-                                        <h4 className="font-bold text-amber-700 mb-2">⭐ {idioma === 'val' ? "Benestar Total" : "Total Welfare"}</h4>
+                                    <div className="p-5 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl border border-blue-200 shadow-sm">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-400 rounded-xl flex items-center justify-center text-white text-xl shadow">🏭</div>
+                                            <h4 className="font-bold text-blue-700 text-lg">{idioma === 'val' ? "Excedent del Productor" : "Producer Surplus"}</h4>
+                                        </div>
+                                        <p className="text-sm text-blue-600 mb-3">{idioma === 'val' ? "La diferència entre el preu que reben i el MÍNIM que acceptarien per vendre." : "The difference between the price received and the MINIMUM they'd accept to sell."}</p>
+                                        <div className="bg-white p-3 rounded-xl shadow-inner">
+                                            <p className="text-3xl font-black text-blue-600 text-center">{equilibri.excProd}€</p>
+                                        </div>
+                                    </div>
+                                    <div className="p-5 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-200 shadow-sm">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-400 rounded-xl flex items-center justify-center text-white text-xl shadow">⭐</div>
+                                            <h4 className="font-bold text-amber-700 text-lg">{idioma === 'val' ? "Benestar Total" : "Total Welfare"}</h4>
+                                        </div>
                                         <p className="text-sm text-amber-600 mb-2">{idioma === 'val' ? "EC + EP = Guany total de la societat pel comerç" : "CS + PS = Total gain to society from trade"}</p>
-                                        <div className="bg-white p-2 rounded">
-                                            <p className="text-2xl font-black text-amber-700 text-center">{(parseFloat(equilibri.excCons) + parseFloat(equilibri.excProd)).toFixed(0)}€</p>
+                                        <div className="bg-white p-3 rounded-xl shadow-inner">
+                                            <p className="text-3xl font-black text-amber-600 text-center">{(parseFloat(equilibri.excCons) + parseFloat(equilibri.excProd)).toFixed(0)}€</p>
                                         </div>
-                                        <p className="text-xs mt-2 text-amber-500">{idioma === 'val' ? "En equilibri competitiu, el benestar és MÀXIM!" : "In competitive equilibrium, welfare is MAXIMUM!"}</p>
+                                        <p className="text-xs mt-2 text-amber-500 text-center">{idioma === 'val' ? "✨ En equilibri competitiu, el benestar és MÀXIM!" : "✨ In competitive equilibrium, welfare is MAXIMUM!"}</p>
                                     </div>
                                 </div>
                             </div>
                         </Card>
                         <Card title={idioma === 'val' ? "⚠️ Pèrdua d'Eficiència (DWL)" : "⚠️ Deadweight Loss (DWL)"}>
-                            <div className="bg-red-50 p-4 rounded-xl">
+                            <div className="bg-gradient-to-r from-red-50 to-rose-50 p-4 rounded-xl border border-red-200">
                                 <p className="text-red-700">{idioma === 'val' ? "💡 Quan el govern intervé (impostos, preus màxims/mínims), es produeix menys del que és òptim i part del benestar es PERD per sempre. Aquesta pèrdua s'anomena Deadweight Loss (DWL) o Pèrdua Irrecuperable d'Eficiència." : "💡 When government intervenes (taxes, price ceilings/floors), less is produced than optimal and part of welfare is LOST forever. This loss is called Deadweight Loss (DWL)."}</p>
                             </div>
-                            <div className="mt-4 p-3 bg-violet-50 rounded-xl">
-                                <p className="text-sm text-violet-700">{idioma === 'val' ? "👉 Ves a la pestanya 'Intervencions' per veure com els impostos i controls de preus creen DWL!" : "👉 Go to the 'Interventions' tab to see how taxes and price controls create DWL!"}</p>
+                            <div className="mt-4 p-4 bg-gradient-to-r from-violet-50 to-purple-50 rounded-xl border border-violet-200">
+                                <p className="text-violet-700 font-medium">{idioma === 'val' ? "👉 Ves a la pestanya 'Intervencions' per veure gràficament com els impostos i controls de preus creen DWL!" : "👉 Go to the 'Interventions' tab to see graphically how taxes and price controls create DWL!"}</p>
                             </div>
                         </Card>
                     </div>
@@ -686,41 +811,136 @@ function EconomiaApp() {
                         <div className="grid lg:grid-cols-2 gap-6">
                             <Card title={idioma === 'val' ? "⚙️ Simulador" : "⚙️ Simulator"} icon="⚙️">
                                 <div className="space-y-3">
-                                    <div className="p-3 bg-pink-50 rounded-lg">
-                                        <p className="text-xs font-bold text-pink-600 mb-2">{idioma === 'val' ? 'DEMANDA: Qd = a - bP' : 'DEMAND: Qd = a - bP'}</p>
-                                        <Slider label="a" value={demandaA} onChange={setDemandaA} min={50} max={150} />
-                                        <Slider label="b" value={demandaB} onChange={setDemandaB} min={0.5} max={5} step={0.1} />
+                                    <div className="p-4 bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl border border-pink-200">
+                                        <p className="text-sm font-bold text-pink-600 mb-3">{idioma === 'val' ? '📉 DEMANDA: Qd = a - bP' : '📉 DEMAND: Qd = a - bP'}</p>
+                                        <Slider label={`a (${idioma === 'val' ? 'intercepció' : 'intercept'})`} value={demandaA} onChange={setDemandaA} min={50} max={150} />
+                                        <Slider label={`b (${idioma === 'val' ? 'pendent' : 'slope'})`} value={demandaB} onChange={setDemandaB} min={0.5} max={5} step={0.1} />
                                     </div>
-                                    <div className="p-3 bg-blue-50 rounded-lg">
-                                        <p className="text-xs font-bold text-blue-600 mb-2">{idioma === 'val' ? 'OFERTA: Qs = c + dP' : 'SUPPLY: Qs = c + dP'}</p>
-                                        <Slider label="c" value={ofertaC} onChange={setOfertaC} min={0} max={50} />
-                                        <Slider label="d" value={ofertaD} onChange={setOfertaD} min={0.5} max={5} step={0.1} />
+                                    <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
+                                        <p className="text-sm font-bold text-blue-600 mb-3">{idioma === 'val' ? '📈 OFERTA: Qs = c + dP' : '📈 SUPPLY: Qs = c + dP'}</p>
+                                        <Slider label={`c (${idioma === 'val' ? 'intercepció' : 'intercept'})`} value={ofertaC} onChange={setOfertaC} min={0} max={50} />
+                                        <Slider label={`d (${idioma === 'val' ? 'pendent' : 'slope'})`} value={ofertaD} onChange={setOfertaD} min={0.5} max={5} step={0.1} />
                                     </div>
                                 </div>
                             </Card>
-                            <Card>
-                                <div className="h-64">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <LineChart data={dadesOD}>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                            <XAxis dataKey="q" label={{ value: 'Q', position: 'bottom' }} />
-                                            <YAxis domain={[0, 60]} />
-                                            <Tooltip />
-                                            <Legend />
-                                            <Line type="monotone" dataKey="demanda" stroke="#ec4899" strokeWidth={3} dot={false} name={idioma === 'val' ? "Demanda" : "Demand"} />
-                                            <Line type="monotone" dataKey="oferta" stroke="#3b82f6" strokeWidth={3} dot={false} name={idioma === 'val' ? "Oferta" : "Supply"} />
-                                            <ReferenceLine x={Number(equilibri.q)} stroke="#10b981" strokeDasharray="5 5" />
-                                            <ReferenceLine y={Number(equilibri.p)} stroke="#10b981" strokeDasharray="5 5" />
-                                        </LineChart>
-                                    </ResponsiveContainer>
+                            <Card title={idioma === 'val' ? "📊 Gràfic Oferta i Demanda" : "📊 Supply and Demand Graph"}>
+                                <div className="h-72 bg-gradient-to-br from-gray-50 to-white rounded-xl border-2 border-gray-200 p-2 shadow-inner">
+                                    {(() => {
+                                        const pEq = parseFloat(equilibri.p);
+                                        const qEq = parseFloat(equilibri.q);
+                                        const pMax = demandaA / demandaB;
+                                        const pMinS = Math.max(0, -ofertaC / ofertaD);
+                                        const scale = { x: 2.2, y: 3.2 };
+                                        const offset = { x: 50, y: 210 };
+                                        const toX = (q) => offset.x + q * scale.x;
+                                        const toY = (p) => offset.y - p * scale.y;
+                                        
+                                        return (
+                                            <svg viewBox="0 0 310 250" className="w-full h-full">
+                                                <defs>
+                                                    <linearGradient id="eqPointGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                        <stop offset="0%" stopColor="#fbbf24"/>
+                                                        <stop offset="100%" stopColor="#f59e0b"/>
+                                                    </linearGradient>
+                                                    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                                                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                                        <feMerge>
+                                                            <feMergeNode in="coloredBlur"/>
+                                                            <feMergeNode in="SourceGraphic"/>
+                                                        </feMerge>
+                                                    </filter>
+                                                    <marker id="arrowEq" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                                        <polygon points="0 0, 10 3.5, 0 7" fill="#374151"/>
+                                                    </marker>
+                                                </defs>
+                                                
+                                                {/* Grid */}
+                                                {[0, 10, 20, 30, 40, 50].map(p => (
+                                                    <g key={`grid-p-${p}`}>
+                                                        <line x1={offset.x} y1={toY(p)} x2="295" y2={toY(p)} stroke="#e5e7eb" strokeWidth="1"/>
+                                                        <text x={offset.x - 8} y={toY(p) + 4} fontSize="9" fill="#9ca3af" textAnchor="end">{p}</text>
+                                                    </g>
+                                                ))}
+                                                {[0, 20, 40, 60, 80, 100].map(q => (
+                                                    <g key={`grid-q-${q}`}>
+                                                        <line x1={toX(q)} y1="15" x2={toX(q)} y2={offset.y} stroke="#e5e7eb" strokeWidth="1"/>
+                                                        <text x={toX(q)} y={offset.y + 14} fontSize="9" fill="#9ca3af" textAnchor="middle">{q}</text>
+                                                    </g>
+                                                ))}
+                                                
+                                                {/* Axes */}
+                                                <line x1={offset.x} y1={offset.y} x2="300" y2={offset.y} stroke="#374151" strokeWidth="2.5" markerEnd="url(#arrowEq)"/>
+                                                <line x1={offset.x} y1={offset.y} x2={offset.x} y2="10" stroke="#374151" strokeWidth="2.5" markerEnd="url(#arrowEq)"/>
+                                                
+                                                {/* Demand Curve */}
+                                                <line 
+                                                    x1={toX(0)} y1={toY(pMax)} 
+                                                    x2={toX(Math.min(demandaA, 110))} y2={toY(Math.max(0, (demandaA - 110) / demandaB))} 
+                                                    stroke="#ec4899" strokeWidth="4" strokeLinecap="round"
+                                                />
+                                                
+                                                {/* Supply Curve */}
+                                                <line 
+                                                    x1={toX(Math.max(0, ofertaC))} y1={toY(Math.max(0, pMinS))} 
+                                                    x2={toX(100)} y2={toY((100 - ofertaC) / ofertaD)} 
+                                                    stroke="#3b82f6" strokeWidth="4" strokeLinecap="round"
+                                                />
+                                                
+                                                {/* Equilibrium dashed lines */}
+                                                <line x1={toX(0)} y1={toY(pEq)} x2={toX(qEq)} y2={toY(pEq)} stroke="#f59e0b" strokeWidth="2" strokeDasharray="6 4"/>
+                                                <line x1={toX(qEq)} y1={toY(0)} x2={toX(qEq)} y2={toY(pEq)} stroke="#f59e0b" strokeWidth="2" strokeDasharray="6 4"/>
+                                                
+                                                {/* Equilibrium Point with glow */}
+                                                <circle cx={toX(qEq)} cy={toY(pEq)} r="12" fill="url(#eqPointGrad)" stroke="white" strokeWidth="3" filter="url(#glow)"/>
+                                                <text x={toX(qEq)} y={toY(pEq) + 5} textAnchor="middle" fontSize="11" fill="white" fontWeight="bold">E</text>
+                                                
+                                                {/* Curve Labels */}
+                                                <text x={toX(Math.min(demandaA - 10, 95))} y={toY(8)} fontSize="14" fill="#ec4899" fontWeight="bold">D</text>
+                                                <text x={toX(90)} y={toY((90 - ofertaC) / ofertaD) - 10} fontSize="14" fill="#3b82f6" fontWeight="bold">S</text>
+                                                
+                                                {/* Axis Labels */}
+                                                <text x="295" y={offset.y + 18} fontSize="14" fill="#374151" fontWeight="bold">Q</text>
+                                                <text x={offset.x - 15} y="18" fontSize="14" fill="#374151" fontWeight="bold">P</text>
+                                                
+                                                {/* Equilibrium annotation */}
+                                                <text x={toX(qEq) + 15} y={toY(pEq) - 5} fontSize="10" fill="#f59e0b" fontWeight="bold">(Q*={qEq.toFixed(0)}, P*={pEq.toFixed(0)})</text>
+                                            </svg>
+                                        );
+                                    })()}
+                                </div>
+                                <div className="mt-3 flex gap-4 justify-center">
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <div className="w-5 h-1.5 bg-pink-500 rounded"></div>
+                                        <span className="text-gray-600">{idioma === 'val' ? 'Demanda' : 'Demand'}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <div className="w-5 h-1.5 bg-blue-500 rounded"></div>
+                                        <span className="text-gray-600">{idioma === 'val' ? 'Oferta' : 'Supply'}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <div className="w-5 h-5 bg-amber-400 rounded-full shadow"></div>
+                                        <span className="text-gray-600">{idioma === 'val' ? 'Equilibri' : 'Equilibrium'}</span>
+                                    </div>
                                 </div>
                             </Card>
                         </div>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                            <ResultCard title={idioma === 'val' ? "Preu Eq." : "Eq. Price"} value={equilibri.p + "€"} color="green" />
-                            <ResultCard title={idioma === 'val' ? "Quantitat Eq." : "Eq. Quantity"} value={equilibri.q} color="green" />
-                            <ResultCard title={idioma === 'val' ? "Exc. Consumidor" : "Consumer Surplus"} value={equilibri.excCons + "€"} color="pink" />
-                            <ResultCard title={idioma === 'val' ? "Exc. Productor" : "Producer Surplus"} value={equilibri.excProd + "€"} color="blue" />
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border border-green-200 shadow-sm">
+                                <p className="text-xs text-green-600 font-medium">{idioma === 'val' ? 'Preu Equilibri' : 'Equilibrium Price'}</p>
+                                <p className="text-3xl font-black text-green-700">{equilibri.p}€</p>
+                            </div>
+                            <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border border-green-200 shadow-sm">
+                                <p className="text-xs text-green-600 font-medium">{idioma === 'val' ? 'Quantitat Equilibri' : 'Equilibrium Quantity'}</p>
+                                <p className="text-3xl font-black text-green-700">{equilibri.q}</p>
+                            </div>
+                            <div className="p-4 bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl border border-pink-200 shadow-sm">
+                                <p className="text-xs text-pink-600 font-medium">{idioma === 'val' ? 'Excedent Consumidor' : 'Consumer Surplus'}</p>
+                                <p className="text-3xl font-black text-pink-700">{equilibri.excCons}€</p>
+                            </div>
+                            <div className="p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl border border-blue-200 shadow-sm">
+                                <p className="text-xs text-blue-600 font-medium">{idioma === 'val' ? 'Excedent Productor' : 'Producer Surplus'}</p>
+                                <p className="text-3xl font-black text-blue-700">{equilibri.excProd}€</p>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -731,89 +951,286 @@ function EconomiaApp() {
                             <div className="grid lg:grid-cols-2 gap-6">
                                 <div className="space-y-4">
                                     <div className="flex flex-wrap gap-2">
-                                        <button onClick={() => setIntervencio('cap')} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${intervencio === 'cap' ? 'bg-gray-700 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}>{idioma === 'val' ? '🔓 Cap' : '🔓 None'}</button>
-                                        <button onClick={() => setIntervencio('impost')} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${intervencio === 'impost' ? 'bg-pink-500 text-white' : 'bg-pink-100 hover:bg-pink-200'}`}>💰 {idioma === 'val' ? 'Impost' : 'Tax'}</button>
-                                        <button onClick={() => setIntervencio('pmax')} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${intervencio === 'pmax' ? 'bg-blue-500 text-white' : 'bg-blue-100 hover:bg-blue-200'}`}>⬇️ {idioma === 'val' ? 'Preu Màxim' : 'Price Ceiling'}</button>
-                                        <button onClick={() => setIntervencio('pmin')} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${intervencio === 'pmin' ? 'bg-green-500 text-white' : 'bg-green-100 hover:bg-green-200'}`}>⬆️ {idioma === 'val' ? 'Preu Mínim' : 'Price Floor'}</button>
+                                        <button onClick={() => setIntervencio('cap')} className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all shadow-sm ${intervencio === 'cap' ? 'bg-gray-700 text-white shadow-gray-300' : 'bg-gray-100 hover:bg-gray-200'}`}>{idioma === 'val' ? '🔓 Cap' : '🔓 None'}</button>
+                                        <button onClick={() => setIntervencio('impost')} className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all shadow-sm ${intervencio === 'impost' ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-pink-300' : 'bg-pink-100 hover:bg-pink-200 text-pink-700'}`}>💰 {idioma === 'val' ? 'Impost' : 'Tax'}</button>
+                                        <button onClick={() => setIntervencio('pmax')} className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all shadow-sm ${intervencio === 'pmax' ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-blue-300' : 'bg-blue-100 hover:bg-blue-200 text-blue-700'}`}>⬇️ {idioma === 'val' ? 'Preu Màxim' : 'Price Ceiling'}</button>
+                                        <button onClick={() => setIntervencio('pmin')} className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all shadow-sm ${intervencio === 'pmin' ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-green-300' : 'bg-green-100 hover:bg-green-200 text-green-700'}`}>⬆️ {idioma === 'val' ? 'Preu Mínim' : 'Price Floor'}</button>
                                     </div>
                                     {intervencio === 'impost' && <Slider label={idioma === 'val' ? "💰 Impost per unitat" : "💰 Tax per unit"} value={impost} onChange={setImpost} min={1} max={20} suffix="€" />}
                                     {intervencio === 'pmax' && <Slider label={idioma === 'val' ? "⬇️ Preu màxim (sostre)" : "⬇️ Price ceiling"} value={preuMax} onChange={setPreuMax} min={5} max={40} suffix="€" />}
                                     {intervencio === 'pmin' && <Slider label={idioma === 'val' ? "⬆️ Preu mínim (terra)" : "⬆️ Price floor"} value={preuMin} onChange={setPreuMin} min={15} max={50} suffix="€" />}
                                     
-                                    <div className="p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl">
-                                        <p className="text-sm"><strong>⚖️ {idioma === 'val' ? 'Equilibri lliure:' : 'Free equilibrium:'}</strong> P = {equilibri.p}€, Q = {equilibri.q}</p>
+                                    <div className="p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border">
+                                        <p className="text-sm"><strong>⚖️ {idioma === 'val' ? 'Equilibri lliure:' : 'Free equilibrium:'}</strong> P* = {equilibri.p}€, Q* = {equilibri.q}</p>
                                     </div>
                                     
                                     {intervencio === 'impost' && intervResult && (
-                                        <div className="p-4 bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl border border-pink-200">
-                                            <h4 className="font-bold text-pink-700 mb-2">💰 {idioma === 'val' ? "Efectes de l'Impost" : "Tax Effects"}</h4>
-                                            <div className="grid grid-cols-2 gap-2 text-sm">
-                                                <p>👤 {idioma === 'val' ? 'Preu consumidor:' : 'Consumer price:'} <strong>{intervResult.pCons}€</strong></p>
-                                                <p>🏭 {idioma === 'val' ? 'Preu productor:' : 'Producer price:'} <strong>{intervResult.pProd}€</strong></p>
-                                                <p>📦 {idioma === 'val' ? 'Nova quantitat:' : 'New quantity:'} <strong>{intervResult.q}</strong></p>
-                                                <p>🏛️ {idioma === 'val' ? 'Recaptació:' : 'Tax revenue:'} <strong className="text-green-600">{intervResult.recaptacio}€</strong></p>
+                                        <div className="p-4 bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl border-2 border-pink-200 shadow-sm">
+                                            <h4 className="font-bold text-pink-700 mb-3 flex items-center gap-2">
+                                                <span className="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center text-white">💰</span>
+                                                {idioma === 'val' ? "Efectes de l'Impost" : "Tax Effects"}
+                                            </h4>
+                                            <div className="grid grid-cols-2 gap-3 text-sm">
+                                                <div className="p-2 bg-white rounded-lg"><span className="text-gray-500">👤 {idioma === 'val' ? 'P. consumidor:' : 'Consumer P:'}</span> <strong className="text-pink-600">{intervResult.pCons}€</strong></div>
+                                                <div className="p-2 bg-white rounded-lg"><span className="text-gray-500">🏭 {idioma === 'val' ? 'P. productor:' : 'Producer P:'}</span> <strong className="text-blue-600">{intervResult.pProd}€</strong></div>
+                                                <div className="p-2 bg-white rounded-lg"><span className="text-gray-500">📦 {idioma === 'val' ? 'Nova Q:' : 'New Q:'}</span> <strong>{intervResult.q}</strong></div>
+                                                <div className="p-2 bg-green-50 rounded-lg"><span className="text-gray-500">🏛️ {idioma === 'val' ? 'Recaptació:' : 'Revenue:'}</span> <strong className="text-green-600">{intervResult.recaptacio}€</strong></div>
                                             </div>
-                                            <p className="mt-2 text-red-600 font-medium">⚠️ {idioma === 'val' ? 'Pèrdua Eficiència (DWL):' : 'Deadweight Loss:'} {intervResult.dwl}€</p>
+                                            <div className="mt-3 p-2 bg-red-100 rounded-lg border border-red-200">
+                                                <p className="text-red-700 font-bold text-center">⚠️ DWL = {intervResult.dwl}€ {idioma === 'val' ? '(pèrdua irrecuperable)' : '(deadweight loss)'}</p>
+                                            </div>
                                         </div>
                                     )}
                                     {intervencio === 'pmax' && intervResult?.efectiu && (
-                                        <div className="p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
-                                            <h4 className="font-bold text-blue-700 mb-2">⬇️ {idioma === 'val' ? 'Preu Màxim Efectiu' : 'Effective Price Ceiling'}</h4>
-                                            <p className="text-sm mb-2">{idioma === 'val' ? '⚠️ Crea ESCASSETAT: més gent vol comprar que el que es produeix!' : '⚠️ Creates SHORTAGE: more people want to buy than is produced!'}</p>
+                                        <div className="p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border-2 border-blue-200 shadow-sm">
+                                            <h4 className="font-bold text-blue-700 mb-2 flex items-center gap-2">
+                                                <span className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white">⬇️</span>
+                                                {idioma === 'val' ? 'Preu Màxim Efectiu' : 'Effective Price Ceiling'}
+                                            </h4>
+                                            <p className="text-sm mb-3 text-blue-600">{idioma === 'val' ? '⚠️ Crea ESCASSETAT: més gent vol comprar que el que es produeix!' : '⚠️ Creates SHORTAGE: more people want to buy than is produced!'}</p>
                                             <div className="grid grid-cols-2 gap-2 text-sm">
-                                                <p>📈 Qd = <strong>{intervResult.qD}</strong></p>
-                                                <p>📉 Qs = <strong>{intervResult.qS}</strong></p>
+                                                <div className="p-2 bg-white rounded-lg">📈 Qd = <strong className="text-pink-600">{intervResult.qD}</strong></div>
+                                                <div className="p-2 bg-white rounded-lg">📉 Qs = <strong className="text-blue-600">{intervResult.qS}</strong></div>
                                             </div>
-                                            <p className="mt-2 text-red-600 font-bold">🚨 {idioma === 'val' ? 'Escassetat:' : 'Shortage:'} {intervResult.escassetat} {idioma === 'val' ? 'unitats' : 'units'}</p>
-                                            <p className="text-xs mt-2 text-gray-500">{idioma === 'val' ? 'Conseqüències: cues, mercats negres, racionament' : 'Consequences: queues, black markets, rationing'}</p>
+                                            <div className="mt-3 p-2 bg-red-100 rounded-lg border border-red-200">
+                                                <p className="text-red-700 font-bold text-center">🚨 {idioma === 'val' ? 'Escassetat:' : 'Shortage:'} {intervResult.escassetat} {idioma === 'val' ? 'unitats' : 'units'}</p>
+                                            </div>
+                                            <p className="text-xs mt-2 text-gray-500">{idioma === 'val' ? '💡 Conseqüències: cues, mercats negres, racionament' : '💡 Consequences: queues, black markets, rationing'}</p>
                                         </div>
                                     )}
                                     {intervencio === 'pmax' && preuMax >= parseFloat(equilibri.p) && (
-                                        <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
+                                        <div className="p-4 bg-amber-50 rounded-xl border-2 border-amber-200">
                                             <p className="text-amber-700">⚠️ {idioma === 'val' ? "Preu màxim per SOBRE d'equilibri → No té efecte! Baixa'l per veure l'impacte." : "Price ceiling ABOVE equilibrium → No effect! Lower it to see impact."}</p>
                                         </div>
                                     )}
                                     {intervencio === 'pmin' && intervResult?.efectiu && (
-                                        <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200">
-                                            <h4 className="font-bold text-green-700 mb-2">⬆️ {idioma === 'val' ? 'Preu Mínim Efectiu' : 'Effective Price Floor'}</h4>
-                                            <p className="text-sm mb-2">{idioma === 'val' ? '⚠️ Crea EXCEDENT: es produeix més del que es compra!' : '⚠️ Creates SURPLUS: more is produced than bought!'}</p>
+                                        <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border-2 border-green-200 shadow-sm">
+                                            <h4 className="font-bold text-green-700 mb-2 flex items-center gap-2">
+                                                <span className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center text-white">⬆️</span>
+                                                {idioma === 'val' ? 'Preu Mínim Efectiu' : 'Effective Price Floor'}
+                                            </h4>
+                                            <p className="text-sm mb-3 text-green-600">{idioma === 'val' ? '⚠️ Crea EXCEDENT: es produeix més del que es compra!' : '⚠️ Creates SURPLUS: more is produced than bought!'}</p>
                                             <div className="grid grid-cols-2 gap-2 text-sm">
-                                                <p>📉 Qd = <strong>{intervResult.qD}</strong></p>
-                                                <p>📈 Qs = <strong>{intervResult.qS}</strong></p>
+                                                <div className="p-2 bg-white rounded-lg">📉 Qd = <strong className="text-pink-600">{intervResult.qD}</strong></div>
+                                                <div className="p-2 bg-white rounded-lg">📈 Qs = <strong className="text-blue-600">{intervResult.qS}</strong></div>
                                             </div>
-                                            <p className="mt-2 text-red-600 font-bold">🚨 {idioma === 'val' ? 'Excedent:' : 'Surplus:'} {intervResult.excedent} {idioma === 'val' ? 'unitats' : 'units'}</p>
+                                            <div className="mt-3 p-2 bg-red-100 rounded-lg border border-red-200">
+                                                <p className="text-red-700 font-bold text-center">🚨 {idioma === 'val' ? 'Excedent:' : 'Surplus:'} {intervResult.excedent} {idioma === 'val' ? 'unitats' : 'units'}</p>
+                                            </div>
                                             <p className="text-xs mt-2 text-gray-500">{idioma === 'val' ? '💼 Exemple: Salari mínim per sobre equilibri → pot crear atur' : '💼 Example: Minimum wage above equilibrium → may create unemployment'}</p>
                                         </div>
                                     )}
                                     {intervencio === 'pmin' && preuMin <= parseFloat(equilibri.p) && (
-                                        <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
+                                        <div className="p-4 bg-amber-50 rounded-xl border-2 border-amber-200">
                                             <p className="text-amber-700">⚠️ {idioma === 'val' ? "Preu mínim per SOTA d'equilibri → No té efecte! Puja'l per veure l'impacte." : "Price floor BELOW equilibrium → No effect! Raise it to see impact."}</p>
                                         </div>
                                     )}
                                 </div>
                                 <div>
-                                    <div className="h-72">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <LineChart data={dadesOD}>
-                                                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                                                <XAxis dataKey="q" label={{ value: 'Q', position: 'bottom' }} />
-                                                <YAxis domain={[0, 60]} label={{ value: 'P', angle: -90, position: 'insideLeft' }} />
-                                                <Tooltip formatter={(v) => v?.toFixed(2)} />
-                                                <Legend />
-                                                <Line type="monotone" dataKey="demanda" stroke="#ec4899" strokeWidth={3} dot={false} name={idioma === 'val' ? "Demanda" : "Demand"} />
-                                                <Line type="monotone" dataKey="oferta" stroke="#3b82f6" strokeWidth={3} dot={false} name={idioma === 'val' ? "Oferta" : "Supply"} />
-                                                {intervencio === 'impost' && <Line type="monotone" dataKey="ofertaImpost" stroke="#f97316" strokeWidth={3} strokeDasharray="5 5" dot={false} name={idioma === 'val' ? "Oferta + Impost" : "Supply + Tax"} />}
-                                                <ReferenceLine x={Number(equilibri.q)} stroke="#10b981" strokeDasharray="3 3" label={{ value: 'Q*', position: 'top' }} />
-                                                <ReferenceLine y={Number(equilibri.p)} stroke="#10b981" strokeDasharray="3 3" label={{ value: 'P*', position: 'right' }} />
-                                                {intervencio === 'pmax' && <ReferenceLine y={preuMax} stroke="#3b82f6" strokeWidth={2} label={{ value: idioma === 'val' ? 'P màx' : 'P ceil', fill: '#3b82f6' }} />}
-                                                {intervencio === 'pmin' && <ReferenceLine y={preuMin} stroke="#10b981" strokeWidth={2} label={{ value: idioma === 'val' ? 'P mín' : 'P floor', fill: '#10b981' }} />}
-                                            </LineChart>
-                                        </ResponsiveContainer>
+                                    <div className="h-80 bg-gradient-to-br from-gray-50 to-white rounded-xl border-2 border-gray-200 p-3 shadow-inner">
+                                        {(() => {
+                                            const pEq = parseFloat(equilibri.p);
+                                            const qEq = parseFloat(equilibri.q);
+                                            const pMax = demandaA / demandaB;
+                                            const pMinS = Math.max(0, -ofertaC / ofertaD);
+                                            const scale = { x: 2.2, y: 3.2 };
+                                            const offset = { x: 55, y: 215 };
+                                            const toX = (q) => offset.x + q * scale.x;
+                                            const toY = (p) => offset.y - p * scale.y;
+                                            
+                                            // Calculate intervention points
+                                            let pCons, pProd, qNew, qD, qS;
+                                            if (intervencio === 'impost' && intervResult) {
+                                                pCons = parseFloat(intervResult.pCons);
+                                                pProd = parseFloat(intervResult.pProd);
+                                                qNew = parseFloat(intervResult.q);
+                                            }
+                                            if ((intervencio === 'pmax' || intervencio === 'pmin') && intervResult?.efectiu) {
+                                                qD = parseFloat(intervResult.qD);
+                                                qS = parseFloat(intervResult.qS);
+                                            }
+                                            
+                                            return (
+                                                <svg viewBox="0 0 320 260" className="w-full h-full">
+                                                    <defs>
+                                                        <linearGradient id="taxRevGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                                            <stop offset="0%" stopColor="#10b981" stopOpacity="0.7"/>
+                                                            <stop offset="100%" stopColor="#34d399" stopOpacity="0.4"/>
+                                                        </linearGradient>
+                                                        <linearGradient id="dwlGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                            <stop offset="0%" stopColor="#ef4444" stopOpacity="0.7"/>
+                                                            <stop offset="100%" stopColor="#f87171" stopOpacity="0.4"/>
+                                                        </linearGradient>
+                                                        <linearGradient id="shortageGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                            <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.6"/>
+                                                            <stop offset="100%" stopColor="#fbbf24" stopOpacity="0.3"/>
+                                                        </linearGradient>
+                                                        <pattern id="stripes" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+                                                            <line x1="0" y1="0" x2="0" y2="8" stroke="#ef4444" strokeWidth="4" strokeOpacity="0.3"/>
+                                                        </pattern>
+                                                        <marker id="arrowInt" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                                            <polygon points="0 0, 10 3.5, 0 7" fill="#374151"/>
+                                                        </marker>
+                                                    </defs>
+                                                    
+                                                    {/* Grid */}
+                                                    {[0, 10, 20, 30, 40, 50].map(p => (
+                                                        <line key={`grid-p-${p}`} x1={offset.x} y1={toY(p)} x2="300" y2={toY(p)} stroke="#e5e7eb" strokeWidth="1"/>
+                                                    ))}
+                                                    
+                                                    {/* Tax Revenue Area */}
+                                                    {intervencio === 'impost' && intervResult && (
+                                                        <rect 
+                                                            x={toX(0)} 
+                                                            y={toY(pCons)} 
+                                                            width={toX(qNew) - toX(0)} 
+                                                            height={toY(pProd) - toY(pCons)}
+                                                            fill="url(#taxRevGrad)" 
+                                                            stroke="#10b981" 
+                                                            strokeWidth="2"
+                                                        />
+                                                    )}
+                                                    
+                                                    {/* DWL Triangle for Tax */}
+                                                    {intervencio === 'impost' && intervResult && (
+                                                        <polygon 
+                                                            points={`${toX(qNew)},${toY(pCons)} ${toX(qEq)},${toY(pEq)} ${toX(qNew)},${toY(pProd)}`}
+                                                            fill="url(#dwlGrad)" 
+                                                            stroke="#ef4444" 
+                                                            strokeWidth="2"
+                                                        />
+                                                    )}
+                                                    
+                                                    {/* DWL for Price Ceiling */}
+                                                    {intervencio === 'pmax' && intervResult?.efectiu && (
+                                                        <polygon 
+                                                            points={`${toX(qS)},${toY(preuMax)} ${toX(qEq)},${toY(pEq)} ${toX(qS)},${toY((qS - ofertaC) / ofertaD)}`}
+                                                            fill="url(#dwlGrad)" 
+                                                            stroke="#ef4444" 
+                                                            strokeWidth="2"
+                                                        />
+                                                    )}
+                                                    
+                                                    {/* DWL for Price Floor */}
+                                                    {intervencio === 'pmin' && intervResult?.efectiu && (
+                                                        <polygon 
+                                                            points={`${toX(qD)},${toY(preuMin)} ${toX(qEq)},${toY(pEq)} ${toX(qD)},${toY((demandaA - qD) / demandaB)}`}
+                                                            fill="url(#dwlGrad)" 
+                                                            stroke="#ef4444" 
+                                                            strokeWidth="2"
+                                                        />
+                                                    )}
+                                                    
+                                                    {/* Axes */}
+                                                    <line x1={offset.x} y1={offset.y} x2="305" y2={offset.y} stroke="#374151" strokeWidth="2.5" markerEnd="url(#arrowInt)"/>
+                                                    <line x1={offset.x} y1={offset.y} x2={offset.x} y2="15" stroke="#374151" strokeWidth="2.5" markerEnd="url(#arrowInt)"/>
+                                                    
+                                                    {/* Demand Curve */}
+                                                    <line x1={toX(0)} y1={toY(pMax)} x2={toX(demandaA)} y2={toY(0)} stroke="#ec4899" strokeWidth="3.5" strokeLinecap="round"/>
+                                                    
+                                                    {/* Supply Curve */}
+                                                    <line x1={toX(0)} y1={toY(pMinS)} x2={toX(100)} y2={toY((100 - ofertaC) / ofertaD)} stroke="#3b82f6" strokeWidth="3.5" strokeLinecap="round"/>
+                                                    
+                                                    {/* Supply + Tax Curve */}
+                                                    {intervencio === 'impost' && (
+                                                        <line x1={toX(0)} y1={toY(pMinS + impost)} x2={toX(100)} y2={toY((100 - ofertaC) / ofertaD + impost)} stroke="#f97316" strokeWidth="3" strokeDasharray="8 4" strokeLinecap="round"/>
+                                                    )}
+                                                    
+                                                    {/* Price Ceiling Line */}
+                                                    {intervencio === 'pmax' && (
+                                                        <line x1={toX(0)} y1={toY(preuMax)} x2="300" y2={toY(preuMax)} stroke="#3b82f6" strokeWidth="3" strokeDasharray="10 5"/>
+                                                    )}
+                                                    
+                                                    {/* Price Floor Line */}
+                                                    {intervencio === 'pmin' && (
+                                                        <line x1={toX(0)} y1={toY(preuMin)} x2="300" y2={toY(preuMin)} stroke="#10b981" strokeWidth="3" strokeDasharray="10 5"/>
+                                                    )}
+                                                    
+                                                    {/* Equilibrium Point */}
+                                                    <circle cx={toX(qEq)} cy={toY(pEq)} r="8" fill="#f59e0b" stroke="white" strokeWidth="2"/>
+                                                    
+                                                    {/* Equilibrium dashed lines */}
+                                                    <line x1={toX(0)} y1={toY(pEq)} x2={toX(qEq)} y2={toY(pEq)} stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="4 3"/>
+                                                    <line x1={toX(qEq)} y1={toY(0)} x2={toX(qEq)} y2={toY(pEq)} stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="4 3"/>
+                                                    
+                                                    {/* Tax specific elements */}
+                                                    {intervencio === 'impost' && intervResult && (
+                                                        <>
+                                                            <line x1={toX(qNew)} y1={toY(0)} x2={toX(qNew)} y2={toY(pCons)} stroke="#ef4444" strokeWidth="1.5" strokeDasharray="4 3"/>
+                                                            <circle cx={toX(qNew)} cy={toY(pCons)} r="5" fill="#ec4899" stroke="white" strokeWidth="2"/>
+                                                            <circle cx={toX(qNew)} cy={toY(pProd)} r="5" fill="#3b82f6" stroke="white" strokeWidth="2"/>
+                                                            <text x={toX(qNew/2)} y={toY((pCons + pProd)/2) + 4} textAnchor="middle" fontSize="10" fill="#059669" fontWeight="bold">{idioma === 'val' ? 'Recapt.' : 'Revenue'}</text>
+                                                            <text x={toX(qNew + (qEq-qNew)/2) + 5} y={toY(pEq)} textAnchor="middle" fontSize="10" fill="#dc2626" fontWeight="bold">DWL</text>
+                                                        </>
+                                                    )}
+                                                    
+                                                    {/* Price ceiling elements */}
+                                                    {intervencio === 'pmax' && intervResult?.efectiu && (
+                                                        <>
+                                                            <line x1={toX(qS)} y1={toY(preuMax)} x2={toX(qD)} y2={toY(preuMax)} stroke="#f59e0b" strokeWidth="3"/>
+                                                            <text x={toX((qS + qD)/2)} y={toY(preuMax) - 8} textAnchor="middle" fontSize="10" fill="#d97706" fontWeight="bold">{idioma === 'val' ? 'Escassetat' : 'Shortage'}</text>
+                                                            <text x={toX(qS + (qEq-qS)/2) + 5} y={toY((preuMax + pEq)/2)} textAnchor="middle" fontSize="10" fill="#dc2626" fontWeight="bold">DWL</text>
+                                                        </>
+                                                    )}
+                                                    
+                                                    {/* Price floor elements */}
+                                                    {intervencio === 'pmin' && intervResult?.efectiu && (
+                                                        <>
+                                                            <line x1={toX(qD)} y1={toY(preuMin)} x2={toX(qS)} y2={toY(preuMin)} stroke="#f59e0b" strokeWidth="3"/>
+                                                            <text x={toX((qD + qS)/2)} y={toY(preuMin) + 15} textAnchor="middle" fontSize="10" fill="#d97706" fontWeight="bold">{idioma === 'val' ? 'Excedent' : 'Surplus'}</text>
+                                                            <text x={toX(qD + (qEq-qD)/2) + 5} y={toY((preuMin + pEq)/2)} textAnchor="middle" fontSize="10" fill="#dc2626" fontWeight="bold">DWL</text>
+                                                        </>
+                                                    )}
+                                                    
+                                                    {/* Labels */}
+                                                    <text x="300" y={offset.y + 18} fontSize="14" fill="#374151" fontWeight="bold">Q</text>
+                                                    <text x={offset.x - 12} y="22" fontSize="14" fill="#374151" fontWeight="bold">P</text>
+                                                    <text x={toX(demandaA - 15)} y={toY(5)} fontSize="12" fill="#ec4899" fontWeight="bold">D</text>
+                                                    <text x={toX(85)} y={toY((85 - ofertaC) / ofertaD) - 8} fontSize="12" fill="#3b82f6" fontWeight="bold">S</text>
+                                                    {intervencio === 'impost' && <text x={toX(85)} y={toY((85 - ofertaC) / ofertaD + impost) - 8} fontSize="11" fill="#f97316" fontWeight="bold">S+t</text>}
+                                                    
+                                                    {/* Axis values */}
+                                                    <text x={toX(qEq)} y={offset.y + 16} textAnchor="middle" fontSize="10" fill="#f59e0b" fontWeight="bold">Q*</text>
+                                                    <text x={offset.x - 8} y={toY(pEq) + 4} textAnchor="end" fontSize="10" fill="#f59e0b" fontWeight="bold">P*</text>
+                                                    {intervencio === 'pmax' && <text x={offset.x - 8} y={toY(preuMax) + 4} textAnchor="end" fontSize="10" fill="#3b82f6" fontWeight="bold">Pm</text>}
+                                                    {intervencio === 'pmin' && <text x={offset.x - 8} y={toY(preuMin) + 4} textAnchor="end" fontSize="10" fill="#10b981" fontWeight="bold">Pm</text>}
+                                                </svg>
+                                            );
+                                        })()}
                                     </div>
-                                    <div className="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-600">
-                                        <p><span className="inline-block w-3 h-1 bg-pink-500 mr-1"></span> {idioma === 'val' ? 'Demanda (pendent negatiu)' : 'Demand (negative slope)'}</p>
-                                        <p><span className="inline-block w-3 h-1 bg-blue-500 mr-1"></span> {idioma === 'val' ? 'Oferta (pendent positiu)' : 'Supply (positive slope)'}</p>
-                                        {intervencio === 'impost' && <p><span className="inline-block w-3 h-1 bg-orange-500 mr-1" style={{borderStyle: 'dashed'}}></span> {idioma === 'val' ? "Oferta desplaçada per l'impost" : 'Supply shifted by tax'}</p>}
+                                    <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                                        <div className="p-2 bg-pink-50 rounded-lg flex items-center gap-2">
+                                            <div className="w-4 h-1 bg-pink-500 rounded"></div>
+                                            <span>{idioma === 'val' ? 'Demanda' : 'Demand'}</span>
+                                        </div>
+                                        <div className="p-2 bg-blue-50 rounded-lg flex items-center gap-2">
+                                            <div className="w-4 h-1 bg-blue-500 rounded"></div>
+                                            <span>{idioma === 'val' ? 'Oferta' : 'Supply'}</span>
+                                        </div>
+                                        {intervencio === 'impost' && (
+                                            <>
+                                                <div className="p-2 bg-green-50 rounded-lg flex items-center gap-2">
+                                                    <div className="w-4 h-4 bg-green-400/60 rounded"></div>
+                                                    <span>{idioma === 'val' ? 'Recaptació' : 'Tax Revenue'}</span>
+                                                </div>
+                                                <div className="p-2 bg-red-50 rounded-lg flex items-center gap-2">
+                                                    <div className="w-4 h-4 bg-red-400/60 rounded"></div>
+                                                    <span>DWL</span>
+                                                </div>
+                                            </>
+                                        )}
+                                        {(intervencio === 'pmax' || intervencio === 'pmin') && (
+                                            <>
+                                                <div className="p-2 bg-amber-50 rounded-lg flex items-center gap-2">
+                                                    <div className="w-4 h-1 bg-amber-500 rounded"></div>
+                                                    <span>{intervencio === 'pmax' ? (idioma === 'val' ? 'Escassetat' : 'Shortage') : (idioma === 'val' ? 'Excedent' : 'Surplus')}</span>
+                                                </div>
+                                                <div className="p-2 bg-red-50 rounded-lg flex items-center gap-2">
+                                                    <div className="w-4 h-4 bg-red-400/60 rounded"></div>
+                                                    <span>DWL</span>
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
                             </div>
