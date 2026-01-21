@@ -117,8 +117,15 @@ function EconomiaApp() {
             { id: 'macro', name: 'Macroeconomia', icon: '🌍', color: 'from-emerald-500 to-teal-500', desc: idioma === 'val' ? 'PIB, IS-LM, AD-AS, inflació, atur' : idioma === 'es' ? 'PIB, IS-LM, AD-AS, inflación, desempleo' : 'GDP, IS-LM, AD-AS, inflation, unemployment' },
             { id: 'monetaria', name: idioma === 'val' ? 'Economia Monetària' : idioma === 'es' ? 'Economía Monetaria' : 'Monetary Economics', icon: '🏛️', color: 'from-indigo-500 to-blue-500', desc: idioma === 'val' ? 'Banc Central, política monetària' : idioma === 'es' ? 'Banco Central, política monetaria' : 'Central Bank, monetary policy' },
             { id: 'comerc', name: idioma === 'val' ? 'Comerç Internacional' : idioma === 'es' ? 'Comercio Internacional' : 'International Trade', icon: '🚚', color: 'from-cyan-500 to-teal-500', desc: idioma === 'val' ? 'Avantatge comparatiu, aranzels' : idioma === 'es' ? 'Ventaja comparativa, aranceles' : 'Comparative advantage, tariffs' },
+            { id: 'mundial', name: idioma === 'val' ? 'Economia Mundial' : idioma === 'es' ? 'Economía Mundial' : 'World Economy', icon: '🌐', color: 'from-sky-500 to-blue-500', desc: idioma === 'val' ? 'FMI, BCE, OCDE, G20, globalització' : idioma === 'es' ? 'FMI, BCE, OCDE, G20, globalización' : 'IMF, ECB, OECD, G20, globalization' },
+            { id: 'laboral', name: idioma === 'val' ? 'Economia Laboral' : idioma === 'es' ? 'Economía Laboral' : 'Labor Economics', icon: '👷', color: 'from-orange-500 to-red-500', desc: idioma === 'val' ? 'Atur, salaris, sindicats, mercat treball' : idioma === 'es' ? 'Desempleo, salarios, sindicatos' : 'Unemployment, wages, unions' },
+            { id: 'benestar', name: idioma === 'val' ? 'Economia Benestar' : idioma === 'es' ? 'Economía Bienestar' : 'Welfare Economics', icon: '⚖️', color: 'from-teal-500 to-green-500', desc: idioma === 'val' ? 'Eficiència, equitat, Pareto, funcions socials' : idioma === 'es' ? 'Eficiencia, equidad, Pareto' : 'Efficiency, equity, Pareto' },
+            { id: 'desenvolupament', name: idioma === 'val' ? 'Desenvolupament' : idioma === 'es' ? 'Desarrollo' : 'Development', icon: '📈', color: 'from-lime-500 to-green-500', desc: idioma === 'val' ? 'Pobresa, desigualtat, IDH, ODS' : idioma === 'es' ? 'Pobreza, desigualdad, IDH, ODS' : 'Poverty, inequality, HDI, SDGs' },
+            { id: 'comportament', name: idioma === 'val' ? 'Econ. Comportament' : idioma === 'es' ? 'Econ. Comportamiento' : 'Behavioral Econ.', icon: '🧠', color: 'from-purple-500 to-fuchsia-500', desc: idioma === 'val' ? 'Biaixos, heurístiques, nudges' : idioma === 'es' ? 'Sesgos, heurísticas, nudges' : 'Biases, heuristics, nudges' },
+            { id: 'ecologia', name: idioma === 'val' ? 'Economia Ecològica' : idioma === 'es' ? 'Economía Ecológica' : 'Ecological Economics', icon: '🌱', color: 'from-green-500 to-emerald-500', desc: idioma === 'val' ? 'Sostenibilitat, circular, canvi climàtic' : idioma === 'es' ? 'Sostenibilidad, circular, cambio climático' : 'Sustainability, circular, climate change' },
+            { id: 'digital', name: idioma === 'val' ? 'Economia Digital' : idioma === 'es' ? 'Economía Digital' : 'Digital Economy', icon: '🤖', color: 'from-slate-500 to-gray-600', desc: idioma === 'val' ? 'IA, Big Data, plataformes, criptomonedes' : idioma === 'es' ? 'IA, Big Data, plataformas, criptomonedas' : 'AI, Big Data, platforms, crypto' },
             { id: 'jocs', name: idioma === 'val' ? 'Teoria de Jocs' : idioma === 'es' ? 'Teoría de Juegos' : 'Game Theory', icon: '🎮', color: 'from-fuchsia-500 to-pink-500', desc: idioma === 'val' ? 'Nash, dilema presoner' : idioma === 'es' ? 'Nash, dilema prisionero' : 'Nash, prisoner dilemma' },
-            { id: 'historia', name: idioma === 'val' ? 'Història Econòmica' : idioma === 'es' ? 'Historia Económica' : 'Economic History', icon: '🕐', color: 'from-gray-500 to-slate-500', desc: idioma === 'val' ? 'Smith, Keynes, Friedman' : 'Smith, Keynes, Friedman' },
+            { id: 'historia', name: idioma === 'val' ? 'Història Econòmica' : idioma === 'es' ? 'Historia Económica' : 'Economic History', icon: '🕐', color: 'from-gray-500 to-slate-500', desc: idioma === 'val' ? 'Smith, Marx, Keynes, Friedman' : 'Smith, Marx, Keynes, Friedman' },
         ];
         
         return (
@@ -2531,6 +2538,770 @@ Lluitar  Acomodar
     };
 
     // ========================================================================
+    // SECTION: ECONOMIA MUNDIAL I ORGANITZACIONS
+    // ========================================================================
+    const EconomiaMundial = () => {
+        const [tab, setTab] = useState('intro');
+        
+        const organitzacions = [
+            { nom: "FMI", nomComplet: idioma === 'val' ? "Fons Monetari Internacional" : "International Monetary Fund", any: 1944, membres: 190, seu: "Washington DC", funcio: idioma === 'val' ? "Estabilitat monetària mundial, préstecs a països en crisi, supervisió economies" : "Global monetary stability, crisis loans, economic surveillance", color: "blue" },
+            { nom: "Banc Mundial", nomComplet: idioma === 'val' ? "Grup Banc Mundial" : "World Bank Group", any: 1944, membres: 189, seu: "Washington DC", funcio: idioma === 'val' ? "Finançament desenvolupament, reducció pobresa, infraestructures" : "Development financing, poverty reduction, infrastructure", color: "green" },
+            { nom: "BCE", nomComplet: idioma === 'val' ? "Banc Central Europeu" : "European Central Bank", any: 1998, membres: 20, seu: "Frankfurt", funcio: idioma === 'val' ? "Política monetària eurozona, estabilitat preus, supervisió bancària" : "Eurozone monetary policy, price stability, banking supervision", color: "indigo" },
+            { nom: "OCDE", nomComplet: idioma === 'val' ? "Organització per Cooperació i Desenvolupament" : "OECD", any: 1961, membres: 38, seu: "París", funcio: idioma === 'val' ? "Coordinació polítiques, estadístiques, recomanacions econòmiques" : "Policy coordination, statistics, economic recommendations", color: "cyan" },
+            { nom: "OMC", nomComplet: idioma === 'val' ? "Organització Mundial del Comerç" : "World Trade Organization", any: 1995, membres: 164, seu: "Ginebra", funcio: idioma === 'val' ? "Regles comerç internacional, resolució disputes, negociacions" : "International trade rules, dispute resolution, negotiations", color: "amber" },
+            { nom: "G20", nomComplet: idioma === 'val' ? "Grup dels 20" : "Group of Twenty", any: 1999, membres: 20, seu: idioma === 'val' ? "Rotatiu" : "Rotating", funcio: idioma === 'val' ? "Coordinació economies principals, resposta crisis globals" : "Major economies coordination, global crisis response", color: "red" },
+            { nom: "ONU", nomComplet: idioma === 'val' ? "Organització Nacions Unides" : "United Nations", any: 1945, membres: 193, seu: "Nova York", funcio: idioma === 'val' ? "ODS, UNCTAD, desenvolupament sostenible" : "SDGs, UNCTAD, sustainable development", color: "sky" },
+        ];
+        
+        return (
+            <div className="space-y-6">
+                <div><h1 className="text-3xl font-black text-gray-800">{idioma === 'val' ? 'Economia Mundial i Organitzacions' : 'World Economy & Organizations'}</h1></div>
+                
+                <Tabs tabs={[
+                    { id: 'intro', label: idioma === 'val' ? '🌍 Introducció' : '🌍 Introduction' },
+                    { id: 'orgs', label: idioma === 'val' ? '🏛️ Organitzacions' : '🏛️ Organizations' },
+                    { id: 'global', label: idioma === 'val' ? '🔄 Globalització' : '🔄 Globalization' },
+                ]} active={tab} onChange={setTab} />
+                
+                {tab === 'intro' && (
+                    <div className="space-y-6">
+                        <Card title={idioma === 'val' ? "🌍 Per què importa l'economia mundial?" : "🌍 Why does the world economy matter?"}>
+                            <div className="bg-gradient-to-r from-sky-50 to-blue-50 p-4 rounded-xl mb-4">
+                                <p className="text-sky-700">{idioma === 'val' ? "💡 Vivim en un món interconnectat. Una crisi a la Xina pot afectar el teu treball a València. Les decisions del BCE determinen el teu tipus d'hipoteca. Les regles de l'OMC influeixen en el preu de la teva roba." : "💡 We live in an interconnected world. A crisis in China can affect your job in Valencia. ECB decisions determine your mortgage rate. WTO rules influence the price of your clothes."}</p>
+                            </div>
+                            <div className="grid md:grid-cols-3 gap-4">
+                                <div className="p-4 bg-blue-50 rounded-xl">
+                                    <h4 className="font-bold text-blue-700">💱 {idioma === 'val' ? "Sistema Monetari" : "Monetary System"}</h4>
+                                    <p className="text-sm text-blue-600">{idioma === 'val' ? "El dòlar és la moneda de reserva mundial. El BCE controla l'euro. Els tipus de canvi afecten exportacions." : "Dollar is world reserve currency. ECB controls euro. Exchange rates affect exports."}</p>
+                                </div>
+                                <div className="p-4 bg-green-50 rounded-xl">
+                                    <h4 className="font-bold text-green-700">🚢 {idioma === 'val' ? "Comerç Global" : "Global Trade"}</h4>
+                                    <p className="text-sm text-green-600">{idioma === 'val' ? "Cadenes de subministrament globals. El teu iPhone té peces de 43 països. La globalització ha reduït la pobresa extrema." : "Global supply chains. Your iPhone has parts from 43 countries. Globalization reduced extreme poverty."}</p>
+                                </div>
+                                <div className="p-4 bg-amber-50 rounded-xl">
+                                    <h4 className="font-bold text-amber-700">📊 {idioma === 'val' ? "Coordinació" : "Coordination"}</h4>
+                                    <p className="text-sm text-amber-600">{idioma === 'val' ? "El G20 va coordinar la resposta a la crisi 2008. El FMI rescata països en problemes. L'OCDE harmonitza impostos." : "G20 coordinated 2008 crisis response. IMF rescues troubled countries. OECD harmonizes taxes."}</p>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+                
+                {tab === 'orgs' && (
+                    <div className="space-y-4">
+                        {organitzacions.map((o, i) => (
+                            <Card key={i} className="hover:shadow-lg transition-shadow">
+                                <div className="flex flex-col md:flex-row gap-4">
+                                    <div className={`flex-shrink-0 w-20 h-20 bg-gradient-to-br from-${o.color}-400 to-${o.color}-600 rounded-xl flex items-center justify-center text-white text-lg font-bold`}>
+                                        {o.nom}
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="font-bold text-lg text-gray-800">{o.nomComplet}</h3>
+                                        <div className="flex flex-wrap gap-2 my-2">
+                                            <span className="text-xs px-2 py-1 bg-gray-100 rounded">📅 {o.any}</span>
+                                            <span className="text-xs px-2 py-1 bg-gray-100 rounded">🌍 {o.membres} {idioma === 'val' ? 'membres' : 'members'}</span>
+                                            <span className="text-xs px-2 py-1 bg-gray-100 rounded">📍 {o.seu}</span>
+                                        </div>
+                                        <p className="text-sm text-gray-600">{o.funcio}</p>
+                                    </div>
+                                </div>
+                            </Card>
+                        ))}
+                    </div>
+                )}
+                
+                {tab === 'global' && (
+                    <div className="space-y-6">
+                        <Card title={idioma === 'val' ? "🔄 Globalització: Pros i Contres" : "🔄 Globalization: Pros and Cons"}>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="p-4 bg-green-50 rounded-xl">
+                                    <h4 className="font-bold text-green-700 mb-3">✅ {idioma === 'val' ? "Beneficis" : "Benefits"}</h4>
+                                    <ul className="space-y-2 text-sm text-green-600">
+                                        <li>• {idioma === 'val' ? "Reducció pobresa extrema (de 36% a 10% des de 1990)" : "Extreme poverty reduction (36% to 10% since 1990)"}</li>
+                                        <li>• {idioma === 'val' ? "Preus més baixos per als consumidors" : "Lower prices for consumers"}</li>
+                                        <li>• {idioma === 'val' ? "Accés a tecnologia i innovació" : "Access to technology and innovation"}</li>
+                                        <li>• {idioma === 'val' ? "Creixement econòmic a països emergents" : "Economic growth in emerging countries"}</li>
+                                        <li>• {idioma === 'val' ? "Intercanvi cultural i educatiu" : "Cultural and educational exchange"}</li>
+                                    </ul>
+                                </div>
+                                <div className="p-4 bg-red-50 rounded-xl">
+                                    <h4 className="font-bold text-red-700 mb-3">❌ {idioma === 'val' ? "Problemes" : "Problems"}</h4>
+                                    <ul className="space-y-2 text-sm text-red-600">
+                                        <li>• {idioma === 'val' ? "Desigualtat dins dels països desenvolupats" : "Inequality within developed countries"}</li>
+                                        <li>• {idioma === 'val' ? "Deslocalització i pèrdua de feines industrials" : "Offshoring and loss of industrial jobs"}</li>
+                                        <li>• {idioma === 'val' ? "Impacte mediambiental (transport, producció)" : "Environmental impact (transport, production)"}</li>
+                                        <li>• {idioma === 'val' ? "Dependència de cadenes globals (COVID ho va mostrar)" : "Global chain dependency (COVID showed this)"}</li>
+                                        <li>• {idioma === 'val' ? "Evasió fiscal de multinacionals" : "Tax evasion by multinationals"}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    // ========================================================================
+    // SECTION: ECONOMIA LABORAL
+    // ========================================================================
+    const EconomiaLaboral = () => {
+        const [tab, setTab] = useState('intro');
+        const [salariMin, setSalariMin] = useState(1134);
+        const [productivitat, setProductivitat] = useState(30);
+        
+        return (
+            <div className="space-y-6">
+                <div><h1 className="text-3xl font-black text-gray-800">{idioma === 'val' ? 'Economia Laboral' : 'Labor Economics'}</h1></div>
+                
+                <Tabs tabs={[
+                    { id: 'intro', label: idioma === 'val' ? '📖 Introducció' : '📖 Introduction' },
+                    { id: 'atur', label: idioma === 'val' ? '📉 Atur' : '📉 Unemployment' },
+                    { id: 'salaris', label: idioma === 'val' ? '💰 Salaris' : '💰 Wages' },
+                    { id: 'sindicats', label: idioma === 'val' ? '✊ Sindicats' : '✊ Unions' },
+                ]} active={tab} onChange={setTab} />
+                
+                {tab === 'intro' && (
+                    <Card title={idioma === 'val' ? "👷 Què estudia l'economia laboral?" : "👷 What does labor economics study?"}>
+                        <div className="bg-gradient-to-r from-orange-50 to-red-50 p-4 rounded-xl mb-4">
+                            <p className="text-orange-700">{idioma === 'val' ? "💡 El treball és el principal actiu de la majoria de persones. Com es determinen els salaris? Per què hi ha atur? Funcionen els sindicats? Són bones les lleis laborals?" : "💡 Labor is most people's main asset. How are wages determined? Why is there unemployment? Do unions work? Are labor laws good?"}</p>
+                        </div>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <ConceptBox title={idioma === 'val' ? "Oferta Treball" : "Labor Supply"} color="pink">
+                                <p className="text-sm">{idioma === 'val' ? "Decisions individuals: treballar o oci? Quantes hores?" : "Individual decisions: work or leisure? How many hours?"}</p>
+                            </ConceptBox>
+                            <ConceptBox title={idioma === 'val' ? "Demanda Treball" : "Labor Demand"} color="blue">
+                                <p className="text-sm">{idioma === 'val' ? "Empreses contracten fins que PMg = Salari" : "Firms hire until MPL = Wage"}</p>
+                            </ConceptBox>
+                            <ConceptBox title={idioma === 'val' ? "Capital Humà" : "Human Capital"} color="green">
+                                <p className="text-sm">{idioma === 'val' ? "Educació i experiència augmenten productivitat i salaris" : "Education and experience increase productivity and wages"}</p>
+                            </ConceptBox>
+                            <ConceptBox title={idioma === 'val' ? "Discriminació" : "Discrimination"} color="red">
+                                <p className="text-sm">{idioma === 'val' ? "Bretxa salarial de gènere, raça, origen..." : "Gender, race, origin wage gaps..."}</p>
+                            </ConceptBox>
+                        </div>
+                    </Card>
+                )}
+                
+                {tab === 'atur' && (
+                    <div className="space-y-6">
+                        <Card title={idioma === 'val' ? "📉 Tipus d'Atur" : "📉 Types of Unemployment"}>
+                            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div className="p-4 bg-blue-50 rounded-xl">
+                                    <h4 className="font-bold text-blue-700">{idioma === 'val' ? "Friccional" : "Frictional"}</h4>
+                                    <p className="text-sm text-blue-600">{idioma === 'val' ? "Temps de cerca entre feines. Normal i sa. Ex: recent graduat buscant." : "Job search time between jobs. Normal and healthy. Ex: recent graduate searching."}</p>
+                                </div>
+                                <div className="p-4 bg-amber-50 rounded-xl">
+                                    <h4 className="font-bold text-amber-700">{idioma === 'val' ? "Estructural" : "Structural"}</h4>
+                                    <p className="text-sm text-amber-600">{idioma === 'val' ? "Desajust habilitats/ubicació. Ex: miner del carbó sense formació digital." : "Skills/location mismatch. Ex: coal miner without digital training."}</p>
+                                </div>
+                                <div className="p-4 bg-red-50 rounded-xl">
+                                    <h4 className="font-bold text-red-700">{idioma === 'val' ? "Cíclic" : "Cyclical"}</h4>
+                                    <p className="text-sm text-red-600">{idioma === 'val' ? "Per recessió econòmica. Demanda agregada baixa. Ex: crisi 2008." : "Due to recession. Low aggregate demand. Ex: 2008 crisis."}</p>
+                                </div>
+                                <div className="p-4 bg-green-50 rounded-xl">
+                                    <h4 className="font-bold text-green-700">{idioma === 'val' ? "Estacional" : "Seasonal"}</h4>
+                                    <p className="text-sm text-green-600">{idioma === 'val' ? "Segons època de l'any. Ex: turisme a l'estiu, agricultura a la collita." : "Depending on time of year. Ex: summer tourism, harvest agriculture."}</p>
+                                </div>
+                            </div>
+                        </Card>
+                        <Card title={idioma === 'val' ? "📊 Taxa d'Atur" : "📊 Unemployment Rate"}>
+                            <FormulaBox formula={idioma === 'val' ? "Taxa Atur = (Aturats / Població Activa) × 100" : "Unemployment Rate = (Unemployed / Labor Force) × 100"} />
+                            <div className="mt-4 p-3 bg-violet-50 rounded-xl">
+                                <p className="text-sm text-violet-700">{idioma === 'val' ? "💡 La NAIRU (taxa natural d'atur) és el nivell d'atur compatible amb inflació estable. A Espanya és alta (~12%) per rigideses del mercat laboral." : "💡 NAIRU (natural rate of unemployment) is the unemployment level compatible with stable inflation. In Spain it's high (~12%) due to labor market rigidities."}</p>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+                
+                {tab === 'salaris' && (
+                    <div className="space-y-6">
+                        <Card title={idioma === 'val' ? "💰 Determinació dels Salaris" : "💰 Wage Determination"}>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <ConceptBox title={idioma === 'val' ? "Teoria Productivitat Marginal" : "Marginal Productivity Theory"} color="blue">
+                                        <FormulaBox formula="W = PMgL × P" />
+                                        <p className="text-sm">{idioma === 'val' ? "El salari = valor del que produeixes addicionalment" : "Wage = value of what you additionally produce"}</p>
+                                    </ConceptBox>
+                                    <ConceptBox title={idioma === 'val' ? "Salari Mínim" : "Minimum Wage"} color="green">
+                                        <p className="text-sm">{idioma === 'val' ? "Espanya 2024: 1.134€/mes (14 pagues). Debat: protegeix o destrueix ocupació?" : "Spain 2024: €1,134/month (14 payments). Debate: protects or destroys jobs?"}</p>
+                                    </ConceptBox>
+                                </div>
+                                <div>
+                                    <h4 className="font-bold mb-2">{idioma === 'val' ? "Factors que afecten el salari:" : "Factors affecting wages:"}</h4>
+                                    <ul className="space-y-2 text-sm">
+                                        <li className="p-2 bg-gray-50 rounded">📚 {idioma === 'val' ? "Educació i formació (capital humà)" : "Education and training (human capital)"}</li>
+                                        <li className="p-2 bg-gray-50 rounded">⏰ {idioma === 'val' ? "Experiència laboral" : "Work experience"}</li>
+                                        <li className="p-2 bg-gray-50 rounded">🏭 {idioma === 'val' ? "Sector i empresa" : "Sector and company"}</li>
+                                        <li className="p-2 bg-gray-50 rounded">📍 {idioma === 'val' ? "Ubicació geogràfica" : "Geographic location"}</li>
+                                        <li className="p-2 bg-gray-50 rounded">⚠️ {idioma === 'val' ? "Risc i condicions laborals" : "Risk and working conditions"}</li>
+                                        <li className="p-2 bg-gray-50 rounded">✊ {idioma === 'val' ? "Poder negociació (sindicats)" : "Bargaining power (unions)"}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+                
+                {tab === 'sindicats' && (
+                    <Card title={idioma === 'val' ? "✊ Sindicats i Negociació Col·lectiva" : "✊ Unions and Collective Bargaining"}>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="p-4 bg-green-50 rounded-xl">
+                                <h4 className="font-bold text-green-700 mb-3">✅ {idioma === 'val' ? "Arguments a favor" : "Arguments in favor"}</h4>
+                                <ul className="space-y-2 text-sm text-green-600">
+                                    <li>• {idioma === 'val' ? "Equilibren el poder de negociació treballador-empresa" : "Balance worker-firm bargaining power"}</li>
+                                    <li>• {idioma === 'val' ? "Milloren condicions laborals i seguretat" : "Improve working conditions and safety"}</li>
+                                    <li>• {idioma === 'val' ? "Redueixen desigualtat salarial" : "Reduce wage inequality"}</li>
+                                    <li>• {idioma === 'val' ? "Veu col·lectiva: menys rotació, més productivitat" : "Collective voice: less turnover, more productivity"}</li>
+                                </ul>
+                            </div>
+                            <div className="p-4 bg-red-50 rounded-xl">
+                                <h4 className="font-bold text-red-700 mb-3">❌ {idioma === 'val' ? "Arguments en contra" : "Arguments against"}</h4>
+                                <ul className="space-y-2 text-sm text-red-600">
+                                    <li>• {idioma === 'val' ? "Poden pujar salaris per sobre de l'equilibri → atur" : "May raise wages above equilibrium → unemployment"}</li>
+                                    <li>• {idioma === 'val' ? "Rigidesa que dificulta ajustos en crisis" : "Rigidity that hinders crisis adjustments"}</li>
+                                    <li>• {idioma === 'val' ? "Insiders vs outsiders: protegeixen membres, no aturats" : "Insiders vs outsiders: protect members, not unemployed"}</li>
+                                    <li>• {idioma === 'val' ? "Poden frenar innovació i canvis" : "May slow innovation and change"}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </Card>
+                )}
+            </div>
+        );
+    };
+
+    // ========================================================================
+    // SECTION: ECONOMIA DEL BENESTAR
+    // ========================================================================
+    const EconomiaBenestar = () => {
+        const [tab, setTab] = useState('intro');
+        
+        return (
+            <div className="space-y-6">
+                <div><h1 className="text-3xl font-black text-gray-800">{idioma === 'val' ? 'Economia del Benestar' : 'Welfare Economics'}</h1></div>
+                
+                <Tabs tabs={[
+                    { id: 'intro', label: idioma === 'val' ? '📖 Introducció' : '📖 Introduction' },
+                    { id: 'pareto', label: '⚖️ Pareto' },
+                    { id: 'funcions', label: idioma === 'val' ? '📊 Funcions Socials' : '📊 Social Functions' },
+                ]} active={tab} onChange={setTab} />
+                
+                {tab === 'intro' && (
+                    <Card title={idioma === 'val' ? "⚖️ Què és l'economia del benestar?" : "⚖️ What is welfare economics?"}>
+                        <div className="bg-gradient-to-r from-teal-50 to-green-50 p-4 rounded-xl mb-4">
+                            <p className="text-teal-700">{idioma === 'val' ? "💡 L'economia del benestar intenta respondre: Quin sistema econòmic és 'millor'? Com podem avaluar si una política beneficia la societat? Quan és just redistribuir?" : "💡 Welfare economics tries to answer: Which economic system is 'better'? How can we evaluate if a policy benefits society? When is redistribution fair?"}</p>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <ConceptBox title={idioma === 'val' ? "Eficiència" : "Efficiency"} color="blue">
+                                <p className="text-sm">{idioma === 'val' ? "Maximitzar el 'pastís' total. El mercat competitiu és eficient (1r Teorema Benestar)." : "Maximize the total 'pie'. Competitive market is efficient (1st Welfare Theorem)."}</p>
+                            </ConceptBox>
+                            <ConceptBox title={idioma === 'val' ? "Equitat" : "Equity"} color="green">
+                                <p className="text-sm">{idioma === 'val' ? "Com es reparteix el pastís? Justícia distributiva. Subjectiu i polític." : "How is the pie divided? Distributive justice. Subjective and political."}</p>
+                            </ConceptBox>
+                        </div>
+                    </Card>
+                )}
+                
+                {tab === 'pareto' && (
+                    <div className="space-y-6">
+                        <Card title={idioma === 'val' ? "⚖️ Eficiència de Pareto" : "⚖️ Pareto Efficiency"}>
+                            <div className="bg-violet-50 p-4 rounded-xl mb-4">
+                                <p className="text-violet-700 font-medium">{idioma === 'val' ? "Una situació és Pareto eficient si NO es pot millorar ningú sense empitjorar algú altre." : "A situation is Pareto efficient if NO ONE can be made better off without making someone else worse off."}</p>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="p-4 bg-green-50 rounded-xl">
+                                    <h4 className="font-bold text-green-700">✅ {idioma === 'val' ? "Millora Paretiana" : "Pareto Improvement"}</h4>
+                                    <p className="text-sm text-green-600">{idioma === 'val' ? "Un canvi on algú millora i ningú empitjora. Tots estem d'acord que és bo!" : "A change where someone improves and no one gets worse. We all agree it's good!"}</p>
+                                </div>
+                                <div className="p-4 bg-amber-50 rounded-xl">
+                                    <h4 className="font-bold text-amber-700">⚠️ {idioma === 'val' ? "Limitació" : "Limitation"}</h4>
+                                    <p className="text-sm text-amber-600">{idioma === 'val' ? "Una distribució on 1 persona ho té tot pot ser Pareto eficient! No diu res sobre justícia." : "A distribution where 1 person has everything can be Pareto efficient! Says nothing about fairness."}</p>
+                                </div>
+                            </div>
+                        </Card>
+                        <Card title={idioma === 'val' ? "📜 Teoremes del Benestar" : "📜 Welfare Theorems"}>
+                            <div className="space-y-4">
+                                <div className="p-4 bg-blue-50 rounded-xl">
+                                    <h4 className="font-bold text-blue-700">{idioma === 'val' ? "1r Teorema: Eficiència" : "1st Theorem: Efficiency"}</h4>
+                                    <p className="text-sm text-blue-600">{idioma === 'val' ? "Tot equilibri competitiu és Pareto eficient (sota certes condicions: competència perfecta, no externalitats, info completa)." : "Every competitive equilibrium is Pareto efficient (under certain conditions: perfect competition, no externalities, complete info)."}</p>
+                                </div>
+                                <div className="p-4 bg-green-50 rounded-xl">
+                                    <h4 className="font-bold text-green-700">{idioma === 'val' ? "2n Teorema: Equitat" : "2nd Theorem: Equity"}</h4>
+                                    <p className="text-sm text-green-600">{idioma === 'val' ? "Qualsevol assignació Pareto eficient es pot aconseguir amb un equilibri competitiu + redistribució inicial adequada. Podem ser eficients I justos!" : "Any Pareto efficient allocation can be achieved with competitive equilibrium + adequate initial redistribution. We can be efficient AND fair!"}</p>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+                
+                {tab === 'funcions' && (
+                    <Card title={idioma === 'val' ? "📊 Funcions de Benestar Social" : "📊 Social Welfare Functions"}>
+                        <p className="text-gray-600 mb-4">{idioma === 'val' ? "Com agreguem les utilitats individuals en un 'benestar social' total?" : "How do we aggregate individual utilities into a total 'social welfare'?"}</p>
+                        <div className="grid md:grid-cols-3 gap-4">
+                            <div className="p-4 bg-blue-50 rounded-xl">
+                                <h4 className="font-bold text-blue-700">{idioma === 'val' ? "Utilitarista (Bentham)" : "Utilitarian (Bentham)"}</h4>
+                                <FormulaBox formula="W = ΣUᵢ" />
+                                <p className="text-sm text-blue-600">{idioma === 'val' ? "Suma total. El màxim bé per al màxim nombre." : "Total sum. Greatest good for greatest number."}</p>
+                            </div>
+                            <div className="p-4 bg-green-50 rounded-xl">
+                                <h4 className="font-bold text-green-700">{idioma === 'val' ? "Rawlsiana (Rawls)" : "Rawlsian (Rawls)"}</h4>
+                                <FormulaBox formula="W = min(Uᵢ)" />
+                                <p className="text-sm text-green-600">{idioma === 'val' ? "Maximitzar el benestar del més desfavorit. Vel d'ignorància." : "Maximize welfare of worst-off. Veil of ignorance."}</p>
+                            </div>
+                            <div className="p-4 bg-amber-50 rounded-xl">
+                                <h4 className="font-bold text-amber-700">{idioma === 'val' ? "Niveladora" : "Egalitarian"}</h4>
+                                <p className="text-sm text-amber-600">{idioma === 'val' ? "Busca igualtat d'utilitats. Pot requerir molta redistribució." : "Seeks equality of utilities. May require much redistribution."}</p>
+                            </div>
+                        </div>
+                    </Card>
+                )}
+            </div>
+        );
+    };
+
+    // ========================================================================
+    // SECTION: DESENVOLUPAMENT I DESIGUALTAT
+    // ========================================================================
+    const Desenvolupament = () => {
+        const [tab, setTab] = useState('intro');
+        
+        return (
+            <div className="space-y-6">
+                <div><h1 className="text-3xl font-black text-gray-800">{idioma === 'val' ? 'Desenvolupament Econòmic i Desigualtat' : 'Economic Development & Inequality'}</h1></div>
+                
+                <Tabs tabs={[
+                    { id: 'intro', label: idioma === 'val' ? '📖 Introducció' : '📖 Introduction' },
+                    { id: 'mesures', label: idioma === 'val' ? '📊 Mesures' : '📊 Measures' },
+                    { id: 'trampes', label: idioma === 'val' ? '🔒 Trampes Pobresa' : '🔒 Poverty Traps' },
+                    { id: 'ods', label: '🎯 ODS' },
+                ]} active={tab} onChange={setTab} />
+                
+                {tab === 'intro' && (
+                    <Card title={idioma === 'val' ? "📈 Creixement vs Desenvolupament" : "📈 Growth vs Development"}>
+                        <div className="bg-gradient-to-r from-lime-50 to-green-50 p-4 rounded-xl mb-4">
+                            <p className="text-lime-700">{idioma === 'val' ? "💡 Creixement és tenir més PIB. Desenvolupament és millorar la vida de les persones: salut, educació, llibertat, medi ambient. Un país pot créixer sense desenvolupar-se (petroestats) o desenvolupar-se més del que creix (Costa Rica)." : "💡 Growth is having more GDP. Development is improving people's lives: health, education, freedom, environment. A country can grow without developing (petrostates) or develop more than it grows (Costa Rica)."}</p>
+                        </div>
+                        <div className="grid md:grid-cols-3 gap-4">
+                            <div className="p-4 bg-amber-50 rounded-xl">
+                                <h4 className="font-bold text-amber-700">💰 {idioma === 'val' ? "PIB per càpita" : "GDP per capita"}</h4>
+                                <p className="text-sm text-amber-600">{idioma === 'val' ? "Mesura riquesa mitjana però no distribució ni benestar real." : "Measures average wealth but not distribution or real welfare."}</p>
+                            </div>
+                            <div className="p-4 bg-green-50 rounded-xl">
+                                <h4 className="font-bold text-green-700">📊 IDH</h4>
+                                <p className="text-sm text-green-600">{idioma === 'val' ? "Índex Desenvolupament Humà: vida llarga, educació, nivell de vida digne." : "Human Development Index: long life, education, decent standard of living."}</p>
+                            </div>
+                            <div className="p-4 bg-violet-50 rounded-xl">
+                                <h4 className="font-bold text-violet-700">😊 {idioma === 'val' ? "Felicitat" : "Happiness"}</h4>
+                                <p className="text-sm text-violet-600">{idioma === 'val' ? "World Happiness Report: més enllà dels diners (relacions, llibertat, confiança)." : "World Happiness Report: beyond money (relationships, freedom, trust)."}</p>
+                            </div>
+                        </div>
+                    </Card>
+                )}
+                
+                {tab === 'mesures' && (
+                    <div className="space-y-6">
+                        <Card title={idioma === 'val' ? "📏 Mesurant la Desigualtat" : "📏 Measuring Inequality"}>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <ConceptBox title={idioma === 'val' ? "Coeficient de Gini" : "Gini Coefficient"} color="blue">
+                                        <p className="text-sm mb-2">{idioma === 'val' ? "0 = igualtat perfecta, 1 = desigualtat màxima" : "0 = perfect equality, 1 = maximum inequality"}</p>
+                                        <div className="space-y-1 text-xs">
+                                            <p>🇸🇪 {idioma === 'val' ? "Suècia: ~0.27 (baixa)" : "Sweden: ~0.27 (low)"}</p>
+                                            <p>🇪🇸 {idioma === 'val' ? "Espanya: ~0.33 (mitjana)" : "Spain: ~0.33 (medium)"}</p>
+                                            <p>🇺🇸 {idioma === 'val' ? "EUA: ~0.39 (alta)" : "USA: ~0.39 (high)"}</p>
+                                            <p>🇿🇦 {idioma === 'val' ? "Sud-àfrica: ~0.63 (molt alta)" : "South Africa: ~0.63 (very high)"}</p>
+                                        </div>
+                                    </ConceptBox>
+                                </div>
+                                <div>
+                                    <ConceptBox title={idioma === 'val' ? "Corba de Lorenz" : "Lorenz Curve"} color="green">
+                                        <p className="text-sm">{idioma === 'val' ? "Gràfic que mostra % de renda acumulada per % de població. Com més lluny de la diagonal, més desigualtat." : "Graph showing % of income accumulated by % of population. Further from diagonal = more inequality."}</p>
+                                    </ConceptBox>
+                                    <ConceptBox title={idioma === 'val' ? "Ràtio 90/10" : "90/10 Ratio"} color="amber">
+                                        <p className="text-sm">{idioma === 'val' ? "Renda del percentil 90 dividida pel percentil 10. Fàcil d'entendre." : "Income of 90th percentile divided by 10th. Easy to understand."}</p>
+                                    </ConceptBox>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+                
+                {tab === 'trampes' && (
+                    <Card title={idioma === 'val' ? "🔒 Trampes de la Pobresa" : "🔒 Poverty Traps"}>
+                        <p className="text-gray-600 mb-4">{idioma === 'val' ? "Per què alguns països no aconsegueixen sortir de la pobresa?" : "Why can't some countries escape poverty?"}</p>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="p-4 bg-red-50 rounded-xl">
+                                <h4 className="font-bold text-red-700">🏦 {idioma === 'val' ? "Trampa Estalvi" : "Savings Trap"}</h4>
+                                <p className="text-sm text-red-600">{idioma === 'val' ? "Massa pobres per estalviar → no inversió → no creixement → segueixen pobres" : "Too poor to save → no investment → no growth → stay poor"}</p>
+                            </div>
+                            <div className="p-4 bg-amber-50 rounded-xl">
+                                <h4 className="font-bold text-amber-700">👶 {idioma === 'val' ? "Trampa Demogràfica" : "Demographic Trap"}</h4>
+                                <p className="text-sm text-amber-600">{idioma === 'val' ? "Alta natalitat → recursos dividits → menys capital humà → segueixen pobres" : "High birth rate → divided resources → less human capital → stay poor"}</p>
+                            </div>
+                            <div className="p-4 bg-violet-50 rounded-xl">
+                                <h4 className="font-bold text-violet-700">🏛️ {idioma === 'val' ? "Trampa Institucional" : "Institutional Trap"}</h4>
+                                <p className="text-sm text-violet-600">{idioma === 'val' ? "Corrupció, inseguretat jurídica → no inversió estrangera → no desenvolupament" : "Corruption, legal insecurity → no foreign investment → no development"}</p>
+                            </div>
+                        </div>
+                    </Card>
+                )}
+                
+                {tab === 'ods' && (
+                    <Card title={idioma === 'val' ? "🎯 Objectius de Desenvolupament Sostenible (ODS)" : "🎯 Sustainable Development Goals (SDGs)"}>
+                        <p className="text-gray-600 mb-4">{idioma === 'val' ? "17 objectius de l'ONU per al 2030. Els més econòmics:" : "17 UN goals for 2030. The most economic ones:"}</p>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <div className="p-3 bg-red-100 rounded-xl text-center"><span className="text-2xl">1️⃣</span><p className="text-xs font-bold">{idioma === 'val' ? "Fi pobresa" : "No poverty"}</p></div>
+                            <div className="p-3 bg-amber-100 rounded-xl text-center"><span className="text-2xl">2️⃣</span><p className="text-xs font-bold">{idioma === 'val' ? "Fam zero" : "Zero hunger"}</p></div>
+                            <div className="p-3 bg-pink-100 rounded-xl text-center"><span className="text-2xl">8️⃣</span><p className="text-xs font-bold">{idioma === 'val' ? "Treball decent" : "Decent work"}</p></div>
+                            <div className="p-3 bg-orange-100 rounded-xl text-center"><span className="text-2xl">9️⃣</span><p className="text-xs font-bold">{idioma === 'val' ? "Indústria i innovació" : "Industry & innovation"}</p></div>
+                            <div className="p-3 bg-rose-100 rounded-xl text-center"><span className="text-2xl">🔟</span><p className="text-xs font-bold">{idioma === 'val' ? "Reduir desigualtats" : "Reduce inequalities"}</p></div>
+                            <div className="p-3 bg-amber-100 rounded-xl text-center"><span className="text-2xl">1️⃣2️⃣</span><p className="text-xs font-bold">{idioma === 'val' ? "Consum responsable" : "Responsible consumption"}</p></div>
+                            <div className="p-3 bg-green-100 rounded-xl text-center"><span className="text-2xl">1️⃣3️⃣</span><p className="text-xs font-bold">{idioma === 'val' ? "Acció climàtica" : "Climate action"}</p></div>
+                            <div className="p-3 bg-blue-100 rounded-xl text-center"><span className="text-2xl">1️⃣7️⃣</span><p className="text-xs font-bold">{idioma === 'val' ? "Aliances" : "Partnerships"}</p></div>
+                        </div>
+                    </Card>
+                )}
+            </div>
+        );
+    };
+
+    // ========================================================================
+    // SECTION: ECONOMIA DEL COMPORTAMENT
+    // ========================================================================
+    const EconomiaComportament = () => {
+        const [tab, setTab] = useState('intro');
+        
+        const biaixos = [
+            { nom: idioma === 'val' ? "Aversió a la pèrdua" : "Loss aversion", desc: idioma === 'val' ? "Perdre 100€ fa més mal que el plaer de guanyar 100€" : "Losing €100 hurts more than the pleasure of gaining €100", exemple: idioma === 'val' ? "No vendre accions en pèrdues encara que sigui racional" : "Not selling stocks at a loss even when rational", color: "red" },
+            { nom: idioma === 'val' ? "Efecte ancoratge" : "Anchoring effect", desc: idioma === 'val' ? "El primer número que veus influeix les teves estimacions" : "The first number you see influences your estimates", exemple: idioma === 'val' ? "Preu 'antic' tatxat fa que el nou sembli més barat" : "Crossed-out 'old' price makes new one seem cheaper", color: "blue" },
+            { nom: idioma === 'val' ? "Biaix de confirmació" : "Confirmation bias", desc: idioma === 'val' ? "Busquem informació que confirma el que ja creiem" : "We seek information that confirms what we already believe", exemple: idioma === 'val' ? "Només llegir notícies que reforcen la nostra opinió política" : "Only reading news that reinforces our political opinion", color: "amber" },
+            { nom: idioma === 'val' ? "Present bias" : "Present bias", desc: idioma === 'val' ? "Preferim recompenses immediates sobre futures (descompte hiperbòlic)" : "We prefer immediate rewards over future ones (hyperbolic discounting)", exemple: idioma === 'val' ? "Gastar ara en lloc d'estalviar per a la jubilació" : "Spending now instead of saving for retirement", color: "pink" },
+            { nom: idioma === 'val' ? "Efecte dotació" : "Endowment effect", desc: idioma === 'val' ? "Valorem més el que ja tenim que el que no tenim" : "We value what we have more than what we don't", exemple: idioma === 'val' ? "No voler vendre un objecte pel preu que pagaríem per comprar-lo" : "Not wanting to sell an object for the price we'd pay to buy it", color: "green" },
+            { nom: idioma === 'val' ? "Herd behavior" : "Herd behavior", desc: idioma === 'val' ? "Seguim el que fan els altres sense pensar" : "We follow what others do without thinking", exemple: idioma === 'val' ? "Comprar Bitcoin perquè tothom ho fa, bombolles" : "Buying Bitcoin because everyone does, bubbles", color: "violet" },
+        ];
+        
+        return (
+            <div className="space-y-6">
+                <div><h1 className="text-3xl font-black text-gray-800">{idioma === 'val' ? 'Economia del Comportament' : 'Behavioral Economics'}</h1></div>
+                
+                <Tabs tabs={[
+                    { id: 'intro', label: idioma === 'val' ? '🧠 Introducció' : '🧠 Introduction' },
+                    { id: 'biaixos', label: idioma === 'val' ? '⚠️ Biaixos' : '⚠️ Biases' },
+                    { id: 'nudges', label: '👉 Nudges' },
+                ]} active={tab} onChange={setTab} />
+                
+                {tab === 'intro' && (
+                    <Card title={idioma === 'val' ? "🧠 Humans no som 'Homo Economicus'" : "🧠 Humans are not 'Homo Economicus'"}>
+                        <div className="bg-gradient-to-r from-purple-50 to-fuchsia-50 p-4 rounded-xl mb-4">
+                            <p className="text-purple-700">{idioma === 'val' ? "💡 L'economia tradicional assumeix que som racionals: maximitzem utilitat, processem tota la informació, tenim preferències estables. Però la psicologia mostra que cometem errors sistemàtics. L'economia del comportament (Kahneman, Thaler) estudia aquests errors." : "💡 Traditional economics assumes we're rational: maximize utility, process all information, have stable preferences. But psychology shows we make systematic errors. Behavioral economics (Kahneman, Thaler) studies these errors."}</p>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="p-4 bg-gray-50 rounded-xl">
+                                <h4 className="font-bold text-gray-700 mb-2">📐 {idioma === 'val' ? "Model Tradicional" : "Traditional Model"}</h4>
+                                <ul className="text-sm text-gray-600 space-y-1">
+                                    <li>• {idioma === 'val' ? "Racionalitat perfecta" : "Perfect rationality"}</li>
+                                    <li>• {idioma === 'val' ? "Autocontrol total" : "Complete self-control"}</li>
+                                    <li>• {idioma === 'val' ? "Egoisme pur" : "Pure selfishness"}</li>
+                                    <li>• {idioma === 'val' ? "Maximització utilitat" : "Utility maximization"}</li>
+                                </ul>
+                            </div>
+                            <div className="p-4 bg-purple-50 rounded-xl">
+                                <h4 className="font-bold text-purple-700 mb-2">🧠 {idioma === 'val' ? "Model Comportamental" : "Behavioral Model"}</h4>
+                                <ul className="text-sm text-purple-600 space-y-1">
+                                    <li>• {idioma === 'val' ? "Racionalitat limitada (bounded)" : "Bounded rationality"}</li>
+                                    <li>• {idioma === 'val' ? "Força de voluntat limitada" : "Limited willpower"}</li>
+                                    <li>• {idioma === 'val' ? "Interès propi limitat (altruisme)" : "Limited self-interest (altruism)"}</li>
+                                    <li>• {idioma === 'val' ? "Heurístiques i biaixos" : "Heuristics and biases"}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </Card>
+                )}
+                
+                {tab === 'biaixos' && (
+                    <div className="space-y-4">
+                        {biaixos.map((b, i) => (
+                            <Card key={i} className={`bg-${b.color}-50 border-l-4 border-${b.color}-500`}>
+                                <h4 className={`font-bold text-${b.color}-700 mb-1`}>{b.nom}</h4>
+                                <p className={`text-sm text-${b.color}-600 mb-2`}>{b.desc}</p>
+                                <p className="text-xs bg-white p-2 rounded">💡 <strong>{idioma === 'val' ? "Exemple:" : "Example:"}</strong> {b.exemple}</p>
+                            </Card>
+                        ))}
+                    </div>
+                )}
+                
+                {tab === 'nudges' && (
+                    <div className="space-y-6">
+                        <Card title={idioma === 'val' ? "👉 Nudges: Petits empentetes" : "👉 Nudges: Small pushes"}>
+                            <div className="bg-green-50 p-4 rounded-xl mb-4">
+                                <p className="text-green-700">{idioma === 'val' ? "💡 Un nudge és un canvi en l'arquitectura de les decisions que empeny suaument cap a millors opcions sense prohibir res (Thaler & Sunstein). Paternalisme llibertari." : "💡 A nudge is a change in choice architecture that gently pushes toward better options without banning anything (Thaler & Sunstein). Libertarian paternalism."}</p>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="p-4 bg-blue-50 rounded-xl">
+                                    <h4 className="font-bold text-blue-700">📝 {idioma === 'val' ? "Opció per defecte" : "Default option"}</h4>
+                                    <p className="text-sm text-blue-600">{idioma === 'val' ? "Inscripció automàtica a plans de pensions (opt-out vs opt-in) augmenta participació del 40% al 90%." : "Automatic enrollment in pension plans (opt-out vs opt-in) increases participation from 40% to 90%."}</p>
+                                </div>
+                                <div className="p-4 bg-green-50 rounded-xl">
+                                    <h4 className="font-bold text-green-700">📊 {idioma === 'val' ? "Feedback" : "Feedback"}</h4>
+                                    <p className="text-sm text-green-600">{idioma === 'val' ? "Mostrar consum elèctric comparat amb veïns redueix consum. Caretes somrients/tristes." : "Showing electricity consumption compared to neighbors reduces usage. Smiley/frown faces."}</p>
+                                </div>
+                                <div className="p-4 bg-amber-50 rounded-xl">
+                                    <h4 className="font-bold text-amber-700">🎯 {idioma === 'val' ? "Simplificació" : "Simplification"}</h4>
+                                    <p className="text-sm text-amber-600">{idioma === 'val' ? "Formularis més simples augmenten participació en programes socials. Menys opcions, millors decisions." : "Simpler forms increase participation in social programs. Fewer options, better decisions."}</p>
+                                </div>
+                                <div className="p-4 bg-pink-50 rounded-xl">
+                                    <h4 className="font-bold text-pink-700">👥 {idioma === 'val' ? "Normes socials" : "Social norms"}</h4>
+                                    <p className="text-sm text-pink-600">{idioma === 'val' ? "'El 90% dels teus veïns paguen els impostos a temps' → més compliment." : "'90% of your neighbors pay taxes on time' → more compliance."}</p>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    // ========================================================================
+    // SECTION: ECONOMIA ECOLÒGICA
+    // ========================================================================
+    const EconomiaEcologica = () => {
+        const [tab, setTab] = useState('intro');
+        
+        return (
+            <div className="space-y-6">
+                <div><h1 className="text-3xl font-black text-gray-800">{idioma === 'val' ? 'Economia Ecològica' : 'Ecological Economics'}</h1></div>
+                
+                <Tabs tabs={[
+                    { id: 'intro', label: idioma === 'val' ? '🌱 Introducció' : '🌱 Introduction' },
+                    { id: 'circular', label: idioma === 'val' ? '♻️ Economia Circular' : '♻️ Circular Economy' },
+                    { id: 'clima', label: idioma === 'val' ? '🌡️ Canvi Climàtic' : '🌡️ Climate Change' },
+                ]} active={tab} onChange={setTab} />
+                
+                {tab === 'intro' && (
+                    <Card title={idioma === 'val' ? "🌍 Economia i Medi Ambient" : "🌍 Economy and Environment"}>
+                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl mb-4">
+                            <p className="text-green-700">{idioma === 'val' ? "💡 L'economia tradicional tracta el medi ambient com un bé gratuït i il·limitat. Però el planeta té límits! L'economia ecològica estudia com fer compatible el creixement econòmic amb la sostenibilitat ambiental." : "💡 Traditional economics treats the environment as a free, unlimited good. But the planet has limits! Ecological economics studies how to make economic growth compatible with environmental sustainability."}</p>
+                        </div>
+                        <div className="grid md:grid-cols-3 gap-4">
+                            <ConceptBox title={idioma === 'val' ? "Externalitats Negatives" : "Negative Externalities"} color="red">
+                                <p className="text-sm">{idioma === 'val' ? "Contaminació = cost no reflectit en preus. Solució: impostos Pigou (qui contamina paga)." : "Pollution = cost not reflected in prices. Solution: Pigou taxes (polluter pays)."}</p>
+                            </ConceptBox>
+                            <ConceptBox title={idioma === 'val' ? "Béns Comuns" : "Common Goods"} color="amber">
+                                <p className="text-sm">{idioma === 'val' ? "Aire, oceans, boscos: tragèdia dels comuns. Cal regulació o drets de propietat." : "Air, oceans, forests: tragedy of the commons. Need regulation or property rights."}</p>
+                            </ConceptBox>
+                            <ConceptBox title={idioma === 'val' ? "Capital Natural" : "Natural Capital"} color="green">
+                                <p className="text-sm">{idioma === 'val' ? "Recursos naturals com a actiu. El PIB no compta la seva depreciació!" : "Natural resources as assets. GDP doesn't count their depreciation!"}</p>
+                            </ConceptBox>
+                        </div>
+                    </Card>
+                )}
+                
+                {tab === 'circular' && (
+                    <div className="space-y-6">
+                        <Card title={idioma === 'val' ? "♻️ De l'economia lineal a la circular" : "♻️ From linear to circular economy"}>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="p-4 bg-red-50 rounded-xl">
+                                    <h4 className="font-bold text-red-700 mb-2">❌ {idioma === 'val' ? "Model Lineal (actual)" : "Linear Model (current)"}</h4>
+                                    <p className="text-sm text-red-600 mb-2">{idioma === 'val' ? "Extreure → Produir → Consumir → LLENÇAR" : "Extract → Produce → Consume → THROW AWAY"}</p>
+                                    <p className="text-xs text-red-500">{idioma === 'val' ? "Insostenible: recursos finits, residus creixents, contaminació" : "Unsustainable: finite resources, growing waste, pollution"}</p>
+                                </div>
+                                <div className="p-4 bg-green-50 rounded-xl">
+                                    <h4 className="font-bold text-green-700 mb-2">✅ {idioma === 'val' ? "Model Circular (objectiu)" : "Circular Model (goal)"}</h4>
+                                    <p className="text-sm text-green-600 mb-2">{idioma === 'val' ? "Dissenyar → Produir → Usar → REUTILITZAR/RECICLAR" : "Design → Produce → Use → REUSE/RECYCLE"}</p>
+                                    <p className="text-xs text-green-500">{idioma === 'val' ? "Eliminar residus, mantenir productes en ús, regenerar natura" : "Eliminate waste, keep products in use, regenerate nature"}</p>
+                                </div>
+                            </div>
+                        </Card>
+                        <Card title={idioma === 'val' ? "🔄 Les 7 R" : "🔄 The 7 Rs"}>
+                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
+                                <div className="p-2 bg-red-100 rounded text-center"><span className="font-bold">1</span><p className="text-xs">{idioma === 'val' ? "Redissenyar" : "Redesign"}</p></div>
+                                <div className="p-2 bg-orange-100 rounded text-center"><span className="font-bold">2</span><p className="text-xs">{idioma === 'val' ? "Reduir" : "Reduce"}</p></div>
+                                <div className="p-2 bg-amber-100 rounded text-center"><span className="font-bold">3</span><p className="text-xs">{idioma === 'val' ? "Reutilitzar" : "Reuse"}</p></div>
+                                <div className="p-2 bg-lime-100 rounded text-center"><span className="font-bold">4</span><p className="text-xs">{idioma === 'val' ? "Reparar" : "Repair"}</p></div>
+                                <div className="p-2 bg-green-100 rounded text-center"><span className="font-bold">5</span><p className="text-xs">{idioma === 'val' ? "Renovar" : "Refurbish"}</p></div>
+                                <div className="p-2 bg-teal-100 rounded text-center"><span className="font-bold">6</span><p className="text-xs">{idioma === 'val' ? "Remanufacturar" : "Remanufacture"}</p></div>
+                                <div className="p-2 bg-cyan-100 rounded text-center"><span className="font-bold">7</span><p className="text-xs">{idioma === 'val' ? "Reciclar" : "Recycle"}</p></div>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+                
+                {tab === 'clima' && (
+                    <Card title={idioma === 'val' ? "🌡️ Economia del Canvi Climàtic" : "🌡️ Climate Change Economics"}>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 className="font-bold mb-3">{idioma === 'val' ? "Instruments econòmics:" : "Economic instruments:"}</h4>
+                                <div className="space-y-3">
+                                    <div className="p-3 bg-blue-50 rounded-xl">
+                                        <p className="font-bold text-blue-700 text-sm">{idioma === 'val' ? "Impost al carboni" : "Carbon tax"}</p>
+                                        <p className="text-xs text-blue-600">{idioma === 'val' ? "Preu per tona de CO₂. Espanya ~15€/t, Suècia ~120€/t. Internalitza l'externalitat." : "Price per ton of CO₂. Spain ~€15/t, Sweden ~€120/t. Internalizes externality."}</p>
+                                    </div>
+                                    <div className="p-3 bg-green-50 rounded-xl">
+                                        <p className="font-bold text-green-700 text-sm">{idioma === 'val' ? "Mercat d'emissions (ETS)" : "Emissions trading (ETS)"}</p>
+                                        <p className="text-xs text-green-600">{idioma === 'val' ? "Cap and trade: límit total + permisos comercialitzables. UE ETS: ~80€/t." : "Cap and trade: total limit + tradeable permits. EU ETS: ~€80/t."}</p>
+                                    </div>
+                                    <div className="p-3 bg-amber-50 rounded-xl">
+                                        <p className="font-bold text-amber-700 text-sm">{idioma === 'val' ? "Subvencions verdes" : "Green subsidies"}</p>
+                                        <p className="text-xs text-amber-600">{idioma === 'val' ? "Ajudes a renovables, vehicles elèctrics, eficiència energètica." : "Aid for renewables, electric vehicles, energy efficiency."}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="p-4 bg-violet-50 rounded-xl">
+                                <h4 className="font-bold text-violet-700 mb-2">{idioma === 'val' ? "El dilema econòmic:" : "The economic dilemma:"}</h4>
+                                <p className="text-sm text-violet-600 mb-3">{idioma === 'val' ? "Actuar costa ara, els beneficis són futurs i globals. Free-rider problem entre països." : "Acting costs now, benefits are future and global. Free-rider problem between countries."}</p>
+                                <div className="bg-white p-2 rounded">
+                                    <p className="text-xs"><strong>Stern Review (2006):</strong> {idioma === 'val' ? "No actuar costarà 5-20% PIB. Actuar costa 1-2% PIB. És rendible actuar!" : "Not acting will cost 5-20% GDP. Acting costs 1-2% GDP. Action pays off!"}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
+                )}
+            </div>
+        );
+    };
+
+    // ========================================================================
+    // SECTION: ECONOMIA DIGITAL
+    // ========================================================================
+    const EconomiaDigital = () => {
+        const [tab, setTab] = useState('intro');
+        
+        return (
+            <div className="space-y-6">
+                <div><h1 className="text-3xl font-black text-gray-800">{idioma === 'val' ? 'Economia Digital' : 'Digital Economy'}</h1></div>
+                
+                <Tabs tabs={[
+                    { id: 'intro', label: idioma === 'val' ? '🤖 Introducció' : '🤖 Introduction' },
+                    { id: 'plataformes', label: idioma === 'val' ? '📱 Plataformes' : '📱 Platforms' },
+                    { id: 'ia', label: idioma === 'val' ? '🧠 IA i Treball' : '🧠 AI & Work' },
+                    { id: 'crypto', label: '₿ Crypto' },
+                ]} active={tab} onChange={setTab} />
+                
+                {tab === 'intro' && (
+                    <Card title={idioma === 'val' ? "🌐 La revolució digital" : "🌐 The digital revolution"}>
+                        <div className="bg-gradient-to-r from-slate-50 to-gray-100 p-4 rounded-xl mb-4">
+                            <p className="text-slate-700">{idioma === 'val' ? "💡 La digitalització està transformant l'economia: noves formes de producció (IA), nous mercats (plataformes), nous actius (dades), nous diners (crypto). Genera oportunitats però també riscos (monopolis digitals, atur tecnològic, privacitat)." : "💡 Digitalization is transforming the economy: new forms of production (AI), new markets (platforms), new assets (data), new money (crypto). Creates opportunities but also risks (digital monopolies, technological unemployment, privacy)."}</p>
+                        </div>
+                        <div className="grid md:grid-cols-4 gap-4">
+                            <div className="p-4 bg-blue-50 rounded-xl text-center">
+                                <span className="text-3xl">📊</span>
+                                <p className="font-bold text-blue-700">Big Data</p>
+                                <p className="text-xs text-blue-600">{idioma === 'val' ? "Les dades són el nou petroli" : "Data is the new oil"}</p>
+                            </div>
+                            <div className="p-4 bg-purple-50 rounded-xl text-center">
+                                <span className="text-3xl">🤖</span>
+                                <p className="font-bold text-purple-700">IA</p>
+                                <p className="text-xs text-purple-600">{idioma === 'val' ? "Automatització intel·ligent" : "Intelligent automation"}</p>
+                            </div>
+                            <div className="p-4 bg-pink-50 rounded-xl text-center">
+                                <span className="text-3xl">📱</span>
+                                <p className="font-bold text-pink-700">{idioma === 'val' ? "Plataformes" : "Platforms"}</p>
+                                <p className="text-xs text-pink-600">Google, Amazon, Uber</p>
+                            </div>
+                            <div className="p-4 bg-amber-50 rounded-xl text-center">
+                                <span className="text-3xl">₿</span>
+                                <p className="font-bold text-amber-700">Blockchain</p>
+                                <p className="text-xs text-amber-600">{idioma === 'val' ? "Descentralització" : "Decentralization"}</p>
+                            </div>
+                        </div>
+                    </Card>
+                )}
+                
+                {tab === 'plataformes' && (
+                    <Card title={idioma === 'val' ? "📱 Economia de Plataformes" : "📱 Platform Economy"}>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 className="font-bold mb-3">{idioma === 'val' ? "Característiques:" : "Characteristics:"}</h4>
+                                <ul className="space-y-2 text-sm">
+                                    <li className="p-2 bg-blue-50 rounded">🔗 {idioma === 'val' ? "Efectes de xarxa: més usuaris → més valor (Facebook, WhatsApp)" : "Network effects: more users → more value (Facebook, WhatsApp)"}</li>
+                                    <li className="p-2 bg-green-50 rounded">📈 {idioma === 'val' ? "Winner-takes-all: tendència al monopoli natural" : "Winner-takes-all: tendency toward natural monopoly"}</li>
+                                    <li className="p-2 bg-amber-50 rounded">💰 {idioma === 'val' ? "Cost marginal ~0: escalar sense cost" : "Marginal cost ~0: scale without cost"}</li>
+                                    <li className="p-2 bg-pink-50 rounded">📊 {idioma === 'val' ? "Model freemium: gratis per usuaris, ingressos per publicitat/premium" : "Freemium model: free for users, revenue from ads/premium"}</li>
+                                </ul>
+                            </div>
+                            <div className="p-4 bg-red-50 rounded-xl">
+                                <h4 className="font-bold text-red-700 mb-3">⚠️ {idioma === 'val' ? "Problemes regulatoris:" : "Regulatory issues:"}</h4>
+                                <ul className="space-y-2 text-sm text-red-600">
+                                    <li>• {idioma === 'val' ? "Poder de mercat excessiu (antimonopoli)" : "Excessive market power (antitrust)"}</li>
+                                    <li>• {idioma === 'val' ? "Privacitat i ús de dades personals" : "Privacy and personal data use"}</li>
+                                    <li>• {idioma === 'val' ? "Evasió fiscal (on tributen?)" : "Tax evasion (where do they pay taxes?)"}</li>
+                                    <li>• {idioma === 'val' ? "Gig economy: falsos autònoms?" : "Gig economy: fake self-employed?"}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </Card>
+                )}
+                
+                {tab === 'ia' && (
+                    <Card title={idioma === 'val' ? "🧠 Intel·ligència Artificial i el Futur del Treball" : "🧠 AI and the Future of Work"}>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="p-4 bg-green-50 rounded-xl">
+                                <h4 className="font-bold text-green-700 mb-3">✅ {idioma === 'val' ? "Optimistes" : "Optimists"}</h4>
+                                <ul className="space-y-2 text-sm text-green-600">
+                                    <li>• {idioma === 'val' ? "Històricament la tecnologia crea més feines de les que destrueix" : "Historically technology creates more jobs than it destroys"}</li>
+                                    <li>• {idioma === 'val' ? "Augmentarà productivitat i salaris" : "Will increase productivity and wages"}</li>
+                                    <li>• {idioma === 'val' ? "Noves professions que no imaginem" : "New professions we can't imagine"}</li>
+                                    <li>• {idioma === 'val' ? "IA com a complement, no substitut" : "AI as complement, not substitute"}</li>
+                                </ul>
+                            </div>
+                            <div className="p-4 bg-red-50 rounded-xl">
+                                <h4 className="font-bold text-red-700 mb-3">⚠️ {idioma === 'val' ? "Pessimistes" : "Pessimists"}</h4>
+                                <ul className="space-y-2 text-sm text-red-600">
+                                    <li>• {idioma === 'val' ? "Aquesta vegada és diferent: IA pot fer tasques cognitives" : "This time is different: AI can do cognitive tasks"}</li>
+                                    <li>• {idioma === 'val' ? "Polarització: treball bo vs dolent" : "Polarization: good jobs vs bad jobs"}</li>
+                                    <li>• {idioma === 'val' ? "Transició dolorosa: qui perd feina avui?" : "Painful transition: who loses jobs today?"}</li>
+                                    <li>• {idioma === 'val' ? "Concentració riquesa en propietaris IA" : "Wealth concentration in AI owners"}</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div className="mt-4 p-3 bg-violet-50 rounded-xl">
+                            <p className="text-sm text-violet-700">{idioma === 'val' ? "💡 Solucions proposades: Renda bàsica universal, impost als robots, formació contínua, repartiment del treball, propietat col·lectiva de la IA." : "💡 Proposed solutions: Universal basic income, robot tax, lifelong learning, work sharing, collective AI ownership."}</p>
+                        </div>
+                    </Card>
+                )}
+                
+                {tab === 'crypto' && (
+                    <Card title={idioma === 'val' ? "₿ Criptomonedes i Blockchain" : "₿ Cryptocurrencies and Blockchain"}>
+                        <div className="grid md:grid-cols-3 gap-4 mb-4">
+                            <div className="p-4 bg-amber-50 rounded-xl">
+                                <h4 className="font-bold text-amber-700">₿ Bitcoin</h4>
+                                <p className="text-sm text-amber-600">{idioma === 'val' ? "Or digital, reserva de valor, límit 21M" : "Digital gold, store of value, 21M limit"}</p>
+                            </div>
+                            <div className="p-4 bg-blue-50 rounded-xl">
+                                <h4 className="font-bold text-blue-700">Ξ Ethereum</h4>
+                                <p className="text-sm text-blue-600">{idioma === 'val' ? "Smart contracts, DeFi, NFTs" : "Smart contracts, DeFi, NFTs"}</p>
+                            </div>
+                            <div className="p-4 bg-green-50 rounded-xl">
+                                <h4 className="font-bold text-green-700">💶 Stablecoins</h4>
+                                <p className="text-sm text-green-600">{idioma === 'val' ? "Ancorades a €/$, pagaments" : "Pegged to €/$, payments"}</p>
+                            </div>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-4">
+                            <div className="p-4 bg-green-50 rounded-xl">
+                                <h4 className="font-bold text-green-700 mb-2">✅ {idioma === 'val' ? "Potencial" : "Potential"}</h4>
+                                <ul className="text-sm text-green-600 space-y-1">
+                                    <li>• {idioma === 'val' ? "Inclusió financera (2B sense banc)" : "Financial inclusion (2B unbanked)"}</li>
+                                    <li>• {idioma === 'val' ? "Transferències internacionals barates" : "Cheap international transfers"}</li>
+                                    <li>• {idioma === 'val' ? "Transparència i traçabilitat" : "Transparency and traceability"}</li>
+                                </ul>
+                            </div>
+                            <div className="p-4 bg-red-50 rounded-xl">
+                                <h4 className="font-bold text-red-700 mb-2">❌ {idioma === 'val' ? "Problemes" : "Problems"}</h4>
+                                <ul className="text-sm text-red-600 space-y-1">
+                                    <li>• {idioma === 'val' ? "Volatilitat extrema (especulació)" : "Extreme volatility (speculation)"}</li>
+                                    <li>• {idioma === 'val' ? "Consum energètic (Bitcoin)" : "Energy consumption (Bitcoin)"}</li>
+                                    <li>• {idioma === 'val' ? "Blanqueig i activitats il·lícites" : "Money laundering and illicit activities"}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </Card>
+                )}
+            </div>
+        );
+    };
+
+    // ========================================================================
     // SECTION: HISTÒRIA ECONÒMICA (AMPLIADA)
     // ========================================================================
     const HistoriaEconomica = () => {
@@ -3722,6 +4493,13 @@ Lluitar  Acomodar
                 {section === 'macro' && <Macroeconomia />}
                 {section === 'monetaria' && <EconomiaMonetaria />}
                 {section === 'comerc' && <ComercInternacional />}
+                {section === 'mundial' && <EconomiaMundial />}
+                {section === 'laboral' && <EconomiaLaboral />}
+                {section === 'benestar' && <EconomiaBenestar />}
+                {section === 'desenvolupament' && <Desenvolupament />}
+                {section === 'comportament' && <EconomiaComportament />}
+                {section === 'ecologia' && <EconomiaEcologica />}
+                {section === 'digital' && <EconomiaDigital />}
                 {section === 'estadistica' && <Estadistica />}
                 {section === 'matematiques' && <Matematiques />}
                 {section === 'econometria' && <Econometria />}
@@ -3754,11 +4532,15 @@ Lluitar  Acomodar
             { id: 'macro', name: 'Macroeconomia', icon: '🌍', color: 'from-emerald-500 to-teal-500', desc: idioma === 'val' ? 'PIB, IS-LM, AD-AS, inflació, atur' : idioma === 'es' ? 'PIB, IS-LM, AD-AS, inflación, desempleo' : 'GDP, IS-LM, AD-AS, inflation, unemployment' },
             { id: 'monetaria', name: idioma === 'val' ? 'Economia Monetària' : idioma === 'es' ? 'Economía Monetaria' : 'Monetary Economics', icon: '🏛️', color: 'from-indigo-500 to-blue-500', desc: idioma === 'val' ? 'Banc Central, política monetària' : idioma === 'es' ? 'Banco Central, política monetaria' : 'Central Bank, monetary policy' },
             { id: 'comerc', name: idioma === 'val' ? 'Comerç Internacional' : idioma === 'es' ? 'Comercio Internacional' : 'International Trade', icon: '🚚', color: 'from-cyan-500 to-teal-500', desc: idioma === 'val' ? 'Avantatge comparatiu, aranzels' : idioma === 'es' ? 'Ventaja comparativa, aranceles' : 'Comparative advantage, tariffs' },
-            { id: 'estadistica', name: idioma === 'val' ? 'Estadística' : idioma === 'es' ? 'Estadística' : 'Statistics', icon: '📈', color: 'from-sky-500 to-blue-500', desc: idioma === 'val' ? 'Descriptiva, probabilitat, inferència' : idioma === 'es' ? 'Descriptiva, probabilidad, inferencia' : 'Descriptive, probability, inference' },
-            { id: 'matematiques', name: idioma === 'val' ? 'Mates Econòmiques' : idioma === 'es' ? 'Mates Económicas' : 'Economic Math', icon: '🧮', color: 'from-lime-500 to-green-500', desc: idioma === 'val' ? 'Derivades, integrals, mat. financeres' : idioma === 'es' ? 'Derivadas, integrales, mat. financieras' : 'Derivatives, integrals, financial math' },
-            { id: 'econometria', name: 'Econometria', icon: '📉', color: 'from-orange-500 to-red-500', desc: idioma === 'val' ? 'Regressió OLS, R², hipòtesis' : idioma === 'es' ? 'Regresión OLS, R², hipótesis' : 'OLS regression, R², hypothesis' },
+            { id: 'mundial', name: idioma === 'val' ? 'Economia Mundial' : idioma === 'es' ? 'Economía Mundial' : 'World Economy', icon: '🌐', color: 'from-sky-500 to-blue-500', desc: idioma === 'val' ? 'FMI, BCE, OCDE, G20, globalització' : idioma === 'es' ? 'FMI, BCE, OCDE, G20, globalización' : 'IMF, ECB, OECD, G20, globalization' },
+            { id: 'laboral', name: idioma === 'val' ? 'Economia Laboral' : idioma === 'es' ? 'Economía Laboral' : 'Labor Economics', icon: '👷', color: 'from-orange-500 to-red-500', desc: idioma === 'val' ? 'Atur, salaris, sindicats, mercat treball' : idioma === 'es' ? 'Desempleo, salarios, sindicatos' : 'Unemployment, wages, unions' },
+            { id: 'benestar', name: idioma === 'val' ? 'Economia Benestar' : idioma === 'es' ? 'Economía Bienestar' : 'Welfare Economics', icon: '⚖️', color: 'from-teal-500 to-green-500', desc: idioma === 'val' ? 'Eficiència, equitat, Pareto, funcions socials' : idioma === 'es' ? 'Eficiencia, equidad, Pareto' : 'Efficiency, equity, Pareto' },
+            { id: 'desenvolupament', name: idioma === 'val' ? 'Desenvolupament' : idioma === 'es' ? 'Desarrollo' : 'Development', icon: '📈', color: 'from-lime-500 to-green-500', desc: idioma === 'val' ? 'Pobresa, desigualtat, IDH, ODS' : idioma === 'es' ? 'Pobreza, desigualdad, IDH, ODS' : 'Poverty, inequality, HDI, SDGs' },
+            { id: 'comportament', name: idioma === 'val' ? 'Econ. Comportament' : idioma === 'es' ? 'Econ. Comportamiento' : 'Behavioral Econ.', icon: '🧠', color: 'from-purple-500 to-fuchsia-500', desc: idioma === 'val' ? 'Biaixos, heurístiques, nudges' : idioma === 'es' ? 'Sesgos, heurísticas, nudges' : 'Biases, heuristics, nudges' },
+            { id: 'ecologia', name: idioma === 'val' ? 'Economia Ecològica' : idioma === 'es' ? 'Economía Ecológica' : 'Ecological Economics', icon: '🌱', color: 'from-green-500 to-emerald-500', desc: idioma === 'val' ? 'Sostenibilitat, circular, canvi climàtic' : idioma === 'es' ? 'Sostenibilidad, circular, cambio climático' : 'Sustainability, circular, climate change' },
+            { id: 'digital', name: idioma === 'val' ? 'Economia Digital' : idioma === 'es' ? 'Economía Digital' : 'Digital Economy', icon: '🤖', color: 'from-slate-500 to-gray-600', desc: idioma === 'val' ? 'IA, Big Data, plataformes, criptomonedes' : idioma === 'es' ? 'IA, Big Data, plataformas, criptomonedas' : 'AI, Big Data, platforms, crypto' },
             { id: 'jocs', name: idioma === 'val' ? 'Teoria de Jocs' : idioma === 'es' ? 'Teoría de Juegos' : 'Game Theory', icon: '🎮', color: 'from-fuchsia-500 to-pink-500', desc: idioma === 'val' ? 'Nash, dilema presoner' : idioma === 'es' ? 'Nash, dilema prisionero' : 'Nash, prisoner dilemma' },
-            { id: 'historia', name: idioma === 'val' ? 'Història Econòmica' : idioma === 'es' ? 'Historia Económica' : 'Economic History', icon: '🕐', color: 'from-gray-500 to-slate-500', desc: idioma === 'val' ? 'Smith, Keynes, Friedman' : 'Smith, Keynes, Friedman' },
+            { id: 'historia', name: idioma === 'val' ? 'Història Econòmica' : idioma === 'es' ? 'Historia Económica' : 'Economic History', icon: '🕐', color: 'from-gray-500 to-slate-500', desc: idioma === 'val' ? 'Smith, Marx, Keynes, Friedman' : 'Smith, Marx, Keynes, Friedman' },
         ];
         
         return (
