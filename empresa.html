@@ -1654,132 +1654,599 @@ function EmpresaApp() {
         );
     };
 
-    // SECCIÓ MARKETING
+    // SECCIÓ MARKETING - COMPLETA
     const Marketing = () => {
-        const [tab, setTab] = useState('4ps');
+        const [tab, setTab] = useState('investigacio');
         
         return (
             <div className="space-y-6">
-                <SectionTitle icon="📣" title="Marketing" subtitle={t("Com vendre el teu producte", "Cómo vender tu producto", "How to sell your product")} />
+                <SectionTitle icon="📣" title="Marketing" subtitle={t("Entendre el client i satisfer les seues necessitats", "Entender al cliente y satisfacer sus necesidades", "Understanding customers and meeting their needs")} />
                 
                 <WhyImportant>
-                    {t("Pots tenir el millor producte del món, però si ningú el coneix o no el presentes bé, no el vendràs. Marketing no és 'enganyar' - és entendre què vol el client i comunicar-li com el teu producte resol el seu problema. Apple no ven telèfons, ven 'estatus' i 'simplicitat'. Nike no ven sabatilles, ven 'superació'.",
-                       "Puedes tener el mejor producto del mundo, pero si nadie lo conoce, no lo venderás. Marketing no es 'engañar' - es entender qué quiere el cliente y comunicar cómo tu producto resuelve su problema.",
-                       "You can have the best product in the world, but if no one knows about it, you won't sell it. Marketing isn't 'deceiving' - it's understanding what the customer wants and communicating how your product solves their problem.")}
+                    {t("El marketing NO és només publicitat. És TOT el procés d'entendre què vol el client, crear un producte que ho satisfaça, posar-li un preu adequat, fer-lo arribar al lloc correcte i comunicar-ho bé. Coca-Cola gasta milions en investigar què vols ABANS de crear un producte. Spotify analitza milions de dades per recomanar-te música. Entendre marketing és entendre com funciona el món comercial modern.",
+                       "El marketing NO es solo publicidad. Es TODO el proceso de entender qué quiere el cliente, crear un producto que lo satisfaga, ponerle un precio adecuado, hacerlo llegar al lugar correcto y comunicarlo bien. Entender marketing es entender cómo funciona el mundo comercial moderno.",
+                       "Marketing is NOT just advertising. It's the ENTIRE process of understanding what the customer wants, creating a product that satisfies it, pricing it right, getting it to the right place and communicating it well. Understanding marketing is understanding how the modern commercial world works.")}
                 </WhyImportant>
                 
                 <Tabs tabs={[
-                    { id: '4ps', label: '🎯 Marketing Mix (4Ps)' },
-                    { id: 'bcg', label: '📊 Matriu BCG' },
-                    { id: 'cicle', label: t('📈 Cicle de Vida', '📈 Ciclo de Vida', '📈 Life Cycle') },
+                    { id: 'investigacio', label: t('🔍 Investigació', '🔍 Investigación', '🔍 Research') },
+                    { id: 'segmentacio', label: t('👥 Segmentació', '👥 Segmentación', '👥 Segmentation') },
+                    { id: 'producte', label: '📦 Product' },
+                    { id: 'preu', label: '💰 Price' },
+                    { id: 'distribucio', label: '📍 Place' },
+                    { id: 'promocio', label: '📢 Promotion' },
+                    { id: 'digital', label: '💻 Màrqueting Digital' },
+                    { id: 'eines', label: t('📊 Eines', '📊 Herramientas', '📊 Tools') },
                 ]} active={tab} onChange={setTab} />
                 
-                {tab === '4ps' && (
-                    <Card title="Marketing Mix - Les 4 Ps" icon="🎯">
-                        <div className="grid md:grid-cols-2 gap-4">
-                            <div className="p-5 bg-blue-50 rounded-xl border-2 border-blue-200">
-                                <div className="flex items-center gap-3 mb-3"><span className="text-3xl">📦</span><h4 className="font-bold text-blue-700 text-xl">Product</h4></div>
-                                <p className="text-sm text-slate-600 mb-3">{t("Què venem exactament?", "¿Qué vendemos exactamente?", "What exactly do we sell?")}</p>
-                                <ul className="text-sm text-blue-600 space-y-1">
-                                    <li>• {t("Característiques i qualitat", "Características y calidad", "Features and quality")}</li>
-                                    <li>• {t("Disseny i packaging", "Diseño y packaging", "Design and packaging")}</li>
-                                    <li>• {t("Marca i imatge", "Marca e imagen", "Brand and image")}</li>
-                                    <li>• {t("Garantia i servei postvenda", "Garantía y servicio postventa", "Warranty and after-sales")}</li>
-                                </ul>
+                {/* INVESTIGACIÓ DE MERCATS */}
+                {tab === 'investigacio' && (
+                    <div className="space-y-6">
+                        <Card title={t("Investigació de Mercats", "Investigación de Mercados", "Market Research")} icon="🔍">
+                            <TheoryBlock color="blue">
+                                <p className="text-lg font-semibold">{t("Abans de vendre res, has de saber: QUI comprarà, QUÈ vol, QUANT pagarà, ON compra i PER QUÈ ho fa.", "Antes de vender nada, debes saber: QUIÉN comprará, QUÉ quiere, CUÁNTO pagará, DÓNDE compra y POR QUÉ lo hace.", "Before selling anything, you need to know: WHO will buy, WHAT they want, HOW MUCH they'll pay, WHERE they buy and WHY.")}</p>
+                            </TheoryBlock>
+                            
+                            <div className="grid md:grid-cols-2 gap-6 mt-6">
+                                <div className="p-5 bg-green-50 rounded-xl border-2 border-green-200">
+                                    <h4 className="font-bold text-green-700 text-lg mb-3">📗 {t("Fonts PRIMÀRIES", "Fuentes PRIMARIAS", "PRIMARY Sources")}</h4>
+                                    <p className="text-sm text-slate-600 mb-3">{t("Informació nova, recollida per nosaltres directament", "Información nueva, recogida por nosotros directamente", "New information, collected by us directly")}</p>
+                                    <div className="space-y-2">
+                                        <div className="p-2 bg-white rounded border border-green-200">
+                                            <p className="font-semibold text-green-700">📋 {t("Enquestes", "Encuestas", "Surveys")}</p>
+                                            <p className="text-xs text-slate-500">{t("Qüestionaris a moltes persones. Dades quantitatives.", "Cuestionarios a muchas personas. Datos cuantitativos.", "Questionnaires to many people. Quantitative data.")}</p>
+                                        </div>
+                                        <div className="p-2 bg-white rounded border border-green-200">
+                                            <p className="font-semibold text-green-700">🎤 {t("Entrevistes", "Entrevistas", "Interviews")}</p>
+                                            <p className="text-xs text-slate-500">{t("Converses profundes amb pocs. Dades qualitatives.", "Conversaciones profundas con pocos. Datos cualitativos.", "Deep conversations with few. Qualitative data.")}</p>
+                                        </div>
+                                        <div className="p-2 bg-white rounded border border-green-200">
+                                            <p className="font-semibold text-green-700">👥 Focus Groups</p>
+                                            <p className="text-xs text-slate-500">{t("Grups de discussió guiats. Opinions i percepcions.", "Grupos de discusión guiados. Opiniones y percepciones.", "Guided discussion groups. Opinions and perceptions.")}</p>
+                                        </div>
+                                        <div className="p-2 bg-white rounded border border-green-200">
+                                            <p className="font-semibold text-green-700">👁️ {t("Observació", "Observación", "Observation")}</p>
+                                            <p className="text-xs text-slate-500">{t("Estudiar comportaments reals dels consumidors.", "Estudiar comportamientos reales de los consumidores.", "Study actual consumer behaviors.")}</p>
+                                        </div>
+                                        <div className="p-2 bg-white rounded border border-green-200">
+                                            <p className="font-semibold text-green-700">🧪 {t("Experiments", "Experimentos", "Experiments")}</p>
+                                            <p className="text-xs text-slate-500">{t("Tests A/B, proves de producte, mercat de prova.", "Tests A/B, pruebas de producto, mercado de prueba.", "A/B tests, product tests, test markets.")}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="p-5 bg-blue-50 rounded-xl border-2 border-blue-200">
+                                    <h4 className="font-bold text-blue-700 text-lg mb-3">📘 {t("Fonts SECUNDÀRIES", "Fuentes SECUNDARIAS", "SECONDARY Sources")}</h4>
+                                    <p className="text-sm text-slate-600 mb-3">{t("Informació ja existent, recollida per altres", "Información ya existente, recogida por otros", "Existing information, collected by others")}</p>
+                                    <div className="space-y-2">
+                                        <div className="p-2 bg-white rounded border border-blue-200">
+                                            <p className="font-semibold text-blue-700">🏛️ {t("Fonts públiques", "Fuentes públicas", "Public sources")}</p>
+                                            <p className="text-xs text-slate-500">INE, Eurostat, Banc d'Espanya, cambres de comerç...</p>
+                                        </div>
+                                        <div className="p-2 bg-white rounded border border-blue-200">
+                                            <p className="font-semibold text-blue-700">📰 {t("Premsa especialitzada", "Prensa especializada", "Trade press")}</p>
+                                            <p className="text-xs text-slate-500">{t("Revistes del sector, informes d'analistes", "Revistas del sector, informes de analistas", "Industry magazines, analyst reports")}</p>
+                                        </div>
+                                        <div className="p-2 bg-white rounded border border-blue-200">
+                                            <p className="font-semibold text-blue-700">🏢 {t("Dades internes", "Datos internos", "Internal data")}</p>
+                                            <p className="text-xs text-slate-500">{t("Historial de vendes, queixes, CRM", "Historial de ventas, quejas, CRM", "Sales history, complaints, CRM")}</p>
+                                        </div>
+                                        <div className="p-2 bg-white rounded border border-blue-200">
+                                            <p className="font-semibold text-blue-700">🌐 {t("Internet i xarxes", "Internet y redes", "Internet and social")}</p>
+                                            <p className="text-xs text-slate-500">{t("Google Trends, anàlisi de xarxes socials", "Google Trends, análisis de redes sociales", "Google Trends, social media analysis")}</p>
+                                        </div>
+                                    </div>
+                                    <div className="mt-3 p-2 bg-amber-100 rounded text-xs">
+                                        <p className="font-bold text-amber-700">⚠️ {t("Avantatge: barata i ràpida", "Ventaja: barata y rápida", "Advantage: cheap and fast")}</p>
+                                        <p className="text-amber-600">{t("Desavantatge: pot estar desactualitzada o no ser específica", "Desventaja: puede estar desactualizada o no ser específica", "Disadvantage: may be outdated or not specific")}</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="p-5 bg-green-50 rounded-xl border-2 border-green-200">
-                                <div className="flex items-center gap-3 mb-3"><span className="text-3xl">💰</span><h4 className="font-bold text-green-700 text-xl">Price</h4></div>
-                                <p className="text-sm text-slate-600 mb-3">{t("A quin preu?", "¿A qué precio?", "At what price?")}</p>
-                                <ul className="text-sm text-green-600 space-y-1">
-                                    <li>• {t("Estratègia de preus", "Estrategia de precios", "Pricing strategy")}</li>
-                                    <li>• {t("Descomptes i promocions", "Descuentos y promociones", "Discounts and promotions")}</li>
-                                    <li>• {t("Formes de pagament", "Formas de pago", "Payment methods")}</li>
-                                    <li>• {t("Percepció de valor", "Percepción de valor", "Value perception")}</li>
-                                </ul>
+                        </Card>
+                        
+                        <Card title={t("Procés d'Investigació de Mercats", "Proceso de Investigación de Mercados", "Market Research Process")} icon="📋">
+                            <div className="flex flex-wrap justify-center gap-2 md:gap-4">
+                                {[
+                                    { num: 1, icon: "🎯", title: t("Definir problema", "Definir problema", "Define problem") },
+                                    { num: 2, icon: "📝", title: t("Dissenyar investigació", "Diseñar investigación", "Design research") },
+                                    { num: 3, icon: "📊", title: t("Recollir dades", "Recoger datos", "Collect data") },
+                                    { num: 4, icon: "🔬", title: t("Analitzar", "Analizar", "Analyze") },
+                                    { num: 5, icon: "📈", title: t("Conclusions", "Conclusiones", "Conclusions") },
+                                ].map((item, i) => (
+                                    <div key={i} className="flex items-center gap-2">
+                                        <div className="p-3 bg-slate-100 rounded-lg text-center min-w-[80px]">
+                                            <span className="text-xl">{item.icon}</span>
+                                            <p className="text-xs font-bold text-slate-700 mt-1">{item.num}. {item.title}</p>
+                                        </div>
+                                        {i < 4 && <span className="text-slate-400 hidden md:block">→</span>}
+                                    </div>
+                                ))}
                             </div>
-                            <div className="p-5 bg-amber-50 rounded-xl border-2 border-amber-200">
-                                <div className="flex items-center gap-3 mb-3"><span className="text-3xl">📍</span><h4 className="font-bold text-amber-700 text-xl">Place</h4></div>
-                                <p className="text-sm text-slate-600 mb-3">{t("On i com arriba al client?", "¿Dónde y cómo llega al cliente?", "Where and how does it reach the customer?")}</p>
-                                <ul className="text-sm text-amber-600 space-y-1">
-                                    <li>• {t("Canals de distribució", "Canales de distribución", "Distribution channels")}</li>
-                                    <li>• {t("Punts de venda", "Puntos de venta", "Points of sale")}</li>
-                                    <li>• {t("Logística i estoc", "Logística y stock", "Logistics and inventory")}</li>
-                                    <li>• {t("Online vs físic", "Online vs físico", "Online vs physical")}</li>
-                                </ul>
-                            </div>
-                            <div className="p-5 bg-pink-50 rounded-xl border-2 border-pink-200">
-                                <div className="flex items-center gap-3 mb-3"><span className="text-3xl">📢</span><h4 className="font-bold text-pink-700 text-xl">Promotion</h4></div>
-                                <p className="text-sm text-slate-600 mb-3">{t("Com ho comuniquem?", "¿Cómo lo comunicamos?", "How do we communicate it?")}</p>
-                                <ul className="text-sm text-pink-600 space-y-1">
-                                    <li>• {t("Publicitat", "Publicidad", "Advertising")}</li>
-                                    <li>• {t("RRPP i influencers", "RRPP e influencers", "PR and influencers")}</li>
-                                    <li>• {t("Promocions de vendes", "Promociones de ventas", "Sales promotions")}</li>
-                                    <li>• {t("Xarxes socials i màrqueting digital", "Redes sociales y marketing digital", "Social media and digital marketing")}</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </Card>
+                        </Card>
+                    </div>
                 )}
                 
-                {tab === 'bcg' && (
-                    <Card title={t("Matriu BCG (Boston Consulting Group)", "Matriz BCG", "BCG Matrix")} icon="📊">
-                        <TheoryBlock color="green">
-                            <p>{t("Eina per analitzar la cartera de productes segons la seua quota de mercat i el creixement del mercat. Ajuda a decidir on invertir recursos.", "Herramienta para analizar la cartera de productos según su cuota de mercado y el crecimiento del mercado.", "Tool to analyze product portfolio based on market share and market growth.")}</p>
-                        </TheoryBlock>
-                        <div className="grid grid-cols-2 gap-4 mt-4">
-                            <div className="p-4 bg-yellow-100 rounded-xl border-2 border-yellow-300">
-                                <span className="text-3xl">⭐</span>
-                                <h4 className="font-bold text-yellow-700 text-lg">{t("ESTRELLES", "ESTRELLAS", "STARS")}</h4>
-                                <p className="text-sm text-slate-600 mt-2">{t("Alta quota + Alt creixement", "Alta cuota + Alto crecimiento", "High share + High growth")}</p>
-                                <p className="text-xs text-yellow-700 mt-2 font-bold">{t("Invertir per mantenir lideratge", "Invertir para mantener liderazgo", "Invest to maintain leadership")}</p>
+                {/* SEGMENTACIÓ */}
+                {tab === 'segmentacio' && (
+                    <div className="space-y-6">
+                        <Card title={t("Segmentació del Mercat", "Segmentación del Mercado", "Market Segmentation")} icon="👥">
+                            <TheoryBlock color="violet">
+                                <p className="text-lg font-semibold">{t("No pots vendre a tothom igual. Has de dividir el mercat en grups amb necessitats similars i triar a quin/quins dirigir-te.", "No puedes vender a todos igual. Debes dividir el mercado en grupos con necesidades similares y elegir a cuál/cuáles dirigirte.", "You can't sell to everyone the same way. You must divide the market into groups with similar needs and choose which to target.")}</p>
+                            </TheoryBlock>
+                        </Card>
+                        
+                        <Card title={t("Criteris de Segmentació", "Criterios de Segmentación", "Segmentation Criteria")} icon="📋">
+                            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                                    <h4 className="font-bold text-blue-700 text-lg">🧑 {t("Demogràfics", "Demográficos", "Demographic")}</h4>
+                                    <ul className="text-sm text-slate-600 mt-2 space-y-1">
+                                        <li>• {t("Edat", "Edad", "Age")}</li>
+                                        <li>• {t("Sexe", "Sexo", "Gender")}</li>
+                                        <li>• {t("Renda/Ingressos", "Renta/Ingresos", "Income")}</li>
+                                        <li>• {t("Educació", "Educación", "Education")}</li>
+                                        <li>• {t("Ocupació", "Ocupación", "Occupation")}</li>
+                                        <li>• {t("Estat civil", "Estado civil", "Marital status")}</li>
+                                        <li>• {t("Mida família", "Tamaño familia", "Family size")}</li>
+                                    </ul>
+                                    <p className="text-xs text-blue-600 mt-2 font-bold">📌 Ex: Pampers → famílies amb nadons</p>
+                                </div>
+                                <div className="p-4 bg-green-50 rounded-xl border border-green-200">
+                                    <h4 className="font-bold text-green-700 text-lg">🌍 {t("Geogràfics", "Geográficos", "Geographic")}</h4>
+                                    <ul className="text-sm text-slate-600 mt-2 space-y-1">
+                                        <li>• {t("País/Regió", "País/Región", "Country/Region")}</li>
+                                        <li>• {t("Clima", "Clima", "Climate")}</li>
+                                        <li>• {t("Urbà/Rural", "Urbano/Rural", "Urban/Rural")}</li>
+                                        <li>• {t("Densitat població", "Densidad población", "Population density")}</li>
+                                    </ul>
+                                    <p className="text-xs text-green-600 mt-2 font-bold">📌 Ex: Roba d'hivern → zones fredes</p>
+                                </div>
+                                <div className="p-4 bg-pink-50 rounded-xl border border-pink-200">
+                                    <h4 className="font-bold text-pink-700 text-lg">🧠 {t("Psicogràfics", "Psicográficos", "Psychographic")}</h4>
+                                    <ul className="text-sm text-slate-600 mt-2 space-y-1">
+                                        <li>• {t("Personalitat", "Personalidad", "Personality")}</li>
+                                        <li>• {t("Estil de vida", "Estilo de vida", "Lifestyle")}</li>
+                                        <li>• {t("Valors", "Valores", "Values")}</li>
+                                        <li>• {t("Interessos", "Intereses", "Interests")}</li>
+                                        <li>• {t("Opinions", "Opiniones", "Opinions")}</li>
+                                    </ul>
+                                    <p className="text-xs text-pink-600 mt-2 font-bold">📌 Ex: Tesla → ecologistes amb estatus</p>
+                                </div>
+                                <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
+                                    <h4 className="font-bold text-amber-700 text-lg">🛒 {t("Conductuals", "Conductuales", "Behavioral")}</h4>
+                                    <ul className="text-sm text-slate-600 mt-2 space-y-1">
+                                        <li>• {t("Freqüència de compra", "Frecuencia de compra", "Purchase frequency")}</li>
+                                        <li>• {t("Lleialtat marca", "Lealtad marca", "Brand loyalty")}</li>
+                                        <li>• {t("Benefici buscat", "Beneficio buscado", "Benefit sought")}</li>
+                                        <li>• {t("Ocasió d'ús", "Ocasión de uso", "Usage occasion")}</li>
+                                        <li>• {t("Sensibilitat al preu", "Sensibilidad al precio", "Price sensitivity")}</li>
+                                    </ul>
+                                    <p className="text-xs text-amber-600 mt-2 font-bold">📌 Ex: Programes de fidelització</p>
+                                </div>
                             </div>
-                            <div className="p-4 bg-purple-100 rounded-xl border-2 border-purple-300">
-                                <span className="text-3xl">❓</span>
-                                <h4 className="font-bold text-purple-700 text-lg">{t("INTERROGANTS", "INTERROGANTES", "QUESTION MARKS")}</h4>
-                                <p className="text-sm text-slate-600 mt-2">{t("Baixa quota + Alt creixement", "Baja cuota + Alto crecimiento", "Low share + High growth")}</p>
-                                <p className="text-xs text-purple-700 mt-2 font-bold">{t("Decidir: invertir fort o abandonar", "Decidir: invertir fuerte o abandonar", "Decide: invest heavily or abandon")}</p>
+                        </Card>
+                        
+                        <Card title={t("Estratègies de Segmentació", "Estrategias de Segmentación", "Segmentation Strategies")} icon="🎯">
+                            <div className="grid md:grid-cols-3 gap-4">
+                                <TheoryBlock title={t("Indiferenciada (Massiva)", "Indiferenciada (Masiva)", "Undifferentiated (Mass)")} color="slate">
+                                    <p>{t("Un sol producte per a tot el mercat. Ignora diferències entre segments.", "Un solo producto para todo el mercado. Ignora diferencias entre segmentos.", "One product for the whole market. Ignores segment differences.")}</p>
+                                    <p className="mt-2 font-bold text-green-600">✅ {t("Economies d'escala", "Economías de escala", "Economies of scale")}</p>
+                                    <p className="font-bold text-red-600">❌ {t("Vulnerable a competidors especialitzats", "Vulnerable a competidores especializados", "Vulnerable to specialized competitors")}</p>
+                                    <p className="text-xs mt-2">📌 Ex: {t("Sal, sucre", "Sal, azúcar", "Salt, sugar")}</p>
+                                </TheoryBlock>
+                                <TheoryBlock title={t("Diferenciada", "Diferenciada", "Differentiated")} color="blue">
+                                    <p>{t("Productes diferents per a cada segment. Adaptes l'oferta.", "Productos diferentes para cada segmento. Adaptas la oferta.", "Different products for each segment. You adapt the offer.")}</p>
+                                    <p className="mt-2 font-bold text-green-600">✅ {t("Major satisfacció, més vendes", "Mayor satisfacción, más ventas", "Higher satisfaction, more sales")}</p>
+                                    <p className="font-bold text-red-600">❌ {t("Costós (múltiples campanyes)", "Costoso (múltiples campañas)", "Expensive (multiple campaigns)")}</p>
+                                    <p className="text-xs mt-2">📌 Ex: Inditex (Zara, Massimo Dutti, Bershka...)</p>
+                                </TheoryBlock>
+                                <TheoryBlock title={t("Concentrada (Nínxol)", "Concentrada (Nicho)", "Concentrated (Niche)")} color="green">
+                                    <p>{t("Tot l'esforç en un sol segment. Especialització màxima.", "Todo el esfuerzo en un solo segmento. Especialización máxima.", "All effort on one segment. Maximum specialization.")}</p>
+                                    <p className="mt-2 font-bold text-green-600">✅ {t("Expert, fidelització", "Experto, fidelización", "Expert, loyalty")}</p>
+                                    <p className="font-bold text-red-600">❌ {t("Risc si el segment desapareix", "Riesgo si el segmento desaparece", "Risk if segment disappears")}</p>
+                                    <p className="text-xs mt-2">📌 Ex: Ferrari, Rolex, Lush</p>
+                                </TheoryBlock>
                             </div>
-                            <div className="p-4 bg-green-100 rounded-xl border-2 border-green-300">
-                                <span className="text-3xl">🐄</span>
-                                <h4 className="font-bold text-green-700 text-lg">{t("VAQUES", "VACAS", "CASH COWS")}</h4>
-                                <p className="text-sm text-slate-600 mt-2">{t("Alta quota + Baix creixement", "Alta cuota + Bajo crecimiento", "High share + Low growth")}</p>
-                                <p className="text-xs text-green-700 mt-2 font-bold">{t("'Munyir' per finançar altres", "Ordeñar para financiar otros", "'Milk' to finance others")}</p>
+                        </Card>
+                        
+                        <Card title={t("Posicionament", "Posicionamiento", "Positioning")} icon="🎯">
+                            <TheoryBlock color="amber">
+                                <p className="text-lg font-semibold">{t("Com vols que el client et perceba en comparació amb la competència? Quin lloc ocupes a la seua ment?", "¿Cómo quieres que el cliente te perciba en comparación con la competencia? ¿Qué lugar ocupas en su mente?", "How do you want the customer to perceive you compared to competition? What place do you occupy in their mind?")}</p>
+                            </TheoryBlock>
+                            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
+                                <div className="p-3 bg-slate-50 rounded-lg text-center">
+                                    <p className="font-bold text-slate-700">{t("Per atribut", "Por atributo", "By attribute")}</p>
+                                    <p className="text-xs text-slate-500">Volvo = Seguretat</p>
+                                </div>
+                                <div className="p-3 bg-slate-50 rounded-lg text-center">
+                                    <p className="font-bold text-slate-700">{t("Per preu/qualitat", "Por precio/calidad", "By price/quality")}</p>
+                                    <p className="text-xs text-slate-500">Rolex = Luxe</p>
+                                </div>
+                                <div className="p-3 bg-slate-50 rounded-lg text-center">
+                                    <p className="font-bold text-slate-700">{t("Per ús", "Por uso", "By use")}</p>
+                                    <p className="text-xs text-slate-500">Red Bull = Energia</p>
+                                </div>
+                                <div className="p-3 bg-slate-50 rounded-lg text-center">
+                                    <p className="font-bold text-slate-700">{t("Per competidor", "Por competidor", "By competitor")}</p>
+                                    <p className="text-xs text-slate-500">Pepsi vs Coca-Cola</p>
+                                </div>
                             </div>
-                            <div className="p-4 bg-slate-200 rounded-xl border-2 border-slate-400">
-                                <span className="text-3xl">🐕</span>
-                                <h4 className="font-bold text-slate-700 text-lg">{t("GOSSOS", "PERROS", "DOGS")}</h4>
-                                <p className="text-sm text-slate-600 mt-2">{t("Baixa quota + Baix creixement", "Baja cuota + Bajo crecimiento", "Low share + Low growth")}</p>
-                                <p className="text-xs text-slate-700 mt-2 font-bold">{t("Eliminar o reposicionar", "Eliminar o reposicionar", "Eliminate or reposition")}</p>
-                            </div>
-                        </div>
-                    </Card>
+                        </Card>
+                    </div>
                 )}
                 
-                {tab === 'cicle' && (
-                    <Card title={t("Cicle de Vida del Producte", "Ciclo de Vida del Producto", "Product Life Cycle")} icon="📈">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                            <div className="p-4 bg-blue-50 rounded-xl text-center">
-                                <span className="text-3xl">🚀</span>
-                                <h4 className="font-bold text-blue-700 mt-2">{t("Introducció", "Introducción", "Introduction")}</h4>
-                                <p className="text-xs text-slate-600 mt-2">{t("Vendes baixes, alts costos de màrqueting, pèrdues", "Ventas bajas, altos costes de marketing, pérdidas", "Low sales, high marketing costs, losses")}</p>
+                {/* PRODUCTE */}
+                {tab === 'producte' && (
+                    <div className="space-y-6">
+                        <Card title={t("Política de Producte", "Política de Producto", "Product Policy")} icon="📦">
+                            <div className="p-5 bg-blue-50 rounded-xl border-2 border-blue-200 mb-6">
+                                <h4 className="font-bold text-blue-700 text-xl mb-3">{t("Els 3 Nivells del Producte", "Los 3 Niveles del Producto", "The 3 Product Levels")}</h4>
+                                <div className="grid md:grid-cols-3 gap-4">
+                                    <div className="p-3 bg-white rounded-lg text-center">
+                                        <span className="text-2xl">💡</span>
+                                        <p className="font-bold text-blue-700">{t("Producte BÀSIC", "Producto BÁSICO", "CORE Product")}</p>
+                                        <p className="text-xs text-slate-600">{t("El benefici que realment compres", "El beneficio que realmente compras", "The benefit you actually buy")}</p>
+                                        <p className="text-xs text-blue-600 mt-1">Ex: Hotel = Descans</p>
+                                    </div>
+                                    <div className="p-3 bg-white rounded-lg text-center">
+                                        <span className="text-2xl">📦</span>
+                                        <p className="font-bold text-blue-700">{t("Producte REAL", "Producto REAL", "ACTUAL Product")}</p>
+                                        <p className="text-xs text-slate-600">{t("Característiques tangibles", "Características tangibles", "Tangible features")}</p>
+                                        <p className="text-xs text-blue-600 mt-1">Ex: Habitació, llit, bany...</p>
+                                    </div>
+                                    <div className="p-3 bg-white rounded-lg text-center">
+                                        <span className="text-2xl">⭐</span>
+                                        <p className="font-bold text-blue-700">{t("Producte AUGMENTAT", "Producto AUMENTADO", "AUGMENTED Product")}</p>
+                                        <p className="text-xs text-slate-600">{t("Serveis addicionals", "Servicios adicionales", "Additional services")}</p>
+                                        <p className="text-xs text-blue-600 mt-1">Ex: Wi-Fi, esmorzar, spa...</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="p-4 bg-green-50 rounded-xl text-center">
-                                <span className="text-3xl">📈</span>
-                                <h4 className="font-bold text-green-700 mt-2">{t("Creixement", "Crecimiento", "Growth")}</h4>
-                                <p className="text-xs text-slate-600 mt-2">{t("Vendes augmenten ràpid, primers beneficis, entren competidors", "Ventas aumentan rápido, primeros beneficios, entran competidores", "Sales rise fast, first profits, competitors enter")}</p>
+                            
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <TheoryBlock title={t("La Marca (Branding)", "La Marca (Branding)", "Branding")} color="pink">
+                                    <p>{t("Nom, logotip, eslògan que identifica el producte i el diferencia. La marca ÉS el valor.", "Nombre, logotipo, eslogan que identifica el producto y lo diferencia. La marca ES el valor.", "Name, logo, slogan that identifies and differentiates the product. The brand IS the value.")}</p>
+                                    <ul className="mt-2 space-y-1 text-sm">
+                                        <li>• <strong>{t("Marca única:", "Marca única:", "Single brand:")}</strong> Apple</li>
+                                        <li>• <strong>{t("Marques múltiples:", "Marcas múltiples:", "Multiple brands:")}</strong> P&G (Ariel, Fairy...)</li>
+                                        <li>• <strong>{t("Marca blanca:", "Marca blanca:", "Private label:")}</strong> Hacendado</li>
+                                    </ul>
+                                </TheoryBlock>
+                                <TheoryBlock title="Packaging" color="amber">
+                                    <p>{t("L'envàs no només protegeix, també VENT. És el 'venedor silenciós'.", "El envase no solo protege, también VENDE. Es el 'vendedor silencioso'.", "Packaging doesn't just protect, it SELLS. It's the 'silent salesman'.")}</p>
+                                    <ul className="mt-2 space-y-1 text-sm">
+                                        <li>• {t("Protecció del producte", "Protección del producto", "Product protection")}</li>
+                                        <li>• {t("Informació (ingredients, ús)", "Información (ingredientes, uso)", "Information (ingredients, use)")}</li>
+                                        <li>• {t("Atracció visual", "Atracción visual", "Visual attraction")}</li>
+                                        <li>• {t("Diferenciació", "Diferenciación", "Differentiation")}</li>
+                                    </ul>
+                                </TheoryBlock>
                             </div>
-                            <div className="p-4 bg-amber-50 rounded-xl text-center">
-                                <span className="text-3xl">⏸️</span>
-                                <h4 className="font-bold text-amber-700 mt-2">{t("Maduresa", "Madurez", "Maturity")}</h4>
-                                <p className="text-xs text-slate-600 mt-2">{t("Vendes estables, màxim benefici, molta competència", "Ventas estables, máximo beneficio, mucha competencia", "Stable sales, max profit, high competition")}</p>
+                        </Card>
+                    </div>
+                )}
+                
+                {/* PREU */}
+                {tab === 'preu' && (
+                    <div className="space-y-6">
+                        <Card title={t("Política de Preus", "Política de Precios", "Pricing Policy")} icon="💰">
+                            <TheoryBlock color="green">
+                                <p className="text-lg font-semibold">{t("El preu NO és només cobrir costos. És una DECISIÓ ESTRATÈGICA que afecta la percepció del producte.", "El precio NO es solo cubrir costes. Es una DECISIÓN ESTRATÉGICA que afecta la percepción del producto.", "Price is NOT just covering costs. It's a STRATEGIC DECISION that affects product perception.")}</p>
+                            </TheoryBlock>
+                        </Card>
+                        
+                        <Card title={t("Mètodes de Fixació de Preus", "Métodos de Fijación de Precios", "Pricing Methods")} icon="🧮">
+                            <div className="grid md:grid-cols-3 gap-4">
+                                <TheoryBlock title={t("Basat en COSTOS", "Basado en COSTES", "COST-based")} color="blue">
+                                    <p>{t("Calcules el cost i afegeixes un marge de benefici.", "Calculas el coste y añades un margen de beneficio.", "Calculate cost and add a profit margin.")}</p>
+                                    <FormulaBox formula="Preu = Cost + Marge" />
+                                    <p className="text-xs">✅ {t("Simple", "Simple", "Simple")}</p>
+                                    <p className="text-xs">❌ {t("Ignora competència i demanda", "Ignora competencia y demanda", "Ignores competition and demand")}</p>
+                                </TheoryBlock>
+                                <TheoryBlock title={t("Basat en COMPETÈNCIA", "Basado en COMPETENCIA", "COMPETITION-based")} color="amber">
+                                    <p>{t("Mires què cobren els altres i te posiciones.", "Miras qué cobran los otros y te posicionas.", "Look at what others charge and position yourself.")}</p>
+                                    <ul className="mt-2 text-sm">
+                                        <li>• {t("Per sobre (si ets millor)", "Por encima (si eres mejor)", "Above (if you're better)")}</li>
+                                        <li>• {t("Igual (seguir líder)", "Igual (seguir líder)", "Same (follow leader)")}</li>
+                                        <li>• {t("Per sota (atacar)", "Por debajo (atacar)", "Below (attack)")}</li>
+                                    </ul>
+                                </TheoryBlock>
+                                <TheoryBlock title={t("Basat en VALOR", "Basado en VALOR", "VALUE-based")} color="green">
+                                    <p>{t("El preu depèn de quant VALORA el client el producte.", "El precio depende de cuánto VALORA el cliente el producto.", "Price depends on how much the customer VALUES the product.")}</p>
+                                    <p className="mt-2 text-sm font-bold">{t("El mètode més rendible si crees valor real", "El método más rentable si creas valor real", "Most profitable if you create real value")}</p>
+                                    <p className="text-xs mt-1">📌 Ex: Apple cobra més perquè el client paga per l'experiència</p>
+                                </TheoryBlock>
                             </div>
-                            <div className="p-4 bg-red-50 rounded-xl text-center">
-                                <span className="text-3xl">📉</span>
-                                <h4 className="font-bold text-red-700 mt-2">{t("Declivi", "Declive", "Decline")}</h4>
-                                <p className="text-xs text-slate-600 mt-2">{t("Vendes cauen, beneficis baixen, decidir: relançar o retirar", "Ventas caen, beneficios bajan, decidir: relanzar o retirar", "Sales fall, profits drop, decide: relaunch or retire")}</p>
+                        </Card>
+                        
+                        <Card title={t("Estratègies de Preus", "Estrategias de Precios", "Pricing Strategies")} icon="🎯">
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <div className="p-4 bg-green-50 rounded-xl border border-green-200">
+                                    <h4 className="font-bold text-green-700">📉 {t("Penetració", "Penetración", "Penetration")}</h4>
+                                    <p className="text-sm text-slate-600 mt-2">{t("Preu BAIX per entrar al mercat ràpid i guanyar quota.", "Precio BAJO para entrar al mercado rápido y ganar cuota.", "LOW price to enter market fast and gain share.")}</p>
+                                    <p className="text-xs text-green-600 mt-2">📌 Ex: Netflix als inicis, Xiaomi</p>
+                                </div>
+                                <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                                    <h4 className="font-bold text-blue-700">📈 {t("Desnatament", "Descremado", "Skimming")}</h4>
+                                    <p className="text-sm text-slate-600 mt-2">{t("Preu ALT al principi (clients que paguen més), després baixa.", "Precio ALTO al principio (clientes que pagan más), después baja.", "HIGH price at first (customers who pay more), then lower.")}</p>
+                                    <p className="text-xs text-blue-600 mt-2">📌 Ex: iPhone nou, consoles de videojocs</p>
+                                </div>
+                                <div className="p-4 bg-pink-50 rounded-xl border border-pink-200">
+                                    <h4 className="font-bold text-pink-700">🧠 {t("Psicològics", "Psicológicos", "Psychological")}</h4>
+                                    <p className="text-sm text-slate-600 mt-2">{t("Aprofitar com el cervell percep els preus.", "Aprovechar cómo el cerebro percibe los precios.", "Leverage how the brain perceives prices.")}</p>
+                                    <p className="text-xs text-pink-600 mt-2">📌 Ex: 9,99€ en lloc de 10€</p>
+                                </div>
+                                <div className="p-4 bg-violet-50 rounded-xl border border-violet-200">
+                                    <h4 className="font-bold text-violet-700">🎁 {t("Per lots (bundle)", "Por lotes (bundle)", "Bundling")}</h4>
+                                    <p className="text-sm text-slate-600 mt-2">{t("Vendre diversos productes junts a preu reduït.", "Vender varios productos juntos a precio reducido.", "Sell multiple products together at reduced price.")}</p>
+                                    <p className="text-xs text-violet-600 mt-2">📌 Ex: Menú de McDonald's, Office 365</p>
+                                </div>
+                                <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
+                                    <h4 className="font-bold text-amber-700">🆓 Freemium</h4>
+                                    <p className="text-sm text-slate-600 mt-2">{t("Bàsic gratuït, premium de pagament.", "Básico gratuito, premium de pago.", "Basic free, premium paid.")}</p>
+                                    <p className="text-xs text-amber-600 mt-2">📌 Ex: Spotify, LinkedIn, Dropbox</p>
+                                </div>
+                                <div className="p-4 bg-red-50 rounded-xl border border-red-200">
+                                    <h4 className="font-bold text-red-700">⚡ {t("Dinàmics", "Dinámicos", "Dynamic")}</h4>
+                                    <p className="text-sm text-slate-600 mt-2">{t("El preu canvia segons demanda, moment, client...", "El precio cambia según demanda, momento, cliente...", "Price changes based on demand, time, customer...")}</p>
+                                    <p className="text-xs text-red-600 mt-2">📌 Ex: Uber, vols d'avió, Amazon</p>
+                                </div>
                             </div>
-                        </div>
-                    </Card>
+                        </Card>
+                    </div>
+                )}
+                
+                {/* DISTRIBUCIÓ */}
+                {tab === 'distribucio' && (
+                    <div className="space-y-6">
+                        <Card title={t("Política de Distribució (Place)", "Política de Distribución (Place)", "Distribution Policy (Place)")} icon="📍">
+                            <TheoryBlock color="amber">
+                                <p className="text-lg font-semibold">{t("Com fas arribar el producte des de la fàbrica fins al client? Per quins 'camins' passa?", "¿Cómo haces llegar el producto desde la fábrica hasta el cliente? ¿Por qué 'caminos' pasa?", "How do you get the product from factory to customer? What 'paths' does it take?")}</p>
+                            </TheoryBlock>
+                        </Card>
+                        
+                        <Card title={t("Canals de Distribució", "Canales de Distribución", "Distribution Channels")} icon="🛤️">
+                            <div className="space-y-4">
+                                <div className="p-4 bg-green-50 rounded-xl border border-green-200">
+                                    <h4 className="font-bold text-green-700">{t("Canal DIRECTE (nivell 0)", "Canal DIRECTO (nivel 0)", "DIRECT Channel (level 0)")}</h4>
+                                    <div className="flex items-center gap-4 mt-2 text-sm">
+                                        <span className="p-2 bg-green-200 rounded">🏭 {t("Fabricant", "Fabricante", "Manufacturer")}</span>
+                                        <span>→</span>
+                                        <span className="p-2 bg-green-200 rounded">👤 {t("Consumidor", "Consumidor", "Consumer")}</span>
+                                    </div>
+                                    <p className="text-xs text-green-600 mt-2">📌 Ex: Apple Store, Tesla, venda online directa</p>
+                                </div>
+                                <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                                    <h4 className="font-bold text-blue-700">{t("Canal CURT (nivell 1)", "Canal CORTO (nivel 1)", "SHORT Channel (level 1)")}</h4>
+                                    <div className="flex items-center gap-4 mt-2 text-sm">
+                                        <span className="p-2 bg-blue-200 rounded">🏭 {t("Fabricant", "Fabricante", "Manufacturer")}</span>
+                                        <span>→</span>
+                                        <span className="p-2 bg-blue-200 rounded">🏪 {t("Minorista", "Minorista", "Retailer")}</span>
+                                        <span>→</span>
+                                        <span className="p-2 bg-blue-200 rounded">👤 {t("Consumidor", "Consumidor", "Consumer")}</span>
+                                    </div>
+                                    <p className="text-xs text-blue-600 mt-2">📌 Ex: Zara, Mercadona (productes propis)</p>
+                                </div>
+                                <div className="p-4 bg-violet-50 rounded-xl border border-violet-200">
+                                    <h4 className="font-bold text-violet-700">{t("Canal LLARG (nivell 2+)", "Canal LARGO (nivel 2+)", "LONG Channel (level 2+)")}</h4>
+                                    <div className="flex items-center gap-2 md:gap-4 mt-2 text-sm flex-wrap">
+                                        <span className="p-2 bg-violet-200 rounded">🏭 {t("Fabricant", "Fabricante", "Manufacturer")}</span>
+                                        <span>→</span>
+                                        <span className="p-2 bg-violet-200 rounded">📦 {t("Majorista", "Mayorista", "Wholesaler")}</span>
+                                        <span>→</span>
+                                        <span className="p-2 bg-violet-200 rounded">🏪 {t("Minorista", "Minorista", "Retailer")}</span>
+                                        <span>→</span>
+                                        <span className="p-2 bg-violet-200 rounded">👤 {t("Consumidor", "Consumidor", "Consumer")}</span>
+                                    </div>
+                                    <p className="text-xs text-violet-600 mt-2">📌 Ex: Productes alimentaris tradicionals</p>
+                                </div>
+                            </div>
+                        </Card>
+                        
+                        <Card title={t("Estratègies de Distribució", "Estrategias de Distribución", "Distribution Strategies")} icon="🎯">
+                            <div className="grid md:grid-cols-3 gap-4">
+                                <TheoryBlock title={t("Intensiva", "Intensiva", "Intensive")} color="blue">
+                                    <p>{t("El producte ha d'estar EN TOTS els punts de venda possibles.", "El producto debe estar EN TODOS los puntos de venta posibles.", "Product must be in ALL possible points of sale.")}</p>
+                                    <p className="mt-2 text-sm font-bold">📌 {t("Per a productes de compra freqüent", "Para productos de compra frecuente", "For frequently purchased products")}</p>
+                                    <p className="text-xs">Ex: Coca-Cola, xiclets, llet</p>
+                                </TheoryBlock>
+                                <TheoryBlock title={t("Selectiva", "Selectiva", "Selective")} color="green">
+                                    <p>{t("Només en ALGUNS punts de venda escollits.", "Solo en ALGUNOS puntos de venta escogidos.", "Only in SOME selected points of sale.")}</p>
+                                    <p className="mt-2 text-sm font-bold">📌 {t("Per a productes de comparació", "Para productos de comparación", "For comparison products")}</p>
+                                    <p className="text-xs">Ex: Electrodomèstics, roba de marca</p>
+                                </TheoryBlock>
+                                <TheoryBlock title={t("Exclusiva", "Exclusiva", "Exclusive")} color="pink">
+                                    <p>{t("UN SOL distribuïdor per zona. Control màxim.", "UN SOLO distribuidor por zona. Control máximo.", "ONE distributor per area. Maximum control.")}</p>
+                                    <p className="mt-2 text-sm font-bold">📌 {t("Per a productes de luxe o especialitzats", "Para productos de lujo o especializados", "For luxury or specialized products")}</p>
+                                    <p className="text-xs">Ex: Ferrari, Rolex, franquícies</p>
+                                </TheoryBlock>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+                
+                {/* PROMOCIÓ */}
+                {tab === 'promocio' && (
+                    <div className="space-y-6">
+                        <Card title={t("Política de Comunicació (Promotion)", "Política de Comunicación (Promotion)", "Communication Policy (Promotion)")} icon="📢">
+                            <TheoryBlock color="pink">
+                                <p className="text-lg font-semibold">{t("El mix de comunicació són TOTES les formes de dir al client que existeixes i per què t'ha de comprar.", "El mix de comunicación son TODAS las formas de decir al cliente que existes y por qué debe comprarte.", "The communication mix is ALL ways of telling customers you exist and why they should buy from you.")}</p>
+                            </TheoryBlock>
+                        </Card>
+                        
+                        <Card title={t("Eines de Comunicació", "Herramientas de Comunicación", "Communication Tools")} icon="🛠️">
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="p-5 bg-blue-50 rounded-xl border-2 border-blue-200">
+                                    <h4 className="font-bold text-blue-700 text-lg mb-3">📺 {t("PUBLICITAT", "PUBLICIDAD", "ADVERTISING")}</h4>
+                                    <p className="text-sm text-slate-600 mb-2">{t("Comunicació massiva, pagada, impersonal", "Comunicación masiva, pagada, impersonal", "Mass, paid, impersonal communication")}</p>
+                                    <div className="space-y-1 text-sm">
+                                        <p>• TV, ràdio, premsa</p>
+                                        <p>• {t("Tanques publicitàries", "Vallas publicitarias", "Billboards")}</p>
+                                        <p>• {t("Publicitat online (banners, vídeos)", "Publicidad online (banners, vídeos)", "Online ads (banners, videos)")}</p>
+                                    </div>
+                                    <p className="text-xs text-blue-600 mt-2">✅ {t("Abast massiu", "Alcance masivo", "Mass reach")} | ❌ {t("Cara, impersonal", "Cara, impersonal", "Expensive, impersonal")}</p>
+                                </div>
+                                <div className="p-5 bg-green-50 rounded-xl border-2 border-green-200">
+                                    <h4 className="font-bold text-green-700 text-lg mb-3">🤝 {t("VENDA PERSONAL", "VENTA PERSONAL", "PERSONAL SELLING")}</h4>
+                                    <p className="text-sm text-slate-600 mb-2">{t("Comunicació directa, cara a cara", "Comunicación directa, cara a cara", "Direct, face-to-face communication")}</p>
+                                    <div className="space-y-1 text-sm">
+                                        <p>• {t("Comercials i representants", "Comerciales y representantes", "Sales reps")}</p>
+                                        <p>• {t("Dependents en botiga", "Dependientes en tienda", "Store clerks")}</p>
+                                        <p>• {t("Telemarketing", "Telemarketing", "Telemarketing")}</p>
+                                    </div>
+                                    <p className="text-xs text-green-600 mt-2">✅ {t("Personalitzada, feedback", "Personalizada, feedback", "Personalized, feedback")} | ❌ {t("Cara per contacte", "Cara por contacto", "Expensive per contact")}</p>
+                                </div>
+                                <div className="p-5 bg-amber-50 rounded-xl border-2 border-amber-200">
+                                    <h4 className="font-bold text-amber-700 text-lg mb-3">🎁 {t("PROMOCIÓ DE VENDES", "PROMOCIÓN DE VENTAS", "SALES PROMOTION")}</h4>
+                                    <p className="text-sm text-slate-600 mb-2">{t("Incentius a curt termini per estimular compra", "Incentivos a corto plazo para estimular compra", "Short-term incentives to stimulate purchase")}</p>
+                                    <div className="space-y-1 text-sm">
+                                        <p>• {t("Descomptes, 2x1, cupons", "Descuentos, 2x1, cupones", "Discounts, 2-for-1, coupons")}</p>
+                                        <p>• {t("Mostres gratuïtes", "Muestras gratuitas", "Free samples")}</p>
+                                        <p>• {t("Concursos i sortejos", "Concursos y sorteos", "Contests and giveaways")}</p>
+                                        <p>• {t("Programes de fidelització", "Programas de fidelización", "Loyalty programs")}</p>
+                                    </div>
+                                    <p className="text-xs text-amber-600 mt-2">✅ {t("Resultat ràpid", "Resultado rápido", "Quick results")} | ❌ {t("Efecte temporal", "Efecto temporal", "Temporary effect")}</p>
+                                </div>
+                                <div className="p-5 bg-violet-50 rounded-xl border-2 border-violet-200">
+                                    <h4 className="font-bold text-violet-700 text-lg mb-3">📰 {t("RELACIONS PÚBLIQUES (RRPP)", "RELACIONES PÚBLICAS (RRPP)", "PUBLIC RELATIONS (PR)")}</h4>
+                                    <p className="text-sm text-slate-600 mb-2">{t("Crear imatge positiva sense pagar directament", "Crear imagen positiva sin pagar directamente", "Create positive image without paying directly")}</p>
+                                    <div className="space-y-1 text-sm">
+                                        <p>• {t("Notes de premsa", "Notas de prensa", "Press releases")}</p>
+                                        <p>• {t("Patrocinis i mecenatge", "Patrocinios y mecenazgo", "Sponsorships")}</p>
+                                        <p>• {t("Esdeveniments, fires", "Eventos, ferias", "Events, trade shows")}</p>
+                                        <p>• RSC ({t("Responsabilitat Social", "Responsabilidad Social", "Social Responsibility")})</p>
+                                    </div>
+                                    <p className="text-xs text-violet-600 mt-2">✅ {t("Credibilitat", "Credibilidad", "Credibility")} | ❌ {t("Difícil de controlar", "Difícil de controlar", "Hard to control")}</p>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+                
+                {/* MARKETING DIGITAL */}
+                {tab === 'digital' && (
+                    <div className="space-y-6">
+                        <Card title={t("Marketing Digital", "Marketing Digital", "Digital Marketing")} icon="💻">
+                            <TheoryBlock color="cyan">
+                                <p className="text-lg font-semibold">{t("El marketing del segle XXI. On estan els clients? A Internet. On has d'estar tu? A Internet.", "El marketing del siglo XXI. ¿Dónde están los clientes? En Internet. ¿Dónde debes estar tú? En Internet.", "21st century marketing. Where are customers? On the Internet. Where should you be? On the Internet.")}</p>
+                            </TheoryBlock>
+                        </Card>
+                        
+                        <Card title={t("Principals Eines de Marketing Digital", "Principales Herramientas de Marketing Digital", "Main Digital Marketing Tools")} icon="🛠️">
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <div className="p-4 bg-green-50 rounded-xl border border-green-200">
+                                    <h4 className="font-bold text-green-700">🔍 SEO</h4>
+                                    <p className="text-sm text-green-600">{t("Search Engine Optimization", "Search Engine Optimization", "Search Engine Optimization")}</p>
+                                    <p className="text-sm text-slate-600 mt-2">{t("Posicionar-se als primers resultats de Google de forma ORGÀNICA (sense pagar).", "Posicionarse en los primeros resultados de Google de forma ORGÁNICA (sin pagar).", "Rank in top Google results ORGANICALLY (without paying).")}</p>
+                                    <p className="text-xs text-green-700 mt-2 font-bold">💡 {t("Paraules clau, contingut de qualitat, links", "Palabras clave, contenido de calidad, links", "Keywords, quality content, links")}</p>
+                                </div>
+                                <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                                    <h4 className="font-bold text-blue-700">💰 SEM</h4>
+                                    <p className="text-sm text-blue-600">{t("Search Engine Marketing", "Search Engine Marketing", "Search Engine Marketing")}</p>
+                                    <p className="text-sm text-slate-600 mt-2">{t("Anuncis DE PAGAMENT a Google (Google Ads). Pagues per clic (PPC).", "Anuncios DE PAGO en Google (Google Ads). Pagas por clic (PPC).", "PAID ads on Google (Google Ads). Pay per click (PPC).")}</p>
+                                    <p className="text-xs text-blue-700 mt-2 font-bold">💡 {t("Resultats immediats, però costa diners", "Resultados inmediatos, pero cuesta dinero", "Immediate results, but costs money")}</p>
+                                </div>
+                                <div className="p-4 bg-pink-50 rounded-xl border border-pink-200">
+                                    <h4 className="font-bold text-pink-700">📱 Social Media Marketing</h4>
+                                    <p className="text-sm text-slate-600 mt-2">{t("Màrqueting a xarxes socials: Instagram, TikTok, LinkedIn, X, Facebook...", "Marketing en redes sociales: Instagram, TikTok, LinkedIn, X, Facebook...", "Marketing on social networks: Instagram, TikTok, LinkedIn, X, Facebook...")}</p>
+                                    <p className="text-xs text-pink-700 mt-2 font-bold">💡 {t("Cada xarxa té el seu públic!", "¡Cada red tiene su público!", "Each network has its audience!")}</p>
+                                </div>
+                                <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
+                                    <h4 className="font-bold text-amber-700">📧 Email Marketing</h4>
+                                    <p className="text-sm text-slate-600 mt-2">{t("Newsletters, correus promocionals. El canal amb millor ROI (retorn).", "Newsletters, correos promocionales. El canal con mejor ROI (retorno).", "Newsletters, promotional emails. Channel with best ROI.")}</p>
+                                    <p className="text-xs text-amber-700 mt-2 font-bold">💡 {t("Barato, personalitzable, mesurable", "Barato, personalizable, medible", "Cheap, customizable, measurable")}</p>
+                                </div>
+                                <div className="p-4 bg-violet-50 rounded-xl border border-violet-200">
+                                    <h4 className="font-bold text-violet-700">✍️ Content Marketing</h4>
+                                    <p className="text-sm text-slate-600 mt-2">{t("Crear contingut de valor (blog, vídeos, podcasts) per atraure clients.", "Crear contenido de valor (blog, vídeos, podcasts) para atraer clientes.", "Create valuable content (blog, videos, podcasts) to attract customers.")}</p>
+                                    <p className="text-xs text-violet-700 mt-2 font-bold">💡 {t("'Atraure' en lloc de 'perseguir' (Inbound)", "'Atraer' en lugar de 'perseguir' (Inbound)", "'Attract' instead of 'chase' (Inbound)")}</p>
+                                </div>
+                                <div className="p-4 bg-red-50 rounded-xl border border-red-200">
+                                    <h4 className="font-bold text-red-700">👤 Influencer Marketing</h4>
+                                    <p className="text-sm text-slate-600 mt-2">{t("Col·laborar amb persones amb audiència a xarxes per promocionar productes.", "Colaborar con personas con audiencia en redes para promocionar productos.", "Collaborate with people with social media audiences to promote products.")}</p>
+                                    <p className="text-xs text-red-700 mt-2 font-bold">💡 {t("Credibilitat + abast. Atenció amb la falsa autenticitat!", "Credibilidad + alcance. ¡Cuidado con la falsa autenticidad!", "Credibility + reach. Beware of fake authenticity!")}</p>
+                                </div>
+                            </div>
+                        </Card>
+                        
+                        <Card title={t("El Funnel de Conversió", "El Funnel de Conversión", "The Conversion Funnel")} icon="📊">
+                            <p className="text-sm text-slate-600 mb-4">{t("El 'embut' de vendes digital: del desconegut al client fidel", "El 'embudo' de ventas digital: del desconocido al cliente fiel", "The digital sales 'funnel': from stranger to loyal customer")}</p>
+                            <div className="flex flex-col items-center gap-2">
+                                <div className="w-full max-w-md p-3 bg-blue-100 rounded-lg text-center"><span className="font-bold text-blue-700">1. {t("ATRAURE", "ATRAER", "ATTRACT")}</span><p className="text-xs text-blue-600">SEO, contingut, xarxes</p></div>
+                                <span className="text-slate-400">↓</span>
+                                <div className="w-4/5 max-w-sm p-3 bg-green-100 rounded-lg text-center"><span className="font-bold text-green-700">2. {t("CONVERTIR", "CONVERTIR", "CONVERT")}</span><p className="text-xs text-green-600">Landing pages, formularis, leads</p></div>
+                                <span className="text-slate-400">↓</span>
+                                <div className="w-3/5 max-w-xs p-3 bg-amber-100 rounded-lg text-center"><span className="font-bold text-amber-700">3. {t("TANCAR", "CERRAR", "CLOSE")}</span><p className="text-xs text-amber-600">Email, ofertes, venda</p></div>
+                                <span className="text-slate-400">↓</span>
+                                <div className="w-2/5 max-w-[150px] p-3 bg-pink-100 rounded-lg text-center"><span className="font-bold text-pink-700">4. {t("FIDELITZAR", "FIDELIZAR", "DELIGHT")}</span><p className="text-xs text-pink-600">Servei, comunitat</p></div>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+                
+                {/* EINES (BCG i Cicle de Vida) */}
+                {tab === 'eines' && (
+                    <div className="space-y-6">
+                        <Card title={t("Matriu BCG (Boston Consulting Group)", "Matriz BCG", "BCG Matrix")} icon="📊">
+                            <TheoryBlock color="green">
+                                <p>{t("Eina per analitzar la cartera de productes segons la seua quota de mercat i el creixement del mercat. Ajuda a decidir on invertir recursos.", "Herramienta para analizar la cartera de productos según su cuota de mercado y el crecimiento del mercado.", "Tool to analyze product portfolio based on market share and market growth.")}</p>
+                            </TheoryBlock>
+                            <div className="grid grid-cols-2 gap-4 mt-4">
+                                <div className="p-4 bg-yellow-100 rounded-xl border-2 border-yellow-300">
+                                    <span className="text-3xl">⭐</span>
+                                    <h4 className="font-bold text-yellow-700 text-lg">{t("ESTRELLES", "ESTRELLAS", "STARS")}</h4>
+                                    <p className="text-sm text-slate-600 mt-2">{t("Alta quota + Alt creixement", "Alta cuota + Alto crecimiento", "High share + High growth")}</p>
+                                    <p className="text-xs text-yellow-700 mt-2 font-bold">{t("Invertir per mantenir lideratge", "Invertir para mantener liderazgo", "Invest to maintain leadership")}</p>
+                                </div>
+                                <div className="p-4 bg-purple-100 rounded-xl border-2 border-purple-300">
+                                    <span className="text-3xl">❓</span>
+                                    <h4 className="font-bold text-purple-700 text-lg">{t("INTERROGANTS", "INTERROGANTES", "QUESTION MARKS")}</h4>
+                                    <p className="text-sm text-slate-600 mt-2">{t("Baixa quota + Alt creixement", "Baja cuota + Alto crecimiento", "Low share + High growth")}</p>
+                                    <p className="text-xs text-purple-700 mt-2 font-bold">{t("Decidir: invertir fort o abandonar", "Decidir: invertir fuerte o abandonar", "Decide: invest heavily or abandon")}</p>
+                                </div>
+                                <div className="p-4 bg-green-100 rounded-xl border-2 border-green-300">
+                                    <span className="text-3xl">🐄</span>
+                                    <h4 className="font-bold text-green-700 text-lg">{t("VAQUES", "VACAS", "CASH COWS")}</h4>
+                                    <p className="text-sm text-slate-600 mt-2">{t("Alta quota + Baix creixement", "Alta cuota + Bajo crecimiento", "High share + Low growth")}</p>
+                                    <p className="text-xs text-green-700 mt-2 font-bold">{t("'Munyir' per finançar altres", "Ordeñar para financiar otros", "'Milk' to finance others")}</p>
+                                </div>
+                                <div className="p-4 bg-slate-200 rounded-xl border-2 border-slate-400">
+                                    <span className="text-3xl">🐕</span>
+                                    <h4 className="font-bold text-slate-700 text-lg">{t("GOSSOS", "PERROS", "DOGS")}</h4>
+                                    <p className="text-sm text-slate-600 mt-2">{t("Baixa quota + Baix creixement", "Baja cuota + Bajo crecimiento", "Low share + Low growth")}</p>
+                                    <p className="text-xs text-slate-700 mt-2 font-bold">{t("Eliminar o reposicionar", "Eliminar o reposicionar", "Eliminate or reposition")}</p>
+                                </div>
+                            </div>
+                        </Card>
+                        
+                        <Card title={t("Cicle de Vida del Producte", "Ciclo de Vida del Producto", "Product Life Cycle")} icon="📈">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div className="p-4 bg-blue-50 rounded-xl text-center">
+                                    <span className="text-3xl">🚀</span>
+                                    <h4 className="font-bold text-blue-700 mt-2">{t("Introducció", "Introducción", "Introduction")}</h4>
+                                    <p className="text-xs text-slate-600 mt-2">{t("Vendes baixes, alts costos de màrqueting", "Ventas bajas, altos costes de marketing", "Low sales, high marketing costs")}</p>
+                                    <p className="text-xs text-blue-600 mt-1 font-bold">{t("Estratègia: Penetració o desnatament", "Estrategia: Penetración o descremado", "Strategy: Penetration or skimming")}</p>
+                                </div>
+                                <div className="p-4 bg-green-50 rounded-xl text-center">
+                                    <span className="text-3xl">📈</span>
+                                    <h4 className="font-bold text-green-700 mt-2">{t("Creixement", "Crecimiento", "Growth")}</h4>
+                                    <p className="text-xs text-slate-600 mt-2">{t("Vendes augmenten, primers beneficis", "Ventas aumentan, primeros beneficios", "Sales rise, first profits")}</p>
+                                    <p className="text-xs text-green-600 mt-1 font-bold">{t("Estratègia: Diferenciació, fidelitzar", "Estrategia: Diferenciación, fidelizar", "Strategy: Differentiation, loyalty")}</p>
+                                </div>
+                                <div className="p-4 bg-amber-50 rounded-xl text-center">
+                                    <span className="text-3xl">⏸️</span>
+                                    <h4 className="font-bold text-amber-700 mt-2">{t("Maduresa", "Madurez", "Maturity")}</h4>
+                                    <p className="text-xs text-slate-600 mt-2">{t("Vendes estables, màxim benefici", "Ventas estables, máximo beneficio", "Stable sales, max profit")}</p>
+                                    <p className="text-xs text-amber-600 mt-1 font-bold">{t("Estratègia: Defensiva, promocions", "Estrategia: Defensiva, promociones", "Strategy: Defensive, promotions")}</p>
+                                </div>
+                                <div className="p-4 bg-red-50 rounded-xl text-center">
+                                    <span className="text-3xl">📉</span>
+                                    <h4 className="font-bold text-red-700 mt-2">{t("Declivi", "Declive", "Decline")}</h4>
+                                    <p className="text-xs text-slate-600 mt-2">{t("Vendes cauen, beneficis baixen", "Ventas caen, beneficios bajan", "Sales fall, profits drop")}</p>
+                                    <p className="text-xs text-red-600 mt-1 font-bold">{t("Estratègia: Relançar, 'munyir' o retirar", "Estrategia: Relanzar, 'ordeñar' o retirar", "Strategy: Relaunch, 'milk' or retire")}</p>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
                 )}
             </div>
         );
