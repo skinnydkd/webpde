@@ -336,6 +336,17 @@ function usePdeDeepLink(section, setSection) {
 }
 
 // ─── Expose all components globally ─────────────────────────────
+// Babel standalone wraps each type="text/babel" script in its own scope,
+// so we must explicitly attach to window for cross-script access.
+window.PdeHeader = PdeHeader;
+window.PdeFooter = PdeFooter;
+window.PdeLanguageSelector = PdeLanguageSelector;
+window.PdeCrossNav = PdeCrossNav;
+window.PdeScrollToTop = PdeScrollToTop;
+window.PdePrevNext = PdePrevNext;
+window.PdeHomeButton = PdeHomeButton;
+window.usePdeDeepLink = usePdeDeepLink;
+
 window.PDE = {
     Header: PdeHeader,
     Footer: PdeFooter,

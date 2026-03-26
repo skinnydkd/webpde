@@ -5,7 +5,7 @@
  */
 
 // ─── Configuration ───────────────────────────────────────────────
-const PDE_CONFIG = {
+var PDE_CONFIG = {
     name: 'PDE',
     fullName: 'Plataforma Didàctica Econòmica',
     year: 2025,
@@ -17,7 +17,7 @@ const PDE_CONFIG = {
 };
 
 // ─── Navigation — App definitions ────────────────────────────────
-const PDE_NAV = [
+var PDE_NAV = [
     { id: 'economia',     href: './economia.html',     emoji: '📈', gradient: 'from-pink-500 to-rose-500' },
     { id: 'empresa',      href: './empresa.html',      emoji: '🏢', gradient: 'from-amber-500 to-orange-500' },
     { id: 'finances',     href: './finances.html',      emoji: '👛', gradient: 'from-emerald-500 to-teal-500' },
@@ -29,7 +29,7 @@ const PDE_NAV = [
 ];
 
 // ─── Shared Translations (header, footer, nav, common UI) ───────
-const PDE_SHARED_TRANSLATIONS = {
+var PDE_SHARED_TRANSLATIONS = {
     // App names (used in cross-app nav)
     'nav.home':         { val: 'Inici',                   es: 'Inicio',               en: 'Home' },
     'nav.economia':     { val: 'Economia',                es: 'Economía',              en: 'Economics' },
@@ -63,12 +63,12 @@ const PDE_SHARED_TRANSLATIONS = {
 };
 
 // ─── Language Store (localStorage persistence) ──────────────────
-const PdeLanguageStore = {
+var PdeLanguageStore = {
     KEY: 'pde_idioma',
 
     get: function() {
         try {
-            const lang = localStorage.getItem(this.KEY);
+            var lang = localStorage.getItem(this.KEY);
             return PDE_CONFIG.supportedLangs.includes(lang) ? lang : PDE_CONFIG.defaultLang;
         } catch (e) {
             return PDE_CONFIG.defaultLang;
@@ -129,7 +129,7 @@ function createTranslator(pageTranslations, idioma) {
 }
 
 // ─── Unified CSS Styles ─────────────────────────────────────────
-const PDE_STYLES = {
+var PDE_STYLES = {
     // Header
     header: 'sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm',
     headerContainer: 'max-w-7xl mx-auto px-4 py-3 flex items-center justify-between',
