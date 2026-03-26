@@ -18,14 +18,14 @@ var PDE_CONFIG = {
 
 // ─── Navigation — App definitions ────────────────────────────────
 var PDE_NAV = [
-    { id: 'economia',     href: './economia.html',     emoji: '📈', gradient: 'from-pink-500 to-rose-500' },
-    { id: 'empresa',      href: './empresa.html',      emoji: '🏢', gradient: 'from-amber-500 to-orange-500' },
-    { id: 'finances',     href: './finances.html',      emoji: '👛', gradient: 'from-emerald-500 to-teal-500' },
-    { id: 'vidapractica', href: './vidapractica.html',  emoji: '🏠', gradient: 'from-violet-500 to-purple-500' },
-    { id: 'ferramentes',  href: './ferramentes.html',   emoji: '🔧', gradient: 'from-slate-500 to-zinc-600' },
-    { id: 'recerca',      href: './recerca.html',       emoji: '📚', gradient: 'from-indigo-500 to-blue-500' },
-    { id: 'playground',   href: './playground.html',    emoji: '🎮', gradient: 'from-yellow-400 via-pink-500 to-purple-500', immersive: true },
-    { id: 'concurs',      href: './concurs.html',       emoji: '🏆', gradient: 'from-yellow-400 to-amber-500', immersive: true },
+    { id: 'economia',     href: './economia',     emoji: '📈', gradient: 'from-pink-500 to-rose-500' },
+    { id: 'empresa',      href: './empresa',      emoji: '🏢', gradient: 'from-amber-500 to-orange-500' },
+    { id: 'finances',     href: './finances',      emoji: '👛', gradient: 'from-emerald-500 to-teal-500' },
+    { id: 'vidapractica', href: './vidapractica',  emoji: '🏠', gradient: 'from-violet-500 to-purple-500' },
+    { id: 'ferramentes',  href: './ferramentes',   emoji: '🔧', gradient: 'from-slate-500 to-zinc-600' },
+    { id: 'recerca',      href: './recerca',       emoji: '📚', gradient: 'from-indigo-500 to-blue-500' },
+    { id: 'playground',   href: './playground',    emoji: '🎮', gradient: 'from-yellow-400 via-pink-500 to-purple-500', immersive: true },
+    { id: 'concurs',      href: './concurs',       emoji: '🏆', gradient: 'from-yellow-400 to-amber-500', immersive: true },
 ];
 
 // ─── Shared Translations (header, footer, nav, common UI) ───────

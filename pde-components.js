@@ -60,7 +60,7 @@ function PdeCrossNav({ idioma, currentApp }) {
 
             {open && (
                 <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50">
-                    <a href="./index.html"
+                    <a href="./"
                        className={currentApp === 'index' ? PDE_STYLES.navLinkActive : PDE_STYLES.navLink}
                     >
                         <span>🎓</span> {t('nav.home')}
@@ -104,7 +104,7 @@ function PdeHeader({ idioma, setIdioma, currentApp, sections, currentSection, se
             <div className={PDE_STYLES.headerContainer}>
                 {/* Left: Logo + Home link */}
                 <div className="flex items-center gap-3">
-                    <a href="./index.html" className="flex items-center gap-2 hover:opacity-80 transition-opacity" title={t('nav.home')}>
+                    <a href="./" className="flex items-center gap-2 hover:opacity-80 transition-opacity" title={t('nav.home')}>
                         <span className="text-xl">🎓</span>
                         <span className="font-black text-xl text-gray-800">PDE</span>
                     </a>
@@ -307,7 +307,7 @@ function PdeHomeButton({ idioma }) {
 
     return (
         <a
-            href="./index.html"
+            href="./"
             className="fixed top-4 left-4 z-50 flex items-center gap-2 px-3 py-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 text-sm font-medium text-gray-700 hover:text-pink-600 hover:border-pink-200 transition-all"
             title={t('footer.backHome')}
         >
