@@ -7,11 +7,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        h1, h2, h3, .font-serif { font-family: 'Merriweather', serif; }
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #ec4899 #fdf2f8; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #fdf2f8; }
+        ::-webkit-scrollbar-thumb { background-color: #ec4899; border-radius: 3px; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade { animation: fadeIn 0.4s ease-out; }
         .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
@@ -24,7 +28,7 @@
 const { useState, useMemo } = React;
 
 function RecercaApp() {
-    const [idioma, setIdioma] = useState('val');
+    const [idioma, setIdioma] = useState(PdeLanguageStore.get());
     const [seccio, setSeccio] = useState('papers');
     const [subSeccio, setSubSeccio] = useState(null);
     const [itemSeleccionat, setItemSeleccionat] = useState(null);
@@ -949,19 +953,7 @@ CONCLUSION: Economics isn't perfect, but it's the best we have to understand the
     }, [articlesCuriosos, cercador]);
 
     // ==================== COMPONENTS ====================
-    const NavBtn = ({ id, icon, label }) => (
-        <button
-            onClick={() => { setSeccio(id); setFiltreCategoria('tots'); setCercador(''); }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                seccio === id 
-                    ? 'bg-amber-500 text-white shadow-lg' 
-                    : 'bg-white text-slate-600 hover:bg-amber-50 border border-slate-200'
-            }`}
-        >
-            <span>{icon}</span>
-            <span className="hidden sm:inline">{label}</span>
-        </button>
-    );
+
 
     const PaperCard = ({ paper }) => (
         <div 
@@ -969,7 +961,7 @@ CONCLUSION: Economics isn't perfect, but it's the best we have to understand the
             className={`bg-white rounded-xl border ${paper.destacat ? 'border-amber-300 ring-2 ring-amber-100' : 'border-slate-200'} p-5 cursor-pointer hover:shadow-lg transition-all group`}
         >
             {paper.destacat && <span className="inline-block bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded mb-2">⭐ {t('Destacat', 'Destacado', 'Featured')}</span>}
-            <h3 className="font-serif font-bold text-slate-800 group-hover:text-amber-600 transition-colors mb-2">{paper.titol}</h3>
+            <h3 className="font-extrabold text-slate-800 group-hover:text-amber-600 transition-colors mb-2">{paper.titol}</h3>
             <p className="text-sm text-slate-500 mb-2">{paper.autors} · {paper.institucio}</p>
             <p className="text-sm text-slate-600 line-clamp-3 mb-3">{paper.resum}</p>
             <div className="flex items-center justify-between">
@@ -1022,7 +1014,7 @@ CONCLUSION: Economics isn't perfect, but it's the best we have to understand the
                 onClick={() => setItemSeleccionat({ tipus: 'curios', data: article })}
                 className={`bg-gradient-to-br ${colors[article.color] || colors.amber} rounded-xl border p-5 cursor-pointer hover:shadow-lg transition-all`}
             >
-                <h3 className="font-serif font-bold text-slate-800 mb-2">{article.titol}</h3>
+                <h3 className="font-extrabold text-slate-800 mb-2">{article.titol}</h3>
                 <p className="text-sm text-slate-500 mb-2">{article.autors}</p>
                 <p className="text-sm text-slate-600 line-clamp-3">{article.resum}</p>
                 {article.destacat && <span className="inline-block mt-2 bg-amber-200 text-amber-800 text-xs font-bold px-2 py-1 rounded">🏆 Nobel 2023</span>}
@@ -1044,7 +1036,7 @@ CONCLUSION: Economics isn't perfect, but it's the best we have to understand the
                         {tipus === 'paper' && (
                             <>
                                 <span className="text-amber-500 text-sm font-medium">{data.revista} · {data.any}</span>
-                                <h2 className="font-serif font-bold text-2xl text-slate-800 mt-2 mb-3">{data.titol}</h2>
+                                <h2 className="font-extrabold text-2xl text-slate-800 mt-2 mb-3">{data.titol}</h2>
                                 <p className="text-slate-600 mb-2">{data.autors}</p>
                                 <p className="text-sm text-slate-500 mb-4">{data.institucio}</p>
                                 
@@ -1071,7 +1063,7 @@ CONCLUSION: Economics isn't perfect, but it's the best we have to understand the
                                 <div className="flex gap-4 mb-4">
                                     <div className="w-24 h-32 bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg flex items-center justify-center text-4xl flex-shrink-0">📖</div>
                                     <div>
-                                        <h2 className="font-serif font-bold text-2xl text-slate-800">{data.titol}</h2>
+                                        <h2 className="font-extrabold text-2xl text-slate-800">{data.titol}</h2>
                                         <p className="text-slate-600 mt-1">{data.autor}</p>
                                         <div className="flex items-center gap-2 mt-2">
                                             <span className="text-sm bg-slate-100 text-slate-600 px-2 py-1 rounded">{
@@ -1095,7 +1087,7 @@ CONCLUSION: Economics isn't perfect, but it's the best we have to understand the
                         
                         {tipus === 'curios' && (
                             <>
-                                <h2 className="font-serif font-bold text-2xl text-slate-800 mb-2">{data.titol}</h2>
+                                <h2 className="font-extrabold text-2xl text-slate-800 mb-2">{data.titol}</h2>
                                 <p className="text-slate-500 mb-4">{data.autors}</p>
                                 
                                 <div className="bg-slate-50 rounded-xl p-4 mb-4">
@@ -1117,48 +1109,26 @@ CONCLUSION: Economics isn't perfect, but it's the best we have to understand the
     // ==================== RENDER ====================
     return (
         <div className="min-h-screen">
-            {/* Header */}
-            <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
-                <div className="max-w-7xl mx-auto px-4">
-                    <div className="flex items-center justify-between h-16">
-                        <div className="flex items-center gap-3">
-                            <span className="text-3xl">📚</span>
-                            <div>
-                                <h1 className="font-serif font-bold text-xl text-slate-800">{t('Recerca i Lectures', 'Investigación y Lecturas', 'Research & Readings')}</h1>
-                                <p className="text-xs text-slate-500 hidden sm:block">{t('Papers, llibres i mètode científic', 'Papers, libros y método científico', 'Papers, books and scientific method')}</p>
-                            </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-2">
-                            <a href="./index.html" className="p-2 text-slate-600 hover:text-amber-500 hover:bg-amber-50 rounded-lg" title={t('Tornar', 'Volver', 'Back')}>
-                                🏠
-                            </a>
-                            <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
-                                {['val', 'es', 'en'].map(lang => (
-                                    <button key={lang} onClick={() => setIdioma(lang)} className={`px-2 py-1 rounded text-xs font-bold ${idioma === lang ? 'bg-amber-500 text-white' : 'text-slate-600 hover:bg-slate-200'}`}>
-                                        {lang.toUpperCase()}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
+            <PdeHeader
+                idioma={idioma}
+                setIdioma={(lang) => { setIdioma(lang); PdeLanguageStore.set(lang); }}
+                currentApp="recerca"
+                sections={[
+                    { id: 'papers', emoji: '📄', label: t('Papers Acadèmics', 'Papers Académicos', 'Academic Papers') },
+                    { id: 'metode', emoji: '🔬', label: t('Mètode Científic', 'Método Científico', 'Scientific Method') },
+                    { id: 'curiosos', emoji: '💡', label: t('Articles Curiosos', 'Artículos Curiosos', 'Curious Articles') },
+                    { id: 'llibres', emoji: '📖', label: t('Llibres', 'Libros', 'Books') },
+                ]}
+                currentSection={seccio}
+                setSection={setSeccio}
+            />
 
             <main className="max-w-7xl mx-auto px-4 py-8">
-                {/* Navegació seccions */}
-                <div className="flex flex-wrap gap-2 mb-8">
-                    <NavBtn id="papers" icon="📄" label={t('Papers Acadèmics', 'Papers Académicos', 'Academic Papers')} />
-                    <NavBtn id="metode" icon="🔬" label={t('Mètode Científic', 'Método Científico', 'Scientific Method')} />
-                    <NavBtn id="curiosos" icon="💡" label={t('Articles Curiosos', 'Artículos Curiosos', 'Curious Articles')} />
-                    <NavBtn id="llibres" icon="📖" label={t('Llibres', 'Libros', 'Books')} />
-                </div>
-
                 {/* SECCIÓ: PAPERS */}
                 {seccio === 'papers' && (
                     <div className="animate-fade">
                         <div className="mb-6">
-                            <h2 className="font-serif font-bold text-2xl text-slate-800 mb-2">📄 {t('Papers Acadèmics', 'Papers Académicos', 'Academic Papers')}</h2>
+                            <h2 className="font-extrabold text-2xl text-slate-800 mb-2">📄 {t('Papers Acadèmics', 'Papers Académicos', 'Academic Papers')}</h2>
                             <p className="text-slate-500">{t('Els estudis més influents en economia, explicats perquè els pugues entendre.', 'Los estudios más influyentes en economía, explicados para que los puedas entender.', 'The most influential studies in economics, explained so you can understand them.')}</p>
                         </div>
                         
@@ -1192,7 +1162,7 @@ CONCLUSION: Economics isn't perfect, but it's the best we have to understand the
                 {seccio === 'metode' && (
                     <div className="animate-fade">
                         <div className="mb-8">
-                            <h2 className="font-serif font-bold text-2xl text-slate-800 mb-2">🔬 {metodeCientific.intro.titol}</h2>
+                            <h2 className="font-extrabold text-2xl text-slate-800 mb-2">🔬 {metodeCientific.intro.titol}</h2>
                             <p className="text-slate-600 leading-relaxed">{metodeCientific.intro.text}</p>
                         </div>
                         
@@ -1205,7 +1175,7 @@ CONCLUSION: Economics isn't perfect, but it's the best we have to understand the
                                     >
                                         <div className="flex items-center gap-4">
                                             <span className="text-3xl">{sec.icon}</span>
-                                            <h3 className="font-serif font-bold text-xl text-slate-800">{sec.titol}</h3>
+                                            <h3 className="font-extrabold text-xl text-slate-800">{sec.titol}</h3>
                                         </div>
                                         <span className="text-2xl text-slate-400">{subSeccio === sec.id ? '−' : '+'}</span>
                                     </button>
@@ -1226,7 +1196,7 @@ CONCLUSION: Economics isn't perfect, but it's the best we have to understand the
                 {seccio === 'curiosos' && (
                     <div className="animate-fade">
                         <div className="mb-6">
-                            <h2 className="font-serif font-bold text-2xl text-slate-800 mb-2">💡 {t('Articles Curiosos', 'Artículos Curiosos', 'Curious Articles')}</h2>
+                            <h2 className="font-extrabold text-2xl text-slate-800 mb-2">💡 {t('Articles Curiosos', 'Artículos Curiosos', 'Curious Articles')}</h2>
                             <p className="text-slate-500">{t('Experiments sorprenents, descobriments contraintuïtius i històries que canvien com veus el món.', 'Experimentos sorprendentes, descubrimientos contraintuitivos e historias que cambian cómo ves el mundo.', 'Surprising experiments, counterintuitive discoveries and stories that change how you see the world.')}</p>
                         </div>
                         
@@ -1248,7 +1218,7 @@ CONCLUSION: Economics isn't perfect, but it's the best we have to understand the
                 {seccio === 'llibres' && (
                     <div className="animate-fade">
                         <div className="mb-6">
-                            <h2 className="font-serif font-bold text-2xl text-slate-800 mb-2">📖 {t('Llibres Recomanats', 'Libros Recomendados', 'Recommended Books')}</h2>
+                            <h2 className="font-extrabold text-2xl text-slate-800 mb-2">📖 {t('Llibres Recomanats', 'Libros Recomendados', 'Recommended Books')}</h2>
                             <p className="text-slate-500">{t('Una selecció de llibres per entendre economia, finances i comportament humà.', 'Una selección de libros para entender economía, finanzas y comportamiento humano.', 'A selection of books to understand economics, finance and human behavior.')}</p>
                         </div>
                         
@@ -1279,11 +1249,8 @@ CONCLUSION: Economics isn't perfect, but it's the best we have to understand the
                 )}
             </main>
 
-            <footer className="mt-12 py-8 bg-slate-100 border-t border-slate-200">
-                <div className="max-w-7xl mx-auto px-4 text-center text-slate-500 text-sm">
-                    <p>📚 {t('Recerca i Lectures', 'Investigación y Lecturas', 'Research & Readings')} · profedeeconomia.es · 2025</p>
-                </div>
-            </footer>
+            <PdeFooter appEmoji="📚" appName="Recerca" idioma={idioma} />
+            <PdeScrollToTop />
 
             <Modal />
         </div>

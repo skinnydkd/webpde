@@ -12,7 +12,11 @@
     <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/recharts@2.1.16/umd/Recharts.js"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
         * { scrollbar-width: thin; scrollbar-color: #8b5cf6 #f5f3ff; }
         input[type="range"] { -webkit-appearance: none; height: 8px; border-radius: 4px; background: #e9d5ff; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #8b5cf6; cursor: pointer; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
@@ -225,9 +229,8 @@
 
         function App() {
             const [section, setSection] = useState('inicio');
-            const [menuOpen, setMenuOpen] = useState(false);
             const [searchTerm, setSearchTerm] = useState('');
-            const [idioma, setIdioma] = useState('val');
+            const [idioma, setIdioma] = useState(PdeLanguageStore.get());
             
             // Funció de traducció
             const t = (category, key) => {
@@ -237,20 +240,6 @@
                 } catch { return key || category; }
             };
             
-            // Selector d'idioma (només VAL/ES)
-            const LanguageSelector = () => (
-                <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-                    {[{ code: 'val', label: 'VAL' }, { code: 'es', label: 'ES' }].map(lang => (
-                        <button 
-                            key={lang.code} 
-                            onClick={() => setIdioma(lang.code)} 
-                            className={`px-2 py-1 rounded text-xs font-bold transition-all ${idioma === lang.code ? 'bg-violet-500 text-white' : 'text-gray-600 hover:bg-gray-200'}`}
-                        >
-                            {lang.label}
-                        </button>
-                    ))}
-                </div>
-            );
             // Simulador Nòmina
             const [salarioBrut, setSalarioBrut] = useState(2000);
             const [pagues, setPagues] = useState(14);
@@ -373,11 +362,6 @@
                 </div>
             );
 
-            const NavBtn = ({ sec, label, emoji }) => (
-                <button onClick={() => { setSection(sec); setMenuOpen(false); }} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${section === sec ? 'bg-violet-500 text-white' : 'text-gray-600 hover:bg-violet-100'}`}>
-                    <span>{emoji}</span><span className="hidden md:inline">{label}</span>
-                </button>
-            );
 
             const Inicio = () => (
                 <div className="space-y-8">
@@ -1967,56 +1951,28 @@
 
             return (
                 <div className="min-h-screen">
-                    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-lg border-b border-gray-100 shadow-sm">
-                        <div className="max-w-6xl mx-auto px-4 py-3">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <a href="./index.html" className="p-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-xl">🏠</a>
-                                    <button onClick={() => setSection('inicio')} className="flex items-center gap-2">
-                                        <div className="p-2 bg-violet-500 rounded-xl text-xl">💼</div>
-                                        <span className="font-bold hidden sm:block">{t('title')}</span>
-                                    </button>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <LanguageSelector />
-                                    <nav className="hidden xl:flex gap-1">
-                                        <NavBtn sec="inicio" label={t('nav', 'inicio')} emoji="🏠" />
-                                        <NavBtn sec="nomina" label={t('nav', 'nomina')} emoji="💳" />
-                                        <NavBtn sec="hipoteca" label={t('nav', 'hipoteca')} emoji="🏠" />
-                                        <NavBtn sec="estalvi" label={t('nav', 'estalvi')} emoji="🐷" />
-                                        <NavBtn sec="pressupost" label={t('nav', 'pressupost')} emoji="💰" />
-                                        <NavBtn sec="prestec" label={t('nav', 'prestec')} emoji="💸" />
-                                        <NavBtn sec="renda" label={t('nav', 'renda')} emoji="🧾" />
-                                        <NavBtn sec="impostos" label={t('nav', 'impostos')} emoji="🏛️" />
-                                        <NavBtn sec="factures" label={t('nav', 'factures')} emoji="🔌" />
-                                        <NavBtn sec="lloguer" label={t('nav', 'lloguer')} emoji="🏘️" />
-                                        <NavBtn sec="contractes" label={t('nav', 'contractes')} emoji="📋" />
-                                        <NavBtn sec="cv" label={t('nav', 'cv')} emoji="📄" />
-                                        <NavBtn sec="glossari" label={t('nav', 'glossari')} emoji="📖" />
-                                    </nav>
-                                </div>
-                                <button onClick={() => setMenuOpen(!menuOpen)} className="xl:hidden p-2 hover:bg-gray-100 rounded-lg text-xl">{menuOpen ? '✕' : '☰'}</button>
-                            </div>
-                            {menuOpen && (
-                                <nav className="xl:hidden flex flex-wrap gap-2 mt-3 pb-2">
-                                    <NavBtn sec="inicio" label={t('nav', 'inicio')} emoji="🏠" />
-                                    <NavBtn sec="nomina" label={t('nav', 'nomina')} emoji="💳" />
-                                    <NavBtn sec="hipoteca" label={t('nav', 'hipoteca')} emoji="🏠" />
-                                    <NavBtn sec="estalvi" label={t('nav', 'estalvi')} emoji="🐷" />
-                                    <NavBtn sec="pressupost" label={t('nav', 'pressupost')} emoji="💰" />
-                                    <NavBtn sec="prestec" label={t('nav', 'prestec')} emoji="💸" />
-                                    <NavBtn sec="renda" label={t('nav', 'renda')} emoji="🧾" />
-                                    <NavBtn sec="impostos" label={t('nav', 'impostos')} emoji="🏛️" />
-                                    <NavBtn sec="factures" label={t('nav', 'factures')} emoji="🔌" />
-                                    <NavBtn sec="lloguer" label={t('nav', 'lloguer')} emoji="🏘️" />
-                                    <NavBtn sec="contractes" label={t('nav', 'contractes')} emoji="📋" />
-                                    <NavBtn sec="cv" label={t('nav', 'cv')} emoji="📄" />
-                                    <NavBtn sec="glossari" label={t('nav', 'glossari')} emoji="📖" />
-                                    <NavBtn sec="glossari" label="Glossari" emoji="📖" />
-                                </nav>
-                            )}
-                        </div>
-                    </header>
+                    <PdeHeader
+                        idioma={idioma}
+                        setIdioma={(lang) => { setIdioma(lang); PdeLanguageStore.set(lang); }}
+                        currentApp="vidapractica"
+                        sections={[
+                            { id: 'inicio', label: t('nav', 'inicio'), emoji: '🏠' },
+                            { id: 'nomina', label: t('nav', 'nomina'), emoji: '💳' },
+                            { id: 'hipoteca', label: t('nav', 'hipoteca'), emoji: '🏠' },
+                            { id: 'estalvi', label: t('nav', 'estalvi'), emoji: '🐷' },
+                            { id: 'pressupost', label: t('nav', 'pressupost'), emoji: '💰' },
+                            { id: 'prestec', label: t('nav', 'prestec'), emoji: '💸' },
+                            { id: 'renda', label: t('nav', 'renda'), emoji: '🧾' },
+                            { id: 'impostos', label: t('nav', 'impostos'), emoji: '🏛️' },
+                            { id: 'factures', label: t('nav', 'factures'), emoji: '🔌' },
+                            { id: 'lloguer', label: t('nav', 'lloguer'), emoji: '🏘️' },
+                            { id: 'contractes', label: t('nav', 'contractes'), emoji: '📋' },
+                            { id: 'cv', label: t('nav', 'cv'), emoji: '📄' },
+                            { id: 'glossari', label: t('nav', 'glossari'), emoji: '📖' },
+                        ]}
+                        currentSection={section}
+                        setSection={setSection}
+                    />
                     <main className="max-w-6xl mx-auto px-4 py-8">
                         {section === 'inicio' && <Inicio />}
                         {section === 'nomina' && <Nomina />}
@@ -2032,9 +1988,8 @@
                         {section === 'cv' && <CV />}
                         {section === 'glossari' && <Glossari />}
                     </main>
-                    <footer className="py-6 text-center text-sm text-gray-400 border-t border-gray-100">
-                        <p>Vida Pràctica · PDE · 2025</p>
-                    </footer>
+                    <PdeFooter appEmoji="💼" appName={idioma === 'val' ? 'Vida Pràctica' : 'Vida Práctica'} idioma={idioma} />
+                    <PdeScrollToTop />
                 </div>
             );
         }

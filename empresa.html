@@ -8,9 +8,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; }
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; scrollbar-width: thin; scrollbar-color: #ec4899 #fdf2f8; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #fdf2f8; }
+        ::-webkit-scrollbar-thumb { background-color: #ec4899; border-radius: 3px; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade { animation: fadeIn 0.4s ease-out; }
         .dropdown-content { display: none; }
@@ -24,8 +29,7 @@ const { useState, useMemo, useEffect } = React;
 
 function EmpresaApp() {
     const [section, setSection] = useState('inicio');
-    const [menuOpen, setMenuOpen] = useState(false);
-    const [idioma, setIdioma] = useState('val');
+    const [idioma, setIdioma] = useState(PdeLanguageStore.get());
 
     const t = (val, es, en) => idioma === 'val' ? val : idioma === 'es' ? es : en;
 
@@ -101,46 +105,6 @@ function EmpresaApp() {
             {subtitle && <p className="text-slate-500 ml-12">{subtitle}</p>}
         </div>
     );
-
-    // MENÚ DESKTOP AMB DESPLEGABLES
-    const menuGroups = [
-        {
-            id: 'finances',
-            label: t('💰 Finances', '💰 Finanzas', '💰 Finance'),
-            items: [
-                { sec: 'comptabilitat', icon: '📒', label: t('Comptabilitat', 'Contabilidad', 'Accounting') },
-                { sec: 'analisi', icon: '📊', label: t('Anàlisi Financera', 'Análisis Financiero', 'Financial Analysis') },
-                { sec: 'costos', icon: '💰', label: t('Costos i Punt Mort', 'Costes y Umbral', 'Costs & Break-even') },
-                { sec: 'inversio', icon: '📈', label: t('Inversió', 'Inversión', 'Investment') },
-                { sec: 'fiscalitat', icon: '🏛️', label: t('Fiscalitat', 'Fiscalidad', 'Taxation') },
-            ]
-        },
-        {
-            id: 'operacions',
-            label: t('⚙️ Operacions', '⚙️ Operaciones', '⚙️ Operations'),
-            items: [
-                { sec: 'produccio', icon: '🏭', label: t('Producció', 'Producción', 'Production') },
-                { sec: 'rrhh', icon: '👥', label: t('Recursos Humans', 'Recursos Humanos', 'Human Resources') },
-                { sec: 'marketing', icon: '📣', label: 'Marketing' },
-            ]
-        },
-        {
-            id: 'estrategia',
-            label: t('🎯 Estratègia', '🎯 Estrategia', '🎯 Strategy'),
-            items: [
-                { sec: 'estrategia', icon: '🎯', label: t('Anàlisi Estratègica', 'Análisis Estratégico', 'Strategic Analysis') },
-                { sec: 'formes', icon: '⚖️', label: t('Formes Jurídiques', 'Formas Jurídicas', 'Legal Forms') },
-                { sec: 'financament', icon: '🏦', label: t('Finançament', 'Financiación', 'Financing') },
-            ]
-        },
-        {
-            id: 'emprendre',
-            label: t('🚀 Emprendre', '🚀 Emprender', '🚀 Startup'),
-            items: [
-                { sec: 'emprenedoria', icon: '🚀', label: t('Guia Emprenedoria', 'Guía Emprendimiento', 'Startup Guide') },
-            ]
-        }
-    ];
 
     // SECCIÓ INICI
     const Inicio = () => {
@@ -2397,70 +2361,32 @@ function EmpresaApp() {
     };
 
     // NAVEGACIÓ I RENDER
+    const headerSections = [
+        { id: 'comptabilitat', label: t('Comptabilitat', 'Contabilidad', 'Accounting'), emoji: '📒' },
+        { id: 'analisi', label: t('Anàlisi Financera', 'Análisis Financiero', 'Financial Analysis'), emoji: '📊' },
+        { id: 'costos', label: t('Costos i Punt Mort', 'Costes y Umbral', 'Costs & Break-even'), emoji: '💰' },
+        { id: 'inversio', label: t('Inversió', 'Inversión', 'Investment'), emoji: '📈' },
+        { id: 'fiscalitat', label: t('Fiscalitat', 'Fiscalidad', 'Taxation'), emoji: '🏛️' },
+        { id: 'produccio', label: t('Producció', 'Producción', 'Production'), emoji: '🏭' },
+        { id: 'rrhh', label: t('Recursos Humans', 'Recursos Humanos', 'Human Resources'), emoji: '👥' },
+        { id: 'marketing', label: 'Marketing', emoji: '📣' },
+        { id: 'estrategia', label: t('Anàlisi Estratègica', 'Análisis Estratégico', 'Strategic Analysis'), emoji: '🎯' },
+        { id: 'formes', label: t('Formes Jurídiques', 'Formas Jurídicas', 'Legal Forms'), emoji: '⚖️' },
+        { id: 'financament', label: t('Finançament', 'Financiación', 'Financing'), emoji: '🏦' },
+        { id: 'emprenedoria', label: t('Guia Emprenedoria', 'Guía Emprendimiento', 'Startup Guide'), emoji: '🚀' },
+    ];
+
     return (
         <div className="min-h-screen">
-            <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
-                <div className="max-w-7xl mx-auto px-4">
-                    <div className="flex items-center justify-between h-16">
-                        <button onClick={() => setSection('inicio')} className="flex items-center gap-2">
-                            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl text-white text-lg">🏢</div>
-                            <span className="font-bold text-lg text-slate-800 hidden sm:block">{t('Empresa', 'Empresa', 'Business')}</span>
-                        </button>
-                        
-                        {/* Desktop: Menú desplegable */}
-                        <nav className="hidden xl:flex items-center gap-1">
-                            <button onClick={() => setSection('inicio')} className={`px-3 py-2 rounded-lg text-sm font-semibold ${section === 'inicio' ? 'bg-blue-100 text-blue-700' : 'text-slate-600 hover:bg-slate-100'}`}>
-                                🏠 {t('Inici', 'Inicio', 'Home')}
-                            </button>
-                            
-                            {menuGroups.map(group => (
-                                <div key={group.id} className="relative dropdown">
-                                    <button className="px-3 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 flex items-center gap-1">
-                                        {group.label} <span className="text-xs">▼</span>
-                                    </button>
-                                    <div className="dropdown-content absolute top-full left-0 mt-1 bg-white rounded-xl shadow-xl border border-slate-200 py-2 min-w-[200px] z-50">
-                                        {group.items.map(item => (
-                                            <button key={item.sec} onClick={() => setSection(item.sec)}
-                                                className={`w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2 ${section === item.sec ? 'text-blue-600 bg-blue-50' : 'text-slate-600'}`}>
-                                                <span>{item.icon}</span> {item.label}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </nav>
-                        
-                        <div className="flex items-center gap-2">
-                            <a href="./index.html" className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg" title={t('Tornar', 'Volver', 'Back')}>🏠</a>
-                            <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
-                                {['val', 'es', 'en'].map(lang => (
-                                    <button key={lang} onClick={() => setIdioma(lang)} className={`px-2 py-1 rounded text-xs font-bold transition-all ${idioma === lang ? 'bg-blue-500 text-white shadow' : 'text-slate-600 hover:bg-slate-200'}`}>
-                                        {lang.toUpperCase()}
-                                    </button>
-                                ))}
-                            </div>
-                            <button onClick={() => setMenuOpen(!menuOpen)} className="xl:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg">
-                                {menuOpen ? '✕' : '☰'}
-                            </button>
-                        </div>
-                    </div>
-                    
-                    {/* Mobile menu */}
-                    {menuOpen && (
-                        <div className="xl:hidden py-4 border-t border-slate-100 animate-fade">
-                            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-                                {[{sec:'inicio',icon:'🏠',label:t('Inici','Inicio','Home')},{sec:'comptabilitat',icon:'📒',label:t('Comptab.','Contab.','Account.')},{sec:'analisi',icon:'📊',label:t('Anàlisi','Análisis','Analysis')},{sec:'costos',icon:'💰',label:t('Costos','Costes','Costs')},{sec:'inversio',icon:'📈',label:t('Inversió','Inversión','Invest.')},{sec:'fiscalitat',icon:'🏛️',label:'Fiscal'},{sec:'produccio',icon:'🏭',label:t('Produc.','Produc.','Prod.')},{sec:'rrhh',icon:'👥',label:'RRHH'},{sec:'marketing',icon:'📣',label:'Market.'},{sec:'estrategia',icon:'🎯',label:t('Estrat.','Estrat.','Strategy')},{sec:'formes',icon:'⚖️',label:t('Formes','Formas','Forms')},{sec:'financament',icon:'🏦',label:t('Finanç.','Financ.','Finance')},{sec:'emprenedoria',icon:'🚀',label:t('Empr.','Empr.','Startup')}].map(item => (
-                                    <button key={item.sec} onClick={() => { setSection(item.sec); setMenuOpen(false); }} className={`p-3 rounded-lg text-center transition-all ${section === item.sec ? 'bg-blue-100 text-blue-700' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}>
-                                        <span className="text-xl block mb-1">{item.icon}</span>
-                                        <span className="text-xs font-medium">{item.label}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </header>
-            
+            <PdeHeader
+                idioma={idioma}
+                setIdioma={(lang) => { setIdioma(lang); PdeLanguageStore.set(lang); }}
+                currentApp="empresa"
+                sections={headerSections}
+                currentSection={section}
+                setSection={setSection}
+            />
+
             <main className="max-w-7xl mx-auto px-4 py-8">
                 {section === 'inicio' && <Inicio />}
                 {section === 'comptabilitat' && <Comptabilitat />}
@@ -2476,10 +2402,9 @@ function EmpresaApp() {
                 {section === 'financament' && <Financament />}
                 {section === 'emprenedoria' && <Emprenedoria />}
             </main>
-            
-            <footer className="py-6 text-center text-sm text-slate-400 border-t border-slate-100">
-                <p>🏢 Empresa · PDE · profedeeconomia.es · 2025</p>
-            </footer>
+
+            <PdeFooter appEmoji="🏢" appName={t('Empresa', 'Empresa', 'Business')} idioma={idioma} />
+            <PdeScrollToTop />
         </div>
     );
 }

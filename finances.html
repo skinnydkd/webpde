@@ -11,12 +11,15 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
     <script src="https://unpkg.com/recharts@2.1.16/umd/Recharts.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { scrollbar-width: thin; scrollbar-color: #f9a8d4 transparent; }
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #ec4899 #fdf2f8; }
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background-color: #f9a8d4; border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: #fdf2f8; }
+        ::-webkit-scrollbar-thumb { background-color: #ec4899; border-radius: 3px; }
         input[type="range"] { -webkit-appearance: none; appearance: none; height: 8px; border-radius: 4px; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #10b981; cursor: pointer; border: 2px solid white; }
         input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: #10b981; cursor: pointer; border: 2px solid white; }
@@ -241,10 +244,9 @@
 
         function FinanzasApp() {
             const [section, setSection] = useState('inicio');
-            const [menuOpen, setMenuOpen] = useState(false);
             const [showGlosario, setShowGlosario] = useState(false);
             const [searchTerm, setSearchTerm] = useState('');
-            const [idioma, setIdioma] = useState('val');
+            const [idioma, setIdioma] = useState(PdeLanguageStore.get());
             
             // Funció de traducció
             const t = (category, key) => {
@@ -253,21 +255,6 @@
                     return translations[category][idioma] || translations[category]['val'];
                 } catch { return key || category; }
             };
-            
-            // Selector d'idioma
-            const LanguageSelector = () => (
-                <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-                    {[{ code: 'val', label: 'VAL' }, { code: 'es', label: 'ES' }, { code: 'en', label: 'EN' }].map(lang => (
-                        <button 
-                            key={lang.code} 
-                            onClick={() => setIdioma(lang.code)} 
-                            className={`px-2 py-1 rounded text-xs font-bold transition-all ${idioma === lang.code ? 'bg-emerald-500 text-white' : 'text-gray-600 hover:bg-gray-200'}`}
-                        >
-                            {lang.label}
-                        </button>
-                    ))}
-                </div>
-            );
             
             const [calcCapital, setCalcCapital] = useState(10000);
             const [calcMensual, setCalcMensual] = useState(200);
@@ -510,12 +497,6 @@
                 else { brokersRec = ['MyInvestor', 'Trade Republic']; }
                 return { perfil, carteraRec, brokersRec };
             };
-
-            const NavBtn = ({ sec, icono: Icono, label }) => (
-                <button onClick={() => { setSection(sec); setMenuOpen(false); }} className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm transition-all ${section === sec ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg' : 'text-gray-500 hover:text-gray-800 hover:bg-pink-50'}`}>
-                    <Icono size={16} /><span className="font-medium">{label}</span>
-                </button>
-            );
 
             const filteredGlosario = glosario.filter(g => g.term.toLowerCase().includes(searchTerm.toLowerCase()) || g.def.toLowerCase().includes(searchTerm.toLowerCase()));
             const filteredBrokers = brokers.filter(b => brokerFiltro === 'todos' || b.tipo === brokerFiltro);
@@ -1712,72 +1693,29 @@
                 <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-pink-50 text-gray-800">
                     <div className="fixed inset-0 overflow-hidden pointer-events-none"><div className="absolute top-0 left-1/4 w-96 h-96 bg-pink-200/30 rounded-full blur-3xl" /><div className="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-200/30 rounded-full blur-3xl" /></div>
                     
-                    {/* Header - estil economia */}
-                    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
-                        <div className="max-w-7xl mx-auto px-4">
-                            <div className="flex items-center justify-between h-16">
-                                <button onClick={() => setSection('inicio')} className="flex items-center gap-2">
-                                    <div className="p-2 bg-pink-500 rounded-xl text-white"><TrendingUp size={20} /></div>
-                                    <span className="font-bold text-lg text-gray-800 hidden sm:block">{t('title')}</span>
-                                </button>
-                                
-                                <nav className="hidden xl:flex items-center gap-1">
-                                    <NavBtn sec="inicio" icono={Zap} label={t('nav', 'inicio')} />
-                                    <NavBtn sec="gestion" icono={Wallet} label={t('nav', 'gestion')} />
-                                    <NavBtn sec="activos" icono={BarChart3} label={t('nav', 'activos')} />
-                                    <NavBtn sec="calc" icono={Calculator} label={t('nav', 'calc')} />
-                                    <NavBtn sec="cartera" icono={PieChartIcon} label={t('nav', 'cartera')} />
-                                    <NavBtn sec="estrategias" icono={Target} label={t('nav', 'estrategias')} />
-                                    <NavBtn sec="psicologia" icono={Brain} label={t('nav', 'psicologia')} />
-                                    <NavBtn sec="brokers" icono={Building} label={t('nav', 'brokers')} />
-                                    <NavBtn sec="bitcoin" icono={Coins} label="₿ BTC" />
-                                    <NavBtn sec="fiscalitat" icono={() => <span>🧾</span>} label={t('nav', 'fiscalitat')} />
-                                    <NavBtn sec="analisi" icono={() => <span>📈</span>} label={t('nav', 'analisi')} />
-                                    <NavBtn sec="derivats" icono={() => <span>⚖️</span>} label={t('nav', 'derivats')} />
-                                    <NavBtn sec="quiz" icono={GraduationCap} label={t('nav', 'quiz')} />
-                                    <NavBtn sec="test" icono={Award} label={t('nav', 'test')} />
-                                </nav>
-                                
-                                <div className="flex items-center gap-2">
-                                    <a href="./index.html" className="p-2 text-gray-600 hover:text-pink-500 hover:bg-pink-50 rounded-lg" title={idioma === 'val' ? 'Tornar' : idioma === 'es' ? 'Volver' : 'Back'}>
-                                        <Home size={20} />
-                                    </a>
-                                    <LanguageSelector />
-                                    <button onClick={() => setMenuOpen(!menuOpen)} className="xl:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
-                                        {menuOpen ? <X size={24} /> : <Menu size={24} />}
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            {menuOpen && (
-                                <div className="xl:hidden py-4 border-t border-gray-100">
-                                    <div className="grid grid-cols-5 gap-2">
-                                        {[
-                                            { sec: 'inicio', icon: '🏠', label: t('nav', 'inicio') },
-                                            { sec: 'gestion', icon: '👛', label: t('nav', 'gestion') },
-                                            { sec: 'activos', icon: '📊', label: t('nav', 'activos') },
-                                            { sec: 'calc', icon: '🧮', label: t('nav', 'calc') },
-                                            { sec: 'cartera', icon: '🥧', label: t('nav', 'cartera') },
-                                            { sec: 'estrategias', icon: '🎯', label: t('nav', 'estrategias') },
-                                            { sec: 'psicologia', icon: '🧠', label: t('nav', 'psicologia') },
-                                            { sec: 'brokers', icon: '🏢', label: t('nav', 'brokers') },
-                                            { sec: 'bitcoin', icon: '₿', label: 'Bitcoin' },
-                                            { sec: 'fiscalitat', icon: '🧾', label: t('nav', 'fiscalitat') },
-                                            { sec: 'analisi', icon: '📈', label: t('nav', 'analisi') },
-                                            { sec: 'derivats', icon: '⚖️', label: t('nav', 'derivats') },
-                                            { sec: 'quiz', icon: '🎓', label: t('nav', 'quiz') },
-                                            { sec: 'test', icon: '🏆', label: t('nav', 'test') },
-                                        ].map(item => (
-                                            <button key={item.sec} onClick={() => { setSection(item.sec); setMenuOpen(false); }} className={`p-3 rounded-lg text-center ${section === item.sec ? 'bg-pink-100 text-pink-700' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}>
-                                                <span className="text-xl block mb-1">{item.icon}</span>
-                                                <span className="text-xs font-medium">{item.label}</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </header>
+                    <PdeHeader
+                        idioma={idioma}
+                        setIdioma={(lang) => { setIdioma(lang); PdeLanguageStore.set(lang); }}
+                        currentApp="finances"
+                        sections={[
+                            { id: 'inicio', emoji: '🏠', label: t('nav', 'inicio') },
+                            { id: 'gestion', emoji: '👛', label: t('nav', 'gestion') },
+                            { id: 'activos', emoji: '📊', label: t('nav', 'activos') },
+                            { id: 'calc', emoji: '🧮', label: t('nav', 'calc') },
+                            { id: 'cartera', emoji: '🥧', label: t('nav', 'cartera') },
+                            { id: 'estrategias', emoji: '🎯', label: t('nav', 'estrategias') },
+                            { id: 'psicologia', emoji: '🧠', label: t('nav', 'psicologia') },
+                            { id: 'brokers', emoji: '🏢', label: t('nav', 'brokers') },
+                            { id: 'bitcoin', emoji: '₿', label: t('nav', 'bitcoin') },
+                            { id: 'fiscalitat', emoji: '🧾', label: t('nav', 'fiscalitat') },
+                            { id: 'analisi', emoji: '📈', label: t('nav', 'analisi') },
+                            { id: 'derivats', emoji: '⚖️', label: t('nav', 'derivats') },
+                            { id: 'quiz', emoji: '🎓', label: t('nav', 'quiz') },
+                            { id: 'test', emoji: '🏆', label: t('nav', 'test') },
+                        ]}
+                        currentSection={section}
+                        setSection={setSection}
+                    />
                     
                     {/* Main */}
                     <main className="max-w-7xl mx-auto px-4 py-8">
@@ -1799,6 +1737,9 @@
                     <button onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent('📊 ' + (idioma === 'val' ? 'Guia COMPLETA de Finances Personals' : idioma === 'es' ? 'Guía COMPLETA de Finanzas Personales' : 'Complete Personal Finance Guide') + '\n\n✅ ' + t('nav', 'calc') + '\n✅ ' + t('nav', 'cartera') + '\n✅ ' + t('nav', 'test') + '\n✅ ' + t('nav', 'quiz') + '\n✅ ' + t('nav', 'brokers') + '\n\n🚀 ' + (idioma === 'val' ? 'Tot interactiu!' : idioma === 'es' ? '¡Todo interactivo!' : 'All interactive!'))}`, '_blank')} className="fixed bottom-6 right-6 p-4 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full shadow-lg shadow-emerald-500/25 hover:scale-110 transition-all z-50"><Smartphone size={24} /></button>
                     <button onClick={() => setShowGlosario(true)} className="fixed bottom-6 left-6 p-4 bg-white rounded-full shadow-lg hover:scale-110 transition-all z-50 border border-gray-200"><BookOpen size={24} /></button>
                     {showGlosario && <GlosarioModal />}
+
+                    <PdeFooter appEmoji="👛" appName={t('title') || 'Finances'} idioma={idioma} />
+                    <PdeScrollToTop />
                 </div>
             );
         }
