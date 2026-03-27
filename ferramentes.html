@@ -10,17 +10,20 @@
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { scrollbar-width: thin; scrollbar-color: #64748b #f1f5f9; }
+        * { scrollbar-width: thin; scrollbar-color: #ec4899 #fdf2f8; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background-color: #64748b; border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: #fdf2f8; }
+        ::-webkit-scrollbar-thumb { background-color: #ec4899; border-radius: 3px; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.3s ease-out; }
         .tool-card:hover { transform: translateY(-4px); }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 via-white to-zinc-100 min-h-screen">
+<body class="bg-gradient-to-br from-amber-50 via-white to-pink-50 min-h-screen">
     <div id="root"></div>
     <script type="text/babel">
         const { useState, useMemo } = React;
@@ -1415,7 +1418,7 @@
         // APP PRINCIPAL
         // ============================================
         function ToolboxApp() {
-            const [idioma, setIdioma] = useState('val');
+            const [idioma, setIdioma] = useState(PdeLanguageStore.get());
             const [selectedTool, setSelectedTool] = useState(null);
             const [filter, setFilter] = useState('all');
             
@@ -1432,31 +1435,14 @@
                 { id: 'prioritzacio', label: translations.categories.prioritzacio },
             ];
             
-            const LanguageSelector = () => (
-                <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
-                    {[{ code: 'val', label: 'VAL' }, { code: 'es', label: 'ES' }, { code: 'en', label: 'EN' }].map(lang => (
-                        <button 
-                            key={lang.code} 
-                            onClick={() => setIdioma(lang.code)} 
-                            className={`px-2 py-1 rounded text-xs font-bold transition-all ${idioma === lang.code ? 'bg-slate-700 text-white' : 'text-slate-600 hover:bg-slate-200'}`}
-                        >
-                            {lang.label}
-                        </button>
-                    ))}
-                </div>
-            );
-            
             return (
                 <div className="min-h-screen">
                     {/* Header */}
-                    <header className="bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-40">
-                        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-                            <a href="./index.html" className="text-sm text-slate-500 hover:text-slate-700 flex items-center gap-1">
-                                ← {t('backHome')}
-                            </a>
-                            <LanguageSelector />
-                        </div>
-                    </header>
+                    <PdeHeader
+                        idioma={idioma}
+                        setIdioma={(lang) => { setIdioma(lang); PdeLanguageStore.set(lang); }}
+                        currentApp="ferramentes"
+                    />
                     
                     {/* Hero */}
                     <section className="py-12 md:py-16">
@@ -1524,14 +1510,11 @@
                     </section>
                     
                     {/* Footer */}
-                    <footer className="py-8 bg-slate-50 border-t border-slate-100">
-                        <div className="max-w-6xl mx-auto px-4 text-center">
-                            <p className="text-sm text-slate-500">
-                                🔧 {t('title')} · <a href="./index.html" className="text-slate-700 hover:underline">PDE</a> · 2025
-                            </p>
-                        </div>
-                    </footer>
-                    
+                    <PdeFooter appEmoji="🔧" appName={t('title')} idioma={idioma} />
+
+                    {/* Scroll to top */}
+                    <PdeScrollToTop />
+
                     {/* Modal */}
                     {selectedTool && (
                         <ToolModal 
