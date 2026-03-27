@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Playground - Aprèn Economia Jugant! | PDE</title>
-    <meta name="description" content="10 jocs educatius d'economia per a 2 jugadors: teoria de jocs, diversificació, interès compost, oferta i demanda, inflació i més.">
+    <meta name="description" content="10 jocs educatius d'economia per a 1-2 jugadors: teoria de jocs, bombolles especulatives, tragèdia dels comuns, comerç internacional, cost d'oportunitat i més.">
     <meta property="og:title" content="Playground - Aprèn Economia Jugant! | PDE">
-    <meta property="og:description" content="10 jocs educatius per aprendre economia jugant amb amics.">
+    <meta property="og:description" content="10 jocs educatius per aprendre economia jugant: bombolles, comerç internacional, tragèdia dels comuns i molt més!">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://profedeeconomia.es/playground">
     <meta property="og:locale" content="ca_ES">
@@ -451,265 +451,1156 @@ const JocSubhasta = ({ jugadors, onEnd, difficulty }) => {
     return null;
 };
 
-// ============== JOC 5: EL MERCAT ==============
-const JocMercat = ({ jugadors, onEnd, difficulty }) => {
-    const TOTAL_RONDES = difficulty === 'hard' ? 8 : 5;
+// ============== JOC NOU: TRAGÈDIA DELS COMUNS ==============
+const JocComuns = ({ jugadors, onEnd, difficulty }) => {
+    // Game parameters based on difficulty
+    const PEIXOS_INICIALS = difficulty === 'hard' ? 15 : 20;
+    const TOTAL_RONDES = difficulty === 'hard' ? 12 : 8;
+    const REGENERACIO = difficulty === 'hard' ? 0.2 : 0.3;
+    const MAX_BARQUES = difficulty === 'hard' ? 5 : 4;
+
     const [fase, setFase] = useState('intro');
-    const [torn, setTorn] = useState('j1');
     const [ronda, setRonda] = useState(1);
-    const [inventari, setInventari] = useState({ j1: { monedes: 20, pomes: 0 }, j2: { monedes: 20, pomes: 0 } });
-    const [preu, setPreu] = useState(5);
-    const [ofertaDemanda, setOfertaDemanda] = useState({ oferta: 0, demanda: 0 });
+    const [llac, setLlac] = useState(PEIXOS_INICIALS);
+    const [eleccioJ1, setEleccioJ1] = useState(1);
+    const [eleccioJ2, setEleccioJ2] = useState(1);
+    const [confirmatJ1, setConfirmatJ1] = useState(false);
+    const [pescaTotal, setPescaTotal] = useState({ j1: 0, j2: 0 });
+    const [historial, setHistorial] = useState([PEIXOS_INICIALS]);
+    const [resultatRonda, setResultatRonda] = useState(null);
+    const [tempesta, setTempesta] = useState(null);
     const [showConfetti, setShowConfetti] = useState(false);
+    const [collapsed, setCollapsed] = useState(false);
 
-    const comprar = (q) => { const cost = q * preu; if (inventari[torn].monedes < cost) return; playSound('coin'); setInventari(i => ({ ...i, [torn]: { monedes: i[torn].monedes - cost, pomes: i[torn].pomes + q } })); setOfertaDemanda(od => ({ ...od, demanda: od.demanda + q })); };
-    const vendre = (q) => { if (inventari[torn].pomes < q) return; playSound('coin'); setInventari(i => ({ ...i, [torn]: { monedes: i[torn].monedes + q * preu, pomes: i[torn].pomes - q } })); setOfertaDemanda(od => ({ ...od, oferta: od.oferta + q })); };
+    // Calculate health percentage for the lake bar
+    const salutLlac = Math.round((llac / PEIXOS_INICIALS) * 100);
+    const colorSalut = salutLlac > 60 ? 'bg-green-500' : salutLlac > 30 ? 'bg-yellow-500' : 'bg-red-500';
+    const colorSalutBg = salutLlac > 60 ? 'bg-green-100' : salutLlac > 30 ? 'bg-yellow-100' : 'bg-red-100';
 
-    const passarTorn = () => {
-        if (torn === 'j1') setTorn('j2');
-        else {
-            let nouPreu = preu;
-            const { oferta, demanda } = ofertaDemanda;
-            if (demanda > oferta) nouPreu = Math.min(15, preu + Math.ceil((demanda - oferta) / 2));
-            else if (oferta > demanda) nouPreu = Math.max(1, preu - Math.ceil((oferta - demanda) / 2));
-            if (difficulty === 'hard' && Math.random() < 0.2) nouPreu = Math.max(1, Math.min(15, nouPreu + (Math.random() > 0.5 ? 2 : -2)));
-            setPreu(nouPreu); setOfertaDemanda({ oferta: 0, demanda: 0 });
-            if (ronda >= TOTAL_RONDES) { setFase('resultat'); playSound('win'); setShowConfetti(true); }
-            else { setRonda(r => r + 1); setTorn('j1'); }
-        }
+    // Lake visualization component
+    const Llac = ({ peixos, animating = false }) => {
+        const shown = Math.min(peixos, 20);
+        return (
+            <div className="relative bg-gradient-to-b from-blue-300 to-blue-500 rounded-3xl p-4 min-h-[120px] overflow-hidden shadow-inner">
+                <div className="absolute inset-0 opacity-20">
+                    {[...Array(5)].map((_, i) => (
+                        <div key={i} className="absolute bg-white/30 rounded-full" style={{
+                            width: `${60 + i * 20}px`, height: '8px',
+                            left: `${10 + i * 15}%`, top: `${20 + i * 15}%`,
+                            animation: `float ${3 + i * 0.5}s ease-in-out infinite`
+                        }} />
+                    ))}
+                </div>
+                <div className="relative flex flex-wrap justify-center gap-1 items-center">
+                    {[...Array(shown)].map((_, i) => (
+                        <span key={i} className={`text-2xl ${animating ? 'animate-pop' : ''}`}
+                              style={{ animation: `float ${2 + (i % 3) * 0.5}s ease-in-out ${i * 0.1}s infinite` }}>
+                            🐟
+                        </span>
+                    ))}
+                    {peixos === 0 && <span className="text-4xl">💀</span>}
+                </div>
+                {peixos > 20 && <p className="text-center text-white/80 text-sm font-bold mt-1">+{peixos - 20} més</p>}
+            </div>
+        );
     };
 
-    if (fase === 'intro') return (
-        <GameCard><div className="text-center space-y-5">
-            <h2 className="text-3xl font-black text-red-600">🎰 El Mercat</h2>
-            <Mascot mood="smart" message="Compra barat, ven car!" />
-            <div className={`rounded-2xl p-5 space-y-3 ${difficulty === 'hard' ? 'bg-red-100' : 'bg-orange-100'}`}>
-                <p className="text-lg font-bold text-center">📜 Regles:</p>
-                <div className="space-y-2"><p>🪙 Tens <strong>20 monedes</strong></p><p>🍎 Compra i ven <strong>pomes</strong></p><p>📈 El preu canvia segons <strong>oferta i demanda</strong></p></div>
+    // Health bar component
+    const BarraSalut = () => (
+        <div className="space-y-1">
+            <div className="flex justify-between text-sm font-bold text-gray-600">
+                <span>🐟 Llac: {llac} peixos</span>
+                <span>{salutLlac}%</span>
             </div>
-            <BigButton color="red" onClick={() => setFase('joc')}>🎮 Començar!</BigButton>
-        </div></GameCard>
+            <div className={`w-full h-4 ${colorSalutBg} rounded-full overflow-hidden`}>
+                <div className={`h-full ${colorSalut} rounded-full transition-all duration-700`}
+                     style={{ width: `${Math.max(salutLlac, 0)}%` }} />
+            </div>
+        </div>
     );
 
-    if (fase === 'joc') {
-        const esJ1 = torn === 'j1';
-        const inv = inventari[torn];
-        return (
-            <GameCard><div className="space-y-4">
-                <div className="flex justify-between items-center">
-                    <PlayerBadge name={jugadors.j1} score={`🪙${inventari.j1.monedes} 🍎${inventari.j1.pomes}`} color="from-blue-400 to-blue-600" isActive={esJ1} emoji="🦊" />
-                    <span className="text-sm">Ronda {ronda}/{TOTAL_RONDES}</span>
-                    <PlayerBadge name={jugadors.j2} score={`🪙${inventari.j2.monedes} 🍎${inventari.j2.pomes}`} color="from-pink-400 to-pink-600" isActive={!esJ1} emoji="🐰" />
-                </div>
-                <div className="bg-gradient-to-r from-green-200 to-emerald-200 rounded-2xl p-4 text-center">
-                    <p className="text-sm text-green-800">Preu actual</p><p className="text-4xl font-black text-green-700">🍎 = 🪙{preu}</p>
-                </div>
-                <div className={`p-4 rounded-2xl ${esJ1 ? 'bg-blue-50 ring-2 ring-blue-400' : 'bg-pink-50 ring-2 ring-pink-400'}`}>
-                    <p className="font-bold mb-2">{jugadors[torn]} {esJ1 ? '🦊' : '🐰'}</p>
-                    <p className="text-sm mb-3">🪙 {inv.monedes} | 🍎 {inv.pomes}</p>
-                    <div className="grid grid-cols-2 gap-3">
-                        <div><p className="text-sm font-bold text-green-600">Comprar 🍎</p><div className="flex gap-1">{[1, 2, 3].map(q => <button key={q} onClick={() => comprar(q)} disabled={inv.monedes < q * preu} className={`px-3 py-2 rounded-lg font-bold text-sm ${inv.monedes >= q * preu ? 'bg-green-500 text-white' : 'bg-gray-200'}`}>+{q}</button>)}</div></div>
-                        <div><p className="text-sm font-bold text-red-600">Vendre 🍎</p><div className="flex gap-1">{[1, 2, 3].map(q => <button key={q} onClick={() => vendre(q)} disabled={inv.pomes < q} className={`px-3 py-2 rounded-lg font-bold text-sm ${inv.pomes >= q ? 'bg-red-500 text-white' : 'bg-gray-200'}`}>-{q}</button>)}</div></div>
-                    </div>
-                </div>
-                <BigButton color={esJ1 ? 'blue' : 'pink'} onClick={passarTorn}>✅ Acabar Torn</BigButton>
-            </div></GameCard>
-        );
-    }
+    // Boat selector component
+    const SelectorBarques = ({ value, onChange }) => (
+        <div className="space-y-2">
+            <p className="text-lg font-bold text-gray-700">Quantes barques envies?</p>
+            <div className="flex justify-center gap-2 flex-wrap">
+                {[...Array(MAX_BARQUES)].map((_, i) => {
+                    const num = i + 1;
+                    return (
+                        <button key={num} onClick={() => { playSound('pop'); onChange(num); }}
+                                className={`w-14 h-14 rounded-2xl text-2xl font-black transition-all ${
+                                    value === num
+                                        ? 'bg-gradient-to-b from-blue-400 to-blue-600 text-white scale-110 shadow-lg ring-4 ring-blue-300'
+                                        : 'bg-white shadow-md hover:scale-105'
+                                }`}>
+                            {num}
+                        </button>
+                    );
+                })}
+            </div>
+            <div className="flex justify-center gap-1">
+                {[...Array(value)].map((_, i) => <span key={i} className="text-2xl animate-pop">🚣</span>)}
+            </div>
+        </div>
+    );
 
-    if (fase === 'resultat') {
-        const valorJ1 = inventari.j1.monedes + inventari.j1.pomes * preu;
-        const valorJ2 = inventari.j2.monedes + inventari.j2.pomes * preu;
-        return (
-            <GameCard><Confetti show={showConfetti} /><div className="text-center space-y-5">
-                <h3 className="text-2xl font-black">🏪 Mercat Tancat!</h3>
-                <div className="grid grid-cols-2 gap-4">
-                    <div className={`rounded-2xl p-4 ${valorJ1 > valorJ2 ? 'bg-yellow-100 ring-4 ring-yellow-400' : 'bg-blue-100'}`}><p className="font-bold">{jugadors.j1} 🦊</p><p className="text-sm">🪙{inventari.j1.monedes} + 🍎{inventari.j1.pomes}×{preu}</p><p className="text-3xl font-black text-green-600">= {valorJ1}</p></div>
-                    <div className={`rounded-2xl p-4 ${valorJ2 > valorJ1 ? 'bg-yellow-100 ring-4 ring-yellow-400' : 'bg-pink-100'}`}><p className="font-bold">{jugadors.j2} 🐰</p><p className="text-sm">🪙{inventari.j2.monedes} + 🍎{inventari.j2.pomes}×{preu}</p><p className="text-3xl font-black text-green-600">= {valorJ2}</p></div>
-                </div>
-                <Mascot mood="smart" message="L'oferta i la demanda determinen els preus!" />
-                <BigButton color="yellow" onClick={() => onEnd({ j1: valorJ1, j2: valorJ2 })}>🏆 Veure Guanyador</BigButton>
-            </div></GameCard>
-        );
-    }
-    return null;
-};
+    // Process round results
+    const processarRonda = () => {
+        const j1boats = eleccioJ1;
+        const j2boats = eleccioJ2;
+        const totalBarques = j1boats + j2boats;
 
-// ============== JOC 6: LA INFLACIÓ ==============
-const JocInflacio = ({ jugadors, onEnd, difficulty }) => {
-    const TOTAL_RONDES = difficulty === 'hard' ? 10 : 6;
-    const [fase, setFase] = useState('intro');
-    const [ronda, setRonda] = useState(1);
-    const [inflacio, setInflacio] = useState(0);
-    const [diners, setDiners] = useState({ j1: 100, j2: 100 });
-    const [bens, setBens] = useState({ j1: 0, j2: 0 });
-    const [preuBens, setPreuBens] = useState(10);
-    const [showConfetti, setShowConfetti] = useState(false);
+        // Calculate proportional catch
+        let pescaJ1 = Math.min(j1boats, Math.floor(llac * j1boats / totalBarques));
+        let pescaJ2 = Math.min(j2boats, Math.floor(llac * j2boats / totalBarques));
 
-    const comprarBens = (jugador) => { const q = Math.floor(diners[jugador] / preuBens); if (q <= 0) return; playSound('coin'); setDiners(d => ({ ...d, [jugador]: d[jugador] - q * preuBens })); setBens(b => ({ ...b, [jugador]: b[jugador] + q })); };
+        // Total catch can't exceed lake
+        if (pescaJ1 + pescaJ2 > llac) {
+            const ratio = llac / (pescaJ1 + pescaJ2);
+            pescaJ1 = Math.floor(pescaJ1 * ratio);
+            pescaJ2 = Math.floor(pescaJ2 * ratio);
+        }
 
+        // Lake after fishing
+        const remaining = llac - (pescaJ1 + pescaJ2);
+
+        // Regeneration
+        let nouLlac = remaining + Math.floor(remaining * REGENERACIO);
+
+        // Hard mode storms
+        let stormDmg = 0;
+        if (difficulty === 'hard' && Math.random() < 0.2) {
+            stormDmg = 2 + Math.floor(Math.random() * 3);
+            nouLlac = Math.max(0, nouLlac - stormDmg);
+        }
+
+        // Update scores
+        const newPesca = { j1: pescaTotal.j1 + pescaJ1, j2: pescaTotal.j2 + pescaJ2 };
+        setPescaTotal(newPesca);
+        setLlac(nouLlac);
+        setHistorial(h => [...h, nouLlac]);
+        setTempesta(stormDmg > 0 ? stormDmg : null);
+
+        // Determine mascot reaction
+        let mascotMood, mascotMsg;
+        if (nouLlac < 3) {
+            mascotMood = 'sad';
+            mascotMsg = "TRAGÈDIA! El llac s'ha buidat! No queden peixos per a ningú! 😱";
+            playSound('lose');
+            setCollapsed(true);
+        } else if (j1boats <= 2 && j2boats <= 2) {
+            mascotMood = 'love';
+            mascotMsg = 'Pesca sostenible! El llac es regenera! 🌿';
+            playSound('win');
+        } else if (j1boats >= 4 || j2boats >= 4) {
+            mascotMood = 'surprised';
+            mascotMsg = 'Algú pesca massa... El llac pateix! ⚠️';
+            playSound('lose');
+        } else {
+            mascotMood = 'thinking';
+            mascotMsg = `El llac aguanta... de moment. Queden ${nouLlac} peixos.`;
+            playSound('coin');
+        }
+
+        setResultatRonda({
+            j1boats, j2boats, pescaJ1, pescaJ2, remaining,
+            nouLlac, stormDmg, mascotMood, mascotMsg
+        });
+        setFase('resultat_ronda');
+    };
+
+    // Handle next round or end game
     const seguentRonda = () => {
-        const novaInflacio = difficulty === 'hard' ? Math.floor(Math.random() * 20) + 5 : Math.floor(Math.random() * 15) + 3;
-        setInflacio(novaInflacio);
-        setDiners(d => ({ j1: Math.floor(d.j1 * (100 - novaInflacio) / 100) + 20, j2: Math.floor(d.j2 * (100 - novaInflacio) / 100) + 20 }));
-        setPreuBens(p => Math.ceil(p * (100 + novaInflacio) / 100));
-        if (ronda >= TOTAL_RONDES) { setFase('resultat'); playSound('win'); setShowConfetti(true); }
-        else setRonda(r => r + 1);
-    };
-
-    if (fase === 'intro') return (
-        <GameCard><div className="text-center space-y-5">
-            <h2 className="text-3xl font-black text-red-500">🏃 La Cursa de la Inflació</h2>
-            <Mascot mood="thinking" message="Els diners perden valor amb el temps!" />
-            <div className={`rounded-2xl p-5 space-y-3 ${difficulty === 'hard' ? 'bg-red-100' : 'bg-orange-100'}`}>
-                <p className="text-lg font-bold text-center">📜 Regles:</p>
-                <div className="space-y-2"><p>🪙 Comences amb <strong>100 monedes</strong></p><p>📉 Cada ronda hi ha <strong>INFLACIÓ</strong></p><p>🏠 Compra <strong>béns</strong> (mantenen valor)</p></div>
-            </div>
-            <BigButton color="red" onClick={() => setFase('joc')}>🎮 Començar!</BigButton>
-        </div></GameCard>
-    );
-
-    if (fase === 'joc') return (
-        <GameCard><div className="space-y-4">
-            <div className="flex justify-between items-center">
-                <span className="font-bold">Ronda {ronda}/{TOTAL_RONDES}</span>
-                {inflacio > 0 && <span className="px-3 py-1 bg-red-500 text-white rounded-full font-bold text-sm">📉 Inflació: {inflacio}%</span>}
-            </div>
-            <div className="bg-gradient-to-r from-red-200 to-orange-200 rounded-2xl p-4 text-center">
-                <p className="text-sm text-red-800">Preu béns</p><p className="text-3xl font-black text-red-700">🏠 = 🪙{preuBens}</p>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-                {['j1', 'j2'].map(j => (
-                    <div key={j} className={`${j === 'j1' ? 'bg-blue-50' : 'bg-pink-50'} rounded-2xl p-4`}>
-                        <p className="font-bold">{jugadors[j]} {j === 'j1' ? '🦊' : '🐰'}</p>
-                        <p className="text-2xl font-black">🪙 {diners[j]}</p>
-                        <p className="text-lg">🏠 {bens[j]} béns</p>
-                        <button onClick={() => comprarBens(j)} disabled={diners[j] < preuBens} className={`w-full mt-2 px-3 py-2 rounded-lg font-bold ${diners[j] >= preuBens ? 'bg-green-500 text-white' : 'bg-gray-200'}`}>🏠 Comprar ({Math.floor(diners[j] / preuBens)})</button>
-                    </div>
-                ))}
-            </div>
-            <BigButton color="orange" onClick={seguentRonda}>⏭️ Passar Ronda (Ve la inflació!)</BigButton>
-        </div></GameCard>
-    );
-
-    if (fase === 'resultat') {
-        const valorJ1 = diners.j1 + bens.j1 * preuBens, valorJ2 = diners.j2 + bens.j2 * preuBens;
-        return (
-            <GameCard><Confetti show={showConfetti} /><div className="text-center space-y-5">
-                <h3 className="text-2xl font-black">📊 Fi de la Cursa!</h3>
-                <div className="grid grid-cols-2 gap-4">
-                    <div className={`rounded-2xl p-4 ${valorJ1 > valorJ2 ? 'bg-yellow-100 ring-4 ring-yellow-400' : 'bg-blue-100'}`}><p className="font-bold">{jugadors.j1} 🦊</p><p className="text-sm">🪙{diners.j1} + 🏠{bens.j1}×{preuBens}</p><p className="text-3xl font-black text-green-600">= {valorJ1}</p></div>
-                    <div className={`rounded-2xl p-4 ${valorJ2 > valorJ1 ? 'bg-yellow-100 ring-4 ring-yellow-400' : 'bg-pink-100'}`}><p className="font-bold">{jugadors.j2} 🐰</p><p className="text-sm">🪙{diners.j2} + 🏠{bens.j2}×{preuBens}</p><p className="text-3xl font-black text-green-600">= {valorJ2}</p></div>
-                </div>
-                <Mascot mood="smart" message="La INFLACIÓ fa que els diners valguin menys. Els béns reals protegeixen el patrimoni!" />
-                <BigButton color="yellow" onClick={() => onEnd({ j1: valorJ1, j2: valorJ2 })}>🏆 Veure Guanyador</BigButton>
-            </div></GameCard>
-        );
-    }
-    return null;
-};
-
-// ============== JOC 7: OR, BITCOIN I DINERS ==============
-const JocEscassetat = ({ jugadors, onEnd, difficulty }) => {
-    const TOTAL_RONDES = difficulty === 'hard' ? 8 : 5;
-    const [fase, setFase] = useState('intro');
-    const [ronda, setRonda] = useState(1);
-    const [cartera, setCartera] = useState({ j1: { fiat: 50, or: 0, btc: 0 }, j2: { fiat: 50, or: 0, btc: 0 } });
-    const [preus, setPreus] = useState({ or: 10, btc: 10 });
-    const [fiatImpresos, setFiatImpresos] = useState(0);
-    const [showConfetti, setShowConfetti] = useState(false);
-    const [torn, setTorn] = useState('j1');
-    const [eventMessage, setEventMessage] = useState('');
-
-    const comprar = (actiu) => { if (cartera[torn].fiat < preus[actiu]) return; playSound('coin'); setCartera(c => ({ ...c, [torn]: { ...c[torn], fiat: c[torn].fiat - preus[actiu], [actiu]: c[torn][actiu] + 1 } })); };
-    const vendre = (actiu) => { if (cartera[torn][actiu] <= 0) return; playSound('coin'); setCartera(c => ({ ...c, [torn]: { ...c[torn], fiat: c[torn].fiat + preus[actiu], [actiu]: c[torn][actiu] - 1 } })); };
-
-    const passarTorn = () => {
-        if (torn === 'j1') setTorn('j2');
-        else {
-            const impresio = difficulty === 'hard' ? Math.floor(Math.random() * 30) + 20 : Math.floor(Math.random() * 20) + 10;
-            setFiatImpresos(f => f + impresio);
-            setCartera(c => ({ j1: { ...c.j1, fiat: c.j1.fiat + 10 }, j2: { ...c.j2, fiat: c.j2.fiat + 10 } }));
-            let nouPreuOr = Math.ceil(preus.or * (1 + impresio / 200));
-            let nouPreuBtc = Math.ceil(preus.btc * (1 + impresio / 150));
-            const event = Math.random();
-            let msg = `💵 Impresos ${impresio} nous!`;
-            if (event < 0.2) { nouPreuBtc = Math.ceil(nouPreuBtc * 1.5); msg = '📈 BOOM Bitcoin!'; }
-            else if (event < 0.35) { nouPreuBtc = Math.ceil(nouPreuBtc * 0.7); msg = '📉 Crash Bitcoin!'; }
-            else if (event < 0.5) { nouPreuOr = Math.ceil(nouPreuOr * 1.3); msg = '🏦 Crisi! Or puja!'; }
-            setEventMessage(msg); setPreus({ or: nouPreuOr, btc: nouPreuBtc });
-            if (ronda >= TOTAL_RONDES) { setFase('resultat'); playSound('win'); setShowConfetti(true); }
-            else { setRonda(r => r + 1); setTorn('j1'); }
+        if (collapsed || ronda >= TOTAL_RONDES) {
+            playSound('win');
+            setShowConfetti(true);
+            setFase('final');
+        } else {
+            setRonda(r => r + 1);
+            setEleccioJ1(1);
+            setEleccioJ2(1);
+            setConfirmatJ1(false);
+            setTempesta(null);
+            setResultatRonda(null);
+            setFase('player1');
         }
     };
 
+    // ===== INTRO =====
     if (fase === 'intro') return (
         <GameCard><div className="text-center space-y-5">
-            <h2 className="text-3xl font-black"><span className="text-yellow-500">🪙</span> Or, Bitcoin i Diners <span className="text-orange-500">₿</span></h2>
-            <Mascot mood="smart" message="Per què l'or i el Bitcoin tenen valor?" />
-            <div className={`rounded-2xl p-5 space-y-3 ${difficulty === 'hard' ? 'bg-red-100' : 'bg-yellow-100'}`}>
-                <p className="text-lg font-bold text-center">📜 Regles:</p>
-                <div className="space-y-2"><p>💵 <strong>Fiat</strong>: El govern n'imprimeix més!</p><p>🪙 <strong>Or</strong>: Escàs, estable</p><p>₿ <strong>Bitcoin</strong>: Molt escàs (21M!), volàtil</p></div>
-                <div className="bg-white rounded-xl p-3"><p className="text-yellow-700 font-bold text-sm">💡 L'ESCASSETAT dóna valor!</p></div>
+            <h2 className="text-3xl font-black text-blue-600">🐟 Tragèdia dels Comuns</h2>
+            <Mascot mood="thinking" message="Pescareu de manera sostenible... o destruireu el llac?" />
+            <div className={`rounded-2xl p-5 space-y-3 ${difficulty === 'hard' ? 'bg-red-100' : 'bg-blue-100'}`}>
+                <p className="text-lg font-bold text-center">📜 Regles ({difficulty === 'hard' ? '🔥 Difícil' : '🌱 Fàcil'}):</p>
+                <div className="space-y-2">
+                    <div className="bg-white rounded-xl p-3 flex items-center gap-3">
+                        <span className="text-2xl">🐟</span>
+                        <span>El llac comença amb <strong className="text-blue-600">{PEIXOS_INICIALS} peixos</strong></span>
+                    </div>
+                    <div className="bg-white rounded-xl p-3 flex items-center gap-3">
+                        <span className="text-2xl">🚣</span>
+                        <span>Cada ronda tries de <strong>1 a {MAX_BARQUES} barques</strong> (en secret!)</span>
+                    </div>
+                    <div className="bg-white rounded-xl p-3 flex items-center gap-3">
+                        <span className="text-2xl">🌿</span>
+                        <span>El llac es regenera un <strong className="text-green-600">{REGENERACIO * 100}%</strong> dels peixos restants</span>
+                    </div>
+                    <div className="bg-white rounded-xl p-3 flex items-center gap-3">
+                        <span className="text-2xl">⏱️</span>
+                        <span><strong>{TOTAL_RONDES} rondes</strong> o fins que el llac col·lapse!</span>
+                    </div>
+                    {difficulty === 'hard' && (
+                        <div className="bg-red-200 rounded-xl p-3 flex items-center gap-3">
+                            <span className="text-2xl">⛈️</span>
+                            <span className="text-red-700 font-bold">Tempestes aleatòries poden matar peixos!</span>
+                        </div>
+                    )}
+                </div>
             </div>
-            <BigButton color="gold" onClick={() => setFase('joc')}>🎮 Començar!</BigButton>
+            <BigButton color="blue" onClick={() => setFase('player1')}>🎮 Començar!</BigButton>
         </div></GameCard>
     );
 
-    if (fase === 'joc') {
-        const esJ1 = torn === 'j1';
-        const c = cartera[torn];
+    // ===== PLAYER 1 =====
+    if (fase === 'player1') return (
+        <GameCard><div className="text-center space-y-4">
+            <div className="flex justify-between items-center">
+                <PlayerBadge name={jugadors.j1} score={pescaTotal.j1} color="from-blue-400 to-blue-600" isActive={true} emoji="🦊" />
+                <span className="text-lg font-black text-gray-400">Ronda {ronda}/{TOTAL_RONDES}</span>
+                <PlayerBadge name={jugadors.j2} score={pescaTotal.j2} color="from-pink-400 to-pink-600" isActive={false} emoji="🐰" />
+            </div>
+            <BarraSalut />
+            <Llac peixos={llac} />
+            <div className="bg-yellow-100 rounded-2xl p-3">
+                <p className="text-yellow-700 font-bold">🙈 {jugadors.j2}, no miris!</p>
+            </div>
+            <div className="py-2">
+                <div className="text-5xl mb-2">🦊</div>
+                <h3 className="text-2xl font-black text-gray-800">{jugadors.j1}, quantes barques?</h3>
+            </div>
+            <SelectorBarques value={eleccioJ1} onChange={setEleccioJ1} />
+            <BigButton color="blue" onClick={() => { setConfirmatJ1(true); setFase('player2'); }}>
+                ✅ Confirmar {eleccioJ1} {eleccioJ1 === 1 ? 'barca' : 'barques'}
+            </BigButton>
+        </div></GameCard>
+    );
+
+    // ===== PLAYER 2 =====
+    if (fase === 'player2') return (
+        <GameCard><div className="text-center space-y-4">
+            <div className="flex justify-between items-center">
+                <PlayerBadge name={jugadors.j1} score={pescaTotal.j1} color="from-blue-400 to-blue-600" isActive={false} emoji="🦊" />
+                <span className="text-lg font-black text-gray-400">Ronda {ronda}/{TOTAL_RONDES}</span>
+                <PlayerBadge name={jugadors.j2} score={pescaTotal.j2} color="from-pink-400 to-pink-600" isActive={true} emoji="🐰" />
+            </div>
+            <BarraSalut />
+            <Llac peixos={llac} />
+            <div className="bg-green-100 rounded-2xl p-3">
+                <p className="text-green-700 font-bold">✅ {jugadors.j1} ja ha triat!</p>
+            </div>
+            <div className="py-2">
+                <div className="text-5xl mb-2">🐰</div>
+                <h3 className="text-2xl font-black text-gray-800">{jugadors.j2}, quantes barques?</h3>
+            </div>
+            <SelectorBarques value={eleccioJ2} onChange={setEleccioJ2} />
+            <BigButton color="pink" onClick={processarRonda}>
+                ✅ Confirmar {eleccioJ2} {eleccioJ2 === 1 ? 'barca' : 'barques'}
+            </BigButton>
+        </div></GameCard>
+    );
+
+    // ===== ROUND RESULT =====
+    if (fase === 'resultat_ronda' && resultatRonda) {
+        const r = resultatRonda;
         return (
-            <GameCard><div className="space-y-4">
-                <div className="flex justify-between items-center text-sm">
-                    <span className="font-bold">Ronda {ronda}/{TOTAL_RONDES}</span>
-                    <span className="px-2 py-1 bg-red-100 text-red-600 rounded-full text-xs">💵 Impresos: {fiatImpresos}</span>
+            <GameCard><div className="text-center space-y-4">
+                <div className="flex justify-between items-center">
+                    <PlayerBadge name={jugadors.j1} score={pescaTotal.j1} color="from-blue-400 to-blue-600" emoji="🦊" />
+                    <span className="text-lg font-black text-gray-400">Ronda {ronda}/{TOTAL_RONDES}</span>
+                    <PlayerBadge name={jugadors.j2} score={pescaTotal.j2} color="from-pink-400 to-pink-600" emoji="🐰" />
                 </div>
-                {eventMessage && <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-3 text-center animate-slide-in"><p className="font-bold text-purple-700">{eventMessage}</p></div>}
-                <div className="grid grid-cols-3 gap-2 text-center">
-                    <div className="bg-green-100 rounded-xl p-3"><p className="text-2xl">💵</p><p className="text-xs">Fiat</p><p className="font-bold">∞</p></div>
-                    <div className="bg-yellow-100 rounded-xl p-3"><p className="text-2xl">🪙</p><p className="text-xs">Or</p><p className="font-bold text-yellow-600">🪙{preus.or}</p></div>
-                    <div className="bg-orange-100 rounded-xl p-3"><p className="text-2xl">₿</p><p className="text-xs">Bitcoin</p><p className="font-bold text-orange-600">🪙{preus.btc}</p></div>
-                </div>
-                <div className="flex justify-between">
-                    <PlayerBadge name={jugadors.j1} score={`💵${cartera.j1.fiat}`} color="from-blue-400 to-blue-600" isActive={esJ1} emoji="🦊" />
-                    <PlayerBadge name={jugadors.j2} score={`💵${cartera.j2.fiat}`} color="from-pink-400 to-pink-600" isActive={!esJ1} emoji="🐰" />
-                </div>
-                <div className={`p-4 rounded-2xl ${esJ1 ? 'bg-blue-50 ring-2 ring-blue-400' : 'bg-pink-50 ring-2 ring-pink-400'}`}>
-                    <p className="font-bold mb-2">{jugadors[torn]} {esJ1 ? '🦊' : '🐰'}</p>
-                    <p className="text-sm mb-3">💵 {c.fiat} | 🪙 {c.or} | ₿ {c.btc}</p>
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-2">
-                            <button onClick={() => comprar('or')} disabled={c.fiat < preus.or} className={`w-full px-2 py-2 rounded-lg font-bold text-sm ${c.fiat >= preus.or ? 'bg-yellow-500 text-white' : 'bg-gray-200'}`}>Comprar 🪙</button>
-                            <button onClick={() => vendre('or')} disabled={c.or <= 0} className={`w-full px-2 py-2 rounded-lg font-bold text-sm ${c.or > 0 ? 'bg-yellow-300' : 'bg-gray-200'}`}>Vendre 🪙</button>
+                <h3 className="text-2xl font-black text-gray-800">Resultat de la ronda!</h3>
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-blue-50 rounded-2xl p-4 animate-slide-in">
+                        <p className="font-bold text-gray-700">{jugadors.j1} 🦊</p>
+                        <div className="flex justify-center gap-1 my-2">
+                            {[...Array(r.j1boats)].map((_, i) => <span key={i} className="text-2xl">🚣</span>)}
                         </div>
-                        <div className="space-y-2">
-                            <button onClick={() => comprar('btc')} disabled={c.fiat < preus.btc} className={`w-full px-2 py-2 rounded-lg font-bold text-sm ${c.fiat >= preus.btc ? 'bg-orange-500 text-white' : 'bg-gray-200'}`}>Comprar ₿</button>
-                            <button onClick={() => vendre('btc')} disabled={c.btc <= 0} className={`w-full px-2 py-2 rounded-lg font-bold text-sm ${c.btc > 0 ? 'bg-orange-300' : 'bg-gray-200'}`}>Vendre ₿</button>
+                        <p className="text-2xl font-black text-green-600">🐟 +{r.pescaJ1}</p>
+                    </div>
+                    <div className="bg-pink-50 rounded-2xl p-4 animate-slide-in">
+                        <p className="font-bold text-gray-700">{jugadors.j2} 🐰</p>
+                        <div className="flex justify-center gap-1 my-2">
+                            {[...Array(r.j2boats)].map((_, i) => <span key={i} className="text-2xl">🚣</span>)}
                         </div>
+                        <p className="text-2xl font-black text-green-600">🐟 +{r.pescaJ2}</p>
                     </div>
                 </div>
-                <BigButton color={esJ1 ? 'blue' : 'pink'} onClick={passarTorn}>✅ Acabar Torn</BigButton>
+                <BarraSalut />
+                <Llac peixos={llac} animating={true} />
+                {r.stormDmg > 0 && (
+                    <div className="bg-purple-100 rounded-2xl p-3 animate-shake">
+                        <p className="text-purple-700 font-black text-lg">⛈️ TEMPESTA! -{r.stormDmg} peixos!</p>
+                    </div>
+                )}
+                {collapsed && (
+                    <div className="bg-red-200 rounded-2xl p-4 animate-shake">
+                        <p className="text-red-700 font-black text-xl">💀 COL·LAPSE! El llac s'ha buidat!</p>
+                    </div>
+                )}
+                <Mascot mood={r.mascotMood} message={r.mascotMsg} />
+                <div className="bg-gray-50 rounded-xl p-3">
+                    <p className="text-xs font-bold text-gray-500 mb-1">📊 Historial del llac:</p>
+                    <p className="text-sm text-gray-600 font-mono">
+                        {historial.map((h, i) => (
+                            <span key={i}>
+                                {i > 0 && ' → '}
+                                <span className={h < 5 ? 'text-red-600 font-bold' : h < 10 ? 'text-yellow-600' : 'text-green-600'}>
+                                    {h}
+                                </span>
+                            </span>
+                        ))}
+                    </p>
+                </div>
+                <BigButton
+                    color={collapsed || ronda >= TOTAL_RONDES ? 'yellow' : 'blue'}
+                    onClick={seguentRonda}>
+                    {collapsed || ronda >= TOTAL_RONDES ? '🏆 Resultats Finals' : '➡️ Següent Ronda'}
+                </BigButton>
             </div></GameCard>
         );
     }
 
-    if (fase === 'resultat') {
-        const valorJ1 = cartera.j1.fiat + cartera.j1.or * preus.or + cartera.j1.btc * preus.btc;
-        const valorJ2 = cartera.j2.fiat + cartera.j2.or * preus.or + cartera.j2.btc * preus.btc;
+    // ===== FINAL RESULTS =====
+    if (fase === 'final') {
+        const guanyador = pescaTotal.j1 > pescaTotal.j2 ? 'j1' : pescaTotal.j2 > pescaTotal.j1 ? 'j2' : null;
         return (
             <GameCard><Confetti show={showConfetti} /><div className="text-center space-y-5">
-                <h3 className="text-2xl font-black">💰 Valor Final</h3>
-                <div className="bg-red-100 rounded-xl p-3 text-sm"><p className="text-red-700">💵 Total impresos: <strong>{fiatImpresos}</strong></p></div>
+                <h2 className="text-3xl font-black text-blue-600">🏆 Resultats Finals</h2>
+                {collapsed && (
+                    <div className="bg-red-100 rounded-2xl p-4">
+                        <p className="text-red-600 font-black text-xl">💀 El llac ha col·lapsat a la ronda {ronda}!</p>
+                    </div>
+                )}
                 <div className="grid grid-cols-2 gap-4">
-                    <div className={`rounded-2xl p-4 ${valorJ1 > valorJ2 ? 'bg-yellow-100 ring-4 ring-yellow-400' : 'bg-blue-100'}`}><p className="font-bold">{jugadors.j1} 🦊</p><div className="text-xs mt-2"><p>💵 {cartera.j1.fiat}</p><p>🪙 {cartera.j1.or}×{preus.or}={cartera.j1.or * preus.or}</p><p>₿ {cartera.j1.btc}×{preus.btc}={cartera.j1.btc * preus.btc}</p></div><p className="text-3xl font-black text-green-600 mt-2">= {valorJ1}</p></div>
-                    <div className={`rounded-2xl p-4 ${valorJ2 > valorJ1 ? 'bg-yellow-100 ring-4 ring-yellow-400' : 'bg-pink-100'}`}><p className="font-bold">{jugadors.j2} 🐰</p><div className="text-xs mt-2"><p>💵 {cartera.j2.fiat}</p><p>🪙 {cartera.j2.or}×{preus.or}={cartera.j2.or * preus.or}</p><p>₿ {cartera.j2.btc}×{preus.btc}={cartera.j2.btc * preus.btc}</p></div><p className="text-3xl font-black text-green-600 mt-2">= {valorJ2}</p></div>
+                    <div className={`rounded-2xl p-5 ${guanyador === 'j1' ? 'bg-yellow-100 ring-4 ring-yellow-400' : 'bg-blue-50'}`}>
+                        <p className="text-4xl mb-2">🦊</p>
+                        <p className="font-bold text-lg">{jugadors.j1}</p>
+                        {guanyador === 'j1' && <p className="text-2xl">👑</p>}
+                        <p className="text-3xl font-black text-green-600 mt-2">🐟 {pescaTotal.j1}</p>
+                    </div>
+                    <div className={`rounded-2xl p-5 ${guanyador === 'j2' ? 'bg-yellow-100 ring-4 ring-yellow-400' : 'bg-pink-50'}`}>
+                        <p className="text-4xl mb-2">🐰</p>
+                        <p className="font-bold text-lg">{jugadors.j2}</p>
+                        {guanyador === 'j2' && <p className="text-2xl">👑</p>}
+                        <p className="text-3xl font-black text-green-600 mt-2">🐟 {pescaTotal.j2}</p>
+                    </div>
                 </div>
-                <Mascot mood="smart" message="L'ESCASSETAT és clau! L'or i Bitcoin mantenen valor. El fiat perd valor si s'imprimeix massa!" />
-                <BigButton color="yellow" onClick={() => onEnd({ j1: valorJ1, j2: valorJ2 })}>🏆 Veure Guanyador</BigButton>
+                {!guanyador && <p className="text-xl font-black text-purple-600">🤝 Empat!</p>}
+                <div className="bg-gray-50 rounded-2xl p-4">
+                    <p className="text-sm font-bold text-gray-500 mb-2">📊 Evolució del llac:</p>
+                    <div className="flex items-end justify-center gap-1 h-24">
+                        {historial.map((h, i) => {
+                            const height = Math.max(4, (h / PEIXOS_INICIALS) * 100);
+                            const color = h < 3 ? 'bg-red-400' : h < PEIXOS_INICIALS * 0.3 ? 'bg-yellow-400' : h < PEIXOS_INICIALS * 0.6 ? 'bg-blue-400' : 'bg-green-400';
+                            return (
+                                <div key={i} className="flex flex-col items-center gap-1">
+                                    <span className="text-[10px] font-bold text-gray-500">{h}</span>
+                                    <div className={`w-5 ${color} rounded-t-md transition-all`}
+                                         style={{ height: `${height}%` }} />
+                                    <span className="text-[9px] text-gray-400">{i}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+                <Mascot mood="smart"
+                    message="Quan tots busquem el benefici individual, destruïm el bé comú. Això és la TRAGÈDIA DELS COMUNS! La cooperació i els límits compartits són la clau. 🌍" />
+                <BigButton color="yellow" onClick={() => onEnd(pescaTotal)}>🏆 Veure Guanyador</BigButton>
             </div></GameCard>
         );
     }
+
+    return null;
+};
+
+// ============== JOC NOU: LA BOMBOLLA ==============
+const JocBombolla = ({ jugadors, onEnd, difficulty, mode }) => {
+    // State
+    const [fase, setFase] = useState('intro');
+    const [ronda, setRonda] = useState(1);
+    const [preu, setPreu] = useState(10);
+    const [historialPreus, setHistorialPreus] = useState([10]);
+    const [probCrash, setProbCrash] = useState(0.05);
+    const [cash, setCash] = useState({ j1: 50, j2: 50 });
+    const [tulipes, setTulipes] = useState({ j1: 0, j2: 0 });
+    const [torn, setTorn] = useState('j1');
+    const [missatge, setMissatge] = useState('');
+    const [mascotMood, setMascotMood] = useState('happy');
+    const [showConfetti, setShowConfetti] = useState(false);
+    const [crashPreu, setCrashPreu] = useState(null);
+    const [fakeWarning, setFakeWarning] = useState(false);
+    const [animCrash, setAnimCrash] = useState(false);
+
+    const isHard = difficulty === 'hard';
+    const is1P = mode === 1;
+    const nomJ1 = jugadors.j1 || 'Jugador 1';
+    const nomJ2 = is1P ? 'El Mercat' : (jugadors.j2 || 'Jugador 2');
+
+    // Tulip scale based on price (grows with price)
+    const tulipScale = Math.min(2.5, 1.0 + (preu - 10) / 80);
+
+    // Danger bar color
+    const dangerColor = (prob) => {
+        if (prob < 0.2) return 'bg-green-400';
+        if (prob < 0.4) return 'bg-yellow-400';
+        if (prob < 0.6) return 'bg-orange-400';
+        return 'bg-red-500';
+    };
+
+    // Apply an action to cash/tulipes and return new values (pure function)
+    const aplicarAccio = (c, t, jugador, accio, preuActual) => {
+        const nc = { ...c };
+        const nt = { ...t };
+        if (accio === 'comprar' && nc[jugador] >= preuActual) {
+            nc[jugador] -= preuActual;
+            nt[jugador] += 1;
+        } else if (accio === 'vendre' && nt[jugador] > 0) {
+            nc[jugador] += nt[jugador] * preuActual;
+            nt[jugador] = 0;
+        }
+        return { cash: nc, tulipes: nt };
+    };
+
+    // AI strategy for single player mode
+    const aiDecision = () => {
+        if (ronda <= 3 && cash.j2 >= preu) return 'comprar';
+        if (ronda >= 4 && ronda <= 6) return 'mantindre';
+        const threshold = isHard ? 0.65 : 0.50;
+        if (probCrash > threshold && tulipes.j2 > 0) return 'vendre';
+        if (tulipes.j2 > 0) return 'mantindre';
+        if (cash.j2 >= preu) return 'comprar';
+        return 'mantindre';
+    };
+
+    // Advance round: update price, prob, check crash
+    const advanceRound = (newCash, newTulipes) => {
+        const crashed = Math.random() < probCrash;
+
+        if (crashed) {
+            const cp = Math.ceil(preu * 0.2);
+            setCrashPreu(cp);
+            // Force-sell at crash price
+            setCash({
+                j1: newCash.j1 + newTulipes.j1 * cp,
+                j2: newCash.j2 + newTulipes.j2 * cp
+            });
+            setTulipes({ j1: 0, j2: 0 });
+            playSound('lose');
+            setAnimCrash(true);
+            setFase('crash');
+        } else {
+            // Price increases
+            const pujada = isHard
+                ? 1 + Math.random() * 0.5 + 0.1
+                : 1 + Math.random() * 0.3 + 0.2;
+            const nouPreu = Math.ceil(preu * pujada);
+
+            if (nouPreu >= preu * 2) {
+                setMascotMood('excited');
+                setMissatge('El preu es duplica! La febre de les tulipes! 🌷🔥');
+            } else {
+                setMascotMood('happy');
+                setMissatge(`Ronda ${ronda} completada. El preu puja a ${nouPreu}!`);
+            }
+
+            // Increase crash probability
+            let novaProbCrash = isHard
+                ? probCrash + 0.08 + Math.random() * 0.05
+                : probCrash + 0.05 + Math.random() * 0.03;
+            novaProbCrash = Math.min(0.95, novaProbCrash);
+
+            // Fake warnings in hard mode
+            if (isHard && Math.random() < 0.25 && probCrash > 0.15) {
+                setFakeWarning(true);
+                setTimeout(() => setFakeWarning(false), 2000);
+            }
+
+            setCash(newCash);
+            setTulipes(newTulipes);
+            setPreu(nouPreu);
+            setHistorialPreus(prev => [...prev, nouPreu]);
+            setProbCrash(novaProbCrash);
+            setRonda(r => r + 1);
+            setTorn('j1');
+            setFase('joc');
+        }
+    };
+
+    // Handle player action
+    const handleAccio = (accio) => {
+        playSound('pop');
+
+        if (torn === 'j1') {
+            // Apply J1 action
+            const after1 = aplicarAccio(cash, tulipes, 'j1', accio, preu);
+
+            if (is1P) {
+                // AI acts immediately after J1
+                const aiAcc = aiDecision();
+                const afterBoth = aplicarAccio(after1.cash, after1.tulipes, 'j2', aiAcc, preu);
+
+                // Brief pause then resolve round
+                setCash(afterBoth.cash);
+                setTulipes(afterBoth.tulipes);
+                setTorn('resolucio');
+
+                // Show what AI did
+                const aiLabel = aiAcc === 'comprar' ? '🌷 Compra' : aiAcc === 'vendre' ? '💰 Ven tot' : '✋ Manté';
+                setMissatge(`El Mercat decideix: ${aiLabel}`);
+                setMascotMood('thinking');
+
+                setTimeout(() => advanceRound(afterBoth.cash, afterBoth.tulipes), 800);
+            } else {
+                // 2P: save J1 state, pass phone to J2
+                setCash(after1.cash);
+                setTulipes(after1.tulipes);
+                setTorn('j2');
+                setFase('passPhone');
+            }
+        } else if (torn === 'j2') {
+            // Apply J2 action
+            const after2 = aplicarAccio(cash, tulipes, 'j2', accio, preu);
+            setCash(after2.cash);
+            setTulipes(after2.tulipes);
+            setTorn('resolucio');
+
+            setTimeout(() => advanceRound(after2.cash, after2.tulipes), 800);
+        }
+    };
+
+    // Mini bar chart component
+    const MiniChart = ({ preus }) => {
+        const last8 = preus.slice(-8);
+        const maxPreu = Math.max(...last8);
+        return (
+            <div className="flex items-end gap-1 h-20 bg-white/50 rounded-xl p-2">
+                {last8.map((p, i) => {
+                    const height = (p / maxPreu) * 100;
+                    const color = i === last8.length - 1 ? 'bg-rose-500' : 'bg-rose-300';
+                    return (
+                        <div key={i} className="flex-1 flex flex-col items-center justify-end">
+                            <span className="text-[8px] font-bold text-gray-500">{p}</span>
+                            <div className={`w-full rounded-t ${color}`} style={{ height: `${Math.max(height, 8)}%` }} />
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    };
+
+    // Danger meter component
+    const DangerMeter = () => {
+        const pct = Math.min(probCrash * 100, 95);
+        const barColor = dangerColor(probCrash);
+        return (
+            <div className="space-y-1">
+                <div className="flex justify-between items-center">
+                    <span className="text-sm font-bold text-gray-600">⚠️ Risc:</span>
+                    {!isHard && <span className="text-sm font-black text-red-600">{Math.round(pct)}%</span>}
+                </div>
+                <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
+                    <div className={`h-full ${barColor} rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
+                </div>
+            </div>
+        );
+    };
+
+    // Portfolio display
+    const Portfolio = ({ jugador, nom, emoji, color }) => {
+        const valor = cash[jugador] + tulipes[jugador] * preu;
+        return (
+            <div className={`rounded-2xl p-3 ${color}`}>
+                <p className="font-bold text-sm">{emoji} {nom}</p>
+                <div className="text-xs mt-1 space-y-0.5">
+                    <p>💵 {cash[jugador]}</p>
+                    <p>🌷 {tulipes[jugador]} × {preu} = {tulipes[jugador] * preu}</p>
+                </div>
+                <p className="text-lg font-black text-green-700 mt-1">= {valor}</p>
+            </div>
+        );
+    };
+
+    // ===== INTRO =====
+    if (fase === 'intro') return (
+        <GameCard>
+            <div className="text-center space-y-5">
+                <h2 className="text-3xl font-black text-rose-600">🌷 La Bombolla</h2>
+                <div className="text-6xl animate-bounce-slow">🌷</div>
+                <Mascot mood="thinking" message="Sabies que al segle XVII els holandesos van pagar el preu d'una casa per una sola tulipa?" />
+                <div className={`rounded-2xl p-5 space-y-3 text-left ${isHard ? 'bg-red-100' : 'bg-rose-100'}`}>
+                    <p className="font-bold text-lg">📜 Regles:</p>
+                    <ul className="space-y-2 text-sm">
+                        <li>🌷 El preu de les tulipes puja cada ronda... fins que la bombolla esclata!</li>
+                        <li>💰 Comences amb <strong>50 monedes</strong> i cap tulipa</li>
+                        <li>🎯 Cada ronda pots: <strong>Comprar</strong> (1 tulipa), <strong>Mantindre</strong> o <strong>Vendre tot</strong></li>
+                        <li>💥 Quan la bombolla esclati, el preu caurà un 80%!</li>
+                        <li>🧠 L'objectiu: vendre abans del crash i acabar amb més diners!</li>
+                    </ul>
+                    {isHard && (
+                        <div className="bg-red-200 rounded-xl p-3 mt-2">
+                            <p className="font-bold text-red-700 text-sm">🔥 Mode Difícil: No veuràs el percentatge de risc! I atenció als falsos avisos de perill...</p>
+                        </div>
+                    )}
+                </div>
+                <div className="flex justify-center gap-4">
+                    <PlayerBadge name={nomJ1} score={50} color="from-blue-400 to-blue-600" isActive={true} emoji="🦊" />
+                    <PlayerBadge name={nomJ2} score={50} color={is1P ? "from-rose-400 to-rose-600" : "from-pink-400 to-pink-600"} isActive={true} emoji={is1P ? "📈" : "🐰"} />
+                </div>
+                <BigButton color="red" onClick={() => { playSound('coin'); setFase('joc'); }}>🌷 Començar!</BigButton>
+            </div>
+        </GameCard>
+    );
+
+    // ===== PASS PHONE (2P only) =====
+    if (fase === 'passPhone') return (
+        <GameCard>
+            <div className="text-center space-y-5">
+                <h3 className="text-2xl font-black text-gray-700">📱 Passa el mòbil!</h3>
+                <div className="text-6xl animate-bounce-slow">🐰</div>
+                <p className="text-lg font-bold text-pink-600">{nomJ2}, és el teu torn!</p>
+                <p className="text-gray-500">{nomJ1} ja ha triat. No miris! 🙈</p>
+                <BigButton color="pink" onClick={() => setFase('joc')}>👀 Estic preparat/da!</BigButton>
+            </div>
+        </GameCard>
+    );
+
+    // ===== MAIN GAME =====
+    if (fase === 'joc') {
+        const jugadorActual = torn === 'j1' ? nomJ1 : nomJ2;
+        const potComprar = torn === 'j1' ? cash.j1 >= preu : cash.j2 >= preu;
+        const teTulipes = torn === 'j1' ? tulipes.j1 > 0 : tulipes.j2 > 0;
+
+        return (
+            <GameCard>
+                <div className="space-y-4">
+                    {/* Header */}
+                    <div className="flex justify-between items-center">
+                        <span className="bg-rose-100 text-rose-700 px-3 py-1 rounded-full font-bold text-sm">Ronda {ronda}</span>
+                        <div className="flex gap-2">
+                            <PlayerBadge name={nomJ1} score={`💵${cash.j1}`} color="from-blue-400 to-blue-600" isActive={torn === 'j1'} emoji="🦊" />
+                            <PlayerBadge name={nomJ2} score={`💵${cash.j2}`} color={is1P ? "from-rose-400 to-rose-600" : "from-pink-400 to-pink-600"} isActive={torn === 'j2'} emoji={is1P ? "📈" : "🐰"} />
+                        </div>
+                    </div>
+
+                    {/* Fake warning (hard mode only) */}
+                    {fakeWarning && (
+                        <div className="bg-red-100 border-2 border-red-400 rounded-xl p-3 text-center animate-shake">
+                            <span className="text-2xl">⚠️</span>
+                            <p className="font-black text-red-600">PERILL!</p>
+                        </div>
+                    )}
+
+                    {/* Tulip price display */}
+                    <div className="text-center bg-gradient-to-br from-rose-50 to-amber-50 rounded-2xl p-4">
+                        <div className="text-6xl mb-2" style={{ transform: `scale(${tulipScale})`, transition: 'transform 0.5s ease' }}>🌷</div>
+                        <p className="text-sm text-gray-500 mt-2">Preu actual</p>
+                        <p className="text-4xl font-black text-rose-600">{preu} 💰</p>
+                    </div>
+
+                    {/* Price history chart */}
+                    <MiniChart preus={historialPreus} />
+
+                    {/* Danger meter */}
+                    <DangerMeter />
+
+                    {/* Portfolios */}
+                    <div className="grid grid-cols-2 gap-2">
+                        <Portfolio jugador="j1" nom={nomJ1} emoji="🦊" color="bg-blue-50" />
+                        <Portfolio jugador="j2" nom={nomJ2} emoji={is1P ? "📈" : "🐰"} color={is1P ? "bg-rose-50" : "bg-pink-50"} />
+                    </div>
+
+                    {/* Mascot message */}
+                    {missatge && <Mascot mood={mascotMood} message={missatge} />}
+
+                    {/* Current player turn */}
+                    <div className="text-center">
+                        <h3 className="text-xl font-black text-gray-800">{jugadorActual}, què fas?</h3>
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="grid grid-cols-3 gap-2">
+                        <BigButton color="green" onClick={() => handleAccio('comprar')} disabled={!potComprar || torn === 'resolucio'}>
+                            🌷 Comprar
+                        </BigButton>
+                        <BigButton color="yellow" onClick={() => handleAccio('mantindre')} disabled={torn === 'resolucio'}>
+                            ✋ Mantindre
+                        </BigButton>
+                        <BigButton color="red" onClick={() => handleAccio('vendre')} disabled={!teTulipes || torn === 'resolucio'}>
+                            💰 Vendre Tot
+                        </BigButton>
+                    </div>
+
+                    {!potComprar && torn !== 'resolucio' && <p className="text-center text-xs text-gray-400">No tens prou diners per comprar ({preu} 💰)</p>}
+                </div>
+            </GameCard>
+        );
+    }
+
+    // ===== CRASH =====
+    if (fase === 'crash') {
+        const preuFinal = crashPreu || Math.ceil(preu * 0.2);
+        // At this point tulipes are already 0 (force-sold in advanceRound)
+        // We show the crash info using the pre-crash state via historialPreus
+        const preuAnterior = historialPreus[historialPreus.length - 1];
+
+        return (
+            <GameCard>
+                <div className="text-center space-y-5">
+                    <div className={`text-6xl ${animCrash ? 'animate-shake' : ''}`}>💥</div>
+                    <h2 className="text-3xl font-black text-red-600">CRASH!</h2>
+                    <p className="text-xl font-bold text-red-500">La bombolla ha esclatat!</p>
+
+                    <div className="bg-red-100 rounded-2xl p-4 space-y-2">
+                        <div className="flex justify-center items-center gap-4">
+                            <div className="text-center">
+                                <p className="text-sm text-gray-500">Preu abans</p>
+                                <p className="text-2xl font-black text-gray-400 line-through">{preuAnterior} 💰</p>
+                            </div>
+                            <span className="text-3xl">➡️</span>
+                            <div className="text-center">
+                                <p className="text-sm text-gray-500">Preu ara</p>
+                                <p className="text-2xl font-black text-red-600">{preuFinal} 💰</p>
+                            </div>
+                        </div>
+                        <p className="text-sm text-red-600 font-bold">📉 Caiguda del {Math.round((1 - preuFinal / preuAnterior) * 100)}%!</p>
+                    </div>
+
+                    <Mascot mood="sad" message="CRASH! La bombolla ha esclatat! 💥" />
+
+                    <div className="bg-amber-50 rounded-2xl p-3 text-sm text-gray-600">
+                        <p>Les tulipes que quedaven s'han venut al preu de crash ({preuFinal} 💰).</p>
+                    </div>
+
+                    <BigButton color="red" onClick={() => { playSound('click'); setShowConfetti(true); setFase('resultat'); }}>📊 Veure Resultats</BigButton>
+                </div>
+            </GameCard>
+        );
+    }
+
+    // ===== RESULTS =====
+    if (fase === 'resultat') {
+        const finalJ1 = cash.j1;
+        const finalJ2 = cash.j2;
+        const guanyador = finalJ1 > finalJ2 ? 'j1' : finalJ2 > finalJ1 ? 'j2' : 'empat';
+
+        return (
+            <GameCard>
+                <Confetti show={showConfetti} />
+                <div className="text-center space-y-5">
+                    <h2 className="text-3xl font-black text-rose-600">📊 Resultats Finals</h2>
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className={`rounded-2xl p-4 ${guanyador === 'j1' ? 'bg-yellow-100 ring-4 ring-yellow-400' : 'bg-blue-50'}`}>
+                            <p className="text-3xl">🦊</p>
+                            <p className="font-bold">{nomJ1}</p>
+                            <p className="text-xs text-gray-500">Inici: 50 💰</p>
+                            <p className="text-3xl font-black text-green-600">{finalJ1} 💰</p>
+                            <p className={`text-sm font-bold ${finalJ1 >= 50 ? 'text-green-500' : 'text-red-500'}`}>
+                                {finalJ1 >= 50 ? '+' : ''}{finalJ1 - 50} benefici
+                            </p>
+                            {guanyador === 'j1' && <p className="text-yellow-600 font-black mt-1">🏆 Guanyador!</p>}
+                        </div>
+                        <div className={`rounded-2xl p-4 ${guanyador === 'j2' ? 'bg-yellow-100 ring-4 ring-yellow-400' : is1P ? 'bg-rose-50' : 'bg-pink-50'}`}>
+                            <p className="text-3xl">{is1P ? '📈' : '🐰'}</p>
+                            <p className="font-bold">{nomJ2}</p>
+                            <p className="text-xs text-gray-500">Inici: 50 💰</p>
+                            <p className="text-3xl font-black text-green-600">{finalJ2} 💰</p>
+                            <p className={`text-sm font-bold ${finalJ2 >= 50 ? 'text-green-500' : 'text-red-500'}`}>
+                                {finalJ2 >= 50 ? '+' : ''}{finalJ2 - 50} benefici
+                            </p>
+                            {guanyador === 'j2' && <p className="text-yellow-600 font-black mt-1">🏆 Guanyador!</p>}
+                        </div>
+                    </div>
+
+                    {guanyador === 'empat' && (
+                        <p className="text-xl font-black text-purple-600">🤝 Empat!</p>
+                    )}
+
+                    <Mascot mood="smart" message="Les BOMBOLLES ESPECULATIVES creixen per la cobdícia i l'efecte ramat. Sempre esclaten!" />
+
+                    <div className="bg-amber-50 rounded-2xl p-4 text-left space-y-2">
+                        <p className="font-bold text-amber-700">📚 Lliçó econòmica:</p>
+                        <p className="text-sm text-gray-700">La <strong>Tulipmania</strong> (1637) va ser la primera bombolla especulativa documentada. Els preus de les tulipes van pujar 2000% en mesos i després van caure un 99%.</p>
+                        <p className="text-sm text-gray-700">Les bombolles es repeteixen: les <strong>.com</strong> (2000), la <strong>immobiliària</strong> (2008), les <strong>criptomonedes</strong>... El patró és sempre el mateix: eufòria → pànic.</p>
+                    </div>
+
+                    <BigButton color="gold" onClick={() => {
+                        if (is1P) {
+                            onEnd({ j1: finalJ1 });
+                        } else {
+                            onEnd({ j1: finalJ1, j2: finalJ2 });
+                        }
+                    }}>🏆 Veure Guanyador</BigButton>
+                </div>
+            </GameCard>
+        );
+    }
+
+    return null;
+};
+
+// ============== JOC: L'ILLA DE L'ESCASSETAT (1 Player) ==============
+const JocIlla = ({ jugadors, onEnd, difficulty }) => {
+    const isHard = difficulty === 'hard';
+    const HORES_DIA = 10;
+    const TOTAL_DIES = 6;
+    const FOOD_PER_HOUR = isHard ? 2 : 3;
+    const SHELTER_PER_HOUR = isHard ? 1 : 2;
+    const EXPLORE_PER_HOUR = isHard ? 4 : 5;
+    const CONSUM_DIARI = 8;
+    const DESGAST_DIARI = isHard ? 4 : 3;
+    const TOOL_BOOST = isHard ? 0.10 : 0.15;
+
+    const [fase, setFase] = useState('intro');
+    const [dia, setDia] = useState(1);
+    const [hores, setHores] = useState({ menjar: 0, refugi: 0, eines: 0, explorar: 0 });
+    const [acumulat, setAcumulat] = useState({ menjar: 10, refugi: 5, eines: 0, explorar: 0 });
+    const [multiplicador, setMultiplicador] = useState(1.0);
+    const [showConfetti, setShowConfetti] = useState(false);
+    const [eventMsg, setEventMsg] = useState(null);
+    const [diaResultat, setDiaResultat] = useState(null);
+    const [mortCausa, setMortCausa] = useState(null);
+
+    const horesRestants = HORES_DIA - hores.menjar - hores.refugi - hores.eines - hores.explorar;
+
+    // Adjust hours for an activity
+    const ajustarHores = (activitat, delta) => {
+        const nouVal = hores[activitat] + delta;
+        if (nouVal < 0) return;
+        const totalSense = HORES_DIA - hores.menjar - hores.refugi - hores.eines - hores.explorar + hores[activitat];
+        if (nouVal > totalSense) return;
+        playSound('pop');
+        setHores(h => ({ ...h, [activitat]: nouVal }));
+    };
+
+    // Confirm day allocation
+    const confirmarDia = () => {
+        if (horesRestants !== 0) return;
+        playSound('coin');
+
+        // Calculate production
+        const prodMenjar = Math.floor(hores.menjar * FOOD_PER_HOUR * multiplicador);
+        const prodRefugi = Math.floor(hores.refugi * SHELTER_PER_HOUR * multiplicador);
+        const prodExplorar = hores.explorar * EXPLORE_PER_HOUR;
+        const boostNou = hores.eines * TOOL_BOOST;
+
+        let nouMenjar = acumulat.menjar + prodMenjar - CONSUM_DIARI;
+        let nouRefugi = acumulat.refugi + prodRefugi - DESGAST_DIARI;
+        const nouExplorar = acumulat.explorar + prodExplorar;
+        const nouMultiplicador = multiplicador + boostNou;
+
+        // Random event for hard mode
+        let event = null;
+        if (isHard && Math.random() < 0.25) {
+            if (Math.random() < 0.5) {
+                event = '🌪️ Tempesta! Refugi -3';
+                nouRefugi -= 3;
+            } else {
+                event = '🍇 Temporada de fruites! Menjar +5';
+                nouMenjar += 5;
+            }
+        }
+
+        const resultat = {
+            prodMenjar, prodRefugi, prodExplorar, boostNou,
+            nouMenjar, nouRefugi, nouExplorar, nouMultiplicador, event
+        };
+
+        setDiaResultat(resultat);
+        setEventMsg(event);
+
+        // Check death
+        if (nouMenjar < 0) {
+            setMortCausa('fam');
+            setAcumulat(a => ({ ...a, menjar: nouMenjar, refugi: nouRefugi, explorar: nouExplorar }));
+            setMultiplicador(nouMultiplicador);
+            setFase('mort');
+            playSound('lose');
+        } else if (nouRefugi < 0) {
+            setMortCausa('fred');
+            setAcumulat(a => ({ ...a, menjar: nouMenjar, refugi: nouRefugi, explorar: nouExplorar }));
+            setMultiplicador(nouMultiplicador);
+            setFase('mort');
+            playSound('lose');
+        } else {
+            setAcumulat({ menjar: nouMenjar, refugi: nouRefugi, eines: acumulat.eines + hores.eines, explorar: nouExplorar });
+            setMultiplicador(nouMultiplicador);
+            setFase('resultat_dia');
+        }
+    };
+
+    // Advance to next day or final
+    const seguentDia = () => {
+        if (dia >= TOTAL_DIES) {
+            setFase('final');
+            playSound('win');
+            setShowConfetti(true);
+            setTimeout(() => setShowConfetti(false), 3000);
+        } else {
+            setDia(d => d + 1);
+            setHores({ menjar: 0, refugi: 0, eines: 0, explorar: 0 });
+            setEventMsg(null);
+            setDiaResultat(null);
+            setFase('dia');
+        }
+    };
+
+    // Activity config
+    const activitats = [
+        { key: 'menjar', icon: '🍌', nom: 'Menjar', rate: FOOD_PER_HOUR, color: 'bg-green-100', textColor: 'text-green-700' },
+        { key: 'refugi', icon: '🛖', nom: 'Refugi', rate: SHELTER_PER_HOUR, color: 'bg-amber-100', textColor: 'text-amber-700' },
+        { key: 'eines', icon: '🔨', nom: 'Eines', rate: null, color: 'bg-blue-100', textColor: 'text-blue-700' },
+        { key: 'explorar', icon: '🗺️', nom: 'Explorar', rate: EXPLORE_PER_HOUR, color: 'bg-purple-100', textColor: 'text-purple-700' }
+    ];
+
+    // Resource bar component
+    const ResourceBar = ({ label, icon, value, max, danger }) => {
+        const pct = Math.max(0, Math.min(100, (value / max) * 100));
+        const isDanger = value < 0;
+        return (
+            <div className="space-y-1">
+                <div className="flex justify-between text-sm font-bold">
+                    <span>{icon} {label}</span>
+                    <span className={isDanger ? 'text-red-600' : ''}>{value}</span>
+                </div>
+                <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full transition-all ${isDanger ? 'bg-red-500' : value <= danger ? 'bg-orange-400' : 'bg-green-400'}`} style={{ width: `${pct}%` }} />
+                </div>
+                {value <= danger && value >= 0 && <p className="text-xs text-red-500 font-bold">⚠️ Zona de perill!</p>}
+            </div>
+        );
+    };
+
+    // Day progress circles
+    const DayProgress = () => (
+        <div className="flex justify-center gap-2">
+            {[...Array(TOTAL_DIES)].map((_, i) => (
+                <div key={i} className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
+                    i + 1 < dia ? 'bg-green-400 text-white' :
+                    i + 1 === dia ? 'bg-amber-400 text-white scale-110 ring-2 ring-amber-300' :
+                    'bg-gray-200 text-gray-400'
+                }`}>{i + 1}</div>
+            ))}
+        </div>
+    );
+
+    // INTRO
+    if (fase === 'intro') return (
+        <GameCard><div className="text-center space-y-5">
+            <h2 className="text-3xl font-black text-amber-600">🏝️ L'Illa de l'Escassetat</h2>
+            <Mascot mood="thinking" message={`${jugadors.j1}, has naufragat en una illa deserta! Sobreviu 6 dies i explora tot el que pugues.`} />
+            <div className={`rounded-2xl p-5 space-y-3 ${isHard ? 'bg-red-100' : 'bg-amber-100'}`}>
+                <p className="text-lg font-bold text-center">📜 Regles ({isHard ? '🔥 Difícil' : '🌱 Fàcil'}):</p>
+                <div className="space-y-2 text-left">
+                    <div className="bg-white rounded-xl p-3 flex items-center gap-3">
+                        <span className="text-2xl">⏰</span>
+                        <span>Tens <strong>{HORES_DIA} hores/dia</strong> durant <strong>{TOTAL_DIES} dies</strong></span>
+                    </div>
+                    <div className="bg-white rounded-xl p-3 space-y-1">
+                        <p className="font-bold">4 activitats:</p>
+                        <p>🍌 <strong>Menjar:</strong> {FOOD_PER_HOUR} unitats/hora (consums {CONSUM_DIARI}/dia)</p>
+                        <p>🛖 <strong>Refugi:</strong> {SHELTER_PER_HOUR} unitats/hora (desgast {DESGAST_DIARI}/dia)</p>
+                        <p>🔨 <strong>Eines:</strong> +{(TOOL_BOOST * 100).toFixed(0)}% productivitat per hora</p>
+                        <p>🗺️ <strong>Explorar:</strong> {EXPLORE_PER_HOUR} punts/hora (OBJECTIU!)</p>
+                    </div>
+                    <div className="bg-white rounded-xl p-3">
+                        <p className="text-red-600 font-bold">💀 Si menjar o refugi arriba a 0... mors!</p>
+                    </div>
+                    {isHard && <div className="bg-red-200 rounded-xl p-3">
+                        <p className="text-red-700 font-bold text-sm">⚠️ Mode difícil: menys recursos, més desgast i EVENTS ALEATORIS!</p>
+                    </div>}
+                </div>
+            </div>
+            <BigButton color="orange" onClick={() => setFase('dia')}>🏝️ Sobreviure!</BigButton>
+        </div></GameCard>
+    );
+
+    // DAY ALLOCATION
+    if (fase === 'dia') return (
+        <GameCard><div className="space-y-4">
+            <DayProgress />
+            <h3 className="text-xl font-black text-center text-amber-700">Dia {dia} — {jugadors.j1}</h3>
+
+            {/* Resource status */}
+            <div className="bg-white/80 rounded-2xl p-4 space-y-3">
+                <ResourceBar label="Menjar" icon="🍌" value={acumulat.menjar} max={30} danger={CONSUM_DIARI} />
+                <ResourceBar label="Refugi" icon="🛖" value={acumulat.refugi} max={20} danger={DESGAST_DIARI} />
+                <div className="flex justify-between items-center">
+                    <span className="text-sm font-bold">🗺️ Exploració</span>
+                    <span className="text-purple-600 font-black text-lg">{acumulat.explorar} pts</span>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="text-sm font-bold">⚙️ Multiplicador</span>
+                    <span className="bg-blue-100 text-blue-700 font-black px-3 py-1 rounded-full text-sm">x{multiplicador.toFixed(2)}</span>
+                </div>
+            </div>
+
+            {/* Hours remaining */}
+            <div className="text-center">
+                <span className={`inline-block px-4 py-2 rounded-full font-black text-lg ${horesRestants === 0 ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                    ⏰ {horesRestants} hores restants
+                </span>
+            </div>
+
+            {/* Activity rows */}
+            <div className="space-y-2">
+                {activitats.map(act => {
+                    const preview = act.key === 'eines'
+                        ? `+${((hores[act.key] * TOOL_BOOST) * 100).toFixed(0)}% boost`
+                        : act.key === 'explorar'
+                            ? `+${hores[act.key] * act.rate} pts`
+                            : `+${Math.floor(hores[act.key] * act.rate * multiplicador)} unitats`;
+                    return (
+                        <div key={act.key} className={`${act.color} rounded-2xl p-3 flex items-center gap-3`}>
+                            <span className="text-2xl w-8">{act.icon}</span>
+                            <div className="flex-1">
+                                <p className={`font-bold text-sm ${act.textColor}`}>{act.nom}</p>
+                                <p className="text-xs text-gray-500">{preview}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button onClick={() => ajustarHores(act.key, -1)} disabled={hores[act.key] <= 0}
+                                    className="w-8 h-8 rounded-full bg-white shadow-lg text-lg font-bold disabled:opacity-30">−</button>
+                                <span className="w-8 text-center text-xl font-black">{hores[act.key]}</span>
+                                <button onClick={() => ajustarHores(act.key, 1)} disabled={horesRestants <= 0}
+                                    className="w-8 h-8 rounded-full bg-white shadow-lg text-lg font-bold disabled:opacity-30">+</button>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+
+            <BigButton color="green" onClick={confirmarDia} disabled={horesRestants !== 0}>
+                {horesRestants !== 0 ? `Assigna ${horesRestants} hores més!` : '✅ Confirmar Dia'}
+            </BigButton>
+        </div></GameCard>
+    );
+
+    // DAY RESULT
+    if (fase === 'resultat_dia' && diaResultat) return (
+        <GameCard><div className="text-center space-y-4">
+            <DayProgress />
+            <h3 className="text-xl font-black text-amber-700">Resultats del Dia {dia}</h3>
+
+            <div className="space-y-2">
+                <div className="bg-green-50 rounded-xl p-3 flex justify-between">
+                    <span>🍌 Menjar produït</span>
+                    <span className="font-bold text-green-600">+{diaResultat.prodMenjar}</span>
+                </div>
+                <div className="bg-red-50 rounded-xl p-3 flex justify-between">
+                    <span>🍌 Consum diari</span>
+                    <span className="font-bold text-red-600">-{CONSUM_DIARI}</span>
+                </div>
+                <div className="bg-amber-50 rounded-xl p-3 flex justify-between">
+                    <span>🛖 Refugi construït</span>
+                    <span className="font-bold text-green-600">+{diaResultat.prodRefugi}</span>
+                </div>
+                <div className="bg-red-50 rounded-xl p-3 flex justify-between">
+                    <span>🛖 Desgast diari</span>
+                    <span className="font-bold text-red-600">-{DESGAST_DIARI}</span>
+                </div>
+                {diaResultat.prodExplorar > 0 && <div className="bg-purple-50 rounded-xl p-3 flex justify-between">
+                    <span>🗺️ Exploració</span>
+                    <span className="font-bold text-purple-600">+{diaResultat.prodExplorar}</span>
+                </div>}
+                {diaResultat.boostNou > 0 && <div className="bg-blue-50 rounded-xl p-3 flex justify-between">
+                    <span>⚙️ Nou multiplicador</span>
+                    <span className="font-bold text-blue-600">x{diaResultat.nouMultiplicador.toFixed(2)}</span>
+                </div>}
+            </div>
+
+            {eventMsg && <div className="bg-yellow-100 rounded-2xl p-4 animate-shake">
+                <p className="text-lg font-black">{eventMsg}</p>
+            </div>}
+
+            {/* Net result summary */}
+            <div className="bg-white rounded-2xl p-4 space-y-2">
+                <p className="font-bold text-sm text-gray-500">Estat actual:</p>
+                <div className="flex justify-around">
+                    <div><span className="text-2xl">🍌</span><p className={`font-black ${acumulat.menjar <= CONSUM_DIARI ? 'text-orange-600' : 'text-green-600'}`}>{acumulat.menjar}</p></div>
+                    <div><span className="text-2xl">🛖</span><p className={`font-black ${acumulat.refugi <= DESGAST_DIARI ? 'text-orange-600' : 'text-green-600'}`}>{acumulat.refugi}</p></div>
+                    <div><span className="text-2xl">🗺️</span><p className="font-black text-purple-600">{acumulat.explorar}</p></div>
+                    <div><span className="text-2xl">⚙️</span><p className="font-black text-blue-600">x{multiplicador.toFixed(2)}</p></div>
+                </div>
+            </div>
+
+            <Mascot mood={acumulat.menjar <= CONSUM_DIARI || acumulat.refugi <= DESGAST_DIARI ? 'thinking' : 'happy'}
+                message={acumulat.menjar <= CONSUM_DIARI || acumulat.refugi <= DESGAST_DIARI
+                    ? 'Atenció! Els recursos estan baixos... Prioritza la supervivència!'
+                    : dia >= 4 ? 'Últims dies! Hora d\'explorar al màxim!' : 'Bon treball! Recorda invertir en eines per al futur.'} />
+
+            <BigButton color="orange" onClick={seguentDia}>
+                {dia >= TOTAL_DIES ? '🏆 Resultats Finals' : `➡️ Dia ${dia + 1}`}
+            </BigButton>
+        </div></GameCard>
+    );
+
+    // DEATH
+    if (fase === 'mort') return (
+        <GameCard><div className="text-center space-y-5">
+            <h3 className="text-3xl font-black text-red-600">💀 Game Over!</h3>
+            <div className="text-6xl animate-shake">{mortCausa === 'fam' ? '🍌' : '🛖'}</div>
+            <p className="text-xl font-bold text-gray-700">
+                {mortCausa === 'fam' ? 'Has mort de fam!' : 'Has mort de fred!'}
+            </p>
+            <p className="text-gray-500">Dia {dia} de {TOTAL_DIES} — No has pogut sobreviure.</p>
+            <Mascot mood="sad" message="El COST D'OPORTUNITAT és real! Cada hora que dediques a explorar és una hora menys per sobreviure. Cal equilibrar necessitats bàsiques i objectius a llarg termini." />
+            <div className="bg-red-50 rounded-2xl p-4">
+                <p className="text-sm text-gray-500">Exploració acumulada:</p>
+                <p className="text-3xl font-black text-red-400 line-through">{acumulat.explorar} pts</p>
+                <p className="text-lg font-black text-red-600">Puntuació final: 0</p>
+            </div>
+            <BigButton color="red" onClick={() => onEnd({ j1: 0 })}>🏠 Tornar</BigButton>
+        </div></GameCard>
+    );
+
+    // FINAL
+    if (fase === 'final') return (
+        <GameCard><Confetti show={showConfetti} /><div className="text-center space-y-5">
+            <h3 className="text-3xl font-black text-green-600">🏝️ Has Sobreviscut!</h3>
+            <div className="text-6xl animate-bounce-slow">🎉</div>
+            <p className="text-lg text-gray-600">{jugadors.j1} ha explorat l'illa durant {TOTAL_DIES} dies!</p>
+
+            <div className="bg-white rounded-2xl p-5 space-y-3">
+                <div className="flex justify-around">
+                    <div className="text-center">
+                        <p className="text-3xl">🍌</p>
+                        <p className="font-black text-green-600">{acumulat.menjar}</p>
+                        <p className="text-xs text-gray-400">Menjar</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-3xl">🛖</p>
+                        <p className="font-black text-amber-600">{acumulat.refugi}</p>
+                        <p className="text-xs text-gray-400">Refugi</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-3xl">⚙️</p>
+                        <p className="font-black text-blue-600">x{multiplicador.toFixed(2)}</p>
+                        <p className="text-xs text-gray-400">Multiplicador</p>
+                    </div>
+                </div>
+                <div className="border-t pt-3">
+                    <p className="text-sm text-gray-400">Puntuació d'exploració</p>
+                    <p className="text-4xl font-black text-purple-600">🗺️ {acumulat.explorar} pts</p>
+                </div>
+            </div>
+
+            <Mascot mood="smart" message="L'ESCASSETAT ens obliga a TRIAR. Invertir en eines (capital) augmenta la productivitat futura. Això és la base del CREIXEMENT ECONÒMIC!" />
+            <BigButton color="gold" onClick={() => onEnd({ j1: acumulat.explorar })}>🏆 Veure Puntuació</BigButton>
+        </div></GameCard>
+    );
+
     return null;
 };
 
@@ -898,98 +1789,384 @@ const JocRiscRecompensa = ({ jugadors, onEnd, difficulty }) => {
     return null;
 };
 
-// ============== JOC 10: EL TRADER ==============
-const JocTrader = ({ jugadors, onEnd, difficulty }) => {
-    const TOTAL_RONDES = difficulty === 'hard' ? 10 : 6;
+// ============== JOC: EL COMERÇ INTERNACIONAL (2 Players) ==============
+const JocComers = ({ jugadors, onEnd, difficulty }) => {
+    const isHard = difficulty === 'hard';
+    const HORES = 10;
+    const eficiencia = isHard
+        ? { j1: { blat: 4, acer: 3 }, j2: { blat: 1, acer: 2 } }
+        : { j1: { blat: 3, acer: 1 }, j2: { blat: 1, acer: 2 } };
+
     const [fase, setFase] = useState('intro');
-    const [ronda, setRonda] = useState(1);
-    const [cartera, setCartera] = useState({ j1: { diners: 100, accions: 0 }, j2: { diners: 100, accions: 0 } });
-    const [preu, setPreu] = useState(10);
-    const [historial, setHistorial] = useState([10]);
-    const [torn, setTorn] = useState('j1');
-    const [noticies, setNoticies] = useState('');
+    const [allocAut, setAllocAut] = useState({ j1: { blat: 5, acer: 5 }, j2: { blat: 5, acer: 5 } });
+    const [allocCom, setAllocCom] = useState({ j1: { blat: 5, acer: 5 }, j2: { blat: 5, acer: 5 } });
+    const [oferta, setOferta] = useState({ blatJ1aJ2: 0, acerJ2aJ1: 0 });
     const [showConfetti, setShowConfetti] = useState(false);
+    const [tradeAccepted, setTradeAccepted] = useState(null);
 
-    const comprar = (q) => { const cost = q * preu; if (cartera[torn].diners < cost) return; playSound('coin'); setCartera(c => ({ ...c, [torn]: { diners: c[torn].diners - cost, accions: c[torn].accions + q } })); };
-    const vendre = (q) => { if (cartera[torn].accions < q) return; playSound('coin'); setCartera(c => ({ ...c, [torn]: { diners: c[torn].diners + q * preu, accions: c[torn].accions - q } })); };
+    // Calculate production from allocation
+    const calcProd = (alloc, jugador) => ({
+        blat: alloc[jugador].blat * eficiencia[jugador].blat,
+        acer: alloc[jugador].acer * eficiencia[jugador].acer
+    });
 
-    const passarTorn = () => {
-        if (torn === 'j1') setTorn('j2');
-        else {
-            const NOTICIES = difficulty === 'hard' ? [
-                { text: '📈 Excel·lents resultats!', canvi: 1.3 }, { text: '📉 Escàndol!', canvi: 0.6 },
-                { text: '🚀 Nou producte!', canvi: 1.5 }, { text: '💥 Competidor!', canvi: 0.5 },
-                { text: '🏦 Tipus pugen!', canvi: 0.8 }, { text: '🌟 Recomanació compra!', canvi: 1.2 },
-            ] : [
-                { text: '📈 Bones notícies!', canvi: 1.2 }, { text: '📉 Males notícies!', canvi: 0.8 },
-                { text: '🚀 Molt bones!', canvi: 1.4 }, { text: '💥 Molt males!', canvi: 0.7 }, { text: '😐 Estable', canvi: 1.0 },
-            ];
-            const noticia = NOTICIES[Math.floor(Math.random() * NOTICIES.length)];
-            const nouPreu = Math.max(1, Math.round(preu * noticia.canvi));
-            setNoticies(noticia.text); setPreu(nouPreu); setHistorial(h => [...h, nouPreu]);
-            if (ronda >= TOTAL_RONDES) { setFase('resultat'); playSound('win'); setShowConfetti(true); }
-            else { setRonda(r => r + 1); setTorn('j1'); }
-        }
+    // Satisfaction formula
+    const satisfaccio = (blat, acer) => Math.min(blat, acer) * 10 + Math.abs(blat - acer);
+
+    // Adjust allocation for autarky or trade
+    const ajustarAlloc = (target, jugador, delta) => {
+        const setter = target === 'aut' ? setAllocAut : setAllocCom;
+        setter(prev => {
+            const nouBlat = prev[jugador].blat + delta;
+            const nouAcer = HORES - nouBlat;
+            if (nouBlat < 0 || nouBlat > HORES) return prev;
+            playSound('pop');
+            return { ...prev, [jugador]: { blat: nouBlat, acer: nouAcer } };
+        });
     };
 
+    // Adjust trade offer
+    const ajustarOferta = (camp, delta) => {
+        setOferta(prev => {
+            const nou = prev[camp] + delta;
+            if (nou < 0) return prev;
+            // Can't give more than you produced
+            const prodComJ1 = calcProd(allocCom, 'j1');
+            const prodComJ2 = calcProd(allocCom, 'j2');
+            if (camp === 'blatJ1aJ2' && nou > prodComJ1.blat) return prev;
+            if (camp === 'acerJ2aJ1' && nou > prodComJ2.acer) return prev;
+            playSound('pop');
+            return { ...prev, [camp]: nou };
+        });
+    };
+
+    // Finalize trade decision
+    const resoldreComerc = (acceptat) => {
+        setTradeAccepted(acceptat);
+        if (acceptat) {
+            playSound('win');
+            setShowConfetti(true);
+            setTimeout(() => setShowConfetti(false), 3000);
+        } else {
+            playSound('lose');
+        }
+        setFase('resultat');
+    };
+
+    // Efficiency table component
+    const TaulaEficiencia = () => (
+        <div className="bg-white rounded-2xl p-4 space-y-2">
+            <p className="font-bold text-sm text-gray-500 text-center">Productivitat per hora</p>
+            <div className="grid grid-cols-3 gap-2 text-center">
+                <div></div>
+                <div className="font-bold text-sm">🌾 Blat</div>
+                <div className="font-bold text-sm">⚙️ Acer</div>
+                <div className="font-bold text-sm text-blue-600">{jugadors.j1} 🦊</div>
+                <div className="bg-blue-50 rounded-lg p-1 font-black">{eficiencia.j1.blat}/h</div>
+                <div className="bg-blue-50 rounded-lg p-1 font-black">{eficiencia.j1.acer}/h</div>
+                <div className="font-bold text-sm text-pink-600">{jugadors.j2} 🐰</div>
+                <div className="bg-pink-50 rounded-lg p-1 font-black">{eficiencia.j2.blat}/h</div>
+                <div className="bg-pink-50 rounded-lg p-1 font-black">{eficiencia.j2.acer}/h</div>
+            </div>
+        </div>
+    );
+
+    // Allocation UI component
+    const AllocUI = ({ jugador, alloc, target, color, emoji }) => {
+        const prod = calcProd(target === 'aut' ? allocAut : allocCom, jugador);
+        const a = (target === 'aut' ? allocAut : allocCom)[jugador];
+        return (
+            <div className={`${color} rounded-2xl p-4 space-y-3`}>
+                <p className="font-bold text-center">{jugadors[jugador]} {emoji} — {HORES} hores</p>
+
+                {/* Visual hour bar */}
+                <div className="flex rounded-full overflow-hidden h-6">
+                    <div className="bg-amber-400 flex items-center justify-center text-xs font-bold text-white transition-all" style={{ width: `${(a.blat / HORES) * 100}%` }}>
+                        {a.blat > 0 && `🌾${a.blat}h`}
+                    </div>
+                    <div className="bg-gray-500 flex items-center justify-center text-xs font-bold text-white transition-all" style={{ width: `${(a.acer / HORES) * 100}%` }}>
+                        {a.acer > 0 && `⚙️${a.acer}h`}
+                    </div>
+                </div>
+
+                {/* Controls */}
+                <div className="flex items-center justify-center gap-3">
+                    <span className="text-lg">🌾</span>
+                    <button onClick={() => ajustarAlloc(target, jugador, -1)} disabled={a.blat <= 0}
+                        className="w-8 h-8 rounded-full bg-white shadow-lg text-lg font-bold disabled:opacity-30">−</button>
+                    <span className="w-8 text-center text-xl font-black">{a.blat}</span>
+                    <button onClick={() => ajustarAlloc(target, jugador, 1)} disabled={a.blat >= HORES}
+                        className="w-8 h-8 rounded-full bg-white shadow-lg text-lg font-bold disabled:opacity-30">+</button>
+                    <span className="text-lg">⚙️</span>
+                    <span className="text-xl font-black w-8 text-center">{a.acer}</span>
+                </div>
+
+                {/* Production preview */}
+                <div className="flex justify-center gap-4">
+                    <div className="bg-white/80 rounded-xl px-3 py-1">
+                        <span className="font-bold">🌾 {prod.blat}</span>
+                    </div>
+                    <div className="bg-white/80 rounded-xl px-3 py-1">
+                        <span className="font-bold">⚙️ {prod.acer}</span>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    // INTRO
     if (fase === 'intro') return (
         <GameCard><div className="text-center space-y-5">
-            <h2 className="text-3xl font-black text-cyan-600">📈 El Trader</h2>
-            <Mascot mood="excited" message="Compra barat, ven car!" />
-            <div className={`rounded-2xl p-5 space-y-3 ${difficulty === 'hard' ? 'bg-red-100' : 'bg-cyan-100'}`}>
-                <p className="text-lg font-bold text-center">📜 Regles:</p>
-                <div className="space-y-2"><p>💵 Tens <strong>100 monedes</strong></p><p>📊 Compra i ven <strong>accions</strong></p><p>📰 Les <strong>notícies</strong> mouen el preu!</p></div>
+            <h2 className="text-3xl font-black text-blue-600">🚢 El Comerç Internacional</h2>
+            <Mascot mood="smart" message="Dos països, dos béns. Pot el comerç fer que TOTS dos guanyen?" />
+            <TaulaEficiencia />
+            <div className={`rounded-2xl p-5 space-y-3 ${isHard ? 'bg-red-100' : 'bg-blue-100'}`}>
+                <p className="text-lg font-bold text-center">📜 Com funciona ({isHard ? '🔥 Difícil' : '🌱 Fàcil'}):</p>
+                <div className="space-y-2 text-left text-sm">
+                    <div className="bg-white rounded-xl p-3">
+                        <p><strong>Fase 1 — Autarquia:</strong> Cada país reparteix {HORES} hores entre 🌾 Blat i ⚙️ Acer. Sense comerç!</p>
+                    </div>
+                    <div className="bg-white rounded-xl p-3">
+                        <p><strong>Fase 2 — Comerç:</strong> Produïu de nou, però ara podeu COMERCIAR!</p>
+                    </div>
+                    <div className="bg-white rounded-xl p-3">
+                        <p><strong>Puntuació:</strong> min(blat, acer) x 10 + excedent</p>
+                    </div>
+                    {isHard && <div className="bg-red-200 rounded-xl p-3">
+                        <p className="text-red-700 font-bold">⚠️ {jugadors.j1} és millor en TOT! Però l'avantatge comparatiu encara funciona...</p>
+                    </div>}
+                </div>
             </div>
-            <BigButton color="blue" onClick={() => setFase('joc')}>🎮 Començar!</BigButton>
+            <BigButton color="blue" onClick={() => setFase('autarquia_j1')}>🚢 Començar!</BigButton>
         </div></GameCard>
     );
 
-    if (fase === 'joc') {
-        const esJ1 = torn === 'j1';
-        const c = cartera[torn];
+    // AUTARKY J1
+    if (fase === 'autarquia_j1') return (
+        <GameCard><div className="space-y-4">
+            <h3 className="text-xl font-black text-center text-gray-700">📦 Fase 1: Autarquia</h3>
+            <p className="text-center text-sm text-gray-500">{jugadors.j2}, no miris! 🙈</p>
+            <TaulaEficiencia />
+            <AllocUI jugador="j1" alloc={allocAut} target="aut" color="bg-blue-50" emoji="🦊" />
+            <BigButton color="blue" onClick={() => setFase('autarquia_j2')}>✅ Confirmar {jugadors.j1}</BigButton>
+        </div></GameCard>
+    );
+
+    // AUTARKY J2
+    if (fase === 'autarquia_j2') return (
+        <GameCard><div className="space-y-4">
+            <h3 className="text-xl font-black text-center text-gray-700">📦 Fase 1: Autarquia</h3>
+            <p className="text-center text-sm text-gray-500">Ara li toca a {jugadors.j2}!</p>
+            <TaulaEficiencia />
+            <AllocUI jugador="j2" alloc={allocAut} target="aut" color="bg-pink-50" emoji="🐰" />
+            <BigButton color="pink" onClick={() => setFase('autarquia_resultat')}>✅ Confirmar {jugadors.j2}</BigButton>
+        </div></GameCard>
+    );
+
+    // AUTARKY RESULTS
+    if (fase === 'autarquia_resultat') {
+        const prodJ1 = calcProd(allocAut, 'j1');
+        const prodJ2 = calcProd(allocAut, 'j2');
+        const satJ1 = satisfaccio(prodJ1.blat, prodJ1.acer);
+        const satJ2 = satisfaccio(prodJ2.blat, prodJ2.acer);
         return (
-            <GameCard><div className="space-y-4">
-                <div className="flex justify-between items-center"><span className="font-bold">Ronda {ronda}/{TOTAL_RONDES}</span></div>
-                {noticies && <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-xl p-3 text-center animate-slide-in"><p className="font-bold">{noticies}</p></div>}
-                <div className="bg-gradient-to-r from-cyan-100 to-blue-100 rounded-2xl p-4">
-                    <div className="flex justify-between items-center">
-                        <div><p className="text-sm text-gray-600">Preu</p><p className="text-3xl font-black text-cyan-700">📊 {preu}🪙</p></div>
-                        <div className="flex gap-1">{historial.slice(-6).map((p, i) => <div key={i} className="text-center"><div className={`w-4 rounded ${i === historial.slice(-6).length - 1 ? 'bg-cyan-500' : 'bg-gray-300'}`} style={{ height: `${Math.max(8, p * 2)}px` }}></div><span className="text-xs">{p}</span></div>)}</div>
+            <GameCard><div className="text-center space-y-4">
+                <h3 className="text-xl font-black text-gray-700">📦 Resultat Autarquia</h3>
+                <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-blue-50 rounded-2xl p-4">
+                        <p className="font-bold">{jugadors.j1} 🦊</p>
+                        <p className="text-lg">🌾 {prodJ1.blat} | ⚙️ {prodJ1.acer}</p>
+                        <p className="text-2xl font-black text-blue-600">⭐ {satJ1}</p>
+                    </div>
+                    <div className="bg-pink-50 rounded-2xl p-4">
+                        <p className="font-bold">{jugadors.j2} 🐰</p>
+                        <p className="text-lg">🌾 {prodJ2.blat} | ⚙️ {prodJ2.acer}</p>
+                        <p className="text-2xl font-black text-pink-600">⭐ {satJ2}</p>
                     </div>
                 </div>
-                <div className="flex justify-between">
-                    <PlayerBadge name={jugadors.j1} score={`💵${cartera.j1.diners} 📊${cartera.j1.accions}`} color="from-blue-400 to-blue-600" isActive={esJ1} emoji="🦊" />
-                    <PlayerBadge name={jugadors.j2} score={`💵${cartera.j2.diners} 📊${cartera.j2.accions}`} color="from-pink-400 to-pink-600" isActive={!esJ1} emoji="🐰" />
-                </div>
-                <div className={`p-4 rounded-2xl ${esJ1 ? 'bg-blue-50 ring-2 ring-blue-400' : 'bg-pink-50 ring-2 ring-pink-400'}`}>
-                    <p className="font-bold mb-2">{jugadors[torn]} {esJ1 ? '🦊' : '🐰'}</p>
-                    <p className="text-sm mb-3">💵 {c.diners} | 📊 {c.accions} (val {c.accions * preu})</p>
-                    <div className="grid grid-cols-2 gap-3">
-                        <div><p className="text-sm font-bold text-green-600">Comprar 📊</p><div className="flex gap-1">{[1, 5, 10].map(q => <button key={q} onClick={() => comprar(q)} disabled={c.diners < q * preu} className={`px-2 py-2 rounded-lg font-bold text-sm ${c.diners >= q * preu ? 'bg-green-500 text-white' : 'bg-gray-200'}`}>+{q}</button>)}</div></div>
-                        <div><p className="text-sm font-bold text-red-600">Vendre 📊</p><div className="flex gap-1">{[1, 5, 10].map(q => <button key={q} onClick={() => vendre(q)} disabled={c.accions < q} className={`px-2 py-2 rounded-lg font-bold text-sm ${c.accions >= q ? 'bg-red-500 text-white' : 'bg-gray-200'}`}>-{q}</button>)}</div></div>
-                    </div>
-                </div>
-                <BigButton color={esJ1 ? 'blue' : 'pink'} onClick={passarTorn}>✅ Acabar Torn</BigButton>
+                <Mascot mood="thinking" message="Sense comerç, cada país ha de produir de tot... Però no és eficient! I si us especialitzàreu?" />
+                <BigButton color="purple" onClick={() => setFase('comerc_j1')}>🚢 Fase 2: Comerç!</BigButton>
             </div></GameCard>
         );
     }
 
-    if (fase === 'resultat') {
-        const valorJ1 = cartera.j1.diners + cartera.j1.accions * preu;
-        const valorJ2 = cartera.j2.diners + cartera.j2.accions * preu;
+    // TRADE J1
+    if (fase === 'comerc_j1') return (
+        <GameCard><div className="space-y-4">
+            <h3 className="text-xl font-black text-center text-purple-700">🚢 Fase 2: Producció per al Comerç</h3>
+            <p className="text-center text-sm text-gray-500">Ara podreu comerciar! Especialitza't! {jugadors.j2}, no miris! 🙈</p>
+            <TaulaEficiencia />
+            <AllocUI jugador="j1" alloc={allocCom} target="com" color="bg-blue-50" emoji="🦊" />
+            <BigButton color="blue" onClick={() => setFase('comerc_j2')}>✅ Confirmar {jugadors.j1}</BigButton>
+        </div></GameCard>
+    );
+
+    // TRADE J2
+    if (fase === 'comerc_j2') return (
+        <GameCard><div className="space-y-4">
+            <h3 className="text-xl font-black text-center text-purple-700">🚢 Fase 2: Producció per al Comerç</h3>
+            <p className="text-center text-sm text-gray-500">Ara li toca a {jugadors.j2}!</p>
+            <TaulaEficiencia />
+            <AllocUI jugador="j2" alloc={allocCom} target="com" color="bg-pink-50" emoji="🐰" />
+            <BigButton color="pink" onClick={() => setFase('negociacio')}>✅ Confirmar {jugadors.j2}</BigButton>
+        </div></GameCard>
+    );
+
+    // NEGOTIATION
+    if (fase === 'negociacio') {
+        const prodJ1 = calcProd(allocCom, 'j1');
+        const prodJ2 = calcProd(allocCom, 'j2');
+        const postTradeJ1 = { blat: prodJ1.blat - oferta.blatJ1aJ2, acer: prodJ1.acer + oferta.acerJ2aJ1 };
+        const postTradeJ2 = { blat: prodJ2.blat + oferta.blatJ1aJ2, acer: prodJ2.acer - oferta.acerJ2aJ1 };
         return (
-            <GameCard><Confetti show={showConfetti} /><div className="text-center space-y-5">
-                <h3 className="text-2xl font-black">📈 Tancament!</h3>
-                <div className="bg-gray-100 rounded-xl p-3"><p className="text-sm">Preu final: <strong className="text-xl">{preu}🪙</strong></p></div>
-                <div className="grid grid-cols-2 gap-4">
-                    <div className={`rounded-2xl p-4 ${valorJ1 > valorJ2 ? 'bg-yellow-100 ring-4 ring-yellow-400' : 'bg-blue-100'}`}><p className="font-bold">{jugadors.j1} 🦊</p><div className="text-xs mt-2"><p>💵 {cartera.j1.diners}</p><p>📊 {cartera.j1.accions}×{preu}={cartera.j1.accions * preu}</p></div><p className="text-3xl font-black text-green-600 mt-2">= {valorJ1}</p></div>
-                    <div className={`rounded-2xl p-4 ${valorJ2 > valorJ1 ? 'bg-yellow-100 ring-4 ring-yellow-400' : 'bg-pink-100'}`}><p className="font-bold">{jugadors.j2} 🐰</p><div className="text-xs mt-2"><p>💵 {cartera.j2.diners}</p><p>📊 {cartera.j2.accions}×{preu}={cartera.j2.accions * preu}</p></div><p className="text-3xl font-black text-green-600 mt-2">= {valorJ2}</p></div>
+            <GameCard><div className="space-y-4">
+                <h3 className="text-xl font-black text-center text-purple-700">🤝 Negociació</h3>
+
+                {/* Current production */}
+                <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-blue-50 rounded-xl p-3 text-center">
+                        <p className="font-bold text-sm">{jugadors.j1} 🦊 ha produït:</p>
+                        <p className="font-black">🌾 {prodJ1.blat} | ⚙️ {prodJ1.acer}</p>
+                    </div>
+                    <div className="bg-pink-50 rounded-xl p-3 text-center">
+                        <p className="font-bold text-sm">{jugadors.j2} 🐰 ha produït:</p>
+                        <p className="font-black">🌾 {prodJ2.blat} | ⚙️ {prodJ2.acer}</p>
+                    </div>
                 </div>
-                <Mascot mood="smart" message="Les notícies mouen mercats! Invertir a llarg termini sol funcionar millor." />
-                <BigButton color="yellow" onClick={() => onEnd({ j1: valorJ1, j2: valorJ2 })}>🏆 Veure Guanyador</BigButton>
+
+                {/* Trade offer */}
+                <div className="bg-purple-50 rounded-2xl p-4 space-y-3">
+                    <p className="font-bold text-center text-purple-700">{jugadors.j1} proposa:</p>
+
+                    <div className="flex items-center justify-center gap-3">
+                        <span className="text-sm font-bold">{jugadors.j1} dóna 🌾</span>
+                        <button onClick={() => ajustarOferta('blatJ1aJ2', -1)} disabled={oferta.blatJ1aJ2 <= 0}
+                            className="w-8 h-8 rounded-full bg-white shadow-lg text-lg font-bold disabled:opacity-30">−</button>
+                        <span className="w-10 text-center text-xl font-black text-amber-600">{oferta.blatJ1aJ2}</span>
+                        <button onClick={() => ajustarOferta('blatJ1aJ2', 1)}
+                            className="w-8 h-8 rounded-full bg-white shadow-lg text-lg font-bold disabled:opacity-30">+</button>
+                    </div>
+
+                    <div className="text-center text-2xl">🔄</div>
+
+                    <div className="flex items-center justify-center gap-3">
+                        <span className="text-sm font-bold">{jugadors.j2} dóna ⚙️</span>
+                        <button onClick={() => ajustarOferta('acerJ2aJ1', -1)} disabled={oferta.acerJ2aJ1 <= 0}
+                            className="w-8 h-8 rounded-full bg-white shadow-lg text-lg font-bold disabled:opacity-30">−</button>
+                        <span className="w-10 text-center text-xl font-black text-gray-600">{oferta.acerJ2aJ1}</span>
+                        <button onClick={() => ajustarOferta('acerJ2aJ1', 1)}
+                            className="w-8 h-8 rounded-full bg-white shadow-lg text-lg font-bold disabled:opacity-30">+</button>
+                    </div>
+                </div>
+
+                {/* Preview after trade */}
+                <div className="bg-white rounded-2xl p-4 space-y-2">
+                    <p className="font-bold text-sm text-center text-gray-500">Resultat si s'accepta:</p>
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className="text-center">
+                            <p className="font-bold text-sm text-blue-600">{jugadors.j1} 🦊</p>
+                            <p className={`font-black ${postTradeJ1.blat < 0 ? 'text-red-600' : ''}`}>🌾 {postTradeJ1.blat}</p>
+                            <p className="font-black">⚙️ {postTradeJ1.acer}</p>
+                        </div>
+                        <div className="text-center">
+                            <p className="font-bold text-sm text-pink-600">{jugadors.j2} 🐰</p>
+                            <p className="font-black">🌾 {postTradeJ2.blat}</p>
+                            <p className={`font-black ${postTradeJ2.acer < 0 ? 'text-red-600' : ''}`}>⚙️ {postTradeJ2.acer}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <p className="text-center font-bold text-gray-600">{jugadors.j2}, acceptes l'acord?</p>
+                <div className="grid grid-cols-2 gap-3">
+                    <BigButton color="green" onClick={() => resoldreComerc(true)}>✅ Acceptar</BigButton>
+                    <BigButton color="red" onClick={() => resoldreComerc(false)}>❌ Rebutjar</BigButton>
+                </div>
             </div></GameCard>
         );
     }
+
+    // FINAL RESULTS
+    if (fase === 'resultat') {
+        const prodAutJ1 = calcProd(allocAut, 'j1');
+        const prodAutJ2 = calcProd(allocAut, 'j2');
+        const prodComJ1 = calcProd(allocCom, 'j1');
+        const prodComJ2 = calcProd(allocCom, 'j2');
+
+        const satAutJ1 = satisfaccio(prodAutJ1.blat, prodAutJ1.acer);
+        const satAutJ2 = satisfaccio(prodAutJ2.blat, prodAutJ2.acer);
+
+        let finalJ1, finalJ2, satComJ1, satComJ2;
+        if (tradeAccepted) {
+            finalJ1 = { blat: prodComJ1.blat - oferta.blatJ1aJ2, acer: prodComJ1.acer + oferta.acerJ2aJ1 };
+            finalJ2 = { blat: prodComJ2.blat + oferta.blatJ1aJ2, acer: prodComJ2.acer - oferta.acerJ2aJ1 };
+        } else {
+            finalJ1 = prodComJ1;
+            finalJ2 = prodComJ2;
+        }
+        satComJ1 = satisfaccio(Math.max(0, finalJ1.blat), Math.max(0, finalJ1.acer));
+        satComJ2 = satisfaccio(Math.max(0, finalJ2.blat), Math.max(0, finalJ2.acer));
+
+        const milloraJ1 = satComJ1 - satAutJ1;
+        const milloraJ2 = satComJ2 - satAutJ2;
+
+        return (
+            <GameCard><Confetti show={showConfetti} /><div className="text-center space-y-4">
+                <h3 className="text-2xl font-black text-purple-700">📊 Comparació Final</h3>
+
+                {/* Side by side comparison */}
+                <div className="space-y-3">
+                    {/* J1 */}
+                    <div className="bg-blue-50 rounded-2xl p-4">
+                        <p className="font-bold text-blue-600 mb-2">{jugadors.j1} 🦊</p>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div className="bg-white rounded-xl p-2">
+                                <p className="text-gray-400 text-xs">Autarquia</p>
+                                <p>🌾 {prodAutJ1.blat} | ⚙️ {prodAutJ1.acer}</p>
+                                <p className="font-black">⭐ {satAutJ1}</p>
+                            </div>
+                            <div className="bg-white rounded-xl p-2">
+                                <p className="text-gray-400 text-xs">Amb comerç</p>
+                                <p>🌾 {finalJ1.blat} | ⚙️ {finalJ1.acer}</p>
+                                <p className="font-black">⭐ {satComJ1}</p>
+                            </div>
+                        </div>
+                        <p className={`font-black mt-1 ${milloraJ1 > 0 ? 'text-green-600' : milloraJ1 < 0 ? 'text-red-600' : 'text-gray-500'}`}>
+                            {milloraJ1 > 0 ? `📈 +${milloraJ1} punts!` : milloraJ1 < 0 ? `📉 ${milloraJ1} punts` : '= Igual'}
+                        </p>
+                    </div>
+
+                    {/* J2 */}
+                    <div className="bg-pink-50 rounded-2xl p-4">
+                        <p className="font-bold text-pink-600 mb-2">{jugadors.j2} 🐰</p>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div className="bg-white rounded-xl p-2">
+                                <p className="text-gray-400 text-xs">Autarquia</p>
+                                <p>🌾 {prodAutJ2.blat} | ⚙️ {prodAutJ2.acer}</p>
+                                <p className="font-black">⭐ {satAutJ2}</p>
+                            </div>
+                            <div className="bg-white rounded-xl p-2">
+                                <p className="text-gray-400 text-xs">Amb comerç</p>
+                                <p>🌾 {finalJ2.blat} | ⚙️ {finalJ2.acer}</p>
+                                <p className="font-black">⭐ {satComJ2}</p>
+                            </div>
+                        </div>
+                        <p className={`font-black mt-1 ${milloraJ2 > 0 ? 'text-green-600' : milloraJ2 < 0 ? 'text-red-600' : 'text-gray-500'}`}>
+                            {milloraJ2 > 0 ? `📈 +${milloraJ2} punts!` : milloraJ2 < 0 ? `📉 ${milloraJ2} punts` : '= Igual'}
+                        </p>
+                    </div>
+                </div>
+
+                {tradeAccepted ? (
+                    <Mascot mood="excited" message="Amb COMERÇ tots dos teniu MES! Especialitzar-se funciona! David Ricardo (1817): L'AVANTATGE COMPARATIU fa que el comerç beneficie TOTS dos, fins i tot quan un es millor en tot!" />
+                ) : (
+                    <Mascot mood="sad" message="Sense acord... Podrieu haver guanyat tots dos. David Ricardo (1817): L'AVANTATGE COMPARATIU fa que el comerç beneficie TOTS dos, fins i tot quan un es millor en tot!" />
+                )}
+
+                <BigButton color="gold" onClick={() => onEnd({ j1: satComJ1, j2: satComJ2 })}>🏆 Veure Guanyador</BigButton>
+            </div></GameCard>
+        );
+    }
+
     return null;
 };
 
@@ -1024,28 +2201,32 @@ function PlaygroundApp() {
     const [resultat, setResultat] = useState(null);
     const [difficulty, setDifficulty] = useState('easy');
     const [showLeaderboard, setShowLeaderboard] = useState(false);
+    const [modeJugadors, setModeJugadors] = useState(null); // 1 or 2, for '1-2' games
 
     const JOCS = [
-        { id: 'compartir', nom: '🤝 Compartir o Robar', desc: 'Teoria de Jocs', color: 'from-purple-400 to-purple-600' },
-        { id: 'ous', nom: '🥚 Ous i Cistells', desc: 'Diversificació', color: 'from-orange-400 to-orange-600' },
-        { id: 'arbre', nom: '🌳 Arbre de Monedes', desc: 'Interès Compost', color: 'from-green-400 to-green-600' },
-        { id: 'subhasta', nom: '🎪 La Subhasta', desc: 'Valoració', color: 'from-pink-400 to-pink-600' },
-        { id: 'mercat', nom: '🎰 El Mercat', desc: 'Oferta i Demanda', color: 'from-red-400 to-red-600' },
-        { id: 'inflacio', nom: '🏃 La Inflació', desc: 'Pèrdua de Valor', color: 'from-amber-400 to-amber-600' },
-        { id: 'escassetat', nom: '🪙 Or i Bitcoin', desc: 'Escassetat', color: 'from-yellow-500 to-amber-600' },
-        { id: 'banquer', nom: '🏦 El Banquer', desc: 'Estalvi i Deute', color: 'from-emerald-400 to-emerald-600' },
-        { id: 'risc', nom: '🎲 Risc i Recompensa', desc: 'Probabilitats', color: 'from-indigo-400 to-indigo-600' },
-        { id: 'trader', nom: '📈 El Trader', desc: 'Borsa', color: 'from-cyan-400 to-cyan-600' },
+        { id: 'compartir', nom: '🤝 Compartir o Robar', desc: 'Teoria de Jocs', color: 'from-purple-400 to-purple-600', players: 2 },
+        { id: 'ous', nom: '🥚 Ous i Cistells', desc: 'Diversificació', color: 'from-orange-400 to-orange-600', players: 2 },
+        { id: 'arbre', nom: '🌳 Arbre de Monedes', desc: 'Interès Compost', color: 'from-green-400 to-green-600', players: 2 },
+        { id: 'subhasta', nom: '🎪 La Subhasta', desc: 'Valoració', color: 'from-pink-400 to-pink-600', players: 2 },
+        { id: 'comuns', nom: '🐟 Tragèdia dels Comuns', desc: 'Recursos Comuns', color: 'from-teal-400 to-cyan-600', players: 2 },
+        { id: 'bombolla', nom: '🌷 La Bombolla', desc: 'Bombolles Especulatives', color: 'from-rose-400 to-red-600', players: '1-2' },
+        { id: 'illa', nom: '🏝️ Illa de l\'Escassetat', desc: 'Cost d\'Oportunitat', color: 'from-amber-400 to-orange-600', players: 1 },
+        { id: 'banquer', nom: '🏦 El Banquer', desc: 'Estalvi i Deute', color: 'from-emerald-400 to-emerald-600', players: 2 },
+        { id: 'risc', nom: '🎲 Risc i Recompensa', desc: 'Probabilitats', color: 'from-indigo-400 to-indigo-600', players: 2 },
+        { id: 'comers', nom: '🚢 Comerç Internacional', desc: 'Avantatge Comparatiu', color: 'from-blue-400 to-indigo-600', players: 2 },
     ];
 
+    const getJocPlayers = (id) => { const j = JOCS.find(x => x.id === id); return j ? j.players : 2; };
+
     const iniciarJoc = (id) => { setJocActual(id); setPantalla('joc'); };
-    
+
     const acabarJoc = (punts) => {
         setResultat(punts);
-        setPuntuacions(p => ({ j1: p.j1 + punts.j1, j2: p.j2 + punts.j2 }));
+        const p2 = punts.j2 != null ? punts.j2 : 0;
+        setPuntuacions(p => ({ j1: p.j1 + punts.j1, j2: p.j2 + p2 }));
         const joc = JOCS.find(j => j.id === jocActual);
         if (jugadors.j1) ScoreManager.saveScore(jugadors.j1, punts.j1, joc?.nom || jocActual);
-        if (jugadors.j2) ScoreManager.saveScore(jugadors.j2, punts.j2, joc?.nom || jocActual);
+        if (jugadors.j2) ScoreManager.saveScore(jugadors.j2, p2, joc?.nom || jocActual);
         setPantalla('resultat');
     };
 
@@ -1066,10 +2247,10 @@ function PlaygroundApp() {
                 {jugadors.j1 && <div className="flex justify-center gap-4"><PlayerBadge name={jugadors.j1} score={puntuacions.j1} color="from-blue-400 to-blue-600" emoji="🦊" /><PlayerBadge name={jugadors.j2} score={puntuacions.j2} color="from-pink-400 to-pink-600" emoji="🐰" /></div>}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                     {JOCS.map(joc => (
-                        <button key={joc.id} onClick={() => { playSound('pop'); if (!jugadors.j1) { setJocActual(joc.id); setPantalla('noms'); } else iniciarJoc(joc.id); }} className={`btn-game p-4 rounded-2xl bg-gradient-to-br ${joc.color} text-white text-left relative`}>
+                        <button key={joc.id} onClick={() => { playSound('pop'); setJocActual(joc.id); const pl = joc.players; if (pl === 1) { if (!jugadors.j1) { setModeJugadors(1); setPantalla('noms'); } else iniciarJoc(joc.id); } else if (pl === '1-2') { setModeJugadors(null); setPantalla('noms'); } else { if (!jugadors.j1) { setModeJugadors(2); setPantalla('noms'); } else iniciarJoc(joc.id); } }} className={`btn-game p-4 rounded-2xl bg-gradient-to-br ${joc.color} text-white text-left relative`}>
                             {difficulty === 'hard' && <span className="absolute top-1 right-1 text-xs bg-red-500 px-1 rounded">🔥</span>}
                             <p className="text-lg font-black leading-tight">{joc.nom}</p>
-                            <p className="text-xs bg-white/20 inline-block px-2 py-1 rounded-full mt-2">📚 {joc.desc}</p>
+                            <p className="text-xs bg-white/20 inline-block px-2 py-1 rounded-full mt-1">{joc.players === 1 ? '👤' : joc.players === '1-2' ? '👤/👥' : '👥'} {joc.desc}</p>
                         </button>
                     ))}
                 </div>
@@ -1078,19 +2259,32 @@ function PlaygroundApp() {
         </div>
     );
 
-    if (pantalla === 'noms') return (
-        <div className="min-h-screen p-4 flex items-center justify-center">
-            <GameCard className="max-w-md w-full"><div className="text-center space-y-5">
-                <h2 className="text-2xl font-black">👋 Qui juga?</h2>
-                <div className="space-y-3">
-                    <div className="flex items-center gap-3"><span className="text-3xl">🦊</span><input type="text" placeholder="Jugador 1" value={jugadors.j1} onChange={e => setJugadors(j => ({ ...j, j1: e.target.value }))} className="flex-1 px-4 py-3 text-lg rounded-xl border-2 border-blue-300 focus:border-blue-500 focus:outline-none" /></div>
-                    <div className="flex items-center gap-3"><span className="text-3xl">🐰</span><input type="text" placeholder="Jugador 2" value={jugadors.j2} onChange={e => setJugadors(j => ({ ...j, j2: e.target.value }))} className="flex-1 px-4 py-3 text-lg rounded-xl border-2 border-pink-300 focus:border-pink-500 focus:outline-none" /></div>
-                </div>
-                <BigButton color="green" onClick={() => iniciarJoc(jocActual)} disabled={!jugadors.j1.trim() || !jugadors.j2.trim()}>🎮 Jugar!</BigButton>
-                <button onClick={() => setPantalla('menu')} className="text-gray-500 hover:text-gray-700">← Tornar</button>
-            </div></GameCard>
-        </div>
-    );
+    if (pantalla === 'noms') {
+        const jocPlayers = getJocPlayers(jocActual);
+        const effectiveMode = modeJugadors || (jocPlayers === '1-2' ? null : jocPlayers);
+        const needs2P = effectiveMode === 2;
+        const needs1P = effectiveMode === 1;
+        const canStart = needs1P ? jugadors.j1.trim() : needs2P ? (jugadors.j1.trim() && jugadors.j2.trim()) : (modeJugadors && jugadors.j1.trim() && (modeJugadors === 1 || jugadors.j2.trim()));
+        return (
+            <div className="min-h-screen p-4 flex items-center justify-center">
+                <GameCard className="max-w-md w-full"><div className="text-center space-y-5">
+                    <h2 className="text-2xl font-black">👋 Qui juga?</h2>
+                    {jocPlayers === '1-2' && !modeJugadors && (
+                        <div className="flex gap-3 justify-center">
+                            <button onClick={() => setModeJugadors(1)} className="px-5 py-3 rounded-xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 text-white">👤 1 Jugador</button>
+                            <button onClick={() => setModeJugadors(2)} className="px-5 py-3 rounded-xl font-bold bg-gradient-to-r from-pink-400 to-pink-600 text-white">👥 2 Jugadors</button>
+                        </div>
+                    )}
+                    {modeJugadors && (<div className="space-y-3">
+                        <div className="flex items-center gap-3"><span className="text-3xl">🦊</span><input type="text" placeholder={modeJugadors === 1 ? 'El teu nom' : 'Jugador 1'} value={jugadors.j1} onChange={e => setJugadors(j => ({ ...j, j1: e.target.value }))} className="flex-1 px-4 py-3 text-lg rounded-xl border-2 border-blue-300 focus:border-blue-500 focus:outline-none" /></div>
+                        {modeJugadors === 2 && <div className="flex items-center gap-3"><span className="text-3xl">🐰</span><input type="text" placeholder="Jugador 2" value={jugadors.j2} onChange={e => setJugadors(j => ({ ...j, j2: e.target.value }))} className="flex-1 px-4 py-3 text-lg rounded-xl border-2 border-pink-300 focus:border-pink-500 focus:outline-none" /></div>}
+                    </div>)}
+                    {modeJugadors && <BigButton color="green" onClick={() => { if (modeJugadors === 1) setJugadors(j => ({ ...j, j2: '' })); iniciarJoc(jocActual); }} disabled={!canStart}>🎮 Jugar!</BigButton>}
+                    <button onClick={() => { setPantalla('menu'); setModeJugadors(null); }} className="text-gray-500 hover:text-gray-700">← Tornar</button>
+                </div></GameCard>
+            </div>
+        );
+    }
 
     if (pantalla === 'joc') return (
         <div className="min-h-screen p-4 flex items-center justify-center">
@@ -1099,27 +2293,33 @@ function PlaygroundApp() {
                 {jocActual === 'ous' && <JocOusCistells jugadors={jugadors} onEnd={acabarJoc} difficulty={difficulty} />}
                 {jocActual === 'arbre' && <JocArbreMonedes jugadors={jugadors} onEnd={acabarJoc} difficulty={difficulty} />}
                 {jocActual === 'subhasta' && <JocSubhasta jugadors={jugadors} onEnd={acabarJoc} difficulty={difficulty} />}
-                {jocActual === 'mercat' && <JocMercat jugadors={jugadors} onEnd={acabarJoc} difficulty={difficulty} />}
-                {jocActual === 'inflacio' && <JocInflacio jugadors={jugadors} onEnd={acabarJoc} difficulty={difficulty} />}
-                {jocActual === 'escassetat' && <JocEscassetat jugadors={jugadors} onEnd={acabarJoc} difficulty={difficulty} />}
+                {jocActual === 'comuns' && <JocComuns jugadors={jugadors} onEnd={acabarJoc} difficulty={difficulty} />}
+                {jocActual === 'bombolla' && <JocBombolla jugadors={jugadors} onEnd={acabarJoc} difficulty={difficulty} mode={modeJugadors} />}
+                {jocActual === 'illa' && <JocIlla jugadors={jugadors} onEnd={acabarJoc} difficulty={difficulty} />}
                 {jocActual === 'banquer' && <JocBanquer jugadors={jugadors} onEnd={acabarJoc} difficulty={difficulty} />}
                 {jocActual === 'risc' && <JocRiscRecompensa jugadors={jugadors} onEnd={acabarJoc} difficulty={difficulty} />}
-                {jocActual === 'trader' && <JocTrader jugadors={jugadors} onEnd={acabarJoc} difficulty={difficulty} />}
+                {jocActual === 'comers' && <JocComers jugadors={jugadors} onEnd={acabarJoc} difficulty={difficulty} />}
             </div>
         </div>
     );
 
     if (pantalla === 'resultat' && resultat) {
-        const guanyador = resultat.j1 > resultat.j2 ? 'j1' : resultat.j2 > resultat.j1 ? 'j2' : null;
+        const is1P = resultat.j2 == null || !jugadors.j2;
+        const guanyador = is1P ? null : resultat.j1 > resultat.j2 ? 'j1' : resultat.j2 > resultat.j1 ? 'j2' : null;
         return (
             <div className="min-h-screen p-4 flex items-center justify-center">
                 <GameCard className="max-w-md w-full"><Confetti show={true} /><div className="text-center space-y-5">
                     <h2 className="text-3xl font-black">🏆 Resultat!</h2>
-                    {guanyador ? <><div className="text-7xl animate-bounce-slow">{guanyador === 'j1' ? '🦊' : '🐰'}</div><p className="text-2xl font-black text-yellow-600">{jugadors[guanyador]} guanya!</p></> : <><div className="text-5xl">🤝</div><p className="text-2xl font-black text-purple-600">Empat!</p></>}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className={`p-4 rounded-2xl ${guanyador === 'j1' ? 'bg-yellow-100 ring-4 ring-yellow-400' : 'bg-blue-100'}`}><p className="text-3xl">🦊</p><p className="font-bold">{jugadors.j1}</p><p className="text-2xl font-black text-yellow-600">⭐ {resultat.j1}</p></div>
-                        <div className={`p-4 rounded-2xl ${guanyador === 'j2' ? 'bg-yellow-100 ring-4 ring-yellow-400' : 'bg-pink-100'}`}><p className="text-3xl">🐰</p><p className="font-bold">{jugadors.j2}</p><p className="text-2xl font-black text-yellow-600">⭐ {resultat.j2}</p></div>
-                    </div>
+                    {is1P ? (
+                        <><div className="text-7xl animate-bounce-slow">🦊</div><p className="text-2xl font-black text-yellow-600">{jugadors.j1}</p>
+                        <div className="bg-yellow-100 ring-4 ring-yellow-400 rounded-2xl p-5"><p className="text-4xl font-black text-yellow-600">⭐ {resultat.j1}</p><p className="text-sm text-gray-500 mt-1">punts</p></div></>
+                    ) : (
+                        <>{guanyador ? <><div className="text-7xl animate-bounce-slow">{guanyador === 'j1' ? '🦊' : '🐰'}</div><p className="text-2xl font-black text-yellow-600">{jugadors[guanyador]} guanya!</p></> : <><div className="text-5xl">🤝</div><p className="text-2xl font-black text-purple-600">Empat!</p></>}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className={`p-4 rounded-2xl ${guanyador === 'j1' ? 'bg-yellow-100 ring-4 ring-yellow-400' : 'bg-blue-100'}`}><p className="text-3xl">🦊</p><p className="font-bold">{jugadors.j1}</p><p className="text-2xl font-black text-yellow-600">⭐ {resultat.j1}</p></div>
+                            <div className={`p-4 rounded-2xl ${guanyador === 'j2' ? 'bg-yellow-100 ring-4 ring-yellow-400' : 'bg-pink-100'}`}><p className="text-3xl">🐰</p><p className="font-bold">{jugadors.j2}</p><p className="text-2xl font-black text-yellow-600">⭐ {resultat.j2}</p></div>
+                        </div></>
+                    )}
                     <div className="bg-green-100 rounded-xl p-3 text-sm"><p className="text-green-700">✅ Puntuacions guardades!</p></div>
                     <BigButton color="purple" onClick={() => { setPantalla('menu'); setJocActual(null); setResultat(null); }}>🎮 Més Jocs</BigButton>
                 </div></GameCard>
