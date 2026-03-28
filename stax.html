@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>STAX - Simulador d'Inversions | PDE</title>
+    <meta name="description" content="Simulador d'inversions educatiu amb dades reals. Competeix amb els teus companys invertint durant 20 anys simulats.">
+    <meta property="og:title" content="STAX - Simulador d'Inversions | PDE">
+    <meta property="og:description" content="Aprèn a invertir amb dades reals de l'IBEX 35, S&P 500, or, bitcoin i més!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/stax">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <link rel="canonical" href="https://profedeeconomia.es/stax">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+    <!-- React + Babel + Tailwind -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- ReCharts for portfolio graphs -->
+    <script src="https://unpkg.com/recharts@2.1.16/umd/Recharts.js"></script>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <!-- QR Code -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <!-- PDE Shared -->
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
+    <script src="./pde-game-engine.js" type="text/babel"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; scrollbar-width: thin; scrollbar-color: #10b981 #ecfdf5; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #ecfdf5; }
+        ::-webkit-scrollbar-thumb { background-color: #10b981; border-radius: 3px; }
+        @keyframes fall { 0% { transform: translateY(-100%) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(16,185,129,0.3); } 50% { box-shadow: 0 0 40px rgba(16,185,129,0.6); } }
+        .card-stax { background: linear-gradient(145deg, #ffffff 0%, #f0fdf4 100%); border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .btn-stax { transition: all 0.15s; }
+        .btn-stax:active { transform: scale(0.96); }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-emerald-900 via-green-800 to-teal-900">
+    <div id="root"></div>
+    <script type="text/babel">
+const { useState, useEffect, useRef } = React;
+const { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, BarChart, Bar } = Recharts;
+
+// ═══════════════════════════════════════════════════════════════
+// MARKET DATA — Real historical annual returns (%)
+// Sources: IBEX35, S&P500, gold, Spanish bonds, Bitcoin, real estate
+// ═══════════════════════════════════════════════════════════════
+const STAX_DATA = {
+    // Years covered: 2000-2024 (25 years, pick 15 or 20 for a game)
+    years: [2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024],
+
+    assets: {
+        savings:  { emoji: '🏦', risk: 'low',    returns: [2.5,2.3,2.0,1.5,1.2,1.5,2.0,3.0,3.5,1.0,0.5,0.8,0.5,0.3,0.2,0.1,0.0,0.0,0.0,0.0,0.0,0.0,0.5,2.5,3.0] },
+        deposit:  { emoji: '📜', risk: 'low',    returns: [4.0,3.8,3.0,2.5,2.2,2.0,2.8,4.0,4.5,2.0,1.5,1.8,1.5,1.0,0.8,0.5,0.3,0.2,0.1,0.1,0.0,0.0,1.0,3.0,3.5] },
+        ibex35:   { emoji: '🇪🇸', risk: 'high',   returns: [-21.7,-7.8,-28.1,28.2,17.4,18.2,31.8,7.3,-39.4,29.8,-17.4,-13.1,-4.7,21.4,3.7,-7.2,-2.0,7.4,-15.0,11.8,-15.5,7.9,-5.6,22.8,14.8] },
+        sp500:    { emoji: '🇺🇸', risk: 'high',   returns: [-9.1,-11.9,-22.1,28.7,10.9,4.9,15.8,5.5,-37.0,26.5,15.1,2.1,16.0,32.4,13.7,1.4,12.0,21.8,-4.4,31.5,18.4,28.7,-18.1,26.3,25.0] },
+        bonds:    { emoji: '📊', risk: 'low',    returns: [4.8,5.1,5.5,4.2,4.0,3.5,3.8,4.3,4.0,4.0,4.8,5.4,5.0,3.5,2.0,1.2,1.0,0.8,0.6,0.3,0.1,0.3,2.5,3.5,3.2] },
+        gold:     { emoji: '🥇', risk: 'medium', returns: [-5.4,0.7,25.6,19.9,5.6,18.2,23.2,31.9,4.3,25.0,29.5,10.1,7.0,-28.3,-1.5,-10.4,8.6,13.7,-2.1,18.3,24.6,-3.6,0.4,13.1,27.2] },
+        bitcoin:  { emoji: '₿',  risk: 'extreme', returns: [null,null,null,null,null,null,null,null,null,null,null,null,186.0,5507.0,57.6,-17.3,124.0,1338.0,-72.6,87.2,301.0,59.8,-64.3,155.7,121.5] },
+        realestate:{ emoji: '🏠', risk: 'medium', returns: [8.5,8.0,15.2,17.4,17.2,13.9,11.0,5.8,-9.5,-6.7,-3.9,-11.2,-13.7,-5.0,0.3,1.1,1.5,2.4,3.4,3.2,-1.8,3.7,5.5,3.2,4.6] }
+    },
+
+    // Historical context per year (shown on host screen)
+    events: {
+        2000: { title: 'Bombolla .com explota', emoji: '💻', effect: 'Tech stocks crash' },
+        2001: { title: '11-S i recessió', emoji: '🏢', effect: 'Markets shaken by terrorism' },
+        2002: { title: 'Escàndols Enron/WorldCom', emoji: '📉', effect: 'Corporate fraud crashes confidence' },
+        2003: { title: 'Recuperació post-bombolla', emoji: '📈', effect: 'Markets rebound strongly' },
+        2005: { title: 'Boom immobiliari espanyol', emoji: '🏗️', effect: 'Spain builds more than France+Germany combined' },
+        2007: { title: 'Primeres senyals de crisi', emoji: '⚠️', effect: 'Subprime mortgages start failing' },
+        2008: { title: 'CRISI FINANCERA GLOBAL', emoji: '🔥', effect: 'Lehman Brothers collapse, markets -40%' },
+        2009: { title: 'Recuperació amb estímuls', emoji: '💰', effect: 'Central banks print money, markets recover' },
+        2011: { title: 'Crisi del deute europeu', emoji: '🇪🇺', effect: 'Greece, Portugal, Spain in trouble' },
+        2012: { title: 'Rescat bancari d\'Espanya', emoji: '🏦', effect: 'Spain receives €100bn bailout' },
+        2013: { title: 'Bitcoin arriba a $1000', emoji: '₿', effect: 'Crypto goes mainstream' },
+        2015: { title: 'Xina desaccelera', emoji: '🇨🇳', effect: 'Chinese stock market crash' },
+        2017: { title: 'Febre del Bitcoin', emoji: '🚀', effect: 'Bitcoin reaches $20,000' },
+        2018: { title: 'Crypto winter', emoji: '❄️', effect: 'Bitcoin drops 72%' },
+        2019: { title: 'Guerra comercial EUA-Xina', emoji: '🏭', effect: 'Trade tensions affect markets' },
+        2020: { title: 'PANDÈMIA COVID-19', emoji: '🦠', effect: 'Markets crash then recover in V-shape' },
+        2021: { title: 'Boom post-COVID', emoji: '🎉', effect: 'Stocks, crypto, everything rallies' },
+        2022: { title: 'Inflació + guerra Ucraïna', emoji: '📊', effect: 'Interest rates rise, markets fall' },
+        2023: { title: 'IA revolution (ChatGPT)', emoji: '🤖', effect: 'Tech stocks soar on AI hype' },
+        2024: { title: 'Rècords borsaris', emoji: '📈', effect: 'S&P 500 hits all-time highs' }
+    },
+
+    // Random life events for players
+    lifeEvents: [
+        { name: 'Avaria del cotxe', cost: 1500, emoji: '🚗' },
+        { name: 'Bonus de Nadal', income: 2000, emoji: '🎄' },
+        { name: 'Herència familiar', income: 8000, emoji: '📜' },
+        { name: 'Despesa mèdica', cost: 3000, emoji: '🏥' },
+        { name: 'Loteria!', income: 5000, emoji: '🎰' },
+        { name: 'Avaria electrodomèstics', cost: 800, emoji: '🔧' },
+        { name: 'Devolució d\'Hisenda', income: 1200, emoji: '🏛️' },
+        { name: 'Multa de trànsit', cost: 400, emoji: '🚨' },
+        { name: 'Regal d\'aniversari', income: 500, emoji: '🎂' },
+        { name: 'Reparació de la llar', cost: 2500, emoji: '🏠' },
+        { name: 'Premi al treball', income: 3000, emoji: '🏆' },
+        { name: 'Viatge inesperat', cost: 1800, emoji: '✈️' },
+        { name: 'Venda de roba usada', income: 300, emoji: '👕' },
+        { name: 'Despesa dental', cost: 1000, emoji: '🦷' },
+    ],
+
+    // Translation keys
+    assetNames: {
+        savings:    { val: "Compte d'estalvi",    es: 'Cuenta de ahorro',     en: 'Savings Account' },
+        deposit:    { val: 'Dipòsit a termini',    es: 'Depósito a plazo',     en: 'Fixed Deposit' },
+        ibex35:     { val: 'Fons IBEX 35',         es: 'Fondo IBEX 35',       en: 'IBEX 35 Fund' },
+        sp500:      { val: 'Fons S&P 500',         es: 'Fondo S&P 500',       en: 'S&P 500 Fund' },
+        bonds:      { val: 'Bons del govern',      es: 'Bonos del gobierno',   en: 'Government Bonds' },
+        gold:       { val: 'Or',                    es: 'Oro',                  en: 'Gold' },
+        bitcoin:    { val: 'Bitcoin',               es: 'Bitcoin',              en: 'Bitcoin' },
+        realestate: { val: 'Immobiliari',           es: 'Inmobiliario',         en: 'Real Estate' }
+    }
+};
+
+// ═══════════════════════════════════════════════════════════════
+// STAX APP
+// ═══════════════════════════════════════════════════════════════
+function StaxApp() {
+    const [phase, setPhase] = useState('lobby'); // lobby, playing, results
+    const [gameInfo, setGameInfo] = useState(null); // { roomCode, playerId, isHost, players }
+    const [meta, setMeta] = useState({});
+    const [players, setPlayers] = useState({});
+    const [gameState, setGameState] = useState({});
+
+    // Check if Firebase is configured
+    if (!PdeFirebase.isConfigured()) {
+        return <PdeFirebaseError />;
+    }
+
+    // Init Firebase
+    useEffect(function() { PdeFirebase.init(); }, []);
+
+    // Subscribe to room data once game starts
+    useEffect(function() {
+        if (!gameInfo) return;
+        var unsub1 = PdeRoomManager.onPlayersChange(gameInfo.roomCode, setPlayers);
+        var unsub2 = PdeRoomManager.onGameStateChange(gameInfo.roomCode, setGameState);
+        var unsub3 = PdeRoomManager.onMetaChange(gameInfo.roomCode, setMeta);
+        return function() { unsub1(); unsub2(); unsub3(); };
+    }, [gameInfo?.roomCode]);
+
+    // Listen for game start (player side)
+    useEffect(function() {
+        if (meta.status === 'playing' && phase === 'lobby') {
+            setPhase('playing');
+        }
+    }, [meta.status]);
+
+    var handleGameStart = function(info) {
+        setGameInfo(info);
+        setPhase('playing');
+
+        // Host: initialize game state
+        if (info.isHost) {
+            var startYear = 2000;
+            var totalRounds = 20;
+            var incomePerRound = 3000;
+
+            // Initialize each player's portfolio
+            var playerUpdates = {};
+            Object.keys(info.players).forEach(function(pid) {
+                playerUpdates[pid] = {
+                    ...info.players[pid],
+                    data: {
+                        cash: 5000,
+                        portfolio: { savings: 0, deposit: 0, ibex35: 0, sp500: 0, bonds: 0, gold: 0, bitcoin: 0, realestate: 0 },
+                        history: [{ year: startYear - 1, netWorth: 5000 }],
+                        lifeEvent: null,
+                        submitted: false,
+                        allocation: null
+                    }
+                };
+            });
+
+            PdeFirebase.ref('rooms/' + info.roomCode + '/players').set(playerUpdates);
+            PdeRoomManager.setGameState(info.roomCode, {
+                round: 0,
+                totalRounds: totalRounds,
+                phase: 'news', // news -> allocate -> results -> (repeat)
+                currentYear: startYear,
+                startYear: startYear,
+                incomePerRound: incomePerRound,
+                finished: false
+            });
+        }
+    };
+
+    // ── Lobby phase ──
+    if (phase === 'lobby') {
+        return (
+            <PdeGameLobby
+                gameType="stax"
+                gameName="STAX"
+                gameEmoji="📈"
+                gameGradient="from-emerald-500 to-teal-600"
+                minPlayers={2}
+                maxPlayers={30}
+                onGameStart={handleGameStart}
+            />
+        );
+    }
+
+    // ── Game phase ──
+    if (phase === 'playing' && gameInfo) {
+        if (gameInfo.isHost) {
+            return <StaxHost roomCode={gameInfo.roomCode} playerId={gameInfo.playerId}
+                players={players} gameState={gameState} />;
+        } else {
+            return <StaxPlayer roomCode={gameInfo.roomCode} playerId={gameInfo.playerId}
+                players={players} gameState={gameState} />;
+        }
+    }
+
+    return null;
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// STAX HOST VIEW (projected on classroom screen)
+// ═══════════════════════════════════════════════════════════════
+function StaxHost({ roomCode, playerId, players, gameState }) {
+    const [showConfetti, setShowConfetti] = useState(false);
+
+    var gs = gameState || {};
+    var year = gs.currentYear || 2000;
+    var round = gs.round || 0;
+    var totalRounds = gs.totalRounds || 20;
+    var phase = gs.phase || 'news';
+    var yearEvent = STAX_DATA.events[year];
+    var yearIndex = STAX_DATA.years.indexOf(year);
+
+    // Count submitted players
+    var playerList = Object.entries(players || {}).filter(function(e) { return e[1].connected !== false; });
+    var submittedCount = playerList.filter(function(e) { return e[1].data?.submitted; }).length;
+
+    // Calculate net worths for leaderboard
+    var leaderboard = playerList.map(function(entry) {
+        var p = entry[1];
+        var d = p.data || {};
+        var portfolioValue = 0;
+        if (d.portfolio) {
+            Object.entries(d.portfolio).forEach(function(pEntry) {
+                portfolioValue += pEntry[1] || 0;
+            });
+        }
+        return { id: entry[0], name: p.name, netWorth: (d.cash || 0) + portfolioValue };
+    }).sort(function(a, b) { return b.netWorth - a.netWorth; });
+
+    // Advance to next phase
+    var advancePhase = function() {
+        if (phase === 'news') {
+            // Give income to all players
+            var updates = {};
+            playerList.forEach(function(entry) {
+                var pid = entry[0];
+                var d = entry[1].data || {};
+                var newCash = (d.cash || 0) + (gs.incomePerRound || 3000);
+                updates['players/' + pid + '/data/cash'] = newCash;
+                updates['players/' + pid + '/data/submitted'] = false;
+                updates['players/' + pid + '/data/allocation'] = null;
+                updates['players/' + pid + '/data/lifeEvent'] = null;
+            });
+            updates['gameState/phase'] = 'allocate';
+            PdeFirebase.ref('rooms/' + roomCode).update(updates);
+        } else if (phase === 'allocate') {
+            // Apply returns for the year
+            applyReturns();
+        } else if (phase === 'results') {
+            if (round >= totalRounds - 1) {
+                // Game over
+                PdeRoomManager.updateGameState(roomCode, { phase: 'finished', finished: true });
+                setShowConfetti(true);
+                PdeGameSounds.play('win');
+            } else {
+                // Next round
+                var nextYear = STAX_DATA.years[yearIndex + 1];
+                PdeRoomManager.updateGameState(roomCode, {
+                    round: round + 1,
+                    currentYear: nextYear,
+                    phase: 'news'
+                });
+            }
+        }
+    };
+
+    var applyReturns = function() {
+        var updates = {};
+
+        playerList.forEach(function(entry) {
+            var pid = entry[0];
+            var d = entry[1].data || {};
+            var portfolio = { ...(d.portfolio || {}) };
+            var cash = d.cash || 0;
+
+            // Apply allocation if submitted
+            if (d.allocation) {
+                // Reset portfolio and reallocate from cash + current portfolio total
+                var totalValue = cash;
+                Object.values(portfolio).forEach(function(v) { totalValue += v || 0; });
+
+                Object.keys(portfolio).forEach(function(k) { portfolio[k] = 0; });
+                cash = 0;
+
+                Object.entries(d.allocation).forEach(function(allocEntry) {
+                    var asset = allocEntry[0], pct = allocEntry[1];
+                    if (asset === 'cash') {
+                        cash = Math.round(totalValue * pct / 100);
+                    } else {
+                        portfolio[asset] = Math.round(totalValue * pct / 100);
+                    }
+                });
+            }
+
+            // Apply returns for the year
+            Object.entries(portfolio).forEach(function(pEntry) {
+                var asset = pEntry[0], value = pEntry[1];
+                if (!value || value <= 0) return;
+                var returnRate = STAX_DATA.assets[asset]?.returns[yearIndex];
+                if (returnRate == null) return; // null = asset doesn't exist yet (bitcoin)
+                portfolio[asset] = Math.round(value * (1 + returnRate / 100));
+                if (portfolio[asset] < 0) portfolio[asset] = 0;
+            });
+
+            // Random life event (30% chance)
+            var lifeEvent = null;
+            if (Math.random() < 0.3) {
+                lifeEvent = STAX_DATA.lifeEvents[Math.floor(Math.random() * STAX_DATA.lifeEvents.length)];
+                if (lifeEvent.cost) cash = Math.max(0, cash - lifeEvent.cost);
+                if (lifeEvent.income) cash += lifeEvent.income;
+            }
+
+            // Calculate net worth
+            var portfolioValue = 0;
+            Object.values(portfolio).forEach(function(v) { portfolioValue += v || 0; });
+            var netWorth = cash + portfolioValue;
+
+            var history = d.history ? [...d.history] : [];
+            history.push({ year: year, netWorth: netWorth });
+
+            updates['players/' + pid + '/data'] = {
+                cash: cash,
+                portfolio: portfolio,
+                history: history,
+                lifeEvent: lifeEvent,
+                submitted: false,
+                allocation: null
+            };
+        });
+
+        updates['gameState/phase'] = 'results';
+        PdeFirebase.ref('rooms/' + roomCode).update(updates);
+    };
+
+    // ── FINISHED ──
+    if (phase === 'finished' || gs.finished) {
+        // Build chart data from top 5 players
+        var top5 = leaderboard.slice(0, 5);
+        var chartData = [];
+        if (top5.length > 0 && top5[0].id && players[top5[0].id]?.data?.history) {
+            var histLen = players[top5[0].id].data.history.length;
+            for (var i = 0; i < histLen; i++) {
+                var point = { year: players[top5[0].id].data.history[i].year };
+                top5.forEach(function(p) {
+                    var h = players[p.id]?.data?.history;
+                    if (h && h[i]) point[p.name] = h[i].netWorth;
+                });
+                chartData.push(point);
+            }
+        }
+        var colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
+
+        return (
+            <PdeHostView title="STAX — Resultats Finals" emoji="📈" gradient="from-emerald-900 to-teal-900">
+                <PdeConfetti show={showConfetti} />
+
+                {/* Winner */}
+                {leaderboard[0] && (
+                    <div className="text-center">
+                        <div className="text-8xl mb-2">🏆</div>
+                        <h2 className="text-4xl font-black text-yellow-400">{leaderboard[0].name}</h2>
+                        <p className="text-2xl text-emerald-400 font-bold">{leaderboard[0].netWorth.toLocaleString()} €</p>
+                    </div>
+                )}
+
+                {/* Evolution chart */}
+                {chartData.length > 1 && (
+                    <div className="card-stax p-4">
+                        <h3 className="text-lg font-black mb-3 text-center">📊 Evolució del Patrimoni (Top 5)</h3>
+                        <ResponsiveContainer width="100%" height={300}>
+                            <LineChart data={chartData}>
+                                <XAxis dataKey="year" />
+                                <YAxis tickFormatter={function(v) { return (v/1000).toFixed(0) + 'k'; }} />
+                                <Tooltip formatter={function(v) { return v.toLocaleString() + ' €'; }} />
+                                <Legend />
+                                {top5.map(function(p, idx) {
+                                    return <Line key={p.id} type="monotone" dataKey={p.name}
+                                        stroke={colors[idx]} strokeWidth={2} dot={false} />;
+                                })}
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                )}
+
+                {/* Full leaderboard */}
+                <div className="card-stax p-4">
+                    <PdeGameLeaderboard
+                        players={Object.fromEntries(leaderboard.map(function(p) { return [p.id, { name: p.name, score: p.netWorth }]; }))}
+                        sortBy="score"
+                        title="🏆 Classificació Final"
+                    />
+                </div>
+
+                {/* Lesson */}
+                <div className="card-stax p-6 text-center">
+                    <h3 className="text-xl font-black mb-2">📚 Què hem après?</h3>
+                    <div className="space-y-2 text-gray-700">
+                        <p>📊 <strong>Diversificar</strong> redueix el risc: no poses tot en un sol actiu</p>
+                        <p>⏳ <strong>Temps al mercat</strong> &gt; Sincronitzar el mercat: invertir aviat i mantenir</p>
+                        <p>📈 L'<strong>interès compost</strong> és la força més poderosa de les finances</p>
+                        <p>🎲 La <strong>volatilitat</strong> no és el teu enemic si tens paciència</p>
+                    </div>
+                </div>
+
+                <a href="./" className="block text-center py-3 bg-white/20 text-white font-bold rounded-xl hover:bg-white/30">🏠 Tornar</a>
+            </PdeHostView>
+        );
+    }
+
+    // ── NEWS phase ──
+    if (phase === 'news') {
+        return (
+            <PdeHostView title="STAX" emoji="📈" gradient="from-emerald-900 to-teal-900">
+                <div className="text-center text-white">
+                    <p className="text-lg text-emerald-400 font-bold">Ronda {round + 1} de {totalRounds}</p>
+                </div>
+
+                <div className="card-stax p-8 text-center space-y-4">
+                    <p className="text-6xl font-black text-emerald-700">{year}</p>
+                    {yearEvent && (
+                        <div className="space-y-2">
+                            <p className="text-5xl">{yearEvent.emoji}</p>
+                            <h2 className="text-3xl font-black text-gray-800">{yearEvent.title}</h2>
+                            <p className="text-lg text-gray-500">{yearEvent.effect}</p>
+                        </div>
+                    )}
+                    {!yearEvent && <p className="text-xl text-gray-500">Un any tranquil als mercats...</p>}
+                </div>
+
+                {/* Previous year returns preview */}
+                {yearIndex > 0 && (
+                    <div className="card-stax p-4">
+                        <h3 className="text-lg font-black text-center mb-3">📊 Rendiments de {STAX_DATA.years[yearIndex - 1]}</h3>
+                        <div className="grid grid-cols-4 gap-2">
+                            {Object.entries(STAX_DATA.assets).map(function(entry) {
+                                var key = entry[0], asset = entry[1];
+                                var ret = asset.returns[yearIndex - 1];
+                                if (ret == null) return null;
+                                return (
+                                    <div key={key} className="text-center p-2 rounded-xl bg-gray-50">
+                                        <span className="text-2xl">{asset.emoji}</span>
+                                        <p className={'text-sm font-black ' + (ret >= 0 ? 'text-green-600' : 'text-red-600')}>
+                                            {ret >= 0 ? '+' : ''}{ret.toFixed(1)}%
+                                        </p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+
+                <button onClick={advancePhase}
+                    className="w-full py-5 rounded-2xl text-white font-black text-2xl shadow-lg bg-gradient-to-r from-emerald-500 to-teal-600 btn-stax hover:brightness-110">
+                    💰 Obrir Mercat — Invertiu!
+                </button>
+            </PdeHostView>
+        );
+    }
+
+    // ── ALLOCATE phase ──
+    if (phase === 'allocate') {
+        return (
+            <PdeHostView title="STAX" emoji="📈" gradient="from-emerald-900 to-teal-900">
+                <div className="text-center text-white">
+                    <p className="text-lg text-emerald-400 font-bold">Any {year} — Ronda {round + 1}/{totalRounds}</p>
+                    <p className="text-3xl font-black mt-2">💰 Invertiu als vostres mòbils!</p>
+                </div>
+
+                {/* Progress */}
+                <div className="card-stax p-6 text-center">
+                    <p className="text-lg font-bold text-gray-600 mb-3">
+                        ✅ {submittedCount} / {playerList.length} jugadors preparats
+                    </p>
+                    <div className="w-full bg-gray-200 rounded-full h-4">
+                        <div className="bg-emerald-500 h-4 rounded-full transition-all"
+                            style={{ width: (submittedCount / Math.max(playerList.length, 1) * 100) + '%' }} />
+                    </div>
+                </div>
+
+                {/* Mini leaderboard */}
+                <div className="card-stax p-4">
+                    <PdeGameLeaderboard
+                        players={Object.fromEntries(leaderboard.map(function(p) { return [p.id, { name: p.name, score: p.netWorth }]; }))}
+                        sortBy="score"
+                        maxVisible={8}
+                        title="📊 Patrimoni Net Actual"
+                    />
+                </div>
+
+                <button onClick={advancePhase}
+                    disabled={submittedCount < 1}
+                    className={'w-full py-5 rounded-2xl text-white font-black text-2xl shadow-lg bg-gradient-to-r from-amber-500 to-orange-600 btn-stax ' +
+                        (submittedCount < 1 ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-110')}>
+                    {submittedCount >= playerList.length ? '🔔 Tancar Mercat!' : '⏳ Esperant jugadors...'}
+                </button>
+            </PdeHostView>
+        );
+    }
+
+    // ── RESULTS phase ──
+    if (phase === 'results') {
+        return (
+            <PdeHostView title="STAX" emoji="📈" gradient="from-emerald-900 to-teal-900">
+                <div className="text-center text-white">
+                    <p className="text-lg text-emerald-400 font-bold">Resultats de {year}</p>
+                </div>
+
+                {/* Year returns */}
+                <div className="card-stax p-4">
+                    <h3 className="text-lg font-black text-center mb-3">📊 Rendiments de {year}</h3>
+                    <div className="grid grid-cols-4 gap-2">
+                        {Object.entries(STAX_DATA.assets).map(function(entry) {
+                            var key = entry[0], asset = entry[1];
+                            var ret = asset.returns[yearIndex];
+                            if (ret == null) return (
+                                <div key={key} className="text-center p-2 rounded-xl bg-gray-100">
+                                    <span className="text-2xl">{asset.emoji}</span>
+                                    <p className="text-sm text-gray-400">N/A</p>
+                                </div>
+                            );
+                            return (
+                                <div key={key} className={'text-center p-3 rounded-xl ' + (ret >= 0 ? 'bg-green-50' : 'bg-red-50')}>
+                                    <span className="text-3xl">{asset.emoji}</span>
+                                    <p className={'text-lg font-black ' + (ret >= 0 ? 'text-green-600' : 'text-red-600')}>
+                                        {ret >= 0 ? '+' : ''}{ret.toFixed(1)}%
+                                    </p>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Updated leaderboard */}
+                <div className="card-stax p-4">
+                    <PdeGameLeaderboard
+                        players={Object.fromEntries(leaderboard.map(function(p) { return [p.id, { name: p.name, score: p.netWorth }]; }))}
+                        sortBy="score"
+                        title="🏆 Classificació"
+                    />
+                </div>
+
+                <button onClick={advancePhase}
+                    className="w-full py-5 rounded-2xl text-white font-black text-2xl shadow-lg bg-gradient-to-r from-emerald-500 to-teal-600 btn-stax hover:brightness-110">
+                    {round >= totalRounds - 1 ? '🏆 Veure Resultats Finals' : '➡️ Següent Any'}
+                </button>
+            </PdeHostView>
+        );
+    }
+
+    return null;
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// STAX PLAYER VIEW (on student's phone)
+// ═══════════════════════════════════════════════════════════════
+function StaxPlayer({ roomCode, playerId, players, gameState }) {
+    const [allocation, setAllocation] = useState({
+        cash: 100, savings: 0, deposit: 0, ibex35: 0, sp500: 0, bonds: 0, gold: 0, bitcoin: 0, realestate: 0
+    });
+
+    var gs = gameState || {};
+    var phase = gs.phase || 'news';
+    var year = gs.currentYear || 2000;
+    var yearIndex = STAX_DATA.years.indexOf(year);
+    var myData = players[playerId]?.data || {};
+    var cash = myData.cash || 0;
+    var portfolio = myData.portfolio || {};
+    var submitted = myData.submitted || false;
+    var lifeEvent = myData.lifeEvent;
+
+    // Calculate total portfolio value
+    var portfolioValue = 0;
+    Object.values(portfolio).forEach(function(v) { portfolioValue += v || 0; });
+    var totalWealth = cash + portfolioValue;
+
+    // Available assets (bitcoin only from 2009+)
+    var availableAssets = Object.entries(STAX_DATA.assets).filter(function(entry) {
+        var returns = entry[1].returns;
+        return returns[yearIndex] != null;
+    });
+
+    // Adjust allocation for an asset
+    var adjustAlloc = function(asset, delta) {
+        if (submitted) return;
+        setAllocation(function(prev) {
+            var newVal = Math.max(0, Math.min(100, (prev[asset] || 0) + delta));
+            var newAlloc = { ...prev, [asset]: newVal };
+            // Calculate used percentage
+            var totalUsed = Object.values(newAlloc).reduce(function(s, v) { return s + v; }, 0);
+            // If over 100, reduce cash
+            if (totalUsed > 100 && asset !== 'cash') {
+                newAlloc.cash = Math.max(0, newAlloc.cash - (totalUsed - 100));
+            }
+            // Recalculate
+            totalUsed = Object.values(newAlloc).reduce(function(s, v) { return s + v; }, 0);
+            if (totalUsed > 100) {
+                newAlloc[asset] = newVal - (totalUsed - 100);
+            }
+            return newAlloc;
+        });
+        PdeGameSounds.play('pop');
+    };
+
+    // Submit allocation
+    var submitAllocation = function() {
+        PdeRoomManager.updatePlayer(roomCode, playerId, {
+            'data/allocation': allocation,
+            'data/submitted': true
+        });
+        PdeGameSounds.play('coin');
+    };
+
+    var totalAllocated = Object.values(allocation).reduce(function(s, v) { return s + v; }, 0);
+
+    // ── Waiting screens ──
+    if (phase === 'news') {
+        return (
+            <PdePlayerView gradient="from-emerald-900 to-teal-900">
+                <div className="card-stax p-6 text-center space-y-4">
+                    <p className="text-5xl">📈</p>
+                    <h2 className="text-2xl font-black">Any {year}</h2>
+                    <p className="text-gray-500">Mira la pantalla del professor...</p>
+                    <div className="bg-emerald-50 rounded-xl p-4">
+                        <p className="text-sm text-gray-500">El teu patrimoni</p>
+                        <p className="text-3xl font-black text-emerald-600">{totalWealth.toLocaleString()} €</p>
+                    </div>
+                </div>
+            </PdePlayerView>
+        );
+    }
+
+    if (phase === 'results') {
+        var yearEvent = STAX_DATA.events[year];
+        return (
+            <PdePlayerView gradient="from-emerald-900 to-teal-900">
+                <div className="card-stax p-6 space-y-4">
+                    <h2 className="text-xl font-black text-center">📊 Resultats {year}</h2>
+
+                    {/* Life event */}
+                    {lifeEvent && (
+                        <div className={`rounded-xl p-3 text-center ${lifeEvent.cost ? 'bg-red-50' : 'bg-green-50'}`}>
+                            <p className="text-2xl">{lifeEvent.emoji}</p>
+                            <p className="font-bold">{lifeEvent.name}</p>
+                            <p className={'font-black ' + (lifeEvent.cost ? 'text-red-600' : 'text-green-600')}>
+                                {lifeEvent.cost ? '-' + lifeEvent.cost.toLocaleString() : '+' + lifeEvent.income.toLocaleString()} €
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Portfolio breakdown */}
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center bg-gray-50 rounded-xl px-3 py-2">
+                            <span>💵 Efectiu</span>
+                            <span className="font-black">{cash.toLocaleString()} €</span>
+                        </div>
+                        {Object.entries(portfolio).map(function(entry) {
+                            var asset = entry[0], value = entry[1];
+                            if (!value) return null;
+                            var assetInfo = STAX_DATA.assets[asset];
+                            return (
+                                <div key={asset} className="flex justify-between items-center bg-gray-50 rounded-xl px-3 py-2">
+                                    <span>{assetInfo?.emoji} {STAX_DATA.assetNames[asset]?.val || asset}</span>
+                                    <span className="font-black">{value.toLocaleString()} €</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    <div className="bg-emerald-50 rounded-xl p-4 text-center">
+                        <p className="text-sm text-gray-500">Patrimoni Total</p>
+                        <p className="text-3xl font-black text-emerald-600">{totalWealth.toLocaleString()} €</p>
+                    </div>
+                </div>
+            </PdePlayerView>
+        );
+    }
+
+    if (phase === 'finished') {
+        return (
+            <PdePlayerView gradient="from-emerald-900 to-teal-900">
+                <div className="card-stax p-6 text-center space-y-4">
+                    <p className="text-6xl">🏆</p>
+                    <h2 className="text-2xl font-black">Partida Acabada!</h2>
+                    <div className="bg-emerald-50 rounded-xl p-4">
+                        <p className="text-sm text-gray-500">El teu patrimoni final</p>
+                        <p className="text-4xl font-black text-emerald-600">{totalWealth.toLocaleString()} €</p>
+                    </div>
+                    <p className="text-gray-500">Mira la classificació a la pantalla!</p>
+                </div>
+            </PdePlayerView>
+        );
+    }
+
+    // ── ALLOCATE phase (main interaction) ──
+    if (phase === 'allocate') {
+        if (submitted) {
+            return (
+                <PdePlayerView gradient="from-emerald-900 to-teal-900">
+                    <div className="card-stax p-6 text-center space-y-4">
+                        <p className="text-5xl">✅</p>
+                        <h2 className="text-xl font-black">Inversió enviada!</h2>
+                        <p className="text-gray-500">Esperant els altres jugadors...</p>
+                        <div className="bg-emerald-50 rounded-xl p-3">
+                            <p className="text-sm text-gray-500">Patrimoni actual</p>
+                            <p className="text-2xl font-black text-emerald-600">{totalWealth.toLocaleString()} €</p>
+                        </div>
+                    </div>
+                </PdePlayerView>
+            );
+        }
+
+        return (
+            <PdePlayerView gradient="from-emerald-900 to-teal-900">
+                <div className="card-stax p-5 space-y-3">
+                    <div className="text-center">
+                        <h2 className="text-lg font-black">💰 Distribueix el teu capital</h2>
+                        <p className="text-emerald-600 font-bold text-xl">{totalWealth.toLocaleString()} €</p>
+                        <p className="text-xs text-gray-400">Any {year} — Ronda {(gs.round || 0) + 1}</p>
+                    </div>
+
+                    {/* Cash allocation */}
+                    <div className="bg-gray-50 rounded-xl p-3">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <span className="text-xl">💵</span>
+                                <span className="font-bold text-sm">Efectiu</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button onClick={function() { adjustAlloc('cash', -5); }}
+                                    className="w-8 h-8 rounded-full bg-white shadow text-lg font-bold">−</button>
+                                <span className="font-black w-12 text-center">{allocation.cash}%</span>
+                                <button onClick={function() { adjustAlloc('cash', 5); }}
+                                    className="w-8 h-8 rounded-full bg-white shadow text-lg font-bold">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Asset allocations */}
+                    {availableAssets.map(function(entry) {
+                        var key = entry[0], asset = entry[1];
+                        var riskColors = { low: 'bg-green-50', medium: 'bg-yellow-50', high: 'bg-orange-50', extreme: 'bg-red-50' };
+                        var riskLabels = { low: '🟢', medium: '🟡', high: '🟠', extreme: '🔴' };
+                        return (
+                            <div key={key} className={(riskColors[asset.risk] || 'bg-gray-50') + ' rounded-xl p-3'}>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                                        <span className="text-xl">{asset.emoji}</span>
+                                        <div className="min-w-0">
+                                            <p className="font-bold text-sm truncate">{STAX_DATA.assetNames[key]?.val || key}</p>
+                                            <p className="text-xs text-gray-400">{riskLabels[asset.risk]} Risc {asset.risk}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={function() { adjustAlloc(key, -5); }}
+                                            className="w-8 h-8 rounded-full bg-white shadow text-lg font-bold">−</button>
+                                        <span className="font-black w-12 text-center">{allocation[key] || 0}%</span>
+                                        <button onClick={function() { adjustAlloc(key, 5); }}
+                                            className="w-8 h-8 rounded-full bg-white shadow text-lg font-bold">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+
+                    {/* Total & Submit */}
+                    <div className={'rounded-xl p-3 text-center ' + (totalAllocated === 100 ? 'bg-emerald-100' : 'bg-red-100')}>
+                        <p className="font-bold">Total: <span className={'font-black text-xl ' + (totalAllocated === 100 ? 'text-emerald-600' : 'text-red-600')}>{totalAllocated}%</span></p>
+                    </div>
+
+                    <button onClick={submitAllocation} disabled={totalAllocated !== 100}
+                        className={'w-full py-4 rounded-2xl text-white font-black text-lg shadow-lg bg-gradient-to-r from-emerald-500 to-teal-600 btn-stax ' +
+                            (totalAllocated !== 100 ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-110')}>
+                        {totalAllocated !== 100 ? '⚠️ Ha de sumar 100%' : '✅ Confirmar Inversió'}
+                    </button>
+                </div>
+            </PdePlayerView>
+        );
+    }
+
+    return null;
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════
+ReactDOM.render(<StaxApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
