@@ -18,8 +18,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="./pde-shared.js"></script>
     <script src="./pde-components.js" type="text/babel"></script>
+    <script src="./pde-game-engine.js" type="text/babel"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #ec4899 #fdf2f8; }
@@ -313,6 +317,646 @@ const PointsPopup = ({ points, show }) => {
         </div>
     );
 };
+
+// ─── CONCURS AULA (Kahoot-style classroom mode) ──────────────────────────
+function ConcursAula({ idioma, t, bancPreguntes, obtenirPreguntes, onBack }) {
+    const [phase, setPhase] = useState('lobby'); // lobby, hostGame, playerGame, leaderboard
+    const [roomInfo, setRoomInfo] = useState(null); // { roomCode, playerId, isHost, players }
+    const [gameState, setGameState] = useState({});
+    const [players, setPlayers] = useState({});
+    const [categoria, setCategoria] = useState('totes');
+    const [numPreguntes, setNumPreguntes] = useState(10);
+
+    // Host-only state
+    const [questions, setQuestions] = useState([]);
+    const [currentQ, setCurrentQ] = useState(0);
+    const [showingResults, setShowingResults] = useState(false);
+    const [questionStartTime, setQuestionStartTime] = useState(0);
+    const [questionTimer, setQuestionTimer] = useState(30);
+    const timerRef = useRef(null);
+    const revealResultsRef = useRef(null);
+
+    // Player-only state
+    const [myAnswer, setMyAnswer] = useState(null);
+    const [answered, setAnswered] = useState(false);
+    const [lastResult, setLastResult] = useState(null);
+    const [showConfetti, setShowConfetti] = useState(false);
+
+    // Listen to game state changes once in a room
+    useEffect(() => {
+        if (!roomInfo) return;
+        var unsub1 = PdeRoomManager.onGameStateChange(roomInfo.roomCode, function(gs) {
+            setGameState(gs || {});
+        });
+        var unsub2 = PdeRoomManager.onPlayersChange(roomInfo.roomCode, function(p) {
+            setPlayers(p || {});
+        });
+        return function() { unsub1(); unsub2(); };
+    }, [roomInfo]);
+
+    // Player: react to game state changes from host
+    useEffect(() => {
+        if (!roomInfo || roomInfo.isHost) return;
+        if (gameState.phase === 'question') {
+            setMyAnswer(null);
+            setAnswered(false);
+            setLastResult(null);
+        }
+        if (gameState.phase === 'finished') {
+            setPhase('leaderboard');
+        }
+    }, [gameState.phase, gameState.questionIndex]);
+
+    // Host: start timer countdown
+    useEffect(() => {
+        if (!roomInfo || !roomInfo.isHost) return;
+        if (phase !== 'hostGame' || showingResults) return;
+        if (!gameState.phase || gameState.phase !== 'question') return;
+
+        setQuestionTimer(30);
+        if (timerRef.current) clearInterval(timerRef.current);
+        timerRef.current = setInterval(() => {
+            setQuestionTimer(prev => {
+                if (prev <= 1) {
+                    clearInterval(timerRef.current);
+                    timerRef.current = null;
+                    // Auto-reveal results when time is up
+                    if (revealResultsRef.current) revealResultsRef.current();
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+        return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    }, [phase, gameState.phase, gameState.questionIndex, showingResults]);
+
+    // When lobby says game starts (host presses start)
+    var handleGameStart = function(info) {
+        setRoomInfo(info);
+        if (info.isHost) {
+            // Host: generate questions and push first one
+            var qs = obtenirPreguntes(categoria).slice(0, numPreguntes);
+            // For classroom mode, only use multiple choice and true/false for simplicity
+            qs = qs.filter(function(q) {
+                return q.tipus === 'multiple' || q.tipus === 'truefalse' || q.tipus === 'identify' || q.tipus === 'formula';
+            });
+            if (qs.length < 5) {
+                // Fallback: get all and filter
+                var allPool = [...bancPreguntes.economia, ...bancPreguntes.finances, ...bancPreguntes.empresa];
+                qs = allPool.filter(function(q) {
+                    return q.tipus === 'multiple' || q.tipus === 'truefalse';
+                }).sort(function() { return Math.random() - 0.5; }).slice(0, numPreguntes);
+            }
+            setQuestions(qs);
+            setCurrentQ(0);
+            setShowingResults(false);
+            setPhase('hostGame');
+
+            // Serialize question for players (without correct answer)
+            var q = qs[0];
+            var playerQuestion = {
+                pregunta: q.pregunta,
+                tipus: q.tipus,
+                opcions: q.opcions || null,
+                index: 0,
+                total: qs.length
+            };
+            PdeRoomManager.setGameState(info.roomCode, {
+                phase: 'question',
+                questionIndex: 0,
+                question: playerQuestion,
+                startTime: Date.now(),
+                totalQuestions: qs.length,
+                answers: {}
+            });
+            setQuestionStartTime(Date.now());
+        } else {
+            setPhase('playerGame');
+        }
+    };
+
+    // Player: detect when host starts the game (meta status changes to 'playing')
+    // Since PdeGameLobby only fires onGameStart for hosts, players need to poll meta
+    useEffect(() => {
+        if (phase !== 'lobby') return;
+        // Check localStorage for saved room info (set by PdeGameLobby when player joins)
+        var checkInterval = setInterval(function() {
+            var saved = PdeRoomManager.getSavedRoom();
+            if (saved && !saved.isHost && saved.code) {
+                // Player has joined a room, listen for meta change
+                var metaRef = PdeFirebase.ref('rooms/' + saved.code + '/meta');
+                metaRef.once('value').then(function(snap) {
+                    var meta = snap.val();
+                    if (meta && meta.status === 'playing') {
+                        clearInterval(checkInterval);
+                        setRoomInfo({ roomCode: saved.code, playerId: saved.playerId, isHost: false, players: {} });
+                        setPhase('playerGame');
+                    }
+                });
+            }
+        }, 1000);
+        return function() { clearInterval(checkInterval); };
+    }, [phase]);
+
+    // Player waiting in lobby also detects game started via gameState
+    useEffect(() => {
+        if (!roomInfo || roomInfo.isHost) return;
+        if (gameState.phase === 'question' && phase === 'lobby') {
+            setPhase('playerGame');
+        }
+    }, [gameState.phase]);
+
+    // Host: reveal results for current question
+    var handleRevealResults = function() {
+        if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+        setShowingResults(true);
+        var q = questions[currentQ];
+        var correcta = q.correcta;
+
+        // Calculate scores for each player who answered
+        var answers = gameState.answers || {};
+        var updates = {};
+        Object.keys(answers).forEach(function(pid) {
+            var ans = answers[pid];
+            var isCorrect = false;
+            if (q.tipus === 'truefalse') {
+                isCorrect = ans.answer === correcta;
+            } else {
+                isCorrect = ans.answer === correcta;
+            }
+            var points = 0;
+            if (isCorrect) {
+                var speed = Math.max(0, 30 - Math.floor((ans.time - (gameState.startTime || 0)) / 1000));
+                points = 100 + speed * 10; // 100 base + up to 300 speed bonus
+            }
+            var currentScore = (players[pid] && players[pid].score) || 0;
+            updates['players/' + pid + '/score'] = currentScore + points;
+        });
+        if (Object.keys(updates).length > 0) {
+            PdeFirebase.ref('rooms/' + roomInfo.roomCode).update(updates);
+        }
+        // Update game state to show results
+        PdeRoomManager.updateGameState(roomInfo.roomCode, {
+            phase: 'results',
+            correctAnswer: correcta,
+            questionIndex: currentQ
+        });
+        PdeGameSounds.play('ding');
+    };
+    revealResultsRef.current = handleRevealResults;
+
+    // Host: next question
+    var handleNextQuestion = function() {
+        var next = currentQ + 1;
+        if (next >= questions.length) {
+            // Game over
+            PdeRoomManager.updateGameState(roomInfo.roomCode, {
+                phase: 'finished'
+            });
+            setPhase('leaderboard');
+            PdeGameSounds.play('win');
+            return;
+        }
+        setCurrentQ(next);
+        setShowingResults(false);
+        var q = questions[next];
+        var playerQuestion = {
+            pregunta: q.pregunta,
+            tipus: q.tipus,
+            opcions: q.opcions || null,
+            index: next,
+            total: questions.length
+        };
+        PdeRoomManager.setGameState(roomInfo.roomCode, {
+            phase: 'question',
+            questionIndex: next,
+            question: playerQuestion,
+            startTime: Date.now(),
+            totalQuestions: questions.length,
+            answers: {}
+        });
+        setQuestionStartTime(Date.now());
+    };
+
+    // Player: submit answer
+    var handlePlayerAnswer = function(answer) {
+        if (answered || !roomInfo) return;
+        setMyAnswer(answer);
+        setAnswered(true);
+        PdeGameSounds.play('pop');
+        // Write answer to Firebase
+        var answerUpdate = {};
+        answerUpdate['answers/' + roomInfo.playerId] = {
+            answer: answer,
+            time: Date.now()
+        };
+        PdeRoomManager.updateGameState(roomInfo.roomCode, answerUpdate);
+    };
+
+    // Player: check results
+    useEffect(() => {
+        if (!roomInfo || roomInfo.isHost) return;
+        if (gameState.phase === 'results' && answered) {
+            var isCorrect = myAnswer === gameState.correctAnswer;
+            setLastResult(isCorrect);
+            if (isCorrect) {
+                setShowConfetti(true);
+                PdeGameSounds.play('win');
+                setTimeout(function() { setShowConfetti(false); }, 3000);
+            } else {
+                PdeGameSounds.play('lose');
+            }
+        }
+    }, [gameState.phase, gameState.correctAnswer]);
+
+    // Get sorted leaderboard
+    var getSortedPlayers = function() {
+        return Object.entries(players)
+            .map(function(e) { return { id: e[0], ...e[1] }; })
+            .filter(function(p) { return p.connected !== false; })
+            .sort(function(a, b) { return (b.score || 0) - (a.score || 0); });
+    };
+
+    var answerColors = ['bg-red-500', 'bg-blue-500', 'bg-yellow-500', 'bg-green-500'];
+    var answerShapes = ['▲', '◆', '●', '■'];
+    var medals = ['🥇', '🥈', '🥉'];
+    var answeredCount = gameState.answers ? Object.keys(gameState.answers).length : 0;
+    var totalPlayers = Object.keys(players).filter(function(id) { return players[id].connected !== false; }).length;
+
+    // ── LOBBY PHASE ──
+    if (phase === 'lobby') {
+        return (
+            <div>
+                <div className="mb-4">
+                    <button onClick={onBack} className="text-purple-300 hover:text-white transition-colors font-bold">
+                        ← Tornar al concurs individual
+                    </button>
+                </div>
+
+                {/* Category and question count selector for host */}
+                <div className="bg-white/10 backdrop-blur rounded-2xl p-4 mb-4 space-y-3">
+                    <h3 className="text-white font-bold text-center">Configuració de la partida</h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        {[
+                            { id: 'economia', icon: '📈', label: 'Economia' },
+                            { id: 'finances', icon: '💰', label: 'Finances' },
+                            { id: 'empresa', icon: '🏢', label: 'Empresa' },
+                            { id: 'totes', icon: '🎯', label: 'Totes' },
+                        ].map(function(cat) {
+                            return (
+                                <button key={cat.id} onClick={function() { setCategoria(cat.id); }}
+                                    className={'px-3 py-2 rounded-xl font-bold text-sm transition-all ' +
+                                        (categoria === cat.id ? 'bg-yellow-400 text-slate-900' : 'bg-white/10 text-white hover:bg-white/20')}>
+                                    {cat.icon} {cat.label}
+                                </button>
+                            );
+                        })}
+                    </div>
+                    <div className="flex items-center gap-3 justify-center">
+                        <span className="text-white text-sm font-bold">Preguntes:</span>
+                        {[5, 10, 15, 20].map(function(n) {
+                            return (
+                                <button key={n} onClick={function() { setNumPreguntes(n); }}
+                                    className={'px-3 py-1 rounded-lg font-bold text-sm ' +
+                                        (numPreguntes === n ? 'bg-yellow-400 text-slate-900' : 'bg-white/10 text-white hover:bg-white/20')}>
+                                    {n}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                <PdeGameLobby
+                    gameType="concurs-aula"
+                    gameName="Concurs PDE — Mode Aula"
+                    gameEmoji="🏫"
+                    gameGradient="from-emerald-500 to-teal-600"
+                    minPlayers={2}
+                    maxPlayers={40}
+                    onGameStart={handleGameStart}
+                />
+            </div>
+        );
+    }
+
+    // ── HOST GAME VIEW ──
+    if (phase === 'hostGame' && roomInfo && roomInfo.isHost) {
+        var q = questions[currentQ];
+        if (!q) return null;
+
+        return (
+            <div className="max-w-5xl mx-auto animate-fade">
+                <PdeConfetti show={showConfetti} />
+
+                {/* Header bar */}
+                <div className="flex items-center justify-between mb-4">
+                    <div className="text-white">
+                        <span className="font-black text-2xl">🏫 Mode Aula</span>
+                        <span className="ml-3 text-purple-300 text-sm">Sala: {roomInfo.roomCode}</span>
+                    </div>
+                    <div className="text-white font-bold">
+                        {currentQ + 1} / {questions.length}
+                    </div>
+                </div>
+
+                {/* Timer bar */}
+                {!showingResults && (
+                    <div className="mb-4">
+                        <div className="flex items-center gap-3">
+                            <div className="flex-1 h-3 bg-white/20 rounded-full overflow-hidden">
+                                <div className={'h-full rounded-full transition-all duration-1000 ' +
+                                    (questionTimer > 20 ? 'bg-green-500' : questionTimer > 10 ? 'bg-yellow-500' : 'bg-red-500')}
+                                    style={{width: ((questionTimer / 30) * 100) + '%'}}></div>
+                            </div>
+                            <span className={'text-3xl font-black ' +
+                                (questionTimer > 20 ? 'text-green-400' : questionTimer > 10 ? 'text-yellow-400' : 'text-red-400 animate-pulse')}>
+                                {questionTimer}s
+                            </span>
+                        </div>
+                    </div>
+                )}
+
+                {/* Question */}
+                <div className="bg-indigo-800/80 backdrop-blur rounded-3xl p-8 mb-6 text-center shadow-2xl border border-indigo-500/30">
+                    <p className="text-sm text-indigo-300 mb-2 font-bold">
+                        {q.tipus === 'truefalse' ? 'Vertader o Fals' : 'Tria la resposta correcta'}
+                    </p>
+                    <h2 className="text-2xl md:text-3xl font-black text-white leading-snug">
+                        {q.pregunta}
+                    </h2>
+                </div>
+
+                {/* Answer options (displayed on projector) */}
+                {q.tipus === 'truefalse' ? (
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                        {[
+                            { label: 'VERTADER', val: true, color: 'bg-green-500', shape: '●' },
+                            { label: 'FALS', val: false, color: 'bg-red-500', shape: '▲' }
+                        ].map(function(opt, i) {
+                            var isCorrectAnswer = showingResults && opt.val === q.correcta;
+                            var isWrongAnswer = showingResults && opt.val !== q.correcta;
+                            return (
+                                <div key={i} className={'rounded-2xl p-6 text-center text-white font-black text-2xl transition-all ' +
+                                    opt.color +
+                                    (isCorrectAnswer ? ' ring-4 ring-yellow-400 scale-105 shadow-xl shadow-yellow-400/30' : '') +
+                                    (isWrongAnswer ? ' opacity-40' : '')}>
+                                    <span className="text-4xl block mb-2">{opt.shape}</span>
+                                    {opt.label}
+                                    {isCorrectAnswer && <span className="block text-yellow-300 text-lg mt-1">✅ Correcta!</span>}
+                                </div>
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                        {(q.opcions || []).map(function(opt, i) {
+                            var isCorrectAnswer = showingResults && i === q.correcta;
+                            var isWrongAnswer = showingResults && i !== q.correcta;
+                            return (
+                                <div key={i} className={'rounded-2xl p-5 text-center text-white font-bold text-lg transition-all ' +
+                                    answerColors[i % answerColors.length] +
+                                    (isCorrectAnswer ? ' ring-4 ring-yellow-400 scale-105 shadow-xl shadow-yellow-400/30' : '') +
+                                    (isWrongAnswer ? ' opacity-40' : '')}>
+                                    <span className="text-2xl block mb-1">{answerShapes[i % answerShapes.length]}</span>
+                                    {opt}
+                                    {isCorrectAnswer && <span className="block text-yellow-300 text-sm mt-1">✅ Correcta!</span>}
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* Answer count / action buttons */}
+                <div className="flex items-center justify-between">
+                    <div className="bg-white/10 backdrop-blur rounded-xl px-5 py-3 text-white">
+                        <span className="font-black text-2xl">{answeredCount}</span>
+                        <span className="text-purple-300 ml-1">/ {totalPlayers} respostes</span>
+                    </div>
+                    {!showingResults ? (
+                        <button onClick={handleRevealResults}
+                            className="px-8 py-3 bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-900 font-black text-lg rounded-xl hover:brightness-110 shadow-lg">
+                            📊 Mostrar Resultats
+                        </button>
+                    ) : (
+                        <button onClick={handleNextQuestion}
+                            className="px-8 py-3 bg-gradient-to-r from-emerald-400 to-green-500 text-slate-900 font-black text-lg rounded-xl hover:brightness-110 shadow-lg animate-pulse">
+                            {currentQ + 1 >= questions.length ? '🏆 Resultats Finals' : '➡️ Següent Pregunta'}
+                        </button>
+                    )}
+                </div>
+
+                {/* Mini leaderboard when showing results */}
+                {showingResults && (
+                    <div className="mt-6 bg-white/10 backdrop-blur rounded-2xl p-4 animate-fade">
+                        <h3 className="text-white font-black text-center text-lg mb-3">🏆 Classificació Parcial</h3>
+                        <div className="space-y-2">
+                            {getSortedPlayers().slice(0, 5).map(function(p, i) {
+                                return (
+                                    <div key={p.id} className={'flex items-center gap-3 px-4 py-2 rounded-xl ' +
+                                        (i === 0 ? 'bg-yellow-400/20 text-yellow-300' : 'bg-white/5 text-white')}>
+                                        <span className="text-xl w-8 text-center">{medals[i] || (i + 1)}</span>
+                                        <span className="font-bold flex-1 truncate">{p.name}</span>
+                                        <span className="font-black text-lg">{(p.score || 0).toLocaleString()} pts</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    // ── PLAYER GAME VIEW ──
+    if (phase === 'playerGame' && roomInfo && !roomInfo.isHost) {
+        var gsPhase = gameState.phase;
+        var gQuestion = gameState.question;
+        var myScore = (players[roomInfo.playerId] && players[roomInfo.playerId].score) || 0;
+
+        // Waiting for question
+        if (!gQuestion || (gsPhase !== 'question' && gsPhase !== 'results')) {
+            return (
+                <div className="flex items-center justify-center min-h-[60vh]">
+                    <div className="text-center text-white space-y-4 animate-fade">
+                        <div className="text-6xl animate-bounce">🏫</div>
+                        <h2 className="text-2xl font-black">Esperant la pregunta...</h2>
+                        <p className="text-purple-300">Mira la pantalla del professor</p>
+                        <div className="bg-white/10 rounded-xl px-4 py-2 inline-block">
+                            <span className="text-yellow-400 font-black text-xl">{myScore} pts</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Show results phase
+        if (gsPhase === 'results') {
+            return (
+                <div className="flex items-center justify-center min-h-[60vh]">
+                    <PdeConfetti show={showConfetti} />
+                    <div className="text-center space-y-6 animate-fade w-full max-w-sm">
+                        {lastResult === true ? (
+                            <div className="space-y-3">
+                                <div className="text-8xl">✅</div>
+                                <h2 className="text-3xl font-black text-green-400">Correcte!</h2>
+                            </div>
+                        ) : lastResult === false ? (
+                            <div className="space-y-3">
+                                <div className="text-8xl">❌</div>
+                                <h2 className="text-3xl font-black text-red-400">Incorrecte</h2>
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                <div className="text-8xl">⏳</div>
+                                <h2 className="text-3xl font-black text-gray-400">No has respost</h2>
+                            </div>
+                        )}
+                        <div className="bg-white/10 backdrop-blur rounded-2xl p-4">
+                            <p className="text-purple-300 text-sm">La teua puntuació</p>
+                            <p className="text-yellow-400 font-black text-3xl">{myScore} pts</p>
+                        </div>
+                        <p className="text-purple-300 text-sm">Esperant la següent pregunta...</p>
+                    </div>
+                </div>
+            );
+        }
+
+        // Active question - show answer buttons
+        return (
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="w-full max-w-md space-y-4 animate-fade">
+                    {/* Score + question number */}
+                    <div className="flex items-center justify-between text-white mb-2">
+                        <span className="bg-white/10 rounded-lg px-3 py-1 font-bold text-sm">
+                            Pregunta {(gQuestion.index || 0) + 1} / {gQuestion.total || '?'}
+                        </span>
+                        <span className="bg-yellow-400/20 text-yellow-400 rounded-lg px-3 py-1 font-bold text-sm">
+                            {myScore} pts
+                        </span>
+                    </div>
+
+                    {answered ? (
+                        <div className="text-center space-y-4 py-8">
+                            <div className="text-6xl animate-bounce">✅</div>
+                            <h2 className="text-2xl font-black text-white">Resposta enviada!</h2>
+                            <p className="text-purple-300">Esperant els resultats...</p>
+                        </div>
+                    ) : gQuestion.tipus === 'truefalse' ? (
+                        <div className="grid grid-cols-1 gap-4">
+                            <button onClick={function() { handlePlayerAnswer(true); }}
+                                className="py-8 bg-green-500 rounded-2xl text-white font-black text-2xl hover:brightness-110 active:scale-95 transition-all shadow-lg">
+                                <span className="text-4xl block mb-1">●</span>
+                                VERTADER
+                            </button>
+                            <button onClick={function() { handlePlayerAnswer(false); }}
+                                className="py-8 bg-red-500 rounded-2xl text-white font-black text-2xl hover:brightness-110 active:scale-95 transition-all shadow-lg">
+                                <span className="text-4xl block mb-1">▲</span>
+                                FALS
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-2 gap-3">
+                            {(gQuestion.opcions || []).map(function(opt, i) {
+                                return (
+                                    <button key={i} onClick={function() { handlePlayerAnswer(i); }}
+                                        className={'py-6 rounded-2xl text-white font-bold text-base hover:brightness-110 active:scale-95 transition-all shadow-lg ' +
+                                            answerColors[i % answerColors.length]}>
+                                        <span className="text-3xl block mb-1">{answerShapes[i % answerShapes.length]}</span>
+                                        {opt}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // ── LEADERBOARD (FINAL) ──
+    if (phase === 'leaderboard') {
+        var sorted = getSortedPlayers();
+        return (
+            <div className="max-w-2xl mx-auto text-center space-y-6 animate-fade">
+                <PdeConfetti show={true} />
+                <div className="text-6xl mb-2 animate-bounce">🏆</div>
+                <h1 className="text-4xl font-black text-white">Resultats Finals!</h1>
+                <p className="text-purple-300">Concurs PDE — Mode Aula</p>
+
+                {/* Podium */}
+                {sorted.length >= 1 && (
+                    <div className="flex items-end justify-center gap-4 my-8">
+                        {sorted.length >= 2 && (
+                            <div className="text-center">
+                                <div className="bg-gradient-to-t from-gray-300 to-gray-200 rounded-t-xl w-24 h-24 flex items-end justify-center pb-2">
+                                    <span className="text-3xl">🥈</span>
+                                </div>
+                                <div className="bg-gray-200 p-2 rounded-b-xl">
+                                    <p className="font-bold text-gray-800 text-sm truncate w-24">{sorted[1].name}</p>
+                                    <p className="text-gray-600 font-black text-sm">{(sorted[1].score || 0).toLocaleString()}</p>
+                                </div>
+                            </div>
+                        )}
+                        <div className="text-center">
+                            <div className="bg-gradient-to-t from-yellow-400 to-yellow-300 rounded-t-xl w-28 h-32 flex items-end justify-center pb-2">
+                                <span className="text-4xl">🥇</span>
+                            </div>
+                            <div className="bg-yellow-300 p-2 rounded-b-xl">
+                                <p className="font-bold text-gray-800 truncate w-28">{sorted[0].name}</p>
+                                <p className="text-gray-800 font-black">{(sorted[0].score || 0).toLocaleString()}</p>
+                            </div>
+                        </div>
+                        {sorted.length >= 3 && (
+                            <div className="text-center">
+                                <div className="bg-gradient-to-t from-amber-600 to-amber-500 rounded-t-xl w-24 h-20 flex items-end justify-center pb-2">
+                                    <span className="text-3xl">🥉</span>
+                                </div>
+                                <div className="bg-amber-500 p-2 rounded-b-xl">
+                                    <p className="font-bold text-white text-sm truncate w-24">{sorted[2].name}</p>
+                                    <p className="text-white font-black text-sm">{(sorted[2].score || 0).toLocaleString()}</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Full ranking */}
+                <div className="bg-white/10 backdrop-blur rounded-2xl p-4 space-y-2">
+                    {sorted.map(function(p, i) {
+                        return (
+                            <div key={p.id} className={'flex items-center gap-3 px-4 py-3 rounded-xl transition-all ' +
+                                (i === 0 ? 'bg-yellow-400/20 text-yellow-300 scale-105' : i < 3 ? 'bg-white/10 text-white' : 'bg-white/5 text-purple-200')}>
+                                <span className="text-xl w-8 text-center font-black">{medals[i] || (i + 1)}</span>
+                                <span className="font-bold flex-1 truncate">{p.name}</span>
+                                <span className="font-black text-lg">{(p.score || 0).toLocaleString()} pts</span>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                <div className="flex gap-3 justify-center">
+                    <button onClick={function() {
+                        PdeRoomManager.deleteRoom(roomInfo.roomCode);
+                        PdeRoomManager.clearSavedRoom();
+                        setRoomInfo(null);
+                        setPhase('lobby');
+                        setGameState({});
+                        setPlayers({});
+                        setQuestions([]);
+                        setCurrentQ(0);
+                    }} className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-xl hover:brightness-110">
+                        🔄 Nova Partida
+                    </button>
+                    <button onClick={onBack} className="px-6 py-3 bg-white/10 text-white font-bold rounded-xl hover:bg-white/20">
+                        🏠 Tornar
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    return null;
+}
 
 function ConcursApp() {
     const [idioma, setIdiomaState] = useState(PdeLanguageStore.get());
@@ -1915,6 +2559,12 @@ function ConcursApp() {
                 <RankingPreview />
             </div>
             
+            <button
+                onClick={() => setFase('aula')}
+                className="w-full py-5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black text-xl rounded-2xl hover:brightness-110 transition-all shadow-lg shadow-emerald-500/30 transform hover:scale-[1.02] flex items-center justify-center gap-3">
+                🏫 Mode Aula (Kahoot)
+            </button>
+
             <div className="flex gap-3">
                 <a href="./" className="flex-1 py-4 bg-white/10 border border-white/30 text-white font-bold rounded-xl hover:bg-white/20 text-center transition-all">🏠 {t('pantallainici.inici')}</a>
             </div>
@@ -2540,6 +3190,7 @@ function ConcursApp() {
                 {fase === 'jugant' && <PantallaJoc />}
                 {fase === 'resultats' && <PantallaResultats />}
                 {fase === 'ranking' && <PantallaRanking />}
+                {fase === 'aula' && <ConcursAula idioma={idioma} t={t} bancPreguntes={bancPreguntes} obtenirPreguntes={obtenirPreguntes} onBack={() => setFase('inici')} />}
                 <footer className="mt-8 text-center text-purple-400/60 text-sm">
                     <p>Concurs PDE · profedeeconomia.es · 2025</p>
                 </footer>
