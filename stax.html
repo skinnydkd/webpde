@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>STAX - Simulador d'Inversions | PDE</title>
-    <meta name="description" content="Simulador d'inversions educatiu amb dades reals. Competeix amb els teus companys invertint durant 20 anys simulats.">
-    <meta property="og:title" content="STAX - Simulador d'Inversions | PDE">
-    <meta property="og:description" content="Aprèn a invertir amb dades reals de l'IBEX 35, S&P 500, or, bitcoin i més!">
+    <title>STONKS 📈 - Simulador d'Inversions | PDE</title>
+    <meta name="description" content="STONKS only go up! 📈 Simulador d'inversions educatiu amb dades reals. Competeix amb els teus companys invertint durant 20 anys simulats.">
+    <meta property="og:title" content="STONKS 📈 - Simulador d'Inversions | PDE">
+    <meta property="og:description" content="STONKS only go up! Aprèn a invertir amb dades reals de l'IBEX 35, S&P 500, or, bitcoin i més!">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://profedeeconomia.es/stax">
     <meta property="og:locale" content="ca_ES">
@@ -37,9 +37,9 @@
         ::-webkit-scrollbar-thumb { background-color: #10b981; border-radius: 3px; }
         @keyframes fall { 0% { transform: translateY(-100%) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
         @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(16,185,129,0.3); } 50% { box-shadow: 0 0 40px rgba(16,185,129,0.6); } }
-        .card-stax { background: linear-gradient(145deg, #ffffff 0%, #f0fdf4 100%); border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
-        .btn-stax { transition: all 0.15s; }
-        .btn-stax:active { transform: scale(0.96); }
+        .card-stonks { background: linear-gradient(145deg, #ffffff 0%, #f0fdf4 100%); border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .btn-stonks { transition: all 0.15s; }
+        .btn-stonks:active { transform: scale(0.96); }
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-emerald-900 via-green-800 to-teal-900">
@@ -52,7 +52,7 @@ const { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, Bar
 // MARKET DATA — Real historical annual returns (%)
 // Sources: IBEX35, S&P500, gold, Spanish bonds, Bitcoin, real estate
 // ═══════════════════════════════════════════════════════════════
-const STAX_DATA = {
+var STONKS_DATA = {
     // Years covered: 2000-2024 (25 years, pick 15 or 20 for a game)
     years: [2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024],
 
@@ -76,7 +76,7 @@ const STAX_DATA = {
         2005: { title: 'Boom immobiliari espanyol', emoji: '🏗️', effect: 'Spain builds more than France+Germany combined' },
         2007: { title: 'Primeres senyals de crisi', emoji: '⚠️', effect: 'Subprime mortgages start failing' },
         2008: { title: 'CRISI FINANCERA GLOBAL', emoji: '🔥', effect: 'Lehman Brothers collapse, markets -40%' },
-        2009: { title: 'Recuperació amb estímuls', emoji: '💰', effect: 'Central banks print money, markets recover' },
+        2009: { title: 'Money printer goes BRRR 🖨️💵', emoji: '🖨️', effect: 'Central banks go BRRR — massive stimulus, markets recover' },
         2011: { title: 'Crisi del deute europeu', emoji: '🇪🇺', effect: 'Greece, Portugal, Spain in trouble' },
         2012: { title: 'Rescat bancari d\'Espanya', emoji: '🏦', effect: 'Spain receives €100bn bailout' },
         2013: { title: 'Bitcoin arriba a $1000', emoji: '₿', effect: 'Crypto goes mainstream' },
@@ -84,7 +84,7 @@ const STAX_DATA = {
         2017: { title: 'Febre del Bitcoin', emoji: '🚀', effect: 'Bitcoin reaches $20,000' },
         2018: { title: 'Crypto winter', emoji: '❄️', effect: 'Bitcoin drops 72%' },
         2019: { title: 'Guerra comercial EUA-Xina', emoji: '🏭', effect: 'Trade tensions affect markets' },
-        2020: { title: 'PANDÈMIA COVID-19', emoji: '🦠', effect: 'Markets crash then recover in V-shape' },
+        2020: { title: 'PANDÈMIA COVID-19 💉 (BRRR x2)', emoji: '🦠', effect: 'Markets crash → money printer goes BRRR harder → V-shape recovery' },
         2021: { title: 'Boom post-COVID', emoji: '🎉', effect: 'Stocks, crypto, everything rallies' },
         2022: { title: 'Inflació + guerra Ucraïna', emoji: '📊', effect: 'Interest rates rise, markets fall' },
         2023: { title: 'IA revolution (ChatGPT)', emoji: '🤖', effect: 'Tech stocks soar on AI hype' },
@@ -143,9 +143,9 @@ const STAX_DATA = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// STAX APP
+// STONKS APP
 // ═══════════════════════════════════════════════════════════════
-function StaxApp() {
+function StonksApp() {
     const [phase, setPhase] = useState('lobby'); // lobby, playing, results
     const [gameInfo, setGameInfo] = useState(null); // { roomCode, playerId, isHost, players }
     const [meta, setMeta] = useState({});
@@ -238,7 +238,7 @@ function StaxApp() {
         return (
             <PdeGameLobby
                 gameType="stax"
-                gameName="STAX"
+                gameName="STONKS 📈"
                 gameEmoji="📈"
                 gameGradient="from-emerald-500 to-teal-600"
                 minPlayers={2}
@@ -251,10 +251,10 @@ function StaxApp() {
     // ── Game phase ──
     if (phase === 'playing' && gameInfo) {
         if (gameInfo.isHost) {
-            return <StaxHost roomCode={gameInfo.roomCode} playerId={gameInfo.playerId}
+            return <StonksHost roomCode={gameInfo.roomCode} playerId={gameInfo.playerId}
                 players={players} gameState={gameState} />;
         } else {
-            return <StaxPlayer roomCode={gameInfo.roomCode} playerId={gameInfo.playerId}
+            return <StonksPlayer roomCode={gameInfo.roomCode} playerId={gameInfo.playerId}
                 players={players} gameState={gameState} />;
         }
     }
@@ -264,9 +264,9 @@ function StaxApp() {
 
 
 // ═══════════════════════════════════════════════════════════════
-// STAX HOST VIEW (projected on classroom screen)
+// STONKS HOST VIEW (projected on classroom screen)
 // ═══════════════════════════════════════════════════════════════
-function StaxHost({ roomCode, playerId, players, gameState }) {
+function StonksHost({ roomCode, playerId, players, gameState }) {
     const [showConfetti, setShowConfetti] = useState(false);
 
     var gs = gameState || {};
@@ -274,8 +274,8 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
     var round = gs.round || 0;
     var totalRounds = gs.totalRounds || 20;
     var phase = gs.phase || 'news';
-    var yearEvent = STAX_DATA.events[year];
-    var yearIndex = STAX_DATA.years.indexOf(year);
+    var yearEvent = STONKS_DATA.events[year];
+    var yearIndex = STONKS_DATA.years.indexOf(year);
 
     // Count submitted players (exclude AI from submission count)
     var playerList = Object.entries(players || {}).filter(function(e) { return e[1].connected !== false; });
@@ -301,7 +301,7 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
             // Check for new asset unlocks
             var currentUnlocked = gs.unlockedAssets || ['savings', 'deposit'];
             var newUnlocks = [];
-            Object.entries(STAX_DATA.unlockSchedule).forEach(function(entry) {
+            Object.entries(STONKS_DATA.unlockSchedule).forEach(function(entry) {
                 var unlockRound = parseInt(entry[0]);
                 var assets = entry[1];
                 if (round >= unlockRound) {
@@ -354,7 +354,7 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
                 PdeGameSounds.play('win');
             } else {
                 // Next round
-                var nextYear = STAX_DATA.years[yearIndex + 1];
+                var nextYear = STONKS_DATA.years[yearIndex + 1];
                 PdeRoomManager.updateGameState(roomCode, {
                     round: round + 1,
                     currentYear: nextYear,
@@ -396,7 +396,7 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
             Object.entries(portfolio).forEach(function(pEntry) {
                 var asset = pEntry[0], value = pEntry[1];
                 if (!value || value <= 0) return;
-                var returnRate = STAX_DATA.assets[asset]?.returns[yearIndex];
+                var returnRate = STONKS_DATA.assets[asset]?.returns[yearIndex];
                 if (returnRate == null) return; // null = asset doesn't exist yet (bitcoin)
                 portfolio[asset] = Math.round(value * (1 + returnRate / 100));
                 if (portfolio[asset] < 0) portfolio[asset] = 0;
@@ -405,7 +405,7 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
             // Random life event (30% chance)
             var lifeEvent = null;
             if (Math.random() < 0.3) {
-                lifeEvent = STAX_DATA.lifeEvents[Math.floor(Math.random() * STAX_DATA.lifeEvents.length)];
+                lifeEvent = STONKS_DATA.lifeEvents[Math.floor(Math.random() * STONKS_DATA.lifeEvents.length)];
                 if (lifeEvent.cost) cash = Math.max(0, cash - lifeEvent.cost);
                 if (lifeEvent.income) cash += lifeEvent.income;
             }
@@ -451,7 +451,7 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
         var colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
 
         return (
-            <PdeHostView title="STAX — Resultats Finals" emoji="📈" gradient="from-emerald-900 to-teal-900">
+            <PdeHostView title="STONKS — Resultats Finals" emoji="📈" gradient="from-emerald-900 to-teal-900">
                 <PdeConfetti show={showConfetti} />
 
                 {/* Winner */}
@@ -465,7 +465,7 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
 
                 {/* Evolution chart */}
                 {chartData.length > 1 && (
-                    <div className="card-stax p-4">
+                    <div className="card-stonks p-4">
                         <h3 className="text-lg font-black mb-3 text-center">📊 Evolució del Patrimoni (Top 5)</h3>
                         <ResponsiveContainer width="100%" height={300}>
                             <LineChart data={chartData}>
@@ -483,7 +483,7 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
                 )}
 
                 {/* Full leaderboard */}
-                <div className="card-stax p-4">
+                <div className="card-stonks p-4">
                     <PdeGameLeaderboard
                         players={Object.fromEntries(leaderboard.map(function(p) { return [p.id, { name: p.name, score: p.netWorth }]; }))}
                         sortBy="score"
@@ -504,7 +504,7 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
                     var beatMarket = humanWinner && humanWinner.netWorth > aiWorth;
 
                     return (
-                        <div className="card-stax p-5">
+                        <div className="card-stonks p-5">
                             <h3 className="text-lg font-black text-center mb-3">🤖 Has guanyat al Mercat?</h3>
                             <div className="grid grid-cols-2 gap-3">
                                 <div className={'rounded-xl p-4 text-center ' + (beatMarket ? 'bg-green-50 ring-2 ring-green-400' : 'bg-gray-50')}>
@@ -528,7 +528,7 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
 
                 {/* Future projection */}
                 {leaderboard[0] && (
-                    <div className="card-stax p-5 text-center">
+                    <div className="card-stonks p-5 text-center">
                         <h3 className="text-lg font-black mb-2">🔮 Projecció Futura</h3>
                         <p className="text-sm text-gray-500 mb-3">Si el guanyador continua invertint 20 anys més al 6% anual...</p>
                         <div className="flex justify-center gap-6">
@@ -547,7 +547,7 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
                 )}
 
                 {/* Lesson */}
-                <div className="card-stax p-6 text-center">
+                <div className="card-stonks p-6 text-center">
                     <h3 className="text-xl font-black mb-2">📚 Què hem après?</h3>
                     <div className="space-y-2 text-gray-700 text-left">
                         <p>📊 <strong>Diversificar</strong> redueix el risc: no poses tot en un sol actiu</p>
@@ -567,12 +567,12 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
     // ── NEWS phase ──
     if (phase === 'news') {
         return (
-            <PdeHostView title="STAX" emoji="📈" gradient="from-emerald-900 to-teal-900">
+            <PdeHostView title="STONKS" emoji="📈" gradient="from-emerald-900 to-teal-900">
                 <div className="text-center text-white">
                     <p className="text-lg text-emerald-400 font-bold">Ronda {round + 1} de {totalRounds}</p>
                 </div>
 
-                <div className="card-stax p-8 text-center space-y-4">
+                <div className="card-stonks p-8 text-center space-y-4">
                     <p className="text-6xl font-black text-emerald-700">{year}</p>
                     {yearEvent && (
                         <div className="space-y-2">
@@ -586,10 +586,10 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
 
                 {/* Previous year returns preview */}
                 {yearIndex > 0 && (
-                    <div className="card-stax p-4">
-                        <h3 className="text-lg font-black text-center mb-3">📊 Rendiments de {STAX_DATA.years[yearIndex - 1]}</h3>
+                    <div className="card-stonks p-4">
+                        <h3 className="text-lg font-black text-center mb-3">📊 Rendiments de {STONKS_DATA.years[yearIndex - 1]}</h3>
                         <div className="grid grid-cols-4 gap-2">
-                            {Object.entries(STAX_DATA.assets).map(function(entry) {
+                            {Object.entries(STONKS_DATA.assets).map(function(entry) {
                                 var key = entry[0], asset = entry[1];
                                 var ret = asset.returns[yearIndex - 1];
                                 if (ret == null) return null;
@@ -607,7 +607,7 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
                 )}
 
                 <button onClick={advancePhase}
-                    className="w-full py-5 rounded-2xl text-white font-black text-2xl shadow-lg bg-gradient-to-r from-emerald-500 to-teal-600 btn-stax hover:brightness-110">
+                    className="w-full py-5 rounded-2xl text-white font-black text-2xl shadow-lg bg-gradient-to-r from-emerald-500 to-teal-600 btn-stonks hover:brightness-110">
                     💰 Obrir Mercat — Invertiu!
                 </button>
             </PdeHostView>
@@ -617,7 +617,7 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
     // ── ALLOCATE phase ──
     if (phase === 'allocate') {
         return (
-            <PdeHostView title="STAX" emoji="📈" gradient="from-emerald-900 to-teal-900">
+            <PdeHostView title="STONKS" emoji="📈" gradient="from-emerald-900 to-teal-900">
                 <div className="text-center text-white">
                     <p className="text-lg text-emerald-400 font-bold">Any {year} — Ronda {round + 1}/{totalRounds}</p>
                     <p className="text-3xl font-black mt-2">💰 Invertiu als vostres mòbils!</p>
@@ -626,15 +626,15 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
                 {/* Progress */}
                 {/* New unlock notification */}
                 {gs.newUnlocks && gs.newUnlocks.length > 0 && (
-                    <div className="card-stax p-5 text-center bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300">
+                    <div className="card-stonks p-5 text-center bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300">
                         <p className="text-2xl font-black text-amber-700 mb-2">🔓 Nous actius desbloquejats!</p>
                         <div className="flex justify-center gap-4 flex-wrap">
                             {gs.newUnlocks.map(function(key) {
-                                var asset = STAX_DATA.assets[key];
+                                var asset = STONKS_DATA.assets[key];
                                 return (
                                     <div key={key} className="bg-white rounded-xl p-3 shadow-md text-center min-w-[100px]">
                                         <span className="text-3xl">{asset?.emoji}</span>
-                                        <p className="font-bold text-sm mt-1">{STAX_DATA.assetNames[key]?.val || key}</p>
+                                        <p className="font-bold text-sm mt-1">{STONKS_DATA.assetNames[key]?.val || key}</p>
                                         <p className="text-xs text-gray-400">Risc: {asset?.risk}</p>
                                     </div>
                                 );
@@ -644,7 +644,7 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
                     </div>
                 )}
 
-                <div className="card-stax p-6 text-center">
+                <div className="card-stonks p-6 text-center">
                     <p className="text-lg font-bold text-gray-600 mb-3">
                         ✅ {submittedCount} / {humanPlayers.length} jugadors preparats
                     </p>
@@ -655,7 +655,7 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
                 </div>
 
                 {/* Mini leaderboard */}
-                <div className="card-stax p-4">
+                <div className="card-stonks p-4">
                     <PdeGameLeaderboard
                         players={Object.fromEntries(leaderboard.map(function(p) { return [p.id, { name: p.name, score: p.netWorth }]; }))}
                         sortBy="score"
@@ -666,7 +666,7 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
 
                 <button onClick={advancePhase}
                     disabled={submittedCount < 1}
-                    className={'w-full py-5 rounded-2xl text-white font-black text-2xl shadow-lg bg-gradient-to-r from-amber-500 to-orange-600 btn-stax ' +
+                    className={'w-full py-5 rounded-2xl text-white font-black text-2xl shadow-lg bg-gradient-to-r from-amber-500 to-orange-600 btn-stonks ' +
                         (submittedCount < 1 ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-110')}>
                     {submittedCount >= humanPlayers.length ? '🔔 Tancar Mercat!' : '⏳ Esperant jugadors...'}
                 </button>
@@ -677,16 +677,16 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
     // ── RESULTS phase ──
     if (phase === 'results') {
         return (
-            <PdeHostView title="STAX" emoji="📈" gradient="from-emerald-900 to-teal-900">
+            <PdeHostView title="STONKS" emoji="📈" gradient="from-emerald-900 to-teal-900">
                 <div className="text-center text-white">
                     <p className="text-lg text-emerald-400 font-bold">Resultats de {year}</p>
                 </div>
 
                 {/* Year returns */}
-                <div className="card-stax p-4">
+                <div className="card-stonks p-4">
                     <h3 className="text-lg font-black text-center mb-3">📊 Rendiments de {year}</h3>
                     <div className="grid grid-cols-4 gap-2">
-                        {Object.entries(STAX_DATA.assets).map(function(entry) {
+                        {Object.entries(STONKS_DATA.assets).map(function(entry) {
                             var key = entry[0], asset = entry[1];
                             var ret = asset.returns[yearIndex];
                             if (ret == null) return (
@@ -708,7 +708,7 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
                 </div>
 
                 {/* Updated leaderboard */}
-                <div className="card-stax p-4">
+                <div className="card-stonks p-4">
                     <PdeGameLeaderboard
                         players={Object.fromEntries(leaderboard.map(function(p) { return [p.id, { name: p.name, score: p.netWorth }]; }))}
                         sortBy="score"
@@ -717,7 +717,7 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
                 </div>
 
                 <button onClick={advancePhase}
-                    className="w-full py-5 rounded-2xl text-white font-black text-2xl shadow-lg bg-gradient-to-r from-emerald-500 to-teal-600 btn-stax hover:brightness-110">
+                    className="w-full py-5 rounded-2xl text-white font-black text-2xl shadow-lg bg-gradient-to-r from-emerald-500 to-teal-600 btn-stonks hover:brightness-110">
                     {round >= totalRounds - 1 ? '🏆 Veure Resultats Finals' : '➡️ Següent Any'}
                 </button>
             </PdeHostView>
@@ -729,9 +729,9 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
 
 
 // ═══════════════════════════════════════════════════════════════
-// STAX PLAYER VIEW (on student's phone)
+// STONKS PLAYER VIEW (on student's phone)
 // ═══════════════════════════════════════════════════════════════
-function StaxPlayer({ roomCode, playerId, players, gameState }) {
+function StonksPlayer({ roomCode, playerId, players, gameState }) {
     const [allocation, setAllocation] = useState({
         cash: 100, savings: 0, deposit: 0, ibex35: 0, sp500: 0, bonds: 0, gold: 0, bitcoin: 0, realestate: 0
     });
@@ -739,7 +739,7 @@ function StaxPlayer({ roomCode, playerId, players, gameState }) {
     var gs = gameState || {};
     var phase = gs.phase || 'news';
     var year = gs.currentYear || 2000;
-    var yearIndex = STAX_DATA.years.indexOf(year);
+    var yearIndex = STONKS_DATA.years.indexOf(year);
     var myData = players[playerId]?.data || {};
     var cash = myData.cash || 0;
     var portfolio = myData.portfolio || {};
@@ -753,7 +753,7 @@ function StaxPlayer({ roomCode, playerId, players, gameState }) {
 
     // Available assets based on progressive unlock + data availability
     var unlockedAssets = gs.unlockedAssets || ['savings', 'deposit'];
-    var availableAssets = Object.entries(STAX_DATA.assets).filter(function(entry) {
+    var availableAssets = Object.entries(STONKS_DATA.assets).filter(function(entry) {
         var key = entry[0];
         var returns = entry[1].returns;
         return unlockedAssets.indexOf(key) !== -1 && returns[yearIndex] != null;
@@ -799,7 +799,7 @@ function StaxPlayer({ roomCode, playerId, players, gameState }) {
     if (phase === 'news') {
         return (
             <PdePlayerView gradient="from-emerald-900 to-teal-900">
-                <div className="card-stax p-6 text-center space-y-4">
+                <div className="card-stonks p-6 text-center space-y-4">
                     <p className="text-5xl">📈</p>
                     <h2 className="text-2xl font-black">Any {year}</h2>
                     <p className="text-gray-500">Mira la pantalla del professor...</p>
@@ -813,10 +813,10 @@ function StaxPlayer({ roomCode, playerId, players, gameState }) {
     }
 
     if (phase === 'results') {
-        var yearEvent = STAX_DATA.events[year];
+        var yearEvent = STONKS_DATA.events[year];
         return (
             <PdePlayerView gradient="from-emerald-900 to-teal-900">
-                <div className="card-stax p-6 space-y-4">
+                <div className="card-stonks p-6 space-y-4">
                     <h2 className="text-xl font-black text-center">📊 Resultats {year}</h2>
 
                     {/* Life event */}
@@ -839,10 +839,10 @@ function StaxPlayer({ roomCode, playerId, players, gameState }) {
                         {Object.entries(portfolio).map(function(entry) {
                             var asset = entry[0], value = entry[1];
                             if (!value) return null;
-                            var assetInfo = STAX_DATA.assets[asset];
+                            var assetInfo = STONKS_DATA.assets[asset];
                             return (
                                 <div key={asset} className="flex justify-between items-center bg-gray-50 rounded-xl px-3 py-2">
-                                    <span>{assetInfo?.emoji} {STAX_DATA.assetNames[asset]?.val || asset}</span>
+                                    <span>{assetInfo?.emoji} {STONKS_DATA.assetNames[asset]?.val || asset}</span>
                                     <span className="font-black">{value.toLocaleString()} €</span>
                                 </div>
                             );
@@ -861,7 +861,7 @@ function StaxPlayer({ roomCode, playerId, players, gameState }) {
     if (phase === 'finished') {
         return (
             <PdePlayerView gradient="from-emerald-900 to-teal-900">
-                <div className="card-stax p-6 text-center space-y-4">
+                <div className="card-stonks p-6 text-center space-y-4">
                     <p className="text-6xl">🏆</p>
                     <h2 className="text-2xl font-black">Partida Acabada!</h2>
                     <div className="bg-emerald-50 rounded-xl p-4">
@@ -879,7 +879,7 @@ function StaxPlayer({ roomCode, playerId, players, gameState }) {
         if (submitted) {
             return (
                 <PdePlayerView gradient="from-emerald-900 to-teal-900">
-                    <div className="card-stax p-6 text-center space-y-4">
+                    <div className="card-stonks p-6 text-center space-y-4">
                         <p className="text-5xl">✅</p>
                         <h2 className="text-xl font-black">Inversió enviada!</h2>
                         <p className="text-gray-500">Esperant els altres jugadors...</p>
@@ -894,7 +894,7 @@ function StaxPlayer({ roomCode, playerId, players, gameState }) {
 
         return (
             <PdePlayerView gradient="from-emerald-900 to-teal-900">
-                <div className="card-stax p-5 space-y-3">
+                <div className="card-stonks p-5 space-y-3">
                     <div className="text-center">
                         <h2 className="text-lg font-black">💰 Distribueix el teu capital</h2>
                         <p className="text-emerald-600 font-bold text-xl">{totalWealth.toLocaleString()} €</p>
@@ -931,7 +931,7 @@ function StaxPlayer({ roomCode, playerId, players, gameState }) {
                                     <div className="flex items-center gap-2 flex-1 min-w-0">
                                         <span className="text-xl">{asset.emoji}</span>
                                         <div className="min-w-0">
-                                            <p className="font-bold text-sm truncate">{STAX_DATA.assetNames[key]?.val || key}</p>
+                                            <p className="font-bold text-sm truncate">{STONKS_DATA.assetNames[key]?.val || key}</p>
                                             <p className="text-xs text-gray-400">{riskLabels[asset.risk]} Risc {asset.risk}</p>
                                         </div>
                                         <button onClick={function() { setShowInfo(showInfo === key ? null : key); }}
@@ -947,7 +947,7 @@ function StaxPlayer({ roomCode, playerId, players, gameState }) {
                                 </div>
                                 {showInfo === key && (
                                     <div className="mt-2 bg-white rounded-lg p-2 text-xs text-gray-600 border-l-3 border-blue-400">
-                                        {STAX_DATA.assetInfo[key]?.val || ''}
+                                        {STONKS_DATA.assetInfo[key]?.val || ''}
                                     </div>
                                 )}
                             </div>
@@ -960,7 +960,7 @@ function StaxPlayer({ roomCode, playerId, players, gameState }) {
                     </div>
 
                     <button onClick={submitAllocation} disabled={totalAllocated !== 100}
-                        className={'w-full py-4 rounded-2xl text-white font-black text-lg shadow-lg bg-gradient-to-r from-emerald-500 to-teal-600 btn-stax ' +
+                        className={'w-full py-4 rounded-2xl text-white font-black text-lg shadow-lg bg-gradient-to-r from-emerald-500 to-teal-600 btn-stonks ' +
                             (totalAllocated !== 100 ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-110')}>
                         {totalAllocated !== 100 ? '⚠️ Ha de sumar 100%' : '✅ Confirmar Inversió'}
                     </button>
@@ -976,7 +976,7 @@ function StaxPlayer({ roomCode, playerId, players, gameState }) {
 // ═══════════════════════════════════════════════════════════════
 // RENDER
 // ═══════════════════════════════════════════════════════════════
-ReactDOM.render(<StaxApp />, document.getElementById('root'));
+ReactDOM.render(<StonksApp />, document.getElementById('root'));
     </script>
 </body>
 </html>
