@@ -8,16 +8,18 @@
     <meta property="og:title" content="STONKS 📈 - Simulador d'Inversions | PDE">
     <meta property="og:description" content="STONKS only go up! Aprèn a invertir amb dades reals de l'IBEX 35, S&P 500, or, bitcoin i més!">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://profedeeconomia.es/stax">
+    <meta property="og:url" content="https://profedeeconomia.es/stonks">
     <meta property="og:locale" content="ca_ES">
     <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
-    <link rel="canonical" href="https://profedeeconomia.es/stax">
+    <link rel="canonical" href="https://profedeeconomia.es/stonks">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
     <!-- React + Babel + Tailwind -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- PropTypes (required by ReCharts UMD) -->
+    <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
     <!-- ReCharts for portfolio graphs -->
     <script src="https://unpkg.com/recharts@2.1.16/umd/Recharts.js"></script>
     <!-- Firebase -->
@@ -47,6 +49,66 @@
     <script type="text/babel">
 const { useState, useEffect, useRef } = React;
 const { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, BarChart, Bar } = Recharts;
+
+// ═══════════════════════════════════════════════════════════════
+// TRANSLATIONS
+// ═══════════════════════════════════════════════════════════════
+var STONKS_TRANSLATIONS = {
+    'round_x_of_y':       { val: 'Ronda {x} de {y}',  es: 'Ronda {x} de {y}',  en: 'Round {x} of {y}' },
+    'year_round':         { val: 'Any {x} — Ronda {r}/{t}', es: 'Año {x} — Ronda {r}/{t}', en: 'Year {x} — Round {r}/{t}' },
+    'final_results':      { val: 'STONKS — Resultats Finals', es: 'STONKS — Resultados Finales', en: 'STONKS — Final Results' },
+    'portfolio_evolution': { val: 'Evolució del Patrimoni (Top 5)', es: 'Evolución del Patrimonio (Top 5)', en: 'Portfolio Evolution (Top 5)' },
+    'final_ranking':      { val: 'Classificació Final', es: 'Clasificación Final', en: 'Final Ranking' },
+    'beat_market':        { val: 'Has guanyat al Mercat?', es: '¿Has ganado al Mercado?', en: 'Did you beat the Market?' },
+    'beat_yes':           { val: 'Heu guanyat al mercat! Molt pocs inversors ho aconsegueixen.', es: '¡Habéis ganado al mercado! Muy pocos inversores lo consiguen.', en: 'You beat the market! Very few investors manage this.' },
+    'beat_no':            { val: 'El mercat guanya! Invertir passivament en fons indexats sol ser la millor estratègia.', es: '¡El mercado gana! Invertir pasivamente en fondos indexados suele ser la mejor estrategia.', en: 'The market wins! Passive index fund investing is usually the best strategy.' },
+    'the_market_ai':      { val: 'El Mercat (IA)', es: 'El Mercado (IA)', en: 'The Market (AI)' },
+    'strategy_dca':       { val: 'Estratègia: DCA en fons indexats', es: 'Estrategia: DCA en fondos indexados', en: 'Strategy: DCA into index funds' },
+    'future_projection':  { val: 'Projecció Futura', es: 'Proyección Futura', en: 'Future Projection' },
+    'proj_text':          { val: 'Si el guanyador continua invertint 20 anys més al 6% anual...', es: 'Si el ganador sigue invirtiendo 20 años más al 6% anual...', en: 'If the winner keeps investing for 20 more years at 6% annual...' },
+    'today':              { val: 'Avui', es: 'Hoy', en: 'Today' },
+    'in_20_years':        { val: 'En 20 anys (6%)', es: 'En 20 años (6%)', en: 'In 20 years (6%)' },
+    'rule_72':            { val: 'La Regla del 72: 72 ÷ 6% = 12 anys per duplicar el capital', es: 'La Regla del 72: 72 ÷ 6% = 12 años para duplicar el capital', en: 'The Rule of 72: 72 ÷ 6% = 12 years to double your capital' },
+    'what_learned':       { val: 'Què hem après?', es: '¿Qué hemos aprendido?', en: 'What did we learn?' },
+    'lesson_1':           { val: '<strong>Diversificar</strong> redueix el risc: no poses tot en un sol actiu', es: '<strong>Diversificar</strong> reduce el riesgo: no pongas todo en un solo activo', en: '<strong>Diversifying</strong> reduces risk: don\'t put everything in one asset' },
+    'lesson_2':           { val: '<strong>Temps al mercat</strong> > Sincronitzar el mercat: invertir aviat i mantenir', es: '<strong>Tiempo en el mercado</strong> > Sincronizar el mercado: invertir pronto y mantener', en: '<strong>Time in the market</strong> > Timing the market: invest early and hold' },
+    'lesson_3':           { val: "L'<strong>interès compost</strong> és la força més poderosa de les finances", es: 'El <strong>interés compuesto</strong> es la fuerza más poderosa de las finanzas', en: '<strong>Compound interest</strong> is the most powerful force in finance' },
+    'lesson_4':           { val: 'La <strong>volatilitat</strong> no és el teu enemic si tens paciència', es: 'La <strong>volatilidad</strong> no es tu enemigo si tienes paciencia', en: '<strong>Volatility</strong> is not your enemy if you are patient' },
+    'lesson_5':           { val: 'El <strong>80% dels fons actius</strong> NO superen l\'índex a llarg termini (S&P 500)', es: 'El <strong>80% de los fondos activos</strong> NO superan el índice a largo plazo (S&P 500)', en: '<strong>80% of active funds</strong> do NOT beat the index long-term (S&P 500)' },
+    'lesson_6':           { val: '<strong>Dollar-Cost Averaging</strong>: invertir la mateixa quantitat cada mes, passi el que passi', es: '<strong>Dollar-Cost Averaging</strong>: invertir la misma cantidad cada mes, pase lo que pase', en: '<strong>Dollar-Cost Averaging</strong>: invest the same amount every month, no matter what' },
+    'back':               { val: 'Tornar', es: 'Volver', en: 'Back' },
+    'quiet_year':         { val: 'Un any tranquil als mercats...', es: 'Un año tranquilo en los mercados...', en: 'A quiet year in the markets...' },
+    'returns_of':         { val: 'Rendiments de {x}', es: 'Rendimientos de {x}', en: 'Returns for {x}' },
+    'open_market':        { val: 'Obrir Mercat — Invertiu!', es: '¡Abrir Mercado — Invertid!', en: 'Open Market — Invest!' },
+    'invest_now':         { val: 'Invertiu als vostres mòbils!', es: '¡Invertid en vuestros móviles!', en: 'Invest on your phones!' },
+    'new_assets':         { val: 'Nous actius desbloquejats!', es: '¡Nuevos activos desbloqueados!', en: 'New assets unlocked!' },
+    'risk':               { val: 'Risc', es: 'Riesgo', en: 'Risk' },
+    'can_invest_now':     { val: 'Ara podeu invertir en aquests actius!', es: '¡Ahora podéis invertir en estos activos!', en: 'You can now invest in these assets!' },
+    'players_ready':      { val: 'jugadors preparats', es: 'jugadores preparados', en: 'players ready' },
+    'net_worth':          { val: 'Patrimoni Net Actual', es: 'Patrimonio Neto Actual', en: 'Current Net Worth' },
+    'close_market':       { val: 'Tancar Mercat!', es: '¡Cerrar Mercado!', en: 'Close Market!' },
+    'waiting_players':    { val: 'Esperant jugadors...', es: 'Esperando jugadores...', en: 'Waiting for players...' },
+    'results_of':         { val: 'Resultats de {x}', es: 'Resultados de {x}', en: 'Results for {x}' },
+    'ranking':            { val: 'Classificació', es: 'Clasificación', en: 'Ranking' },
+    'see_final':          { val: 'Veure Resultats Finals', es: 'Ver Resultados Finales', en: 'See Final Results' },
+    'next_year':          { val: 'Següent Any', es: 'Siguiente Año', en: 'Next Year' },
+    'year_x':             { val: 'Any {x}', es: 'Año {x}', en: 'Year {x}' },
+    'look_screen':        { val: 'Mira la pantalla del professor...', es: 'Mira la pantalla del profesor...', en: 'Look at the teacher\'s screen...' },
+    'your_wealth':        { val: 'El teu patrimoni', es: 'Tu patrimonio', en: 'Your portfolio' },
+    'results_year':       { val: 'Resultats {x}', es: 'Resultados {x}', en: 'Results {x}' },
+    'cash':               { val: 'Efectiu', es: 'Efectivo', en: 'Cash' },
+    'total_wealth':       { val: 'Patrimoni Total', es: 'Patrimonio Total', en: 'Total Portfolio' },
+    'game_over':          { val: 'Partida Acabada!', es: '¡Partida Acabada!', en: 'Game Over!' },
+    'final_wealth':       { val: 'El teu patrimoni final', es: 'Tu patrimonio final', en: 'Your final portfolio' },
+    'see_ranking_screen': { val: 'Mira la classificació a la pantalla!', es: '¡Mira la clasificación en la pantalla!', en: 'Check the ranking on the screen!' },
+    'distribute':         { val: 'Distribueix el teu capital', es: 'Distribuye tu capital', en: 'Distribute your capital' },
+    'current_wealth':     { val: 'Patrimoni actual', es: 'Patrimonio actual', en: 'Current portfolio' },
+    'investment_sent':    { val: 'Inversió enviada!', es: '¡Inversión enviada!', en: 'Investment sent!' },
+    'waiting_others':     { val: 'Esperant els altres jugadors...', es: 'Esperando a los demás jugadores...', en: 'Waiting for other players...' },
+    'must_sum_100':       { val: 'Ha de sumar 100%', es: 'Debe sumar 100%', en: 'Must add up to 100%' },
+    'confirm_invest':     { val: 'Confirmar Inversió', es: 'Confirmar Inversión', en: 'Confirm Investment' },
+    'new_tag':            { val: 'NOU!', es: '¡NUEVO!', en: 'NEW!' }
+};
 
 // ═══════════════════════════════════════════════════════════════
 // MARKET DATA — Real historical annual returns (%)
@@ -151,14 +213,11 @@ function StonksApp() {
     const [meta, setMeta] = useState({});
     const [players, setPlayers] = useState({});
     const [gameState, setGameState] = useState({});
-
-    // Check if Firebase is configured
-    if (!PdeFirebase.isConfigured()) {
-        return <PdeFirebaseError />;
-    }
+    var [idioma, setIdioma] = useState(PdeLanguageStore.get());
+    var t = function(key) { return STONKS_TRANSLATIONS[key]?.[idioma] || STONKS_TRANSLATIONS[key]?.val || key; };
 
     // Init Firebase
-    useEffect(function() { PdeFirebase.init(); }, []);
+    useEffect(function() { if (PdeFirebase.isConfigured()) PdeFirebase.init(); }, []);
 
     // Subscribe to room data once game starts
     useEffect(function() {
@@ -175,6 +234,11 @@ function StonksApp() {
             setPhase('playing');
         }
     }, [meta.status]);
+
+    // Check if Firebase is configured (after all hooks)
+    if (!PdeFirebase.isConfigured()) {
+        return <PdeFirebaseError />;
+    }
 
     var handleGameStart = function(info) {
         setGameInfo(info);
@@ -236,15 +300,27 @@ function StonksApp() {
     // ── Lobby phase ──
     if (phase === 'lobby') {
         return (
-            <PdeGameLobby
-                gameType="stax"
-                gameName="STONKS 📈"
-                gameEmoji="📈"
-                gameGradient="from-emerald-500 to-teal-600"
-                minPlayers={2}
-                maxPlayers={30}
-                onGameStart={handleGameStart}
-            />
+            <div>
+                <div style={{position:'fixed',top:12,right:12,zIndex:9999,display:'flex',gap:4}}>
+                    {['val','es','en'].map(function(l) {
+                        return <button key={l} onClick={function(){setIdioma(l);PdeLanguageStore.set(l);}}
+                            style={{padding:'4px 10px',borderRadius:8,fontSize:13,fontWeight:idioma===l?800:500,
+                                background:idioma===l?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.2)',
+                                color:idioma===l?'#1a1a2e':'white',border:'none',cursor:'pointer'}}>
+                            {l.toUpperCase()}
+                        </button>;
+                    })}
+                </div>
+                <PdeGameLobby
+                    gameType="stonks"
+                    gameName="STONKS 📈"
+                    gameEmoji="📈"
+                    gameGradient="from-emerald-500 to-teal-600"
+                    minPlayers={2}
+                    maxPlayers={30}
+                    onGameStart={handleGameStart}
+                />
+            </div>
         );
     }
 
@@ -252,10 +328,10 @@ function StonksApp() {
     if (phase === 'playing' && gameInfo) {
         if (gameInfo.isHost) {
             return <StonksHost roomCode={gameInfo.roomCode} playerId={gameInfo.playerId}
-                players={players} gameState={gameState} />;
+                players={players} gameState={gameState} idioma={idioma} />;
         } else {
             return <StonksPlayer roomCode={gameInfo.roomCode} playerId={gameInfo.playerId}
-                players={players} gameState={gameState} />;
+                players={players} gameState={gameState} idioma={idioma} />;
         }
     }
 
@@ -266,7 +342,10 @@ function StonksApp() {
 // ═══════════════════════════════════════════════════════════════
 // STONKS HOST VIEW (projected on classroom screen)
 // ═══════════════════════════════════════════════════════════════
-function StonksHost({ roomCode, playerId, players, gameState }) {
+function StonksHost({ roomCode, playerId, players, gameState, idioma }) {
+    var t = function(key) { return STONKS_TRANSLATIONS[key]?.[idioma] || STONKS_TRANSLATIONS[key]?.val || key; };
+    var tAsset = function(key) { return STONKS_DATA.assetNames[key]?.[idioma] || STONKS_DATA.assetNames[key]?.val || key; };
+    var tInfo = function(key) { return STONKS_DATA.assetInfo[key]?.[idioma] || STONKS_DATA.assetInfo[key]?.val || ''; };
     const [showConfetti, setShowConfetti] = useState(false);
 
     var gs = gameState || {};
@@ -451,7 +530,7 @@ function StonksHost({ roomCode, playerId, players, gameState }) {
         var colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
 
         return (
-            <PdeHostView title="STONKS — Resultats Finals" emoji="📈" gradient="from-emerald-900 to-teal-900">
+            <PdeHostView title={t('final_results')} emoji="📈" gradient="from-emerald-900 to-teal-900">
                 <PdeConfetti show={showConfetti} />
 
                 {/* Winner */}
@@ -466,7 +545,7 @@ function StonksHost({ roomCode, playerId, players, gameState }) {
                 {/* Evolution chart */}
                 {chartData.length > 1 && (
                     <div className="card-stonks p-4">
-                        <h3 className="text-lg font-black mb-3 text-center">📊 Evolució del Patrimoni (Top 5)</h3>
+                        <h3 className="text-lg font-black mb-3 text-center">📊 {t('portfolio_evolution')}</h3>
                         <ResponsiveContainer width="100%" height={300}>
                             <LineChart data={chartData}>
                                 <XAxis dataKey="year" />
@@ -487,7 +566,7 @@ function StonksHost({ roomCode, playerId, players, gameState }) {
                     <PdeGameLeaderboard
                         players={Object.fromEntries(leaderboard.map(function(p) { return [p.id, { name: p.name, score: p.netWorth }]; }))}
                         sortBy="score"
-                        title="🏆 Classificació Final"
+                        title={'🏆 ' + t('final_ranking')}
                     />
                 </div>
 
@@ -505,7 +584,7 @@ function StonksHost({ roomCode, playerId, players, gameState }) {
 
                     return (
                         <div className="card-stonks p-5">
-                            <h3 className="text-lg font-black text-center mb-3">🤖 Has guanyat al Mercat?</h3>
+                            <h3 className="text-lg font-black text-center mb-3">🤖 {t('beat_market')}</h3>
                             <div className="grid grid-cols-2 gap-3">
                                 <div className={'rounded-xl p-4 text-center ' + (beatMarket ? 'bg-green-50 ring-2 ring-green-400' : 'bg-gray-50')}>
                                     <p className="text-2xl">🏆</p>
@@ -514,13 +593,13 @@ function StonksHost({ roomCode, playerId, players, gameState }) {
                                 </div>
                                 <div className={'rounded-xl p-4 text-center ' + (!beatMarket ? 'bg-emerald-50 ring-2 ring-emerald-400' : 'bg-gray-50')}>
                                     <p className="text-2xl">📈</p>
-                                    <p className="font-bold text-sm">El Mercat (IA)</p>
+                                    <p className="font-bold text-sm">{t('the_market_ai')}</p>
                                     <p className="text-xl font-black text-emerald-600">{aiWorth.toLocaleString()} €</p>
-                                    <p className="text-xs text-gray-400">Estratègia: DCA en fons indexats</p>
+                                    <p className="text-xs text-gray-400">{t('strategy_dca')}</p>
                                 </div>
                             </div>
                             <p className={'text-center font-black mt-3 text-lg ' + (beatMarket ? 'text-green-600' : 'text-amber-600')}>
-                                {beatMarket ? '🎉 Heu guanyat al mercat! Molt pocs inversors ho aconsegueixen.' : '📊 El mercat guanya! Invertir passivament en fons indexats sol ser la millor estratègia.'}
+                                {beatMarket ? '🎉 ' + t('beat_yes') : '📊 ' + t('beat_no')}
                             </p>
                         </div>
                     );
@@ -529,37 +608,37 @@ function StonksHost({ roomCode, playerId, players, gameState }) {
                 {/* Future projection */}
                 {leaderboard[0] && (
                     <div className="card-stonks p-5 text-center">
-                        <h3 className="text-lg font-black mb-2">🔮 Projecció Futura</h3>
-                        <p className="text-sm text-gray-500 mb-3">Si el guanyador continua invertint 20 anys més al 6% anual...</p>
+                        <h3 className="text-lg font-black mb-2">🔮 {t('future_projection')}</h3>
+                        <p className="text-sm text-gray-500 mb-3">{t('proj_text')}</p>
                         <div className="flex justify-center gap-6">
                             <div>
-                                <p className="text-xs text-gray-400">Avui</p>
+                                <p className="text-xs text-gray-400">{t('today')}</p>
                                 <p className="text-xl font-black text-emerald-600">{leaderboard[0].netWorth.toLocaleString()} €</p>
                             </div>
                             <div className="text-3xl text-gray-300">→</div>
                             <div>
-                                <p className="text-xs text-gray-400">En 20 anys (6%)</p>
+                                <p className="text-xs text-gray-400">{t('in_20_years')}</p>
                                 <p className="text-xl font-black text-emerald-700">{Math.round(leaderboard[0].netWorth * Math.pow(1.06, 20)).toLocaleString()} €</p>
                             </div>
                         </div>
-                        <p className="text-xs text-amber-600 mt-2 font-bold">💡 La Regla del 72: 72 ÷ 6% = 12 anys per duplicar el capital</p>
+                        <p className="text-xs text-amber-600 mt-2 font-bold">💡 {t('rule_72')}</p>
                     </div>
                 )}
 
                 {/* Lesson */}
                 <div className="card-stonks p-6 text-center">
-                    <h3 className="text-xl font-black mb-2">📚 Què hem après?</h3>
+                    <h3 className="text-xl font-black mb-2">📚 {t('what_learned')}</h3>
                     <div className="space-y-2 text-gray-700 text-left">
-                        <p>📊 <strong>Diversificar</strong> redueix el risc: no poses tot en un sol actiu</p>
-                        <p>⏳ <strong>Temps al mercat</strong> &gt; Sincronitzar el mercat: invertir aviat i mantenir</p>
-                        <p>📈 L'<strong>interès compost</strong> és la força més poderosa de les finances</p>
-                        <p>🎲 La <strong>volatilitat</strong> no és el teu enemic si tens paciència</p>
-                        <p>🤖 El <strong>80% dels fons actius</strong> NO superen l'índex a llarg termini (S&P 500)</p>
-                        <p>💰 <strong>Dollar-Cost Averaging</strong>: invertir la mateixa quantitat cada mes, passi el que passi</p>
+                        <p dangerouslySetInnerHTML={{__html: '📊 ' + t('lesson_1')}} />
+                        <p dangerouslySetInnerHTML={{__html: '⏳ ' + t('lesson_2')}} />
+                        <p dangerouslySetInnerHTML={{__html: '📈 ' + t('lesson_3')}} />
+                        <p dangerouslySetInnerHTML={{__html: '🎲 ' + t('lesson_4')}} />
+                        <p dangerouslySetInnerHTML={{__html: '🤖 ' + t('lesson_5')}} />
+                        <p dangerouslySetInnerHTML={{__html: '💰 ' + t('lesson_6')}} />
                     </div>
                 </div>
 
-                <a href="./" className="block text-center py-3 bg-white/20 text-white font-bold rounded-xl hover:bg-white/30">🏠 Tornar</a>
+                <a href="./" className="block text-center py-3 bg-white/20 text-white font-bold rounded-xl hover:bg-white/30">🏠 {t('back')}</a>
             </PdeHostView>
         );
     }
@@ -569,7 +648,7 @@ function StonksHost({ roomCode, playerId, players, gameState }) {
         return (
             <PdeHostView title="STONKS" emoji="📈" gradient="from-emerald-900 to-teal-900">
                 <div className="text-center text-white">
-                    <p className="text-lg text-emerald-400 font-bold">Ronda {round + 1} de {totalRounds}</p>
+                    <p className="text-lg text-emerald-400 font-bold">{t('round_x_of_y').replace('{x}', round + 1).replace('{y}', totalRounds)}</p>
                 </div>
 
                 <div className="card-stonks p-8 text-center space-y-4">
@@ -581,13 +660,13 @@ function StonksHost({ roomCode, playerId, players, gameState }) {
                             <p className="text-lg text-gray-500">{yearEvent.effect}</p>
                         </div>
                     )}
-                    {!yearEvent && <p className="text-xl text-gray-500">Un any tranquil als mercats...</p>}
+                    {!yearEvent && <p className="text-xl text-gray-500">{t('quiet_year')}</p>}
                 </div>
 
                 {/* Previous year returns preview */}
                 {yearIndex > 0 && (
                     <div className="card-stonks p-4">
-                        <h3 className="text-lg font-black text-center mb-3">📊 Rendiments de {STONKS_DATA.years[yearIndex - 1]}</h3>
+                        <h3 className="text-lg font-black text-center mb-3">📊 {t('returns_of').replace('{x}', STONKS_DATA.years[yearIndex - 1])}</h3>
                         <div className="grid grid-cols-4 gap-2">
                             {Object.entries(STONKS_DATA.assets).map(function(entry) {
                                 var key = entry[0], asset = entry[1];
@@ -608,7 +687,7 @@ function StonksHost({ roomCode, playerId, players, gameState }) {
 
                 <button onClick={advancePhase}
                     className="w-full py-5 rounded-2xl text-white font-black text-2xl shadow-lg bg-gradient-to-r from-emerald-500 to-teal-600 btn-stonks hover:brightness-110">
-                    💰 Obrir Mercat — Invertiu!
+                    💰 {t('open_market')}
                 </button>
             </PdeHostView>
         );
@@ -619,34 +698,34 @@ function StonksHost({ roomCode, playerId, players, gameState }) {
         return (
             <PdeHostView title="STONKS" emoji="📈" gradient="from-emerald-900 to-teal-900">
                 <div className="text-center text-white">
-                    <p className="text-lg text-emerald-400 font-bold">Any {year} — Ronda {round + 1}/{totalRounds}</p>
-                    <p className="text-3xl font-black mt-2">💰 Invertiu als vostres mòbils!</p>
+                    <p className="text-lg text-emerald-400 font-bold">{t('year_round').replace('{x}', year).replace('{r}', round + 1).replace('{t}', totalRounds)}</p>
+                    <p className="text-3xl font-black mt-2">💰 {t('invest_now')}</p>
                 </div>
 
                 {/* Progress */}
                 {/* New unlock notification */}
                 {gs.newUnlocks && gs.newUnlocks.length > 0 && (
                     <div className="card-stonks p-5 text-center bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300">
-                        <p className="text-2xl font-black text-amber-700 mb-2">🔓 Nous actius desbloquejats!</p>
+                        <p className="text-2xl font-black text-amber-700 mb-2">🔓 {t('new_assets')}</p>
                         <div className="flex justify-center gap-4 flex-wrap">
                             {gs.newUnlocks.map(function(key) {
                                 var asset = STONKS_DATA.assets[key];
                                 return (
                                     <div key={key} className="bg-white rounded-xl p-3 shadow-md text-center min-w-[100px]">
                                         <span className="text-3xl">{asset?.emoji}</span>
-                                        <p className="font-bold text-sm mt-1">{STONKS_DATA.assetNames[key]?.val || key}</p>
-                                        <p className="text-xs text-gray-400">Risc: {asset?.risk}</p>
+                                        <p className="font-bold text-sm mt-1">{tAsset(key)}</p>
+                                        <p className="text-xs text-gray-400">{t('risk')}: {asset?.risk}</p>
                                     </div>
                                 );
                             })}
                         </div>
-                        <p className="text-sm text-amber-600 mt-2 font-bold">Ara podeu invertir en {gs.newUnlocks.length === 1 ? 'aquest actiu' : 'aquests actius'}!</p>
+                        <p className="text-sm text-amber-600 mt-2 font-bold">{t('can_invest_now')}</p>
                     </div>
                 )}
 
                 <div className="card-stonks p-6 text-center">
                     <p className="text-lg font-bold text-gray-600 mb-3">
-                        ✅ {submittedCount} / {humanPlayers.length} jugadors preparats
+                        ✅ {submittedCount} / {humanPlayers.length} {t('players_ready')}
                     </p>
                     <div className="w-full bg-gray-200 rounded-full h-4">
                         <div className="bg-emerald-500 h-4 rounded-full transition-all"
@@ -660,7 +739,7 @@ function StonksHost({ roomCode, playerId, players, gameState }) {
                         players={Object.fromEntries(leaderboard.map(function(p) { return [p.id, { name: p.name, score: p.netWorth }]; }))}
                         sortBy="score"
                         maxVisible={8}
-                        title="📊 Patrimoni Net Actual"
+                        title={'📊 ' + t('net_worth')}
                     />
                 </div>
 
@@ -668,7 +747,7 @@ function StonksHost({ roomCode, playerId, players, gameState }) {
                     disabled={submittedCount < 1}
                     className={'w-full py-5 rounded-2xl text-white font-black text-2xl shadow-lg bg-gradient-to-r from-amber-500 to-orange-600 btn-stonks ' +
                         (submittedCount < 1 ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-110')}>
-                    {submittedCount >= humanPlayers.length ? '🔔 Tancar Mercat!' : '⏳ Esperant jugadors...'}
+                    {submittedCount >= humanPlayers.length ? '🔔 ' + t('close_market') : '⏳ ' + t('waiting_players')}
                 </button>
             </PdeHostView>
         );
@@ -679,12 +758,12 @@ function StonksHost({ roomCode, playerId, players, gameState }) {
         return (
             <PdeHostView title="STONKS" emoji="📈" gradient="from-emerald-900 to-teal-900">
                 <div className="text-center text-white">
-                    <p className="text-lg text-emerald-400 font-bold">Resultats de {year}</p>
+                    <p className="text-lg text-emerald-400 font-bold">{t('results_of').replace('{x}', year)}</p>
                 </div>
 
                 {/* Year returns */}
                 <div className="card-stonks p-4">
-                    <h3 className="text-lg font-black text-center mb-3">📊 Rendiments de {year}</h3>
+                    <h3 className="text-lg font-black text-center mb-3">📊 {t('returns_of').replace('{x}', year)}</h3>
                     <div className="grid grid-cols-4 gap-2">
                         {Object.entries(STONKS_DATA.assets).map(function(entry) {
                             var key = entry[0], asset = entry[1];
@@ -712,13 +791,13 @@ function StonksHost({ roomCode, playerId, players, gameState }) {
                     <PdeGameLeaderboard
                         players={Object.fromEntries(leaderboard.map(function(p) { return [p.id, { name: p.name, score: p.netWorth }]; }))}
                         sortBy="score"
-                        title="🏆 Classificació"
+                        title={'🏆 ' + t('ranking')}
                     />
                 </div>
 
                 <button onClick={advancePhase}
                     className="w-full py-5 rounded-2xl text-white font-black text-2xl shadow-lg bg-gradient-to-r from-emerald-500 to-teal-600 btn-stonks hover:brightness-110">
-                    {round >= totalRounds - 1 ? '🏆 Veure Resultats Finals' : '➡️ Següent Any'}
+                    {round >= totalRounds - 1 ? '🏆 ' + t('see_final') : '➡️ ' + t('next_year')}
                 </button>
             </PdeHostView>
         );
@@ -731,7 +810,10 @@ function StonksHost({ roomCode, playerId, players, gameState }) {
 // ═══════════════════════════════════════════════════════════════
 // STONKS PLAYER VIEW (on student's phone)
 // ═══════════════════════════════════════════════════════════════
-function StonksPlayer({ roomCode, playerId, players, gameState }) {
+function StonksPlayer({ roomCode, playerId, players, gameState, idioma }) {
+    var t = function(key) { return STONKS_TRANSLATIONS[key]?.[idioma] || STONKS_TRANSLATIONS[key]?.val || key; };
+    var tAsset = function(key) { return STONKS_DATA.assetNames[key]?.[idioma] || STONKS_DATA.assetNames[key]?.val || key; };
+    var tInfo = function(key) { return STONKS_DATA.assetInfo[key]?.[idioma] || STONKS_DATA.assetInfo[key]?.val || ''; };
     const [allocation, setAllocation] = useState({
         cash: 100, savings: 0, deposit: 0, ibex35: 0, sp500: 0, bonds: 0, gold: 0, bitcoin: 0, realestate: 0
     });
@@ -801,10 +883,10 @@ function StonksPlayer({ roomCode, playerId, players, gameState }) {
             <PdePlayerView gradient="from-emerald-900 to-teal-900">
                 <div className="card-stonks p-6 text-center space-y-4">
                     <p className="text-5xl">📈</p>
-                    <h2 className="text-2xl font-black">Any {year}</h2>
-                    <p className="text-gray-500">Mira la pantalla del professor...</p>
+                    <h2 className="text-2xl font-black">{t('year_x').replace('{x}', year)}</h2>
+                    <p className="text-gray-500">{t('look_screen')}</p>
                     <div className="bg-emerald-50 rounded-xl p-4">
-                        <p className="text-sm text-gray-500">El teu patrimoni</p>
+                        <p className="text-sm text-gray-500">{t('your_wealth')}</p>
                         <p className="text-3xl font-black text-emerald-600">{totalWealth.toLocaleString()} €</p>
                     </div>
                 </div>
@@ -817,7 +899,7 @@ function StonksPlayer({ roomCode, playerId, players, gameState }) {
         return (
             <PdePlayerView gradient="from-emerald-900 to-teal-900">
                 <div className="card-stonks p-6 space-y-4">
-                    <h2 className="text-xl font-black text-center">📊 Resultats {year}</h2>
+                    <h2 className="text-xl font-black text-center">📊 {t('results_year').replace('{x}', year)}</h2>
 
                     {/* Life event */}
                     {lifeEvent && (
@@ -833,7 +915,7 @@ function StonksPlayer({ roomCode, playerId, players, gameState }) {
                     {/* Portfolio breakdown */}
                     <div className="space-y-2">
                         <div className="flex justify-between items-center bg-gray-50 rounded-xl px-3 py-2">
-                            <span>💵 Efectiu</span>
+                            <span>💵 {t('cash')}</span>
                             <span className="font-black">{cash.toLocaleString()} €</span>
                         </div>
                         {Object.entries(portfolio).map(function(entry) {
@@ -842,7 +924,7 @@ function StonksPlayer({ roomCode, playerId, players, gameState }) {
                             var assetInfo = STONKS_DATA.assets[asset];
                             return (
                                 <div key={asset} className="flex justify-between items-center bg-gray-50 rounded-xl px-3 py-2">
-                                    <span>{assetInfo?.emoji} {STONKS_DATA.assetNames[asset]?.val || asset}</span>
+                                    <span>{assetInfo?.emoji} {tAsset(asset)}</span>
                                     <span className="font-black">{value.toLocaleString()} €</span>
                                 </div>
                             );
@@ -850,7 +932,7 @@ function StonksPlayer({ roomCode, playerId, players, gameState }) {
                     </div>
 
                     <div className="bg-emerald-50 rounded-xl p-4 text-center">
-                        <p className="text-sm text-gray-500">Patrimoni Total</p>
+                        <p className="text-sm text-gray-500">{t('total_wealth')}</p>
                         <p className="text-3xl font-black text-emerald-600">{totalWealth.toLocaleString()} €</p>
                     </div>
                 </div>
@@ -863,12 +945,12 @@ function StonksPlayer({ roomCode, playerId, players, gameState }) {
             <PdePlayerView gradient="from-emerald-900 to-teal-900">
                 <div className="card-stonks p-6 text-center space-y-4">
                     <p className="text-6xl">🏆</p>
-                    <h2 className="text-2xl font-black">Partida Acabada!</h2>
+                    <h2 className="text-2xl font-black">{t('game_over')}</h2>
                     <div className="bg-emerald-50 rounded-xl p-4">
-                        <p className="text-sm text-gray-500">El teu patrimoni final</p>
+                        <p className="text-sm text-gray-500">{t('final_wealth')}</p>
                         <p className="text-4xl font-black text-emerald-600">{totalWealth.toLocaleString()} €</p>
                     </div>
-                    <p className="text-gray-500">Mira la classificació a la pantalla!</p>
+                    <p className="text-gray-500">{t('see_ranking_screen')}</p>
                 </div>
             </PdePlayerView>
         );
@@ -881,10 +963,10 @@ function StonksPlayer({ roomCode, playerId, players, gameState }) {
                 <PdePlayerView gradient="from-emerald-900 to-teal-900">
                     <div className="card-stonks p-6 text-center space-y-4">
                         <p className="text-5xl">✅</p>
-                        <h2 className="text-xl font-black">Inversió enviada!</h2>
-                        <p className="text-gray-500">Esperant els altres jugadors...</p>
+                        <h2 className="text-xl font-black">{t('investment_sent')}</h2>
+                        <p className="text-gray-500">{t('waiting_others')}</p>
                         <div className="bg-emerald-50 rounded-xl p-3">
-                            <p className="text-sm text-gray-500">Patrimoni actual</p>
+                            <p className="text-sm text-gray-500">{t('current_wealth')}</p>
                             <p className="text-2xl font-black text-emerald-600">{totalWealth.toLocaleString()} €</p>
                         </div>
                     </div>
@@ -896,9 +978,9 @@ function StonksPlayer({ roomCode, playerId, players, gameState }) {
             <PdePlayerView gradient="from-emerald-900 to-teal-900">
                 <div className="card-stonks p-5 space-y-3">
                     <div className="text-center">
-                        <h2 className="text-lg font-black">💰 Distribueix el teu capital</h2>
+                        <h2 className="text-lg font-black">💰 {t('distribute')}</h2>
                         <p className="text-emerald-600 font-bold text-xl">{totalWealth.toLocaleString()} €</p>
-                        <p className="text-xs text-gray-400">Any {year} — Ronda {(gs.round || 0) + 1}</p>
+                        <p className="text-xs text-gray-400">{t('year_x').replace('{x}', year)} — {t('round_x_of_y').replace('{x}', (gs.round || 0) + 1).replace(' de {y}', '')}</p>
                     </div>
 
                     {/* Cash allocation */}
@@ -906,7 +988,7 @@ function StonksPlayer({ roomCode, playerId, players, gameState }) {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <span className="text-xl">💵</span>
-                                <span className="font-bold text-sm">Efectiu</span>
+                                <span className="font-bold text-sm">{t('cash')}</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <button onClick={function() { adjustAlloc('cash', -5); }}
@@ -926,13 +1008,13 @@ function StonksPlayer({ roomCode, playerId, players, gameState }) {
                         var isNew = (gs.newUnlocks || []).indexOf(key) !== -1;
                         return (
                             <div key={key} className={(riskColors[asset.risk] || 'bg-gray-50') + ' rounded-xl p-3' + (isNew ? ' ring-2 ring-amber-400 animate-pulse' : '')}>
-                                {isNew && <p className="text-xs font-black text-amber-600 mb-1">🆕 NOU!</p>}
+                                {isNew && <p className="text-xs font-black text-amber-600 mb-1">🆕 {t('new_tag')}</p>}
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2 flex-1 min-w-0">
                                         <span className="text-xl">{asset.emoji}</span>
                                         <div className="min-w-0">
-                                            <p className="font-bold text-sm truncate">{STONKS_DATA.assetNames[key]?.val || key}</p>
-                                            <p className="text-xs text-gray-400">{riskLabels[asset.risk]} Risc {asset.risk}</p>
+                                            <p className="font-bold text-sm truncate">{tAsset(key)}</p>
+                                            <p className="text-xs text-gray-400">{riskLabels[asset.risk]} {t('risk')} {asset.risk}</p>
                                         </div>
                                         <button onClick={function() { setShowInfo(showInfo === key ? null : key); }}
                                             className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 text-xs font-black flex-shrink-0">?</button>
@@ -947,7 +1029,7 @@ function StonksPlayer({ roomCode, playerId, players, gameState }) {
                                 </div>
                                 {showInfo === key && (
                                     <div className="mt-2 bg-white rounded-lg p-2 text-xs text-gray-600 border-l-3 border-blue-400">
-                                        {STONKS_DATA.assetInfo[key]?.val || ''}
+                                        {tInfo(key)}
                                     </div>
                                 )}
                             </div>
@@ -962,7 +1044,7 @@ function StonksPlayer({ roomCode, playerId, players, gameState }) {
                     <button onClick={submitAllocation} disabled={totalAllocated !== 100}
                         className={'w-full py-4 rounded-2xl text-white font-black text-lg shadow-lg bg-gradient-to-r from-emerald-500 to-teal-600 btn-stonks ' +
                             (totalAllocated !== 100 ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-110')}>
-                        {totalAllocated !== 100 ? '⚠️ Ha de sumar 100%' : '✅ Confirmar Inversió'}
+                        {totalAllocated !== 100 ? '⚠️ ' + t('must_sum_100') : '✅ ' + t('confirm_invest')}
                     </button>
                 </div>
             </PdePlayerView>
