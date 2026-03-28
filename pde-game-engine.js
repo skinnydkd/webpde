@@ -8,13 +8,13 @@
 // ─── Firebase Configuration ─────────────────────────────────────
 // IMPORTANT: Replace with your Firebase project config
 var PDE_FIREBASE_CONFIG = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "YOUR_PROJECT",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "000000000000",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyAmpG_bnvYvg6LQjrFqroNEL1sH_BRnSO4",
+    authDomain: "pde-d06a4.firebaseapp.com",
+    databaseURL: "https://pde-d06a4-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "pde-d06a4",
+    storageBucket: "pde-d06a4.firebasestorage.app",
+    messagingSenderId: "435084952847",
+    appId: "1:435084952847:web:afa3214d7e4c34e7192a7a"
 };
 
 // ─── Firebase Init ──────────────────────────────────────────────
