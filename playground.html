@@ -102,6 +102,38 @@ const Mascot = ({ mood = 'happy', message }) => {
     return <div className="flex items-center gap-4 bg-white/80 backdrop-blur rounded-2xl p-4 shadow-lg"><div className="text-5xl animate-bounce-slow">{faces[mood]}</div>{message && <p className="text-base md:text-lg font-bold text-gray-700 flex-1">{message}</p>}</div>;
 };
 
+const LlicioEconomica = ({ concepte, definicio, exemple, sabiesQue, reflexio, autor }) => (
+    <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 text-left space-y-3 border-2 border-amber-200 shadow-inner">
+        <div className="flex items-center gap-2 border-b border-amber-200 pb-2">
+            <span className="text-2xl">📚</span>
+            <h4 className="text-lg font-black text-amber-800">Lliçó Econòmica</h4>
+        </div>
+        <div className="bg-white rounded-xl p-3 border-l-4 border-amber-400">
+            <p className="font-black text-amber-700 text-sm">🔑 Concepte clau: {concepte}</p>
+            <p className="text-sm text-gray-700 mt-1 leading-relaxed">{definicio}</p>
+            {autor && <p className="text-xs text-amber-600 mt-1 italic">— {autor}</p>}
+        </div>
+        {exemple && (
+            <div className="bg-blue-50 rounded-xl p-3">
+                <p className="font-bold text-blue-700 text-sm">🌍 Al món real:</p>
+                <p className="text-sm text-gray-700 mt-1 leading-relaxed">{exemple}</p>
+            </div>
+        )}
+        {sabiesQue && (
+            <div className="bg-purple-50 rounded-xl p-3">
+                <p className="font-bold text-purple-700 text-sm">💡 Sabies que...?</p>
+                <p className="text-sm text-gray-700 mt-1 leading-relaxed">{sabiesQue}</p>
+            </div>
+        )}
+        {reflexio && (
+            <div className="bg-green-50 rounded-xl p-3">
+                <p className="font-bold text-green-700 text-sm">🤔 Per reflexionar:</p>
+                <p className="text-sm text-gray-700 mt-1 leading-relaxed">{reflexio}</p>
+            </div>
+        )}
+    </div>
+);
+
 const DifficultySelector = ({ difficulty, setDifficulty }) => (
     <div className="flex gap-2 justify-center">
         <button onClick={() => setDifficulty('easy')} className={`px-4 py-2 rounded-xl font-bold transition-all ${difficulty === 'easy' ? 'bg-gradient-to-r from-green-400 to-green-600 text-white scale-105' : 'bg-white/50 text-gray-600'}`}>🌱 Fàcil</button>
@@ -194,6 +226,16 @@ const JocCompartirRobar = ({ jugadors, onEnd, difficulty }) => {
                     <div className={`p-5 rounded-2xl ${eleccions.j2 === 'compartir' ? 'bg-green-100' : 'bg-red-100'}`}><p className="font-bold">{jugadors.j2}</p><p className="text-4xl my-2">{eleccions.j2 === 'compartir' ? '🤝' : '😈'}</p><p className={`text-2xl font-black ${res.j2 >= 0 ? 'text-green-600' : 'text-red-600'}`}>{res.j2 >= 0 ? '+' : ''}{res.j2}</p></div>
                 </div>
                 <Mascot mood={res.j1 >= 5 && res.j2 >= 5 ? 'love' : 'surprised'} message={res.msg} />
+                {ronda >= TOTAL_RONDES && (
+                    <LlicioEconomica
+                        concepte="Dilema del Presoner / Teoria de Jocs"
+                        definicio="En situacions d'interacció estratègica, cada jugador tria la millor resposta segons el que espera de l'altre. L'equilibri de Nash pot ser INEFICIENT: tots dos robant guanyeu menys que si tots dos compartísseu."
+                        autor="John Nash, Premi Nobel d'Economia 1994"
+                        exemple="Les guerres de preus entre Coca-Cola i Pepsi, la cursa armamentista durant la Guerra Freda, i els acords climàtics internacionals són dilemes del presoner reals: la cooperació beneficia a tots, però la temptació de 'robar' és massa gran."
+                        sabiesQue="John Nash va patir esquizofrènia durant dècades. La seua vida es va retratar a la pel·lícula 'Una ment meravellosa' (2001). La seua teoria explica per què els càrtels (OPEP, per exemple) són tan inestables: sempre hi ha incentius per fer trampa."
+                        reflexio="Si poguéreu parlar abans de triar, canviaria el resultat? Per què els acords de cooperació són tan difícils de mantenir al món real? Pensa en el canvi climàtic: tots els països guanyen cooperant, però cadascú té incentius per contaminar."
+                    />
+                )}
                 <BigButton color={ronda >= TOTAL_RONDES ? 'yellow' : 'purple'} onClick={seguentRonda}>{ronda >= TOTAL_RONDES ? '🏆 Resultats Finals' : '➡️ Següent Ronda'}</BigButton>
             </div></GameCard>
         );
@@ -283,7 +325,14 @@ const JocOusCistells = ({ jugadors, onEnd, difficulty }) => {
                 <div className="bg-blue-100 rounded-2xl p-4"><p className="font-bold">{jugadors.j1} 🦊</p><p className="text-3xl font-black text-green-600">🥚 {resultats.j1}</p></div>
                 <div className="bg-pink-100 rounded-2xl p-4"><p className="font-bold">{jugadors.j2} 🐰</p><p className="text-3xl font-black text-green-600">🥚 {resultats.j2}</p></div>
             </div>
-            <Mascot mood="excited" message="Això es diu DIVERSIFICACIÓ!" />
+            <LlicioEconomica
+                concepte="Diversificació / Teoria Moderna de Carteres"
+                definicio="Repartir les inversions entre actius diferents redueix el risc sense sacrificar rendibilitat. Si un cistell cau, no ho perds tot. El risc d'una cartera diversificada és MENOR que la mitjana dels riscos individuals."
+                autor="Harry Markowitz, Premi Nobel d'Economia 1990"
+                exemple="Un fons indexat de l'S&P 500 conté 500 empreses. Si Apple cau un 30%, l'impacte total és mínim. Per contra, qui va posar tots els estalvis en accions de Lehman Brothers el 2008 ho va perdre TOT."
+                sabiesQue="Markowitz va publicar la Teoria Moderna de Carteres el 1952 amb només 25 anys. Va demostrar matemàticament que 'no posar tots els ous al mateix cistell' és la millor estratègia. La diversificació és l'únic 'dinar gratis' en finances!"
+                reflexio="Quants cistells has usat? La distribució uniforme (igual a cada cistell) sol ser la millor estratègia. Pensa en la teua vida: estudiar només una assignatura és com posar tots els ous en un cistell. Diversifica els teus coneixements!"
+            />
             <BigButton color="yellow" onClick={() => onEnd(resultats)}>🏆 Veure Guanyador</BigButton>
         </div></GameCard>
     );
@@ -370,7 +419,14 @@ const JocArbreMonedes = ({ jugadors, onEnd, difficulty }) => {
                 <div className="bg-blue-100 rounded-2xl p-5"><p className="font-bold">{jugadors.j1} 🦊</p><p className="text-4xl font-black text-yellow-600 mt-2">🪙 {monedes.j1}</p></div>
                 <div className="bg-pink-100 rounded-2xl p-5"><p className="font-bold">{jugadors.j2} 🐰</p><p className="text-4xl font-black text-yellow-600 mt-2">🪙 {monedes.j2}</p></div>
             </div>
-            <Mascot mood="love" message="L'INTERÈS COMPOST fa que els diners creixin sols!" />
+            <LlicioEconomica
+                concepte="Interès Compost i la Regla del 72"
+                definicio="L'interès compost fa que els guanys generen nous guanys. Els arbres que has plantat aviat eren xicotets, però els que has deixat créixer s'han fet enormes. La REGLA DEL 72: divideix 72 entre el tipus d'interès i obtindràs els anys per duplicar el capital (72 ÷ 8% = 9 anys)."
+                autor="Atribuït a Albert Einstein: 'L'interès compost és la força més poderosa de l'univers'"
+                exemple="1.000€ al 7% anual: 2.000€ en 10 anys → 4.000€ en 20 → 8.000€ en 30 → 16.000€ en 40 anys. Qui comença a invertir als 20 amb 100€/mes tindrà 500.000€ als 65. Qui comença als 40 necessitarà invertir 400€/mes per aconseguir el mateix."
+                sabiesQue="Warren Buffett, l'inversor més ric del món, va fer el 99% de la seua fortuna després dels 50 anys. El secret? Va començar a invertir als 11 anys i mai va parar. El temps és el millor amic de l'interès compost."
+                reflexio="Què ha passat amb les monedes dels arbres que has collit massa aviat? I amb les que has deixat créixer? La paciència és una virtut financera. Quin és el cost de ESPERAR per començar a estalviar?"
+            />
             <BigButton color="yellow" onClick={() => onEnd(monedes)}>🏆 Veure Guanyador</BigButton>
         </div></GameCard>
     );
@@ -444,6 +500,16 @@ const JocSubhasta = ({ jugadors, onEnd, difficulty }) => {
                     <p>Valor real: <strong className="text-green-600">🪙 {premi.valor}</strong></p>
                     <p className={`text-xl font-black mt-2 ${diferencia >= 0 ? 'text-green-600' : 'text-red-600'}`}>{diferencia >= 0 ? `🎉 Bona compra! (+${diferencia})` : `😅 Massa car! (${diferencia})`}</p>
                 </div>
+                {ronda >= TOTAL_RONDES && (
+                    <LlicioEconomica
+                        concepte="La Maledicció del Guanyador (Winner's Curse)"
+                        definicio="En una subhasta, el guanyador sovint és qui MÉS ha sobreestimat el valor real del bé. Guanyar la subhasta pot ser una 'victòria pírrica': has pagat més del que val. La clau és conéixer el VALOR INTRÍNSEC abans de pujar."
+                        autor="Richard Thaler, Premi Nobel d'Economia 2017 (Economia del Comportament)"
+                        exemple="El 2000, les telecom europees van pagar 100.000 milions € per llicències 3G en subhasta — moltes van quasi fer fallida. Al futbol, fitxatges com Coutinho (160M€) o Hazard (115M€) demostren que pagar massa per un 'premi' no garanteix resultats."
+                        sabiesQue="eBay va revolucionar les subhastes online. Estudis demostren que en subhastes, la gent paga de mitjana un 20% més del valor real per l'emoció de guanyar. El govern espanyol recapta milers de milions subhastant deute públic cada setmana."
+                        reflexio="Has pagat més del valor real en alguna ronda? Per què puges quan saps que pots perdre diners? L'emoció de 'guanyar' ens fa irracionals. Quan compres alguna cosa, pagues el valor real o el valor emocional?"
+                    />
+                )}
                 <BigButton color={ronda >= TOTAL_RONDES ? 'yellow' : 'pink'} onClick={() => { if (ronda >= TOTAL_RONDES) onEnd({ j1: monedes.j1 + guanys.j1, j2: monedes.j2 + guanys.j2 }); else { setRonda(r => r + 1); iniciarRonda(); } }}>{ronda >= TOTAL_RONDES ? '🏆 Resultats' : '➡️ Següent'}</BigButton>
             </div></GameCard>
         );
@@ -815,8 +881,14 @@ const JocComuns = ({ jugadors, onEnd, difficulty }) => {
                         })}
                     </div>
                 </div>
-                <Mascot mood="smart"
-                    message="Quan tots busquem el benefici individual, destruïm el bé comú. Això és la TRAGÈDIA DELS COMUNS! La cooperació i els límits compartits són la clau. 🌍" />
+                <LlicioEconomica
+                    concepte="Tragèdia dels Comuns"
+                    definicio="Quan un recurs és compartit i sense regulació, cada individu té incentius per explotar-lo al màxim, destruint-lo per a tots. L'interès individual racional porta al desastre col·lectiu. La solució: regulació (quotes), privatització, o cooperació comunitària."
+                    autor="Garrett Hardin, 'The Tragedy of the Commons' (1968) / Elinor Ostrom, Nobel 2009"
+                    exemple="La sobrepesca ha col·lapsat el 90% dels estocs de peix globals. El bacallà de Terranova, que va alimentar Europa durant segles, va col·lapsar el 1992 i encara no s'ha recuperat. El canvi climàtic és la tragèdia dels comuns a escala planetària: cada país contamina perquè el cost es reparteix."
+                    sabiesQue="Elinor Ostrom (primera dona Nobel d'Economia, 2009) va demostrar que les comunitats locals SÍ poden gestionar béns comuns sense govern ni privatització. Va estudiar comunitats de pescadors, regants i boscos compartits que funcionen des de fa segles amb regles autogestionades."
+                    reflexio={`El llac ha sobreviscut o ha col·lapsat? Heu pescat ${pescaTotal.j1 + pescaTotal.j2} peixos en total. Si haguéreu cooperat limitant-vos a 2 barques, el llac s'hauria regenerat i hauríeu pescat MÉS a llarg termini. Pensa en l'aigua, l'aire, els oceans: són béns comuns. Qui els protegeix?`}
+                />
                 <BigButton color="yellow" onClick={() => onEnd(pescaTotal)}>🏆 Veure Guanyador</BigButton>
             </div></GameCard>
         );
@@ -1228,13 +1300,14 @@ const JocBombolla = ({ jugadors, onEnd, difficulty, mode }) => {
                         <p className="text-xl font-black text-purple-600">🤝 Empat!</p>
                     )}
 
-                    <Mascot mood="smart" message="Les BOMBOLLES ESPECULATIVES creixen per la cobdícia i l'efecte ramat. Sempre esclaten!" />
-
-                    <div className="bg-amber-50 rounded-2xl p-4 text-left space-y-2">
-                        <p className="font-bold text-amber-700">📚 Lliçó econòmica:</p>
-                        <p className="text-sm text-gray-700">La <strong>Tulipmania</strong> (1637) va ser la primera bombolla especulativa documentada. Els preus de les tulipes van pujar 2000% en mesos i després van caure un 99%.</p>
-                        <p className="text-sm text-gray-700">Les bombolles es repeteixen: les <strong>.com</strong> (2000), la <strong>immobiliària</strong> (2008), les <strong>criptomonedes</strong>... El patró és sempre el mateix: eufòria → pànic.</p>
-                    </div>
+                    <LlicioEconomica
+                        concepte="Bombolles Especulatives i Efecte Ramat"
+                        definicio="Una bombolla es forma quan el preu d'un actiu puja molt per sobre del seu valor real, impulsat per l'especulació i l'efecte ramat ('si tots compren, jo també'). Les 5 fases de Kindleberger: Desplaçament → Boom → Eufòria → Presa de beneficis → Pànic."
+                        autor="Charles Kindleberger, 'Manias, Panics and Crashes' (1978) / Hyman Minsky"
+                        exemple="Tulipmania (1637): una tulipa valia més que una casa a Amsterdam. Les .com (2000): empreses sense ingressos valien milers de milions. La immobiliària (2008): els pisos 'mai baixen'. Bitcoin (2017): de 20.000$ a 3.000$ en un any. El patró sempre es repeteix: eufòria → pànic."
+                        sabiesQue="Durant la Tulipmania, un sol bulb de tulipa 'Semper Augustus' es va vendre per 10.000 florins — equivalent al preu de la millor casa del canal d'Amsterdam. Isaac Newton va perdre 20.000 lliures (milions actuals) en la bombolla dels Mars del Sud (1720) i va dir: 'Puc calcular el moviment dels astres, però no la bogeria humana.'"
+                        reflexio="Has venut a temps o t'has quedat amb tulipes durant el crash? L'avarícia i la por de 'perdre's l'oportunitat' (FOMO) són les emocions que alimenten les bombolles. Com pots distingir una inversió real d'una bombolla?"
+                    />
 
                     <BigButton color="gold" onClick={() => {
                         if (is1P) {
@@ -1555,12 +1628,18 @@ const JocIlla = ({ jugadors, onEnd, difficulty }) => {
                 {mortCausa === 'fam' ? 'Has mort de fam!' : 'Has mort de fred!'}
             </p>
             <p className="text-gray-500">Dia {dia} de {TOTAL_DIES} — No has pogut sobreviure.</p>
-            <Mascot mood="sad" message="El COST D'OPORTUNITAT és real! Cada hora que dediques a explorar és una hora menys per sobreviure. Cal equilibrar necessitats bàsiques i objectius a llarg termini." />
             <div className="bg-red-50 rounded-2xl p-4">
                 <p className="text-sm text-gray-500">Exploració acumulada:</p>
                 <p className="text-3xl font-black text-red-400 line-through">{acumulat.explorar} pts</p>
                 <p className="text-lg font-black text-red-600">Puntuació final: 0</p>
             </div>
+            <LlicioEconomica
+                concepte="Piràmide de Maslow i Cost d'Oportunitat"
+                definicio="No pots explorar (autorrealització) si no sobrevius primer (necessitats bàsiques). El COST D'OPORTUNITAT de cada hora és allò que deixes de fer: explorar costa menjar, i menjar costa no explorar. Cada decisió implica una renúncia."
+                autor="Abraham Maslow (1943) / Friedrich von Wieser (cost d'oportunitat, 1914)"
+                exemple="Un estudiant que treballa moltes hores guanya diners però perd temps d'estudi. Un país que gasta tot en defensa militar no inverteix en educació ni sanitat. La Frontera de Possibilitats de Producció (FPP) mostra aquest compromís gràficament."
+                reflexio="Has mort perquè has explorat massa aviat? O no has invertit prou en eines? La lliçó: primer assegura la base (menjar, refugi), després inverteix en capital (eines) per ser més productiu, i finalment explora."
+            />
             <BigButton color="red" onClick={() => onEnd({ j1: 0 })}>🏠 Tornar</BigButton>
         </div></GameCard>
     );
@@ -1596,7 +1675,14 @@ const JocIlla = ({ jugadors, onEnd, difficulty }) => {
                 </div>
             </div>
 
-            <Mascot mood="smart" message="L'ESCASSETAT ens obliga a TRIAR. Invertir en eines (capital) augmenta la productivitat futura. Això és la base del CREIXEMENT ECONÒMIC!" />
+            <LlicioEconomica
+                concepte="Escassetat, FPP i Inversió en Capital"
+                definicio="L'ESCASSETAT (temps limitat) ens obliga a TRIAR. La Frontera de Possibilitats de Producció (FPP) mostra les combinacions màximes que pots produir. Invertir en CAPITAL (eines) desplaça la FPP cap a fora: produeixes MÉS amb les mateixes hores."
+                autor="Paul Samuelson, Nobel 1970 — pare de l'economia moderna"
+                exemple="La Xina va invertir massivament en infraestructures (capital) durant dècades, sacrificant consum present. Resultat: la productivitat es va multiplicar per 10. Espanya, en canvi, va prioritzar consum (bombolla immobiliària) i va créixer menys a llarg termini."
+                sabiesQue={`El teu multiplicador final ha sigut x${multiplicador.toFixed(2)}. Cada hora dedicada a eines va augmentar la teua productivitat un ${(TOOL_BOOST * 100).toFixed(0)}%. Això és exactament el que fan els països que inverteixen en educació i tecnologia: sacrifiquen el present per un futur més productiu.`}
+                reflexio="Quantes hores has dedicat a eines? Si hagueres invertit més al principi, hauries explorat més al final. Això és el dilema entre CONSUM PRESENT i INVERSIÓ FUTURA: la base de tot el creixement econòmic."
+            />
             <BigButton color="gold" onClick={() => onEnd({ j1: acumulat.explorar })}>🏆 Veure Puntuació</BigButton>
         </div></GameCard>
     );
@@ -1692,7 +1778,14 @@ const JocBanquer = ({ jugadors, onEnd, difficulty }) => {
                     <div className={`rounded-2xl p-4 ${valorJ1 > valorJ2 ? 'bg-yellow-100 ring-4 ring-yellow-400' : 'bg-blue-100'}`}><p className="font-bold">{jugadors.j1} 🦊</p><div className="text-xs mt-2"><p>💵 {comptes.j1.caixa}</p><p className="text-green-600">🏦 +{comptes.j1.estalvis}</p><p className="text-red-600">💳 -{comptes.j1.deute}</p></div><p className={`text-3xl font-black mt-2 ${valorJ1 >= 0 ? 'text-green-600' : 'text-red-600'}`}>= {valorJ1}</p></div>
                     <div className={`rounded-2xl p-4 ${valorJ2 > valorJ1 ? 'bg-yellow-100 ring-4 ring-yellow-400' : 'bg-pink-100'}`}><p className="font-bold">{jugadors.j2} 🐰</p><div className="text-xs mt-2"><p>💵 {comptes.j2.caixa}</p><p className="text-green-600">🏦 +{comptes.j2.estalvis}</p><p className="text-red-600">💳 -{comptes.j2.deute}</p></div><p className={`text-3xl font-black mt-2 ${valorJ2 >= 0 ? 'text-green-600' : 'text-red-600'}`}>= {valorJ2}</p></div>
                 </div>
-                <Mascot mood="smart" message="Els ESTALVIS treballen per tu! El DEUTE treballa contra tu!" />
+                <LlicioEconomica
+                    concepte="Interès Compost: a favor o en contra"
+                    definicio={`Els estalvis creixen al ${Math.round(INTERES_ESTALVI * 100)}% (interès compost A FAVOR teu). El deute creix al ${Math.round(INTERES_PRESTEC * 100)}% (interès compost EN CONTRA teu). La diferència entre tots dos tipus és el MARGE BANCARI: el negoci dels bancs.`}
+                    autor="Benjamin Franklin: 'Un cèntim estalviat és un cèntim guanyat'"
+                    exemple="Una targeta de crèdit cobra entre 18-25% TAE. Un dipòsit bancari paga 2-3%. Si deus 1.000€ a la targeta i pagues el mínim, tardaràs 7 anys a pagar-la i hauràs pagat 2.200€ en total. El fons d'emergència (3-6 mesos de despeses) és la base de la salut financera."
+                    sabiesQue="El 40% dels espanyols no té estalvis per cobrir una emergència de 1.000€. Les famílies espanyoles deuen de mitjana 25.000€ en hipoteques i crèdits. La Regla 50/30/20: destina el 50% a necessitats, 30% a desitjos i 20% a estalvi."
+                    reflexio="Qui ha acabat amb més patrimoni? Qui estalviava o qui s'endeutava? Al joc, 5 monedes arriben cada ronda (el teu sou). Com les has gestionat? La disciplina d'estalviar 'primer paga't a tu mateix' és el secret de la riquesa a llarg termini."
+                />
                 <BigButton color="yellow" onClick={() => onEnd({ j1: Math.max(0, valorJ1), j2: Math.max(0, valorJ2) })}>🏆 Veure Guanyador</BigButton>
             </div></GameCard>
         );
@@ -1783,6 +1876,16 @@ const JocRiscRecompensa = ({ jugadors, onEnd, difficulty }) => {
                 ))}
             </div>
             <Mascot mood={resultat.j1.exit && resultat.j2.exit ? 'love' : 'thinking'} message="L'esperança matemàtica guanya a llarg termini!" />
+            {ronda >= TOTAL_RONDES && (
+                <LlicioEconomica
+                    concepte="Valor Esperat i Gestió del Risc"
+                    definicio="El VALOR ESPERAT = probabilitat × guany + (1-probabilitat) × pèrdua. Una inversió 'segura' amb baix rendiment pot ser MILLOR que una 'arriscada' si el seu valor esperat és superior. A llarg termini, l'atzar s'equilibra i el valor esperat domina (Llei dels Grans Nombres)."
+                    autor="Daniel Bernoulli (1738) / Daniel Kahneman, Nobel 2002 (Prospect Theory)"
+                    exemple="Les assegurances funcionen així: tu pagues 500€/any per evitar perdre 100.000€. Per a tu, el valor esperat és negatiu (probablement no tindràs sinistre), però la PAU MENTAL val la pena. Per a l'asseguradora, amb milions de clients, l'atzar s'equilibra i el negoci és rendible."
+                    sabiesQue="Kahneman va descobrir que les pèrdues ens dolen el DOBLE que les equivalent en guanys (aversió a la pèrdua). Per això preferim l'opció 'segura' encara que el valor esperat siga menor. Warren Buffett diu: 'Regla 1: mai perdre diners. Regla 2: mai oblidar la regla 1.'"
+                    reflexio="Quina estratègia ha funcionat millor? Calcula el valor esperat de cada opció del joc. L'opció 'segura' sempre dóna +5, però l'arriscada dóna 50%×20 + 50%×(-5) = +7.5 en promig. A llarg termini, arriscar POT ser millor... si aguantes les pèrdues!"
+                />
+            )}
             <BigButton color={ronda >= TOTAL_RONDES ? 'yellow' : 'purple'} onClick={seguentRonda}>{ronda >= TOTAL_RONDES ? '🏆 Resultats Finals' : '➡️ Següent'}</BigButton>
         </div></GameCard>
     );
@@ -2156,11 +2259,17 @@ const JocComers = ({ jugadors, onEnd, difficulty }) => {
                     </div>
                 </div>
 
-                {tradeAccepted ? (
-                    <Mascot mood="excited" message="Amb COMERÇ tots dos teniu MES! Especialitzar-se funciona! David Ricardo (1817): L'AVANTATGE COMPARATIU fa que el comerç beneficie TOTS dos, fins i tot quan un es millor en tot!" />
-                ) : (
-                    <Mascot mood="sad" message="Sense acord... Podrieu haver guanyat tots dos. David Ricardo (1817): L'AVANTATGE COMPARATIU fa que el comerç beneficie TOTS dos, fins i tot quan un es millor en tot!" />
-                )}
+                <LlicioEconomica
+                    concepte="Avantatge Comparatiu i Comerç Internacional"
+                    definicio="Un país hauria d'especialitzar-se en produir allò en què té menor COST D'OPORTUNITAT (no necessàriament en què és millor). Fins i tot si un país és millor en TOT (avantatge absolut), el comerç beneficia TOTS DOS si cadascú s'especialitza en el seu avantatge comparatiu."
+                    autor="David Ricardo, 'Principis d'Economia Política' (1817)"
+                    exemple="Portugal era millor que Anglaterra produint vi I draps. Però Ricardo va demostrar que si Portugal s'especialitza en vi i Anglaterra en draps, i comercien, TOTS DOS acaben amb més. Avui: la Xina fabrica electrònica, Espanya exporta oli d'oliva i turisme. Cadascú s'especialitza en el seu avantatge comparatiu."
+                    sabiesQue={tradeAccepted
+                        ? `Amb comerç, ${jugadors.j1} ha millorat ${milloraJ1 > 0 ? '+' + milloraJ1 : milloraJ1} punts i ${jugadors.j2} ha millorat ${milloraJ2 > 0 ? '+' + milloraJ2 : milloraJ2} punts. Això demostra el principi de Ricardo: el comerç NO és un joc de suma zero — pot crear riquesa per a TOTS DOS!`
+                        : "Sense acord comercial, cadascú ha hagut de produir de tot sol (autarquia). Històricament, els països que s'han tancat al comerç (Corea del Nord, Cuba) han crescut molt menys que els que l'han abraçat (Corea del Sud, Xina des de 1978)."
+                    }
+                    reflexio="T'has especialitzat en allò on eres més eficient? Has vist com el comerç pot fer que TOTS DOS acabeu amb més? Pensa en el teu dia a dia: si cuines millor i el teu company neteja millor, no és més eficient repartir-vos les tasques?"
+                />
 
                 <BigButton color="gold" onClick={() => onEnd({ j1: satComJ1, j2: satComJ2 })}>🏆 Veure Guanyador</BigButton>
             </div></GameCard>
