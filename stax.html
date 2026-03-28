@@ -109,6 +109,26 @@ const STAX_DATA = {
         { name: 'Despesa dental', cost: 1000, emoji: '🦷' },
     ],
 
+    // Progressive unlock schedule: { round: [assets that unlock] }
+    unlockSchedule: {
+        0: ['savings', 'deposit'],
+        3: ['ibex35', 'sp500'],
+        5: ['bonds', 'gold'],
+        8: ['bitcoin', 'realestate']
+    },
+
+    // Asset descriptions for info buttons
+    assetInfo: {
+        savings:    { val: "Compte bancari amb rendiment mínim però sense risc. Assegurat pel Fons de Garantia de Dipòsits fins a 100.000€.", es: "Cuenta bancaria con rendimiento mínimo pero sin riesgo.", en: "Bank account with minimal return but no risk." },
+        deposit:    { val: "Inversió a termini fix (1-5 anys). Millor rendiment que l'estalvi, però no pots retirar sense penalització.", es: "Inversión a plazo fijo. Mejor rendimiento pero sin liquidez.", en: "Fixed-term investment. Better return but locked in." },
+        ibex35:     { val: "Fons indexat que replica les 35 empreses més grans d'Espanya (Inditex, Santander, BBVA...). Alta volatilitat.", es: "Fondo indexado con las 35 mayores empresas españolas.", en: "Index fund tracking Spain's 35 largest companies." },
+        sp500:      { val: "Fons indexat amb les 500 empreses més grans dels EUA (Apple, Google, Amazon...). El referent mundial.", es: "Fondo indexado con las 500 mayores empresas de EE.UU.", en: "Index fund tracking the 500 largest US companies." },
+        bonds:      { val: "Deute del govern espanyol. Tu li deixes diners a l'estat i et paga un interès fix. Molt segur.", es: "Deuda del gobierno español. Muy seguro.", en: "Spanish government debt. Very safe." },
+        gold:       { val: "Metall preciós que serveix de refugi en crisis. No genera dividends però manté el valor a llarg termini.", es: "Metal precioso, refugio en crisis.", en: "Precious metal, crisis hedge." },
+        bitcoin:    { val: "Criptomoneda descentralitzada creada el 2009. Rendiments extrems (tant positius com negatius). Altament especulatiu.", es: "Criptomoneda descentralizada. Altamente especulativa.", en: "Decentralized cryptocurrency. Highly speculative." },
+        realestate: { val: "Inversió en immobles (pisos, locals). Rendiment moderat, molt lligat al cicle econòmic espanyol.", es: "Inversión en inmuebles. Rendimiento moderado.", en: "Real estate investment. Moderate return." }
+    },
+
     // Translation keys
     assetNames: {
         savings:    { val: "Compte d'estalvi",    es: 'Cuenta de ahorro',     en: 'Savings Account' },
@@ -182,6 +202,22 @@ function StaxApp() {
                 };
             });
 
+            // Add AI opponent "El Mercat" (benchmark: DCA into index funds)
+            playerUpdates['__ai_market__'] = {
+                name: '📈 El Mercat (IA)',
+                connected: true,
+                isAI: true,
+                score: 0,
+                data: {
+                    cash: 5000,
+                    portfolio: { savings: 0, deposit: 0, ibex35: 0, sp500: 0, bonds: 0, gold: 0, bitcoin: 0, realestate: 0 },
+                    history: [{ year: startYear - 1, netWorth: 5000 }],
+                    lifeEvent: null,
+                    submitted: true,
+                    allocation: null
+                }
+            };
+
             PdeFirebase.ref('rooms/' + info.roomCode + '/players').set(playerUpdates);
             PdeRoomManager.setGameState(info.roomCode, {
                 round: 0,
@@ -190,7 +226,9 @@ function StaxApp() {
                 currentYear: startYear,
                 startYear: startYear,
                 incomePerRound: incomePerRound,
-                finished: false
+                finished: false,
+                unlockedAssets: ['savings', 'deposit'],
+                newUnlocks: null
             });
         }
     };
@@ -239,9 +277,10 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
     var yearEvent = STAX_DATA.events[year];
     var yearIndex = STAX_DATA.years.indexOf(year);
 
-    // Count submitted players
+    // Count submitted players (exclude AI from submission count)
     var playerList = Object.entries(players || {}).filter(function(e) { return e[1].connected !== false; });
-    var submittedCount = playerList.filter(function(e) { return e[1].data?.submitted; }).length;
+    var humanPlayers = playerList.filter(function(e) { return e[0] !== '__ai_market__'; });
+    var submittedCount = humanPlayers.filter(function(e) { return e[1].data?.submitted; }).length;
 
     // Calculate net worths for leaderboard
     var leaderboard = playerList.map(function(entry) {
@@ -259,6 +298,22 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
     // Advance to next phase
     var advancePhase = function() {
         if (phase === 'news') {
+            // Check for new asset unlocks
+            var currentUnlocked = gs.unlockedAssets || ['savings', 'deposit'];
+            var newUnlocks = [];
+            Object.entries(STAX_DATA.unlockSchedule).forEach(function(entry) {
+                var unlockRound = parseInt(entry[0]);
+                var assets = entry[1];
+                if (round >= unlockRound) {
+                    assets.forEach(function(a) {
+                        if (currentUnlocked.indexOf(a) === -1) {
+                            currentUnlocked.push(a);
+                            newUnlocks.push(a);
+                        }
+                    });
+                }
+            });
+
             // Give income to all players
             var updates = {};
             playerList.forEach(function(entry) {
@@ -266,11 +321,27 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
                 var d = entry[1].data || {};
                 var newCash = (d.cash || 0) + (gs.incomePerRound || 3000);
                 updates['players/' + pid + '/data/cash'] = newCash;
-                updates['players/' + pid + '/data/submitted'] = false;
+                updates['players/' + pid + '/data/submitted'] = pid === '__ai_market__'; // AI is always "submitted"
                 updates['players/' + pid + '/data/allocation'] = null;
                 updates['players/' + pid + '/data/lifeEvent'] = null;
             });
+
+            // AI strategy: DCA into index funds (50% SP500, 30% IBEX35, 20% bonds — or best available)
+            var aiAlloc = { cash: 0 };
+            if (currentUnlocked.indexOf('sp500') !== -1) {
+                aiAlloc = { cash: 5, savings: 0, deposit: 0, sp500: 50, ibex35: 25, bonds: 15, gold: 5 };
+            } else if (currentUnlocked.indexOf('deposit') !== -1) {
+                aiAlloc = { cash: 10, savings: 30, deposit: 60 };
+            }
+            // Ensure total is 100
+            var aiTotal = Object.values(aiAlloc).reduce(function(s,v){return s+v;}, 0);
+            if (aiTotal < 100) aiAlloc.cash = (aiAlloc.cash || 0) + (100 - aiTotal);
+            updates['players/__ai_market__/data/allocation'] = aiAlloc;
+            updates['players/__ai_market__/data/submitted'] = true;
+
             updates['gameState/phase'] = 'allocate';
+            updates['gameState/unlockedAssets'] = currentUnlocked;
+            updates['gameState/newUnlocks'] = newUnlocks.length > 0 ? newUnlocks : null;
             PdeFirebase.ref('rooms/' + roomCode).update(updates);
         } else if (phase === 'allocate') {
             // Apply returns for the year
@@ -420,14 +491,71 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
                     />
                 </div>
 
+                {/* AI benchmark comparison */}
+                {(function() {
+                    var aiPlayer = players['__ai_market__'];
+                    var aiWorth = 0;
+                    if (aiPlayer?.data) {
+                        aiWorth = (aiPlayer.data.cash || 0);
+                        Object.values(aiPlayer.data.portfolio || {}).forEach(function(v) { aiWorth += v || 0; });
+                    }
+                    var winner = leaderboard[0];
+                    var humanWinner = leaderboard.find(function(p) { return p.id !== '__ai_market__'; });
+                    var beatMarket = humanWinner && humanWinner.netWorth > aiWorth;
+
+                    return (
+                        <div className="card-stax p-5">
+                            <h3 className="text-lg font-black text-center mb-3">🤖 Has guanyat al Mercat?</h3>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className={'rounded-xl p-4 text-center ' + (beatMarket ? 'bg-green-50 ring-2 ring-green-400' : 'bg-gray-50')}>
+                                    <p className="text-2xl">🏆</p>
+                                    <p className="font-bold text-sm">{humanWinner?.name || '—'}</p>
+                                    <p className="text-xl font-black text-green-600">{(humanWinner?.netWorth || 0).toLocaleString()} €</p>
+                                </div>
+                                <div className={'rounded-xl p-4 text-center ' + (!beatMarket ? 'bg-emerald-50 ring-2 ring-emerald-400' : 'bg-gray-50')}>
+                                    <p className="text-2xl">📈</p>
+                                    <p className="font-bold text-sm">El Mercat (IA)</p>
+                                    <p className="text-xl font-black text-emerald-600">{aiWorth.toLocaleString()} €</p>
+                                    <p className="text-xs text-gray-400">Estratègia: DCA en fons indexats</p>
+                                </div>
+                            </div>
+                            <p className={'text-center font-black mt-3 text-lg ' + (beatMarket ? 'text-green-600' : 'text-amber-600')}>
+                                {beatMarket ? '🎉 Heu guanyat al mercat! Molt pocs inversors ho aconsegueixen.' : '📊 El mercat guanya! Invertir passivament en fons indexats sol ser la millor estratègia.'}
+                            </p>
+                        </div>
+                    );
+                })()}
+
+                {/* Future projection */}
+                {leaderboard[0] && (
+                    <div className="card-stax p-5 text-center">
+                        <h3 className="text-lg font-black mb-2">🔮 Projecció Futura</h3>
+                        <p className="text-sm text-gray-500 mb-3">Si el guanyador continua invertint 20 anys més al 6% anual...</p>
+                        <div className="flex justify-center gap-6">
+                            <div>
+                                <p className="text-xs text-gray-400">Avui</p>
+                                <p className="text-xl font-black text-emerald-600">{leaderboard[0].netWorth.toLocaleString()} €</p>
+                            </div>
+                            <div className="text-3xl text-gray-300">→</div>
+                            <div>
+                                <p className="text-xs text-gray-400">En 20 anys (6%)</p>
+                                <p className="text-xl font-black text-emerald-700">{Math.round(leaderboard[0].netWorth * Math.pow(1.06, 20)).toLocaleString()} €</p>
+                            </div>
+                        </div>
+                        <p className="text-xs text-amber-600 mt-2 font-bold">💡 La Regla del 72: 72 ÷ 6% = 12 anys per duplicar el capital</p>
+                    </div>
+                )}
+
                 {/* Lesson */}
                 <div className="card-stax p-6 text-center">
                     <h3 className="text-xl font-black mb-2">📚 Què hem après?</h3>
-                    <div className="space-y-2 text-gray-700">
+                    <div className="space-y-2 text-gray-700 text-left">
                         <p>📊 <strong>Diversificar</strong> redueix el risc: no poses tot en un sol actiu</p>
                         <p>⏳ <strong>Temps al mercat</strong> &gt; Sincronitzar el mercat: invertir aviat i mantenir</p>
                         <p>📈 L'<strong>interès compost</strong> és la força més poderosa de les finances</p>
                         <p>🎲 La <strong>volatilitat</strong> no és el teu enemic si tens paciència</p>
+                        <p>🤖 El <strong>80% dels fons actius</strong> NO superen l'índex a llarg termini (S&P 500)</p>
+                        <p>💰 <strong>Dollar-Cost Averaging</strong>: invertir la mateixa quantitat cada mes, passi el que passi</p>
                     </div>
                 </div>
 
@@ -496,9 +624,29 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
                 </div>
 
                 {/* Progress */}
+                {/* New unlock notification */}
+                {gs.newUnlocks && gs.newUnlocks.length > 0 && (
+                    <div className="card-stax p-5 text-center bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300">
+                        <p className="text-2xl font-black text-amber-700 mb-2">🔓 Nous actius desbloquejats!</p>
+                        <div className="flex justify-center gap-4 flex-wrap">
+                            {gs.newUnlocks.map(function(key) {
+                                var asset = STAX_DATA.assets[key];
+                                return (
+                                    <div key={key} className="bg-white rounded-xl p-3 shadow-md text-center min-w-[100px]">
+                                        <span className="text-3xl">{asset?.emoji}</span>
+                                        <p className="font-bold text-sm mt-1">{STAX_DATA.assetNames[key]?.val || key}</p>
+                                        <p className="text-xs text-gray-400">Risc: {asset?.risk}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <p className="text-sm text-amber-600 mt-2 font-bold">Ara podeu invertir en {gs.newUnlocks.length === 1 ? 'aquest actiu' : 'aquests actius'}!</p>
+                    </div>
+                )}
+
                 <div className="card-stax p-6 text-center">
                     <p className="text-lg font-bold text-gray-600 mb-3">
-                        ✅ {submittedCount} / {playerList.length} jugadors preparats
+                        ✅ {submittedCount} / {humanPlayers.length} jugadors preparats
                     </p>
                     <div className="w-full bg-gray-200 rounded-full h-4">
                         <div className="bg-emerald-500 h-4 rounded-full transition-all"
@@ -520,7 +668,7 @@ function StaxHost({ roomCode, playerId, players, gameState }) {
                     disabled={submittedCount < 1}
                     className={'w-full py-5 rounded-2xl text-white font-black text-2xl shadow-lg bg-gradient-to-r from-amber-500 to-orange-600 btn-stax ' +
                         (submittedCount < 1 ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-110')}>
-                    {submittedCount >= playerList.length ? '🔔 Tancar Mercat!' : '⏳ Esperant jugadors...'}
+                    {submittedCount >= humanPlayers.length ? '🔔 Tancar Mercat!' : '⏳ Esperant jugadors...'}
                 </button>
             </PdeHostView>
         );
@@ -603,11 +751,16 @@ function StaxPlayer({ roomCode, playerId, players, gameState }) {
     Object.values(portfolio).forEach(function(v) { portfolioValue += v || 0; });
     var totalWealth = cash + portfolioValue;
 
-    // Available assets (bitcoin only from 2009+)
+    // Available assets based on progressive unlock + data availability
+    var unlockedAssets = gs.unlockedAssets || ['savings', 'deposit'];
     var availableAssets = Object.entries(STAX_DATA.assets).filter(function(entry) {
+        var key = entry[0];
         var returns = entry[1].returns;
-        return returns[yearIndex] != null;
+        return unlockedAssets.indexOf(key) !== -1 && returns[yearIndex] != null;
     });
+
+    // Info popup state
+    const [showInfo, setShowInfo] = useState(null);
 
     // Adjust allocation for an asset
     var adjustAlloc = function(asset, delta) {
@@ -770,8 +923,10 @@ function StaxPlayer({ roomCode, playerId, players, gameState }) {
                         var key = entry[0], asset = entry[1];
                         var riskColors = { low: 'bg-green-50', medium: 'bg-yellow-50', high: 'bg-orange-50', extreme: 'bg-red-50' };
                         var riskLabels = { low: '🟢', medium: '🟡', high: '🟠', extreme: '🔴' };
+                        var isNew = (gs.newUnlocks || []).indexOf(key) !== -1;
                         return (
-                            <div key={key} className={(riskColors[asset.risk] || 'bg-gray-50') + ' rounded-xl p-3'}>
+                            <div key={key} className={(riskColors[asset.risk] || 'bg-gray-50') + ' rounded-xl p-3' + (isNew ? ' ring-2 ring-amber-400 animate-pulse' : '')}>
+                                {isNew && <p className="text-xs font-black text-amber-600 mb-1">🆕 NOU!</p>}
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2 flex-1 min-w-0">
                                         <span className="text-xl">{asset.emoji}</span>
@@ -779,6 +934,8 @@ function StaxPlayer({ roomCode, playerId, players, gameState }) {
                                             <p className="font-bold text-sm truncate">{STAX_DATA.assetNames[key]?.val || key}</p>
                                             <p className="text-xs text-gray-400">{riskLabels[asset.risk]} Risc {asset.risk}</p>
                                         </div>
+                                        <button onClick={function() { setShowInfo(showInfo === key ? null : key); }}
+                                            className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 text-xs font-black flex-shrink-0">?</button>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <button onClick={function() { adjustAlloc(key, -5); }}
@@ -788,6 +945,11 @@ function StaxPlayer({ roomCode, playerId, players, gameState }) {
                                             className="w-8 h-8 rounded-full bg-white shadow text-lg font-bold">+</button>
                                     </div>
                                 </div>
+                                {showInfo === key && (
+                                    <div className="mt-2 bg-white rounded-lg p-2 text-xs text-gray-600 border-l-3 border-blue-400">
+                                        {STAX_DATA.assetInfo[key]?.val || ''}
+                                    </div>
+                                )}
                             </div>
                         );
                     })}
