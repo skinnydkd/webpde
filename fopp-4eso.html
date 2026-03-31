@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOPP 4ESO - Formacio i Orientacio Personal i Professional | PDE</title>
+    <meta name="description" content="Curs de FOPP per a 4t d'ESO. Autoconeixement, gestio emocional, habilitats socials, entorn laboral i projecte personal.">
+    <meta property="og:title" content="FOPP 4ESO - Formacio i Orientacio Personal i Professional | PDE">
+    <meta property="og:description" content="Materials interactius de FOPP per a 4t ESO: autoconeixement, emocions, habilitats socials, treball i projecte personal.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/fopp-4eso">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didactica Economica">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://profedeeconomia.es/fopp-4eso">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #ec4899 #fdf2f8; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #fdf2f8; }
+        ::-webkit-scrollbar-thumb { background-color: #ec4899; border-radius: 3px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+        .dropdown-content { display: none; }
+        .dropdown:hover .dropdown-content { display: block; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-white to-pink-50 min-h-screen">
+    <div id="root"></div>
+    <script type="text/babel">
+const { useState, useMemo, useEffect } = React;
+
+function FoppApp() {
+    const [section, setSection] = useState('inicio');
+    const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+
+    const pageTranslations = {
+        // whyimportant
+        'whyimportant.title': { val: "Per que t'importa aixo?", es: '¿Por que te importa esto?', en: 'Why does this matter to you?' },
+
+        // inicio
+        'inicio.title': { val: 'Formacio i Orientacio Personal i Professional', es: 'Formacion y Orientacion Personal y Profesional', en: 'Personal & Professional Training' },
+        'inicio.subtitle': { val: 'Materials interactius per a 4t d\'ESO', es: 'Materiales interactivos para 4o de ESO', en: 'Interactive materials for Year 10' },
+        'inicio.whyimportant': { val: "Estas a punt de prendre decisions importants sobre el teu futur: que estudiar, com relacionar-te, qui vols ser. Aquesta assignatura t'ajuda a coneixer-te, gestionar les teues emocions, comunicar-te millor i preparar-te per al mon laboral. No es teoria: es la teua vida.", es: "Estas a punto de tomar decisiones importantes sobre tu futuro: que estudiar, como relacionarte, quien quieres ser. Esta asignatura te ayuda a conocerte, gestionar tus emociones, comunicarte mejor y prepararte para el mundo laboral. No es teoria: es tu vida.", en: "You're about to make important decisions about your future: what to study, how to relate to others, who you want to be. This subject helps you know yourself, manage your emotions, communicate better and prepare for the working world. It's not theory: it's your life." },
+
+        // section names for inicio grid
+        'sec.serhumà': { val: 'El ser huma', es: 'El ser humano', en: 'The human being' },
+        'sec.serhumà.desc': { val: 'Cervell, cognicio, benestar, addiccions', es: 'Cerebro, cognicion, bienestar, adicciones', en: 'Brain, cognition, wellbeing, addictions' },
+        'sec.antropologia': { val: 'Antropologia i Sociologia', es: 'Antropologia y Sociologia', en: 'Anthropology & Sociology' },
+        'sec.antropologia.desc': { val: 'Cultura, socialitzacio, igualtat', es: 'Cultura, socializacion, igualdad', en: 'Culture, socialisation, equality' },
+        'sec.aprenentatge': { val: 'Aprenentatge', es: 'Aprendizaje', en: 'Learning' },
+        'sec.aprenentatge.desc': { val: "Intel·ligencies multiples, tecniques d'estudi", es: 'Inteligencias multiples, tecnicas de estudio', en: 'Multiple intelligences, study techniques' },
+        'sec.emocions': { val: 'Gestio emocional', es: 'Gestion emocional', en: 'Emotional management' },
+        'sec.emocions.desc': { val: "Test d'intel·ligencia emocional", es: 'Test de inteligencia emocional', en: 'Emotional intelligence test' },
+        'sec.habilitats': { val: 'Habilitats personals', es: 'Habilidades personales', en: 'Personal skills' },
+        'sec.habilitats.desc': { val: 'Big Five, Matriu Eisenhower', es: 'Big Five, Matriz Eisenhower', en: 'Big Five, Eisenhower Matrix' },
+        'sec.socials': { val: 'Habilitats socials', es: 'Habilidades sociales', en: 'Social skills' },
+        'sec.socials.desc': { val: 'Assertivitat, lideratge, negociacio', es: 'Asertividad, liderazgo, negociacion', en: 'Assertiveness, leadership, negotiation' },
+        'sec.treball': { val: "L'entorn de treball", es: 'El entorno de trabajo', en: 'The work environment' },
+        'sec.treball.desc': { val: 'Nomina, biaixos cognitius', es: 'Nomina, sesgos cognitivos', en: 'Payslip, cognitive biases' },
+        'sec.projecte': { val: 'Projecte personal', es: 'Proyecto personal', en: 'Personal project' },
+        'sec.projecte.desc': { val: 'Sistema educatiu, CV, entrevista', es: 'Sistema educativo, CV, entrevista', en: 'Education system, CV, interview' },
+
+        // UD1: El ser huma
+        'serhumà.title': { val: 'El ser huma', es: 'El ser humano', en: 'The human being' },
+        'serhumà.subtitle': { val: 'Com funciona el teu cervell i per que importa', es: 'Como funciona tu cerebro y por que importa', en: 'How your brain works and why it matters' },
+        'serhumà.why': { val: "Entendre com funciona el teu cervell t'ajuda a prendre millors decisions i evitar habits nocius.", es: "Entender como funciona tu cerebro te ayuda a tomar mejores decisiones y evitar habitos nocivos.", en: "Understanding how your brain works helps you make better decisions and avoid harmful habits." },
+        'serhumà.psicologia': { val: 'Perspectives psicologiques', es: 'Perspectivas psicologicas', en: 'Psychological perspectives' },
+        'serhumà.psicologia.text': { val: "La psicologia estudia el comportament huma des de diferents perspectives: conductisme (comportament observable), cognitivisme (processos mentals), humanisme (autorealitzacio), psicanalisi (inconscient) i neurociencia (bases biologiques).", es: "La psicologia estudia el comportamiento humano desde diferentes perspectivas: conductismo (comportamiento observable), cognitivismo (procesos mentales), humanismo (autorrealizacion), psicoanalisis (inconsciente) y neurociencia (bases biologicas).", en: "Psychology studies human behaviour from different perspectives: behaviourism (observable behaviour), cognitivism (mental processes), humanism (self-actualisation), psychoanalysis (unconscious) and neuroscience (biological bases)." },
+        'serhumà.sistema': { val: 'El sistema nervios', es: 'El sistema nervioso', en: 'The nervous system' },
+        'serhumà.sistema.text': { val: "El cervell conte mes de 86.000 milions de neurones que es comuniquen mitjancant senyals electriques i quimiques (neurotransmissors). Les connexions entre neurones (sinapsis) son la base de tot el que pensem, sentim i fem.", es: "El cerebro contiene mas de 86.000 millones de neuronas que se comunican mediante senales electricas y quimicas (neurotransmisores). Las conexiones entre neuronas (sinapsis) son la base de todo lo que pensamos, sentimos y hacemos.", en: "The brain contains over 86 billion neurons that communicate through electrical and chemical signals (neurotransmitters). The connections between neurons (synapses) are the basis of everything we think, feel and do." },
+        'serhumà.neuro.dopamina': { val: "Dopamina: motivacio, plaer, recompensa. S'activa quan aconseguim un objectiu o esperem una recompensa.", es: "Dopamina: motivacion, placer, recompensa. Se activa cuando conseguimos un objetivo o esperamos una recompensa.", en: "Dopamine: motivation, pleasure, reward. Activated when we achieve a goal or expect a reward." },
+        'serhumà.neuro.serotonina': { val: "Serotonina: estat d'anim, calma, benestar. Nivells baixos s'associen amb depressio i ansietat.", es: "Serotonina: estado de animo, calma, bienestar. Niveles bajos se asocian con depresion y ansiedad.", en: "Serotonin: mood, calm, wellbeing. Low levels are associated with depression and anxiety." },
+        'serhumà.neuro.endorfines': { val: "Endorfines: analgesics naturals del cos. S'alliberen amb l'exercici fisic, el riure i el contacte social.", es: "Endorfinas: analgesicos naturales del cuerpo. Se liberan con el ejercicio fisico, la risa y el contacto social.", en: "Endorphins: the body's natural painkillers. Released through exercise, laughter and social contact." },
+        'serhumà.cognicio': { val: 'Cognicio', es: 'Cognicion', en: 'Cognition' },
+        'serhumà.cognicio.text': { val: "Els processos cognitius son les funcions mentals que ens permeten interactuar amb el mon:", es: "Los procesos cognitivos son las funciones mentales que nos permiten interactuar con el mundo:", en: "Cognitive processes are the mental functions that allow us to interact with the world:" },
+        'serhumà.cognicio.percepcio': { val: "Percepcio: interpretar la informacio dels sentits", es: "Percepcion: interpretar la informacion de los sentidos", en: "Perception: interpreting sensory information" },
+        'serhumà.cognicio.atencio': { val: "Atencio: focalitzar els recursos mentals en un estimul", es: "Atencion: focalizar los recursos mentales en un estimulo", en: "Attention: focusing mental resources on a stimulus" },
+        'serhumà.cognicio.memoria': { val: "Memoria: codificar, emmagatzemar i recuperar informacio", es: "Memoria: codificar, almacenar y recuperar informacion", en: "Memory: encoding, storing and retrieving information" },
+        'serhumà.cognicio.pensament': { val: "Pensament critic: analitzar, avaluar i raonar de forma logica", es: "Pensamiento critico: analizar, evaluar y razonar de forma logica", en: "Critical thinking: analysing, evaluating and reasoning logically" },
+        'serhumà.benestar': { val: 'Benestar i habits saludables', es: 'Bienestar y habitos saludables', en: 'Wellbeing and healthy habits' },
+        'serhumà.benestar.text': { val: "El benestar depèn de quatre pilars fonamentals:", es: "El bienestar depende de cuatro pilares fundamentales:", en: "Wellbeing depends on four fundamental pillars:" },
+        'serhumà.benestar.son': { val: "Son: 8-10 hores per a adolescents. El cervell consolida la memoria durant el son.", es: "Sueno: 8-10 horas para adolescentes. El cerebro consolida la memoria durante el sueno.", en: "Sleep: 8-10 hours for teenagers. The brain consolidates memory during sleep." },
+        'serhumà.benestar.exercici': { val: "Exercici: allibera endorfines, millora la concentracio i l'estat d'anim.", es: "Ejercicio: libera endorfinas, mejora la concentracion y el estado de animo.", en: "Exercise: releases endorphins, improves concentration and mood." },
+        'serhumà.benestar.alimentacio': { val: "Alimentacio: el cervell consumeix el 20% de l'energia del cos. Necessita nutrients de qualitat.", es: "Alimentacion: el cerebro consume el 20% de la energia del cuerpo. Necesita nutrientes de calidad.", en: "Nutrition: the brain uses 20% of the body's energy. It needs quality nutrients." },
+        'serhumà.benestar.social': { val: "Relacions socials: el contacte huma allibera oxitocina i redueix l'estres.", es: "Relaciones sociales: el contacto humano libera oxitocina y reduce el estres.", en: "Social relationships: human contact releases oxytocin and reduces stress." },
+        'serhumà.addiccions': { val: 'Circuits de recompensa i addiccions', es: 'Circuitos de recompensa y adicciones', en: 'Reward circuits and addictions' },
+        'serhumà.addiccions.text': { val: "El circuit de recompensa funciona aixi: una accio plaent allibera dopamina, el cervell la recorda i et motiva a repetir-la. Amb les drogues i altres conductes addictives, aquest circuit es segrest:", es: "El circuito de recompensa funciona asi: una accion placentera libera dopamina, el cerebro la recuerda y te motiva a repetirla. Con las drogas y otras conductas adictivas, este circuito se secuestra:", en: "The reward circuit works like this: a pleasurable action releases dopamine, the brain remembers it and motivates you to repeat it. With drugs and other addictive behaviours, this circuit is hijacked:" },
+        'serhumà.addiccions.tolerancia': { val: "Tolerancia: el cervell necessita cada vegada mes quantitat per sentir el mateix efecte.", es: "Tolerancia: el cerebro necesita cada vez mas cantidad para sentir el mismo efecto.", en: "Tolerance: the brain needs increasing amounts to feel the same effect." },
+        'serhumà.addiccions.dependencia': { val: "Dependencia: el cos i la ment necessiten la substancia per funcionar amb normalitat.", es: "Dependencia: el cuerpo y la mente necesitan la sustancia para funcionar con normalidad.", en: "Dependence: body and mind need the substance to function normally." },
+        'serhumà.addiccions.sindrome': { val: "Sindrome d'abstinencia: simptomes fisics i psicologics quan es deixa de consumir.", es: "Sindrome de abstinencia: sintomas fisicos y psicologicos cuando se deja de consumir.", en: "Withdrawal syndrome: physical and psychological symptoms when consumption stops." },
+        'serhumà.drogues': { val: 'Efectes del consum de drogues', es: 'Efectos del consumo de drogas', en: 'Effects of drug use' },
+        'serhumà.drogues.alcohol': { val: "Alcohol: depressor del sistema nervios. Afecta la memoria, el judici i la coordinacio. El cervell adolescent es especialment vulnerable.", es: "Alcohol: depresor del sistema nervioso. Afecta la memoria, el juicio y la coordinacion. El cerebro adolescente es especialmente vulnerable.", en: "Alcohol: nervous system depressant. Affects memory, judgement and coordination. The adolescent brain is especially vulnerable." },
+        'serhumà.drogues.tabac': { val: "Tabac: la nicotina genera una de les addiccions mes potents. Danya els pulmons, el cor i la pell.", es: "Tabaco: la nicotina genera una de las adicciones mas potentes. Dana los pulmones, el corazon y la piel.", en: "Tobacco: nicotine creates one of the most powerful addictions. Damages lungs, heart and skin." },
+        'serhumà.drogues.cannabis': { val: "Cannabis: afecta la memoria, la concentracio i la motivacio. En adolescents pot alterar el desenvolupament cerebral.", es: "Cannabis: afecta la memoria, la concentracion y la motivacion. En adolescentes puede alterar el desarrollo cerebral.", en: "Cannabis: affects memory, concentration and motivation. In teenagers it can alter brain development." },
+        'serhumà.drogues.pantalles': { val: "Pantalles i xarxes socials: el desplacament infinit (scroll) i els 'likes' activen el circuit de dopamina de manera similar a les drogues.", es: "Pantallas y redes sociales: el desplazamiento infinito (scroll) y los 'likes' activan el circuito de dopamina de manera similar a las drogas.", en: "Screens and social media: infinite scrolling and 'likes' activate the dopamine circuit similarly to drugs." },
+        'serhumà.adolescencia': { val: "L'adolescencia i la personalitat", es: 'La adolescencia y la personalidad', en: 'Adolescence and personality' },
+        'serhumà.adolescencia.text': { val: "L'adolescencia (12-18 anys) es un periode clau en el desenvolupament de la personalitat. El cervell encara esta madurant, especialment el cortex prefrontal (responsable de la planificacio i el control dels impulsos), que no es completa fins als 25 anys. Aixo explica per que de vegades prens decisions impulsives: no es que sigues immadur, es que el teu cervell encara esta en construccio.", es: "La adolescencia (12-18 anos) es un periodo clave en el desarrollo de la personalidad. El cerebro aun esta madurando, especialmente el cortex prefrontal (responsable de la planificacion y el control de impulsos), que no se completa hasta los 25 anos. Esto explica por que a veces tomas decisiones impulsivas: no es que seas inmaduro, es que tu cerebro aun esta en construccion.", en: "Adolescence (12-18 years) is a key period in personality development. The brain is still maturing, especially the prefrontal cortex (responsible for planning and impulse control), which isn't complete until age 25. This explains why you sometimes make impulsive decisions: it's not that you're immature, it's that your brain is still under construction." },
+
+        // UD2: Antropologia i Sociologia
+        'antropologia.title': { val: 'Antropologia i Sociologia', es: 'Antropologia y Sociologia', en: 'Anthropology & Sociology' },
+        'antropologia.subtitle': { val: 'Cultura, societat i qui ets dins del grup', es: 'Cultura, sociedad y quien eres dentro del grupo', en: 'Culture, society and who you are within the group' },
+        'antropologia.why': { val: "La teua forma de vestir, parlar, pensar i relacionar-te no es casual: es el resultat de la teua cultura i la teua socialitzacio. Entendre-ho t'ajuda a ser mes critic amb les influencies que reps i mes respectuos amb la diversitat.", es: "Tu forma de vestir, hablar, pensar y relacionarte no es casual: es el resultado de tu cultura y tu socializacion. Entenderlo te ayuda a ser mas critico con las influencias que recibes y mas respetuoso con la diversidad.", en: "The way you dress, speak, think and relate is not random: it's the result of your culture and socialisation. Understanding this helps you be more critical of the influences you receive and more respectful of diversity." },
+        'antropologia.antro': { val: "Que es l'antropologia?", es: '¿Que es la antropologia?', en: 'What is anthropology?' },
+        'antropologia.antro.text': { val: "L'antropologia estudia l'esser huma de forma integral: les seues cultures, costums, creences i formes d'organitzacio social. Analitza tant les societats actuals com les del passat per entendre la diversitat humana.", es: "La antropologia estudia al ser humano de forma integral: sus culturas, costumbres, creencias y formas de organizacion social. Analiza tanto las sociedades actuales como las del pasado para entender la diversidad humana.", en: "Anthropology studies human beings holistically: their cultures, customs, beliefs and forms of social organisation. It analyses both current and past societies to understand human diversity." },
+        'antropologia.cultura': { val: 'El concepte de cultura', es: 'El concepto de cultura', en: 'The concept of culture' },
+        'antropologia.cultura.text': { val: "La cultura es el conjunt de coneixements, creences, art, moral, costums, lleis i habits que adquireix una persona com a membre d'una societat. Inclou:", es: "La cultura es el conjunto de conocimientos, creencias, arte, moral, costumbres, leyes y habitos que adquiere una persona como miembro de una sociedad. Incluye:", en: "Culture is the set of knowledge, beliefs, art, morals, customs, laws and habits that a person acquires as a member of a society. It includes:" },
+        'antropologia.cultura.normes': { val: "Normes: regles de comportament (escrites i no escrites)", es: "Normas: reglas de comportamiento (escritas y no escritas)", en: "Norms: rules of behaviour (written and unwritten)" },
+        'antropologia.cultura.valors': { val: "Valors: principis que guien les decisions (llibertat, justicia, solidaritat...)", es: "Valores: principios que guian las decisiones (libertad, justicia, solidaridad...)", en: "Values: principles that guide decisions (freedom, justice, solidarity...)" },
+        'antropologia.cultura.creences': { val: "Creences: conviccions sobre el mon (religioses, filosofiques...)", es: "Creencias: convicciones sobre el mundo (religiosas, filosoficas...)", en: "Beliefs: convictions about the world (religious, philosophical...)" },
+        'antropologia.cultura.llenguatge': { val: "Llenguatge: sistema de comunicacio que transmet cultura", es: "Lenguaje: sistema de comunicacion que transmite cultura", en: "Language: communication system that transmits culture" },
+        'antropologia.cultura.art': { val: "Art i simbols: expressions culturals (musica, pintura, festes, gastronomia...)", es: "Arte y simbolos: expresiones culturales (musica, pintura, fiestas, gastronomia...)", en: "Art and symbols: cultural expressions (music, painting, festivals, gastronomy...)" },
+        'antropologia.diversitat': { val: 'Diversitat cultural', es: 'Diversidad cultural', en: 'Cultural diversity' },
+        'antropologia.diversitat.text': { val: "Totes les cultures son igualment valides i dignes de respecte. L'etnocentrisme (creure que la propia cultura es superior) es un error comú. El relativisme cultural ens invita a entendre cada cultura des del seu propi context, sense jutjar des de la nostra perspectiva.", es: "Todas las culturas son igualmente validas y dignas de respeto. El etnocentrismo (creer que la propia cultura es superior) es un error comun. El relativismo cultural nos invita a entender cada cultura desde su propio contexto, sin juzgar desde nuestra perspectiva.", en: "All cultures are equally valid and worthy of respect. Ethnocentrism (believing one's own culture is superior) is a common mistake. Cultural relativism invites us to understand each culture from its own context, without judging from our perspective." },
+        'antropologia.sociologia': { val: "Sociologia: el proces de socialitzacio", es: 'Sociologia: el proceso de socializacion', en: 'Sociology: the socialisation process' },
+        'antropologia.sociologia.text': { val: "La socialitzacio es el proces pel qual aprenem les normes, valors i comportaments de la nostra societat. Es produeix a traves de diversos agents:", es: "La socializacion es el proceso por el cual aprendemos las normas, valores y comportamientos de nuestra sociedad. Se produce a traves de diversos agentes:", en: "Socialisation is the process by which we learn the norms, values and behaviours of our society. It occurs through various agents:" },
+        'antropologia.agent.familia': { val: "Familia: primer agent socialitzador. Transmet valors basics, llengua, afecte.", es: "Familia: primer agente socializador. Transmite valores basicos, lengua, afecto.", en: "Family: first socialisation agent. Transmits basic values, language, affection." },
+        'antropologia.agent.escola': { val: "Escola: aprenentatge formal, normes de convivencia, relacio amb iguals.", es: "Escuela: aprendizaje formal, normas de convivencia, relacion con iguales.", en: "School: formal learning, coexistence rules, peer relationships." },
+        'antropologia.agent.amics': { val: "Grup d'iguals (amics): influencia molt forta en l'adolescencia. Identitat, pertinenca.", es: "Grupo de iguales (amigos): influencia muy fuerte en la adolescencia. Identidad, pertenencia.", en: "Peer group (friends): very strong influence in adolescence. Identity, belonging." },
+        'antropologia.agent.mitjans': { val: "Mitjans de comunicacio i xarxes socials: transmeten models, valors i estereotips.", es: "Medios de comunicacion y redes sociales: transmiten modelos, valores y estereotipos.", en: "Media and social networks: transmit models, values and stereotypes." },
+        'antropologia.agent.religio': { val: "Religio: transmet creences, rituals i codis morals.", es: "Religion: transmite creencias, rituales y codigos morales.", en: "Religion: transmits beliefs, rituals and moral codes." },
+        'antropologia.igualtat': { val: 'Igualtat de genere', es: 'Igualdad de genero', en: 'Gender equality' },
+        'antropologia.igualtat.text': { val: "Els estereotips de genere son creences simplificades sobre com han de ser els homes i les dones. Son construccions socials, no fets biologics. Un model igualitari implica:", es: "Los estereotipos de genero son creencias simplificadas sobre como deben ser los hombres y las mujeres. Son construcciones sociales, no hechos biologicos. Un modelo igualitario implica:", en: "Gender stereotypes are simplified beliefs about how men and women should be. They are social constructions, not biological facts. An egalitarian model implies:" },
+        'antropologia.igualtat.oportunitats': { val: "Igualtat d'oportunitats en educacio i treball", es: "Igualdad de oportunidades en educacion y trabajo", en: "Equal opportunities in education and work" },
+        'antropologia.igualtat.corresponsabilitat': { val: "Corresponsabilitat en les tasques domestiques i de cura", es: "Corresponsabilidad en las tareas domesticas y de cuidado", en: "Co-responsibility in domestic and care tasks" },
+        'antropologia.igualtat.respecte': { val: "Respecte a totes les identitats i expressions de genere", es: "Respeto a todas las identidades y expresiones de genero", en: "Respect for all gender identities and expressions" },
+        'antropologia.igualtat.violencia': { val: "Rebuig de qualsevol forma de violencia de genere", es: "Rechazo de cualquier forma de violencia de genero", en: "Rejection of any form of gender violence" },
+        'antropologia.grup': { val: 'El poder del grup', es: 'El poder del grupo', en: 'The power of the group' },
+        'antropologia.grup.text': { val: "El grup exerceix una influencia enorme sobre el comportament individual. Fenomens importants:", es: "El grupo ejerce una influencia enorme sobre el comportamiento individual. Fenomenos importantes:", en: "The group exerts an enormous influence on individual behaviour. Important phenomena:" },
+        'antropologia.grup.conformitat': { val: "Conformitat: canviar la propia opinió o conducta per adaptar-se al grup (experiment d'Asch).", es: "Conformidad: cambiar la propia opinion o conducta para adaptarse al grupo (experimento de Asch).", en: "Conformity: changing one's own opinion or behaviour to fit in with the group (Asch experiment)." },
+        'antropologia.grup.pressio': { val: "Pressio de grup: sentir-se obligat a fer algo per no ser rebutjat (beure, fumar, bullying...).", es: "Presion de grupo: sentirse obligado a hacer algo para no ser rechazado (beber, fumar, bullying...).", en: "Peer pressure: feeling compelled to do something to avoid rejection (drinking, smoking, bullying...)." },
+        'antropologia.grup.pensament': { val: "Pensament grupal: el grup pren decisions erronies perque ningu s'atreveix a discrepar.", es: "Pensamiento grupal: el grupo toma decisiones erroneas porque nadie se atreve a discrepar.", en: "Groupthink: the group makes wrong decisions because nobody dares to disagree." },
+
+        // UD3: Aprenentatge
+        'aprenentatge.title': { val: "Aprenentatge i tecniques d'estudi", es: 'Aprendizaje y tecnicas de estudio', en: 'Learning & study techniques' },
+        'aprenentatge.subtitle': { val: 'Com apren el teu cervell i com treure-li el maxim', es: 'Como aprende tu cerebro y como sacarle el maximo', en: 'How your brain learns and how to make the most of it' },
+        'aprenentatge.why': { val: "No es mes intel·ligent qui mes estudia, sino qui sap COM estudiar. Coneixer com apren el teu cervell et permet estalviar temps i obtenir millors resultats. I a mes, descobrir les teues intel·ligencies et dona confianca.", es: "No es mas inteligente quien mas estudia, sino quien sabe COMO estudiar. Conocer como aprende tu cerebro te permite ahorrar tiempo y obtener mejores resultados.", en: "The smartest person is not the one who studies most, but the one who knows HOW to study. Knowing how your brain learns saves you time and gets better results." },
+        'aprenentatge.neuroplasticitat': { val: 'Neuroplasticitat', es: 'Neuroplasticidad', en: 'Neuroplasticity' },
+        'aprenentatge.neuroplasticitat.text': { val: "El cervell canvia fisicament quan aprens. Cada vegada que practiques una habilitat, les connexions neuronals (sinapsis) es reforcen. Aixo vol dir que la intel·ligencia no es fixa: es pot desenvolupar amb esforc i practica. Es com un muscul: com mes l'entrenes, mes fort es fa.", es: "El cerebro cambia fisicamente cuando aprendes. Cada vez que practicas una habilidad, las conexiones neuronales (sinapsis) se refuerzan. Esto significa que la inteligencia no es fija: se puede desarrollar con esfuerzo y practica.", en: "The brain physically changes when you learn. Each time you practise a skill, neural connections (synapses) are strengthened. This means intelligence is not fixed: it can be developed with effort and practice." },
+        'aprenentatge.processos': { val: "Processos clau en l'aprenentatge", es: 'Procesos clave en el aprendizaje', en: 'Key learning processes' },
+        'aprenentatge.processos.atencio': { val: "Atencio: sense atencio no hi ha aprenentatge. El movil es el major enemic de la concentracio.", es: "Atencion: sin atencion no hay aprendizaje. El movil es el mayor enemigo de la concentracion.", en: "Attention: without attention there is no learning. The phone is concentration's biggest enemy." },
+        'aprenentatge.processos.repeticio': { val: "Repeticio espaciada: repassar a intervals creixents (avui, dema, la setmana que ve) es molt mes eficac que estudiar tot d'un cop.", es: "Repeticion espaciada: repasar a intervalos crecientes (hoy, manana, la semana que viene) es mucho mas eficaz que estudiar todo de golpe.", en: "Spaced repetition: reviewing at increasing intervals (today, tomorrow, next week) is much more effective than cramming." },
+        'aprenentatge.processos.son': { val: "Son: durant el son, el cervell consolida el que has apres. Estudiar i dormir > estudiar tota la nit.", es: "Sueno: durante el sueno, el cerebro consolida lo que has aprendido. Estudiar y dormir > estudiar toda la noche.", en: "Sleep: during sleep, the brain consolidates what you've learned. Study and sleep > pulling an all-nighter." },
+        'aprenentatge.processos.emocio': { val: "Emocio: aprenem millor allo que ens emociona o ens interessa. Troba la connexio personal amb la materia.", es: "Emocion: aprendemos mejor lo que nos emociona o nos interesa. Encuentra la conexion personal con la materia.", en: "Emotion: we learn better what excites or interests us. Find the personal connection with the subject." },
+        'aprenentatge.gardner': { val: "Intel·ligencies multiples de Gardner", es: 'Inteligencias multiples de Gardner', en: "Gardner's multiple intelligences" },
+        'aprenentatge.gardner.text': { val: "Howard Gardner va proposar que no existeix una unica intel·ligencia, sino 8 tipus. Tots els tenim tots, pero en diferent grau. Descobrir les teues intel·ligencies dominants t'ajuda a triar metodes d'estudi i orientacio professional.", es: "Howard Gardner propuso que no existe una unica inteligencia, sino 8 tipos. Todos los tenemos todos, pero en diferente grado. Descubrir tus inteligencias dominantes te ayuda a elegir metodos de estudio y orientacion profesional.", en: "Howard Gardner proposed that there is not one single intelligence, but 8 types. We all have all of them, but to different degrees. Discovering your dominant intelligences helps you choose study methods and career orientation." },
+        'aprenentatge.intel.linguistic': { val: 'Linguistica', es: 'Linguistica', en: 'Linguistic' },
+        'aprenentatge.intel.linguistic.desc': { val: "Facilitat amb les paraules, la lectura i l'escriptura", es: "Facilidad con las palabras, la lectura y la escritura", en: "Ease with words, reading and writing" },
+        'aprenentatge.intel.logica': { val: 'Logica-matematica', es: 'Logica-matematica', en: 'Logical-mathematical' },
+        'aprenentatge.intel.logica.desc': { val: "Raonament logic, numeros, patrons, resolucio de problemes", es: "Razonamiento logico, numeros, patrones, resolucion de problemas", en: "Logical reasoning, numbers, patterns, problem solving" },
+        'aprenentatge.intel.espacial': { val: 'Espacial', es: 'Espacial', en: 'Spatial' },
+        'aprenentatge.intel.espacial.desc': { val: "Pensament visual, orientacio, disseny, mapes mentals", es: "Pensamiento visual, orientacion, diseno, mapas mentales", en: "Visual thinking, orientation, design, mind maps" },
+        'aprenentatge.intel.musical': { val: 'Musical', es: 'Musical', en: 'Musical' },
+        'aprenentatge.intel.musical.desc': { val: "Sensibilitat al ritme, la melodia, els sons", es: "Sensibilidad al ritmo, la melodia, los sonidos", en: "Sensitivity to rhythm, melody, sounds" },
+        'aprenentatge.intel.corporal': { val: 'Corporal-cinestesica', es: 'Corporal-cinestesica', en: 'Bodily-kinaesthetic' },
+        'aprenentatge.intel.corporal.desc': { val: "Control del propi cos, coordinacio, esport, manualitats", es: "Control del propio cuerpo, coordinacion, deporte, manualidades", en: "Body control, coordination, sport, crafts" },
+        'aprenentatge.intel.interpersonal': { val: 'Interpersonal', es: 'Interpersonal', en: 'Interpersonal' },
+        'aprenentatge.intel.interpersonal.desc': { val: "Entendre els altres, empatia, lideratge, treball en equip", es: "Entender a los demas, empatia, liderazgo, trabajo en equipo", en: "Understanding others, empathy, leadership, teamwork" },
+        'aprenentatge.intel.intrapersonal': { val: 'Intrapersonal', es: 'Intrapersonal', en: 'Intrapersonal' },
+        'aprenentatge.intel.intrapersonal.desc': { val: "Autoconeixement, reflexio, autocontrol emocional", es: "Autoconocimiento, reflexion, autocontrol emocional", en: "Self-knowledge, reflection, emotional self-control" },
+        'aprenentatge.intel.naturalista': { val: 'Naturalista', es: 'Naturalista', en: 'Naturalistic' },
+        'aprenentatge.intel.naturalista.desc': { val: "Observacio de la natura, classificacio, medi ambient", es: "Observacion de la naturaleza, clasificacion, medio ambiente", en: "Nature observation, classification, environment" },
+        'aprenentatge.metacognicio': { val: 'Metacognicio', es: 'Metacognicion', en: 'Metacognition' },
+        'aprenentatge.metacognicio.text': { val: "La metacognicio es 'pensar sobre com penses'. Implica ser conscient del teu propi proces d'aprenentatge: saber que saps, que no saps, quines estrategies et funcionen i quines no. Es la clau de l'aprenentatge eficac.", es: "La metacognicion es 'pensar sobre como piensas'. Implica ser consciente de tu propio proceso de aprendizaje: saber que sabes, que no sabes, que estrategias te funcionan y cuales no.", en: "Metacognition is 'thinking about how you think'. It involves being aware of your own learning process: knowing what you know, what you don't know, which strategies work and which don't." },
+        'aprenentatge.tecniques': { val: "Tecniques d'estudi", es: 'Tecnicas de estudio', en: 'Study techniques' },
+        'aprenentatge.tec.motivacio': { val: "Motivacio: marca objectius clars i realistes. Pensa en per que estudies.", es: "Motivacion: marca objetivos claros y realistas. Piensa en por que estudias.", en: "Motivation: set clear and realistic goals. Think about why you study." },
+        'aprenentatge.tec.planificacio': { val: "Planificacio: usa un calendari, divideix la materia, evita acumular.", es: "Planificacion: usa un calendario, divide la materia, evita acumular.", en: "Planning: use a calendar, divide the material, avoid accumulating." },
+        'aprenentatge.tec.concentracio': { val: "Concentracio: silencia el movil, periodes de 25 min (Pomodoro), lloc fix d'estudi.", es: "Concentracion: silencia el movil, periodos de 25 min (Pomodoro), lugar fijo de estudio.", en: "Concentration: silence your phone, 25-min periods (Pomodoro), fixed study place." },
+        'aprenentatge.tec.comprensio': { val: "Comprensio: subratlla, fes esquemes, explica-ho en veu alta (com si fores el profe).", es: "Comprension: subraya, haz esquemas, explicalo en voz alta (como si fueras el profe).", en: "Comprehension: underline, make diagrams, explain it aloud (as if you were the teacher)." },
+        'aprenentatge.tec.memoritzacio': { val: "Memoritzacio: flashcards, mnemotecnies, associa conceptes amb imatges o histories.", es: "Memorizacion: flashcards, mnemotecnias, asocia conceptos con imagenes o historias.", en: "Memorisation: flashcards, mnemonics, associate concepts with images or stories." },
+        'aprenentatge.formal': { val: "Aprenentatge formal i informal", es: 'Aprendizaje formal e informal', en: 'Formal and informal learning' },
+        'aprenentatge.formal.text': { val: "No nomes s'apren a l'institut. L'aprenentatge informal (videos, podcasts, experiencies, converses) es igualment valuos. Les empreses valoren cada vegada mes les competencies adquirides de forma informal (idiomes, programacio, creativitat).", es: "No solo se aprende en el instituto. El aprendizaje informal (videos, podcasts, experiencias, conversaciones) es igualmente valioso. Las empresas valoran cada vez mas las competencias adquiridas de forma informal.", en: "You don't only learn at school. Informal learning (videos, podcasts, experiences, conversations) is equally valuable. Companies increasingly value informally acquired skills." },
+
+        // UD4: Gestio emocional
+        'emocions.title': { val: 'Gestio emocional', es: 'Gestion emocional', en: 'Emotional management' },
+        'emocions.subtitle': { val: "Enten les teues emocions i apren a gestionar-les", es: 'Entiende tus emociones y aprende a gestionarlas', en: 'Understand your emotions and learn to manage them' },
+        'emocions.why': { val: "Les emocions influeixen en tot: les teues decisions, les teues relacions, el teu rendiment academic. Aprendre a identificar-les i gestionar-les es una de les habilitats mes importants de la vida.", es: "Las emociones influyen en todo: tus decisiones, tus relaciones, tu rendimiento academico. Aprender a identificarlas y gestionarlas es una de las habilidades mas importantes de la vida.", en: "Emotions influence everything: your decisions, your relationships, your academic performance. Learning to identify and manage them is one of life's most important skills." },
+        'emocions.tab.teoria': { val: 'Teoria', es: 'Teoria', en: 'Theory' },
+        'emocions.tab.test': { val: "Test d'Intel·ligencia Emocional", es: 'Test de Inteligencia Emocional', en: 'Emotional Intelligence Test' },
+        'emocions.basiques': { val: "6 emocions basiques d'Ekman", es: '6 emociones basicas de Ekman', en: "Ekman's 6 basic emotions" },
+        'emocions.basiques.text': { val: "Paul Ekman va identificar 6 emocions universals, presents en totes les cultures del mon:", es: "Paul Ekman identifico 6 emociones universales, presentes en todas las culturas del mundo:", en: "Paul Ekman identified 6 universal emotions, present in all cultures worldwide:" },
+        'emocions.por': { val: "Por: ens protegeix del perill. Resposta de lluita o fugida.", es: "Miedo: nos protege del peligro. Respuesta de lucha o huida.", en: "Fear: protects us from danger. Fight or flight response." },
+        'emocions.sorpresa': { val: "Sorpresa: reaccio davant algo inesperat. Dura molt poc.", es: "Sorpresa: reaccion ante algo inesperado. Dura muy poco.", en: "Surprise: reaction to something unexpected. Very short-lived." },
+        'emocions.fàstic': { val: "Fastig: rebuig cap a algo desagradable. Ens protegeix d'elements toxics.", es: "Asco: rechazo hacia algo desagradable. Nos protege de elementos toxicos.", en: "Disgust: rejection of something unpleasant. Protects us from toxic elements." },
+        'emocions.ira': { val: "Ira: resposta a una injusticia o amenaca. Motiva l'accio pero pot ser destructiva.", es: "Ira: respuesta a una injusticia o amenaza. Motiva la accion pero puede ser destructiva.", en: "Anger: response to injustice or threat. Motivates action but can be destructive." },
+        'emocions.alegria': { val: "Alegria: emocio positiva que ens motiva a repetir experiencies gratificants.", es: "Alegria: emocion positiva que nos motiva a repetir experiencias gratificantes.", en: "Joy: positive emotion that motivates us to repeat rewarding experiences." },
+        'emocions.tristesa': { val: "Tristesa: ens fa parar i reflexionar. Necessaria per al dol i la superacio.", es: "Tristeza: nos hace parar y reflexionar. Necesaria para el duelo y la superacion.", en: "Sadness: makes us stop and reflect. Necessary for grief and overcoming." },
+        'emocions.diferencia': { val: 'Emocio vs sentiment', es: 'Emocion vs sentimiento', en: 'Emotion vs feeling' },
+        'emocions.diferencia.text': { val: "Una emocio es una reaccio automatica, breu i intensa (p.ex., un ensurt). Un sentiment es la interpretacio conscient de l'emocio, que dura mes (p.ex., la por constant a suspendre). Les emocions son universals; els sentiments son personals.", es: "Una emocion es una reaccion automatica, breve e intensa (p.ej., un susto). Un sentimiento es la interpretacion consciente de la emocion, que dura mas (p.ej., el miedo constante a suspender). Las emociones son universales; los sentimientos son personales.", en: "An emotion is an automatic, brief and intense reaction (e.g., a fright). A feeling is the conscious interpretation of the emotion, which lasts longer (e.g., the constant fear of failing). Emotions are universal; feelings are personal." },
+        'emocions.ie': { val: "Intel·ligencia emocional de Goleman", es: 'Inteligencia emocional de Goleman', en: "Goleman's emotional intelligence" },
+        'emocions.ie.text': { val: "Daniel Goleman va definir la intel·ligencia emocional (IE) com la capacitat de reconèixer, entendre i gestionar les emocions propies i les dels altres. Inclou 5 pilars:", es: "Daniel Goleman definio la inteligencia emocional (IE) como la capacidad de reconocer, entender y gestionar las emociones propias y las de los demas. Incluye 5 pilares:", en: "Daniel Goleman defined emotional intelligence (EI) as the ability to recognise, understand and manage one's own emotions and those of others. It includes 5 pillars:" },
+        'emocions.pilar.autoconeixement': { val: "Autoconeixement: identificar i entendre les propies emocions", es: "Autoconocimiento: identificar y entender las propias emociones", en: "Self-awareness: identifying and understanding one's own emotions" },
+        'emocions.pilar.autocontrol': { val: "Autocontrol: regular les emocions, no actuar impulsivament", es: "Autocontrol: regular las emociones, no actuar impulsivamente", en: "Self-regulation: regulating emotions, not acting impulsively" },
+        'emocions.pilar.motivacio': { val: "Automotivacio: persistir malgrat les dificultats", es: "Automotivacion: persistir a pesar de las dificultades", en: "Self-motivation: persisting despite difficulties" },
+        'emocions.pilar.empatia': { val: "Empatia: entendre les emocions dels altres", es: "Empatia: entender las emociones de los demas", en: "Empathy: understanding others' emotions" },
+        'emocions.pilar.social': { val: "Habilitats socials: gestionar relacions i comunicar-se eficacment", es: "Habilidades sociales: gestionar relaciones y comunicarse eficazmente", en: "Social skills: managing relationships and communicating effectively" },
+        'emocions.ment': { val: 'Ment racional vs emocional', es: 'Mente racional vs emocional', en: 'Rational vs emotional mind' },
+        'emocions.ment.text': { val: "Tenim dues ments: la racional (cortex prefrontal, lenta, logica) i l'emocional (amigdala, rapida, automatica). Quan una emocio es molt intensa, l'amigdala pren el control i actuem sense pensar (segrest amigdalar). La intel·ligencia emocional ens ajuda a connectar les dues ments.", es: "Tenemos dos mentes: la racional (cortex prefrontal, lenta, logica) y la emocional (amigdala, rapida, automatica). Cuando una emocion es muy intensa, la amigdala toma el control y actuamos sin pensar (secuestro amigdalar). La inteligencia emocional nos ayuda a conectar las dos mentes.", en: "We have two minds: the rational (prefrontal cortex, slow, logical) and the emotional (amygdala, fast, automatic). When an emotion is very intense, the amygdala takes control and we act without thinking (amygdala hijack). Emotional intelligence helps us connect both minds." },
+        'emocions.tecniques': { val: "Tecniques d'autocontrol emocional", es: 'Tecnicas de autocontrol emocional', en: 'Emotional self-control techniques' },
+        'emocions.tec.respiracio': { val: "Respiracio profunda: 4 segons inspirar, 4 segons aguantar, 4 segons expirar", es: "Respiracion profunda: 4 segundos inspirar, 4 segundos aguantar, 4 segundos expirar", en: "Deep breathing: 4 seconds inhale, 4 seconds hold, 4 seconds exhale" },
+        'emocions.tec.parar': { val: "Tecnica STOP: Para - Tranquil·litza't - Observa - Procedeix", es: "Tecnica STOP: Para - Tranquilizate - Observa - Procede", en: "STOP technique: Stop - Take a breath - Observe - Proceed" },
+        'emocions.tec.reestructuracio': { val: "Reestructuracio cognitiva: canviar els pensaments negatius per alternatius mes realistes", es: "Reestructuracion cognitiva: cambiar los pensamientos negativos por alternativos mas realistas", en: "Cognitive restructuring: changing negative thoughts to more realistic alternatives" },
+        'emocions.tec.empatia': { val: "Empatia activa: posar-se en la pell de l'altre abans de reaccionar", es: "Empatia activa: ponerse en la piel del otro antes de reaccionar", en: "Active empathy: putting yourself in the other's shoes before reacting" },
+
+        // IE test translations
+        'emocions.test.title': { val: "Test d'Intel·ligencia Emocional", es: 'Test de Inteligencia Emocional', en: 'Emotional Intelligence Test' },
+        'emocions.test.desc': { val: "Respon amb sinceritat. No hi ha respostes correctes o incorrectes.", es: 'Responde con sinceridad. No hay respuestas correctas o incorrectas.', en: 'Answer honestly. There are no right or wrong answers.' },
+        'emocions.test.pregunta': { val: 'Pregunta', es: 'Pregunta', en: 'Question' },
+        'emocions.test.de': { val: 'de', es: 'de', en: 'of' },
+        'emocions.test.seguent': { val: 'Seguent', es: 'Siguiente', en: 'Next' },
+        'emocions.test.anterior': { val: 'Anterior', es: 'Anterior', en: 'Previous' },
+        'emocions.test.resultats': { val: 'Veure resultats', es: 'Ver resultados', en: 'See results' },
+        'emocions.test.repetir': { val: 'Repetir test', es: 'Repetir test', en: 'Retake test' },
+        'emocions.test.puntuacio': { val: 'Puntuacio total', es: 'Puntuacion total', en: 'Total score' },
+        'emocions.test.sobre': { val: 'sobre', es: 'sobre', en: 'out of' },
+        'emocions.test.sempre': { val: 'Sempre', es: 'Siempre', en: 'Always' },
+        'emocions.test.sovint': { val: 'Sovint', es: 'A menudo', en: 'Often' },
+        'emocions.test.avegades': { val: 'A vegades', es: 'A veces', en: 'Sometimes' },
+        'emocions.test.mai': { val: 'Mai', es: 'Nunca', en: 'Never' },
+        'emocions.test.nivell.baixa': { val: 'IE Baixa - Tens molt per millorar. Comenca per identificar les teues emocions al llarg del dia.', es: 'IE Baja - Tienes mucho por mejorar. Empieza por identificar tus emociones a lo largo del dia.', en: 'Low EI - You have a lot of room for improvement. Start by identifying your emotions throughout the day.' },
+        'emocions.test.nivell.mitjana': { val: 'IE Mitjana - Bon punt de partida! Treballa les arees amb puntuacio mes baixa.', es: 'IE Media - ¡Buen punto de partida! Trabaja las areas con puntuacion mas baja.', en: 'Average EI - Good starting point! Work on the areas with the lowest scores.' },
+        'emocions.test.nivell.alta': { val: 'IE Alta - Molt be! Tens bones habilitats emocionals. Continua practicant.', es: 'IE Alta - ¡Muy bien! Tienes buenas habilidades emocionales. Sigue practicando.', en: 'High EI - Very good! You have good emotional skills. Keep practising.' },
+        'emocions.test.nivell.moltalta': { val: 'IE Molt Alta - Excel·lent! Ets un referent emocional per als altres. Aprofita-ho per ajudar.', es: 'IE Muy Alta - ¡Excelente! Eres un referente emocional para los demas. Aprovechalo para ayudar.', en: 'Very High EI - Excellent! You are an emotional role model for others. Use it to help.' },
+        'emocions.test.pilar.autoconeixement': { val: 'Autoconeixement', es: 'Autoconocimiento', en: 'Self-awareness' },
+        'emocions.test.pilar.autocontrol': { val: 'Autocontrol', es: 'Autocontrol', en: 'Self-regulation' },
+        'emocions.test.pilar.motivacio': { val: 'Automotivacio', es: 'Automotivacion', en: 'Self-motivation' },
+        'emocions.test.pilar.empatia': { val: 'Empatia', es: 'Empatia', en: 'Empathy' },
+        'emocions.test.pilar.social': { val: 'Habilitats socials', es: 'Habilidades sociales', en: 'Social skills' },
+
+        // IE test questions
+        'emocions.q1': { val: "Quan estas enfadat/da, saps identificar per que?", es: "Cuando estas enfadado/a, ¿sabes identificar por que?", en: "When you're angry, can you identify why?" },
+        'emocions.q2': { val: "Ets capac de posar nom a les teues emocions (tristesa, frustacio, alegria...)?", es: "¿Eres capaz de poner nombre a tus emociones (tristeza, frustracion, alegria...)?", en: "Can you name your emotions (sadness, frustration, joy...)?" },
+        'emocions.q3': { val: "Saps com afecten les teues emocions a les teues decisions?", es: "¿Sabes como afectan tus emociones a tus decisiones?", en: "Do you know how your emotions affect your decisions?" },
+        'emocions.q4': { val: "Quan algu et provoca, ets capac de mantindre la calma?", es: "Cuando alguien te provoca, ¿eres capaz de mantener la calma?", en: "When someone provokes you, can you stay calm?" },
+        'emocions.q5': { val: "Penses abans d'actuar quan estàs en una situacio emocional intensa?", es: "¿Piensas antes de actuar cuando estas en una situacion emocional intensa?", en: "Do you think before acting when in an intense emotional situation?" },
+        'emocions.q6': { val: "Quan algo et frustra, saps gestionar-ho sense explotar?", es: "Cuando algo te frustra, ¿sabes gestionarlo sin explotar?", en: "When something frustrates you, can you manage it without exploding?" },
+        'emocions.q7': { val: "Et marques objectius i treballes per aconseguir-los?", es: "¿Te marcas objetivos y trabajas para conseguirlos?", en: "Do you set goals and work to achieve them?" },
+        'emocions.q8': { val: "Quan les coses van malament, ets capac de seguir endavant?", es: "Cuando las cosas van mal, ¿eres capaz de seguir adelante?", en: "When things go wrong, can you keep going?" },
+        'emocions.q9': { val: "Trobes motivacio per fer coses encara que no t'agraden del tot?", es: "¿Encuentras motivacion para hacer cosas aunque no te gusten del todo?", en: "Do you find motivation to do things even when you don't fully enjoy them?" },
+        'emocions.q10': { val: "Quan un amic esta trist, notes el seu estat d'anim sense que te'l diga?", es: "Cuando un amigo esta triste, ¿notas su estado de animo sin que te lo diga?", en: "When a friend is sad, do you notice their mood without being told?" },
+        'emocions.q11': { val: "T'interesses per com se senten les persones del teu voltant?", es: "¿Te interesas por como se sienten las personas de tu alrededor?", en: "Do you care about how the people around you feel?" },
+        'emocions.q12': { val: "Ets capac d'escoltar els altres sense jutjar-los immediatament?", es: "¿Eres capaz de escuchar a los demas sin juzgarlos inmediatamente?", en: "Can you listen to others without immediately judging them?" },
+        'emocions.q13': { val: "Et resulta facil fer nous amics?", es: "¿Te resulta facil hacer nuevos amigos?", en: "Do you find it easy to make new friends?" },
+        'emocions.q14': { val: "Saps resoldre conflictes amb els altres sense agredir ni cedir sempre?", es: "¿Sabes resolver conflictos con los demas sin agredir ni ceder siempre?", en: "Can you resolve conflicts with others without being aggressive or always giving in?" },
+        'emocions.q15': { val: "Treballes be en equip i cooperes amb els altres?", es: "¿Trabajas bien en equipo y cooperas con los demas?", en: "Do you work well in a team and cooperate with others?" },
+
+        // UD5: Habilitats personals
+        'habilitats.title': { val: 'Habilitats personals', es: 'Habilidades personales', en: 'Personal skills' },
+        'habilitats.subtitle': { val: 'Qui ets i com pots ser la teua millor versio', es: 'Quien eres y como puedes ser tu mejor version', en: 'Who you are and how to be your best self' },
+        'habilitats.why': { val: "Coneixer la teua personalitat, gestionar el teu temps i desenvolupar el pensament critic son habilitats que et serviran tota la vida, en qualsevol feina i en qualsevol relacio.", es: "Conocer tu personalidad, gestionar tu tiempo y desarrollar el pensamiento critico son habilidades que te serviran toda la vida, en cualquier trabajo y en cualquier relacion.", en: "Knowing your personality, managing your time and developing critical thinking are skills that will serve you for life, in any job and any relationship." },
+        'habilitats.tab.teoria': { val: 'Teoria', es: 'Teoria', en: 'Theory' },
+        'habilitats.tab.bigfive': { val: 'Test Big Five', es: 'Test Big Five', en: 'Big Five Test' },
+        'habilitats.tab.eisenhower': { val: 'Matriu Eisenhower', es: 'Matriz Eisenhower', en: 'Eisenhower Matrix' },
+        'habilitats.bigfive': { val: "Els 5 grans trets de personalitat (Big Five / OCEAN)", es: 'Los 5 grandes rasgos de personalidad (Big Five / OCEAN)', en: 'The Big Five personality traits (OCEAN)' },
+        'habilitats.bigfive.text': { val: "El model Big Five es el mes acceptat en psicologia per descriure la personalitat. Tots tenim els 5 trets, pero en diferent grau. Cap extrem es bo ni dolent: depèn del context.", es: "El modelo Big Five es el mas aceptado en psicologia para describir la personalidad. Todos tenemos los 5 rasgos, pero en diferente grado. Ningun extremo es bueno ni malo: depende del contexto.", en: "The Big Five model is the most accepted in psychology for describing personality. We all have all 5 traits, but to different degrees. No extreme is good or bad: it depends on context." },
+        'habilitats.ocean.o': { val: "Obertura (Openness): curiositat, creativitat, gust per la novetat", es: "Apertura (Openness): curiosidad, creatividad, gusto por la novedad", en: "Openness: curiosity, creativity, taste for novelty" },
+        'habilitats.ocean.c': { val: "Responsabilitat (Conscientiousness): organitzacio, disciplina, compromis", es: "Responsabilidad (Conscientiousness): organizacion, disciplina, compromiso", en: "Conscientiousness: organisation, discipline, commitment" },
+        'habilitats.ocean.e': { val: "Extraversio (Extraversion): energia social, assertivitat, optimisme", es: "Extraversion (Extraversion): energia social, asertividad, optimismo", en: "Extraversion: social energy, assertiveness, optimism" },
+        'habilitats.ocean.a': { val: "Amabilitat (Agreeableness): cooperacio, confianca, empatia", es: "Amabilidad (Agreeableness): cooperacion, confianza, empatia", en: "Agreeableness: cooperation, trust, empathy" },
+        'habilitats.ocean.n': { val: "Neuroticisme (Neuroticism): tendencia a l'ansietat, la preocupacio, la inestabilitat emocional", es: "Neuroticismo (Neuroticism): tendencia a la ansiedad, la preocupacion, la inestabilidad emocional", en: "Neuroticism: tendency to anxiety, worry, emotional instability" },
+        'habilitats.autoestima': { val: 'Autoestima i autoconfianca', es: 'Autoestima y autoconfianza', en: 'Self-esteem and self-confidence' },
+        'habilitats.autoestima.text': { val: "L'autoestima es la valoracio que fas de tu mateix/a. No es fixa: puja i baixa segons les experiencies. Per millorar-la: fixa't objectius petits i assolibles, celebra els exits, no et compares amb els altres a les xarxes socials, i envolta't de gent que et valora.", es: "La autoestima es la valoracion que haces de ti mismo/a. No es fija: sube y baja segun las experiencias. Para mejorarla: fijate objetivos pequenos y alcanzables, celebra los exitos, no te compares con los demas en redes sociales, y rodeate de gente que te valora.", en: "Self-esteem is the value you place on yourself. It's not fixed: it goes up and down according to experiences. To improve it: set small achievable goals, celebrate successes, don't compare yourself to others on social media, and surround yourself with people who value you." },
+        'habilitats.pensament': { val: 'Pensament critic', es: 'Pensamiento critico', en: 'Critical thinking' },
+        'habilitats.pensament.text': { val: "Qüestionar la informacio, buscar fonts fiables, distingir fets d'opinions, detectar fal·lacies logiques i formar opinions propies basades en evidencia. En l'era de la desinformacio, es una habilitat essencial.", es: "Cuestionar la informacion, buscar fuentes fiables, distinguir hechos de opiniones, detectar falacias logicas y formar opiniones propias basadas en evidencia. En la era de la desinformacion, es una habilidad esencial.", en: "Questioning information, seeking reliable sources, distinguishing facts from opinions, detecting logical fallacies and forming evidence-based opinions. In the age of misinformation, it's an essential skill." },
+        'habilitats.resiliencia': { val: 'Resiliencia', es: 'Resiliencia', en: 'Resilience' },
+        'habilitats.resiliencia.text': { val: "La capacitat de superar situacions dificils i sortir-ne reforcat/da. No es no patir, sino saber afrontar el patiment. Factors que l'afavoreixen: xarxa social de suport, sentit de l'humor, flexibilitat mental, acceptacio.", es: "La capacidad de superar situaciones dificiles y salir reforzado/a. No es no sufrir, sino saber afrontar el sufrimiento. Factores que la favorecen: red social de apoyo, sentido del humor, flexibilidad mental, aceptacion.", en: "The ability to overcome difficult situations and come out stronger. It's not about not suffering, but knowing how to face suffering. Factors that promote it: support network, sense of humour, mental flexibility, acceptance." },
+        'habilitats.eisenhower': { val: 'Matriu Eisenhower', es: 'Matriz Eisenhower', en: 'Eisenhower Matrix' },
+        'habilitats.eisenhower.text': { val: "Una eina per organitzar les teues tasques en 4 categories segons la seua urgencia i importancia:", es: "Una herramienta para organizar tus tareas en 4 categorias segun su urgencia e importancia:", en: "A tool to organise your tasks into 4 categories based on urgency and importance:" },
+        'habilitats.eisenhower.fer': { val: "FER: Urgent + Important", es: 'HACER: Urgente + Importante', en: 'DO: Urgent + Important' },
+        'habilitats.eisenhower.planificar': { val: "PLANIFICAR: No Urgent + Important", es: 'PLANIFICAR: No Urgente + Importante', en: 'SCHEDULE: Not Urgent + Important' },
+        'habilitats.eisenhower.delegar': { val: "DELEGAR: Urgent + No Important", es: 'DELEGAR: Urgente + No Importante', en: 'DELEGATE: Urgent + Not Important' },
+        'habilitats.eisenhower.eliminar': { val: "ELIMINAR: No Urgent + No Important", es: 'ELIMINAR: No Urgente + No Importante', en: 'ELIMINATE: Not Urgent + Not Important' },
+        'habilitats.eisenhower.guardat': { val: "Es guarda automaticament", es: 'Se guarda automaticamente', en: 'Saves automatically' },
+        'habilitats.eisenhower.esborrar': { val: "Esborrar tot", es: 'Borrar todo', en: 'Clear all' },
+
+        // Big Five test
+        'habilitats.bf.title': { val: 'Test Big Five', es: 'Test Big Five', en: 'Big Five Test' },
+        'habilitats.bf.desc': { val: 'Respon a cada afirmacio amb sinceritat.', es: 'Responde a cada afirmacion con sinceridad.', en: 'Answer each statement honestly.' },
+        'habilitats.bf.moltacord': { val: "Molt d'acord", es: 'Muy de acuerdo', en: 'Strongly agree' },
+        'habilitats.bf.acord': { val: "D'acord", es: 'De acuerdo', en: 'Agree' },
+        'habilitats.bf.neutre': { val: 'Neutre', es: 'Neutro', en: 'Neutral' },
+        'habilitats.bf.desacord': { val: 'En desacord', es: 'En desacuerdo', en: 'Disagree' },
+        'habilitats.bf.moltdesacord': { val: 'Molt en desacord', es: 'Muy en desacuerdo', en: 'Strongly disagree' },
+        'habilitats.bf.resultats': { val: 'Veure resultats', es: 'Ver resultados', en: 'See results' },
+        'habilitats.bf.repetir': { val: 'Repetir test', es: 'Repetir test', en: 'Retake test' },
+        'habilitats.bf.q1': { val: "M'agrada provar coses noves i experimentar", es: "Me gusta probar cosas nuevas y experimentar", en: "I like trying new things and experimenting" },
+        'habilitats.bf.q2': { val: "M'interessen les idees abstractes i la filosofia", es: "Me interesan las ideas abstractas y la filosofia", en: "I'm interested in abstract ideas and philosophy" },
+        'habilitats.bf.q3': { val: "Soc organitzat/da i compleixc amb els meus compromisos", es: "Soy organizado/a y cumplo con mis compromisos", en: "I'm organised and I fulfil my commitments" },
+        'habilitats.bf.q4': { val: "Preparo les coses amb antelacio i no ho deixo tot per a l'ultim moment", es: "Preparo las cosas con antelacion y no lo dejo todo para el ultimo momento", en: "I prepare things in advance and don't leave everything to the last minute" },
+        'habilitats.bf.q5': { val: "M'agrada estar amb gent i participar en activitats socials", es: "Me gusta estar con gente y participar en actividades sociales", en: "I like being with people and participating in social activities" },
+        'habilitats.bf.q6': { val: "Em senc amb energia quan estic en grups grans", es: "Me siento con energia cuando estoy en grupos grandes", en: "I feel energised when in large groups" },
+        'habilitats.bf.q7': { val: "Intente ajudar els altres encara que no em beneficie", es: "Intento ayudar a los demas aunque no me beneficie", en: "I try to help others even when it doesn't benefit me" },
+        'habilitats.bf.q8': { val: "Confie en les bones intencions de la gent", es: "Confio en las buenas intenciones de la gente", en: "I trust people's good intentions" },
+        'habilitats.bf.q9': { val: "Em preocupe sovint per coses que poden anar malament", es: "Me preocupo a menudo por cosas que pueden ir mal", en: "I often worry about things that might go wrong" },
+        'habilitats.bf.q10': { val: "Em senc estressat/da amb facilitat davant els problemes", es: "Me siento estresado/a con facilidad ante los problemas", en: "I get stressed easily when facing problems" },
+        'habilitats.bf.trait.o': { val: 'Obertura', es: 'Apertura', en: 'Openness' },
+        'habilitats.bf.trait.c': { val: 'Responsabilitat', es: 'Responsabilidad', en: 'Conscientiousness' },
+        'habilitats.bf.trait.e': { val: 'Extraversio', es: 'Extraversion', en: 'Extraversion' },
+        'habilitats.bf.trait.a': { val: 'Amabilitat', es: 'Amabilidad', en: 'Agreeableness' },
+        'habilitats.bf.trait.n': { val: 'Neuroticisme', es: 'Neuroticismo', en: 'Neuroticism' },
+
+        // UD6: Habilitats socials
+        'socials.title': { val: 'Habilitats socials', es: 'Habilidades sociales', en: 'Social skills' },
+        'socials.subtitle': { val: 'Comunicar-se, cooperar i liderar', es: 'Comunicarse, cooperar y liderar', en: 'Communicate, cooperate and lead' },
+        'socials.why': { val: "El 85% de l'exit professional depèn de les habilitats socials (Carnegie). Saber comunicar, escoltar, negociar i treballar en equip es tan important com els coneixements tecnics.", es: "El 85% del exito profesional depende de las habilidades sociales (Carnegie). Saber comunicar, escuchar, negociar y trabajar en equipo es tan importante como los conocimientos tecnicos.", en: "85% of professional success depends on social skills (Carnegie). Knowing how to communicate, listen, negotiate and work in teams is as important as technical knowledge." },
+        'socials.empatia': { val: 'Empatia i escolta activa', es: 'Empatia y escucha activa', en: 'Empathy and active listening' },
+        'socials.empatia.text': { val: "Escoltar activament no es nomes sentir les paraules: es prestar atencio, no interrompre, fer preguntes, parafrasejar i mostrar que entens l'altra persona. L'empatia es la capacitat de posar-se en la pell de l'altre i entendre les seues emocions.", es: "Escuchar activamente no es solo oir las palabras: es prestar atencion, no interrumpir, hacer preguntas, parafrasear y mostrar que entiendes a la otra persona. La empatia es la capacidad de ponerse en la piel del otro y entender sus emociones.", en: "Active listening is not just hearing words: it's paying attention, not interrupting, asking questions, paraphrasing and showing you understand the other person. Empathy is the ability to put yourself in another's shoes and understand their emotions." },
+        'socials.comunicacio': { val: 'Comunicacio', es: 'Comunicacion', en: 'Communication' },
+        'socials.comunicacio.verbal': { val: "Verbal: el que diem. Claredat, vocabulari adequat, to de veu.", es: "Verbal: lo que decimos. Claridad, vocabulario adecuado, tono de voz.", en: "Verbal: what we say. Clarity, appropriate vocabulary, tone of voice." },
+        'socials.comunicacio.noverbal': { val: "No verbal: el que transmetem sense paraules. Gestos, postura, contacte visual, distancia. Representa fins al 70% de la comunicacio.", es: "No verbal: lo que transmitimos sin palabras. Gestos, postura, contacto visual, distancia. Representa hasta el 70% de la comunicacion.", en: "Non-verbal: what we convey without words. Gestures, posture, eye contact, distance. Represents up to 70% of communication." },
+        'socials.comunicacio.escrita': { val: "Escrita: correus, xats, xarxes socials. Cura l'ortografia, el to i el context.", es: "Escrita: correos, chats, redes sociales. Cuida la ortografia, el tono y el contexto.", en: "Written: emails, chats, social media. Take care with spelling, tone and context." },
+        'socials.oratoria': { val: 'Parlar en public (oratoria)', es: 'Hablar en publico (oratoria)', en: 'Public speaking (oratory)' },
+        'socials.oratoria.text': { val: "Consells per parlar en public: prepara be el contingut, practica davant el mirall, controla la respiracio, mira el public als ulls, parla a poc a poc, utilitza gestos naturals. La por escenica es normal: es gestiona amb practica.", es: "Consejos para hablar en publico: prepara bien el contenido, practica delante del espejo, controla la respiracion, mira al publico a los ojos, habla despacio, utiliza gestos naturales. El miedo escenico es normal: se gestiona con practica.", en: "Tips for public speaking: prepare the content well, practise in front of a mirror, control your breathing, make eye contact with the audience, speak slowly, use natural gestures. Stage fright is normal: it's managed with practice." },
+        'socials.assertivitat': { val: 'Assertivitat', es: 'Asertividad', en: 'Assertiveness' },
+        'socials.assertivitat.text': { val: "L'assertivitat es la capacitat d'expressar les teues opinions, necessitats i sentiments de manera clara i respectuosa, sense agredir els altres ni deixar-te trepitjar.", es: "La asertividad es la capacidad de expresar tus opiniones, necesidades y sentimientos de manera clara y respetuosa, sin agredir a los demas ni dejarte pisar.", en: "Assertiveness is the ability to express your opinions, needs and feelings clearly and respectfully, without being aggressive or letting others walk over you." },
+        'socials.estil.passiu': { val: 'Passiu', es: 'Pasivo', en: 'Passive' },
+        'socials.estil.passiu.desc': { val: "No expressa les seues necessitats. Cedeix sempre. Es sent frustrat/da per dins.", es: "No expresa sus necesidades. Cede siempre. Se siente frustrado/a por dentro.", en: "Doesn't express needs. Always gives in. Feels frustrated inside." },
+        'socials.estil.assertiu': { val: 'Assertiu', es: 'Asertivo', en: 'Assertive' },
+        'socials.estil.assertiu.desc': { val: "Expressa el que pensa i sent amb respecte. Defensa els seus drets sense vulnerar els dels altres.", es: "Expresa lo que piensa y siente con respeto. Defiende sus derechos sin vulnerar los de los demas.", en: "Expresses thoughts and feelings with respect. Defends their rights without violating others'." },
+        'socials.estil.agressiu': { val: 'Agressiu', es: 'Agresivo', en: 'Aggressive' },
+        'socials.estil.agressiu.desc': { val: "Imposa les seues opinions. No respecta els altres. Genera conflictes.", es: "Impone sus opiniones. No respeta a los demas. Genera conflictos.", en: "Imposes their opinions. Doesn't respect others. Creates conflicts." },
+        'socials.negociacio': { val: 'Negociacio', es: 'Negociacion', en: 'Negotiation' },
+        'socials.negociacio.text': { val: "La negociacio es buscar una solucio que satisfaga totes les parts. La 'tercera via' (win-win) es l'objectiu: en lloc de 'jo guanye, tu perds', buscar una alternativa creativa on tots guanyen.", es: "La negociacion es buscar una solucion que satisfaga a todas las partes. La 'tercera via' (win-win) es el objetivo: en lugar de 'yo gano, tu pierdes', buscar una alternativa creativa donde todos ganen.", en: "Negotiation is finding a solution that satisfies all parties. The 'third way' (win-win) is the goal: instead of 'I win, you lose', finding a creative alternative where everyone wins." },
+        'socials.lideratge': { val: 'Estils de lideratge', es: 'Estilos de liderazgo', en: 'Leadership styles' },
+        'socials.lid.autoritari': { val: 'Autoritari', es: 'Autoritario', en: 'Authoritarian' },
+        'socials.lid.autoritari.desc': { val: "El lider decideix sol. Eficac en emergencies, pero desmotiva a llarg termini.", es: "El lider decide solo. Eficaz en emergencias, pero desmotiva a largo plazo.", en: "The leader decides alone. Effective in emergencies, but demotivating long-term." },
+        'socials.lid.democratic': { val: 'Democratic', es: 'Democratico', en: 'Democratic' },
+        'socials.lid.democratic.desc': { val: "El lider consulta l'equip. Fomenta la participacio i el compromis.", es: "El lider consulta al equipo. Fomenta la participacion y el compromiso.", en: "The leader consults the team. Promotes participation and commitment." },
+        'socials.lid.laissez': { val: 'Laissez-faire', es: 'Laissez-faire', en: 'Laissez-faire' },
+        'socials.lid.laissez.desc': { val: "L'equip decideix. Funciona amb equips molt capacitats i autonoms.", es: "El equipo decide. Funciona con equipos muy capacitados y autonomos.", en: "The team decides. Works with highly capable and autonomous teams." },
+
+        // UD7: L'entorn de treball
+        'treball.title': { val: "L'entorn de treball", es: 'El entorno de trabajo', en: 'The work environment' },
+        'treball.subtitle': { val: 'Relacions laborals, nomina i biaixos cognitius', es: 'Relaciones laborales, nomina y sesgos cognitivos', en: 'Labour relations, payslip and cognitive biases' },
+        'treball.why': { val: "Tard o d'hora treballaras. Entendre els teus drets, saber llegir una nomina i coneixer els biaixos que afecten les teues decisions financeres et donara un avantatge enorme.", es: "Tarde o temprano trabajaras. Entender tus derechos, saber leer una nomina y conocer los sesgos que afectan tus decisiones financieras te dara una ventaja enorme.", en: "Sooner or later you'll work. Understanding your rights, knowing how to read a payslip and recognising the biases that affect your financial decisions will give you a huge advantage." },
+        'treball.tab.teoria': { val: 'Teoria', es: 'Teoria', en: 'Theory' },
+        'treball.tab.nomina': { val: 'Calculadora de Nomina', es: 'Calculadora de Nomina', en: 'Payslip Calculator' },
+        'treball.tab.biaixos': { val: 'Detector de Biaixos', es: 'Detector de Sesgos', en: 'Bias Detector' },
+        'treball.relacions': { val: 'Relacions laborals', es: 'Relaciones laborales', en: 'Labour relations' },
+        'treball.relacions.text': { val: "La relacio laboral es regula per un contracte de treball que estableix drets i obligacions. El treballador te dret a: salari, vacances (30 dies naturals), baixa per malaltia, llibertat sindical. L'empresa te dret a: organitzar el treball, poder disciplinari, control.", es: "La relacion laboral se regula por un contrato de trabajo que establece derechos y obligaciones. El trabajador tiene derecho a: salario, vacaciones (30 dias naturales), baja por enfermedad, libertad sindical. La empresa tiene derecho a: organizar el trabajo, poder disciplinario, control.", en: "The employment relationship is regulated by a contract that establishes rights and obligations. Workers have the right to: salary, holidays (30 calendar days), sick leave, union freedom. The company has the right to: organise work, disciplinary power, control." },
+        'treball.nomina': { val: 'El salari i la nomina', es: 'El salario y la nomina', en: 'Salary and payslip' },
+        'treball.nomina.text': { val: "La nomina es el document que detalla el teu salari. Components:", es: "La nomina es el documento que detalla tu salario. Componentes:", en: "The payslip is the document that details your salary. Components:" },
+        'treball.nomina.base': { val: "Salari base: quantitat fixa pactada en el conveni", es: "Salario base: cantidad fija pactada en el convenio", en: "Base salary: fixed amount agreed in the collective agreement" },
+        'treball.nomina.complements': { val: "Complements: antiguitat, nocturnitat, perillositat, hores extra", es: "Complementos: antiguedad, nocturnidad, peligrosidad, horas extra", en: "Supplements: seniority, night shifts, hazard pay, overtime" },
+        'treball.nomina.pagues': { val: "Pagues extraordinaries: 2 pagues extra a l'any (normalment juny i desembre)", es: "Pagas extraordinarias: 2 pagas extra al ano (normalmente junio y diciembre)", en: "Extra payments: 2 extra payments per year (usually June and December)" },
+        'treball.nomina.ss': { val: "Deduccio Seguretat Social: 6,35% del salari brut (contribucio del treballador)", es: "Deduccion Seguridad Social: 6,35% del salario bruto (contribucion del trabajador)", en: "Social Security deduction: 6.35% of gross salary (worker's contribution)" },
+        'treball.nomina.irpf': { val: "Deduccio IRPF: retencio variable segons el salari (2-45%)", es: "Deduccion IRPF: retencion variable segun el salario (2-45%)", en: "Income tax deduction: variable retention based on salary (2-45%)" },
+        'treball.tendencies': { val: 'Tendencies laborals', es: 'Tendencias laborales', en: 'Labour trends' },
+        'treball.tend.teletreball': { val: "Teletreball: treballar des de casa gràcies a la tecnologia. Avantatges (flexibilitat) i riscos (aillament, desconnexio).", es: "Teletrabajo: trabajar desde casa gracias a la tecnologia. Ventajas (flexibilidad) y riesgos (aislamiento, desconexion).", en: "Remote work: working from home thanks to technology. Advantages (flexibility) and risks (isolation, disconnection)." },
+        'treball.tend.digitalitzacio': { val: "Digitalitzacio: moltes feines desapareixeran, altres de noves apareixeran. L'adaptabilitat es clau.", es: "Digitalizacion: muchos empleos desapareceran, otros nuevos apareceran. La adaptabilidad es clave.", en: "Digitalisation: many jobs will disappear, new ones will appear. Adaptability is key." },
+        'treball.tend.gig': { val: "Economia Gig: feines per encàrrec (rider, freelance). Flexibilitat pero menys estabilitat i drets.", es: "Economia Gig: trabajos por encargo (rider, freelance). Flexibilidad pero menos estabilidad y derechos.", en: "Gig economy: on-demand work (rider, freelance). Flexibility but less stability and rights." },
+        'treball.emprenedoria': { val: 'Emprenedoria', es: 'Emprendimiento', en: 'Entrepreneurship' },
+        'treball.emprenedoria.text': { val: "Emprendre es crear un projecte (empresa, social, creatiu) que resol un problema o satisfa una necessitat. Perfil emprenedor: creativitat, tolerancia al risc, perseverancia, capacitat d'aprendre dels errors.", es: "Emprender es crear un proyecto (empresa, social, creativo) que resuelve un problema o satisface una necesidad. Perfil emprendedor: creatividad, tolerancia al riesgo, perseverancia, capacidad de aprender de los errores.", en: "Entrepreneurship is creating a project (business, social, creative) that solves a problem or meets a need. Entrepreneurial profile: creativity, risk tolerance, perseverance, ability to learn from mistakes." },
+        'treball.biaixos': { val: 'Economia conductual: biaixos cognitius', es: 'Economia conductual: sesgos cognitivos', en: 'Behavioural economics: cognitive biases' },
+        'treball.biaixos.text': { val: "El cervell pren dreceres mentals (heuristiques) per decidir rapid. De vegades, aquestes dreceres ens enganyen: son els biaixos cognitius. Coneixer-los t'ajuda a prendre millors decisions.", es: "El cerebro toma atajos mentales (heuristicas) para decidir rapido. A veces, estos atajos nos enganaan: son los sesgos cognitivos. Conocerlos te ayuda a tomar mejores decisiones.", en: "The brain takes mental shortcuts (heuristics) to decide quickly. Sometimes these shortcuts deceive us: they are cognitive biases. Knowing them helps you make better decisions." },
+
+        // Nomina calculator
+        'treball.calc.title': { val: 'Calculadora de Nomina', es: 'Calculadora de Nomina', en: 'Payslip Calculator' },
+        'treball.calc.brut': { val: 'Salari brut anual', es: 'Salario bruto anual', en: 'Annual gross salary' },
+        'treball.calc.irpf': { val: 'Retencio IRPF', es: 'Retencion IRPF', en: 'Income tax retention' },
+        'treball.calc.brutmens': { val: 'Brut mensual', es: 'Bruto mensual', en: 'Monthly gross' },
+        'treball.calc.ss': { val: 'Seguretat Social (6,35%)', es: 'Seguridad Social (6,35%)', en: 'Social Security (6.35%)' },
+        'treball.calc.irpfmens': { val: 'IRPF mensual', es: 'IRPF mensual', en: 'Monthly income tax' },
+        'treball.calc.net': { val: 'Salari net mensual', es: 'Salario neto mensual', en: 'Monthly net salary' },
+        'treball.calc.paga': { val: 'Paga extra (neta)', es: 'Paga extra (neta)', en: 'Extra payment (net)' },
+        'treball.calc.desc': { val: 'Mou els controls per veure com canvia la teua nomina. El salari es divideix en 14 pagues (12 mesos + 2 pagues extra).', es: 'Mueve los controles para ver como cambia tu nomina. El salario se divide en 14 pagas (12 meses + 2 pagas extra).', en: 'Move the controls to see how your payslip changes. The salary is divided into 14 payments (12 months + 2 extra payments).' },
+
+        // Bias detector
+        'treball.bias.title': { val: 'Detector de Biaixos Cognitius', es: 'Detector de Sesgos Cognitivos', en: 'Cognitive Bias Detector' },
+        'treball.bias.desc': { val: 'Respon a cada situacio i descobreix els biaixos que afecten les teues decisions.', es: 'Responde a cada situacion y descubre los sesgos que afectan tus decisiones.', en: 'Answer each scenario and discover the biases that affect your decisions.' },
+        'treball.bias.seguent': { val: 'Seguent', es: 'Siguiente', en: 'Next' },
+        'treball.bias.anterior': { val: 'Anterior', es: 'Anterior', en: 'Previous' },
+        'treball.bias.resum': { val: 'Resum de biaixos', es: 'Resumen de sesgos', en: 'Bias summary' },
+        'treball.bias.repetir': { val: 'Repetir', es: 'Repetir', en: 'Restart' },
+        'treball.bias.situacio': { val: 'Situacio', es: 'Situacion', en: 'Scenario' },
+        'treball.bias.tria': { val: 'Tria una opcio:', es: 'Elige una opcion:', en: 'Choose an option:' },
+        'treball.bias.biaix': { val: 'Biaix detectat:', es: 'Sesgo detectado:', en: 'Bias detected:' },
+
+        // Bias scenarios
+        'treball.bias.s1.situacio': { val: "Una botiga posa el preu original (99EUR) tatxat i el nou preu (49EUR). Et sembla bona oferta?", es: "Una tienda pone el precio original (99EUR) tachado y el nuevo precio (49EUR). ¿Te parece buena oferta?", en: "A shop shows the original price (EUR99) crossed out and the new price (EUR49). Does it seem like a good deal?" },
+        'treball.bias.s1.a': { val: "Si, es una ganga! Estic estalviant 50EUR", es: "Si, ¡es una ganga! Estoy ahorrando 50EUR", en: "Yes, it's a bargain! I'm saving EUR50" },
+        'treball.bias.s1.b': { val: "Depèn, primer mire si el producte val realment 49EUR", es: "Depende, primero miro si el producto vale realmente 49EUR", en: "It depends, first I check if the product is really worth EUR49" },
+        'treball.bias.s1.biaix': { val: "Biaix d'ancoratge", es: "Sesgo de anclaje", en: "Anchoring bias" },
+        'treball.bias.s1.explicacio': { val: "El preu original (99EUR) serveix d'ancla mental. Comparem el preu nou amb l'ancla, no amb el valor real del producte. Les botigues ho saben i sovint inflen el preu 'original'.", es: "El precio original (99EUR) sirve de ancla mental. Comparamos el precio nuevo con el ancla, no con el valor real del producto. Las tiendas lo saben y a menudo inflan el precio 'original'.", en: "The original price (EUR99) serves as a mental anchor. We compare the new price with the anchor, not with the product's real value. Shops know this and often inflate the 'original' price." },
+        'treball.bias.s2.situacio': { val: "Prefereixes guanyar 100EUR segurs o jugar amb un 50% de probabilitat de guanyar 250EUR?", es: "¿Prefieres ganar 100EUR seguros o jugar con un 50% de probabilidad de ganar 250EUR?", en: "Do you prefer winning EUR100 for certain or a 50% chance of winning EUR250?" },
+        'treball.bias.s2.a': { val: "100EUR segurs, no vull arriscar", es: "100EUR seguros, no quiero arriesgar", en: "EUR100 for certain, I don't want to risk it" },
+        'treball.bias.s2.b': { val: "Jugar: el valor esperat (125EUR) es major", es: "Jugar: el valor esperado (125EUR) es mayor", en: "Play: the expected value (EUR125) is higher" },
+        'treball.bias.s2.biaix': { val: "Aversio a la perdua", es: "Aversion a la perdida", en: "Loss aversion" },
+        'treball.bias.s2.explicacio': { val: "Kahneman i Tversky van demostrar que patim les perdues el doble del que gaudim els guanys. Per aixo tendim a evitar riscos encara que matematicament ens convinguen. La majoria tria els 100EUR segurs.", es: "Kahneman y Tversky demostraron que sufrimos las perdidas el doble de lo que disfrutamos las ganancias. Por eso tendemos a evitar riesgos aunque matematicamente nos convengan.", en: "Kahneman and Tversky showed that we suffer losses twice as much as we enjoy gains. That's why we tend to avoid risks even when mathematically beneficial." },
+        'treball.bias.s3.situacio': { val: "Tots els teus amics compren una marca cara de sabatilles. Et sents pressionat/da per comprar-les tu tambe?", es: "Todos tus amigos compran una marca cara de zapatillas. ¿Te sientes presionado/a para comprarlas tu tambien?", en: "All your friends buy an expensive brand of trainers. Do you feel pressured to buy them too?" },
+        'treball.bias.s3.a': { val: "Si, no vull ser diferent del grup", es: "Si, no quiero ser diferente del grupo", en: "Yes, I don't want to be different from the group" },
+        'treball.bias.s3.b': { val: "No, compre el que jo necessite", es: "No, compro lo que yo necesite", en: "No, I buy what I need" },
+        'treball.bias.s3.c': { val: "Una mica, pero intente resistir", es: "Un poco, pero intento resistir", en: "A bit, but I try to resist" },
+        'treball.bias.s3.biaix': { val: "Efecte manada (conformitat)", es: "Efecto manada (conformidad)", en: "Bandwagon effect (conformity)" },
+        'treball.bias.s3.explicacio': { val: "Tendim a fer el que fa la majoria per sentir-nos part del grup. Les marques ho aprofiten: 'tothom ho compra'. Recordes l'experiment d'Asch? La pressio social es una de les forces mes potents.", es: "Tendemos a hacer lo que hace la mayoria para sentirnos parte del grupo. Las marcas lo aprovechan: 'todo el mundo lo compra'. ¿Recuerdas el experimento de Asch? La presion social es una de las fuerzas mas potentes.", en: "We tend to do what the majority does to feel part of the group. Brands exploit this: 'everyone buys it'. Remember Asch's experiment? Social pressure is one of the most powerful forces." },
+        'treball.bias.s4.situacio': { val: "Quan busques informacio sobre un tema, tendeixes a llegir fonts que confirmen el que ja penses?", es: "Cuando buscas informacion sobre un tema, ¿tiendes a leer fuentes que confirman lo que ya piensas?", en: "When searching for information on a topic, do you tend to read sources that confirm what you already think?" },
+        'treball.bias.s4.a': { val: "Si, normalment busque informacio que recolze la meua opinio", es: "Si, normalmente busco informacion que apoye mi opinion", en: "Yes, I usually look for information that supports my opinion" },
+        'treball.bias.s4.b': { val: "Intente llegir fonts variades i contrastar", es: "Intento leer fuentes variadas y contrastar", en: "I try to read varied sources and compare" },
+        'treball.bias.s4.biaix': { val: "Biaix de confirmacio", es: "Sesgo de confirmacion", en: "Confirmation bias" },
+        'treball.bias.s4.explicacio': { val: "Tendim a buscar, interpretar i recordar informacio que confirma les nostres creences previes. Les xarxes socials ho ampliquen creant 'cambres d'eco'. El pensament critic exigeix buscar activament informacio que contradigui el que pensem.", es: "Tendemos a buscar, interpretar y recordar informacion que confirma nuestras creencias previas. Las redes sociales lo amplifican creando 'camaras de eco'. El pensamiento critico exige buscar activamente informacion que contradiga lo que pensamos.", en: "We tend to seek, interpret and remember information that confirms our existing beliefs. Social media amplifies this by creating 'echo chambers'. Critical thinking demands actively seeking information that contradicts what we think." },
+        'treball.bias.s5.situacio': { val: "Has pagat 50EUR per una entrada de concert pero el dia del concert estas malalt/a. Hi vas igualment?", es: "Has pagado 50EUR por una entrada de concierto pero el dia del concierto estas enfermo/a. ¿Vas igualmente?", en: "You've paid EUR50 for a concert ticket but on the day you're ill. Do you still go?" },
+        'treball.bias.s5.a': { val: "Si, ja he pagat! No vull perdre els diners", es: "Si, ¡ya he pagado! No quiero perder el dinero", en: "Yes, I've already paid! I don't want to lose the money" },
+        'treball.bias.s5.b': { val: "No, els diners ja estan gastats, la meua salut es mes important", es: "No, el dinero ya esta gastado, mi salud es mas importante", en: "No, the money is already spent, my health is more important" },
+        'treball.bias.s5.biaix': { val: "Fal·lacia del cost enfonsat", es: "Falacia del coste hundido", en: "Sunk cost fallacy" },
+        'treball.bias.s5.explicacio': { val: "Tendim a continuar invertint (temps, diners, esforc) en algo nomes perque ja hem invertit, encara que la decisio racional siga abandonar. Els 50EUR ja estan gastats tant si vas com si no: son un cost irrecuperable.", es: "Tendemos a seguir invirtiendo (tiempo, dinero, esfuerzo) en algo solo porque ya hemos invertido, aunque la decision racional sea abandonar. Los 50EUR ya estan gastados tanto si vas como si no: son un coste irrecuperable.", en: "We tend to keep investing (time, money, effort) in something just because we already have, even when the rational decision is to quit. The EUR50 is spent whether you go or not: it's an irrecoverable cost." },
+
+        // UD8: Projecte personal
+        'projecte.title': { val: 'Projecte personal i professional', es: 'Proyecto personal y profesional', en: 'Personal and professional project' },
+        'projecte.subtitle': { val: 'Planifica el teu futur: estudis, treball i marca personal', es: 'Planifica tu futuro: estudios, trabajo y marca personal', en: 'Plan your future: studies, work and personal brand' },
+        'projecte.why': { val: "Ara has de triar entre Batxillerat, FP o el mon laboral. Aquesta decisio marcara el teu cami. No es definitiva (sempre es pot canviar), pero com mes informacio tingues, millor triara.", es: "Ahora tienes que elegir entre Bachillerato, FP o el mundo laboral. Esta decision marcara tu camino. No es definitiva (siempre se puede cambiar), pero cuanta mas informacion tengas, mejor elegiras.", en: "Now you have to choose between A-levels, vocational training or the working world. This decision will shape your path. It's not final (you can always change), but the more information you have, the better you'll choose." },
+        'projecte.sistema': { val: 'El sistema educatiu espanyol', es: 'El sistema educativo espanol', en: 'The Spanish education system' },
+        'projecte.eso': { val: "ESO (12-16 anys): Educacio obligatoria. Despres pots triar:", es: "ESO (12-16 anos): Educacion obligatoria. Despues puedes elegir:", en: "ESO (12-16 years): Compulsory education. Then you can choose:" },
+        'projecte.bach': { val: "Batxillerat (2 anys): preparacio per a la universitat. Modalitats: Ciencies, Humanitats, Arts.", es: "Bachillerato (2 anos): preparacion para la universidad. Modalidades: Ciencias, Humanidades, Artes.", en: "A-levels (2 years): university preparation. Pathways: Sciences, Humanities, Arts." },
+        'projecte.fpbasic': { val: "FP Basica (2 anys): formacio professional basica per a qui vol una via practica.", es: "FP Basica (2 anos): formacion profesional basica para quien quiere una via practica.", en: "Basic VET (2 years): basic vocational training for those wanting a practical route." },
+        'projecte.fpmitja': { val: "FP Grau Mitja (2 anys): formacio tecnica amb practiques en empresa.", es: "FP Grado Medio (2 anos): formacion tecnica con practicas en empresa.", en: "Intermediate VET (2 years): technical training with work placements." },
+        'projecte.fpsuperior': { val: "FP Grau Superior (2 anys): equivalent a grau universitari en molts sectors.", es: "FP Grado Superior (2 anos): equivalente a grado universitario en muchos sectores.", en: "Higher VET (2 years): equivalent to a degree in many sectors." },
+        'projecte.uni': { val: "Universitat (4 anys): graus, masters, doctorats.", es: "Universidad (4 anos): grados, masteres, doctorados.", en: "University (4 years): degrees, masters, doctorates." },
+        'projecte.orientacio': { val: 'Orientacio academica', es: 'Orientacion academica', en: 'Academic guidance' },
+        'projecte.orientacio.text': { val: "Per triar be, pensa en: que m'agrada fer? Que se'm dona be? Quins sectors tenen futur? Quines condicions laborals vull? No tries nomes pel prestigi o pel que diuen els altres: tria pel que et fa sentir be i et motiva.", es: "Para elegir bien, piensa en: ¿que me gusta hacer? ¿Que se me da bien? ¿Que sectores tienen futuro? ¿Que condiciones laborales quiero? No elijas solo por el prestigio o lo que dicen los demas: elige por lo que te hace sentir bien y te motiva.", en: "To choose well, think about: what do I like doing? What am I good at? Which sectors have a future? What working conditions do I want? Don't choose just for prestige or what others say: choose what makes you feel good and motivates you." },
+        'projecte.cv': { val: 'El Curriculum Vitae (CV)', es: 'El Curriculum Vitae (CV)', en: 'The CV (Curriculum Vitae)' },
+        'projecte.cv.dades': { val: "Dades personals: nom, telefon, correu, LinkedIn", es: "Datos personales: nombre, telefono, correo, LinkedIn", en: "Personal details: name, phone, email, LinkedIn" },
+        'projecte.cv.formacio': { val: "Formacio academica: titols, centre, dates", es: "Formacion academica: titulos, centro, fechas", en: "Education: qualifications, institution, dates" },
+        'projecte.cv.experiencia': { val: "Experiencia (si en tens): voluntariat, practiques, treballs puntuals", es: "Experiencia (si tienes): voluntariado, practicas, trabajos puntuales", en: "Experience (if any): volunteering, placements, part-time jobs" },
+        'projecte.cv.idiomes': { val: "Idiomes: nivell real (A1-C2)", es: "Idiomas: nivel real (A1-C2)", en: "Languages: real level (A1-C2)" },
+        'projecte.cv.competencies': { val: "Competencies digitals: programes, xarxes, eines", es: "Competencias digitales: programas, redes, herramientas", en: "Digital skills: software, networks, tools" },
+        'projecte.cv.interessos': { val: "Interessos i aficions rellevants", es: "Intereses y aficiones relevantes", en: "Relevant interests and hobbies" },
+        'projecte.cv.consells': { val: "Consells: 1 pagina, disseny net, sense foto (si no la demanen), sense mentir, adapta'l a cada oferta.", es: "Consejos: 1 pagina, diseno limpio, sin foto (si no la piden), sin mentir, adaptalo a cada oferta.", en: "Tips: 1 page, clean design, no photo (unless requested), no lying, adapt it to each job offer." },
+        'projecte.entrevista': { val: "L'entrevista de treball", es: 'La entrevista de trabajo', en: 'The job interview' },
+        'projecte.entrevista.fases': { val: "Fases: preparacio (investiga l'empresa), presentacio (puntualitat, vestimenta adequada), preguntes (respon amb exemples concrets), preguntes teues (mostra interes), comiat (agraeix l'oportunitat).", es: "Fases: preparacion (investiga la empresa), presentacion (puntualidad, vestimenta adecuada), preguntas (responde con ejemplos concretos), preguntas tuyas (muestra interes), despedida (agradece la oportunidad).", en: "Phases: preparation (research the company), introduction (punctuality, appropriate dress), questions (answer with concrete examples), your questions (show interest), farewell (thank them for the opportunity)." },
+        'projecte.entrevista.errors': { val: "Errors comuns: arribar tard, parlar malament de l'antic treball, no saber res de l'empresa, mentir sobre les competencies.", es: "Errores comunes: llegar tarde, hablar mal del antiguo trabajo, no saber nada de la empresa, mentir sobre las competencias.", en: "Common mistakes: arriving late, speaking badly about previous work, knowing nothing about the company, lying about skills." },
+        'projecte.marca': { val: 'Marca personal', es: 'Marca personal', en: 'Personal brand' },
+        'projecte.marca.text': { val: "La teua marca personal es la imatge que projectes al mon: xarxes socials, LinkedIn, empremta digital. Recorda: tot el que publiques a internet es permanent. Les empreses busquen els candidats a Google i xarxes socials abans de contractar.", es: "Tu marca personal es la imagen que proyectas al mundo: redes sociales, LinkedIn, huella digital. Recuerda: todo lo que publicas en internet es permanente. Las empresas buscan a los candidatos en Google y redes sociales antes de contratar.", en: "Your personal brand is the image you project to the world: social media, LinkedIn, digital footprint. Remember: everything you publish online is permanent. Companies search candidates on Google and social media before hiring." },
+        'projecte.altres': { val: "Altres formes d'ocupacio", es: 'Otras formas de empleo', en: 'Other forms of employment' },
+        'projecte.altres.publica': { val: "Funcio publica: oposicions per treballar a l'administracio (estabilitat, horari fix).", es: "Funcion publica: oposiciones para trabajar en la administracion (estabilidad, horario fijo).", en: "Civil service: competitive exams to work in public administration (stability, fixed hours)." },
+        'projecte.altres.autoocupacio': { val: "Autoocupacio: ser autonom, crear la teua propia empresa o treballar per projectes.", es: "Autoempleo: ser autonomo, crear tu propia empresa o trabajar por proyectos.", en: "Self-employment: being self-employed, creating your own business or working on projects." },
+
+        // footer
+        'footer.appname': { val: 'FOPP 4ESO', es: 'FOPP 4ESO', en: 'FOPP Year 10' },
+    };
+
+    const t = createTranslator(pageTranslations, idioma);
+
+    // Reusable components
+    const Card = ({ children, className = "", title, icon }) => (
+        <div className={`bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 hover:shadow-md transition-shadow ${className} animate-fade`}>
+            {title && <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100"><span className="text-2xl">{icon}</span><h3 className="font-bold text-slate-800 text-lg">{title}</h3></div>}
+            {children}
+        </div>
+    );
+
+    const Slider = ({ label, value, onChange, min, max, step = 1, suffix = "" }) => (
+        <div className="space-y-2">
+            <div className="flex justify-between text-sm"><span className="text-slate-600 font-medium">{label}</span><span className="font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{typeof value === 'number' ? value.toLocaleString() : value}{suffix}</span></div>
+            <input type="range" min={min} max={max} step={step} value={value} onChange={e => onChange(Number(e.target.value))} className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500" />
+        </div>
+    );
+
+    const Tabs = ({ tabs, active, onChange }) => (
+        <div className="flex flex-wrap gap-1 p-1.5 bg-slate-100 rounded-xl">
+            {tabs.map(tab => (
+                <button key={tab.id} onClick={() => onChange(tab.id)} className={`flex-1 min-w-fit py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${active === tab.id ? 'bg-white shadow-sm text-blue-600' : 'text-slate-600 hover:text-slate-800 hover:bg-white/50'}`}>
+                    {tab.label}
+                </button>
+            ))}
+        </div>
+    );
+
+    const FormulaBox = ({ formula, desc }) => (
+        <div className="my-4 p-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+            <p className="text-center font-mono text-lg text-blue-800 font-semibold">{formula}</p>
+            {desc && <p className="text-center text-sm text-blue-600 mt-2">{desc}</p>}
+        </div>
+    );
+
+    const TheoryBlock = ({ title, children, color = "slate" }) => {
+        const colors = { slate: "border-slate-300 bg-slate-50", blue: "border-blue-300 bg-blue-50", green: "border-green-300 bg-green-50", amber: "border-amber-300 bg-amber-50", pink: "border-pink-300 bg-pink-50", violet: "border-violet-300 bg-violet-50", red: "border-red-300 bg-red-50", cyan: "border-cyan-300 bg-cyan-50", emerald: "border-emerald-300 bg-emerald-50" };
+        return (
+            <div className={`border-l-4 ${colors[color]} p-5 rounded-r-xl my-4`}>
+                {title && <h4 className="font-bold text-slate-800 mb-3 text-base">{title}</h4>}
+                <div className="text-slate-700 text-sm leading-relaxed space-y-2">{children}</div>
+            </div>
+        );
+    };
+
+    const WhyImportant = ({ children }) => (
+        <div className="my-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200">
+            <div className="flex items-start gap-3">
+                <span className="text-2xl">🎯</span>
+                <div>
+                    <h4 className="font-bold text-amber-700 mb-1">{t('whyimportant.title')}</h4>
+                    <p className="text-sm text-amber-800">{children}</p>
+                </div>
+            </div>
+        </div>
+    );
+
+    const ResultCard = ({ title, value, color = "gray", subtitle }) => {
+        const colorClasses = { green: 'bg-green-50 border-green-200 text-green-700', red: 'bg-red-50 border-red-200 text-red-700', blue: 'bg-blue-50 border-blue-200 text-blue-700', amber: 'bg-amber-50 border-amber-200 text-amber-700', violet: 'bg-violet-50 border-violet-200 text-violet-700', gray: 'bg-slate-50 border-slate-200 text-slate-700' };
+        return (
+            <div className={`p-4 rounded-xl text-center border ${colorClasses[color]}`}>
+                <p className="text-xs text-slate-500 mb-1 font-medium">{title}</p>
+                <p className="text-xl font-black">{value}</p>
+                {subtitle && <p className="text-xs mt-1 opacity-75">{subtitle}</p>}
+            </div>
+        );
+    };
+
+    const SectionTitle = ({ icon, title, subtitle }) => (
+        <div className="mb-8">
+            <div className="flex items-center gap-3 mb-2"><span className="text-3xl">{icon}</span><h1 className="text-3xl font-black text-slate-800">{title}</h1></div>
+            {subtitle && <p className="text-slate-500 ml-12">{subtitle}</p>}
+        </div>
+    );
+
+    // ========================================================================
+    // SECTION: INICIO (Landing grid)
+    // ========================================================================
+    const Inicio = () => {
+        const sections = [
+            { id: 'serhumà', name: t('sec.serhumà'), icon: '🧠', color: 'from-pink-500 to-rose-500', desc: t('sec.serhumà.desc') },
+            { id: 'antropologia', name: t('sec.antropologia'), icon: '🌍', color: 'from-green-500 to-emerald-500', desc: t('sec.antropologia.desc') },
+            { id: 'aprenentatge', name: t('sec.aprenentatge'), icon: '📖', color: 'from-blue-500 to-indigo-500', desc: t('sec.aprenentatge.desc') },
+            { id: 'emocions', name: t('sec.emocions'), icon: '❤️', color: 'from-red-500 to-pink-500', desc: t('sec.emocions.desc') },
+            { id: 'habilitats', name: t('sec.habilitats'), icon: '💪', color: 'from-violet-500 to-purple-500', desc: t('sec.habilitats.desc') },
+            { id: 'socials', name: t('sec.socials'), icon: '🤝', color: 'from-teal-500 to-cyan-500', desc: t('sec.socials.desc') },
+            { id: 'treball', name: t('sec.treball'), icon: '💼', color: 'from-amber-500 to-orange-500', desc: t('sec.treball.desc') },
+            { id: 'projecte', name: t('sec.projecte'), icon: '🎯', color: 'from-indigo-500 to-blue-500', desc: t('sec.projecte.desc') },
+        ];
+
+        return (
+            <div className="space-y-8">
+                <div className="text-center py-8 animate-fade">
+                    <h1 className="text-4xl md:text-5xl font-black text-slate-800 mb-4">🧭 {t('inicio.title')}</h1>
+                    <p className="text-lg text-slate-500 max-w-2xl mx-auto">{t('inicio.subtitle')}</p>
+                </div>
+
+                <WhyImportant>
+                    {t('inicio.whyimportant')}
+                </WhyImportant>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {sections.map(sec => (
+                        <button key={sec.id} onClick={() => setSection(sec.id)} className={`p-5 rounded-xl bg-gradient-to-br ${sec.color} text-white text-left hover:scale-105 transition-transform shadow-lg`}>
+                            <span className="text-3xl">{sec.icon}</span>
+                            <h3 className="font-bold mt-2">{sec.name}</h3>
+                            <p className="text-sm opacity-90 mt-1">{sec.desc}</p>
+                        </button>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
+    // ========================================================================
+    // UD1: El ser huma
+    // ========================================================================
+    const SerHuma = () => (
+        <div className="space-y-6">
+            <SectionTitle icon="🧠" title={t('serhumà.title')} subtitle={t('serhumà.subtitle')} />
+            <WhyImportant>{t('serhumà.why')}</WhyImportant>
+
+            <Card title={t('serhumà.psicologia')} icon="🔬">
+                <TheoryBlock color="violet">
+                    <p>{t('serhumà.psicologia.text')}</p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title={t('serhumà.sistema')} icon="🧬">
+                <TheoryBlock color="blue">
+                    <p>{t('serhumà.sistema.text')}</p>
+                </TheoryBlock>
+                <div className="grid md:grid-cols-3 gap-3 mt-4">
+                    {[
+                        { key: 'dopamina', emoji: '⚡', color: 'bg-yellow-50 border-yellow-200' },
+                        { key: 'serotonina', emoji: '☀️', color: 'bg-blue-50 border-blue-200' },
+                        { key: 'endorfines', emoji: '🏃', color: 'bg-green-50 border-green-200' },
+                    ].map(item => (
+                        <div key={item.key} className={`p-4 rounded-xl border ${item.color}`}>
+                            <span className="text-2xl">{item.emoji}</span>
+                            <p className="text-sm text-slate-700 mt-2">{t('serhumà.neuro.' + item.key)}</p>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+
+            <Card title={t('serhumà.cognicio')} icon="🧩">
+                <TheoryBlock color="green">
+                    <p>{t('serhumà.cognicio.text')}</p>
+                </TheoryBlock>
+                <div className="space-y-3 mt-4">
+                    {['percepcio', 'atencio', 'memoria', 'pensament'].map((c, i) => (
+                        <div key={c} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
+                            <span className="text-lg">{['👁️', '🎯', '💾', '🤔'][i]}</span>
+                            <p className="text-sm text-slate-700">{t('serhumà.cognicio.' + c)}</p>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+
+            <Card title={t('serhumà.benestar')} icon="🌿">
+                <TheoryBlock color="emerald">
+                    <p>{t('serhumà.benestar.text')}</p>
+                </TheoryBlock>
+                <div className="grid md:grid-cols-2 gap-3 mt-4">
+                    {['son', 'exercici', 'alimentacio', 'social'].map((b, i) => (
+                        <div key={b} className="p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl border border-emerald-200">
+                            <span className="text-2xl">{['😴', '🏋️', '🥗', '👫'][i]}</span>
+                            <p className="text-sm text-slate-700 mt-2">{t('serhumà.benestar.' + b)}</p>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+
+            <Card title={t('serhumà.addiccions')} icon="⚠️">
+                <TheoryBlock color="red">
+                    <p>{t('serhumà.addiccions.text')}</p>
+                </TheoryBlock>
+                <div className="space-y-3 mt-4">
+                    {['tolerancia', 'dependencia', 'sindrome'].map((a, i) => (
+                        <div key={a} className="flex items-start gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
+                            <span className="text-lg">{['📈', '🔗', '💥'][i]}</span>
+                            <p className="text-sm text-slate-700">{t('serhumà.addiccions.' + a)}</p>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+
+            <Card title={t('serhumà.drogues')} icon="🚫">
+                <div className="space-y-3">
+                    {['alcohol', 'tabac', 'cannabis', 'pantalles'].map((d, i) => (
+                        <TheoryBlock key={d} color={['red', 'amber', 'green', 'violet'][i]}>
+                            <p><span className="font-semibold">{['🍺', '🚬', '🌿', '📱'][i]}</span> {t('serhumà.drogues.' + d)}</p>
+                        </TheoryBlock>
+                    ))}
+                </div>
+            </Card>
+
+            <Card title={t('serhumà.adolescencia')} icon="🌱">
+                <TheoryBlock color="pink">
+                    <p>{t('serhumà.adolescencia.text')}</p>
+                </TheoryBlock>
+            </Card>
+        </div>
+    );
+
+    // ========================================================================
+    // UD2: Antropologia i Sociologia
+    // ========================================================================
+    const Antropologia = () => (
+        <div className="space-y-6">
+            <SectionTitle icon="🌍" title={t('antropologia.title')} subtitle={t('antropologia.subtitle')} />
+            <WhyImportant>{t('antropologia.why')}</WhyImportant>
+
+            <Card title={t('antropologia.antro')} icon="🔍">
+                <TheoryBlock color="green">
+                    <p>{t('antropologia.antro.text')}</p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title={t('antropologia.cultura')} icon="🎭">
+                <TheoryBlock color="blue">
+                    <p>{t('antropologia.cultura.text')}</p>
+                </TheoryBlock>
+                <div className="space-y-3 mt-4">
+                    {['normes', 'valors', 'creences', 'llenguatge', 'art'].map((c, i) => (
+                        <div key={c} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
+                            <span className="text-lg">{['📜', '⚖️', '🙏', '💬', '🎨'][i]}</span>
+                            <p className="text-sm text-slate-700">{t('antropologia.cultura.' + c)}</p>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+
+            <Card title={t('antropologia.diversitat')} icon="🌈">
+                <TheoryBlock color="violet">
+                    <p>{t('antropologia.diversitat.text')}</p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title={t('antropologia.sociologia')} icon="👥">
+                <TheoryBlock color="amber">
+                    <p>{t('antropologia.sociologia.text')}</p>
+                </TheoryBlock>
+                <div className="space-y-3 mt-4">
+                    {['familia', 'escola', 'amics', 'mitjans', 'religio'].map((a, i) => (
+                        <div key={a} className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                            <span className="text-lg">{['👨‍👩‍👧', '🏫', '🧑‍🤝‍🧑', '📺', '⛪'][i]}</span>
+                            <p className="text-sm text-slate-700">{t('antropologia.agent.' + a)}</p>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+
+            <Card title={t('antropologia.igualtat')} icon="⚖️">
+                <TheoryBlock color="pink">
+                    <p>{t('antropologia.igualtat.text')}</p>
+                </TheoryBlock>
+                <div className="space-y-3 mt-4">
+                    {['oportunitats', 'corresponsabilitat', 'respecte', 'violencia'].map((ig, i) => (
+                        <div key={ig} className="flex items-start gap-3 p-3 bg-pink-50 rounded-lg border border-pink-200">
+                            <span className="text-lg">{['🎓', '🏠', '🏳️‍🌈', '🚫'][i]}</span>
+                            <p className="text-sm text-slate-700">{t('antropologia.igualtat.' + ig)}</p>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+
+            <Card title={t('antropologia.grup')} icon="👥">
+                <TheoryBlock color="red">
+                    <p>{t('antropologia.grup.text')}</p>
+                </TheoryBlock>
+                <div className="space-y-3 mt-4">
+                    {['conformitat', 'pressio', 'pensament'].map((g, i) => (
+                        <div key={g} className="flex items-start gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
+                            <span className="text-lg">{['🐑', '😰', '🧠'][i]}</span>
+                            <p className="text-sm text-slate-700">{t('antropologia.grup.' + g)}</p>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+        </div>
+    );
+
+    // ========================================================================
+    // UD3: Aprenentatge
+    // ========================================================================
+    const Aprenentatge = () => (
+        <div className="space-y-6">
+            <SectionTitle icon="📖" title={t('aprenentatge.title')} subtitle={t('aprenentatge.subtitle')} />
+            <WhyImportant>{t('aprenentatge.why')}</WhyImportant>
+
+            <Card title={t('aprenentatge.neuroplasticitat')} icon="🧠">
+                <TheoryBlock color="blue">
+                    <p>{t('aprenentatge.neuroplasticitat.text')}</p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title={t('aprenentatge.processos')} icon="⚙️">
+                <div className="space-y-3">
+                    {['atencio', 'repeticio', 'son', 'emocio'].map((p, i) => (
+                        <TheoryBlock key={p} color={['blue', 'green', 'violet', 'pink'][i]}>
+                            <p><span className="font-semibold">{['🎯', '🔄', '😴', '❤️'][i]}</span> {t('aprenentatge.processos.' + p)}</p>
+                        </TheoryBlock>
+                    ))}
+                </div>
+            </Card>
+
+            <Card title={t('aprenentatge.gardner')} icon="🧩">
+                <TheoryBlock color="green">
+                    <p>{t('aprenentatge.gardner.text')}</p>
+                </TheoryBlock>
+                <div className="overflow-x-auto mt-4">
+                    <table className="w-full text-sm border-collapse">
+                        <thead>
+                            <tr className="bg-slate-100">
+                                <th className="p-3 text-left font-semibold border-b border-slate-200">#</th>
+                                <th className="p-3 text-left font-semibold border-b border-slate-200">{idioma === 'en' ? 'Intelligence' : 'Intel·ligencia'}</th>
+                                <th className="p-3 text-left font-semibold border-b border-slate-200">{idioma === 'en' ? 'Description' : 'Descripcio'}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {['linguistic', 'logica', 'espacial', 'musical', 'corporal', 'interpersonal', 'intrapersonal', 'naturalista'].map((intel, i) => (
+                                <tr key={intel} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
+                                    <td className="p-3 border-b border-slate-100">{['📝', '🔢', '🗺️', '🎵', '🤸', '👥', '🧘', '🌿'][i]}</td>
+                                    <td className="p-3 border-b border-slate-100 font-medium">{t('aprenentatge.intel.' + intel)}</td>
+                                    <td className="p-3 border-b border-slate-100 text-slate-600">{t('aprenentatge.intel.' + intel + '.desc')}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </Card>
+
+            <Card title={t('aprenentatge.metacognicio')} icon="🪞">
+                <TheoryBlock color="amber">
+                    <p>{t('aprenentatge.metacognicio.text')}</p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title={t('aprenentatge.tecniques')} icon="📐">
+                <div className="space-y-3">
+                    {['motivacio', 'planificacio', 'concentracio', 'comprensio', 'memoritzacio'].map((tec, i) => (
+                        <div key={tec} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
+                            <span className="text-lg">{['🎯', '📅', '🧘', '📊', '🧠'][i]}</span>
+                            <p className="text-sm text-slate-700">{t('aprenentatge.tec.' + tec)}</p>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+
+            <Card title={t('aprenentatge.formal')} icon="🎓">
+                <TheoryBlock color="cyan">
+                    <p>{t('aprenentatge.formal.text')}</p>
+                </TheoryBlock>
+            </Card>
+        </div>
+    );
+
+    // ========================================================================
+    // UD4: Gestio emocional (with IE Test)
+    // ========================================================================
+    const Emocions = () => {
+        const [tab, setTab] = useState('teoria');
+
+        // IE Test state
+        const ieQuestions = [
+            { q: 'emocions.q1', pilar: 'autoconeixement' },
+            { q: 'emocions.q2', pilar: 'autoconeixement' },
+            { q: 'emocions.q3', pilar: 'autoconeixement' },
+            { q: 'emocions.q4', pilar: 'autocontrol' },
+            { q: 'emocions.q5', pilar: 'autocontrol' },
+            { q: 'emocions.q6', pilar: 'autocontrol' },
+            { q: 'emocions.q7', pilar: 'motivacio' },
+            { q: 'emocions.q8', pilar: 'motivacio' },
+            { q: 'emocions.q9', pilar: 'motivacio' },
+            { q: 'emocions.q10', pilar: 'empatia' },
+            { q: 'emocions.q11', pilar: 'empatia' },
+            { q: 'emocions.q12', pilar: 'empatia' },
+            { q: 'emocions.q13', pilar: 'social' },
+            { q: 'emocions.q14', pilar: 'social' },
+            { q: 'emocions.q15', pilar: 'social' },
+        ];
+
+        const [ieAnswers, setIeAnswers] = useState(() => {
+            const saved = localStorage.getItem('pde_fopp_ie_test');
+            return saved ? JSON.parse(saved) : Array(15).fill(0);
+        });
+        const [ieStep, setIeStep] = useState(0);
+        const [ieShowResults, setIeShowResults] = useState(false);
+
+        const answerIe = (qIndex, value) => {
+            const newAnswers = [...ieAnswers];
+            newAnswers[qIndex] = value;
+            setIeAnswers(newAnswers);
+            localStorage.setItem('pde_fopp_ie_test', JSON.stringify(newAnswers));
+        };
+
+        const ieAllAnswered = ieAnswers.every(a => a > 0);
+
+        const iePilarScores = () => {
+            const pilars = ['autoconeixement', 'autocontrol', 'motivacio', 'empatia', 'social'];
+            return pilars.map(p => {
+                const indices = ieQuestions.map((q, i) => q.pilar === p ? i : -1).filter(i => i >= 0);
+                const score = indices.reduce((sum, i) => sum + ieAnswers[i], 0);
+                return { pilar: p, score, max: indices.length * 4 };
+            });
+        };
+
+        const ieTotalScore = ieAnswers.reduce((a, b) => a + b, 0);
+        const ieMaxScore = 60;
+
+        const ieInterpretation = () => {
+            const pct = ieTotalScore / ieMaxScore;
+            if (pct < 0.4) return t('emocions.test.nivell.baixa');
+            if (pct < 0.6) return t('emocions.test.nivell.mitjana');
+            if (pct < 0.8) return t('emocions.test.nivell.alta');
+            return t('emocions.test.nivell.moltalta');
+        };
+
+        const resetIeTest = () => {
+            setIeAnswers(Array(15).fill(0));
+            setIeStep(0);
+            setIeShowResults(false);
+            localStorage.removeItem('pde_fopp_ie_test');
+        };
+
+        const pilarColors = { autoconeixement: '#3B82F6', autocontrol: '#EF4444', motivacio: '#F59E0B', empatia: '#10B981', social: '#8B5CF6' };
+
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="❤️" title={t('emocions.title')} subtitle={t('emocions.subtitle')} />
+                <WhyImportant>{t('emocions.why')}</WhyImportant>
+
+                <Tabs tabs={[
+                    { id: 'teoria', label: t('emocions.tab.teoria') },
+                    { id: 'test', label: t('emocions.tab.test') },
+                ]} active={tab} onChange={setTab} />
+
+                {tab === 'teoria' && (
+                    <div className="space-y-6">
+                        <Card title={t('emocions.basiques')} icon="😊">
+                            <TheoryBlock color="blue">
+                                <p>{t('emocions.basiques.text')}</p>
+                            </TheoryBlock>
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
+                                {['por', 'sorpresa', 'fàstic', 'ira', 'alegria', 'tristesa'].map((e, i) => (
+                                    <div key={e} className="p-4 rounded-xl border bg-slate-50 border-slate-200">
+                                        <span className="text-2xl">{['😨', '😲', '🤢', '😡', '😊', '😢'][i]}</span>
+                                        <p className="text-sm text-slate-700 mt-2">{t('emocions.' + e)}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
+
+                        <Card title={t('emocions.diferencia')} icon="🔄">
+                            <TheoryBlock color="amber">
+                                <p>{t('emocions.diferencia.text')}</p>
+                            </TheoryBlock>
+                        </Card>
+
+                        <Card title={t('emocions.ie')} icon="🧠">
+                            <TheoryBlock color="green">
+                                <p>{t('emocions.ie.text')}</p>
+                            </TheoryBlock>
+                            <div className="space-y-3 mt-4">
+                                {['autoconeixement', 'autocontrol', 'motivacio', 'empatia', 'social'].map((p, i) => (
+                                    <div key={p} className="flex items-start gap-3 p-3 rounded-lg" style={{ backgroundColor: pilarColors[p] + '15', borderLeft: `4px solid ${pilarColors[p]}` }}>
+                                        <span className="text-lg">{['🪞', '🧘', '🚀', '💕', '🤝'][i]}</span>
+                                        <p className="text-sm text-slate-700">{t('emocions.pilar.' + p)}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
+
+                        <Card title={t('emocions.ment')} icon="⚖️">
+                            <TheoryBlock color="violet">
+                                <p>{t('emocions.ment.text')}</p>
+                            </TheoryBlock>
+                        </Card>
+
+                        <Card title={t('emocions.tecniques')} icon="🛠️">
+                            <div className="space-y-3">
+                                {['respiracio', 'parar', 'reestructuracio', 'empatia'].map((tec, i) => (
+                                    <div key={tec} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
+                                        <span className="text-lg">{['🌬️', '🛑', '💭', '🤲'][i]}</span>
+                                        <p className="text-sm text-slate-700">{t('emocions.tec.' + tec)}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
+                    </div>
+                )}
+
+                {tab === 'test' && (
+                    <Card title={t('emocions.test.title')} icon="📝">
+                        <p className="text-sm text-slate-500 mb-6">{t('emocions.test.desc')}</p>
+
+                        {!ieShowResults ? (
+                            <div className="space-y-6">
+                                {/* Progress bar */}
+                                <div className="w-full bg-slate-200 rounded-full h-2">
+                                    <div className="bg-blue-500 h-2 rounded-full transition-all" style={{ width: `${((ieAnswers.filter(a => a > 0).length) / 15) * 100}%` }}></div>
+                                </div>
+
+                                {/* Current question */}
+                                <div className="p-6 bg-slate-50 rounded-xl">
+                                    <p className="text-xs text-slate-400 mb-2">{t('emocions.test.pregunta')} {ieStep + 1} {t('emocions.test.de')} 15 — {t('emocions.test.pilar.' + ieQuestions[ieStep].pilar)}</p>
+                                    <p className="text-lg font-semibold text-slate-800 mb-6">{t(ieQuestions[ieStep].q)}</p>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                        {[
+                                            { value: 4, label: t('emocions.test.sempre') },
+                                            { value: 3, label: t('emocions.test.sovint') },
+                                            { value: 2, label: t('emocions.test.avegades') },
+                                            { value: 1, label: t('emocions.test.mai') },
+                                        ].map(opt => (
+                                            <button
+                                                key={opt.value}
+                                                onClick={() => {
+                                                    answerIe(ieStep, opt.value);
+                                                    if (ieStep < 14) setIeStep(ieStep + 1);
+                                                }}
+                                                className={`p-3 rounded-xl text-sm font-medium transition-all border-2 ${ieAnswers[ieStep] === opt.value ? 'bg-blue-100 border-blue-500 text-blue-700' : 'bg-white border-slate-200 hover:border-blue-300'}`}
+                                            >
+                                                {opt.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Navigation */}
+                                <div className="flex justify-between">
+                                    <button onClick={() => setIeStep(Math.max(0, ieStep - 1))} disabled={ieStep === 0} className="px-4 py-2 text-sm rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 disabled:opacity-30">{t('emocions.test.anterior')}</button>
+                                    {ieStep < 14 ? (
+                                        <button onClick={() => setIeStep(ieStep + 1)} className="px-4 py-2 text-sm rounded-lg bg-blue-500 text-white hover:bg-blue-600">{t('emocions.test.seguent')}</button>
+                                    ) : (
+                                        <button onClick={() => setIeShowResults(true)} disabled={!ieAllAnswered} className="px-4 py-2 text-sm rounded-lg bg-green-500 text-white hover:bg-green-600 disabled:opacity-30">{t('emocions.test.resultats')}</button>
+                                    )}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                {/* Total score */}
+                                <div className="text-center p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
+                                    <p className="text-sm text-slate-500">{t('emocions.test.puntuacio')}</p>
+                                    <p className="text-5xl font-black text-blue-600 my-2">{ieTotalScore}</p>
+                                    <p className="text-sm text-slate-400">{t('emocions.test.sobre')} {ieMaxScore}</p>
+                                </div>
+
+                                {/* Interpretation */}
+                                <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
+                                    <p className="text-sm text-amber-800 font-medium">{ieInterpretation()}</p>
+                                </div>
+
+                                {/* Pillar bars */}
+                                <div className="space-y-4">
+                                    {iePilarScores().map(({ pilar, score, max }) => (
+                                        <div key={pilar} className="space-y-1">
+                                            <div className="flex justify-between text-sm">
+                                                <span className="font-medium text-slate-700">{t('emocions.test.pilar.' + pilar)}</span>
+                                                <span className="font-bold" style={{ color: pilarColors[pilar] }}>{score}/{max}</span>
+                                            </div>
+                                            <div className="w-full bg-slate-200 rounded-full h-4">
+                                                <div className="h-4 rounded-full transition-all" style={{ width: `${(score / max) * 100}%`, backgroundColor: pilarColors[pilar] }}></div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="flex justify-center">
+                                    <button onClick={resetIeTest} className="px-6 py-2 text-sm rounded-lg bg-slate-200 text-slate-600 hover:bg-slate-300">{t('emocions.test.repetir')}</button>
+                                </div>
+                            </div>
+                        )}
+                    </Card>
+                )}
+            </div>
+        );
+    };
+
+    // ========================================================================
+    // UD5: Habilitats personals (Big Five + Eisenhower)
+    // ========================================================================
+    const Habilitats = () => {
+        const [tab, setTab] = useState('teoria');
+
+        // Big Five test
+        const bfQuestions = [
+            { q: 'habilitats.bf.q1', trait: 'o' },
+            { q: 'habilitats.bf.q2', trait: 'o' },
+            { q: 'habilitats.bf.q3', trait: 'c' },
+            { q: 'habilitats.bf.q4', trait: 'c' },
+            { q: 'habilitats.bf.q5', trait: 'e' },
+            { q: 'habilitats.bf.q6', trait: 'e' },
+            { q: 'habilitats.bf.q7', trait: 'a' },
+            { q: 'habilitats.bf.q8', trait: 'a' },
+            { q: 'habilitats.bf.q9', trait: 'n' },
+            { q: 'habilitats.bf.q10', trait: 'n' },
+        ];
+        const [bfAnswers, setBfAnswers] = useState(Array(10).fill(0));
+        const [bfShowResults, setBfShowResults] = useState(false);
+
+        const bfOptions = [
+            { value: 5, label: t('habilitats.bf.moltacord') },
+            { value: 4, label: t('habilitats.bf.acord') },
+            { value: 3, label: t('habilitats.bf.neutre') },
+            { value: 2, label: t('habilitats.bf.desacord') },
+            { value: 1, label: t('habilitats.bf.moltdesacord') },
+        ];
+
+        const bfTraitScores = () => {
+            const traits = ['o', 'c', 'e', 'a', 'n'];
+            return traits.map(tr => {
+                const indices = bfQuestions.map((q, i) => q.trait === tr ? i : -1).filter(i => i >= 0);
+                const score = indices.reduce((sum, i) => sum + bfAnswers[i], 0);
+                return { trait: tr, score, max: indices.length * 5 };
+            });
+        };
+
+        const bfAllAnswered = bfAnswers.every(a => a > 0);
+        const bfTraitColors = { o: '#8B5CF6', c: '#3B82F6', e: '#F59E0B', a: '#10B981', n: '#EF4444' };
+
+        // Eisenhower
+        const [eisenhower, setEisenhower] = useState(() => {
+            const saved = localStorage.getItem('pde_fopp_eisenhower');
+            return saved ? JSON.parse(saved) : { fer: '', planificar: '', delegar: '', eliminar: '' };
+        });
+
+        const updateEisenhower = (key, value) => {
+            const next = { ...eisenhower, [key]: value };
+            setEisenhower(next);
+            localStorage.setItem('pde_fopp_eisenhower', JSON.stringify(next));
+        };
+
+        const clearEisenhower = () => {
+            const empty = { fer: '', planificar: '', delegar: '', eliminar: '' };
+            setEisenhower(empty);
+            localStorage.setItem('pde_fopp_eisenhower', JSON.stringify(empty));
+        };
+
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="💪" title={t('habilitats.title')} subtitle={t('habilitats.subtitle')} />
+                <WhyImportant>{t('habilitats.why')}</WhyImportant>
+
+                <Tabs tabs={[
+                    { id: 'teoria', label: t('habilitats.tab.teoria') },
+                    { id: 'bigfive', label: t('habilitats.tab.bigfive') },
+                    { id: 'eisenhower', label: t('habilitats.tab.eisenhower') },
+                ]} active={tab} onChange={setTab} />
+
+                {tab === 'teoria' && (
+                    <div className="space-y-6">
+                        <Card title={t('habilitats.bigfive')} icon="🎭">
+                            <TheoryBlock color="violet">
+                                <p>{t('habilitats.bigfive.text')}</p>
+                            </TheoryBlock>
+                            <div className="space-y-3 mt-4">
+                                {['o', 'c', 'e', 'a', 'n'].map((tr, i) => (
+                                    <div key={tr} className="flex items-start gap-3 p-3 rounded-lg" style={{ backgroundColor: bfTraitColors[tr] + '15', borderLeft: `4px solid ${bfTraitColors[tr]}` }}>
+                                        <span className="font-black text-lg" style={{ color: bfTraitColors[tr] }}>{tr.toUpperCase()}</span>
+                                        <p className="text-sm text-slate-700">{t('habilitats.ocean.' + tr)}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
+
+                        <Card title={t('habilitats.autoestima')} icon="🌟">
+                            <TheoryBlock color="amber">
+                                <p>{t('habilitats.autoestima.text')}</p>
+                            </TheoryBlock>
+                        </Card>
+
+                        <Card title={t('habilitats.pensament')} icon="🤔">
+                            <TheoryBlock color="blue">
+                                <p>{t('habilitats.pensament.text')}</p>
+                            </TheoryBlock>
+                        </Card>
+
+                        <Card title={t('habilitats.resiliencia')} icon="🌱">
+                            <TheoryBlock color="green">
+                                <p>{t('habilitats.resiliencia.text')}</p>
+                            </TheoryBlock>
+                        </Card>
+
+                        <Card title={t('habilitats.eisenhower')} icon="📊">
+                            <TheoryBlock color="slate">
+                                <p>{t('habilitats.eisenhower.text')}</p>
+                            </TheoryBlock>
+                            <div className="grid grid-cols-2 gap-3 mt-4">
+                                <div className="p-3 bg-red-50 rounded-xl border-2 border-red-300 text-center"><p className="text-sm font-bold text-red-700">🔴 {t('habilitats.eisenhower.fer')}</p></div>
+                                <div className="p-3 bg-blue-50 rounded-xl border-2 border-blue-300 text-center"><p className="text-sm font-bold text-blue-700">🔵 {t('habilitats.eisenhower.planificar')}</p></div>
+                                <div className="p-3 bg-amber-50 rounded-xl border-2 border-amber-300 text-center"><p className="text-sm font-bold text-amber-700">🟡 {t('habilitats.eisenhower.delegar')}</p></div>
+                                <div className="p-3 bg-slate-100 rounded-xl border-2 border-slate-300 text-center"><p className="text-sm font-bold text-slate-500">⚪ {t('habilitats.eisenhower.eliminar')}</p></div>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+
+                {tab === 'bigfive' && (
+                    <Card title={t('habilitats.bf.title')} icon="🎭">
+                        <p className="text-sm text-slate-500 mb-6">{t('habilitats.bf.desc')}</p>
+
+                        {!bfShowResults ? (
+                            <div className="space-y-6">
+                                {bfQuestions.map((q, idx) => (
+                                    <div key={idx} className="p-4 bg-slate-50 rounded-xl">
+                                        <p className="text-sm font-semibold text-slate-700 mb-3">{idx + 1}. {t(q.q)}</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {bfOptions.map(opt => (
+                                                <button
+                                                    key={opt.value}
+                                                    onClick={() => {
+                                                        const newAnswers = [...bfAnswers];
+                                                        newAnswers[idx] = opt.value;
+                                                        setBfAnswers(newAnswers);
+                                                    }}
+                                                    className={`px-3 py-2 rounded-lg text-xs font-medium transition-all border-2 ${bfAnswers[idx] === opt.value ? 'bg-violet-100 border-violet-500 text-violet-700' : 'bg-white border-slate-200 hover:border-violet-300'}`}
+                                                >
+                                                    {opt.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                                <div className="flex justify-center">
+                                    <button onClick={() => setBfShowResults(true)} disabled={!bfAllAnswered} className="px-6 py-3 rounded-xl bg-violet-500 text-white font-semibold hover:bg-violet-600 disabled:opacity-30">{t('habilitats.bf.resultats')}</button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                <div className="space-y-4">
+                                    {bfTraitScores().map(({ trait, score, max }) => (
+                                        <div key={trait} className="space-y-1">
+                                            <div className="flex justify-between text-sm">
+                                                <span className="font-medium text-slate-700">{t('habilitats.bf.trait.' + trait)}</span>
+                                                <span className="font-bold" style={{ color: bfTraitColors[trait] }}>{score}/{max}</span>
+                                            </div>
+                                            <div className="w-full bg-slate-200 rounded-full h-4">
+                                                <div className="h-4 rounded-full transition-all" style={{ width: `${(score / max) * 100}%`, backgroundColor: bfTraitColors[trait] }}></div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="flex justify-center">
+                                    <button onClick={() => { setBfAnswers(Array(10).fill(0)); setBfShowResults(false); }} className="px-6 py-2 text-sm rounded-lg bg-slate-200 text-slate-600 hover:bg-slate-300">{t('habilitats.bf.repetir')}</button>
+                                </div>
+                            </div>
+                        )}
+                    </Card>
+                )}
+
+                {tab === 'eisenhower' && (
+                    <Card title={t('habilitats.eisenhower')} icon="📊">
+                        <p className="text-sm text-slate-500 mb-4">{t('habilitats.eisenhower.guardat')}</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Fer */}
+                            <div className="p-4 bg-red-50 rounded-xl border-2 border-red-300">
+                                <h4 className="font-bold text-red-700 mb-2">🔴 {t('habilitats.eisenhower.fer')}</h4>
+                                <textarea value={eisenhower.fer} onChange={e => updateEisenhower('fer', e.target.value)} placeholder="..." rows={4} className="w-full p-3 rounded-lg border border-red-200 text-sm focus:ring-2 focus:ring-red-400 outline-none resize-none"></textarea>
+                            </div>
+                            {/* Planificar */}
+                            <div className="p-4 bg-blue-50 rounded-xl border-2 border-blue-300">
+                                <h4 className="font-bold text-blue-700 mb-2">🔵 {t('habilitats.eisenhower.planificar')}</h4>
+                                <textarea value={eisenhower.planificar} onChange={e => updateEisenhower('planificar', e.target.value)} placeholder="..." rows={4} className="w-full p-3 rounded-lg border border-blue-200 text-sm focus:ring-2 focus:ring-blue-400 outline-none resize-none"></textarea>
+                            </div>
+                            {/* Delegar */}
+                            <div className="p-4 bg-amber-50 rounded-xl border-2 border-amber-300">
+                                <h4 className="font-bold text-amber-700 mb-2">🟡 {t('habilitats.eisenhower.delegar')}</h4>
+                                <textarea value={eisenhower.delegar} onChange={e => updateEisenhower('delegar', e.target.value)} placeholder="..." rows={4} className="w-full p-3 rounded-lg border border-amber-200 text-sm focus:ring-2 focus:ring-amber-400 outline-none resize-none"></textarea>
+                            </div>
+                            {/* Eliminar */}
+                            <div className="p-4 bg-slate-100 rounded-xl border-2 border-slate-300">
+                                <h4 className="font-bold text-slate-500 mb-2">⚪ {t('habilitats.eisenhower.eliminar')}</h4>
+                                <textarea value={eisenhower.eliminar} onChange={e => updateEisenhower('eliminar', e.target.value)} placeholder="..." rows={4} className="w-full p-3 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-slate-400 outline-none resize-none"></textarea>
+                            </div>
+                        </div>
+                        <div className="mt-4 flex justify-end">
+                            <button onClick={clearEisenhower} className="px-4 py-2 bg-slate-200 text-slate-600 rounded-lg text-sm hover:bg-slate-300">{t('habilitats.eisenhower.esborrar')}</button>
+                        </div>
+                    </Card>
+                )}
+            </div>
+        );
+    };
+
+    // ========================================================================
+    // UD6: Habilitats socials
+    // ========================================================================
+    const Socials = () => (
+        <div className="space-y-6">
+            <SectionTitle icon="🤝" title={t('socials.title')} subtitle={t('socials.subtitle')} />
+            <WhyImportant>{t('socials.why')}</WhyImportant>
+
+            <Card title={t('socials.empatia')} icon="💕">
+                <TheoryBlock color="pink">
+                    <p>{t('socials.empatia.text')}</p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title={t('socials.comunicacio')} icon="💬">
+                <div className="space-y-3">
+                    {['verbal', 'noverbal', 'escrita'].map((c, i) => (
+                        <TheoryBlock key={c} color={['blue', 'green', 'amber'][i]}>
+                            <p><span className="font-semibold">{['🗣️', '🤚', '✉️'][i]}</span> {t('socials.comunicacio.' + c)}</p>
+                        </TheoryBlock>
+                    ))}
+                </div>
+            </Card>
+
+            <Card title={t('socials.oratoria')} icon="🎤">
+                <TheoryBlock color="violet">
+                    <p>{t('socials.oratoria.text')}</p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title={t('socials.assertivitat')} icon="💪">
+                <TheoryBlock color="green">
+                    <p>{t('socials.assertivitat.text')}</p>
+                </TheoryBlock>
+                <div className="overflow-x-auto mt-4">
+                    <table className="w-full text-sm border-collapse">
+                        <thead>
+                            <tr>
+                                <th className="p-3 text-left font-semibold bg-red-50 border-b-2 border-red-200 text-red-700">{t('socials.estil.passiu')}</th>
+                                <th className="p-3 text-left font-semibold bg-green-50 border-b-2 border-green-200 text-green-700">{t('socials.estil.assertiu')}</th>
+                                <th className="p-3 text-left font-semibold bg-amber-50 border-b-2 border-amber-200 text-amber-700">{t('socials.estil.agressiu')}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td className="p-3 border-b border-slate-100 text-slate-600">{t('socials.estil.passiu.desc')}</td>
+                                <td className="p-3 border-b border-slate-100 text-slate-600 font-medium">{t('socials.estil.assertiu.desc')}</td>
+                                <td className="p-3 border-b border-slate-100 text-slate-600">{t('socials.estil.agressiu.desc')}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </Card>
+
+            <Card title={t('socials.negociacio')} icon="🤝">
+                <TheoryBlock color="blue">
+                    <p>{t('socials.negociacio.text')}</p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title={t('socials.lideratge')} icon="👑">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm border-collapse">
+                        <thead>
+                            <tr className="bg-slate-100">
+                                <th className="p-3 text-left font-semibold border-b border-slate-200">{idioma === 'en' ? 'Style' : 'Estil'}</th>
+                                <th className="p-3 text-left font-semibold border-b border-slate-200">{idioma === 'en' ? 'Description' : 'Descripcio'}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {['autoritari', 'democratic', 'laissez'].map((l, i) => (
+                                <tr key={l} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
+                                    <td className="p-3 border-b border-slate-100 font-medium">{['👊', '🗳️', '🙌'][i]} {t('socials.lid.' + l)}</td>
+                                    <td className="p-3 border-b border-slate-100 text-slate-600">{t('socials.lid.' + l + '.desc')}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </Card>
+        </div>
+    );
+
+    // ========================================================================
+    // UD7: L'entorn de treball (Nomina + Biaixos)
+    // ========================================================================
+    const Treball = () => {
+        const [tab, setTab] = useState('teoria');
+
+        // Nomina calculator
+        const [brutAnual, setBrutAnual] = useState(22000);
+        const [irpfPct, setIrpfPct] = useState(12);
+
+        const brutMensual = brutAnual / 14;
+        const ssMensual = brutMensual * 0.0635;
+        const irpfMensual = brutMensual * (irpfPct / 100);
+        const netMensual = brutMensual - ssMensual - irpfMensual;
+        const pagaExtra = netMensual;
+
+        // Bias detector
+        const biasScenarios = [
+            { id: 's1', options: ['a', 'b'] },
+            { id: 's2', options: ['a', 'b'] },
+            { id: 's3', options: ['a', 'b', 'c'] },
+            { id: 's4', options: ['a', 'b'] },
+            { id: 's5', options: ['a', 'b'] },
+        ];
+        const [biasStep, setBiasStep] = useState(0);
+        const [biasAnswers, setBiasAnswers] = useState(Array(5).fill(null));
+        const [biasRevealed, setBiasRevealed] = useState(Array(5).fill(false));
+        const [biasComplete, setBiasComplete] = useState(false);
+
+        const answerBias = (scenarioIdx, option) => {
+            const newAnswers = [...biasAnswers];
+            newAnswers[scenarioIdx] = option;
+            setBiasAnswers(newAnswers);
+            const newRevealed = [...biasRevealed];
+            newRevealed[scenarioIdx] = true;
+            setBiasRevealed(newRevealed);
+        };
+
+        const nextBias = () => {
+            if (biasStep < 4) {
+                setBiasStep(biasStep + 1);
+            } else {
+                setBiasComplete(true);
+            }
+        };
+
+        const resetBias = () => {
+            setBiasStep(0);
+            setBiasAnswers(Array(5).fill(null));
+            setBiasRevealed(Array(5).fill(false));
+            setBiasComplete(false);
+        };
+
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="💼" title={t('treball.title')} subtitle={t('treball.subtitle')} />
+                <WhyImportant>{t('treball.why')}</WhyImportant>
+
+                <Tabs tabs={[
+                    { id: 'teoria', label: t('treball.tab.teoria') },
+                    { id: 'nomina', label: t('treball.tab.nomina') },
+                    { id: 'biaixos', label: t('treball.tab.biaixos') },
+                ]} active={tab} onChange={setTab} />
+
+                {tab === 'teoria' && (
+                    <div className="space-y-6">
+                        <Card title={t('treball.relacions')} icon="📄">
+                            <TheoryBlock color="blue">
+                                <p>{t('treball.relacions.text')}</p>
+                            </TheoryBlock>
+                        </Card>
+
+                        <Card title={t('treball.nomina')} icon="💰">
+                            <TheoryBlock color="green">
+                                <p>{t('treball.nomina.text')}</p>
+                            </TheoryBlock>
+                            <div className="space-y-3 mt-4">
+                                {['base', 'complements', 'pagues', 'ss', 'irpf'].map((n, i) => (
+                                    <div key={n} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
+                                        <span className="text-lg">{['💶', '➕', '🎁', '🏥', '🏛️'][i]}</span>
+                                        <p className="text-sm text-slate-700">{t('treball.nomina.' + n)}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
+
+                        <Card title={t('treball.tendencies')} icon="🔮">
+                            <div className="space-y-3">
+                                {['teletreball', 'digitalitzacio', 'gig'].map((tend, i) => (
+                                    <TheoryBlock key={tend} color={['blue', 'violet', 'amber'][i]}>
+                                        <p><span className="font-semibold">{['🏠', '💻', '📱'][i]}</span> {t('treball.tend.' + tend)}</p>
+                                    </TheoryBlock>
+                                ))}
+                            </div>
+                        </Card>
+
+                        <Card title={t('treball.emprenedoria')} icon="🚀">
+                            <TheoryBlock color="pink">
+                                <p>{t('treball.emprenedoria.text')}</p>
+                            </TheoryBlock>
+                        </Card>
+
+                        <Card title={t('treball.biaixos')} icon="🧠">
+                            <TheoryBlock color="amber">
+                                <p>{t('treball.biaixos.text')}</p>
+                            </TheoryBlock>
+                        </Card>
+                    </div>
+                )}
+
+                {tab === 'nomina' && (
+                    <Card title={t('treball.calc.title')} icon="🧮">
+                        <p className="text-sm text-slate-500 mb-6">{t('treball.calc.desc')}</p>
+
+                        <div className="space-y-4 mb-6">
+                            <Slider label={t('treball.calc.brut')} value={brutAnual} onChange={setBrutAnual} min={14000} max={50000} step={500} suffix="EUR" />
+                            <Slider label={t('treball.calc.irpf')} value={irpfPct} onChange={setIrpfPct} min={2} max={30} step={1} suffix="%" />
+                        </div>
+
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                            <ResultCard title={t('treball.calc.brutmens')} value={brutMensual.toFixed(2) + "EUR"} color="blue" />
+                            <ResultCard title={t('treball.calc.ss')} value={"-" + ssMensual.toFixed(2) + "EUR"} color="amber" />
+                            <ResultCard title={t('treball.calc.irpfmens')} value={"-" + irpfMensual.toFixed(2) + "EUR"} color="red" />
+                            <ResultCard title={t('treball.calc.net')} value={netMensual.toFixed(2) + "EUR"} color="green" />
+                            <ResultCard title={t('treball.calc.paga')} value={pagaExtra.toFixed(2) + "EUR"} color="violet" />
+                        </div>
+
+                        {/* Visual breakdown bar */}
+                        <div className="mt-6 p-4 bg-slate-50 rounded-xl">
+                            <div className="flex h-8 rounded-full overflow-hidden">
+                                <div className="bg-green-400 flex items-center justify-center text-xs text-white font-bold" style={{ width: `${(netMensual / brutMensual) * 100}%` }}>NET</div>
+                                <div className="bg-amber-400 flex items-center justify-center text-xs text-white font-bold" style={{ width: `${(ssMensual / brutMensual) * 100}%` }}>SS</div>
+                                <div className="bg-red-400 flex items-center justify-center text-xs text-white font-bold" style={{ width: `${(irpfMensual / brutMensual) * 100}%` }}>IRPF</div>
+                            </div>
+                        </div>
+                    </Card>
+                )}
+
+                {tab === 'biaixos' && (
+                    <Card title={t('treball.bias.title')} icon="🧠">
+                        <p className="text-sm text-slate-500 mb-6">{t('treball.bias.desc')}</p>
+
+                        {!biasComplete ? (
+                            <div className="space-y-6">
+                                {/* Progress */}
+                                <div className="flex gap-2">
+                                    {[0,1,2,3,4].map(i => (
+                                        <div key={i} className={`flex-1 h-2 rounded-full ${i <= biasStep ? 'bg-blue-500' : 'bg-slate-200'}`}></div>
+                                    ))}
+                                </div>
+
+                                <div className="p-6 bg-slate-50 rounded-xl">
+                                    <p className="text-xs text-slate-400 mb-2">{t('treball.bias.situacio')} {biasStep + 1}/5</p>
+                                    <p className="text-lg font-semibold text-slate-800 mb-6">{t('treball.bias.s' + (biasStep + 1) + '.situacio')}</p>
+
+                                    {!biasRevealed[biasStep] && (
+                                        <div className="space-y-3">
+                                            <p className="text-sm text-slate-500">{t('treball.bias.tria')}</p>
+                                            {biasScenarios[biasStep].options.map(opt => (
+                                                <button key={opt} onClick={() => answerBias(biasStep, opt)} className="block w-full text-left p-4 rounded-xl border-2 border-slate-200 hover:border-blue-400 bg-white text-sm transition-all">
+                                                    {t('treball.bias.s' + (biasStep + 1) + '.' + opt)}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {biasRevealed[biasStep] && (
+                                        <div className="space-y-4 animate-fade">
+                                            <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
+                                                <p className="text-sm font-bold text-amber-700">{t('treball.bias.biaix')} {t('treball.bias.s' + (biasStep + 1) + '.biaix')}</p>
+                                            </div>
+                                            <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                                                <p className="text-sm text-blue-800">{t('treball.bias.s' + (biasStep + 1) + '.explicacio')}</p>
+                                            </div>
+                                            <div className="flex justify-end">
+                                                <button onClick={nextBias} className="px-4 py-2 text-sm rounded-lg bg-blue-500 text-white hover:bg-blue-600">{biasStep < 4 ? t('treball.bias.seguent') : t('treball.bias.resum')}</button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-4 animate-fade">
+                                <h4 className="text-lg font-bold text-slate-800">{t('treball.bias.resum')}</h4>
+                                {[1,2,3,4,5].map(i => (
+                                    <div key={i} className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                                        <p className="text-sm font-bold text-amber-700 mb-1">{i}. {t('treball.bias.s' + i + '.biaix')}</p>
+                                        <p className="text-xs text-slate-600">{t('treball.bias.s' + i + '.explicacio')}</p>
+                                    </div>
+                                ))}
+                                <div className="flex justify-center">
+                                    <button onClick={resetBias} className="px-6 py-2 text-sm rounded-lg bg-slate-200 text-slate-600 hover:bg-slate-300">{t('treball.bias.repetir')}</button>
+                                </div>
+                            </div>
+                        )}
+                    </Card>
+                )}
+            </div>
+        );
+    };
+
+    // ========================================================================
+    // UD8: Projecte personal i professional
+    // ========================================================================
+    const Projecte = () => (
+        <div className="space-y-6">
+            <SectionTitle icon="🎯" title={t('projecte.title')} subtitle={t('projecte.subtitle')} />
+            <WhyImportant>{t('projecte.why')}</WhyImportant>
+
+            <Card title={t('projecte.sistema')} icon="🏫">
+                {/* Visual education system diagram */}
+                <div className="space-y-4">
+                    {/* ESO */}
+                    <div className="p-4 bg-blue-50 rounded-xl border-2 border-blue-300 text-center">
+                        <p className="font-bold text-blue-700 text-lg">🎒 ESO</p>
+                        <p className="text-sm text-blue-600">{t('projecte.eso')}</p>
+                    </div>
+
+                    {/* Arrow */}
+                    <div className="text-center text-2xl text-slate-300">↓</div>
+
+                    {/* Branches */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div className="p-4 bg-violet-50 rounded-xl border-2 border-violet-300 text-center">
+                            <p className="font-bold text-violet-700">🎓 Batxillerat</p>
+                            <p className="text-xs text-violet-600 mt-1">{t('projecte.bach')}</p>
+                        </div>
+                        <div className="p-4 bg-green-50 rounded-xl border-2 border-green-300 text-center">
+                            <p className="font-bold text-green-700">🔧 FP Grau Mitja</p>
+                            <p className="text-xs text-green-600 mt-1">{t('projecte.fpmitja')}</p>
+                        </div>
+                        <div className="p-4 bg-amber-50 rounded-xl border-2 border-amber-300 text-center">
+                            <p className="font-bold text-amber-700">🛠️ FP Basica</p>
+                            <p className="text-xs text-amber-600 mt-1">{t('projecte.fpbasic')}</p>
+                        </div>
+                    </div>
+
+                    {/* Arrow */}
+                    <div className="text-center text-2xl text-slate-300">↓</div>
+
+                    {/* Higher level */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="p-4 bg-indigo-50 rounded-xl border-2 border-indigo-300 text-center">
+                            <p className="font-bold text-indigo-700">🏛️ Universitat</p>
+                            <p className="text-xs text-indigo-600 mt-1">{t('projecte.uni')}</p>
+                        </div>
+                        <div className="p-4 bg-teal-50 rounded-xl border-2 border-teal-300 text-center">
+                            <p className="font-bold text-teal-700">⭐ FP Grau Superior</p>
+                            <p className="text-xs text-teal-600 mt-1">{t('projecte.fpsuperior')}</p>
+                        </div>
+                    </div>
+                </div>
+            </Card>
+
+            <Card title={t('projecte.orientacio')} icon="🧭">
+                <TheoryBlock color="violet">
+                    <p>{t('projecte.orientacio.text')}</p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title={t('projecte.cv')} icon="📄">
+                <div className="space-y-3">
+                    {['dades', 'formacio', 'experiencia', 'idiomes', 'competencies', 'interessos'].map((cv, i) => (
+                        <div key={cv} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
+                            <span className="text-green-500 text-lg">✓</span>
+                            <p className="text-sm text-slate-700">{t('projecte.cv.' + cv)}</p>
+                        </div>
+                    ))}
+                </div>
+                <TheoryBlock color="amber" title="">
+                    <p className="font-medium">{t('projecte.cv.consells')}</p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title={t('projecte.entrevista')} icon="🤝">
+                <TheoryBlock color="blue">
+                    <p>{t('projecte.entrevista.fases')}</p>
+                </TheoryBlock>
+                <TheoryBlock color="red">
+                    <p className="font-medium">⚠️ {t('projecte.entrevista.errors')}</p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title={t('projecte.marca')} icon="🌐">
+                <TheoryBlock color="pink">
+                    <p>{t('projecte.marca.text')}</p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title={t('projecte.altres')} icon="🔄">
+                <div className="space-y-3">
+                    {['publica', 'autoocupacio'].map((a, i) => (
+                        <TheoryBlock key={a} color={['blue', 'green'][i]}>
+                            <p><span className="font-semibold">{['🏛️', '💡'][i]}</span> {t('projecte.altres.' + a)}</p>
+                        </TheoryBlock>
+                    ))}
+                </div>
+            </Card>
+        </div>
+    );
+
+    // ========================================================================
+    // NAVIGATION AND RENDER
+    // ========================================================================
+    const headerSections = [
+        { id: 'serhumà', label: t('sec.serhumà'), emoji: '🧠' },
+        { id: 'antropologia', label: t('sec.antropologia'), emoji: '🌍' },
+        { id: 'aprenentatge', label: t('sec.aprenentatge'), emoji: '📖' },
+        { id: 'emocions', label: t('sec.emocions'), emoji: '❤️' },
+        { id: 'habilitats', label: t('sec.habilitats'), emoji: '💪' },
+        { id: 'socials', label: t('sec.socials'), emoji: '🤝' },
+        { id: 'treball', label: t('sec.treball'), emoji: '💼' },
+        { id: 'projecte', label: t('sec.projecte'), emoji: '🎯' },
+    ];
+
+    return (
+        <div className="min-h-screen">
+            <PdeHeader
+                idioma={idioma}
+                setIdioma={(lang) => { setIdioma(lang); PdeLanguageStore.set(lang); }}
+                currentApp="fopp-4eso"
+                sections={headerSections}
+                currentSection={section}
+                setSection={setSection}
+            />
+
+            <main className="max-w-7xl mx-auto px-4 py-8">
+                {section === 'inicio' && <Inicio />}
+                {section === 'serhumà' && <SerHuma />}
+                {section === 'antropologia' && <Antropologia />}
+                {section === 'aprenentatge' && <Aprenentatge />}
+                {section === 'emocions' && <Emocions />}
+                {section === 'habilitats' && <Habilitats />}
+                {section === 'socials' && <Socials />}
+                {section === 'treball' && <Treball />}
+                {section === 'projecte' && <Projecte />}
+            </main>
+
+            <PdePrevNext sections={headerSections} currentSection={section} setSection={setSection} idioma={idioma} />
+            <PdeFooter appEmoji="🧭" appName={t('footer.appname')} idioma={idioma} />
+            <PdeScrollToTop />
+        </div>
+    );
+}
+
+ReactDOM.render(<FoppApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
