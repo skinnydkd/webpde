@@ -55,7 +55,7 @@
 <body class="bg-gradient-to-br from-amber-50 via-white to-pink-50">
     <div id="root"></div>
     <script type="text/babel">
-        const { useState, useMemo } = React;
+        const { useState, useMemo, useEffect } = React;
 
         const translations = {
             platform: { val: 'Plataforma Didàctica Econòmica', es: 'Plataforma Didáctica Económica', en: 'Economic Educational Platform' },
@@ -176,11 +176,134 @@
             // CTA
             ctaTitle: { val: 'Preparat per començar?', es: '¿Preparado para empezar?', en: 'Ready to start?' },
             ctaDesc: { val: 'Tria una de les nostres apps i comença a aprendre economia de forma interactiva i divertida.', es: 'Elige una de nuestras apps y empieza a aprender economía de forma interactiva y divertida.', en: 'Choose one of our apps and start learning economics in an interactive and fun way.' },
+
+            // Tabs
+            tabGeneral: { val: 'General', es: 'General', en: 'General' },
+            tabAlumnat: { val: 'Alumnat', es: 'Alumnado', en: 'Students' },
+            tabProfessorat: { val: 'Professorat', es: 'Profesorado', en: 'Teachers' },
+            tabOpositor: { val: 'Opositor', es: 'Opositor', en: 'Exam Prep' },
+
+            // Hero Alumnat
+            heroAlumnatTitle: { val: 'Materials interactius per al teu curs', es: 'Materiales interactivos para tu curso', en: 'Interactive materials for your course' },
+            heroAlumnatSubtitle: { val: 'Jocs, debats, roleplays i activitats per aprendre economia de veritat', es: 'Juegos, debates, roleplays y actividades para aprender economía de verdad', en: 'Games, debates, roleplays and activities to truly learn economics' },
+            heroAlumnatCta: { val: 'Veure cursos', es: 'Ver cursos', en: 'View courses' },
+
+            // Hero Professorat
+            heroProfTitle: { val: 'Recursos docents i Situacions d\'Aprenentatge', es: 'Recursos docentes y Situaciones de Aprendizaje', en: 'Teaching resources & Learning Situations' },
+            heroProfSubtitle: { val: 'Programacions, activitats, jocs i SAs LOMLOE per a les teues classes d\'economia', es: 'Programaciones, actividades, juegos y SAs LOMLOE para tus clases de economía', en: 'Programs, activities, games and LOMLOE learning situations for your economics classes' },
+            heroProfCta: { val: 'Veure recursos', es: 'Ver recursos', en: 'View resources' },
+
+            // Hero Opositor
+            heroOpoTitle: { val: 'Prepara les teues oposicions d\'Economia', es: 'Prepara tus oposiciones de Economía', en: 'Prepare your Economics exams' },
+            heroOpoSubtitle: { val: '71 temes, supòsits pràctics i programacions per comunitat autònoma', es: '71 temas, supuestos prácticos y programaciones por comunidad autónoma', en: '71 topics, practical cases and programs by autonomous community' },
+            heroOpoCta: { val: 'Començar a preparar', es: 'Empezar a preparar', en: 'Start preparing' },
+
+            // Tab section titles
+            alumnatTitle: { val: 'Cursos per assignatura', es: 'Cursos por asignatura', en: 'Courses by subject' },
+            alumnatSubtitle: { val: 'Tria el teu curs i accedeix a materials interactius, jocs, debats i molt més', es: 'Elige tu curso y accede a materiales interactivos, juegos, debates y más', en: 'Choose your course and access interactive materials, games, debates and more' },
+            profTitle: { val: 'Recursos per al professorat', es: 'Recursos para el profesorado', en: 'Resources for teachers' },
+            profSubtitle: { val: 'Materials docents, situacions d\'aprenentatge i recursos d\'aula per assignatura', es: 'Materiales docentes, situaciones de aprendizaje y recursos de aula por asignatura', en: 'Teaching materials, learning situations and classroom resources by subject' },
+            profSATitle: { val: 'Situacions d\'Aprenentatge (LOMLOE)', es: 'Situaciones de Aprendizaje (LOMLOE)', en: 'Learning Situations (LOMLOE)' },
+            profSASubtitle: { val: 'SAs completes amb criteris d\'avaluació, competències i rúbriques', es: 'SAs completas con criterios de evaluación, competencias y rúbricas', en: 'Complete LSs with assessment criteria, competencies and rubrics' },
+            opoTitle: { val: 'Oposicions d\'Economia', es: 'Oposiciones de Economía', en: 'Economics Teaching Exams' },
+            opoSubtitle: { val: 'Tot el que necessites per preparar les oposicions d\'Economia al cos de Secundària', es: 'Todo lo que necesitas para preparar las oposiciones de Economía en Secundaria', en: 'Everything you need to prepare for Economics teaching exams' },
+
+            // Course names
+            courseFopp: { val: 'FOPP', es: 'FOPP', en: 'FOPP' },
+            courseFoppFull: { val: 'Formació i Orientació Personal i Professional', es: 'Formación y Orientación Personal y Profesional', en: 'Personal & Professional Training' },
+            courseFoppDesc: { val: 'Economia bàsica, emprenedoria, orientació laboral i projecte de vida per a 4t d\'ESO.', es: 'Economía básica, emprendimiento, orientación laboral y proyecto de vida para 4º ESO.', en: 'Basic economics, entrepreneurship, career guidance and life project for Year 10.' },
+            courseEco4: { val: 'Economia 4ESO', es: 'Economía 4ESO', en: 'Economics Y10' },
+            courseEco4Full: { val: 'Economia per a 4t d\'ESO', es: 'Economía para 4º ESO', en: 'Economics for Year 10' },
+            courseEco4Desc: { val: 'Microeconomia, macroeconomia, sistema financer i economia internacional adaptada a ESO.', es: 'Microeconomía, macroeconomía, sistema financiero y economía internacional adaptada a ESO.', en: 'Micro, macro, financial system and international economics adapted for secondary.' },
+            courseEdmn: { val: 'EDMN 2BACH', es: 'EDMN 2BACH', en: 'EDMN Y13' },
+            courseEdmnFull: { val: 'Empresa i Disseny de Models de Negoci', es: 'Empresa y Diseño de Modelos de Negocio', en: 'Business & Business Model Design' },
+            courseEdmnDesc: { val: 'Gestió empresarial, innovació, models de negoci, pla d\'empresa i emprenedoria per a 2n BACH.', es: 'Gestión empresarial, innovación, modelos de negocio, plan de empresa y emprendimiento para 2º BACH.', en: 'Business management, innovation, business models, business plan and entrepreneurship.' },
+            courseEco1: { val: 'Economia 1BACH', es: 'Economía 1BACH', en: 'Economics Y12' },
+            courseEco1Full: { val: 'Economia de 1r de Batxillerat', es: 'Economía de 1º de Bachillerato', en: 'Economics Year 12' },
+            courseEco1Desc: { val: 'Fonaments d\'economia: escassetat, mercats, intervenció, macromagnituds, política econòmica i economia internacional.', es: 'Fundamentos de economía: escasez, mercados, intervención, macromagnitudes, política económica y economía internacional.', en: 'Economics fundamentals: scarcity, markets, intervention, macro indicators, economic policy and international economics.' },
+
+            // Course features
+            courseUnitats: { val: 'unitats', es: 'unidades', en: 'units' },
+            courseActivitats: { val: 'activitats', es: 'actividades', en: 'activities' },
+            comingSoon: { val: 'Properament', es: 'Próximamente', en: 'Coming soon' },
+            courseAccess: { val: 'Accedir al curs', es: 'Acceder al curso', en: 'Access course' },
+
+            // Professorat features
+            profProgramacions: { val: 'Programacions didàctiques', es: 'Programaciones didácticas', en: 'Teaching programs' },
+            profActivitats: { val: 'Activitats d\'aula', es: 'Actividades de aula', en: 'Classroom activities' },
+            profAvaluacio: { val: 'Criteris d\'avaluació', es: 'Criterios de evaluación', en: 'Assessment criteria' },
+            profRecursos: { val: 'Recursos digitals', es: 'Recursos digitales', en: 'Digital resources' },
+
+            // Opositor sections
+            opoTemes: { val: '71 Temes', es: '71 Temas', en: '71 Topics' },
+            opoTemesDesc: { val: 'Temari complet de l\'especialitat d\'Economia amb resums, esquemes i exercicis per tema.', es: 'Temario completo de la especialidad de Economía con resúmenes, esquemas y ejercicios por tema.', en: 'Complete Economics syllabus with summaries, outlines and exercises per topic.' },
+            opoSuposits: { val: 'Supòsits Pràctics', es: 'Supuestos Prácticos', en: 'Practical Cases' },
+            opoSupositsDesc: { val: 'Supòsits pràctics resolts i per practicar, orientats a la Comunitat Valenciana.', es: 'Supuestos prácticos resueltos y para practicar, orientados a la Comunitat Valenciana.', en: 'Solved practical cases for practice, oriented to the Valencian Community.' },
+            opoProgramacions: { val: 'Programacions per CCAA', es: 'Programaciones por CCAA', en: 'Programs by Region' },
+            opoProgramacionsDesc: { val: 'Programacions didàctiques adaptades a la normativa de cada comunitat autònoma.', es: 'Programaciones didácticas adaptadas a la normativa de cada comunidad autónoma.', en: 'Teaching programs adapted to each autonomous community\'s regulations.' },
+            opoTemesCount: { val: '71 temes complets', es: '71 temas completos', en: '71 complete topics' },
+            opoSupositsCount: { val: 'Supòsits resolts', es: 'Supuestos resueltos', en: 'Solved cases' },
+            opoCCAACount: { val: '17+ comunitats', es: '17+ comunidades', en: '17+ regions' },
+
+            // Per-tab features
+            // Alumnat features
+            featAlum1Title: { val: 'Materials per curs', es: 'Materiales por curso', en: 'Materials by course' },
+            featAlum1Desc: { val: 'Contingut adaptat al teu nivell i assignatura amb activitats interactives.', es: 'Contenido adaptado a tu nivel y asignatura con actividades interactivas.', en: 'Content adapted to your level and subject with interactive activities.' },
+            featAlum2Title: { val: 'Aprèn jugant', es: 'Aprende jugando', en: 'Learn by playing' },
+            featAlum2Desc: { val: 'Jocs, debats i roleplays per entendre l\'economia de forma pràctica.', es: 'Juegos, debates y roleplays para entender la economía de forma práctica.', en: 'Games, debates and roleplays to understand economics practically.' },
+            featAlum3Title: { val: 'Avaluació contínua', es: 'Evaluación continua', en: 'Continuous assessment' },
+            featAlum3Desc: { val: 'Tests i activitats per verificar el que has aprés en cada unitat.', es: 'Tests y actividades para verificar lo que has aprendido en cada unidad.', en: 'Tests and activities to verify what you\'ve learned in each unit.' },
+            featAlum4Title: { val: 'Multiidioma', es: 'Multiidioma', en: 'Multilingual' },
+            featAlum4Desc: { val: 'Disponible en Valencià, Castellà i Anglès.', es: 'Disponible en Valenciano, Castellano e Inglés.', en: 'Available in Valencian, Spanish and English.' },
+            // Professorat features
+            featProf1Title: { val: 'Programacions llestes', es: 'Programaciones listas', en: 'Ready-made programs' },
+            featProf1Desc: { val: 'Programacions didàctiques completes i adaptables per al teu centre.', es: 'Programaciones didácticas completas y adaptables para tu centro.', en: 'Complete and adaptable teaching programs for your school.' },
+            featProf2Title: { val: 'SAs LOMLOE', es: 'SAs LOMLOE', en: 'LOMLOE LSs' },
+            featProf2Desc: { val: 'Situacions d\'aprenentatge amb competències, criteris i rúbriques.', es: 'Situaciones de aprendizaje con competencias, criterios y rúbricas.', en: 'Learning situations with competencies, criteria and rubrics.' },
+            featProf3Title: { val: 'Recursos d\'aula', es: 'Recursos de aula', en: 'Classroom resources' },
+            featProf3Desc: { val: 'Jocs, simuladors i activitats per fer les classes més dinàmiques.', es: 'Juegos, simuladores y actividades para hacer las clases más dinámicas.', en: 'Games, simulators and activities for more dynamic classes.' },
+            featProf4Title: { val: 'Jocs educatius', es: 'Juegos educativos', en: 'Educational games' },
+            featProf4Desc: { val: 'Jocs de taula multijugador per projectar a l\'aula i jugar amb el mòbil.', es: 'Juegos de mesa multijugador para proyectar en el aula y jugar con el móvil.', en: 'Multiplayer board games to project in class and play on mobile.' },
+            // Opositor features
+            featOpo1Title: { val: '71 Temes complets', es: '71 Temas completos', en: '71 Complete topics' },
+            featOpo1Desc: { val: 'Tot el temari de l\'especialitat d\'economia amb resums i esquemes.', es: 'Todo el temario de la especialidad de economía con resúmenes y esquemas.', en: 'Complete economics specialty syllabus with summaries and outlines.' },
+            featOpo2Title: { val: 'Supòsits resolts', es: 'Supuestos resueltos', en: 'Solved cases' },
+            featOpo2Desc: { val: 'Casos pràctics resolts pas a pas orientats a la Comunitat Valenciana.', es: 'Casos prácticos resueltos paso a paso orientados a la Comunitat Valenciana.', en: 'Step-by-step solved practical cases oriented to the Valencian Community.' },
+            featOpo3Title: { val: 'Programacions per CCAA', es: 'Programaciones por CCAA', en: 'Programs by region' },
+            featOpo3Desc: { val: 'Programacions adaptades a la normativa de cada comunitat autònoma.', es: 'Programaciones adaptadas a la normativa de cada comunidad autónoma.', en: 'Programs adapted to each autonomous community\'s regulations.' },
+            featOpo4Title: { val: 'Actualitzat', es: 'Actualizado', en: 'Updated' },
+            featOpo4Desc: { val: 'Contingut revisat i actualitzat amb la legislació vigent.', es: 'Contenido revisado y actualizado con la legislación vigente.', en: 'Content reviewed and updated with current legislation.' },
+
+            // Per-tab CTA
+            ctaAlumnatTitle: { val: 'Preparat per aprendre?', es: '¿Preparado para aprender?', en: 'Ready to learn?' },
+            ctaAlumnatDesc: { val: 'Tria el teu curs i comença amb activitats interactives des del primer dia.', es: 'Elige tu curso y empieza con actividades interactivas desde el primer día.', en: 'Choose your course and start with interactive activities from day one.' },
+            ctaProfTitle: { val: 'Preparat per a les teues classes?', es: '¿Preparado para tus clases?', en: 'Ready for your classes?' },
+            ctaProfDesc: { val: 'Accedeix a programacions, SAs i recursos per fer les teues classes d\'economia inolvidables.', es: 'Accede a programaciones, SAs y recursos para hacer tus clases de economía inolvidables.', en: 'Access programs, LSs and resources to make your economics classes unforgettable.' },
+            ctaOpoTitle: { val: 'Preparat per opositar?', es: '¿Preparado para opositar?', en: 'Ready to prepare?' },
+            ctaOpoDesc: { val: 'Comença a preparar les teues oposicions d\'economia amb tot el material que necessites.', es: 'Empieza a preparar tus oposiciones de economía con todo el material que necesitas.', en: 'Start preparing your economics exams with all the material you need.' },
+
+            // Free section per tab
+            freeAlumnat: { val: 'Tots els materials del teu curs, gratuïts i en el teu idioma.', es: 'Todos los materiales de tu curso, gratuitos y en tu idioma.', en: 'All your course materials, free and in your language.' },
+            freeProf: { val: 'Recursos docents complets per fer classes d\'economia excel·lents.', es: 'Recursos docentes completos para hacer clases de economía excelentes.', en: 'Complete teaching resources for excellent economics classes.' },
+            freeOpo: { val: 'Prepara les oposicions amb materials de qualitat, totalment gratuïts.', es: 'Prepara las oposiciones con materiales de calidad, totalmente gratuitos.', en: 'Prepare your exams with quality materials, completely free.' },
         };
 
         function HomePage() {
             const [menuOpen, setMenuOpen] = useState(false);
             const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+            const [activeTab, setActiveTab] = useState(() => {
+                const hash = window.location.hash.replace('#', '');
+                return ['alumnat', 'professorat', 'opositor'].includes(hash) ? hash : 'general';
+            });
+
+            useEffect(() => {
+                if (activeTab === 'general') {
+                    history.replaceState(null, '', window.location.pathname);
+                } else {
+                    history.replaceState(null, '', '#' + activeTab);
+                }
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, [activeTab]);
             
             const t = (key) => translations[key]?.[idioma] || translations[key]?.['val'] || key;
             
@@ -385,6 +508,69 @@
                 { icon: Globe, title: t('feat4Title'), desc: t('feat4Desc') },
             ], [idioma]);
 
+            const tabs = [
+                { id: 'general', emoji: '🏠', color: 'pink' },
+                { id: 'alumnat', emoji: '📚', color: 'blue' },
+                { id: 'professorat', emoji: '👨‍🏫', color: 'green' },
+                { id: 'opositor', emoji: '🎯', color: 'purple' },
+            ];
+
+            const heroConfig = useMemo(() => ({
+                general: { title: t('heroTitle'), subtitle: t('heroSubtitle'), cta: t('heroExplore'), gradient: 'from-pink-500 to-rose-500', badge: t('platform') },
+                alumnat: { title: t('heroAlumnatTitle'), subtitle: t('heroAlumnatSubtitle'), cta: t('heroAlumnatCta'), gradient: 'from-blue-500 to-indigo-500', badge: t('tabAlumnat') },
+                professorat: { title: t('heroProfTitle'), subtitle: t('heroProfSubtitle'), cta: t('heroProfCta'), gradient: 'from-green-500 to-emerald-500', badge: t('tabProfessorat') },
+                opositor: { title: t('heroOpoTitle'), subtitle: t('heroOpoSubtitle'), cta: t('heroOpoCta'), gradient: 'from-purple-500 to-violet-500', badge: t('tabOpositor') },
+            }), [idioma]);
+
+            const courses = useMemo(() => [
+                { id: 'fopp-4eso', nom: t('courseFopp'), fullName: t('courseFoppFull'), desc: t('courseFoppDesc'), emoji: '🧭', gradient: 'from-sky-500 to-blue-500', nivell: '4t ESO', unitats: 6, activitats: 24 },
+                { id: 'economia-4eso', nom: t('courseEco4'), fullName: t('courseEco4Full'), desc: t('courseEco4Desc'), emoji: '📊', gradient: 'from-pink-500 to-rose-500', nivell: '4t ESO', unitats: 8, activitats: 32 },
+                { id: 'economia-1bach', nom: t('courseEco1'), fullName: t('courseEco1Full'), desc: t('courseEco1Desc'), emoji: '📈', gradient: 'from-amber-500 to-orange-500', nivell: '1r BACH', unitats: 10, activitats: 40 },
+                { id: 'edmn-2bach', nom: t('courseEdmn'), fullName: t('courseEdmnFull'), desc: t('courseEdmnDesc'), emoji: '💼', gradient: 'from-emerald-500 to-teal-500', nivell: '2n BACH', unitats: 12, activitats: 48, href: './edmn-2bach', ready: true },
+            ], [idioma]);
+
+            const opoSections = useMemo(() => [
+                { id: 'temes', nom: t('opoTemes'), desc: t('opoTemesDesc'), emoji: '📖', gradient: 'from-purple-500 to-violet-500', stat: t('opoTemesCount'), icon: BookOpen },
+                { id: 'suposits', nom: t('opoSuposits'), desc: t('opoSupositsDesc'), emoji: '📝', gradient: 'from-indigo-500 to-blue-500', stat: t('opoSupositsCount'), icon: Calculator },
+                { id: 'programacions', nom: t('opoProgramacions'), desc: t('opoProgramacionsDesc'), emoji: '🗺️', gradient: 'from-violet-500 to-purple-500', stat: t('opoCCAACount'), icon: Globe },
+            ], [idioma]);
+
+            const tabFeatures = useMemo(() => ({
+                general: [
+                    { icon: PlayCircle, title: t('feat1Title'), desc: t('feat1Desc') },
+                    { icon: Brain, title: t('feat2Title'), desc: t('feat2Desc') },
+                    { icon: Award, title: t('feat3Title'), desc: t('feat3Desc') },
+                    { icon: Globe, title: t('feat4Title'), desc: t('feat4Desc') },
+                ],
+                alumnat: [
+                    { icon: BookOpen, title: t('featAlum1Title'), desc: t('featAlum1Desc') },
+                    { icon: Gamepad, title: t('featAlum2Title'), desc: t('featAlum2Desc') },
+                    { icon: Award, title: t('featAlum3Title'), desc: t('featAlum3Desc') },
+                    { icon: Globe, title: t('featAlum4Title'), desc: t('featAlum4Desc') },
+                ],
+                professorat: [
+                    { icon: Target, title: t('featProf1Title'), desc: t('featProf1Desc') },
+                    { icon: Brain, title: t('featProf2Title'), desc: t('featProf2Desc') },
+                    { icon: Zap, title: t('featProf3Title'), desc: t('featProf3Desc') },
+                    { icon: Gamepad, title: t('featProf4Title'), desc: t('featProf4Desc') },
+                ],
+                opositor: [
+                    { icon: BookOpen, title: t('featOpo1Title'), desc: t('featOpo1Desc') },
+                    { icon: Calculator, title: t('featOpo2Title'), desc: t('featOpo2Desc') },
+                    { icon: Globe, title: t('featOpo3Title'), desc: t('featOpo3Desc') },
+                    { icon: Zap, title: t('featOpo4Title'), desc: t('featOpo4Desc') },
+                ],
+            }), [idioma]);
+
+            const tabColors = { general: 'pink', alumnat: 'blue', professorat: 'green', opositor: 'purple' };
+            const colorMap = {
+                pink: { bg: 'bg-pink-500', bgLight: 'bg-pink-100', text: 'text-pink-500', textDark: 'text-pink-700', gradient: 'from-pink-500 to-rose-500', ring: 'ring-pink-500', hover: 'hover:bg-pink-50' },
+                blue: { bg: 'bg-blue-500', bgLight: 'bg-blue-100', text: 'text-blue-500', textDark: 'text-blue-700', gradient: 'from-blue-500 to-indigo-500', ring: 'ring-blue-500', hover: 'hover:bg-blue-50' },
+                green: { bg: 'bg-green-500', bgLight: 'bg-green-100', text: 'text-green-500', textDark: 'text-green-700', gradient: 'from-green-500 to-emerald-500', ring: 'ring-green-500', hover: 'hover:bg-green-50' },
+                purple: { bg: 'bg-purple-500', bgLight: 'bg-purple-100', text: 'text-purple-500', textDark: 'text-purple-700', gradient: 'from-purple-500 to-violet-500', ring: 'ring-purple-500', hover: 'hover:bg-purple-50' },
+            };
+            const tc = colorMap[tabColors[activeTab]];
+
             return (
                 <div className="min-h-screen">
                     <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
@@ -395,37 +581,66 @@
                             </div>
                             <div className="flex items-center gap-4">
                                 <LanguageSelector />
-                                <nav className="hidden md:flex gap-2">
-                                    {apps.filter(app => !app.esGran).map(app => (
-                                        <a key={app.id} href={app.href} className="px-3 py-1.5 text-sm text-gray-600 hover:text-pink-500 hover:bg-pink-50 rounded-lg transition-all flex items-center gap-1">
-                                            <app.icon size={14} />{app.nom}
-                                        </a>
+                                <nav className="hidden md:flex gap-1">
+                                    {tabs.map(tab => (
+                                        <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                                            className={`px-3 py-1.5 text-sm rounded-lg transition-all flex items-center gap-1 ${
+                                                activeTab === tab.id
+                                                    ? `${colorMap[tab.color].text} font-bold bg-gray-50`
+                                                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                                            }`}>
+                                            <span className="text-xs">{tab.emoji}</span>{t('tab' + tab.id.charAt(0).toUpperCase() + tab.id.slice(1))}
+                                        </button>
                                     ))}
                                 </nav>
                             </div>
                         </div>
                     </header>
 
-                    <section className="py-16 md:py-24">
+                    <section className="py-12 md:py-16">
                         <div className="max-w-6xl mx-auto px-4 text-center">
-                            <div className="inline-flex items-center gap-2 bg-pink-100 text-pink-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
-                                <GraduationCap size={16} />{t('platform')}
+                            <div className={`inline-flex items-center gap-2 ${tc.bgLight} ${tc.textDark} px-4 py-2 rounded-full text-sm font-medium mb-6`}>
+                                <GraduationCap size={16} />{heroConfig[activeTab].badge}
                             </div>
-                            <h1 className="text-4xl md:text-6xl font-black text-gray-800 mb-6 leading-tight">{t('heroTitle')}</h1>
-                            <p className="text-xl text-gray-500 max-w-2xl mx-auto mb-8">{t('heroSubtitle')}</p>
-                            <a href="#apps" className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-pink-500/30 transition-all">
-                                {t('heroExplore')} <ChevronRight size={20} />
+                            <h1 className="text-4xl md:text-5xl font-black text-gray-800 mb-4 leading-tight">{heroConfig[activeTab].title}</h1>
+                            <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-8">{heroConfig[activeTab].subtitle}</p>
+                            <a href="#content" className={`inline-flex items-center gap-2 bg-gradient-to-r ${tc.gradient} text-white px-8 py-4 rounded-xl font-bold text-lg hover:shadow-lg transition-all`}>
+                                {heroConfig[activeTab].cta} <ChevronRight size={20} />
                             </a>
                         </div>
                     </section>
 
-                    <section id="apps" className="py-16 bg-white/50">
+                    {/* Tab Bar */}
+                    <section className="sticky top-[57px] z-40 bg-white/90 backdrop-blur-md border-b border-gray-100">
+                        <div className="max-w-6xl mx-auto px-4 py-3">
+                            <div className="flex justify-center">
+                                <div className="inline-flex bg-gray-100 rounded-xl p-1 gap-1 overflow-x-auto">
+                                    {tabs.map(tab => (
+                                        <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                                            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${
+                                                activeTab === tab.id
+                                                    ? `bg-white shadow-md ${colorMap[tab.color].text}`
+                                                    : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'
+                                            }`}>
+                                            <span>{tab.emoji}</span>
+                                            <span className="hidden sm:inline">{t('tab' + tab.id.charAt(0).toUpperCase() + tab.id.slice(1))}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* ==================== TAB: GENERAL ==================== */}
+                    {activeTab === 'general' && (
+                    <React.Fragment>
+                    <section id="content" className="py-16 bg-white/50">
                         <div className="max-w-6xl mx-auto px-4">
                             <div className="text-center mb-12">
                                 <h2 className="text-3xl md:text-4xl font-black text-gray-800 mb-3">{t('appsTitle')}</h2>
                                 <p className="text-gray-500 max-w-xl mx-auto">{t('appsSubtitle')}</p>
                             </div>
-                            
+
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {apps.map(app => (
                                     <a key={app.id} href={app.href} className={`group bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col relative ${app.esGran ? 'md:col-span-2 lg:col-span-3' : ''} ${app.esGran && app.id === 'playground' ? 'bg-gradient-to-r from-yellow-50 via-pink-50 to-purple-50' : ''} ${app.esGran && app.id === 'concurs' ? 'bg-gradient-to-r from-yellow-50 via-amber-50 to-orange-50' : ''} ${app.destacat ? 'border-2 border-yellow-400 shadow-lg shadow-yellow-400/20 ring-2 ring-yellow-400/30 gold-glow' : 'border border-gray-100 hover:shadow-pink-500/10 hover:border-pink-200'}`}>
@@ -440,7 +655,7 @@
                                             </div>
                                         )}
                                         <div className={`h-3 bg-gradient-to-r ${app.gradient}`}></div>
-                                        
+
                                         {app.esGran ? (
                                             <div className="p-6 md:p-8 flex flex-col md:flex-row gap-6">
                                                 <div className="flex-1">
@@ -450,19 +665,19 @@
                                                     <h3 className={`text-2xl font-bold mb-2 ${app.destacat ? 'text-amber-600' : 'text-gray-800'}`}>{app.nom}</h3>
                                                     <p className="text-sm text-gray-400 mb-3">{app.subtitol}</p>
                                                     <p className="text-gray-500 text-sm mb-4">{app.descripcio}</p>
-                                                    
+
                                                     <div className="flex flex-wrap gap-2 mb-4">
                                                         <span className={`px-3 py-1.5 rounded-lg text-sm font-medium ${app.destacat ? 'bg-yellow-100 text-yellow-700' : 'bg-pink-50 text-pink-600'}`}>{app.simuladors} {app.id === 'ferramentes' ? t('tools') : t('simulators')}</span>
                                                         <span className="px-3 py-1.5 bg-amber-50 text-amber-600 rounded-lg text-sm font-medium">{app.temes} {t('topics')}</span>
                                                     </div>
-                                                    
+
                                                     <div className="flex flex-wrap gap-1">
                                                         {app.nivells.map((nivell, i) => (
                                                             <span key={i} className="px-2 py-0.5 bg-gray-100 text-gray-500 rounded text-xs">{nivell}</span>
                                                         ))}
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div className="md:w-64 lg:w-80 space-y-3">
                                                     {app.caracteristiques.map((feat, i) => (
                                                         <div key={i} className={`flex items-center gap-3 p-3 rounded-xl ${app.id === 'playground' ? 'bg-white/70' : 'bg-white/70'}`}>
@@ -523,7 +738,7 @@
                             <div className="grid md:grid-cols-2 gap-6">
                                 {[
                                     { emoji: '☭', name: 'Communist Party', desc: 'Party & Co d\'economia: mímica, dibuix, preguntes, paraula prohibida i ràpid sobre sistemes econòmics.', href: './communist', gradient: 'from-red-500 to-red-700', tag: '2-30 jugadors', features: '185 cartes · 5 categories · Mode ràpid/complet' },
-                                    { emoji: '📈', name: 'STONKS', desc: 'STONKS only go up! 📈 Simulador d\'inversió amb dades reals 2000-2024, desbloqueig progressiu, IA benchmark i money printer goes BRRR.', href: './stax', gradient: 'from-green-500 to-emerald-700', tag: '2-20 jugadors', features: '8 actius · Dades reals · IA benchmark · BRRR' },
+                                    { emoji: '📈', name: 'STONKS', desc: 'STONKS only go up! 📈 Simulador d\'inversió amb dades reals 2000-2024, desbloqueig progressiu, IA benchmark i money printer goes BRRR.', href: './stonks', gradient: 'from-green-500 to-emerald-700', tag: '2-20 jugadors', features: '8 actius · Dades reals · IA benchmark · BRRR' },
                                     { emoji: '🏛️', name: 'Oligopoly', desc: 'Monopoly econòmic: subhastes en temps real, cicles econòmics, R+D, impostos progressius i 8 sectors.', href: './econopoly', gradient: 'from-emerald-500 to-teal-700', tag: '2-6 jugadors', features: '28 caselles · 8 sectors · Subhastes · Cicles' },
                                     { emoji: '⚔️', name: 'Systemic Risk', desc: 'Risk d\'escoles econòmiques: Keynesians vs Marxistes vs Austríacs vs Neoclàssics per la dominació mundial.', href: './econrisk', gradient: 'from-slate-500 to-zinc-700', tag: '2-4 jugadors', features: '24 territoris · 4 faccions · Poders especials' }
                                 ].map(function(game) {
@@ -547,16 +762,203 @@
                             </div>
                         </div>
                     </section>
+                    </React.Fragment>
+                    )}
 
+                    {/* ==================== TAB: ALUMNAT ==================== */}
+                    {activeTab === 'alumnat' && (
+                    <section id="content" className="py-16 bg-gradient-to-br from-blue-50/50 via-white to-indigo-50/30">
+                        <div className="max-w-6xl mx-auto px-4">
+                            <div className="text-center mb-12">
+                                <h2 className="text-3xl md:text-4xl font-black text-gray-800 mb-3">{t('alumnatTitle')}</h2>
+                                <p className="text-gray-500 max-w-xl mx-auto">{t('alumnatSubtitle')}</p>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-6">
+                                {courses.map(course => {
+                                    const Wrapper = course.ready ? 'a' : 'div';
+                                    const wrapperProps = course.ready ? { href: course.href } : {};
+                                    return (
+                                    <Wrapper key={course.id} {...wrapperProps} className={`group bg-white rounded-2xl overflow-hidden border transition-all duration-300 flex flex-col relative ${course.ready ? 'border-blue-200 hover:shadow-xl hover:border-blue-400 cursor-pointer' : 'border-gray-100 hover:shadow-lg hover:border-blue-200'}`}>
+                                        <div className="absolute top-3 right-3 z-10">
+                                            {course.ready
+                                                ? <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">✓ {t('courseUnitats')}</span>
+                                                : <span className="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">{t('comingSoon')}</span>
+                                            }
+                                        </div>
+                                        <div className={`h-3 bg-gradient-to-r ${course.gradient}`}></div>
+                                        <div className="p-6 flex-1">
+                                            <div className={`inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-r ${course.gradient} text-white text-2xl mb-4`}>
+                                                {course.emoji}
+                                            </div>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <h3 className="text-xl font-bold text-gray-800">{course.nom}</h3>
+                                                <span className="px-2 py-0.5 bg-gray-100 text-gray-500 rounded text-xs font-medium">{course.nivell}</span>
+                                            </div>
+                                            <p className="text-sm text-gray-400 mb-3">{course.fullName}</p>
+                                            <p className="text-gray-500 text-sm mb-4">{course.desc}</p>
+
+                                            <div className="flex flex-wrap gap-2">
+                                                <span className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium">{course.unitats} {t('courseUnitats')}</span>
+                                                <span className="px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg text-sm font-medium">{course.activitats} {t('courseActivitats')}</span>
+                                            </div>
+                                        </div>
+                                        <div className={`px-6 py-4 border-t border-gray-100 ${course.ready ? 'bg-blue-50/50' : 'bg-gray-50/50'}`}>
+                                            <span className={`font-medium text-sm flex items-center gap-1 group-hover:gap-2 transition-all ${course.ready ? 'text-blue-600' : 'text-blue-500 opacity-50'}`}>
+                                                {t('courseAccess')} <ChevronRight size={16} />
+                                            </span>
+                                        </div>
+                                    </Wrapper>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </section>
+                    )}
+
+                    {/* ==================== TAB: PROFESSORAT ==================== */}
+                    {activeTab === 'professorat' && (
+                    <React.Fragment>
+                    <section id="content" className="py-16 bg-gradient-to-br from-green-50/50 via-white to-emerald-50/30">
+                        <div className="max-w-6xl mx-auto px-4">
+                            <div className="text-center mb-12">
+                                <h2 className="text-3xl md:text-4xl font-black text-gray-800 mb-3">{t('profTitle')}</h2>
+                                <p className="text-gray-500 max-w-xl mx-auto">{t('profSubtitle')}</p>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-6 mb-16">
+                                {courses.map(course => (
+                                    <div key={course.id} className="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:shadow-xl hover:border-green-200 transition-all duration-300 flex flex-col relative">
+                                        <div className="absolute top-3 right-3 z-10">
+                                            <span className="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">{t('comingSoon')}</span>
+                                        </div>
+                                        <div className={`h-3 bg-gradient-to-r ${course.gradient}`}></div>
+                                        <div className="p-6 flex-1">
+                                            <div className={`inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-r ${course.gradient} text-white text-2xl mb-4`}>
+                                                {course.emoji}
+                                            </div>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <h3 className="text-xl font-bold text-gray-800">{course.nom}</h3>
+                                                <span className="px-2 py-0.5 bg-gray-100 text-gray-500 rounded text-xs font-medium">{course.nivell}</span>
+                                            </div>
+                                            <p className="text-sm text-gray-400 mb-3">{course.fullName}</p>
+                                            <p className="text-gray-500 text-sm mb-4">{course.desc}</p>
+
+                                            <div className="flex flex-wrap gap-2">
+                                                <span className="px-3 py-1.5 bg-green-50 text-green-600 rounded-lg text-sm font-medium">{t('profProgramacions')}</span>
+                                                <span className="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-lg text-sm font-medium">{t('profActivitats')}</span>
+                                                <span className="px-3 py-1.5 bg-teal-50 text-teal-600 rounded-lg text-sm font-medium">{t('profAvaluacio')}</span>
+                                            </div>
+                                        </div>
+                                        <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50">
+                                            <span className="font-medium text-sm flex items-center gap-1 text-green-500 opacity-50">
+                                                {t('profRecursos')} <ChevronRight size={16} />
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* SAs LOMLOE */}
+                            <div className="text-center mb-10">
+                                <h2 className="text-2xl md:text-3xl font-black text-gray-800 mb-3">{t('profSATitle')}</h2>
+                                <p className="text-gray-500 max-w-xl mx-auto">{t('profSASubtitle')}</p>
+                            </div>
+                            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                {courses.map(course => (
+                                    <div key={course.id + '-sa'} className="bg-white rounded-xl border border-gray-100 p-5 text-center hover:shadow-lg hover:border-green-200 transition-all">
+                                        <div className="text-3xl mb-3">{course.emoji}</div>
+                                        <h4 className="font-bold text-gray-800 mb-1">{course.nom}</h4>
+                                        <p className="text-xs text-gray-400 mb-3">SAs LOMLOE</p>
+                                        <span className="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">{t('comingSoon')}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Board Games for Professorat */}
+                    <section className="py-16 bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800">
+                        <div className="max-w-6xl mx-auto px-4">
+                            <div className="text-center mb-10">
+                                <h2 className="text-3xl md:text-4xl font-black text-white mb-3">🎲 Jocs de Taula Multijugador</h2>
+                                <p className="text-gray-400 max-w-xl mx-auto">Jocs d'estratègia econòmica per a l'aula. El professor projecta, els alumnes juguen des del mòbil amb codi o QR.</p>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                {[
+                                    { emoji: '☭', name: 'Communist Party', desc: 'Party & Co d\'economia: mímica, dibuix, preguntes, paraula prohibida i ràpid sobre sistemes econòmics.', href: './communist', gradient: 'from-red-500 to-red-700', tag: '2-30 jugadors', features: '185 cartes · 5 categories · Mode ràpid/complet' },
+                                    { emoji: '📈', name: 'STONKS', desc: 'STONKS only go up! 📈 Simulador d\'inversió amb dades reals 2000-2024, desbloqueig progressiu, IA benchmark i money printer goes BRRR.', href: './stonks', gradient: 'from-green-500 to-emerald-700', tag: '2-20 jugadors', features: '8 actius · Dades reals · IA benchmark · BRRR' },
+                                    { emoji: '🏛️', name: 'Oligopoly', desc: 'Monopoly econòmic: subhastes en temps real, cicles econòmics, R+D, impostos progressius i 8 sectors.', href: './econopoly', gradient: 'from-emerald-500 to-teal-700', tag: '2-6 jugadors', features: '28 caselles · 8 sectors · Subhastes · Cicles' },
+                                    { emoji: '⚔️', name: 'Systemic Risk', desc: 'Risk d\'escoles econòmiques: Keynesians vs Marxistes vs Austríacs vs Neoclàssics per la dominació mundial.', href: './econrisk', gradient: 'from-slate-500 to-zinc-700', tag: '2-4 jugadors', features: '24 territoris · 4 faccions · Poders especials' }
+                                ].map(function(game) {
+                                    return (
+                                        <a key={game.name} href={game.href} className="group bg-white/5 backdrop-blur border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-300">
+                                            <div className={'h-2 bg-gradient-to-r ' + game.gradient}></div>
+                                            <div className="p-6">
+                                                <div className="flex items-start gap-4">
+                                                    <div className={'text-4xl flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-r ' + game.gradient + ' shadow-lg'}>{game.emoji}</div>
+                                                    <div className="flex-1">
+                                                        <h3 className="text-xl font-black text-white group-hover:text-yellow-300 transition-colors">{game.name}</h3>
+                                                        <span className="text-xs text-gray-400 bg-white/10 px-2 py-0.5 rounded-full">{game.tag}</span>
+                                                        <p className="text-gray-400 text-sm mt-2">{game.desc}</p>
+                                                        <p className="text-gray-500 text-xs mt-2">{game.features}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </section>
+                    </React.Fragment>
+                    )}
+
+                    {/* ==================== TAB: OPOSITOR ==================== */}
+                    {activeTab === 'opositor' && (
+                    <section id="content" className="py-16 bg-gradient-to-br from-purple-50/50 via-white to-violet-50/30">
+                        <div className="max-w-6xl mx-auto px-4">
+                            <div className="text-center mb-12">
+                                <h2 className="text-3xl md:text-4xl font-black text-gray-800 mb-3">{t('opoTitle')}</h2>
+                                <p className="text-gray-500 max-w-xl mx-auto">{t('opoSubtitle')}</p>
+                            </div>
+
+                            <div className="grid md:grid-cols-3 gap-6">
+                                {opoSections.map(section => (
+                                    <div key={section.id} className="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:shadow-xl hover:border-purple-200 transition-all duration-300 flex flex-col relative">
+                                        <div className="absolute top-3 right-3 z-10">
+                                            <span className="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">{t('comingSoon')}</span>
+                                        </div>
+                                        <div className={`h-3 bg-gradient-to-r ${section.gradient}`}></div>
+                                        <div className="p-6 flex-1">
+                                            <div className={`inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-r ${section.gradient} text-white text-2xl mb-4`}>
+                                                {section.emoji}
+                                            </div>
+                                            <h3 className="text-xl font-bold text-gray-800 mb-2">{section.nom}</h3>
+                                            <p className="text-gray-500 text-sm mb-4">{section.desc}</p>
+
+                                            <div className="flex items-center gap-2">
+                                                <section.icon size={16} className="text-purple-500" />
+                                                <span className="px-3 py-1.5 bg-purple-50 text-purple-600 rounded-lg text-sm font-medium">{section.stat}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+                    )}
+
+                    {/* ==================== FEATURES + CTA (per tab) ==================== */}
                     <section className="py-16">
                         <div className="max-w-6xl mx-auto px-4">
                             <div className="grid md:grid-cols-2 gap-8 items-center">
                                 <div>
                                     <h2 className="text-3xl font-black text-gray-800 mb-6">{t('featuresTitle')}</h2>
                                     <div className="space-y-4">
-                                        {features.map((item, i) => (
+                                        {(tabFeatures[activeTab] || tabFeatures.general).map((item, i) => (
                                             <div key={i} className="flex gap-4 p-4 bg-white rounded-xl border border-gray-100">
-                                                <div className="p-2 bg-pink-100 rounded-lg h-fit"><item.icon className="text-pink-500" size={20} /></div>
+                                                <div className={`p-2 ${tc.bgLight} rounded-lg h-fit`}><item.icon className={tc.text} size={20} /></div>
                                                 <div>
                                                     <h3 className="font-bold text-gray-800">{item.title}</h3>
                                                     <p className="text-sm text-gray-500">{item.desc}</p>
@@ -565,15 +967,15 @@
                                         ))}
                                     </div>
                                 </div>
-                                
-                                <div className="bg-gradient-to-br from-pink-100 to-amber-100 rounded-3xl p-8 text-center">
+
+                                <div className={`bg-gradient-to-br ${activeTab === 'general' ? 'from-pink-100 to-amber-100' : activeTab === 'alumnat' ? 'from-blue-100 to-indigo-100' : activeTab === 'professorat' ? 'from-green-100 to-emerald-100' : 'from-purple-100 to-violet-100'} rounded-3xl p-8 text-center`}>
                                     <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-2xl shadow-lg mb-6">
-                                        <Rocket className="text-pink-500" size={40} />
+                                        <Rocket className={tc.text} size={40} />
                                     </div>
                                     <h3 className="text-2xl font-black text-gray-800 mb-2">{t('freeTitle')}</h3>
-                                    <p className="text-gray-600 mb-6">{t('freeDesc')}</p>
+                                    <p className="text-gray-600 mb-6">{activeTab === 'general' ? t('freeDesc') : activeTab === 'alumnat' ? t('freeAlumnat') : activeTab === 'professorat' ? t('freeProf') : t('freeOpo')}</p>
                                     <div className="flex justify-center gap-2">
-                                        <Heart className="text-pink-500" size={20} />
+                                        <Heart className={tc.text} size={20} />
                                         <span className="text-sm text-gray-500">{t('madeWith')}</span>
                                     </div>
                                 </div>
@@ -581,15 +983,30 @@
                         </div>
                     </section>
 
-                    <section className="py-16 bg-gradient-to-r from-pink-500 to-rose-500">
+                    <section className={`py-16 bg-gradient-to-r ${tc.gradient}`}>
                         <div className="max-w-4xl mx-auto px-4 text-center text-white">
-                            <h2 className="text-3xl md:text-4xl font-black mb-4">{t('ctaTitle')}</h2>
-                            <p className="text-white/80 mb-8 max-w-xl mx-auto">{t('ctaDesc')}</p>
+                            <h2 className="text-3xl md:text-4xl font-black mb-4">{activeTab === 'general' ? t('ctaTitle') : activeTab === 'alumnat' ? t('ctaAlumnatTitle') : activeTab === 'professorat' ? t('ctaProfTitle') : t('ctaOpoTitle')}</h2>
+                            <p className="text-white/80 mb-8 max-w-xl mx-auto">{activeTab === 'general' ? t('ctaDesc') : activeTab === 'alumnat' ? t('ctaAlumnatDesc') : activeTab === 'professorat' ? t('ctaProfDesc') : t('ctaOpoDesc')}</p>
                             <div className="flex flex-wrap justify-center gap-4">
-                                {apps.filter(app => !app.esGran).map(app => (
+                                {activeTab === 'general' && apps.filter(app => !app.esGran).map(app => (
                                     <a key={app.id} href={app.href} className="px-6 py-3 bg-white text-gray-800 rounded-xl font-bold hover:bg-gray-100 transition-all flex items-center gap-2">
                                         <app.icon size={18} />{app.nom}
                                     </a>
+                                ))}
+                                {activeTab === 'alumnat' && courses.map(course => (
+                                    <button key={course.id} className="px-6 py-3 bg-white/20 text-white rounded-xl font-bold hover:bg-white/30 transition-all flex items-center gap-2 cursor-default">
+                                        <span>{course.emoji}</span>{course.nom}
+                                    </button>
+                                ))}
+                                {activeTab === 'professorat' && courses.map(course => (
+                                    <button key={course.id} className="px-6 py-3 bg-white/20 text-white rounded-xl font-bold hover:bg-white/30 transition-all flex items-center gap-2 cursor-default">
+                                        <span>{course.emoji}</span>{course.nom}
+                                    </button>
+                                ))}
+                                {activeTab === 'opositor' && opoSections.map(section => (
+                                    <button key={section.id} className="px-6 py-3 bg-white/20 text-white rounded-xl font-bold hover:bg-white/30 transition-all flex items-center gap-2 cursor-default">
+                                        <span>{section.emoji}</span>{section.nom}
+                                    </button>
                                 ))}
                             </div>
                         </div>

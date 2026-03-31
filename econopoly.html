@@ -56,6 +56,34 @@
 const { useState, useEffect, useRef, useCallback } = React;
 
 // ═══════════════════════════════════════════════════════════════
+// TRANSLATIONS
+// ═══════════════════════════════════════════════════════════════
+var ECONOPOLY_TRANSLATIONS = {
+    'back_pde':           { val: 'Tornar a PDE', es: 'Volver a PDE', en: 'Back to PDE' },
+    'round_x_of_y':       { val: 'Ronda {x} / {y}', es: 'Ronda {x} / {y}', en: 'Round {x} / {y}' },
+    'final_results':      { val: 'Resultats finals', es: 'Resultados finales', en: 'Final results' },
+    'patrimony':          { val: 'Patrimoni', es: 'Patrimonio', en: 'Net Worth' },
+    'roll_dice':          { val: 'Tirar Daus', es: 'Tirar Dados', en: 'Roll Dice' },
+    'rolling':            { val: 'Tirant...', es: 'Tirando...', en: 'Rolling...' },
+    'end_turn':           { val: 'Finalitzar Torn', es: 'Finalizar Turno', en: 'End Turn' },
+    'auction_ongoing':    { val: 'Subhasta en curs...', es: 'Subasta en curso...', en: 'Auction ongoing...' },
+    'close_auction':      { val: 'Tancar subhasta ara', es: 'Cerrar subasta ahora', en: 'Close auction now' },
+    'end_game':           { val: 'Finalitzar Partida', es: 'Finalizar Partida', en: 'End Game' },
+    'other_players':      { val: 'Altres jugadors', es: 'Otros jugadores', en: 'Other players' },
+    'sell_property':      { val: 'Vendre propietat al banc (50% del valor)', es: 'Vender propiedad al banco (50% del valor)', en: 'Sell property to bank (50% value)' },
+    'close':              { val: 'Tancar', es: 'Cerrar', en: 'Close' },
+    'sell':               { val: 'Vendre', es: 'Vender', en: 'Sell' },
+    'prev':               { val: 'Anterior', es: 'Anterior', en: 'Previous' },
+    'next':               { val: 'Seguent', es: 'Siguiente', en: 'Next' },
+    'play':               { val: 'Jugar!', es: '¡Jugar!', en: 'Play!' },
+    'skip_tutorial':      { val: 'Saltar tutorial', es: 'Saltar tutorial', en: 'Skip tutorial' },
+    'expansion':          { val: "L'economia creix! Lloguers +30%, valors de propietats +20%", es: '¡La economía crece! Alquileres +30%, valores de propiedades +20%', en: 'The economy grows! Rents +30%, property values +20%' },
+    'recession':          { val: "L'economia es contrau! Lloguers -30%, valors de propietats -20%", es: '¡La economía se contrae! Alquileres -30%, valores de propiedades -20%', en: 'The economy contracts! Rents -30%, property values -20%' },
+    'game_over':          { val: 'Partida Acabada!', es: '¡Partida Acabada!', en: 'Game Over!' },
+    'what_learned':       { val: 'Que hem apres?', es: '¿Qué hemos aprendido?', en: 'What did we learn?' }
+};
+
+// ═══════════════════════════════════════════════════════════════
 // PLAYER COLORS — Up to 6 players
 // ═══════════════════════════════════════════════════════════════
 var PLAYER_COLORS = [
@@ -769,7 +797,7 @@ function OligopolyBoard({ gameState, playerOrder, players }) {
 
                     {/* Round info */}
                     <div className="text-xs text-white/60 mt-2">
-                        Ronda {gameState.round || 1} / {gameState.maxRounds || 20}
+                        {t('round_x_of_y').replace('{x}', gameState.round || 1).replace('{y}', gameState.maxRounds || 20)}
                     </div>
 
                     {/* Interest rate */}
@@ -1089,7 +1117,7 @@ function EndGameScreen({ playerOrder, players, money, properties, cycle, sectorM
                 <div className="text-center text-white">
                     <div className="text-6xl mb-2">🏆</div>
                     <h1 className="text-4xl md:text-5xl font-black">FINAL D'OLIGOPOLY!</h1>
-                    <p className="text-emerald-300 text-lg mt-2">Resultats finals</p>
+                    <p className="text-emerald-300 text-lg mt-2">{t('final_results')}</p>
                 </div>
 
                 {/* Winner highlight */}
@@ -1097,7 +1125,7 @@ function EndGameScreen({ playerOrder, players, money, properties, cycle, sectorM
                     <div className="bg-gradient-to-br from-yellow-400 to-amber-500 rounded-3xl p-6 text-center shadow-2xl">
                         <div className="text-5xl mb-2">👑</div>
                         <h2 className="text-3xl font-black text-white">{rankings[0].name}</h2>
-                        <p className="text-white/80 text-xl mt-1">Patrimoni: {rankings[0].netWorth.toLocaleString()}€</p>
+                        <p className="text-white/80 text-xl mt-1">{t('patrimony')}: {rankings[0].netWorth.toLocaleString()}€</p>
                         <div className="flex justify-center gap-4 mt-3">
                             <div className="bg-white/20 rounded-xl px-3 py-1">
                                 <div className="text-white/60 text-xs">Efectiu</div>
@@ -1230,7 +1258,7 @@ function EndGameScreen({ playerOrder, players, money, properties, cycle, sectorM
 
                 <div className="text-center space-y-3">
                     <a href="./" className="inline-block px-8 py-3 bg-white/10 text-white rounded-2xl font-bold hover:bg-white/20">
-                        🏠 Tornar a PDE
+                        🏠 {t('back_pde')}
                     </a>
                     <p className="text-white/20 text-xs">Oligopoly — Plataforma Didactica Economica</p>
                 </div>
@@ -1243,7 +1271,8 @@ function EndGameScreen({ playerOrder, players, money, properties, cycle, sectorM
 // ═══════════════════════════════════════════════════════════════
 // HOST VIEW — Main game controller
 // ═══════════════════════════════════════════════════════════════
-function OligopolyHost({ roomCode, playerId, players, gameState }) {
+function OligopolyHost({ roomCode, playerId, players, gameState, idioma }) {
+    var t = function(key) { return ECONOPOLY_TRANSLATIONS[key]?.[idioma] || ECONOPOLY_TRANSLATIONS[key]?.val || key; };
     const [rolling, setRolling] = useState(false);
     const [showNews, setShowNews] = useState(false);
     const [actionLog, setActionLog] = useState([]);
@@ -1773,7 +1802,7 @@ function OligopolyHost({ roomCode, playerId, players, gameState }) {
                                     <button onClick={handleRollDice} disabled={rolling}
                                         className={'w-full py-4 rounded-2xl text-white font-black text-xl shadow-lg btn-eco ' +
                                             (rolling ? 'bg-gray-500 cursor-wait' : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:brightness-110')}>
-                                        {rolling ? '🎲 Tirant...' : '🎲 Tirar Daus'}
+                                        {rolling ? '🎲 ' + t('rolling') : '🎲 ' + t('roll_dice')}
                                     </button>
 
                                     {/* Show current square info */}
@@ -1801,7 +1830,7 @@ function OligopolyHost({ roomCode, playerId, players, gameState }) {
                                     )}
                                     <button onClick={handleEndTurn}
                                         className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 text-white font-black text-lg shadow-lg btn-eco hover:brightness-110">
-                                        ➡️ Finalitzar Torn
+                                        ➡️ {t('end_turn')}
                                     </button>
                                 </div>
                             )}
@@ -1809,11 +1838,11 @@ function OligopolyHost({ roomCode, playerId, players, gameState }) {
                             {phase === 'auction' && (
                                 <div className="text-center">
                                     <div className="text-yellow-300 font-bold animate-pulse text-sm">
-                                        🔨 Subhasta en curs...
+                                        🔨 {t('auction_ongoing')}
                                     </div>
                                     <button onClick={resolveAuction}
                                         className="mt-2 w-full py-2 rounded-xl bg-red-500 text-white font-bold text-sm btn-eco">
-                                        ⏩ Tancar subhasta ara
+                                        ⏩ {t('close_auction')}
                                     </button>
                                 </div>
                             )}
@@ -1894,7 +1923,8 @@ function OligopolyHost({ roomCode, playerId, players, gameState }) {
 // ═══════════════════════════════════════════════════════════════
 // PLAYER VIEW — Mobile interface for each player
 // ═══════════════════════════════════════════════════════════════
-function OligopolyPlayer({ roomCode, playerId, players, gameState }) {
+function OligopolyPlayer({ roomCode, playerId, players, gameState, idioma }) {
+    var t = function(key) { return ECONOPOLY_TRANSLATIONS[key]?.[idioma] || ECONOPOLY_TRANSLATIONS[key]?.val || key; };
     const [bidAmount, setBidAmount] = useState('');
     const [lastBid, setLastBid] = useState(0);
 
@@ -1966,11 +1996,11 @@ function OligopolyPlayer({ roomCode, playerId, players, gameState }) {
             <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-gray-900 to-teal-950 p-4 flex items-center justify-center">
                 <div className="max-w-sm w-full text-center space-y-4">
                     <div className="text-6xl">{medals[myRank - 1] || '🏁'}</div>
-                    <h1 className="text-3xl font-black text-white">Final del Joc!</h1>
+                    <h1 className="text-3xl font-black text-white">{t('game_over')}</h1>
                     <div className="bg-white/10 rounded-2xl p-4">
-                        <div className="text-white/60 text-sm">La teua posicio</div>
+                        <div className="text-white/60 text-sm">#{myRank}</div>
                         <div className="text-4xl font-black text-emerald-300">#{myRank}</div>
-                        <div className="text-white font-bold mt-1">Patrimoni: {myNetWorth.toLocaleString()}€</div>
+                        <div className="text-white font-bold mt-1">{t('patrimony')}: {myNetWorth.toLocaleString()}€</div>
                     </div>
                     <div className="space-y-1">
                         {rankings.map(function(r, i) {
@@ -2190,7 +2220,7 @@ function OligopolyPlayer({ roomCode, playerId, players, gameState }) {
 
                 {/* OTHER PLAYERS */}
                 <div className="bg-white/5 rounded-2xl p-3">
-                    <h4 className="text-white/40 text-xs font-bold mb-1">👥 Altres jugadors</h4>
+                    <h4 className="text-white/40 text-xs font-bold mb-1">👥 {t('other_players')}</h4>
                     <div className="space-y-1">
                         {playerOrder.map(function(pid, idx) {
                             if (pid === playerId) return null;
@@ -2514,18 +2544,18 @@ function RulesScreen({ onContinue }) {
                     {currentPage > 0 && (
                         <button onClick={function() { setCurrentPage(currentPage - 1); }}
                             className="flex-1 py-3 rounded-2xl bg-white/10 text-white font-bold btn-eco hover:bg-white/20">
-                            ← Anterior
+                            ← {ECONOPOLY_TRANSLATIONS['prev']?.[PdeLanguageStore.get()] || 'Anterior'}
                         </button>
                     )}
                     {currentPage < pages.length - 1 ? (
                         <button onClick={function() { setCurrentPage(currentPage + 1); }}
                             className="flex-1 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold btn-eco hover:brightness-110">
-                            Seguent →
+                            {ECONOPOLY_TRANSLATIONS['next']?.[PdeLanguageStore.get()] || 'Seguent'} →
                         </button>
                     ) : (
                         <button onClick={onContinue}
                             className="flex-1 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black text-xl btn-eco hover:brightness-110 shadow-lg">
-                            🎮 Jugar!
+                            🎮 {ECONOPOLY_TRANSLATIONS['play']?.[PdeLanguageStore.get()] || 'Jugar!'}
                         </button>
                     )}
                 </div>
@@ -2534,12 +2564,12 @@ function RulesScreen({ onContinue }) {
                 {currentPage < pages.length - 1 && (
                     <button onClick={onContinue}
                         className="w-full text-center text-white/30 hover:text-white/60 text-sm">
-                        Saltar tutorial →
+                        {ECONOPOLY_TRANSLATIONS['skip_tutorial']?.[PdeLanguageStore.get()] || 'Saltar tutorial'} →
                     </button>
                 )}
 
                 <div className="text-center">
-                    <a href="./" className="text-white/20 hover:text-white/40 text-xs">🏠 Tornar a PDE</a>
+                    <a href="./" className="text-white/20 hover:text-white/40 text-xs">🏠 {ECONOPOLY_TRANSLATIONS['back_pde']?.[PdeLanguageStore.get()] || 'Tornar a PDE'}</a>
                 </div>
             </div>
         </div>
@@ -2557,12 +2587,10 @@ function OligopolyApp() {
     const [meta, setMeta] = useState({});
     const [players, setPlayers] = useState({});
     const [gameState, setGameState] = useState({});
+    var [idioma, setIdioma] = useState(PdeLanguageStore.get());
+    var t = function(key) { return ECONOPOLY_TRANSLATIONS[key]?.[idioma] || ECONOPOLY_TRANSLATIONS[key]?.val || key; };
 
-    if (!PdeFirebase.isConfigured()) {
-        return <PdeFirebaseError />;
-    }
-
-    useEffect(function() { PdeFirebase.init(); }, []);
+    useEffect(function() { if (PdeFirebase.isConfigured()) PdeFirebase.init(); }, []);
 
     // Subscribe to room data
     useEffect(function() {
@@ -2579,6 +2607,10 @@ function OligopolyApp() {
             setPhase('playing');
         }
     }, [meta.status]);
+
+    if (!PdeFirebase.isConfigured()) {
+        return <PdeFirebaseError />;
+    }
 
     var handleGameStart = function(info) {
         setGameInfo(info);
@@ -2637,7 +2669,21 @@ function OligopolyApp() {
 
     // ── Rules ──
     if (phase === 'rules') {
-        return <RulesScreen onContinue={function() { setPhase('lobby'); }} />;
+        return (
+            <div>
+                <div style={{position:'fixed',top:12,right:12,zIndex:9999,display:'flex',gap:4}}>
+                    {['val','es','en'].map(function(l) {
+                        return <button key={l} onClick={function(){setIdioma(l);PdeLanguageStore.set(l);}}
+                            style={{padding:'4px 10px',borderRadius:8,fontSize:13,fontWeight:idioma===l?800:500,
+                                background:idioma===l?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.2)',
+                                color:idioma===l?'#1a1a2e':'white',border:'none',cursor:'pointer'}}>
+                            {l.toUpperCase()}
+                        </button>;
+                    })}
+                </div>
+                <RulesScreen onContinue={function() { setPhase('lobby'); }} />
+            </div>
+        );
     }
 
     // ── Lobby ──
@@ -2660,10 +2706,10 @@ function OligopolyApp() {
     if (phase === 'playing' && gameInfo) {
         if (gameInfo.isHost) {
             return <OligopolyHost roomCode={gameInfo.roomCode} playerId={gameInfo.playerId}
-                players={players} gameState={gameState} />;
+                players={players} gameState={gameState} idioma={idioma} />;
         } else {
             return <OligopolyPlayer roomCode={gameInfo.roomCode} playerId={gameInfo.playerId}
-                players={players} gameState={gameState} />;
+                players={players} gameState={gameState} idioma={idioma} />;
         }
     }
 

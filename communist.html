@@ -51,6 +51,76 @@
 const { useState, useEffect, useRef } = React;
 
 // ═══════════════════════════════════════════════════════════════
+// TRANSLATIONS
+// ═══════════════════════════════════════════════════════════════
+var COMMUNIST_TRANSLATIONS = {
+    'choose_mode':        { val: 'Tria el mode de joc', es: 'Elige el modo de juego', en: 'Choose game mode' },
+    'mode_rapid':         { val: 'Mode Ràpid', es: 'Modo Rápido', en: 'Quick Mode' },
+    'mode_rapid_desc':    { val: '~10 minuts — Taulell de 12 caselles, partida curta', es: '~10 minutos — Tablero de 12 casillas, partida corta', en: '~10 minutes — 12-space board, short game' },
+    'mode_full':          { val: 'Mode Complet', es: 'Modo Completo', en: 'Full Mode' },
+    'mode_full_desc':     { val: '~25 minuts — Taulell de 24 caselles, partida completa', es: '~25 minutos — Tablero de 24 casillas, partida completa', en: '~25 minutes — 24-space board, full game' },
+    'back':               { val: 'Tornar', es: 'Volver', en: 'Back' },
+    'back_pde':           { val: 'Tornar a PDE', es: 'Volver a PDE', en: 'Back to PDE' },
+    'final_results':      { val: 'Communist Party — Resultats Finals', es: 'Communist Party — Resultados Finales', en: 'Communist Party — Final Results' },
+    'points':             { val: 'punts', es: 'puntos', en: 'points' },
+    'square':             { val: 'Casella', es: 'Casilla', en: 'Square' },
+    'cat_stats':          { val: 'Estadístiques per Categoria', es: 'Estadísticas por Categoría', en: 'Statistics by Category' },
+    'team_label':         { val: 'Equip', es: 'Equipo', en: 'Team' },
+    'team_turn':          { val: "Torn de l'equip", es: 'Turno del equipo', en: "Team's turn" },
+    'roll_dice':          { val: 'Tirar el dau!', es: '¡Tirar el dado!', en: 'Roll the dice!' },
+    'end_game':           { val: 'Finalitzar Partida', es: 'Finalizar Partida', en: 'End Game' },
+    'start_timer':        { val: 'Començar Timer', es: 'Empezar Timer', en: 'Start Timer' },
+    'correct':            { val: 'Correcte!', es: '¡Correcto!', en: 'Correct!' },
+    'incorrect':          { val: 'Incorrecte!', es: '¡Incorrecto!', en: 'Incorrect!' },
+    'correct_btn':        { val: 'Correcte!', es: '¡Correcto!', en: 'Correct!' },
+    'incorrect_btn':      { val: 'Incorrecte', es: 'Incorrecto', en: 'Incorrect' },
+    'evaluate':           { val: 'Avaluar Respostes', es: 'Evaluar Respuestas', en: 'Evaluate Answers' },
+    'evaluate_rapid':     { val: 'Avaluar Ràpid', es: 'Evaluar Rápido', en: 'Evaluate Quick' },
+    'result_label':       { val: 'Resultat', es: 'Resultado', en: 'Result' },
+    'correct_answer':     { val: 'Resposta correcta:', es: 'Respuesta correcta:', en: 'Correct answer:' },
+    'next_turn':          { val: 'Següent Torn', es: 'Siguiente Turno', en: 'Next Turn' },
+    'total_points':       { val: 'punts totals', es: 'puntos totales', en: 'total points' },
+    'waiting':            { val: 'Esperant...', es: 'Esperando...', en: 'Waiting...' },
+    'turn_of':            { val: 'Torn de', es: 'Turno de', en: "Turn of" },
+    'game_over':          { val: 'Partida Acabada!', es: '¡Partida Acabada!', en: 'Game Over!' },
+    'your_turn':          { val: 'El vostre torn!', es: '¡Vuestro turno!', en: 'Your turn!' },
+    'teacher_dice':       { val: 'El professor tirarà el dau...', es: 'El profesor tirará el dado...', en: 'The teacher will roll the dice...' },
+    'waiting_dice':       { val: 'Esperant dau...', es: 'Esperando dado...', en: 'Waiting for dice...' },
+    'waiting_next':       { val: 'Esperant el següent torn...', es: 'Esperando el siguiente turno...', en: 'Waiting for next turn...' },
+    'you_actor':          { val: "ETS L'ACTOR!", es: '¡ERES EL ACTOR!', en: "YOU'RE THE ACTOR!" },
+    'act_mime':           { val: 'Representa amb mímica:', es: 'Representa con mímica:', en: 'Act out with mime:' },
+    'no_talking':         { val: 'NO parles! Només gestos!', es: '¡NO hables! ¡Solo gestos!', en: "DON'T talk! Gestures only!" },
+    'you_artist':         { val: 'ETS EL DIBUIXANT!', es: '¡ERES EL DIBUJANTE!', en: "YOU'RE THE ARTIST!" },
+    'draw_concept':       { val: 'Dibuixa en paper:', es: 'Dibuja en papel:', en: 'Draw on paper:' },
+    'no_letters':         { val: 'NO escrigues lletres ni números!', es: '¡NO escribas letras ni números!', en: "DON'T write letters or numbers!" },
+    'you_describer':      { val: 'ETS EL DESCRIPTOR!', es: '¡ERES EL DESCRIPTOR!', en: "YOU'RE THE DESCRIBER!" },
+    'describe_word':      { val: 'Descriu la paraula:', es: 'Describe la palabra:', en: 'Describe the word:' },
+    'forbidden_words':    { val: 'Paraules prohibides:', es: 'Palabras prohibidas:', en: 'Forbidden words:' },
+    'watch_guess':        { val: 'Mira i endevina!', es: '¡Mira y adivina!', en: 'Watch and guess!' },
+    'waiting_eval':       { val: 'Esperant avaluació del professor...', es: 'Esperando evaluación del profesor...', en: "Waiting for teacher's evaluation..." },
+    'waiting_eval_short': { val: 'Esperant avaluació...', es: 'Esperando evaluación...', en: 'Waiting for evaluation...' },
+    'answer_sent':        { val: 'Resposta enviada!', es: '¡Respuesta enviada!', en: 'Answer sent!' },
+    'rapid_round':        { val: 'Ronda ràpida', es: 'Ronda rápida', en: 'Quick round' },
+    'all_answer_phone':   { val: 'Tots els membres de l\'equip responen al mòbil', es: 'Todos los miembros del equipo responden en el móvil', en: 'All team members answer on their phones' },
+    'all_answer_15s':     { val: 'Tots responen al mòbil — 15 segons!', es: '¡Todos responden en el móvil — 15 segundos!', en: 'Everyone answers on phone — 15 seconds!' },
+    'mime_host_desc':     { val: "Un membre de l'equip ha de representar el concepte amb mímica. La resta ha d'endevinar!", es: 'Un miembro del equipo debe representar el concepto con mímica. ¡El resto debe adivinar!', en: 'One team member must act out the concept with mime. The rest must guess!' },
+    'mime_shown_phone':   { val: "El concepte es mostra al mòbil del jugador assignat", es: 'El concepto se muestra en el móvil del jugador asignado', en: "The concept is shown on the assigned player's phone" },
+    'actor':              { val: 'Actor', es: 'Actor', en: 'Actor' },
+    'draw_host_desc':     { val: "Un membre dibuixa en paper (no al mòbil!). La resta ha d'endevinar al mòbil!", es: 'Un miembro dibuja en papel (¡no en el móvil!). ¡El resto debe adivinar en el móvil!', en: "One member draws on paper (not on phone!). The rest must guess on phone!" },
+    'draw_shown_phone':   { val: "El concepte es mostra al mòbil del dibuixant", es: 'El concepto se muestra en el móvil del dibujante', en: "The concept is shown on the artist's phone" },
+    'drawer':             { val: 'Dibuixant', es: 'Dibujante', en: 'Artist' },
+    'forbid_host_desc':   { val: "Un membre descriu la paraula sense usar les paraules prohibides. La resta endevina!", es: 'Un miembro describe la palabra sin usar las palabras prohibidas. ¡El resto adivina!', en: 'One member describes the word without using forbidden words. The rest guess!' },
+    'forbid_shown_phone': { val: "La paraula i les prohibides es mostren al mòbil del descriptor", es: 'La palabra y las prohibidas se muestran en el móvil del descriptor', en: "The word and forbidden words are shown on the describer's phone" },
+    'describer':          { val: 'Descriptor', es: 'Descriptor', en: 'Describer' },
+    // Category names
+    'cat_mimica':         { val: 'Mímica', es: 'Mímica', en: 'Mime' },
+    'cat_dibuixa':        { val: 'Dibuixa', es: 'Dibuja', en: 'Draw' },
+    'cat_preguntes':      { val: 'Preguntes', es: 'Preguntas', en: 'Questions' },
+    'cat_prohibida':      { val: 'Paraula Prohibida', es: 'Palabra Prohibida', en: 'Forbidden Word' },
+    'cat_rapid':          { val: 'Ràpid', es: 'Rápido', en: 'Quick' }
+};
+
+// ═══════════════════════════════════════════════════════════════
 // TEAMS CONFIGURATION
 // ═══════════════════════════════════════════════════════════════
 var TEAMS = [
@@ -975,12 +1045,10 @@ function CommunistApp() {
     const [meta, setMeta] = useState({});
     const [players, setPlayers] = useState({});
     const [gameState, setGameState] = useState({});
+    var [idioma, setIdioma] = useState(PdeLanguageStore.get());
+    var t = function(key) { return COMMUNIST_TRANSLATIONS[key]?.[idioma] || COMMUNIST_TRANSLATIONS[key]?.val || key; };
 
-    if (!PdeFirebase.isConfigured()) {
-        return <PdeFirebaseError />;
-    }
-
-    useEffect(function() { PdeFirebase.init(); }, []);
+    useEffect(function() { if (PdeFirebase.isConfigured()) PdeFirebase.init(); }, []);
 
     // Subscribe to room data
     useEffect(function() {
@@ -997,6 +1065,10 @@ function CommunistApp() {
             setPhase('playing');
         }
     }, [meta.status]);
+
+    if (!PdeFirebase.isConfigured()) {
+        return <PdeFirebaseError />;
+    }
 
     var handleGameStart = function(info) {
         setGameInfo(info);
@@ -1061,25 +1133,35 @@ function CommunistApp() {
     if (phase === 'lobby' && !gameMode) {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-red-900 via-gray-900 to-red-950">
+                <div style={{position:'fixed',top:12,right:12,zIndex:9999,display:'flex',gap:4}}>
+                    {['val','es','en'].map(function(l) {
+                        return <button key={l} onClick={function(){setIdioma(l);PdeLanguageStore.set(l);}}
+                            style={{padding:'4px 10px',borderRadius:8,fontSize:13,fontWeight:idioma===l?800:500,
+                                background:idioma===l?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.2)',
+                                color:idioma===l?'#1a1a2e':'white',border:'none',cursor:'pointer'}}>
+                            {l.toUpperCase()}
+                        </button>;
+                    })}
+                </div>
                 <div className="max-w-lg w-full space-y-6 text-center">
                     <div className="text-8xl">☭</div>
                     <h1 className="text-5xl font-black text-white">Communist Party</h1>
-                    <p className="text-white/60 text-lg">Tria el mode de joc</p>
+                    <p className="text-white/60 text-lg">{t('choose_mode')}</p>
                     <div className="space-y-4">
                         <button onClick={function() { setGameMode('rapid'); }}
                             className="w-full py-6 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg btn-communist hover:brightness-110">
                             <div className="text-3xl mb-1">⚡</div>
-                            <div className="text-2xl font-black">Mode Ràpid</div>
-                            <div className="text-white/80 text-sm mt-1">~10 minuts — Taulell de 12 caselles, partida curta</div>
+                            <div className="text-2xl font-black">{t('mode_rapid')}</div>
+                            <div className="text-white/80 text-sm mt-1">{t('mode_rapid_desc')}</div>
                         </button>
                         <button onClick={function() { setGameMode('complet'); }}
                             className="w-full py-6 rounded-2xl bg-gradient-to-r from-red-600 to-red-800 text-white shadow-lg btn-communist hover:brightness-110">
                             <div className="text-3xl mb-1">🏛️</div>
-                            <div className="text-2xl font-black">Mode Complet</div>
-                            <div className="text-white/80 text-sm mt-1">~25 minuts — Taulell de 24 caselles, partida completa</div>
+                            <div className="text-2xl font-black">{t('mode_full')}</div>
+                            <div className="text-white/80 text-sm mt-1">{t('mode_full_desc')}</div>
                         </button>
                     </div>
-                    <a href="./" className="inline-block text-gray-400 hover:text-white transition-colors">🏠 Tornar</a>
+                    <a href="./" className="inline-block text-gray-400 hover:text-white transition-colors">🏠 {t('back')}</a>
                 </div>
             </div>
         );
@@ -1090,7 +1172,7 @@ function CommunistApp() {
         return (
             <PdeGameLobby
                 gameType="communist"
-                gameName={'Communist Party — ' + (gameMode === 'rapid' ? '⚡ Ràpid' : '🏛️ Complet')}
+                gameName={'Communist Party — ' + (gameMode === 'rapid' ? '⚡ ' + t('mode_rapid') : '🏛️ ' + t('mode_full'))}
                 gameEmoji="☭"
                 gameGradient="from-red-600 to-red-800"
                 minPlayers={4}
@@ -1106,10 +1188,10 @@ function CommunistApp() {
     if (phase === 'playing' && gameInfo) {
         if (gameInfo.isHost) {
             return <CommunistHost roomCode={gameInfo.roomCode} playerId={gameInfo.playerId}
-                players={players} gameState={gameState} />;
+                players={players} gameState={gameState} idioma={idioma} />;
         } else {
             return <CommunistPlayer roomCode={gameInfo.roomCode} playerId={gameInfo.playerId}
-                players={players} gameState={gameState} />;
+                players={players} gameState={gameState} idioma={idioma} />;
         }
     }
 
@@ -1237,7 +1319,9 @@ function TeamScoreboard({ positions, teamScores, numTeams, currentTeam, boardSiz
 // ═══════════════════════════════════════════════════════════════
 // HOST VIEW
 // ═══════════════════════════════════════════════════════════════
-function CommunistHost({ roomCode, playerId, players, gameState }) {
+function CommunistHost({ roomCode, playerId, players, gameState, idioma }) {
+    var t = function(key) { return COMMUNIST_TRANSLATIONS[key]?.[idioma] || COMMUNIST_TRANSLATIONS[key]?.val || key; };
+    var tCard = function(card) { return card?.[idioma] || card?.val || '???'; };
     const [showConfetti, setShowConfetti] = useState(false);
     const [diceValue, setDiceValue] = useState(null);
     const [diceRolling, setDiceRolling] = useState(false);
@@ -1506,13 +1590,13 @@ function CommunistHost({ roomCode, playerId, players, gameState }) {
         var catKeys = Object.keys(CATEGORIES);
 
         return (
-            <PdeHostView title="Communist Party — Resultats Finals" emoji="☭" gradient="from-red-900 to-gray-900">
+            <PdeHostView title={t('final_results')} emoji="☭" gradient="from-red-900 to-gray-900">
                 <PdeConfetti show={showConfetti} />
                 {sortedTeams[0] && (
                     <div className="text-center">
                         <div className="text-8xl mb-2">🏆</div>
                         <h2 className="text-4xl font-black text-yellow-300">{sortedTeams[0].team.emoji} {sortedTeams[0].team.name}</h2>
-                        <p className="text-white/70 text-xl mt-2">{sortedTeams[0].score} punts — Casella {sortedTeams[0].position}</p>
+                        <p className="text-white/70 text-xl mt-2">{sortedTeams[0].score} {t('points')} — {t('square')} {sortedTeams[0].position}</p>
                     </div>
                 )}
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-6">
@@ -1524,7 +1608,7 @@ function CommunistHost({ roomCode, playerId, players, gameState }) {
                                 <div className="text-2xl mt-1">{t.team.emoji}</div>
                                 <div className="font-black text-lg">{t.team.name}</div>
                                 <div className="text-yellow-600 font-bold">{t.score} pts</div>
-                                <div className="text-gray-500 text-sm">Casella {t.position}/{activeBoardSize}</div>
+                                <div className="text-gray-500 text-sm">{COMMUNIST_TRANSLATIONS['square']?.[idioma] || 'Casella'} {t.position}/{activeBoardSize}</div>
                             </div>
                         );
                     })}
@@ -1532,12 +1616,12 @@ function CommunistHost({ roomCode, playerId, players, gameState }) {
 
                 {/* Category Statistics per Team */}
                 <div className="mt-8">
-                    <h3 className="text-2xl font-black text-white text-center mb-4">📊 Estadístiques per Categoria</h3>
+                    <h3 className="text-2xl font-black text-white text-center mb-4">📊 {t('cat_stats')}</h3>
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="text-white/60">
-                                    <th className="text-left py-2 px-2">Equip</th>
+                                    <th className="text-left py-2 px-2">{t('team_label')}</th>
                                     {catKeys.map(function(cat) {
                                         return <th key={cat} className="text-center py-2 px-1">{CATEGORIES[cat].emoji}<br/><span className="text-xs">{CATEGORIES[cat].name}</span></th>;
                                     })}
@@ -1578,7 +1662,7 @@ function CommunistHost({ roomCode, playerId, players, gameState }) {
                     </div>
                 </div>
 
-                <a href="./" className="block text-center text-white/60 hover:text-white mt-6">🏠 Tornar a PDE</a>
+                <a href="./" className="block text-center text-white/60 hover:text-white mt-6">🏠 {t('back_pde')}</a>
             </PdeHostView>
         );
     }
@@ -1602,7 +1686,7 @@ function CommunistHost({ roomCode, playerId, players, gameState }) {
                         <div className="card-communist p-6 text-center space-y-4">
                             <div className="text-3xl">{team.emoji}</div>
                             <h2 className="text-2xl font-black">{team.name}</h2>
-                            <p className="text-gray-500">Torn de l'equip</p>
+                            <p className="text-gray-500">{t('team_turn')}</p>
 
                             {diceRolling ? (
                                 <PdeDiceRoll value={diceValue} rolling={true} size={100} />
@@ -1611,14 +1695,14 @@ function CommunistHost({ roomCode, playerId, players, gameState }) {
                             ) : (
                                 <button onClick={rollDice}
                                     className="w-full py-4 rounded-2xl text-white font-black text-xl shadow-lg bg-gradient-to-r from-red-500 to-red-700 btn-communist hover:brightness-110">
-                                    🎲 Tirar el dau!
+                                    🎲 {t('roll_dice')}
                                 </button>
                             )}
                         </div>
 
                         <button onClick={endGame}
                             className="w-full py-3 rounded-xl text-white/60 font-bold text-sm hover:text-white hover:bg-white/10 transition-all">
-                            🏁 Finalitzar Partida
+                            🏁 {t('end_game')}
                         </button>
                     </div>
                 </div>
@@ -1674,24 +1758,24 @@ function CommunistHost({ roomCode, playerId, players, gameState }) {
                             {/* Challenge content based on type */}
                             {challenge.type === 'mimica' && (
                                 <div className="space-y-3">
-                                    <p className="text-gray-500 text-lg">Un membre de l'equip ha de representar el concepte amb mímica. La resta ha d'endevinar!</p>
+                                    <p className="text-gray-500 text-lg">{t('mime_host_desc')}</p>
                                     <div className="bg-orange-50 rounded-xl p-4">
-                                        <p className="text-sm text-orange-600 font-bold">El concepte es mostra al mòbil del jugador assignat</p>
+                                        <p className="text-sm text-orange-600 font-bold">{t('mime_shown_phone')}</p>
                                     </div>
                                     {challenge.assignedPlayer && players[challenge.assignedPlayer] && (
-                                        <p className="text-sm text-gray-400">Actor: <span className="font-bold text-gray-700">{players[challenge.assignedPlayer].name}</span></p>
+                                        <p className="text-sm text-gray-400">{t('actor')}: <span className="font-bold text-gray-700">{players[challenge.assignedPlayer].name}</span></p>
                                     )}
                                 </div>
                             )}
 
                             {challenge.type === 'dibuixa' && (
                                 <div className="space-y-3">
-                                    <p className="text-gray-500 text-lg">Un membre dibuixa en paper (no al mòbil!). La resta ha d'endevinar al mòbil!</p>
+                                    <p className="text-gray-500 text-lg">{t('draw_host_desc')}</p>
                                     <div className="bg-teal-50 rounded-xl p-4">
-                                        <p className="text-sm text-teal-600 font-bold">El concepte es mostra al mòbil del dibuixant</p>
+                                        <p className="text-sm text-teal-600 font-bold">{t('draw_shown_phone')}</p>
                                     </div>
                                     {challenge.assignedPlayer && players[challenge.assignedPlayer] && (
-                                        <p className="text-sm text-gray-400">Dibuixant: <span className="font-bold text-gray-700">{players[challenge.assignedPlayer].name}</span></p>
+                                        <p className="text-sm text-gray-400">{t('drawer')}: <span className="font-bold text-gray-700">{players[challenge.assignedPlayer].name}</span></p>
                                     )}
                                 </div>
                             )}
@@ -1700,32 +1784,32 @@ function CommunistHost({ roomCode, playerId, players, gameState }) {
                                 <div className="space-y-3">
                                     {PREGUNTES_CARDS[cardIndex] && (
                                         <div>
-                                            <h3 className="text-xl font-black text-gray-800 mb-3">{PREGUNTES_CARDS[cardIndex].q.val}</h3>
+                                            <h3 className="text-xl font-black text-gray-800 mb-3">{tCard(PREGUNTES_CARDS[cardIndex].q)}</h3>
                                             <div className="grid grid-cols-2 gap-2">
                                                 {PREGUNTES_CARDS[cardIndex].options.map(function(opt, oi) {
                                                     var letters = ['A', 'B', 'C', 'D'];
                                                     return (
                                                         <div key={oi} className="bg-blue-50 rounded-xl p-3 text-left">
                                                             <span className="font-black text-blue-500 mr-2">{letters[oi]}</span>
-                                                            <span className="text-gray-700">{opt.val}</span>
+                                                            <span className="text-gray-700">{tCard(opt)}</span>
                                                         </div>
                                                     );
                                                 })}
                                             </div>
                                         </div>
                                     )}
-                                    <p className="text-sm text-gray-400">Tots els membres de l'equip responen al mòbil</p>
+                                    <p className="text-sm text-gray-400">{t('all_answer_phone')}</p>
                                 </div>
                             )}
 
                             {challenge.type === 'prohibida' && (
                                 <div className="space-y-3">
-                                    <p className="text-gray-500 text-lg">Un membre descriu la paraula sense usar les paraules prohibides. La resta endevina!</p>
+                                    <p className="text-gray-500 text-lg">{t('forbid_host_desc')}</p>
                                     <div className="bg-purple-50 rounded-xl p-4">
-                                        <p className="text-sm text-purple-600 font-bold">La paraula i les prohibides es mostren al mòbil del descriptor</p>
+                                        <p className="text-sm text-purple-600 font-bold">{t('forbid_shown_phone')}</p>
                                     </div>
                                     {challenge.assignedPlayer && players[challenge.assignedPlayer] && (
-                                        <p className="text-sm text-gray-400">Descriptor: <span className="font-bold text-gray-700">{players[challenge.assignedPlayer].name}</span></p>
+                                        <p className="text-sm text-gray-400">{t('describer')}: <span className="font-bold text-gray-700">{players[challenge.assignedPlayer].name}</span></p>
                                     )}
                                 </div>
                             )}
@@ -1733,11 +1817,11 @@ function CommunistHost({ roomCode, playerId, players, gameState }) {
                             {challenge.type === 'rapid' && (
                                 <div className="space-y-3">
                                     <div className="bg-yellow-50 rounded-xl p-3">
-                                        <p className="text-sm text-yellow-700 font-bold">Ronda ràpida {(gs.rapidSubRound || 0) + 1}/{gs.rapidTotal || 5}</p>
+                                        <p className="text-sm text-yellow-700 font-bold">{t('rapid_round')} {(gs.rapidSubRound || 0) + 1}/{gs.rapidTotal || 5}</p>
                                     </div>
                                     {RAPID_CARDS[cardIndex] && (
                                         <div>
-                                            <h3 className="text-xl font-black text-gray-800 mb-3">{RAPID_CARDS[cardIndex].q.val}</h3>
+                                            <h3 className="text-xl font-black text-gray-800 mb-3">{tCard(RAPID_CARDS[cardIndex].q)}</h3>
                                             {RAPID_CARDS[cardIndex].type === 'choice' && RAPID_CARDS[cardIndex].options && (
                                                 <div className="grid grid-cols-2 gap-2">
                                                     {RAPID_CARDS[cardIndex].options.map(function(opt, oi) {
@@ -1745,7 +1829,7 @@ function CommunistHost({ roomCode, playerId, players, gameState }) {
                                                         return (
                                                             <div key={oi} className="bg-yellow-50 rounded-xl p-3 text-left">
                                                                 <span className="font-black text-yellow-600 mr-2">{letters[oi]}</span>
-                                                                <span className="text-gray-700">{opt.val}</span>
+                                                                <span className="text-gray-700">{tCard(opt)}</span>
                                                             </div>
                                                         );
                                                     })}
@@ -1753,7 +1837,7 @@ function CommunistHost({ roomCode, playerId, players, gameState }) {
                                             )}
                                         </div>
                                     )}
-                                    <p className="text-sm text-gray-400">Tots responen al mòbil — 15 segons!</p>
+                                    <p className="text-sm text-gray-400">{t('all_answer_15s')}</p>
                                 </div>
                             )}
 
@@ -1762,7 +1846,7 @@ function CommunistHost({ roomCode, playerId, players, gameState }) {
                                 {!timerRunning && (
                                     <button onClick={startTimer}
                                         className="px-6 py-3 rounded-xl text-white font-bold bg-gradient-to-r from-green-500 to-emerald-600 btn-communist">
-                                        ⏱️ Començar Timer
+                                        ⏱️ {t('start_timer')}
                                     </button>
                                 )}
 
@@ -1770,11 +1854,11 @@ function CommunistHost({ roomCode, playerId, players, gameState }) {
                                     <>
                                         <button onClick={function() { markResult(true); }}
                                             className="px-6 py-3 rounded-xl text-white font-bold bg-gradient-to-r from-green-500 to-green-700 btn-communist">
-                                            ✅ Correcte!
+                                            ✅ {t('correct_btn')}
                                         </button>
                                         <button onClick={function() { markResult(false); }}
                                             className="px-6 py-3 rounded-xl text-white font-bold bg-gradient-to-r from-red-500 to-red-700 btn-communist">
-                                            ❌ Incorrecte
+                                            ❌ {t('incorrect_btn')}
                                         </button>
                                     </>
                                 )}
@@ -1782,14 +1866,14 @@ function CommunistHost({ roomCode, playerId, players, gameState }) {
                                 {challenge.type === 'preguntes' && (
                                     <button onClick={evaluatePreguntes}
                                         className="px-6 py-3 rounded-xl text-white font-bold bg-gradient-to-r from-blue-500 to-blue-700 btn-communist">
-                                        📊 Avaluar Respostes
+                                        📊 {t('evaluate')}
                                     </button>
                                 )}
 
                                 {challenge.type === 'rapid' && (
                                     <button onClick={evaluateRapid}
                                         className="px-6 py-3 rounded-xl text-white font-bold bg-gradient-to-r from-yellow-500 to-yellow-700 btn-communist">
-                                        ⚡ Avaluar Ràpid
+                                        ⚡ {t('evaluate_rapid')}
                                     </button>
                                 )}
                             </div>
@@ -1819,29 +1903,29 @@ function CommunistHost({ roomCode, playerId, players, gameState }) {
                         <div className="card-communist p-8 text-center space-y-4">
                             <div className="text-6xl">{wasCorrect ? '🎉' : '😢'}</div>
                             <h2 className={'text-3xl font-black ' + (wasCorrect ? 'text-green-600' : 'text-red-600')}>
-                                {wasCorrect ? 'Correcte!' : 'Incorrecte!'}
+                                {wasCorrect ? t('correct') : t('incorrect')}
                             </h2>
                             <div className="flex items-center justify-center gap-2">
                                 <span className="text-2xl">{team.emoji}</span>
                                 <span className="font-bold text-lg">{team.name}</span>
                             </div>
-                            {detail && <p className="text-gray-500">Resultat: {detail}</p>}
+                            {detail && <p className="text-gray-500">{t('result_label')}: {detail}</p>}
                             <p className="text-yellow-600 font-bold text-lg">
-                                {teamScores[currentTeam] || 0} punts totals
+                                {teamScores[currentTeam] || 0} {t('total_points')}
                             </p>
 
                             {/* Show explanation for preguntes */}
                             {challenge && challenge.type === 'preguntes' && PREGUNTES_CARDS[challenge.cardIndex] && (
                                 <div className="bg-blue-50 rounded-xl p-4 text-left">
-                                    <p className="font-bold text-blue-700 mb-1">Resposta correcta:</p>
-                                    <p className="text-blue-600">{PREGUNTES_CARDS[challenge.cardIndex].options[PREGUNTES_CARDS[challenge.cardIndex].correct].val}</p>
-                                    <p className="text-gray-600 text-sm mt-2">{PREGUNTES_CARDS[challenge.cardIndex].explanation.val}</p>
+                                    <p className="font-bold text-blue-700 mb-1">{t('correct_answer')}</p>
+                                    <p className="text-blue-600">{tCard(PREGUNTES_CARDS[challenge.cardIndex].options[PREGUNTES_CARDS[challenge.cardIndex].correct])}</p>
+                                    <p className="text-gray-600 text-sm mt-2">{tCard(PREGUNTES_CARDS[challenge.cardIndex].explanation)}</p>
                                 </div>
                             )}
 
                             <button onClick={nextTurn}
                                 className="w-full py-4 rounded-2xl text-white font-black text-xl shadow-lg bg-gradient-to-r from-red-500 to-red-700 btn-communist hover:brightness-110">
-                                ➡️ Següent Torn
+                                ➡️ {t('next_turn')}
                             </button>
                         </div>
 
@@ -1850,7 +1934,7 @@ function CommunistHost({ roomCode, playerId, players, gameState }) {
 
                         <button onClick={endGame}
                             className="w-full py-3 rounded-xl text-white/60 font-bold text-sm hover:text-white hover:bg-white/10 transition-all">
-                            🏁 Finalitzar Partida
+                            🏁 {t('end_game')}
                         </button>
                     </div>
                 </div>
@@ -1865,7 +1949,9 @@ function CommunistHost({ roomCode, playerId, players, gameState }) {
 // ═══════════════════════════════════════════════════════════════
 // PLAYER VIEW
 // ═══════════════════════════════════════════════════════════════
-function CommunistPlayer({ roomCode, playerId, players, gameState }) {
+function CommunistPlayer({ roomCode, playerId, players, gameState, idioma }) {
+    var t = function(key) { return COMMUNIST_TRANSLATIONS[key]?.[idioma] || COMMUNIST_TRANSLATIONS[key]?.val || key; };
+    var tCard = function(card) { return card?.[idioma] || card?.val || '???'; };
     const [answerSent, setAnswerSent] = useState(false);
     const [openAnswer, setOpenAnswer] = useState('');
 
@@ -1902,14 +1988,14 @@ function CommunistPlayer({ roomCode, playerId, players, gameState }) {
             <PdePlayerView gradient="from-gray-900 to-gray-800">
                 <div className="card-communist p-6 text-center space-y-4">
                     <div className="text-4xl">{myTeamInfo.emoji}</div>
-                    <h2 className="font-black text-xl">Equip {myTeamInfo.name}</h2>
+                    <h2 className="font-black text-xl">{t('team_label')} {myTeamInfo.name}</h2>
                     <div className={'rounded-xl p-3 ' + myTeamInfo.bgLight}>
                         <p className={myTeamInfo.text + ' font-bold'}>{myPlayer.name}</p>
-                        <p className="text-gray-500 text-sm">{teamScores[myTeam] || 0} punts</p>
+                        <p className="text-gray-500 text-sm">{teamScores[myTeam] || 0} {t('points')}</p>
                     </div>
                     <div className="bg-gray-100 rounded-xl p-4">
-                        <p className="text-gray-500">Esperant...</p>
-                        <p className="font-bold text-gray-700 mt-1">{activeTeam.emoji} Torn de {activeTeam.name}</p>
+                        <p className="text-gray-500">{t('waiting')}</p>
+                        <p className="font-bold text-gray-700 mt-1">{activeTeam.emoji} {t('turn_of')} {activeTeam.name}</p>
                     </div>
                 </div>
             </PdePlayerView>
@@ -1922,13 +2008,13 @@ function CommunistPlayer({ roomCode, playerId, players, gameState }) {
             <PdePlayerView gradient="from-gray-900 to-gray-800">
                 <div className="card-communist p-6 text-center space-y-4">
                     <div className="text-5xl">🏆</div>
-                    <h2 className="font-black text-2xl">Partida Acabada!</h2>
+                    <h2 className="font-black text-2xl">{t('game_over')}</h2>
                     <div className={'rounded-xl p-4 ' + myTeamInfo.bgLight}>
                         <p className="text-2xl">{myTeamInfo.emoji}</p>
                         <p className={'font-black text-xl ' + myTeamInfo.text}>{myTeamInfo.name}</p>
-                        <p className="text-yellow-600 font-bold text-lg">{teamScores[myTeam] || 0} punts</p>
+                        <p className="text-yellow-600 font-bold text-lg">{teamScores[myTeam] || 0} {t('points')}</p>
                     </div>
-                    <a href="./" className="inline-block px-6 py-3 bg-gray-200 rounded-xl font-bold hover:bg-gray-300">🏠 Tornar</a>
+                    <a href="./" className="inline-block px-6 py-3 bg-gray-200 rounded-xl font-bold hover:bg-gray-300">🏠 {t('back')}</a>
                 </div>
             </PdePlayerView>
         );
@@ -1940,13 +2026,13 @@ function CommunistPlayer({ roomCode, playerId, players, gameState }) {
             <PdePlayerView gradient="from-gray-900 to-gray-800">
                 <div className="card-communist p-6 text-center space-y-4">
                     <div className="text-4xl">{myTeamInfo.emoji}</div>
-                    <h2 className="font-black text-xl">El vostre torn!</h2>
-                    <p className="text-gray-500">El professor tirarà el dau...</p>
+                    <h2 className="font-black text-xl">{t('your_turn')}</h2>
+                    <p className="text-gray-500">{t('teacher_dice')}</p>
                     <div className="bg-yellow-50 rounded-xl p-3">
-                        <p className="text-yellow-700 font-bold">🎲 Esperant dau...</p>
+                        <p className="text-yellow-700 font-bold">🎲 {t('waiting_dice')}</p>
                     </div>
                     <div className={'rounded-xl p-3 ' + myTeamInfo.bgLight}>
-                        <p className={myTeamInfo.text + ' font-bold'}>{teamScores[myTeam] || 0} punts</p>
+                        <p className={myTeamInfo.text + ' font-bold'}>{teamScores[myTeam] || 0} {t('points')}</p>
                     </div>
                 </div>
             </PdePlayerView>
@@ -1961,9 +2047,9 @@ function CommunistPlayer({ roomCode, playerId, players, gameState }) {
                 <div className="card-communist p-6 text-center space-y-4">
                     <div className="text-5xl">{wasCorrect ? '🎉' : '😢'}</div>
                     <h2 className={'font-black text-2xl ' + (wasCorrect ? 'text-green-600' : 'text-red-600')}>
-                        {wasCorrect ? 'Correcte!' : 'Incorrecte!'}
+                        {wasCorrect ? t('correct') : t('incorrect')}
                     </h2>
-                    <p className="text-gray-500">Esperant el següent torn...</p>
+                    <p className="text-gray-500">{t('waiting_next')}</p>
                 </div>
             </PdePlayerView>
         );
@@ -1982,12 +2068,12 @@ function CommunistPlayer({ roomCode, playerId, players, gameState }) {
                     <PdePlayerView gradient="from-gray-900 to-gray-800">
                         <div className="card-communist p-6 text-center space-y-4">
                             <div className="text-3xl">{catInfo.emoji}</div>
-                            <h3 className="font-black text-lg text-orange-600">ETS L'ACTOR!</h3>
+                            <h3 className="font-black text-lg text-orange-600">{t('you_actor')}</h3>
                             <div className="bg-orange-100 rounded-xl p-6">
-                                <p className="text-sm text-orange-600 mb-2">Representa amb mímica:</p>
-                                <p className="text-3xl font-black text-orange-800">{card ? card.val : '???'}</p>
+                                <p className="text-sm text-orange-600 mb-2">{t('act_mime')}</p>
+                                <p className="text-3xl font-black text-orange-800">{card ? tCard(card) : '???'}</p>
                             </div>
-                            <p className="text-sm text-gray-400">NO parles! Només gestos!</p>
+                            <p className="text-sm text-gray-400">{t('no_talking')}</p>
                         </div>
                     </PdePlayerView>
                 );
@@ -1996,8 +2082,8 @@ function CommunistPlayer({ roomCode, playerId, players, gameState }) {
                     <PdePlayerView gradient="from-gray-900 to-gray-800">
                         <div className="card-communist p-6 text-center space-y-4">
                             <div className="text-3xl">{catInfo.emoji}</div>
-                            <h3 className="font-black text-lg text-orange-600">Mímica</h3>
-                            <p className="text-gray-600">Observa el teu company i endevina el concepte!</p>
+                            <h3 className="font-black text-lg text-orange-600">{t('cat_mimica')}</h3>
+                            <p className="text-gray-600">{t('watch_guess')}</p>
                             {!answerSent ? (
                                 <div className="space-y-3">
                                     <input type="text" placeholder="Escriu la teua resposta..."
@@ -2013,7 +2099,7 @@ function CommunistPlayer({ roomCode, playerId, players, gameState }) {
                                 </div>
                             ) : (
                                 <div className="bg-green-100 rounded-xl p-4">
-                                    <p className="text-green-700 font-bold">✅ Resposta enviada!</p>
+                                    <p className="text-green-700 font-bold">✅ {t('answer_sent')}</p>
                                 </div>
                             )}
                         </div>
@@ -2030,12 +2116,12 @@ function CommunistPlayer({ roomCode, playerId, players, gameState }) {
                     <PdePlayerView gradient="from-gray-900 to-gray-800">
                         <div className="card-communist p-6 text-center space-y-4">
                             <div className="text-3xl">{catInfo.emoji}</div>
-                            <h3 className="font-black text-lg text-teal-600">ETS EL DIBUIXANT!</h3>
+                            <h3 className="font-black text-lg text-teal-600">{t('you_artist')}</h3>
                             <div className="bg-teal-100 rounded-xl p-6">
-                                <p className="text-sm text-teal-600 mb-2">Dibuixa en PAPER:</p>
-                                <p className="text-3xl font-black text-teal-800">{card ? card.val : '???'}</p>
+                                <p className="text-sm text-teal-600 mb-2">{t('draw_concept')}</p>
+                                <p className="text-3xl font-black text-teal-800">{card ? tCard(card) : '???'}</p>
                             </div>
-                            <p className="text-sm text-gray-400">Dibuixa en paper real, NO al mòbil!</p>
+                            <p className="text-sm text-gray-400">{t('no_letters')}</p>
                         </div>
                     </PdePlayerView>
                 );
@@ -2044,8 +2130,8 @@ function CommunistPlayer({ roomCode, playerId, players, gameState }) {
                     <PdePlayerView gradient="from-gray-900 to-gray-800">
                         <div className="card-communist p-6 text-center space-y-4">
                             <div className="text-3xl">{catInfo.emoji}</div>
-                            <h3 className="font-black text-lg text-teal-600">Dibuixa</h3>
-                            <p className="text-gray-600">Mira el dibuix del teu company i endevina!</p>
+                            <h3 className="font-black text-lg text-teal-600">{t('cat_dibuixa')}</h3>
+                            <p className="text-gray-600">{t('watch_guess')}</p>
                             {!answerSent ? (
                                 <div className="space-y-3">
                                     <input type="text" placeholder="Escriu la teua resposta..."
@@ -2061,7 +2147,7 @@ function CommunistPlayer({ roomCode, playerId, players, gameState }) {
                                 </div>
                             ) : (
                                 <div className="bg-green-100 rounded-xl p-4">
-                                    <p className="text-green-700 font-bold">✅ Resposta enviada!</p>
+                                    <p className="text-green-700 font-bold">✅ {t('answer_sent')}</p>
                                 </div>
                             )}
                         </div>
@@ -2078,8 +2164,8 @@ function CommunistPlayer({ roomCode, playerId, players, gameState }) {
                 <PdePlayerView gradient="from-gray-900 to-gray-800">
                     <div className="card-communist p-6 text-center space-y-4">
                         <div className="text-3xl">{catInfo.emoji}</div>
-                        <h3 className="font-black text-lg text-blue-600">Pregunta</h3>
-                        <p className="text-gray-800 font-bold text-lg">{card.q.val}</p>
+                        <h3 className="font-black text-lg text-blue-600">{t('cat_preguntes')}</h3>
+                        <p className="text-gray-800 font-bold text-lg">{tCard(card.q)}</p>
                         {!answerSent ? (
                             <div className="space-y-2">
                                 {card.options.map(function(opt, oi) {
@@ -2088,15 +2174,15 @@ function CommunistPlayer({ roomCode, playerId, players, gameState }) {
                                         <button key={oi} onClick={function() { submitAnswer(oi); }}
                                             className="w-full py-3 px-4 rounded-xl bg-blue-50 hover:bg-blue-100 text-left font-bold transition-colors btn-communist">
                                             <span className="text-blue-500 font-black mr-2">{letters[oi]}</span>
-                                            {opt.val}
+                                            {tCard(opt)}
                                         </button>
                                     );
                                 })}
                             </div>
                         ) : (
                             <div className="bg-green-100 rounded-xl p-4">
-                                <p className="text-green-700 font-bold">✅ Resposta enviada!</p>
-                                <p className="text-gray-500 text-sm">Esperant avaluació del professor...</p>
+                                <p className="text-green-700 font-bold">✅ {t('answer_sent')}</p>
+                                <p className="text-gray-500 text-sm">{t('waiting_eval')}</p>
                             </div>
                         )}
                     </div>
@@ -2112,16 +2198,16 @@ function CommunistPlayer({ roomCode, playerId, players, gameState }) {
                     <PdePlayerView gradient="from-gray-900 to-gray-800">
                         <div className="card-communist p-6 text-center space-y-4">
                             <div className="text-3xl">{catInfo.emoji}</div>
-                            <h3 className="font-black text-lg text-purple-600">ETS EL DESCRIPTOR!</h3>
+                            <h3 className="font-black text-lg text-purple-600">{t('you_describer')}</h3>
                             <div className="bg-purple-100 rounded-xl p-4">
-                                <p className="text-sm text-purple-600 mb-2">Descriu aquesta paraula:</p>
-                                <p className="text-3xl font-black text-purple-800">{card ? card.word.val : '???'}</p>
+                                <p className="text-sm text-purple-600 mb-2">{t('describe_word')}</p>
+                                <p className="text-3xl font-black text-purple-800">{card ? tCard(card.word) : '???'}</p>
                             </div>
                             {card && (
                                 <div className="bg-red-100 rounded-xl p-4">
-                                    <p className="text-sm text-red-600 font-bold mb-2">🚫 PARAULES PROHIBIDES:</p>
+                                    <p className="text-sm text-red-600 font-bold mb-2">🚫 {t('forbidden_words')}</p>
                                     <div className="flex flex-wrap gap-2 justify-center">
-                                        {card.forbidden.val.map(function(w, i) {
+                                        {(card.forbidden[idioma] || card.forbidden.val).map(function(w, i) {
                                             return (
                                                 <span key={i} className="bg-red-200 text-red-800 px-3 py-1 rounded-full font-bold text-sm">
                                                     {w}
@@ -2139,8 +2225,8 @@ function CommunistPlayer({ roomCode, playerId, players, gameState }) {
                     <PdePlayerView gradient="from-gray-900 to-gray-800">
                         <div className="card-communist p-6 text-center space-y-4">
                             <div className="text-3xl">{catInfo.emoji}</div>
-                            <h3 className="font-black text-lg text-purple-600">Paraula Prohibida</h3>
-                            <p className="text-gray-600">Escolta al teu company i endevina la paraula!</p>
+                            <h3 className="font-black text-lg text-purple-600">{t('cat_prohibida')}</h3>
+                            <p className="text-gray-600">{t('watch_guess')}</p>
                             {!answerSent ? (
                                 <div className="space-y-3">
                                     <input type="text" placeholder="Escriu la paraula..."
@@ -2156,7 +2242,7 @@ function CommunistPlayer({ roomCode, playerId, players, gameState }) {
                                 </div>
                             ) : (
                                 <div className="bg-green-100 rounded-xl p-4">
-                                    <p className="text-green-700 font-bold">✅ Resposta enviada!</p>
+                                    <p className="text-green-700 font-bold">✅ {t('answer_sent')}</p>
                                 </div>
                             )}
                         </div>
@@ -2173,8 +2259,8 @@ function CommunistPlayer({ roomCode, playerId, players, gameState }) {
                 <PdePlayerView gradient="from-gray-900 to-gray-800">
                     <div className="card-communist p-6 text-center space-y-4">
                         <div className="text-3xl">{catInfo.emoji}</div>
-                        <h3 className="font-black text-lg text-yellow-600">Ràpid! {(gs.rapidSubRound || 0) + 1}/{gs.rapidTotal || 5}</h3>
-                        <p className="text-gray-800 font-bold text-lg">{card.q.val}</p>
+                        <h3 className="font-black text-lg text-yellow-600">{t('cat_rapid')}! {(gs.rapidSubRound || 0) + 1}/{gs.rapidTotal || 5}</h3>
+                        <p className="text-gray-800 font-bold text-lg">{tCard(card.q)}</p>
                         {!answerSent ? (
                             card.type === 'choice' && card.options ? (
                                 <div className="space-y-2">
@@ -2184,7 +2270,7 @@ function CommunistPlayer({ roomCode, playerId, players, gameState }) {
                                             <button key={oi} onClick={function() { submitAnswer(oi); }}
                                                 className="w-full py-3 px-4 rounded-xl bg-yellow-50 hover:bg-yellow-100 text-left font-bold transition-colors btn-communist">
                                                 <span className="text-yellow-600 font-black mr-2">{letters[oi]}</span>
-                                                {opt.val}
+                                                {tCard(opt)}
                                             </button>
                                         );
                                     })}
@@ -2206,8 +2292,8 @@ function CommunistPlayer({ roomCode, playerId, players, gameState }) {
                             )
                         ) : (
                             <div className="bg-green-100 rounded-xl p-4">
-                                <p className="text-green-700 font-bold">✅ Resposta enviada!</p>
-                                <p className="text-gray-500 text-sm">Esperant avaluació...</p>
+                                <p className="text-green-700 font-bold">✅ {t('answer_sent')}</p>
+                                <p className="text-gray-500 text-sm">{t('waiting_eval_short')}</p>
                             </div>
                         )}
                     </div>

@@ -53,6 +53,27 @@
 const { useState, useEffect, useRef, useCallback } = React;
 
 // =====================================================================
+// TRANSLATIONS
+// =====================================================================
+var ECONRISK_TRANSLATIONS = {
+    'multiplayer':        { val: 'Multijugador Online', es: 'Multijugador Online', en: 'Online Multiplayer' },
+    'local_game':         { val: 'Partida Local (vs IA)', es: 'Partida Local (vs IA)', en: 'Local Game (vs AI)' },
+    'how_to_play':        { val: 'Com es juga?', es: '¿Cómo se juega?', en: 'How to play?' },
+    'rule_1':             { val: '24 territoris en 6 continents', es: '24 territorios en 6 continentes', en: '24 territories across 6 continents' },
+    'rule_2':             { val: 'Combat amb daus (atacant vs defensor)', es: 'Combate con dados (atacante vs defensor)', en: 'Dice combat (attacker vs defender)' },
+    'rule_3':             { val: 'Guanya reforcos cada torn (mes territoris = mes unitats)', es: 'Gana refuerzos cada turno (más territorios = más unidades)', en: 'Earn reinforcements each turn (more territories = more units)' },
+    'rule_4':             { val: 'Controla 18 territoris o elimina tots els rivals', es: 'Controla 18 territorios o elimina a todos los rivales', en: 'Control 18 territories or eliminate all rivals' },
+    'rule_5':             { val: 'Esdeveniments economics aleatoris cada ronda', es: 'Eventos económicos aleatorios cada ronda', en: 'Random economic events each round' },
+    'rule_6':             { val: 'Cada escola te un poder especial unic', es: 'Cada escuela tiene un poder especial único', en: 'Each school has a unique special power' },
+    'back_pde':           { val: 'Tornar a PDE', es: 'Volver a PDE', en: 'Back to PDE' },
+    'back':               { val: 'Tornar', es: 'Volver', en: 'Back' },
+    'round_x_of_y':       { val: 'Ronda {x}/{y}', es: 'Ronda {x}/{y}', en: 'Round {x}/{y}' },
+    'waiting_start':      { val: 'Esperant que comence la partida...', es: 'Esperando que empiece la partida...', en: 'Waiting for the game to start...' },
+    'waiting_host':       { val: "Esperant que l'amfitrio aplique l'esdeveniment...", es: 'Esperando que el anfitrión aplique el evento...', en: "Waiting for the host to apply the event..." },
+    'the_risk_changes':   { val: 'El risc que ho canvia tot', es: 'El riesgo que lo cambia todo', en: 'The risk that changes everything' }
+};
+
+// =====================================================================
 // FACTIONS
 // =====================================================================
 var FACTIONS = [
@@ -1457,7 +1478,7 @@ function PlayerGameView({ roomCode, playerId, factionIdx }) {
                 <div className="text-center text-white space-y-4">
                     <div className="text-6xl animate-bounce">&#x2694;&#xFE0F;</div>
                     <h2 className="text-2xl font-black">Systemic Risk</h2>
-                    <p className="text-gray-400 animate-pulse">Esperant que comence la partida...</p>
+                    <p className="text-gray-400 animate-pulse">{ECONRISK_TRANSLATIONS['waiting_start']?.[PdeLanguageStore.get()] || 'Esperant que comence la partida...'}</p>
                 </div>
             </div>
         );
@@ -1572,7 +1593,7 @@ function PlayerGameView({ roomCode, playerId, factionIdx }) {
                 {/* EVENT PHASE */}
                 {gs.phase === 'event' && (
                     <div className="bg-amber-900/30 rounded-xl p-4 text-center">
-                        <p className="text-amber-200">Esperant que l'amfitrio aplique l'esdeveniment...</p>
+                        <p className="text-amber-200">{ECONRISK_TRANSLATIONS['waiting_host']?.[PdeLanguageStore.get()] || "Esperant que l'amfitrio aplique l'esdeveniment..."}</p>
                     </div>
                 )}
 
@@ -1845,6 +1866,8 @@ function SystemicRiskApp() {
     const [gameMode, setGameMode] = useState(null); // null, 'lobby', 'host', 'player', 'local'
     const [gameInfo, setGameInfo] = useState(null);
     const [localGameState, setLocalGameState] = useState(null);
+    var [idioma, setIdioma] = useState(PdeLanguageStore.get());
+    var t = function(key) { return ECONRISK_TRANSLATIONS[key]?.[idioma] || ECONRISK_TRANSLATIONS[key]?.val || key; };
 
     // Check for Firebase
     var firebaseReady = PdeFirebase.isConfigured();
@@ -1861,11 +1884,21 @@ function SystemicRiskApp() {
     if (!gameMode) {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-gray-900 to-zinc-950">
+                <div style={{position:'fixed',top:12,right:12,zIndex:9999,display:'flex',gap:4}}>
+                    {['val','es','en'].map(function(l) {
+                        return <button key={l} onClick={function(){setIdioma(l);PdeLanguageStore.set(l);}}
+                            style={{padding:'4px 10px',borderRadius:8,fontSize:13,fontWeight:idioma===l?800:500,
+                                background:idioma===l?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.2)',
+                                color:idioma===l?'#1a1a2e':'white',border:'none',cursor:'pointer'}}>
+                            {l.toUpperCase()}
+                        </button>;
+                    })}
+                </div>
                 <div className="max-w-lg w-full space-y-6 text-center">
                     <div className="space-y-2">
                         <div className="text-7xl">&#x2694;&#xFE0F;</div>
                         <h1 className="text-5xl md:text-6xl font-black text-white tracking-tight">Systemic Risk</h1>
-                        <p className="text-gray-400 text-lg">El risc que ho canvia tot</p>
+                        <p className="text-gray-400 text-lg">{t('the_risk_changes')}</p>
                     </div>
 
                     {/* Faction preview */}
@@ -1887,29 +1920,29 @@ function SystemicRiskApp() {
                         {firebaseReady && (
                             <button onClick={function() { setGameMode('lobby'); }}
                                 className="w-full py-5 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-black text-xl shadow-lg btn-risk hover:brightness-110">
-                                &#x1F4FA; Multijugador Online
+                                &#x1F4FA; {t('multiplayer')}
                             </button>
                         )}
                         <button onClick={function() { setGameMode('local'); setLocalGameState(createInitialGameState()); }}
                             className="w-full py-5 rounded-2xl bg-white text-gray-800 font-black text-xl shadow-lg btn-risk hover:bg-gray-100">
-                            &#x1F3AE; Partida Local (vs IA)
+                            &#x1F3AE; {t('local_game')}
                         </button>
                     </div>
 
                     {/* Rules */}
                     <div className="bg-white/5 rounded-2xl p-4 text-left space-y-2">
-                        <h3 className="text-white font-bold">Com es juga?</h3>
+                        <h3 className="text-white font-bold">{t('how_to_play')}</h3>
                         <ul className="text-gray-400 text-sm space-y-1">
-                            <li>&#x1F30D; 24 territoris en 6 continents</li>
-                            <li>&#x2694;&#xFE0F; Combat amb daus (atacant vs defensor)</li>
-                            <li>&#x1F4B0; Guanya reforcos cada torn (mes territoris = mes unitats)</li>
-                            <li>&#x1F3C6; Controla 18 territoris o elimina tots els rivals</li>
-                            <li>&#x1F4DC; Esdeveniments economics aleatoris cada ronda</li>
-                            <li>&#x2728; Cada escola te un poder especial unic</li>
+                            <li>&#x1F30D; {t('rule_1')}</li>
+                            <li>&#x2694;&#xFE0F; {t('rule_2')}</li>
+                            <li>&#x1F4B0; {t('rule_3')}</li>
+                            <li>&#x1F3C6; {t('rule_4')}</li>
+                            <li>&#x1F4DC; {t('rule_5')}</li>
+                            <li>&#x2728; {t('rule_6')}</li>
                         </ul>
                     </div>
 
-                    <a href="./" className="inline-block text-gray-500 hover:text-white transition-colors text-sm">&#x1F393; Tornar a PDE</a>
+                    <a href="./" className="inline-block text-gray-500 hover:text-white transition-colors text-sm">&#x1F393; {t('back_pde')}</a>
                 </div>
             </div>
         );
@@ -2165,7 +2198,7 @@ function LocalGameView({ initialState, onExit }) {
                         </button>
                         <button onClick={onExit}
                             className="px-8 py-4 rounded-2xl bg-gray-700 text-white font-bold text-xl hover:bg-gray-600 btn-risk">
-                            Tornar
+                            {ECONRISK_TRANSLATIONS['back']?.[PdeLanguageStore.get()] || 'Tornar'}
                         </button>
                     </div>
                 </div>
@@ -2202,12 +2235,12 @@ function LocalGameView({ initialState, onExit }) {
                 {/* Header */}
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                        <button onClick={onExit} className="text-gray-500 hover:text-white text-sm">&#x2190; Tornar</button>
+                        <button onClick={onExit} className="text-gray-500 hover:text-white text-sm">&#x2190; {ECONRISK_TRANSLATIONS['back']?.[PdeLanguageStore.get()] || 'Tornar'}</button>
                         <span className="text-gray-700">|</span>
                         <h1 className="text-xl md:text-2xl font-black text-white">&#x2694;&#xFE0F; Systemic Risk</h1>
                     </div>
                     <div className="text-sm text-gray-400">
-                        Ronda {gs.round}/{gs.maxRounds}
+                        {ECONRISK_TRANSLATIONS['round_x_of_y']?.[PdeLanguageStore.get()]?.replace('{x}', gs.round).replace('{y}', gs.maxRounds) || ('Ronda ' + gs.round + '/' + gs.maxRounds)}
                     </div>
                 </div>
 
