@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDMN 2BACH - Empresa i Disseny de Models de Negoci | PDE</title>
+    <meta name="description" content="Curs d'Empresa i Disseny de Models de Negoci per a 2n de Batxillerat. Business Model Canvas, costos, inversió, emprenedoria i més.">
+    <meta property="og:title" content="EDMN 2BACH - Empresa i Disseny de Models de Negoci | PDE">
+    <meta property="og:description" content="Materials interactius d'empresa per a 2n BACH: Canvas, costos, inversió, emprenedoria.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/edmn-2bach">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://profedeeconomia.es/edmn-2bach">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💼</text></svg>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #ec4899 #fdf2f8; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #fdf2f8; }
+        ::-webkit-scrollbar-thumb { background-color: #ec4899; border-radius: 3px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+        .dropdown-content { display: none; }
+        .dropdown:hover .dropdown-content { display: block; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-white to-pink-50 min-h-screen">
+    <div id="root"></div>
+    <script type="text/babel">
+const { useState, useMemo, useEffect } = React;
+
+function EdmnApp() {
+    const [section, setSection] = useState('inicio');
+    const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+
+    const pageTranslations = {
+        // whyimportant
+        'whyimportant.title': { val: "Per que t'importa aixo?", es: '¿Por que te importa esto?', en: 'Why does this matter to you?' },
+
+        // inicio
+        'inicio.title': { val: 'Empresa i Disseny de Models de Negoci', es: 'Empresa y Diseno de Modelos de Negocio', en: 'Business & Business Model Design' },
+        'inicio.subtitle': { val: 'Materials interactius per a 2n de Batxillerat', es: 'Materiales interactivos para 2o de Bachillerato', en: 'Interactive materials for Year 13' },
+        'inicio.whyimportant': { val: "Vius en un mon d'empreses. Cada producte que compres, cada servei que utilitzes, cada lloc on treballaras... tot es empresa. Entendre com funcionen, com es dissenyen i com es financen et dona poder: poder per crear, per decidir i per no deixar-te enganyar. Tant si vols emprendre com si vols ser un treballador o consumidor informat.", es: "Vives en un mundo de empresas. Cada producto que compras, cada servicio que usas, cada lugar donde trabajaras... todo es empresa. Entender como funcionan, como se disenan y como se financian te da poder: poder para crear, decidir y no dejarte enganar.", en: "You live in a world of businesses. Every product you buy, every service you use, every place you'll work... it's all business. Understanding how they work, how they're designed and financed gives you power: power to create, decide, and not be fooled." },
+
+        // section names for inicio grid
+        'sec.empresa': { val: "Que es una empresa?", es: "¿Que es una empresa?", en: "What is a business?" },
+        'sec.empresa.desc': { val: "Funcions, tipus, classificacio", es: "Funciones, tipos, clasificacion", en: "Functions, types, classification" },
+        'sec.entorn': { val: "L'entorn empresarial", es: "El entorno empresarial", en: "The business environment" },
+        'sec.entorn.desc': { val: "PEST, Porter, DAFO interactiu", es: "PEST, Porter, DAFO interactivo", en: "PEST, Porter, interactive SWOT" },
+        'sec.rsc': { val: "RSC i Etica", es: "RSC y Etica", en: "CSR & Ethics" },
+        'sec.rsc.desc': { val: "Stakeholders, ODS, sostenibilitat", es: "Stakeholders, ODS, sostenibilidad", en: "Stakeholders, SDGs, sustainability" },
+        'sec.canvas': { val: "Business Model Canvas", es: "Business Model Canvas", en: "Business Model Canvas" },
+        'sec.canvas.desc': { val: "9 blocs + eina interactiva", es: "9 bloques + herramienta interactiva", en: "9 blocks + interactive tool" },
+        'sec.lean': { val: "Lean Startup", es: "Lean Startup", en: "Lean Startup" },
+        'sec.lean.desc': { val: "MVP, Build-Measure-Learn", es: "MVP, Build-Measure-Learn", en: "MVP, Build-Measure-Learn" },
+        'sec.pla': { val: "El Pla d'Empresa", es: "El Plan de Empresa", en: "The Business Plan" },
+        'sec.pla.desc': { val: "8 seccions pas a pas", es: "8 secciones paso a paso", en: "8 sections step by step" },
+        'sec.costos': { val: "Costos i Punt Mort", es: "Costes y Umbral", en: "Costs & Break-even" },
+        'sec.costos.desc': { val: "CF, CV, simulador interactiu", es: "CF, CV, simulador interactivo", en: "FC, VC, interactive simulator" },
+        'sec.rrhh': { val: "Recursos Humans", es: "Recursos Humanos", en: "Human Resources" },
+        'sec.rrhh.desc': { val: "Maslow, Herzberg, lideratge", es: "Maslow, Herzberg, liderazgo", en: "Maslow, Herzberg, leadership" },
+        'sec.financament': { val: "Fonts de Finançament", es: "Fuentes de Financiacion", en: "Funding Sources" },
+        'sec.financament.desc': { val: "Propies vs alienes, leasing", es: "Propias vs ajenas, leasing", en: "Own vs external, leasing" },
+        'sec.inversio': { val: "Inversio", es: "Inversion", en: "Investment" },
+        'sec.inversio.desc': { val: "VAN, TIR, Payback interactiu", es: "VAN, TIR, Payback interactivo", en: "NPV, IRR, interactive Payback" },
+        'sec.comptabilitat': { val: "Comptabilitat", es: "Contabilidad", en: "Accounting" },
+        'sec.comptabilitat.desc': { val: "Balanc, PyG, ratios basics", es: "Balance, PyG, ratios basicos", en: "Balance sheet, P&L, basic ratios" },
+        'sec.marketing': { val: "Marqueting", es: "Marketing", en: "Marketing" },
+        'sec.marketing.desc': { val: "4P, segmentacio, posicionament", es: "4P, segmentacion, posicionamiento", en: "4P, segmentation, positioning" },
+
+        // Unit 1: Empresa
+        'empresa.title': { val: "Que es una empresa?", es: "¿Que es una empresa?", en: "What is a business?" },
+        'empresa.subtitle': { val: "Funcions, tipus i classificacio", es: "Funciones, tipos y clasificacion", en: "Functions, types and classification" },
+        'empresa.why': { val: "Cada dia interactues amb desenes d'empreses: la botiga on esmores, l'app que utilitzes, el transport que agafes. Saber que es una empresa, quins tipus existeixen i quins objectius persegueixen et permet entendre l'economia real i prendre millors decisions professionals.", es: "Cada dia interactuas con decenas de empresas: la tienda donde desayunas, la app que usas, el transporte que coges. Saber que es una empresa, que tipos existen y que objetivos persiguen te permite entender la economia real.", en: "Every day you interact with dozens of businesses: the shop where you breakfast, the app you use, the transport you take. Knowing what a business is helps you understand the real economy." },
+        'empresa.definicio': { val: "Definicio", es: "Definicion", en: "Definition" },
+        'empresa.definicio.text': { val: "Una empresa es una unitat economica que combina factors productius (treball, capital, terra, tecnologia) per produir bens o serveis destinats al mercat, amb l'objectiu d'obtenir un benefici.", es: "Una empresa es una unidad economica que combina factores productivos (trabajo, capital, tierra, tecnologia) para producir bienes o servicios destinados al mercado, con el objetivo de obtener un beneficio.", en: "A business is an economic unit that combines productive factors (labour, capital, land, technology) to produce goods or services for the market, aiming to earn a profit." },
+        'empresa.funcions': { val: "Funcions de l'empresa", es: "Funciones de la empresa", en: "Functions of a business" },
+        'empresa.func.producir': { val: "Produir bens i serveis que satisfan necessitats", es: "Producir bienes y servicios que satisfacen necesidades", en: "Produce goods and services that satisfy needs" },
+        'empresa.func.empleo': { val: "Crear ocupacio i generar rendes", es: "Crear empleo y generar rentas", en: "Create employment and generate income" },
+        'empresa.func.innovar': { val: "Innovar i impulsar el progres tecnologic", es: "Innovar e impulsar el progreso tecnologico", en: "Innovate and drive technological progress" },
+        'empresa.func.riqueza': { val: "Generar riquesa i contribuir al desenvolupament economic", es: "Generar riqueza y contribuir al desarrollo economico", en: "Generate wealth and contribute to economic development" },
+        'empresa.func.social': { val: "Responsabilitat social: impacte positiu en la societat", es: "Responsabilidad social: impacto positivo en la sociedad", en: "Social responsibility: positive impact on society" },
+        'empresa.per_mida': { val: "Per mida", es: "Por tamano", en: "By size" },
+        'empresa.micro': { val: "Microempresa: <10 treballadors", es: "Microempresa: <10 trabajadores", en: "Micro: <10 employees" },
+        'empresa.petita': { val: "Petita: 10-49 treballadors", es: "Pequena: 10-49 trabajadores", en: "Small: 10-49 employees" },
+        'empresa.mitjana': { val: "Mitjana: 50-249 treballadors", es: "Mediana: 50-249 trabajadores", en: "Medium: 50-249 employees" },
+        'empresa.gran': { val: "Gran: 250+ treballadors", es: "Grande: 250+ trabajadores", en: "Large: 250+ employees" },
+        'empresa.per_sector': { val: "Per sector d'activitat", es: "Por sector de actividad", en: "By sector of activity" },
+        'empresa.primari': { val: "Primari: agricultura, pesca, mineria", es: "Primario: agricultura, pesca, mineria", en: "Primary: agriculture, fishing, mining" },
+        'empresa.secundari': { val: "Secundari: industria, construccio", es: "Secundario: industria, construccion", en: "Secondary: industry, construction" },
+        'empresa.terciari': { val: "Terciari: serveis (comerc, sanitat, educacio)", es: "Terciario: servicios (comercio, sanidad, educacion)", en: "Tertiary: services (retail, health, education)" },
+        'empresa.per_forma': { val: "Per forma juridica", es: "Por forma juridica", en: "By legal form" },
+        'empresa.individual': { val: "Empresari individual (autonom)", es: "Empresario individual (autonomo)", en: "Sole trader (self-employed)" },
+        'empresa.sl': { val: "Societat Limitada (SL): capital minim 3.000EUR", es: "Sociedad Limitada (SL): capital minimo 3.000EUR", en: "Limited Company (Ltd): min. capital EUR3,000" },
+        'empresa.sa': { val: "Societat Anonima (SA): capital minim 60.000EUR", es: "Sociedad Anonima (SA): capital minimo 60.000EUR", en: "Corporation (PLC): min. capital EUR60,000" },
+        'empresa.coop': { val: "Cooperativa: gestio democratica, 1 soci = 1 vot", es: "Cooperativa: gestion democratica, 1 socio = 1 voto", en: "Cooperative: democratic management, 1 member = 1 vote" },
+        'empresa.objectius': { val: "Objectius de l'empresa", es: "Objetivos de la empresa", en: "Business objectives" },
+        'empresa.obj.benefici': { val: "Maxim benefici (pero no l'unic objectiu!)", es: "Maximo beneficio (pero no el unico objetivo!)", en: "Maximum profit (but not the only goal!)" },
+        'empresa.obj.creixement': { val: "Creixement i expansio", es: "Crecimiento y expansion", en: "Growth and expansion" },
+        'empresa.obj.supervivencia': { val: "Supervivencia a llarg termini", es: "Supervivencia a largo plazo", en: "Long-term survival" },
+        'empresa.obj.social': { val: "Objectius socials i mediambientals", es: "Objetivos sociales y medioambientales", en: "Social and environmental goals" },
+
+        // Unit 2: Entorn
+        'entorn.title': { val: "L'entorn empresarial", es: "El entorno empresarial", en: "The business environment" },
+        'entorn.subtitle': { val: "Tot allo que envolta i afecta l'empresa", es: "Todo lo que rodea y afecta a la empresa", en: "Everything that surrounds and affects the business" },
+        'entorn.why': { val: "Cap empresa viu aïllada. Les lleis canvien, la tecnologia evoluciona, la competencia es mou. Si no analitzes l'entorn, les decisions seran a cegues. Les eines PEST, Porter i DAFO et donen un mapa per navegar la incertesa.", es: "Ninguna empresa vive aislada. Las leyes cambian, la tecnologia evoluciona, la competencia se mueve. Si no analizas el entorno, las decisiones seran a ciegas.", en: "No business lives in isolation. Laws change, technology evolves, competition moves. Without analysing the environment, decisions are blind." },
+        'entorn.general': { val: "Entorn general (PEST)", es: "Entorno general (PEST)", en: "General environment (PEST)" },
+        'entorn.politic': { val: "Politic-Legal", es: "Politico-Legal", en: "Political-Legal" },
+        'entorn.politic.desc': { val: "Legislacio laboral, fiscal, regulacions sectorials, estabilitat politica, politica comercial (aranzels, acords UE)", es: "Legislacion laboral, fiscal, regulaciones sectoriales, estabilidad politica, politica comercial (aranceles, acuerdos UE)", en: "Labour law, tax policy, sector regulations, political stability, trade policy (tariffs, EU agreements)" },
+        'entorn.economic': { val: "Economic", es: "Economico", en: "Economic" },
+        'entorn.economic.desc': { val: "Cicle economic, inflacio (IPC), tipus d'interes (BCE), atur, PIB, poder adquisitiu dels consumidors", es: "Ciclo economico, inflacion (IPC), tipos de interes (BCE), desempleo, PIB, poder adquisitivo de los consumidores", en: "Business cycle, inflation (CPI), interest rates (ECB), unemployment, GDP, consumer purchasing power" },
+        'entorn.social': { val: "Sociocultural", es: "Sociocultural", en: "Sociocultural" },
+        'entorn.social.desc': { val: "Demografia, estils de vida, nivell educatiu, tendencies de consum (sostenibilitat, salut), distribucio de la renda", es: "Demografia, estilos de vida, nivel educativo, tendencias de consumo (sostenibilidad, salud), distribucion de la renta", en: "Demographics, lifestyles, education level, consumer trends (sustainability, health), income distribution" },
+        'entorn.tecnologic': { val: "Tecnologic", es: "Tecnologico", en: "Technological" },
+        'entorn.tecnologic.desc': { val: "Digitalitzacio, IA, comerc electronic, innovacio en processos, inversio en R+D, obsolescencia tecnologica", es: "Digitalizacion, IA, comercio electronico, innovacion en procesos, inversion en I+D, obsolescencia tecnologica", en: "Digitalisation, AI, e-commerce, process innovation, R&D investment, technological obsolescence" },
+        'entorn.especific': { val: "Entorn especific (5 Forces de Porter)", es: "Entorno especifico (5 Fuerzas de Porter)", en: "Specific environment (Porter's 5 Forces)" },
+        'entorn.porter.rivals': { val: "Rivalitat entre competidors", es: "Rivalidad entre competidores", en: "Rivalry among competitors" },
+        'entorn.porter.rivals.desc': { val: "Com es d'intensa la competencia al sector? Moltes empreses similars = mes pressio en preus", es: "¿Como de intensa es la competencia en el sector? Muchas empresas similares = mas presion en precios", en: "How intense is competition in the sector? Many similar firms = more price pressure" },
+        'entorn.porter.nous': { val: "Amenaca de nous entrants", es: "Amenaza de nuevos entrantes", en: "Threat of new entrants" },
+        'entorn.porter.nous.desc': { val: "Es facil entrar al sector? Barreres d'entrada: capital, patents, regulacio, fidelitat de marca", es: "¿Es facil entrar en el sector? Barreras de entrada: capital, patentes, regulacion, fidelidad de marca", en: "Is it easy to enter the sector? Barriers: capital, patents, regulation, brand loyalty" },
+        'entorn.porter.substituts': { val: "Amenaca de productes substitutius", es: "Amenaza de productos sustitutivos", en: "Threat of substitutes" },
+        'entorn.porter.substituts.desc': { val: "Existeixen alternatives al producte? Netflix vs cinema, e-book vs llibre fisic", es: "¿Existen alternativas al producto? Netflix vs cine, e-book vs libro fisico", en: "Are there alternatives to the product? Netflix vs cinema, e-book vs physical book" },
+        'entorn.porter.proveïdors': { val: "Poder de negociacio dels proveïdors", es: "Poder de negociacion de los proveedores", en: "Bargaining power of suppliers" },
+        'entorn.porter.proveïdors.desc': { val: "Quants proveïdors hi ha? Si son pocs, poden imposar preus i condicions", es: "¿Cuantos proveedores hay? Si son pocos, pueden imponer precios y condiciones", en: "How many suppliers are there? If few, they can set prices and conditions" },
+        'entorn.porter.clients': { val: "Poder de negociacio dels clients", es: "Poder de negociacion de los clientes", en: "Bargaining power of customers" },
+        'entorn.porter.clients.desc': { val: "Quant de poder tenen els compradors? Si estan informats i tenen alternatives, pressionen preus a la baixa", es: "¿Cuanto poder tienen los compradores? Si estan informados y tienen alternativas, presionan precios a la baja", en: "How much power do buyers have? If informed with alternatives, they push prices down" },
+        'entorn.dafo': { val: "Analisi DAFO", es: "Analisis DAFO", en: "SWOT Analysis" },
+        'entorn.dafo.desc': { val: "Escriu directament a les caselles per fer la teua analisi DAFO personalitzada. Es guarda automaticament.", es: "Escribe directamente en las casillas para hacer tu analisis DAFO personalizado. Se guarda automaticamente.", en: "Type directly in the boxes to create your own SWOT analysis. Saves automatically." },
+        'entorn.fortaleses': { val: "Fortaleses (intern, positiu)", es: "Fortalezas (interno, positivo)", en: "Strengths (internal, positive)" },
+        'entorn.debilitats': { val: "Debilitats (intern, negatiu)", es: "Debilidades (interno, negativo)", en: "Weaknesses (internal, negative)" },
+        'entorn.oportunitats': { val: "Oportunitats (extern, positiu)", es: "Oportunidades (externo, positivo)", en: "Opportunities (external, positive)" },
+        'entorn.amenaces': { val: "Amenaces (extern, negatiu)", es: "Amenazas (externo, negativo)", en: "Threats (external, negative)" },
+        'entorn.fortalesa': { val: "Fortalesa", es: "Fortaleza", en: "Strength" },
+        'entorn.debilitat': { val: "Debilitat", es: "Debilidad", en: "Weakness" },
+        'entorn.oportunitat': { val: "Oportunitat", es: "Oportunidad", en: "Opportunity" },
+        'entorn.amenaca': { val: "Amenaca", es: "Amenaza", en: "Threat" },
+        'entorn.afegir': { val: "+ Afegir", es: "+ Anadir", en: "+ Add" },
+        'entorn.esborrar': { val: "Esborrar tot", es: "Borrar todo", en: "Clear all" },
+        'entorn.tab.pest': { val: "Analisi PEST", es: "Analisis PEST", en: "PEST Analysis" },
+        'entorn.tab.porter': { val: "5 Forces Porter", es: "5 Fuerzas Porter", en: "Porter's 5 Forces" },
+        'entorn.tab.dafo': { val: "DAFO Interactiu", es: "DAFO Interactivo", en: "Interactive SWOT" },
+
+        // Unit 3: RSC
+        'rsc.title': { val: "RSC i Etica Empresarial", es: "RSC y Etica Empresarial", en: "CSR & Business Ethics" },
+        'rsc.subtitle': { val: "L'empresa mes enlla del benefici", es: "La empresa mas alla del beneficio", en: "Business beyond profit" },
+        'rsc.why': { val: "Els consumidors cada vegada exigeixen mes a les empreses: transparencia, respecte al medi ambient, condicions laborals justes. La RSC no es nomes etica, es estrategia. Les empreses responsables atrauen talent, fidelitzen clients i eviten escandols.", es: "Los consumidores cada vez exigen mas a las empresas: transparencia, respeto al medio ambiente, condiciones laborales justas. La RSC no es solo etica, es estrategia.", en: "Consumers increasingly demand more from businesses: transparency, environmental respect, fair working conditions. CSR is not just ethics, it's strategy." },
+        'rsc.definicio': { val: "Que es la RSC?", es: "¿Que es la RSC?", en: "What is CSR?" },
+        'rsc.definicio.text': { val: "La Responsabilitat Social Corporativa (RSC) es el compromis voluntari de l'empresa d'integrar preocupacions socials, mediambientals i etiques en les seues operacions i en la relacio amb els seus grups d'interes (stakeholders).", es: "La Responsabilidad Social Corporativa (RSC) es el compromiso voluntario de la empresa de integrar preocupaciones sociales, medioambientales y eticas en sus operaciones y en la relacion con sus grupos de interes (stakeholders).", en: "Corporate Social Responsibility (CSR) is the voluntary commitment of a business to integrate social, environmental and ethical concerns into its operations and stakeholder relationships." },
+        'rsc.stakeholders': { val: "Grups d'interes (Stakeholders)", es: "Grupos de interes (Stakeholders)", en: "Stakeholders" },
+        'rsc.stake.treballadors': { val: "Treballadors: salaris justos, formacio, seguretat", es: "Trabajadores: salarios justos, formacion, seguridad", en: "Workers: fair wages, training, safety" },
+        'rsc.stake.clients': { val: "Clients: qualitat, transparencia, atenció postVenda", es: "Clientes: calidad, transparencia, atencion postventa", en: "Customers: quality, transparency, after-sales" },
+        'rsc.stake.proveïdors': { val: "Proveïdors: pagament puntual, relacions estables", es: "Proveedores: pago puntual, relaciones estables", en: "Suppliers: timely payment, stable relationships" },
+        'rsc.stake.societat': { val: "Societat: medi ambient, comunitat local, cultura", es: "Sociedad: medio ambiente, comunidad local, cultura", en: "Society: environment, local community, culture" },
+        'rsc.stake.accionistes': { val: "Accionistes: rendibilitat sostenible, transparencia", es: "Accionistas: rentabilidad sostenible, transparencia", en: "Shareholders: sustainable returns, transparency" },
+        'rsc.stake.estat': { val: "Estat: compliment fiscal, regulacio", es: "Estado: cumplimiento fiscal, regulacion", en: "Government: tax compliance, regulation" },
+        'rsc.ods': { val: "Objectius de Desenvolupament Sostenible (ODS)", es: "Objetivos de Desarrollo Sostenible (ODS)", en: "Sustainable Development Goals (SDGs)" },
+        'rsc.ods.text': { val: "Els 17 ODS de l'ONU (Agenda 2030) son un marc de referencia per a les empreses responsables. Exemples: ODS 8 (Treball decent), ODS 12 (Produccio responsable), ODS 13 (Accio climatica).", es: "Los 17 ODS de la ONU (Agenda 2030) son un marco de referencia para las empresas responsables. Ejemplos: ODS 8 (Trabajo decente), ODS 12 (Produccion responsable), ODS 13 (Accion climatica).", en: "The UN's 17 SDGs (Agenda 2030) are a framework for responsible businesses. Examples: SDG 8 (Decent work), SDG 12 (Responsible production), SDG 13 (Climate action)." },
+        'rsc.dimensions': { val: "Dimensions de la RSC", es: "Dimensiones de la RSC", en: "CSR Dimensions" },
+        'rsc.dim.economica': { val: "Economica: crear valor de forma sostenible", es: "Economica: crear valor de forma sostenible", en: "Economic: create value sustainably" },
+        'rsc.dim.social': { val: "Social: condicions laborals, igualtat, inclusio", es: "Social: condiciones laborales, igualdad, inclusion", en: "Social: working conditions, equality, inclusion" },
+        'rsc.dim.ambiental': { val: "Ambiental: reduir emissions, economia circular", es: "Ambiental: reducir emisiones, economia circular", en: "Environmental: reduce emissions, circular economy" },
+        'rsc.exemples': { val: "Exemples reals", es: "Ejemplos reales", en: "Real examples" },
+        'rsc.ex.patagonia': { val: "Patagonia: dona l'1% dels ingressos a causes mediambientals", es: "Patagonia: dona el 1% de los ingresos a causas medioambientales", en: "Patagonia: donates 1% of revenue to environmental causes" },
+        'rsc.ex.mercadona': { val: "Mercadona: politica de proveïdors locals (interproveidors), contractes estables", es: "Mercadona: politica de proveedores locales (interproveedores), contratos estables", en: "Mercadona: local supplier policy, stable contracts" },
+        'rsc.ex.ikea': { val: "IKEA: objectiu 100% energies renovables, materials reciclats", es: "IKEA: objetivo 100% energias renovables, materiales reciclados", en: "IKEA: 100% renewable energy goal, recycled materials" },
+
+        // Unit 4: Canvas
+        'canvas.title': { val: "Business Model Canvas", es: "Business Model Canvas", en: "Business Model Canvas" },
+        'canvas.subtitle': { val: "Dissenya el teu model de negoci en un sol full", es: "Disena tu modelo de negocio en una sola hoja", en: "Design your business model on a single page" },
+        'canvas.why': { val: "El Business Model Canvas es l'eina mes utilitzada al mon per dissenyar i comunicar un model de negoci. En lloc d'escriure un pla de 50 pagines, resums tot en 9 blocs. Totes les startups i acceleradores del mon l'utilitzen.", es: "El Business Model Canvas es la herramienta mas utilizada en el mundo para disenar y comunicar un modelo de negocio. En lugar de escribir un plan de 50 paginas, resumes todo en 9 bloques.", en: "The Business Model Canvas is the world's most used tool for designing and communicating a business model. Instead of a 50-page plan, you summarise everything in 9 blocks." },
+        'canvas.tab.teoria': { val: "Teoria", es: "Teoria", en: "Theory" },
+        'canvas.tab.eina': { val: "Eina Interactiva", es: "Herramienta Interactiva", en: "Interactive Tool" },
+        'canvas.bloc.1': { val: "Segments de Clients", es: "Segmentos de Clientes", en: "Customer Segments" },
+        'canvas.bloc.1.desc': { val: "A qui ens dirigim? Quins grups de persones o empreses volem servir?", es: "¿A quien nos dirigimos? ¿Que grupos de personas o empresas queremos servir?", en: "Who are we targeting? Which groups of people or businesses do we want to serve?" },
+        'canvas.bloc.2': { val: "Proposta de Valor", es: "Propuesta de Valor", en: "Value Proposition" },
+        'canvas.bloc.2.desc': { val: "Que problema resolem? Per que ens trien a nosaltres i no a la competencia?", es: "¿Que problema resolvemos? ¿Por que nos eligen a nosotros y no a la competencia?", en: "What problem do we solve? Why choose us over the competition?" },
+        'canvas.bloc.3': { val: "Canals", es: "Canales", en: "Channels" },
+        'canvas.bloc.3.desc': { val: "Com fem arribar la proposta de valor als clients? (web, botiga, distribuidors...)", es: "¿Como hacemos llegar la propuesta de valor a los clientes? (web, tienda, distribuidores...)", en: "How do we deliver our value proposition to customers? (web, store, distributors...)" },
+        'canvas.bloc.4': { val: "Relacio amb Clients", es: "Relacion con Clientes", en: "Customer Relationships" },
+        'canvas.bloc.4.desc': { val: "Quin tipus de relacio establim? Personal, automatitzada, autoservei, comunitat...", es: "¿Que tipo de relacion establecemos? Personal, automatizada, autoservicio, comunidad...", en: "What type of relationship do we establish? Personal, automated, self-service, community..." },
+        'canvas.bloc.5': { val: "Fonts d'Ingressos", es: "Fuentes de Ingresos", en: "Revenue Streams" },
+        'canvas.bloc.5.desc': { val: "Com guanyem diners? Venda directa, subscripcio, publicitat, freemium...", es: "¿Como ganamos dinero? Venta directa, suscripcion, publicidad, freemium...", en: "How do we make money? Direct sales, subscription, advertising, freemium..." },
+        'canvas.bloc.6': { val: "Recursos Clau", es: "Recursos Clave", en: "Key Resources" },
+        'canvas.bloc.6.desc': { val: "Que necessitem per funcionar? Fisics, intellectuals (patents), humans, financers", es: "¿Que necesitamos para funcionar? Fisicos, intelectuales (patentes), humanos, financieros", en: "What do we need to operate? Physical, intellectual (patents), human, financial" },
+        'canvas.bloc.7': { val: "Activitats Clau", es: "Actividades Clave", en: "Key Activities" },
+        'canvas.bloc.7.desc': { val: "Que fem per crear valor? Produccio, resolucio de problemes, plataforma/xarxa...", es: "¿Que hacemos para crear valor? Produccion, resolucion de problemas, plataforma/red...", en: "What do we do to create value? Production, problem solving, platform/network..." },
+        'canvas.bloc.8': { val: "Socis Clau", es: "Socios Clave", en: "Key Partners" },
+        'canvas.bloc.8.desc': { val: "Amb qui hem de cooperar? Proveïdors estrategics, aliances, joint ventures...", es: "¿Con quien debemos cooperar? Proveedores estrategicos, alianzas, joint ventures...", en: "Who do we need to cooperate with? Strategic suppliers, alliances, joint ventures..." },
+        'canvas.bloc.9': { val: "Estructura de Costos", es: "Estructura de Costes", en: "Cost Structure" },
+        'canvas.bloc.9.desc': { val: "Quins son els costos mes importants? Fixos, variables, economies d'escala...", es: "¿Cuales son los costes mas importantes? Fijos, variables, economias de escala...", en: "What are the most important costs? Fixed, variable, economies of scale..." },
+        'canvas.editable': { val: "Canvas Editable", es: "Canvas Editable", en: "Editable Canvas" },
+        'canvas.instruccio': { val: "Escriu a cada bloc per dissenyar el teu model de negoci. Es guarda automaticament al navegador.", es: "Escribe en cada bloque para disenar tu modelo de negocio. Se guarda automaticamente en el navegador.", en: "Type in each block to design your business model. Saves automatically in your browser." },
+        'canvas.socis': { val: "Socis Clau", es: "Socios Clave", en: "Key Partners" },
+        'canvas.activitats': { val: "Activitats Clau", es: "Actividades Clave", en: "Key Activities" },
+        'canvas.proposta': { val: "Proposta de Valor", es: "Propuesta de Valor", en: "Value Proposition" },
+        'canvas.relacions': { val: "Relacio amb Clients", es: "Relacion con Clientes", en: "Customer Relationships" },
+        'canvas.segments': { val: "Segments de Clients", es: "Segmentos de Clientes", en: "Customer Segments" },
+        'canvas.recursos': { val: "Recursos Clau", es: "Recursos Clave", en: "Key Resources" },
+        'canvas.canals': { val: "Canals", es: "Canales", en: "Channels" },
+        'canvas.costos': { val: "Estructura de Costos", es: "Estructura de Costes", en: "Cost Structure" },
+        'canvas.ingressos': { val: "Fonts d'Ingressos", es: "Fuentes de Ingresos", en: "Revenue Streams" },
+        'canvas.ph.socis': { val: "Proveïdors, aliances...", es: "Proveedores, alianzas...", en: "Suppliers, alliances..." },
+        'canvas.ph.activitats': { val: "Que fem?", es: "¿Que hacemos?", en: "What do we do?" },
+        'canvas.ph.proposta': { val: "Quin problema resolem?", es: "¿Que problema resolvemos?", en: "What problem do we solve?" },
+        'canvas.ph.relacions': { val: "Personal, automatitzada...", es: "Personal, automatizada...", en: "Personal, automated..." },
+        'canvas.ph.segments': { val: "Joves, empreses, families...", es: "Jovenes, empresas, familias...", en: "Young, businesses, families..." },
+        'canvas.ph.recursos': { val: "Fisics, humans, intellectuals...", es: "Fisicos, humanos, intelectuales...", en: "Physical, human, intellectual..." },
+        'canvas.ph.canals': { val: "Online, botigues, xarxes...", es: "Online, tiendas, redes...", en: "Online, stores, networks..." },
+        'canvas.ph.costos': { val: "Quins son els principals costos?", es: "¿Cuales son los principales costes?", en: "What are the main costs?" },
+        'canvas.ph.ingressos': { val: "Venda directa, subscripcio...", es: "Venta directa, suscripcion...", en: "Direct sales, subscription..." },
+        'canvas.reset': { val: "Esborrar tot", es: "Borrar todo", en: "Clear all" },
+        'canvas.export': { val: "Copiar com a text", es: "Copiar como texto", en: "Copy as text" },
+        'canvas.copiat': { val: "Copiat!", es: "¡Copiado!", en: "Copied!" },
+
+        // Unit 5: Lean Startup
+        'lean.title': { val: "Lean Startup", es: "Lean Startup", en: "Lean Startup" },
+        'lean.subtitle': { val: "Aprendre rapid, fallar barat", es: "Aprender rapido, fallar barato", en: "Learn fast, fail cheap" },
+        'lean.why': { val: "El 90% de les startups fracassen. El metode Lean Startup, d'Eric Ries, proposa no gastar mesos construint un producte perfecte que ningu vol. En canvi, llança un producte minim (MVP), mesura el resultat i apren. Si no funciona, pivota.", es: "El 90% de las startups fracasan. El metodo Lean Startup, de Eric Ries, propone no gastar meses construyendo un producto perfecto que nadie quiere. En cambio, lanza un producto minimo (MVP), mide el resultado y aprende. Si no funciona, pivota.", en: "90% of startups fail. Eric Ries' Lean Startup method proposes not spending months building a perfect product nobody wants. Instead, launch a minimum product (MVP), measure the result and learn. If it doesn't work, pivot." },
+        'lean.mvp': { val: "MVP (Producte Minim Viable)", es: "MVP (Producto Minimo Viable)", en: "MVP (Minimum Viable Product)" },
+        'lean.mvp.text': { val: "La versio mes senzilla del producte que permet validar la hipotesi amb clients reals. No es un prototip: es un producte real, pero amb les funcionalitats minimes.", es: "La version mas sencilla del producto que permite validar la hipotesis con clientes reales. No es un prototipo: es un producto real, pero con las funcionalidades minimas.", en: "The simplest version of the product that allows you to validate the hypothesis with real customers. It's not a prototype: it's a real product, but with minimal features." },
+        'lean.cicle': { val: "Cicle Build-Measure-Learn", es: "Ciclo Build-Measure-Learn", en: "Build-Measure-Learn Loop" },
+        'lean.build': { val: "CONSTRUIR: Crea el MVP amb el minim esforc", es: "CONSTRUIR: Crea el MVP con el minimo esfuerzo", en: "BUILD: Create the MVP with minimum effort" },
+        'lean.measure': { val: "MESURAR: Recull dades reals d'us i comportament", es: "MEDIR: Recoge datos reales de uso y comportamiento", en: "MEASURE: Collect real usage and behaviour data" },
+        'lean.learn': { val: "APRENDRE: Analitza si la hipotesi es valida o no", es: "APRENDER: Analiza si la hipotesis es valida o no", en: "LEARN: Analyse whether the hypothesis is valid or not" },
+        'lean.pivot': { val: "Pivot", es: "Pivote", en: "Pivot" },
+        'lean.pivot.text': { val: "Un pivot es un canvi estrategic fonamental basat en l'aprenentatge validat. No es fracas: es aprenentatge. Instagram va ser primer Burbn (xarxa social de check-ins), Slack era un videojoc, YouTube era una web de cites.", es: "Un pivote es un cambio estrategico fundamental basado en el aprendizaje validado. No es fracaso: es aprendizaje. Instagram fue primero Burbn, Slack era un videojuego, YouTube era una web de citas.", en: "A pivot is a fundamental strategic change based on validated learning. It's not failure: it's learning. Instagram was first Burbn, Slack was a video game, YouTube was a dating site." },
+        'lean.metriques': { val: "Metriques Pirata (AARRR)", es: "Metricas Pirata (AARRR)", en: "Pirate Metrics (AARRR)" },
+        'lean.acquisition': { val: "Acquisition: Com arriben els usuaris?", es: "Acquisition: ¿Como llegan los usuarios?", en: "Acquisition: How do users arrive?" },
+        'lean.activation': { val: "Activation: Tenen una primera bona experiencia?", es: "Activation: ¿Tienen una primera buena experiencia?", en: "Activation: Do they have a good first experience?" },
+        'lean.retention': { val: "Retention: Tornen a usar-ho?", es: "Retention: ¿Vuelven a usarlo?", en: "Retention: Do they come back?" },
+        'lean.revenue': { val: "Revenue: Paguen per aixo?", es: "Revenue: ¿Pagan por ello?", en: "Revenue: Do they pay for it?" },
+        'lean.referral': { val: "Referral: Ho recomanen?", es: "Referral: ¿Lo recomiendan?", en: "Referral: Do they recommend it?" },
+
+        // Unit 6: Pla d'Empresa
+        'pla.title': { val: "El Pla d'Empresa", es: "El Plan de Empresa", en: "The Business Plan" },
+        'pla.subtitle': { val: "El full de ruta per convertir una idea en realitat", es: "La hoja de ruta para convertir una idea en realidad", en: "The roadmap to turn an idea into reality" },
+        'pla.why': { val: "El pla d'empresa es el document que demostra que la teua idea es viable. El necessites per demanar financament, convencer socis i, sobretot, per pensar a fons en cada aspecte del negoci abans de gastar-te els estalvis.", es: "El plan de empresa es el documento que demuestra que tu idea es viable. Lo necesitas para pedir financiacion, convencer socios y, sobre todo, para pensar a fondo en cada aspecto del negocio.", en: "The business plan is the document that proves your idea is viable. You need it to seek funding, convince partners, and above all, to think deeply about every aspect of the business." },
+        'pla.seccions': { val: "8 Seccions del Pla d'Empresa", es: "8 Secciones del Plan de Empresa", en: "8 Sections of the Business Plan" },
+        'pla.s1': { val: "Resum Executiu", es: "Resumen Ejecutivo", en: "Executive Summary" },
+        'pla.s1.desc': { val: "Sinopsi d'1-2 pagines que resumeix tot el pla. Es l'ultima seccio que s'escriu pero la primera que es llegeix. Ha de captar l'atencio.", es: "Sinopsis de 1-2 paginas que resume todo el plan. Es la ultima seccion que se escribe pero la primera que se lee. Debe captar la atencion.", en: "1-2 page synopsis summarising the whole plan. The last section written but the first read. It must capture attention." },
+        'pla.s2': { val: "Analisi del Mercat", es: "Analisis del Mercado", en: "Market Analysis" },
+        'pla.s2.desc': { val: "Investigacio del sector, clients potencials, competencia, tendencies. Inclou: mida del mercat (TAM, SAM, SOM), perfil del client, analisi de competidors.", es: "Investigacion del sector, clientes potenciales, competencia, tendencias. Incluye: tamano del mercado (TAM, SAM, SOM), perfil del cliente, analisis de competidores.", en: "Sector research, potential customers, competition, trends. Includes: market size (TAM, SAM, SOM), customer profile, competitor analysis." },
+        'pla.s3': { val: "Producte o Servei", es: "Producto o Servicio", en: "Product or Service" },
+        'pla.s3.desc': { val: "Descripcio detallada: que es, com funciona, que problema resol, quin es l'avantatge competitiu, propietat intellectual.", es: "Descripcion detallada: que es, como funciona, que problema resuelve, cual es la ventaja competitiva, propiedad intelectual.", en: "Detailed description: what it is, how it works, what problem it solves, competitive advantage, intellectual property." },
+        'pla.s4': { val: "Pla de Marqueting", es: "Plan de Marketing", en: "Marketing Plan" },
+        'pla.s4.desc': { val: "Estrategia comercial: 4P (producte, preu, distribucio, comunicacio), posicionament, marqueting digital, pressupost comercial.", es: "Estrategia comercial: 4P (producto, precio, distribucion, comunicacion), posicionamiento, marketing digital, presupuesto comercial.", en: "Commercial strategy: 4P (product, price, place, promotion), positioning, digital marketing, commercial budget." },
+        'pla.s5': { val: "Pla d'Operacions", es: "Plan de Operaciones", en: "Operations Plan" },
+        'pla.s5.desc': { val: "Com es produeix/serveix: localitzacio, processos, proveïdors, logistica, qualitat, capacitat productiva.", es: "Como se produce/sirve: localizacion, procesos, proveedores, logistica, calidad, capacidad productiva.", en: "How it's produced/served: location, processes, suppliers, logistics, quality, production capacity." },
+        'pla.s6': { val: "Pla de Recursos Humans", es: "Plan de Recursos Humanos", en: "HR Plan" },
+        'pla.s6.desc': { val: "Equip fundador, organigrama, perfils necessaris, politica salarial, cultura d'empresa.", es: "Equipo fundador, organigrama, perfiles necesarios, politica salarial, cultura de empresa.", en: "Founding team, org chart, required profiles, salary policy, company culture." },
+        'pla.s7': { val: "Pla Financer", es: "Plan Financiero", en: "Financial Plan" },
+        'pla.s7.desc': { val: "Xifres: inversio inicial, previsions de vendes, compte de resultats, balanc, punt d'equilibri, VAN, TIR, fonts de financament.", es: "Cifras: inversion inicial, previsiones de ventas, cuenta de resultados, balance, punto de equilibrio, VAN, TIR, fuentes de financiacion.", en: "Numbers: initial investment, sales forecasts, P&L, balance sheet, break-even, NPV, IRR, funding sources." },
+        'pla.s8': { val: "Annexos", es: "Anexos", en: "Appendices" },
+        'pla.s8.desc': { val: "Documentacio complementaria: CV dels fundadors, estudis de mercat, contractes, plànols, pressupostos detallats.", es: "Documentacion complementaria: CV de los fundadores, estudios de mercado, contratos, planos, presupuestos detallados.", en: "Supporting documentation: founders' CVs, market studies, contracts, plans, detailed budgets." },
+
+        // Unit 7: Costos
+        'costos.title': { val: "Costos i Punt Mort", es: "Costes y Umbral de Rentabilidad", en: "Costs & Break-even Point" },
+        'costos.subtitle': { val: "Quant has de vendre per no perdre diners?", es: "¿Cuanto tienes que vender para no perder dinero?", en: "How much must you sell to not lose money?" },
+        'costos.why': { val: "Imagina que obres una cafeteria i pagues 3.000EUR de lloguer, 2.000EUR de sous, 500EUR de subministraments... pero no saps quants cafes has de vendre per cobrir-ho. El punt mort t'ho diu exactament. Es la xifra mes important per a qualsevol emprenedor.", es: "Imagina que abres una cafeteria y pagas 3.000EUR de alquiler, 2.000EUR de sueldos, 500EUR de suministros... pero no sabes cuantos cafes tienes que vender para cubrirlo. El umbral de rentabilidad te lo dice exactamente.", en: "Imagine opening a cafe and paying EUR3,000 rent, EUR2,000 salaries, EUR500 utilities... but not knowing how many coffees you need to sell to cover it. The break-even point tells you exactly." },
+        'costos.tab.teoria': { val: "Teoria", es: "Teoria", en: "Theory" },
+        'costos.tab.simulador': { val: "Simulador", es: "Simulador", en: "Simulator" },
+        'costos.classificacio': { val: "Classificacio dels costos", es: "Clasificacion de los costes", en: "Cost classification" },
+        'costos.fixos': { val: "Costos Fixos (CF)", es: "Costes Fijos (CF)", en: "Fixed Costs (FC)" },
+        'costos.fixos.desc': { val: "No varien amb la produccio a curt termini", es: "No varian con la produccion a corto plazo", en: "Don't change with short-term production" },
+        'costos.fixos.ex1': { val: "Lloguer del local", es: "Alquiler del local", en: "Premises rent" },
+        'costos.fixos.ex2': { val: "Sous del personal fix", es: "Sueldos del personal fijo", en: "Fixed staff salaries" },
+        'costos.fixos.ex3': { val: "Assegurances", es: "Seguros", en: "Insurance" },
+        'costos.fixos.ex4': { val: "Amortitzacions", es: "Amortizaciones", en: "Depreciation" },
+        'costos.fixos.note': { val: "Encara que no venguis res, has de pagar-los!", es: "¡Aunque no vendas nada, tienes que pagarlos!", en: "Even if you sell nothing, you must pay them!" },
+        'costos.variables': { val: "Costos Variables (CV)", es: "Costes Variables (CV)", en: "Variable Costs (VC)" },
+        'costos.variables.desc': { val: "Si varien amb la produccio", es: "Si varian con la produccion", en: "Do change with production" },
+        'costos.variables.ex1': { val: "Materies primeres", es: "Materias primas", en: "Raw materials" },
+        'costos.variables.ex2': { val: "Ma d'obra directa (per unitat)", es: "Mano de obra directa (por unidad)", en: "Direct labour (per unit)" },
+        'costos.variables.ex3': { val: "Energia de produccio", es: "Energia de produccion", en: "Production energy" },
+        'costos.variables.ex4': { val: "Embalatge i transport per unitat", es: "Embalaje y transporte por unidad", en: "Packaging and transport per unit" },
+        'costos.variables.note': { val: "Mes produeixes, mes tens", es: "Mas produces, mas tienes", en: "More you produce, more you have" },
+        'costos.formula.ct': { val: "Cost Total = Costos Fixos + Cost Variable Unitari x Quantitat", es: "Coste Total = Costes Fijos + Coste Variable Unitario x Cantidad", en: "Total Cost = Fixed Costs + Variable Cost per Unit x Quantity" },
+        'costos.puntmort': { val: "El Punt Mort (Umbral de Rendibilitat)", es: "El Punto Muerto (Umbral de Rentabilidad)", en: "Break-even Point" },
+        'costos.puntmort.desc': { val: "Es la quantitat que has de vendre perque els ingressos igualin els costos totals. Ni guanyes ni perds.", es: "Es la cantidad que tienes que vender para que los ingresos igualen los costes totales. Ni ganas ni pierdes.", en: "The quantity you must sell for revenue to equal total costs. You neither gain nor lose." },
+        'costos.puntmort.formula': { val: "Formula del Punt Mort", es: "Formula del Punto Muerto", en: "Break-even Formula" },
+        'costos.puntmort.vars': { val: "P = Preu venda, CVu = Cost variable per unitat, CF = Costos fixos", es: "P = Precio venta, CVu = Coste variable por unidad, CF = Costes fijos", en: "P = Selling price, CVu = Variable cost per unit, FC = Fixed costs" },
+        'costos.mc': { val: "Marge de Contribucio (MC)", es: "Margen de Contribucion (MC)", en: "Contribution Margin (CM)" },
+        'costos.mc.desc': { val: "Quant aporta cada unitat per cobrir els costos fixos", es: "Cuanto aporta cada unidad para cubrir los costes fijos", en: "How much each unit contributes to cover fixed costs" },
+        'costos.ms': { val: "Marge de Seguretat", es: "Margen de Seguridad", en: "Safety Margin" },
+        'costos.ms.desc': { val: "Quant poden baixar les vendes abans de tenir perdues", es: "Cuanto pueden bajar las ventas antes de tener perdidas", en: "How much sales can drop before losses" },
+        'costos.sim.cf': { val: "Costos Fixos (CF)", es: "Costes Fijos (CF)", en: "Fixed Costs (FC)" },
+        'costos.sim.cvu': { val: "Cost Variable Unitari (CVu)", es: "Coste Variable Unitario (CVu)", en: "Variable Cost per Unit (VCu)" },
+        'costos.sim.preu': { val: "Preu de Venda (P)", es: "Precio de Venta (P)", en: "Selling Price (P)" },
+        'costos.sim.quantitat': { val: "Quantitat Produïda (Q)", es: "Cantidad Producida (Q)", en: "Quantity Produced (Q)" },
+        'costos.sim.mc': { val: "Marge Contribucio", es: "Margen Contribucion", en: "Contribution Margin" },
+        'costos.sim.pm': { val: "Punt Mort", es: "Punto Muerto", en: "Break-even" },
+        'costos.sim.it': { val: "Ingressos Totals", es: "Ingresos Totales", en: "Total Revenue" },
+        'costos.sim.ct': { val: "Costos Totals", es: "Costes Totales", en: "Total Costs" },
+        'costos.sim.resultat': { val: "Resultat", es: "Resultado", en: "Result" },
+        'costos.sim.benefici': { val: "Benefici", es: "Beneficio", en: "Profit" },
+        'costos.sim.perdua': { val: "Perdua", es: "Perdida", en: "Loss" },
+        'costos.sim.ms': { val: "Marge Seguretat", es: "Margen Seguridad", en: "Safety Margin" },
+        'costos.sim.grafica': { val: "Grafica de Costos i Ingressos", es: "Grafica de Costes e Ingresos", en: "Cost & Revenue Graph" },
+        'costos.sim.sota': { val: "Estas sota el punt mort!", es: "¡Estas bajo el punto muerto!", en: "You're below break-even!" },
+        'costos.sim.just': { val: "Estas just al punt mort!", es: "¡Estas justo en el punto muerto!", en: "You're exactly at break-even!" },
+        'costos.sim.sobre': { val: "Estas sobre el punt mort! Cada unitat extra aporta", es: "¡Estas sobre el punto muerto! Cada unidad extra aporta", en: "You're above break-even! Each extra unit contributes" },
+        'costos.sim.unitats.mes': { val: "unitats mes per no perdre", es: "unidades mas para no perder", en: "more units to not lose money" },
+        'costos.sim.quantitat.label': { val: "Quantitat", es: "Cantidad", en: "Quantity" },
+        'costos.sim.perdues': { val: "PERDUES", es: "PERDIDAS", en: "LOSSES" },
+        'costos.sim.beneficis': { val: "BENEFICIS", es: "BENEFICIOS", en: "PROFITS" },
+        'costos.sim.it.label': { val: "Ingressos Totals", es: "Ingresos Totales", en: "Total Revenue" },
+        'costos.sim.ct.label': { val: "Costos Totals", es: "Costes Totales", en: "Total Costs" },
+        'costos.sim.cf.label': { val: "Costos Fixos", es: "Costes Fijos", en: "Fixed Costs" },
+
+        // Unit 8: RRHH
+        'rrhh.title': { val: "Recursos Humans", es: "Recursos Humanos", en: "Human Resources" },
+        'rrhh.subtitle': { val: "Les persones son el recurs mes important", es: "Las personas son el recurso mas importante", en: "People are the most important resource" },
+        'rrhh.why': { val: "Una empresa amb la millor tecnologia pero amb un equip desmotivat fracassa. Entendre que motiva les persones, com seleccionar talent i com liderar equips es clau, tant si diriges una empresa com si hi treballes.", es: "Una empresa con la mejor tecnologia pero con un equipo desmotivado fracasa. Entender que motiva a las personas, como seleccionar talento y como liderar equipos es clave.", en: "A company with the best technology but a demotivated team will fail. Understanding what motivates people, how to select talent and lead teams is key." },
+        'rrhh.tab.seleccio': { val: "Seleccio i Formacio", es: "Seleccion y Formacion", en: "Selection & Training" },
+        'rrhh.tab.motivacio': { val: "Motivacio", es: "Motivacion", en: "Motivation" },
+        'rrhh.tab.lideratge': { val: "Lideratge", es: "Liderazgo", en: "Leadership" },
+        'rrhh.seleccio': { val: "Proces de Seleccio", es: "Proceso de Seleccion", en: "Selection Process" },
+        'rrhh.seleccio.1': { val: "Analisi del lloc: quines funcions, competencies i requisits necessita el lloc?", es: "Analisis del puesto: ¿que funciones, competencias y requisitos necesita el puesto?", en: "Job analysis: what functions, competencies and requirements does the position need?" },
+        'rrhh.seleccio.2': { val: "Reclutament: intern (promocio) o extern (portals d'ocupacio, xarxes, ETT)", es: "Reclutamiento: interno (promocion) o externo (portales de empleo, redes, ETT)", en: "Recruitment: internal (promotion) or external (job portals, networks, agencies)" },
+        'rrhh.seleccio.3': { val: "Seleccio: entrevistes, proves psicometriques, dinamiques de grup, assessment center", es: "Seleccion: entrevistas, pruebas psicometricas, dinamicas de grupo, assessment center", en: "Selection: interviews, psychometric tests, group dynamics, assessment centre" },
+        'rrhh.seleccio.4': { val: "Incorporacio (onboarding): acollida, formacio inicial, mentoria", es: "Incorporacion (onboarding): acogida, formacion inicial, mentoria", en: "Onboarding: welcome, initial training, mentoring" },
+        'rrhh.formacio': { val: "Formacio continuada", es: "Formacion continuada", en: "Continuous training" },
+        'rrhh.formacio.text': { val: "La formacio no acaba amb la contractacio. Els plans de carrera, la rotacio de llocs i la formacio continua son essencials per retenir talent i mantenir la competitivitat.", es: "La formacion no acaba con la contratacion. Los planes de carrera, la rotacion de puestos y la formacion continua son esenciales para retener talento y mantener la competitividad.", en: "Training doesn't end with hiring. Career plans, job rotation and continuous training are essential to retain talent and maintain competitiveness." },
+        'rrhh.maslow': { val: "Piramide de Maslow", es: "Piramide de Maslow", en: "Maslow's Pyramid" },
+        'rrhh.maslow.desc': { val: "Les necessitats humanes s'organitzen en 5 nivells. Nomes buscarem satisfer les superiors quan les inferiors estiguin cobertes.", es: "Las necesidades humanas se organizan en 5 niveles. Solo buscaremos satisfacer las superiores cuando las inferiores esten cubiertas.", en: "Human needs are organised in 5 levels. We only seek to satisfy higher ones when lower ones are covered." },
+        'rrhh.maslow.1': { val: "Fisiologiques: sou basic, condicions minimes", es: "Fisiologicas: sueldo basico, condiciones minimas", en: "Physiological: basic salary, minimum conditions" },
+        'rrhh.maslow.2': { val: "Seguretat: contracte estable, asseguranca, salut laboral", es: "Seguridad: contrato estable, seguro, salud laboral", en: "Safety: stable contract, insurance, occupational health" },
+        'rrhh.maslow.3': { val: "Socials: bon ambient, equip, sentit de pertinenca", es: "Sociales: buen ambiente, equipo, sentido de pertenencia", en: "Social: good atmosphere, team, sense of belonging" },
+        'rrhh.maslow.4': { val: "Estima: reconeixement, promocio, responsabilitat", es: "Estima: reconocimiento, promocion, responsabilidad", en: "Esteem: recognition, promotion, responsibility" },
+        'rrhh.maslow.5': { val: "Autorealitzacio: creativitat, creixement personal, proposit", es: "Autorrealizacion: creatividad, crecimiento personal, proposito", en: "Self-actualisation: creativity, personal growth, purpose" },
+        'rrhh.herzberg': { val: "Teoria de Herzberg", es: "Teoria de Herzberg", en: "Herzberg's Theory" },
+        'rrhh.herzberg.desc': { val: "Distingeix entre factors d'higiene (eviten la insatisfaccio) i factors motivacionals (generen satisfaccio).", es: "Distingue entre factores de higiene (evitan la insatisfaccion) y factores motivacionales (generan satisfaccion).", en: "Distinguishes between hygiene factors (prevent dissatisfaction) and motivational factors (create satisfaction)." },
+        'rrhh.herzberg.higiene': { val: "Higiene: sou adequat, condicions fisiques, politica d'empresa, relacions interpersonals", es: "Higiene: sueldo adecuado, condiciones fisicas, politica de empresa, relaciones interpersonales", en: "Hygiene: adequate salary, physical conditions, company policy, interpersonal relationships" },
+        'rrhh.herzberg.motivacio': { val: "Motivacio: assoliment, reconeixement, el treball en si, responsabilitat, creixement", es: "Motivacion: logro, reconocimiento, el trabajo en si, responsabilidad, crecimiento", en: "Motivation: achievement, recognition, the work itself, responsibility, growth" },
+        'rrhh.lideratge.title': { val: "Estils de Lideratge", es: "Estilos de Liderazgo", en: "Leadership Styles" },
+        'rrhh.lid.autoritari': { val: "Autoritari: el lider decideix sol. Eficac en crisis, pero desmotiva a llarg termini.", es: "Autoritario: el lider decide solo. Eficaz en crisis, pero desmotiva a largo plazo.", en: "Authoritarian: the leader decides alone. Effective in crisis, but demotivating long-term." },
+        'rrhh.lid.democratic': { val: "Democratic: el lider consulta l'equip. Major compromis i creativitat, pero mes lent.", es: "Democratico: el lider consulta al equipo. Mayor compromiso y creatividad, pero mas lento.", en: "Democratic: the leader consults the team. Greater commitment and creativity, but slower." },
+        'rrhh.lid.laissez': { val: "Laissez-faire: l'equip decideix amb autonomia. Funciona amb equips molt capacitats.", es: "Laissez-faire: el equipo decide con autonomia. Funciona con equipos muy capacitados.", en: "Laissez-faire: the team decides autonomously. Works with highly capable teams." },
+        'rrhh.lid.transformacional': { val: "Transformacional: inspira i motiva, crea una visio compartida. L'estil mes valorat avui dia.", es: "Transformacional: inspira y motiva, crea una vision compartida. El estilo mas valorado hoy dia.", en: "Transformational: inspires and motivates, creates a shared vision. The most valued style today." },
+        'rrhh.organigrama': { val: "L'Organigrama", es: "El Organigrama", en: "The Org Chart" },
+        'rrhh.organigrama.text': { val: "Representacio grafica de l'estructura jerarquica de l'empresa: lineal, funcional, divisional o matricial.", es: "Representacion grafica de la estructura jerarquica de la empresa: lineal, funcional, divisional o matricial.", en: "Graphical representation of the company's hierarchical structure: linear, functional, divisional or matrix." },
+
+        // Unit 9: Financament
+        'financament.title': { val: "Fonts de Finançament", es: "Fuentes de Financiacion", en: "Funding Sources" },
+        'financament.subtitle': { val: "D'on surten els diners per al negoci?", es: "¿De donde salen los dineros para el negocio?", en: "Where does the money for the business come from?" },
+        'financament.why': { val: "Tota empresa necessita diners: per iniciar, per creixer, per sobreviure. Saber les fonts disponibles i els seus costos es fonamental. Un error de financament pot portar una bona idea a la fallida.", es: "Toda empresa necesita dinero: para iniciar, para crecer, para sobrevivir. Conocer las fuentes disponibles y sus costes es fundamental. Un error de financiacion puede llevar una buena idea a la quiebra.", en: "Every business needs money: to start, to grow, to survive. Knowing available sources and their costs is fundamental. A financing mistake can bankrupt a good idea." },
+        'financament.propies': { val: "Fonts Propies (autofinancament)", es: "Fuentes Propias (autofinanciacion)", en: "Own Sources (self-financing)" },
+        'financament.propies.1': { val: "Capital social: aportacions dels socis", es: "Capital social: aportaciones de los socios", en: "Share capital: partner contributions" },
+        'financament.propies.2': { val: "Reserves: beneficis no distribuïts", es: "Reservas: beneficios no distribuidos", en: "Reserves: undistributed profits" },
+        'financament.propies.3': { val: "Amortitzacions: fons per reposar actius", es: "Amortizaciones: fondos para reponer activos", en: "Depreciation: funds to replace assets" },
+        'financament.propies.avantatge': { val: "Avantatge: no generen deute ni interessos", es: "Ventaja: no generan deuda ni intereses", en: "Advantage: no debt or interest generated" },
+        'financament.propies.desavantatge': { val: "Desavantatge: son limitades", es: "Desventaja: son limitadas", en: "Disadvantage: they are limited" },
+        'financament.alienes': { val: "Fonts Alienes (deute)", es: "Fuentes Ajenas (deuda)", en: "External Sources (debt)" },
+        'financament.alienes.ll': { val: "A LLARG TERMINI (>1 any)", es: "A LARGO PLAZO (>1 ano)", en: "LONG-TERM (>1 year)" },
+        'financament.alienes.ll.1': { val: "Prestec bancari: capital + interessos, termini fix", es: "Prestamo bancario: capital + intereses, plazo fijo", en: "Bank loan: capital + interest, fixed term" },
+        'financament.alienes.ll.2': { val: "Leasing: lloguer amb opcio de compra al final", es: "Leasing: alquiler con opcion de compra al final", en: "Leasing: rental with purchase option at the end" },
+        'financament.alienes.ll.3': { val: "Emissio d'obligacions: titols de deute (grans empreses)", es: "Emision de obligaciones: titulos de deuda (grandes empresas)", en: "Bond issuance: debt securities (large companies)" },
+        'financament.alienes.ct': { val: "A CURT TERMINI (<1 any)", es: "A CORTO PLAZO (<1 ano)", en: "SHORT-TERM (<1 year)" },
+        'financament.alienes.ct.1': { val: "Credit comercial: pagar proveïdors a 30-90 dies", es: "Credito comercial: pagar proveedores a 30-90 dias", en: "Trade credit: pay suppliers in 30-90 days" },
+        'financament.alienes.ct.2': { val: "Polissa de credit: linia de credit disponible al banc", es: "Poliza de credito: linea de credito disponible en el banco", en: "Credit facility: available credit line at the bank" },
+        'financament.alienes.ct.3': { val: "Factoring: venda de factures pendents de cobrament", es: "Factoring: venta de facturas pendientes de cobro", en: "Factoring: sale of outstanding invoices" },
+        'financament.alienes.ct.4': { val: "Descompte d'efectes: avançar el cobrament de lletres", es: "Descuento de efectos: adelantar el cobro de letras", en: "Bill discounting: advance collection of bills" },
+        'financament.noves': { val: "Noves Fonts de Finançament", es: "Nuevas Fuentes de Financiacion", en: "New Funding Sources" },
+        'financament.noves.1': { val: "Crowdfunding: financament col·lectiu (Kickstarter, Verkami)", es: "Crowdfunding: financiacion colectiva (Kickstarter, Verkami)", en: "Crowdfunding: collective financing (Kickstarter, Verkami)" },
+        'financament.noves.2': { val: "Business Angels: inversors privats en fases inicials", es: "Business Angels: inversores privados en fases iniciales", en: "Business Angels: private investors in early stages" },
+        'financament.noves.3': { val: "Venture Capital: fons d'inversio per a startups amb alt creixement", es: "Venture Capital: fondos de inversion para startups con alto crecimiento", en: "Venture Capital: investment funds for high-growth startups" },
+        'financament.noves.4': { val: "Subvencions publiques: ajudes de l'Estat, UE (fons FEDER, Next Generation)", es: "Subvenciones publicas: ayudas del Estado, UE (fondos FEDER, Next Generation)", en: "Public grants: state aid, EU (FEDER, Next Generation funds)" },
+
+        // Unit 10: Inversio
+        'inversio.title': { val: "Inversio", es: "Inversion", en: "Investment" },
+        'inversio.subtitle': { val: "Val la pena aquest projecte?", es: "¿Vale la pena este proyecto?", en: "Is this project worth it?" },
+        'inversio.why': { val: "Imagina que tens 100.000EUR i dues opcions d'inversio. Com decideixes? Amb eines matematiques: VAN, TIR i Payback. Son els tres criteris que utilitzen totes les empreses del mon per decidir si un projecte es rendible.", es: "Imagina que tienes 100.000EUR y dos opciones de inversion. ¿Como decides? Con herramientas matematicas: VAN, TIR y Payback. Son los tres criterios que usan todas las empresas del mundo.", en: "Imagine you have EUR100,000 and two investment options. How do you decide? With mathematical tools: NPV, IRR and Payback. These are the three criteria all companies worldwide use." },
+        'inversio.tab.teoria': { val: "Teoria", es: "Teoria", en: "Theory" },
+        'inversio.tab.calculadora': { val: "Calculadora", es: "Calculadora", en: "Calculator" },
+        'inversio.metodes': { val: "Metodes de Seleccio d'Inversions", es: "Metodos de Seleccion de Inversiones", en: "Investment Selection Methods" },
+        'inversio.van': { val: "Valor Actual Net", es: "Valor Actual Neto", en: "Net Present Value" },
+        'inversio.van.desc': { val: "Suma dels fluxos de caixa futurs actualitzats al present, menys la inversio inicial.", es: "Suma de los flujos de caja futuros actualizados al presente, menos la inversion inicial.", en: "Sum of future cash flows discounted to the present, minus the initial investment." },
+        'inversio.van.si': { val: "VAN > 0 = Projecte rendible!", es: "VAN > 0 = ¡Proyecto rentable!", en: "NPV > 0 = Profitable project!" },
+        'inversio.van.no': { val: "VAN < 0 = No rendible", es: "VAN < 0 = No rentable", en: "NPV < 0 = Not profitable" },
+        'inversio.tir': { val: "Taxa Interna de Retorn", es: "Tasa Interna de Retorno", en: "Internal Rate of Return" },
+        'inversio.tir.desc': { val: "La taxa de descompte que fa que el VAN siga igual a 0. Si TIR > k (cost d'oportunitat), el projecte es rendible.", es: "La tasa de descuento que hace que el VAN sea igual a 0. Si TIR > k (coste de oportunidad), el proyecto es rentable.", en: "The discount rate that makes NPV equal to 0. If IRR > k (opportunity cost), the project is profitable." },
+        'inversio.tir.si': { val: "TIR > k = Projecte rendible!", es: "TIR > k = ¡Proyecto rentable!", en: "IRR > k = Profitable project!" },
+        'inversio.tir.no': { val: "TIR < k = No rendible", es: "TIR < k = No rentable", en: "IRR < k = Not profitable" },
+        'inversio.payback': { val: "Termini de Recuperacio (Payback)", es: "Plazo de Recuperacion (Payback)", en: "Payback Period" },
+        'inversio.payback.desc': { val: "Temps que tarda a recuperar-se la inversio inicial. Com mes curt, menys risc.", es: "Tiempo que tarda en recuperarse la inversion inicial. Cuanto mas corto, menos riesgo.", en: "Time it takes to recover the initial investment. The shorter, the less risk." },
+        'inversio.payback.warning': { val: "Limitacio: no te en compte el valor temporal dels diners ni els fluxos posteriors al payback", es: "Limitacion: no tiene en cuenta el valor temporal del dinero ni los flujos posteriores al payback", en: "Limitation: doesn't consider the time value of money or cash flows after payback" },
+        'inversio.formula.van': { val: "k = taxa de descompte (cost d'oportunitat del capital)", es: "k = tasa de descuento (coste de oportunidad del capital)", en: "k = discount rate (opportunity cost of capital)" },
+        'inversio.calc.inv': { val: "Inversio inicial", es: "Inversion inicial", en: "Initial investment" },
+        'inversio.calc.fc': { val: "Flux de caixa anual", es: "Flujo de caja anual", en: "Annual cash flow" },
+        'inversio.calc.anys': { val: "Nombre d'anys", es: "Numero de anos", en: "Number of years" },
+        'inversio.calc.taxa': { val: "Taxa de descompte", es: "Tasa de descuento", en: "Discount rate" },
+        'inversio.calc.rendible': { val: "Projecte RENDIBLE!", es: "¡Proyecto RENTABLE!", en: "PROFITABLE project!" },
+        'inversio.calc.noRendible': { val: "NO rendible", es: "NO rentable", en: "NOT profitable" },
+        'inversio.calc.anys.label': { val: " anys", es: " anos", en: " years" },
+        'inversio.calc.noRecupera': { val: "No es recupera", es: "No se recupera", en: "Not recovered" },
+        'inversio.calc.tempsRecuperacio': { val: "Temps de recuperacio", es: "Tiempo de recuperacion", en: "Recovery time" },
+
+        // Unit 11: Comptabilitat
+        'comptabilitat.title': { val: "Comptabilitat basica", es: "Contabilidad basica", en: "Basic Accounting" },
+        'comptabilitat.subtitle': { val: "El llenguatge universal dels negocis", es: "El lenguaje universal de los negocios", en: "The universal language of business" },
+        'comptabilitat.why': { val: "La comptabilitat es com l'historial medic d'una empresa. Sense ella, no sabries si l'empresa esta sana o malalta. Quan demanes un prestec, el banc mira els comptes. Es la base de TOTES les decisions financeres.", es: "La contabilidad es como el historial medico de una empresa. Sin ella, no sabrias si la empresa esta sana o enferma. Cuando pides un prestamo, el banco mira las cuentas.", en: "Accounting is like a company's medical record. Without it, you wouldn't know if the business is healthy or sick." },
+        'comptabilitat.tab.balanc': { val: "Balanc", es: "Balance", en: "Balance Sheet" },
+        'comptabilitat.tab.pyg': { val: "Compte de PyG", es: "Cuenta de PyG", en: "P&L Statement" },
+        'comptabilitat.tab.ratios': { val: "Ratios", es: "Ratios", en: "Ratios" },
+        'comptabilitat.equacio': { val: "L'equacio fonamental", es: "La ecuacion fundamental", en: "The fundamental equation" },
+        'comptabilitat.equacio.desc': { val: "Sempre en equilibri!", es: "¡Siempre en equilibrio!", en: "Always in balance!" },
+        'comptabilitat.actiu': { val: "ACTIU (el que te)", es: "ACTIVO (lo que tiene)", en: "ASSETS (what it has)" },
+        'comptabilitat.actiu.desc': { val: "Tot el que l'empresa posseeix:", es: "Todo lo que la empresa posee:", en: "Everything the company owns:" },
+        'comptabilitat.actiu.nc': { val: "Actiu No Corrent: immobilitzat material (maquinaria, edificis), immobilitzat intangible (patents)", es: "Activo No Corriente: inmovilizado material (maquinaria, edificios), inmovilizado intangible (patentes)", en: "Non-Current Assets: tangible assets (machinery, buildings), intangible assets (patents)" },
+        'comptabilitat.actiu.c': { val: "Actiu Corrent: existencies, clients (deutors), tresoreria (banc + caixa)", es: "Activo Corriente: existencias, clientes (deudores), tesoreria (banco + caja)", en: "Current Assets: inventory, trade receivables, cash (bank + cash)" },
+        'comptabilitat.passiu': { val: "PASSIU (el que deu)", es: "PASIVO (lo que debe)", en: "LIABILITIES (what it owes)" },
+        'comptabilitat.passiu.desc': { val: "Tot el que l'empresa deu a tercers:", es: "Todo lo que la empresa debe a terceros:", en: "Everything the company owes to others:" },
+        'comptabilitat.passiu.nc': { val: "Passiu No Corrent: prestecs a llarg termini (>1 any)", es: "Pasivo No Corriente: prestamos a largo plazo (>1 ano)", en: "Non-Current Liabilities: long-term loans (>1 year)" },
+        'comptabilitat.passiu.c': { val: "Passiu Corrent: proveïdors, deutes a curt termini (<1 any)", es: "Pasivo Corriente: proveedores, deudas a corto plazo (<1 ano)", en: "Current Liabilities: suppliers, short-term debts (<1 year)" },
+        'comptabilitat.pn': { val: "PATRIMONI NET", es: "PATRIMONIO NETO", en: "EQUITY" },
+        'comptabilitat.pn.desc': { val: "El valor real dels propietaris: capital + reserves + resultats", es: "El valor real de los propietarios: capital + reservas + resultados", en: "The owners' real value: capital + reserves + results" },
+        'comptabilitat.pyg.title': { val: "Compte de Perdues i Guanys (PyG)", es: "Cuenta de Perdidas y Ganancias (PyG)", en: "Profit & Loss Statement (P&L)" },
+        'comptabilitat.pyg.desc': { val: "Resume els ingressos i despeses d'un periode per determinar si hi ha benefici o perdua.", es: "Resume los ingresos y gastos de un periodo para determinar si hay beneficio o perdida.", en: "Summarises income and expenses for a period to determine profit or loss." },
+        'comptabilitat.pyg.ingressos': { val: "Ingressos d'explotacio (vendes)", es: "Ingresos de explotacion (ventas)", en: "Operating income (sales)" },
+        'comptabilitat.pyg.despeses': { val: "- Despeses d'explotacio (compres, sous, amortitzacio)", es: "- Gastos de explotacion (compras, sueldos, amortizacion)", en: "- Operating expenses (purchases, wages, depreciation)" },
+        'comptabilitat.pyg.resultatExpl': { val: "= Resultat d'Explotacio (BAII)", es: "= Resultado de Explotacion (BAII)", en: "= Operating Result (EBIT)" },
+        'comptabilitat.pyg.financers': { val: "+/- Resultats financers (interessos)", es: "+/- Resultados financieros (intereses)", en: "+/- Financial results (interest)" },
+        'comptabilitat.pyg.bai': { val: "= BAI (Benefici Abans d'Impostos)", es: "= BAI (Beneficio Antes de Impuestos)", en: "= EBT (Earnings Before Tax)" },
+        'comptabilitat.pyg.impostos': { val: "- Impost de Societats (25%)", es: "- Impuesto de Sociedades (25%)", en: "- Corporate Tax (25%)" },
+        'comptabilitat.pyg.bn': { val: "= Benefici Net", es: "= Beneficio Neto", en: "= Net Profit" },
+        'comptabilitat.ratios.title': { val: "Ratios Financers Basics", es: "Ratios Financieros Basicos", en: "Basic Financial Ratios" },
+        'comptabilitat.ratio.liquidesa': { val: "Liquidesa = AC / PC", es: "Liquidez = AC / PC", en: "Liquidity = CA / CL" },
+        'comptabilitat.ratio.liquidesa.desc': { val: "Capacitat per pagar deutes a curt termini. Ideal: 1.5-2", es: "Capacidad para pagar deudas a corto plazo. Ideal: 1.5-2", en: "Ability to pay short-term debts. Ideal: 1.5-2" },
+        'comptabilitat.ratio.solvencia': { val: "Solvencia = Actiu Total / Passiu Total", es: "Solvencia = Activo Total / Pasivo Total", en: "Solvency = Total Assets / Total Liabilities" },
+        'comptabilitat.ratio.solvencia.desc': { val: "Capacitat per pagar tots els deutes. Ha de ser > 1", es: "Capacidad para pagar todas las deudas. Debe ser > 1", en: "Ability to pay all debts. Must be > 1" },
+        'comptabilitat.ratio.endeutament': { val: "Endeutament = Passiu / (PN + Passiu)", es: "Endeudamiento = Pasivo / (PN + Pasivo)", en: "Leverage = Liabilities / (Equity + Liabilities)" },
+        'comptabilitat.ratio.endeutament.desc': { val: "Quant del financament es deute? Ideal: 0.4-0.6", es: "¿Cuanto de la financiacion es deuda? Ideal: 0.4-0.6", en: "How much of the financing is debt? Ideal: 0.4-0.6" },
+        'comptabilitat.ratio.rendibilitat': { val: "Rendibilitat Economica (ROA) = BAII / Actiu Total", es: "Rentabilidad Economica (ROA) = BAII / Activo Total", en: "Economic Profitability (ROA) = EBIT / Total Assets" },
+        'comptabilitat.ratio.rendibilitat.desc': { val: "Rendiment dels actius, independentment de com es financen", es: "Rendimiento de los activos, independientemente de como se financian", en: "Return on assets, regardless of how they're financed" },
+        'comptabilitat.ratio.roe': { val: "Rendibilitat Financera (ROE) = BN / Patrimoni Net", es: "Rentabilidad Financiera (ROE) = BN / Patrimonio Neto", en: "Financial Profitability (ROE) = Net Profit / Equity" },
+        'comptabilitat.ratio.roe.desc': { val: "Rendiment per als propietaris. El mes rellevant per als inversors", es: "Rendimiento para los propietarios. El mas relevante para los inversores", en: "Return for owners. The most relevant for investors" },
+        'comptabilitat.ratio.fm': { val: "Fons de Maniobra = AC - PC", es: "Fondo de Maniobra = AC - PC", en: "Working Capital = CA - CL" },
+        'comptabilitat.ratio.fm.desc': { val: "Marge de seguretat financer a curt termini. Ha de ser > 0", es: "Margen de seguridad financiero a corto plazo. Debe ser > 0", en: "Short-term financial safety margin. Must be > 0" },
+
+        // Unit 12: Marketing
+        'marketing.title': { val: "Marqueting", es: "Marketing", en: "Marketing" },
+        'marketing.subtitle': { val: "Com fer arribar el producte al client", es: "Como hacer llegar el producto al cliente", en: "How to get the product to the customer" },
+        'marketing.why': { val: "Pots tenir el millor producte del mon, pero si ningu el coneix o el preu es erroni o no el troben a cap botiga... no vendras res. El marqueting no es nomes publicitat: es entendre el mercat, decidir el preu, triar on vendre i com comunicar.", es: "Puedes tener el mejor producto del mundo, pero si nadie lo conoce o el precio es erroneo o no lo encuentran en ninguna tienda... no venderas nada. El marketing no es solo publicidad.", en: "You can have the best product in the world, but if nobody knows about it or the price is wrong or they can't find it in any store... you won't sell anything. Marketing is not just advertising." },
+        'marketing.tab.investigacio': { val: "Investigacio", es: "Investigacion", en: "Research" },
+        'marketing.tab.segmentacio': { val: "Segmentacio", es: "Segmentacion", en: "Segmentation" },
+        'marketing.tab.mix': { val: "Mix (4P)", es: "Mix (4P)", en: "Mix (4P)" },
+        'marketing.investigacio': { val: "Investigacio de Mercats", es: "Investigacion de Mercados", en: "Market Research" },
+        'marketing.investigacio.desc': { val: "Recollir i analitzar informacio sobre el mercat per prendre decisions. Fonts primaries (enquestes, entrevistes, focus groups) i secundaries (estadistiques, informes sectorials).", es: "Recoger y analizar informacion sobre el mercado para tomar decisiones. Fuentes primarias (encuestas, entrevistas, focus groups) y secundarias (estadisticas, informes sectoriales).", en: "Collecting and analysing market information for decision-making. Primary sources (surveys, interviews, focus groups) and secondary (statistics, sector reports)." },
+        'marketing.segmentacio.title': { val: "Segmentacio del Mercat", es: "Segmentacion del Mercado", en: "Market Segmentation" },
+        'marketing.segmentacio.desc': { val: "Dividir el mercat en grups homogenis de consumidors amb necessitats similars.", es: "Dividir el mercado en grupos homogeneos de consumidores con necesidades similares.", en: "Dividing the market into homogeneous groups of consumers with similar needs." },
+        'marketing.seg.demografic': { val: "Demografic: edat, sexe, renda, ocupacio", es: "Demografico: edad, sexo, renta, ocupacion", en: "Demographic: age, sex, income, occupation" },
+        'marketing.seg.geografic': { val: "Geografic: pais, regio, urba/rural", es: "Geografico: pais, region, urbano/rural", en: "Geographic: country, region, urban/rural" },
+        'marketing.seg.psicografic': { val: "Psicografic: personalitat, valors, estil de vida", es: "Psicografico: personalidad, valores, estilo de vida", en: "Psychographic: personality, values, lifestyle" },
+        'marketing.seg.conductual': { val: "Conductual: frequencia de compra, fidelitat, us", es: "Conductual: frecuencia de compra, fidelidad, uso", en: "Behavioural: purchase frequency, loyalty, usage" },
+        'marketing.posicionament': { val: "Posicionament", es: "Posicionamiento", en: "Positioning" },
+        'marketing.posicionament.desc': { val: "El lloc que ocupa la marca a la ment del consumidor. Ex: Volvo = seguretat, Apple = innovacio, Mercadona = qualitat-preu.", es: "El lugar que ocupa la marca en la mente del consumidor. Ej: Volvo = seguridad, Apple = innovacion, Mercadona = calidad-precio.", en: "The place the brand occupies in the consumer's mind. E.g.: Volvo = safety, Apple = innovation, Mercadona = value." },
+        'marketing.4p': { val: "Mix de Marqueting (4P)", es: "Mix de Marketing (4P)", en: "Marketing Mix (4P)" },
+        'marketing.producte': { val: "Producte (Product)", es: "Producto (Product)", en: "Product" },
+        'marketing.producte.desc': { val: "Que venem? Disseny, qualitat, marca, envàs, garantia, servei postvenda. Cicle de vida: introduccio, creixement, maduresa, declivi.", es: "¿Que vendemos? Diseno, calidad, marca, envase, garantia, servicio postventa. Ciclo de vida: introduccion, crecimiento, madurez, declive.", en: "What do we sell? Design, quality, brand, packaging, warranty, after-sales. Life cycle: introduction, growth, maturity, decline." },
+        'marketing.preu': { val: "Preu (Price)", es: "Precio (Price)", en: "Price" },
+        'marketing.preu.desc': { val: "A quant venem? Estrategies: penetracio (preu baix per entrar), desnatament (preu alt per prestigi), preus psicologics (9,99EUR), preu de cost + marge.", es: "¿A cuanto vendemos? Estrategias: penetracion (precio bajo para entrar), descremado (precio alto por prestigio), precios psicologicos (9,99EUR), precio de coste + margen.", en: "How much do we sell for? Strategies: penetration (low price to enter), skimming (high price for prestige), psychological pricing (EUR9.99), cost-plus pricing." },
+        'marketing.distribucio': { val: "Distribucio (Place)", es: "Distribucion (Place)", en: "Place (Distribution)" },
+        'marketing.distribucio.desc': { val: "On i com venem? Canal directe (fabrica-consumidor) vs indirecte (majorista/detallista). Distribucio intensiva, selectiva o exclusiva. E-commerce.", es: "¿Donde y como vendemos? Canal directo (fabrica-consumidor) vs indirecto (mayorista/detallista). Distribucion intensiva, selectiva o exclusiva. E-commerce.", en: "Where and how do we sell? Direct channel (factory-consumer) vs indirect (wholesaler/retailer). Intensive, selective or exclusive distribution. E-commerce." },
+        'marketing.comunicacio': { val: "Comunicacio (Promotion)", es: "Comunicacion (Promotion)", en: "Promotion (Communication)" },
+        'marketing.comunicacio.desc': { val: "Com ho donem a coneixer? Publicitat, promocio de vendes, relacions publiques, venda personal, marqueting digital (RRSS, SEO, SEM, influencers).", es: "¿Como lo damos a conocer? Publicidad, promocion de ventas, relaciones publicas, venta personal, marketing digital (RRSS, SEO, SEM, influencers).", en: "How do we make it known? Advertising, sales promotion, PR, personal selling, digital marketing (social media, SEO, SEM, influencers)." },
+
+        // footer
+        'footer.appname': { val: "EDMN 2BACH", es: "EDMN 2BACH", en: "EDMN Year 13" },
+    };
+
+    const t = createTranslator(pageTranslations, idioma);
+
+    // Reusable components (identical pattern from empresa.html)
+    const Card = ({ children, className = "", title, icon }) => (
+        <div className={`bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 hover:shadow-md transition-shadow ${className} animate-fade`}>
+            {title && <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100"><span className="text-2xl">{icon}</span><h3 className="font-bold text-slate-800 text-lg">{title}</h3></div>}
+            {children}
+        </div>
+    );
+
+    const Slider = ({ label, value, onChange, min, max, step = 1, suffix = "" }) => (
+        <div className="space-y-2">
+            <div className="flex justify-between text-sm"><span className="text-slate-600 font-medium">{label}</span><span className="font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{typeof value === 'number' ? value.toLocaleString() : value}{suffix}</span></div>
+            <input type="range" min={min} max={max} step={step} value={value} onChange={e => onChange(Number(e.target.value))} className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500" />
+        </div>
+    );
+
+    const Tabs = ({ tabs, active, onChange }) => (
+        <div className="flex flex-wrap gap-1 p-1.5 bg-slate-100 rounded-xl">
+            {tabs.map(tab => (
+                <button key={tab.id} onClick={() => onChange(tab.id)} className={`flex-1 min-w-fit py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${active === tab.id ? 'bg-white shadow-sm text-blue-600' : 'text-slate-600 hover:text-slate-800 hover:bg-white/50'}`}>
+                    {tab.label}
+                </button>
+            ))}
+        </div>
+    );
+
+    const FormulaBox = ({ formula, desc }) => (
+        <div className="my-4 p-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+            <p className="text-center font-mono text-lg text-blue-800 font-semibold">{formula}</p>
+            {desc && <p className="text-center text-sm text-blue-600 mt-2">{desc}</p>}
+        </div>
+    );
+
+    const TheoryBlock = ({ title, children, color = "slate" }) => {
+        const colors = { slate: "border-slate-300 bg-slate-50", blue: "border-blue-300 bg-blue-50", green: "border-green-300 bg-green-50", amber: "border-amber-300 bg-amber-50", pink: "border-pink-300 bg-pink-50", violet: "border-violet-300 bg-violet-50", red: "border-red-300 bg-red-50", cyan: "border-cyan-300 bg-cyan-50", emerald: "border-emerald-300 bg-emerald-50" };
+        return (
+            <div className={`border-l-4 ${colors[color]} p-5 rounded-r-xl my-4`}>
+                {title && <h4 className="font-bold text-slate-800 mb-3 text-base">{title}</h4>}
+                <div className="text-slate-700 text-sm leading-relaxed space-y-2">{children}</div>
+            </div>
+        );
+    };
+
+    const WhyImportant = ({ children }) => (
+        <div className="my-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200">
+            <div className="flex items-start gap-3">
+                <span className="text-2xl">🎯</span>
+                <div>
+                    <h4 className="font-bold text-amber-700 mb-1">{t('whyimportant.title')}</h4>
+                    <p className="text-sm text-amber-800">{children}</p>
+                </div>
+            </div>
+        </div>
+    );
+
+    const ResultCard = ({ title, value, color = "gray", subtitle }) => {
+        const colorClasses = { green: 'bg-green-50 border-green-200 text-green-700', red: 'bg-red-50 border-red-200 text-red-700', blue: 'bg-blue-50 border-blue-200 text-blue-700', amber: 'bg-amber-50 border-amber-200 text-amber-700', violet: 'bg-violet-50 border-violet-200 text-violet-700', gray: 'bg-slate-50 border-slate-200 text-slate-700' };
+        return (
+            <div className={`p-4 rounded-xl text-center border ${colorClasses[color]}`}>
+                <p className="text-xs text-slate-500 mb-1 font-medium">{title}</p>
+                <p className="text-xl font-black">{value}</p>
+                {subtitle && <p className="text-xs mt-1 opacity-75">{subtitle}</p>}
+            </div>
+        );
+    };
+
+    const SectionTitle = ({ icon, title, subtitle }) => (
+        <div className="mb-8">
+            <div className="flex items-center gap-3 mb-2"><span className="text-3xl">{icon}</span><h1 className="text-3xl font-black text-slate-800">{title}</h1></div>
+            {subtitle && <p className="text-slate-500 ml-12">{subtitle}</p>}
+        </div>
+    );
+
+    // ========================================================================
+    // SECTION: INICIO (Landing grid)
+    // ========================================================================
+    const Inicio = () => {
+        const sections = [
+            { id: 'empresa', name: t('sec.empresa'), icon: '🏢', color: 'from-blue-500 to-indigo-500', desc: t('sec.empresa.desc') },
+            { id: 'entorn', name: t('sec.entorn'), icon: '🌍', color: 'from-green-500 to-emerald-500', desc: t('sec.entorn.desc') },
+            { id: 'rsc', name: t('sec.rsc'), icon: '🌱', color: 'from-teal-500 to-cyan-500', desc: t('sec.rsc.desc') },
+            { id: 'canvas', name: t('sec.canvas'), icon: '📋', color: 'from-pink-500 to-rose-500', desc: t('sec.canvas.desc') },
+            { id: 'lean', name: t('sec.lean'), icon: '🚀', color: 'from-orange-500 to-red-500', desc: t('sec.lean.desc') },
+            { id: 'pla', name: t('sec.pla'), icon: '📝', color: 'from-violet-500 to-purple-500', desc: t('sec.pla.desc') },
+            { id: 'costos', name: t('sec.costos'), icon: '💰', color: 'from-amber-500 to-orange-500', desc: t('sec.costos.desc') },
+            { id: 'rrhh', name: t('sec.rrhh'), icon: '👥', color: 'from-indigo-500 to-blue-500', desc: t('sec.rrhh.desc') },
+            { id: 'financament', name: t('sec.financament'), icon: '🏦', color: 'from-sky-500 to-blue-500', desc: t('sec.financament.desc') },
+            { id: 'inversio', name: t('sec.inversio'), icon: '📈', color: 'from-emerald-500 to-green-600', desc: t('sec.inversio.desc') },
+            { id: 'comptabilitat', name: t('sec.comptabilitat'), icon: '📒', color: 'from-slate-600 to-slate-700', desc: t('sec.comptabilitat.desc') },
+            { id: 'marketing', name: t('sec.marketing'), icon: '📣', color: 'from-fuchsia-500 to-pink-500', desc: t('sec.marketing.desc') },
+        ];
+
+        return (
+            <div className="space-y-8">
+                <div className="text-center py-8 animate-fade">
+                    <h1 className="text-4xl md:text-5xl font-black text-slate-800 mb-4">💼 {t('inicio.title')}</h1>
+                    <p className="text-lg text-slate-500 max-w-2xl mx-auto">{t('inicio.subtitle')}</p>
+                </div>
+
+                <WhyImportant>
+                    {t('inicio.whyimportant')}
+                </WhyImportant>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {sections.map(sec => (
+                        <button key={sec.id} onClick={() => setSection(sec.id)} className={`p-5 rounded-xl bg-gradient-to-br ${sec.color} text-white text-left hover:scale-105 transition-transform shadow-lg`}>
+                            <span className="text-3xl">{sec.icon}</span>
+                            <h3 className="font-bold mt-2">{sec.name}</h3>
+                            <p className="text-sm opacity-90 mt-1">{sec.desc}</p>
+                        </button>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
+    // ========================================================================
+    // UNIT 1: Empresa
+    // ========================================================================
+    const Empresa = () => (
+        <div className="space-y-6">
+            <SectionTitle icon="🏢" title={t('empresa.title')} subtitle={t('empresa.subtitle')} />
+            <WhyImportant>{t('empresa.why')}</WhyImportant>
+
+            <Card title={t('empresa.definicio')} icon="📖">
+                <TheoryBlock color="blue">
+                    <p>{t('empresa.definicio.text')}</p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title={t('empresa.funcions')} icon="⚙️">
+                <div className="space-y-3">
+                    {['producir', 'empleo', 'innovar', 'riqueza', 'social'].map((f, i) => (
+                        <div key={f} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
+                            <span className="text-lg">{['🏭', '👷', '💡', '💎', '🤝'][i]}</span>
+                            <p className="text-sm text-slate-700">{t('empresa.func.' + f)}</p>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+
+            <Card title={t('empresa.per_mida')} icon="📏">
+                <div className="grid md:grid-cols-2 gap-3">
+                    {[
+                        { key: 'micro', color: 'bg-blue-50 border-blue-200', emoji: '🔹' },
+                        { key: 'petita', color: 'bg-green-50 border-green-200', emoji: '🔸' },
+                        { key: 'mitjana', color: 'bg-amber-50 border-amber-200', emoji: '🟠' },
+                        { key: 'gran', color: 'bg-red-50 border-red-200', emoji: '🔴' },
+                    ].map(item => (
+                        <div key={item.key} className={`p-3 rounded-lg border ${item.color}`}>
+                            <p className="text-sm font-medium">{item.emoji} {t('empresa.' + item.key)}</p>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+
+            <Card title={t('empresa.per_sector')} icon="🏭">
+                <div className="space-y-3">
+                    {['primari', 'secundari', 'terciari'].map((s, i) => (
+                        <TheoryBlock key={s} color={['green', 'amber', 'blue'][i]}>
+                            <p className="font-semibold">{t('empresa.' + s)}</p>
+                        </TheoryBlock>
+                    ))}
+                </div>
+            </Card>
+
+            <Card title={t('empresa.per_forma')} icon="⚖️">
+                <div className="space-y-3">
+                    {['individual', 'sl', 'sa', 'coop'].map((f, i) => (
+                        <div key={f} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
+                            <span className="text-lg">{['👤', '🏠', '🏛️', '🤝'][i]}</span>
+                            <p className="text-sm text-slate-700">{t('empresa.' + f)}</p>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+
+            <Card title={t('empresa.objectius')} icon="🎯">
+                <div className="grid md:grid-cols-2 gap-3">
+                    {['benefici', 'creixement', 'supervivencia', 'social'].map((o, i) => (
+                        <div key={o} className="p-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border border-slate-200">
+                            <span className="text-2xl">{['💰', '📈', '🛡️', '🌍'][i]}</span>
+                            <p className="text-sm text-slate-700 mt-2">{t('empresa.obj.' + o)}</p>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+        </div>
+    );
+
+    // ========================================================================
+    // UNIT 2: Entorn
+    // ========================================================================
+    const Entorn = () => {
+        const [tab, setTab] = useState('pest');
+
+        // DAFO editable with localStorage
+        const [dafo, setDafo] = useState(() => {
+            const saved = localStorage.getItem('pde_edmn_dafo');
+            return saved ? JSON.parse(saved) : {
+                fortaleses: ['', '', ''],
+                debilitats: ['', '', ''],
+                oportunitats: ['', '', ''],
+                amenaces: ['', '', '']
+            };
+        });
+
+        const updateDafo = (section, index, value) => {
+            const newDafo = { ...dafo, [section]: [...dafo[section]] };
+            newDafo[section][index] = value;
+            setDafo(newDafo);
+            localStorage.setItem('pde_edmn_dafo', JSON.stringify(newDafo));
+        };
+
+        const addDafoItem = (section) => {
+            const newDafo = { ...dafo, [section]: [...dafo[section], ''] };
+            setDafo(newDafo);
+            localStorage.setItem('pde_edmn_dafo', JSON.stringify(newDafo));
+        };
+
+        const clearDafo = () => {
+            const empty = { fortaleses: ['', '', ''], debilitats: ['', '', ''], oportunitats: ['', '', ''], amenaces: ['', '', ''] };
+            setDafo(empty);
+            localStorage.setItem('pde_edmn_dafo', JSON.stringify(empty));
+        };
+
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="🌍" title={t('entorn.title')} subtitle={t('entorn.subtitle')} />
+                <WhyImportant>{t('entorn.why')}</WhyImportant>
+
+                <Tabs tabs={[
+                    { id: 'pest', label: t('entorn.tab.pest') },
+                    { id: 'porter', label: t('entorn.tab.porter') },
+                    { id: 'dafo', label: t('entorn.tab.dafo') },
+                ]} active={tab} onChange={setTab} />
+
+                {tab === 'pest' && (
+                    <Card title={t('entorn.general')} icon="🔍">
+                        <div className="grid md:grid-cols-2 gap-4">
+                            {[
+                                { key: 'politic', emoji: '🏛️', color: 'red' },
+                                { key: 'economic', emoji: '📊', color: 'blue' },
+                                { key: 'social', emoji: '👥', color: 'green' },
+                                { key: 'tecnologic', emoji: '💻', color: 'violet' },
+                            ].map(item => (
+                                <TheoryBlock key={item.key} title={item.emoji + ' ' + t('entorn.' + item.key)} color={item.color}>
+                                    <p>{t('entorn.' + item.key + '.desc')}</p>
+                                </TheoryBlock>
+                            ))}
+                        </div>
+                    </Card>
+                )}
+
+                {tab === 'porter' && (
+                    <Card title={t('entorn.especific')} icon="🏭">
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {[
+                                { key: 'rivals', emoji: '⚔️' },
+                                { key: 'nous', emoji: '🚪' },
+                                { key: 'substituts', emoji: '🔄' },
+                                { key: 'proveïdors', emoji: '🏭' },
+                                { key: 'clients', emoji: '👥' },
+                            ].map(item => (
+                                <div key={item.key} className="p-4 bg-violet-50 rounded-xl border border-violet-200">
+                                    <span className="text-2xl">{item.emoji}</span>
+                                    <h4 className="font-bold text-violet-700 mt-2 text-sm">{t('entorn.porter.' + item.key)}</h4>
+                                    <p className="text-xs text-slate-600 mt-1">{t('entorn.porter.' + item.key + '.desc')}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </Card>
+                )}
+
+                {tab === 'dafo' && (
+                    <Card title={t('entorn.dafo')} icon="📊">
+                        <TheoryBlock color="blue">
+                            <p>{t('entorn.dafo.desc')}</p>
+                        </TheoryBlock>
+
+                        <div className="grid md:grid-cols-2 gap-4 mt-6">
+                            {/* Fortaleses */}
+                            <div className="p-4 bg-green-50 rounded-xl border-2 border-green-300">
+                                <h4 className="font-bold text-green-700 mb-3 text-lg">💪 {t('entorn.fortaleses')}</h4>
+                                {dafo.fortaleses.map((item, i) => (
+                                    <input key={i} type="text" value={item} onChange={(e) => updateDafo('fortaleses', i, e.target.value)}
+                                        placeholder={`${t('entorn.fortalesa')} ${i + 1}...`}
+                                        className="w-full p-2 mb-2 rounded border border-green-200 text-sm focus:ring-2 focus:ring-green-400 outline-none" />
+                                ))}
+                                <button onClick={() => addDafoItem('fortaleses')} className="text-xs text-green-600 hover:text-green-800">{t('entorn.afegir')}</button>
+                            </div>
+
+                            {/* Debilitats */}
+                            <div className="p-4 bg-red-50 rounded-xl border-2 border-red-300">
+                                <h4 className="font-bold text-red-700 mb-3 text-lg">⚠️ {t('entorn.debilitats')}</h4>
+                                {dafo.debilitats.map((item, i) => (
+                                    <input key={i} type="text" value={item} onChange={(e) => updateDafo('debilitats', i, e.target.value)}
+                                        placeholder={`${t('entorn.debilitat')} ${i + 1}...`}
+                                        className="w-full p-2 mb-2 rounded border border-red-200 text-sm focus:ring-2 focus:ring-red-400 outline-none" />
+                                ))}
+                                <button onClick={() => addDafoItem('debilitats')} className="text-xs text-red-600 hover:text-red-800">{t('entorn.afegir')}</button>
+                            </div>
+
+                            {/* Oportunitats */}
+                            <div className="p-4 bg-blue-50 rounded-xl border-2 border-blue-300">
+                                <h4 className="font-bold text-blue-700 mb-3 text-lg">🎯 {t('entorn.oportunitats')}</h4>
+                                {dafo.oportunitats.map((item, i) => (
+                                    <input key={i} type="text" value={item} onChange={(e) => updateDafo('oportunitats', i, e.target.value)}
+                                        placeholder={`${t('entorn.oportunitat')} ${i + 1}...`}
+                                        className="w-full p-2 mb-2 rounded border border-blue-200 text-sm focus:ring-2 focus:ring-blue-400 outline-none" />
+                                ))}
+                                <button onClick={() => addDafoItem('oportunitats')} className="text-xs text-blue-600 hover:text-blue-800">{t('entorn.afegir')}</button>
+                            </div>
+
+                            {/* Amenaces */}
+                            <div className="p-4 bg-amber-50 rounded-xl border-2 border-amber-300">
+                                <h4 className="font-bold text-amber-700 mb-3 text-lg">🌩️ {t('entorn.amenaces')}</h4>
+                                {dafo.amenaces.map((item, i) => (
+                                    <input key={i} type="text" value={item} onChange={(e) => updateDafo('amenaces', i, e.target.value)}
+                                        placeholder={`${t('entorn.amenaca')} ${i + 1}...`}
+                                        className="w-full p-2 mb-2 rounded border border-amber-200 text-sm focus:ring-2 focus:ring-amber-400 outline-none" />
+                                ))}
+                                <button onClick={() => addDafoItem('amenaces')} className="text-xs text-amber-600 hover:text-amber-800">{t('entorn.afegir')}</button>
+                            </div>
+                        </div>
+
+                        <div className="mt-4 flex justify-end">
+                            <button onClick={clearDafo} className="px-4 py-2 bg-slate-200 text-slate-600 rounded-lg text-sm hover:bg-slate-300">🗑️ {t('entorn.esborrar')}</button>
+                        </div>
+                    </Card>
+                )}
+            </div>
+        );
+    };
+
+    // ========================================================================
+    // UNIT 3: RSC i Etica
+    // ========================================================================
+    const RSC = () => (
+        <div className="space-y-6">
+            <SectionTitle icon="🌱" title={t('rsc.title')} subtitle={t('rsc.subtitle')} />
+            <WhyImportant>{t('rsc.why')}</WhyImportant>
+
+            <Card title={t('rsc.definicio')} icon="📖">
+                <TheoryBlock color="green">
+                    <p>{t('rsc.definicio.text')}</p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title={t('rsc.stakeholders')} icon="👥">
+                <div className="space-y-3">
+                    {['treballadors', 'clients', 'proveïdors', 'societat', 'accionistes', 'estat'].map((s, i) => (
+                        <div key={s} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
+                            <span className="text-lg">{['👷', '🛒', '📦', '🌍', '💹', '🏛️'][i]}</span>
+                            <p className="text-sm text-slate-700">{t('rsc.stake.' + s)}</p>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+
+            <Card title={t('rsc.dimensions')} icon="🔄">
+                <div className="grid md:grid-cols-3 gap-4">
+                    {['economica', 'social', 'ambiental'].map((d, i) => (
+                        <TheoryBlock key={d} color={['blue', 'pink', 'green'][i]}>
+                            <p className="font-semibold">{['💰', '🤝', '🌿'][i]} {t('rsc.dim.' + d)}</p>
+                        </TheoryBlock>
+                    ))}
+                </div>
+            </Card>
+
+            <Card title={t('rsc.ods')} icon="🌐">
+                <TheoryBlock color="emerald">
+                    <p>{t('rsc.ods.text')}</p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title={t('rsc.exemples')} icon="🏢">
+                <div className="space-y-3">
+                    {['patagonia', 'mercadona', 'ikea'].map((e, i) => (
+                        <div key={e} className="p-4 bg-gradient-to-r from-slate-50 to-green-50 rounded-xl border border-slate-200">
+                            <span className="text-lg">{['🏔️', '🛒', '🪑'][i]}</span>
+                            <p className="text-sm text-slate-700 mt-1">{t('rsc.ex.' + e)}</p>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+        </div>
+    );
+
+    // ========================================================================
+    // UNIT 4: Business Model Canvas (COMPLETE with interactive tool)
+    // ========================================================================
+    const Canvas = () => {
+        const [tab, setTab] = useState('teoria');
+        const [copiat, setCopiat] = useState(false);
+
+        // Canvas editable with localStorage
+        const [canvas, setCanvas] = useState(() => {
+            const saved = localStorage.getItem('pde_edmn_canvas');
+            return saved ? JSON.parse(saved) : {
+                socis: '', activitats: '', proposta: '', relacions: '', segments: '',
+                recursos: '', canals: '', costos: '', ingressos: ''
+            };
+        });
+
+        const updateCanvas = (field, value) => {
+            const newCanvas = { ...canvas, [field]: value };
+            setCanvas(newCanvas);
+            localStorage.setItem('pde_edmn_canvas', JSON.stringify(newCanvas));
+        };
+
+        const clearCanvas = () => {
+            const empty = { socis: '', activitats: '', proposta: '', relacions: '', segments: '', recursos: '', canals: '', costos: '', ingressos: '' };
+            setCanvas(empty);
+            localStorage.setItem('pde_edmn_canvas', JSON.stringify(empty));
+        };
+
+        const exportCanvas = () => {
+            const labels = {
+                socis: t('canvas.socis'),
+                activitats: t('canvas.activitats'),
+                proposta: t('canvas.proposta'),
+                relacions: t('canvas.relacions'),
+                segments: t('canvas.segments'),
+                recursos: t('canvas.recursos'),
+                canals: t('canvas.canals'),
+                costos: t('canvas.costos'),
+                ingressos: t('canvas.ingressos'),
+            };
+            const text = Object.keys(labels).map(k => `${labels[k]}:\n${canvas[k] || '(buit)'}`).join('\n\n');
+            navigator.clipboard.writeText('BUSINESS MODEL CANVAS\n' + '='.repeat(30) + '\n\n' + text);
+            setCopiat(true);
+            setTimeout(() => setCopiat(false), 2000);
+        };
+
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="📋" title={t('canvas.title')} subtitle={t('canvas.subtitle')} />
+                <WhyImportant>{t('canvas.why')}</WhyImportant>
+
+                <Tabs tabs={[
+                    { id: 'teoria', label: t('canvas.tab.teoria') },
+                    { id: 'eina', label: t('canvas.tab.eina') },
+                ]} active={tab} onChange={setTab} />
+
+                {tab === 'teoria' && (
+                    <div className="space-y-4">
+                        <Card title={t('canvas.title') + ' — 9 Blocs'} icon="📋">
+                            <div className="grid md:grid-cols-3 gap-4">
+                                {[1,2,3,4,5,6,7,8,9].map(n => (
+                                    <div key={n} className="p-4 bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl border border-slate-200">
+                                        <h4 className="font-bold text-slate-800 text-sm mb-1">{n}. {t('canvas.bloc.' + n)}</h4>
+                                        <p className="text-xs text-slate-600">{t('canvas.bloc.' + n + '.desc')}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
+                    </div>
+                )}
+
+                {tab === 'eina' && (
+                    <Card title={t('canvas.editable')} icon="✏️">
+                        <TheoryBlock color="green">
+                            <p>{t('canvas.instruccio')}</p>
+                        </TheoryBlock>
+
+                        {/* Business Model Canvas Layout */}
+                        <div className="mt-6 grid grid-cols-1 md:grid-cols-5 gap-2 text-xs">
+                            {/* Row 1: Partners | Activities + Resources | Value Prop | Relations + Channels | Segments */}
+                            <div className="md:row-span-2 p-3 bg-violet-100 rounded-lg border border-violet-300">
+                                <h5 className="font-bold text-violet-700 mb-2">🤝 {t('canvas.socis')}</h5>
+                                <textarea value={canvas.socis} onChange={(e) => updateCanvas('socis', e.target.value)}
+                                    placeholder={t('canvas.ph.socis')}
+                                    className="w-full h-24 p-2 rounded border border-violet-200 text-xs resize-none focus:ring-2 focus:ring-violet-400 outline-none" />
+                            </div>
+
+                            <div className="p-3 bg-blue-100 rounded-lg border border-blue-300">
+                                <h5 className="font-bold text-blue-700 mb-2">⚙️ {t('canvas.activitats')}</h5>
+                                <textarea value={canvas.activitats} onChange={(e) => updateCanvas('activitats', e.target.value)}
+                                    placeholder={t('canvas.ph.activitats')}
+                                    className="w-full h-16 p-2 rounded border border-blue-200 text-xs resize-none focus:ring-2 focus:ring-blue-400 outline-none" />
+                            </div>
+
+                            <div className="md:row-span-2 p-3 bg-pink-100 rounded-lg border border-pink-300">
+                                <h5 className="font-bold text-pink-700 mb-2">💎 {t('canvas.proposta')}</h5>
+                                <textarea value={canvas.proposta} onChange={(e) => updateCanvas('proposta', e.target.value)}
+                                    placeholder={t('canvas.ph.proposta')}
+                                    className="w-full h-24 p-2 rounded border border-pink-200 text-xs resize-none focus:ring-2 focus:ring-pink-400 outline-none" />
+                            </div>
+
+                            <div className="p-3 bg-green-100 rounded-lg border border-green-300">
+                                <h5 className="font-bold text-green-700 mb-2">❤️ {t('canvas.relacions')}</h5>
+                                <textarea value={canvas.relacions} onChange={(e) => updateCanvas('relacions', e.target.value)}
+                                    placeholder={t('canvas.ph.relacions')}
+                                    className="w-full h-16 p-2 rounded border border-green-200 text-xs resize-none focus:ring-2 focus:ring-green-400 outline-none" />
+                            </div>
+
+                            <div className="md:row-span-2 p-3 bg-emerald-100 rounded-lg border border-emerald-300">
+                                <h5 className="font-bold text-emerald-700 mb-2">👥 {t('canvas.segments')}</h5>
+                                <textarea value={canvas.segments} onChange={(e) => updateCanvas('segments', e.target.value)}
+                                    placeholder={t('canvas.ph.segments')}
+                                    className="w-full h-24 p-2 rounded border border-emerald-200 text-xs resize-none focus:ring-2 focus:ring-emerald-400 outline-none" />
+                            </div>
+
+                            <div className="p-3 bg-cyan-100 rounded-lg border border-cyan-300">
+                                <h5 className="font-bold text-cyan-700 mb-2">🏗️ {t('canvas.recursos')}</h5>
+                                <textarea value={canvas.recursos} onChange={(e) => updateCanvas('recursos', e.target.value)}
+                                    placeholder={t('canvas.ph.recursos')}
+                                    className="w-full h-16 p-2 rounded border border-cyan-200 text-xs resize-none focus:ring-2 focus:ring-cyan-400 outline-none" />
+                            </div>
+
+                            <div className="p-3 bg-amber-100 rounded-lg border border-amber-300">
+                                <h5 className="font-bold text-amber-700 mb-2">📢 {t('canvas.canals')}</h5>
+                                <textarea value={canvas.canals} onChange={(e) => updateCanvas('canals', e.target.value)}
+                                    placeholder={t('canvas.ph.canals')}
+                                    className="w-full h-16 p-2 rounded border border-amber-200 text-xs resize-none focus:ring-2 focus:ring-amber-400 outline-none" />
+                            </div>
+
+                            {/* Bottom row */}
+                            <div className="md:col-span-2 p-3 bg-red-100 rounded-lg border border-red-300">
+                                <h5 className="font-bold text-red-700 mb-2">💸 {t('canvas.costos')}</h5>
+                                <textarea value={canvas.costos} onChange={(e) => updateCanvas('costos', e.target.value)}
+                                    placeholder={t('canvas.ph.costos')}
+                                    className="w-full h-16 p-2 rounded border border-red-200 text-xs resize-none focus:ring-2 focus:ring-red-400 outline-none" />
+                            </div>
+
+                            <div className="md:col-span-3 p-3 bg-green-100 rounded-lg border border-green-300">
+                                <h5 className="font-bold text-green-700 mb-2">💰 {t('canvas.ingressos')}</h5>
+                                <textarea value={canvas.ingressos} onChange={(e) => updateCanvas('ingressos', e.target.value)}
+                                    placeholder={t('canvas.ph.ingressos')}
+                                    className="w-full h-16 p-2 rounded border border-green-200 text-xs resize-none focus:ring-2 focus:ring-green-400 outline-none" />
+                            </div>
+                        </div>
+
+                        <div className="mt-4 flex justify-end gap-3">
+                            <button onClick={exportCanvas} className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors">
+                                {copiat ? ('✅ ' + t('canvas.copiat')) : ('📋 ' + t('canvas.export'))}
+                            </button>
+                            <button onClick={clearCanvas} className="px-4 py-2 bg-slate-200 text-slate-600 rounded-lg text-sm hover:bg-slate-300">🗑️ {t('canvas.reset')}</button>
+                        </div>
+                    </Card>
+                )}
+            </div>
+        );
+    };
+
+    // ========================================================================
+    // UNIT 5: Lean Startup
+    // ========================================================================
+    const Lean = () => (
+        <div className="space-y-6">
+            <SectionTitle icon="🚀" title={t('lean.title')} subtitle={t('lean.subtitle')} />
+            <WhyImportant>{t('lean.why')}</WhyImportant>
+
+            <Card title={t('lean.mvp')} icon="🧪">
+                <TheoryBlock color="blue">
+                    <p>{t('lean.mvp.text')}</p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title={t('lean.cicle')} icon="🔄">
+                {/* Build-Measure-Learn visual loop */}
+                <div className="flex flex-col md:flex-row justify-center items-center gap-4 my-6">
+                    {[
+                        { label: 'BUILD', text: t('lean.build'), color: 'bg-blue-500', emoji: '🔨' },
+                        { label: 'MEASURE', text: t('lean.measure'), color: 'bg-green-500', emoji: '📊' },
+                        { label: 'LEARN', text: t('lean.learn'), color: 'bg-amber-500', emoji: '💡' },
+                    ].map((step, i) => (
+                        <React.Fragment key={step.label}>
+                            <div className={`${step.color} text-white p-5 rounded-xl text-center w-full md:w-48 shadow-lg`}>
+                                <span className="text-3xl">{step.emoji}</span>
+                                <h4 className="font-black text-lg mt-2">{step.label}</h4>
+                                <p className="text-xs mt-1 opacity-90">{step.text}</p>
+                            </div>
+                            {i < 2 && <span className="text-2xl text-slate-400 hidden md:block">→</span>}
+                            {i < 2 && <span className="text-2xl text-slate-400 md:hidden">↓</span>}
+                        </React.Fragment>
+                    ))}
+                </div>
+                <div className="text-center">
+                    <span className="text-2xl text-slate-400">🔄</span>
+                    <p className="text-sm text-slate-500 mt-1">{t('lean.pivot')}: {t('lean.pivot.text')}</p>
+                </div>
+            </Card>
+
+            <Card title={t('lean.metriques')} icon="🏴‍☠️">
+                <div className="space-y-3">
+                    {['acquisition', 'activation', 'retention', 'revenue', 'referral'].map((m, i) => (
+                        <div key={m} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <span className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 text-white flex items-center justify-center text-sm font-black">{['A', 'A', 'R', 'R', 'R'][i]}</span>
+                            <p className="text-sm text-slate-700">{t('lean.' + m)}</p>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+        </div>
+    );
+
+    // ========================================================================
+    // UNIT 6: Pla d'Empresa
+    // ========================================================================
+    const Pla = () => (
+        <div className="space-y-6">
+            <SectionTitle icon="📝" title={t('pla.title')} subtitle={t('pla.subtitle')} />
+            <WhyImportant>{t('pla.why')}</WhyImportant>
+
+            <Card title={t('pla.seccions')} icon="📄">
+                <div className="space-y-4">
+                    {[1,2,3,4,5,6,7,8].map(n => (
+                        <div key={n} className="flex items-start gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100 hover:bg-blue-50 transition-colors">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-white flex items-center justify-center text-sm font-black flex-shrink-0">{n}</div>
+                            <div>
+                                <h4 className="font-bold text-slate-800">{t('pla.s' + n)}</h4>
+                                <p className="text-sm text-slate-600 mt-1">{t('pla.s' + n + '.desc')}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+        </div>
+    );
+
+    // ========================================================================
+    // UNIT 7: Costos i Punt Mort (COMPLETE with simulator)
+    // ========================================================================
+    const Costos = () => {
+        const [tab, setTab] = useState('teoria');
+        const [cf, setCF] = useState(50000);
+        const [cv, setCV] = useState(30);
+        const [preu, setPreu] = useState(80);
+        const [q, setQ] = useState(1500);
+
+        const calc = useMemo(() => {
+            const mc = preu - cv;
+            const qEq = mc > 0 ? cf / mc : 0;
+            const it = preu * q;
+            const ct = cf + cv * q;
+            const benefici = it - ct;
+            const margeSeguretat = q > 0 && qEq > 0 ? (((q - qEq) / q) * 100) : 0;
+            return { mc, qEq: Math.round(qEq), it, ct, benefici, margeSeguretat: margeSeguretat.toFixed(1) };
+        }, [cf, cv, preu, q]);
+
+        // SVG Graph component
+        const CostGraph = () => {
+            const width = 500;
+            const height = 300;
+            const padding = 50;
+            const maxQ = Math.max(calc.qEq * 2, q * 1.5, 2000);
+            const maxY = Math.max(cf + cv * maxQ, preu * maxQ, 150000);
+
+            const scaleX = (val) => padding + (val / maxQ) * (width - padding * 2);
+            const scaleY = (val) => height - padding - (val / maxY) * (height - padding * 2);
+
+            const cfLine = `M ${scaleX(0)} ${scaleY(cf)} L ${scaleX(maxQ)} ${scaleY(cf)}`;
+            const ctLine = `M ${scaleX(0)} ${scaleY(cf)} L ${scaleX(maxQ)} ${scaleY(cf + cv * maxQ)}`;
+            const itLine = `M ${scaleX(0)} ${scaleY(0)} L ${scaleX(maxQ)} ${scaleY(preu * maxQ)}`;
+
+            return (
+                <svg viewBox={`0 0 ${width} ${height}`} className="w-full max-w-lg mx-auto">
+                    {/* Axes */}
+                    <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="#94a3b8" strokeWidth="2" />
+                    <line x1={padding} y1={padding} x2={padding} y2={height - padding} stroke="#94a3b8" strokeWidth="2" />
+
+                    {/* Axis labels */}
+                    <text x={width / 2} y={height - 10} textAnchor="middle" className="text-xs fill-slate-500">{t('costos.sim.quantitat.label')}</text>
+                    <text x={15} y={height / 2} textAnchor="middle" transform={`rotate(-90, 15, ${height/2})`} className="text-xs fill-slate-500">EUR</text>
+
+                    {/* CF line (horizontal) */}
+                    <path d={cfLine} stroke="#f59e0b" strokeWidth="2" strokeDasharray="5,5" fill="none" />
+                    <text x={width - padding + 5} y={scaleY(cf)} className="text-xs fill-amber-600">CF</text>
+
+                    {/* CT line (rising) */}
+                    <path d={ctLine} stroke="#ef4444" strokeWidth="3" fill="none" />
+                    <text x={width - padding + 5} y={scaleY(cf + cv * maxQ) - 10} className="text-xs fill-red-600">CT</text>
+
+                    {/* IT line (rising from 0) */}
+                    <path d={itLine} stroke="#22c55e" strokeWidth="3" fill="none" />
+                    <text x={width - padding + 5} y={scaleY(preu * maxQ) + 15} className="text-xs fill-green-600">IT</text>
+
+                    {/* Break-even point */}
+                    {calc.qEq > 0 && calc.qEq < maxQ && (
+                        <>
+                            <circle cx={scaleX(calc.qEq)} cy={scaleY(preu * calc.qEq)} r="8" fill="#3b82f6" />
+                            <line x1={scaleX(calc.qEq)} y1={scaleY(preu * calc.qEq)} x2={scaleX(calc.qEq)} y2={height - padding} stroke="#3b82f6" strokeWidth="1" strokeDasharray="3,3" />
+                            <text x={scaleX(calc.qEq)} y={height - padding + 15} textAnchor="middle" className="text-xs font-bold fill-blue-600">Q* = {calc.qEq}</text>
+                        </>
+                    )}
+
+                    {/* Loss / profit zones */}
+                    {calc.qEq > 0 && (
+                        <>
+                            <text x={scaleX(calc.qEq / 2)} y={scaleY(cf / 2)} textAnchor="middle" className="text-sm font-bold fill-red-500">{t('costos.sim.perdues')}</text>
+                            <text x={scaleX(Math.min(calc.qEq * 1.5, maxQ * 0.8))} y={scaleY(preu * calc.qEq * 1.3)} textAnchor="middle" className="text-sm font-bold fill-green-500">{t('costos.sim.beneficis')}</text>
+                        </>
+                    )}
+
+                    {/* Legend */}
+                    <rect x={padding} y={10} width="15" height="3" fill="#22c55e" />
+                    <text x={padding + 20} y={15} className="text-xs fill-slate-600">{t('costos.sim.it.label')}</text>
+                    <rect x={padding + 120} y={10} width="15" height="3" fill="#ef4444" />
+                    <text x={padding + 140} y={15} className="text-xs fill-slate-600">{t('costos.sim.ct.label')}</text>
+                    <rect x={padding + 240} y={10} width="15" height="3" fill="#f59e0b" strokeDasharray="5,5" />
+                    <text x={padding + 260} y={15} className="text-xs fill-slate-600">{t('costos.sim.cf.label')}</text>
+                </svg>
+            );
+        };
+
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="💰" title={t('costos.title')} subtitle={t('costos.subtitle')} />
+                <WhyImportant>{t('costos.why')}</WhyImportant>
+
+                <Tabs tabs={[
+                    { id: 'teoria', label: t('costos.tab.teoria') },
+                    { id: 'simulador', label: t('costos.tab.simulador') },
+                ]} active={tab} onChange={setTab} />
+
+                {tab === 'teoria' && (
+                    <div className="space-y-6">
+                        <Card title={t('costos.classificacio')} icon="📋">
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <TheoryBlock title={t('costos.fixos')} color="amber">
+                                    <p className="font-semibold">{t('costos.fixos.desc')}</p>
+                                    <ul className="mt-3 space-y-2">
+                                        <li>🏠 {t('costos.fixos.ex1')}</li>
+                                        <li>👔 {t('costos.fixos.ex2')}</li>
+                                        <li>🛡️ {t('costos.fixos.ex3')}</li>
+                                        <li>📉 {t('costos.fixos.ex4')}</li>
+                                    </ul>
+                                    <p className="mt-3 text-amber-700 font-medium">{t('costos.fixos.note')}</p>
+                                </TheoryBlock>
+                                <TheoryBlock title={t('costos.variables')} color="blue">
+                                    <p className="font-semibold">{t('costos.variables.desc')}</p>
+                                    <ul className="mt-3 space-y-2">
+                                        <li>📦 {t('costos.variables.ex1')}</li>
+                                        <li>👷 {t('costos.variables.ex2')}</li>
+                                        <li>⚡ {t('costos.variables.ex3')}</li>
+                                        <li>🚚 {t('costos.variables.ex4')}</li>
+                                    </ul>
+                                    <p className="mt-3 text-blue-700 font-medium">{t('costos.variables.note')}</p>
+                                </TheoryBlock>
+                            </div>
+                            <FormulaBox formula="CT = CF + CVu × Q" desc={t('costos.formula.ct')} />
+                        </Card>
+
+                        <Card title={t('costos.puntmort')} icon="⚖️">
+                            <TheoryBlock color="green">
+                                <p className="text-lg font-semibold">{t('costos.puntmort.desc')}</p>
+                            </TheoryBlock>
+
+                            <div className="mt-6 p-6 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-xl border-2 border-blue-300">
+                                <p className="text-center text-lg font-bold text-blue-800 mb-2">{t('costos.puntmort.formula')}</p>
+                                <p className="text-center font-mono text-2xl text-blue-900 font-black">Q* = CF / (P - CVu)</p>
+                                <p className="text-center text-sm text-blue-700 mt-2">{t('costos.puntmort.vars')}</p>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-4 mt-6">
+                                <div className="p-4 bg-pink-50 rounded-xl border border-pink-200">
+                                    <h4 className="font-bold text-pink-700">{t('costos.mc')}</h4>
+                                    <FormulaBox formula="MC = P - CVu" />
+                                    <p className="text-sm text-slate-600">{t('costos.mc.desc')}</p>
+                                </div>
+                                <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+                                    <h4 className="font-bold text-emerald-700">{t('costos.ms')}</h4>
+                                    <FormulaBox formula="MS = (Q - Q*) / Q × 100" />
+                                    <p className="text-sm text-slate-600">{t('costos.ms.desc')}</p>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+
+                {tab === 'simulador' && (
+                    <div className="space-y-6">
+                        <Card title={t('costos.tab.simulador')}>
+                            <div className="grid lg:grid-cols-2 gap-8">
+                                <div className="space-y-4">
+                                    <Slider label={t('costos.sim.cf')} value={cf} onChange={setCF} min={1000} max={100000} step={1000} suffix="EUR" />
+                                    <Slider label={t('costos.sim.cvu')} value={cv} onChange={setCV} min={5} max={150} step={1} suffix="EUR" />
+                                    <Slider label={t('costos.sim.preu')} value={preu} onChange={setPreu} min={10} max={200} step={5} suffix="EUR" />
+                                    <Slider label={t('costos.sim.quantitat')} value={q} onChange={setQ} min={0} max={5000} step={50} suffix=" ut." />
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <ResultCard title={t('costos.sim.mc')} value={calc.mc + "EUR"} color={calc.mc > 0 ? "green" : "red"} subtitle="P - CVu" />
+                                    <ResultCard title={t('costos.sim.pm')} value={calc.qEq + " ut."} color="blue" subtitle="CF / MC" />
+                                    <ResultCard title={t('costos.sim.it')} value={calc.it.toLocaleString() + "EUR"} color="green" subtitle="P x Q" />
+                                    <ResultCard title={t('costos.sim.ct')} value={calc.ct.toLocaleString() + "EUR"} color="red" subtitle="CF + CVu x Q" />
+                                    <ResultCard title={t('costos.sim.resultat')} value={calc.benefici.toLocaleString() + "EUR"} color={calc.benefici >= 0 ? "green" : "red"} subtitle={calc.benefici >= 0 ? t('costos.sim.benefici') : t('costos.sim.perdua')} />
+                                    <ResultCard title={t('costos.sim.ms')} value={calc.margeSeguretat + "%"} color={parseFloat(calc.margeSeguretat) > 20 ? "green" : "amber"} />
+                                </div>
+                            </div>
+                        </Card>
+
+                        <Card title={t('costos.sim.grafica')} icon="📊">
+                            <CostGraph />
+                            <div className="mt-4 p-4 bg-slate-50 rounded-xl text-center">
+                                <p className="text-sm text-slate-600">
+                                    {q < calc.qEq ? (
+                                        <span className="text-red-600 font-bold">⚠️ {t('costos.sim.sota')} {calc.qEq - q} {t('costos.sim.unitats.mes')}</span>
+                                    ) : q === calc.qEq ? (
+                                        <span className="text-blue-600 font-bold">⚖️ {t('costos.sim.just')}</span>
+                                    ) : (
+                                        <span className="text-green-600 font-bold">✅ {t('costos.sim.sobre')} {calc.mc}EUR</span>
+                                    )}
+                                </p>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    // ========================================================================
+    // UNIT 8: Recursos Humans
+    // ========================================================================
+    const RRHH = () => {
+        const [tab, setTab] = useState('seleccio');
+
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="👥" title={t('rrhh.title')} subtitle={t('rrhh.subtitle')} />
+                <WhyImportant>{t('rrhh.why')}</WhyImportant>
+
+                <Tabs tabs={[
+                    { id: 'seleccio', label: t('rrhh.tab.seleccio') },
+                    { id: 'motivacio', label: t('rrhh.tab.motivacio') },
+                    { id: 'lideratge', label: t('rrhh.tab.lideratge') },
+                ]} active={tab} onChange={setTab} />
+
+                {tab === 'seleccio' && (
+                    <div className="space-y-6">
+                        <Card title={t('rrhh.seleccio')} icon="🔍">
+                            <div className="space-y-3">
+                                {[1,2,3,4].map(n => (
+                                    <div key={n} className="flex items-start gap-4 p-4 bg-slate-50 rounded-xl">
+                                        <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">{n}</div>
+                                        <p className="text-sm text-slate-700">{t('rrhh.seleccio.' + n)}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
+                        <Card title={t('rrhh.formacio')} icon="📚">
+                            <TheoryBlock color="blue">
+                                <p>{t('rrhh.formacio.text')}</p>
+                            </TheoryBlock>
+                        </Card>
+                    </div>
+                )}
+
+                {tab === 'motivacio' && (
+                    <div className="space-y-6">
+                        <Card title={t('rrhh.maslow')} icon="🔺">
+                            <TheoryBlock color="amber">
+                                <p>{t('rrhh.maslow.desc')}</p>
+                            </TheoryBlock>
+                            {/* Maslow Pyramid as stacked blocks */}
+                            <div className="mt-6 flex flex-col items-center gap-1">
+                                {[5,4,3,2,1].map(n => {
+                                    const widths = { 1: 'w-full', 2: 'w-11/12', 3: 'w-10/12', 4: 'w-9/12', 5: 'w-8/12' };
+                                    const colors = { 1: 'bg-red-100 border-red-300', 2: 'bg-orange-100 border-orange-300', 3: 'bg-yellow-100 border-yellow-300', 4: 'bg-green-100 border-green-300', 5: 'bg-blue-100 border-blue-300' };
+                                    return (
+                                        <div key={n} className={`${widths[n]} p-3 rounded-lg border text-center ${colors[n]}`}>
+                                            <p className="text-xs font-medium text-slate-700">{n}. {t('rrhh.maslow.' + n)}</p>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </Card>
+
+                        <Card title={t('rrhh.herzberg')} icon="⚖️">
+                            <TheoryBlock color="blue">
+                                <p>{t('rrhh.herzberg.desc')}</p>
+                            </TheoryBlock>
+                            <div className="grid md:grid-cols-2 gap-4 mt-4">
+                                <div className="p-4 bg-red-50 rounded-xl border border-red-200">
+                                    <h4 className="font-bold text-red-700 mb-2">⚠️ Factors d'Higiene</h4>
+                                    <p className="text-sm text-slate-600">{t('rrhh.herzberg.higiene')}</p>
+                                </div>
+                                <div className="p-4 bg-green-50 rounded-xl border border-green-200">
+                                    <h4 className="font-bold text-green-700 mb-2">✨ Factors Motivacionals</h4>
+                                    <p className="text-sm text-slate-600">{t('rrhh.herzberg.motivacio')}</p>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+
+                {tab === 'lideratge' && (
+                    <div className="space-y-6">
+                        <Card title={t('rrhh.lideratge.title')} icon="👔">
+                            <div className="grid md:grid-cols-2 gap-4">
+                                {[
+                                    { key: 'autoritari', emoji: '👊', color: 'red' },
+                                    { key: 'democratic', emoji: '🤝', color: 'blue' },
+                                    { key: 'laissez', emoji: '🕊️', color: 'green' },
+                                    { key: 'transformacional', emoji: '🌟', color: 'violet' },
+                                ].map(item => (
+                                    <TheoryBlock key={item.key} title={item.emoji + ' ' + item.key.charAt(0).toUpperCase() + item.key.slice(1)} color={item.color}>
+                                        <p>{t('rrhh.lid.' + item.key)}</p>
+                                    </TheoryBlock>
+                                ))}
+                            </div>
+                        </Card>
+
+                        <Card title={t('rrhh.organigrama')} icon="📊">
+                            <TheoryBlock color="slate">
+                                <p>{t('rrhh.organigrama.text')}</p>
+                            </TheoryBlock>
+                        </Card>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    // ========================================================================
+    // UNIT 9: Fonts de Financament
+    // ========================================================================
+    const Financament = () => (
+        <div className="space-y-6">
+            <SectionTitle icon="🏦" title={t('financament.title')} subtitle={t('financament.subtitle')} />
+            <WhyImportant>{t('financament.why')}</WhyImportant>
+
+            <Card title={t('financament.propies')} icon="💰">
+                <div className="space-y-3">
+                    {[1,2,3].map(n => (
+                        <div key={n} className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                            <span className="text-lg">{['💼', '📊', '🔄'][n-1]}</span>
+                            <p className="text-sm text-slate-700">{t('financament.propies.' + n)}</p>
+                        </div>
+                    ))}
+                </div>
+                <div className="grid md:grid-cols-2 gap-4 mt-4">
+                    <div className="p-3 bg-green-100 rounded-lg border border-green-300">
+                        <p className="text-sm font-medium text-green-700">✅ {t('financament.propies.avantatge')}</p>
+                    </div>
+                    <div className="p-3 bg-red-100 rounded-lg border border-red-300">
+                        <p className="text-sm font-medium text-red-700">⚠️ {t('financament.propies.desavantatge')}</p>
+                    </div>
+                </div>
+            </Card>
+
+            <Card title={t('financament.alienes')} icon="🏦">
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 className="font-bold text-slate-700 mb-3">📅 {t('financament.alienes.ll')}</h4>
+                        <div className="space-y-2">
+                            {[1,2,3].map(n => (
+                                <div key={n} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                    <p className="text-sm text-slate-700">{t('financament.alienes.ll.' + n)}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-700 mb-3">⏰ {t('financament.alienes.ct')}</h4>
+                        <div className="space-y-2">
+                            {[1,2,3,4].map(n => (
+                                <div key={n} className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                                    <p className="text-sm text-slate-700">{t('financament.alienes.ct.' + n)}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </Card>
+
+            <Card title={t('financament.noves')} icon="🚀">
+                <div className="grid md:grid-cols-2 gap-3">
+                    {[1,2,3,4].map(n => (
+                        <div key={n} className="p-4 bg-gradient-to-r from-violet-50 to-pink-50 rounded-xl border border-violet-200">
+                            <span className="text-2xl">{['🌐', '😇', '💹', '🏛️'][n-1]}</span>
+                            <p className="text-sm text-slate-700 mt-2">{t('financament.noves.' + n)}</p>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+        </div>
+    );
+
+    // ========================================================================
+    // UNIT 10: Inversio (COMPLETE with calculator)
+    // ========================================================================
+    const Inversio = () => {
+        const [tab, setTab] = useState('teoria');
+        const [inv, setInv] = useState(100000);
+        const [fc, setFC] = useState(30000);
+        const [anys, setAnys] = useState(5);
+        const [taxa, setTaxa] = useState(10);
+
+        const calc = useMemo(() => {
+            const k = taxa / 100;
+
+            // VAN = -I0 + sum of FC/(1+k)^n
+            let van = -inv;
+            for (let n = 1; n <= anys; n++) {
+                van += fc / Math.pow(1 + k, n);
+            }
+
+            // TIR (Newton-Raphson approximation) - find rate where VAN=0
+            let tir = 0;
+            for (let r = 0; r <= 200; r += 0.25) {
+                const rDec = r / 100;
+                let vanTest = -inv;
+                for (let n = 1; n <= anys; n++) {
+                    vanTest += fc / Math.pow(1 + rDec, n);
+                }
+                if (vanTest < 0) {
+                    tir = r - 0.25;
+                    break;
+                }
+            }
+
+            // Payback = I0 / FC (simple for constant annual flows)
+            const payback = fc > 0 ? inv / fc : -1;
+
+            return {
+                van: van.toFixed(0),
+                tir: tir.toFixed(1),
+                payback: payback > 0 ? payback.toFixed(2) : -1
+            };
+        }, [inv, fc, anys, taxa]);
+
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="📈" title={t('inversio.title')} subtitle={t('inversio.subtitle')} />
+                <WhyImportant>{t('inversio.why')}</WhyImportant>
+
+                <Tabs tabs={[
+                    { id: 'teoria', label: t('inversio.tab.teoria') },
+                    { id: 'calculadora', label: t('inversio.tab.calculadora') },
+                ]} active={tab} onChange={setTab} />
+
+                {tab === 'teoria' && (
+                    <div className="space-y-6">
+                        <Card title={t('inversio.metodes')} icon="📊">
+                            <div className="grid md:grid-cols-3 gap-4">
+                                <TheoryBlock title="VAN" color="green">
+                                    <p className="font-bold text-lg">{t('inversio.van')}</p>
+                                    <p className="mt-2">{t('inversio.van.desc')}</p>
+                                    <div className="mt-3 p-2 bg-green-100 rounded">
+                                        <p className="text-sm">✅ {t('inversio.van.si')}</p>
+                                        <p className="text-sm">❌ {t('inversio.van.no')}</p>
+                                    </div>
+                                </TheoryBlock>
+                                <TheoryBlock title="TIR" color="blue">
+                                    <p className="font-bold text-lg">{t('inversio.tir')}</p>
+                                    <p className="mt-2">{t('inversio.tir.desc')}</p>
+                                    <div className="mt-3 p-2 bg-blue-100 rounded">
+                                        <p className="text-sm">✅ {t('inversio.tir.si')}</p>
+                                        <p className="text-sm">❌ {t('inversio.tir.no')}</p>
+                                    </div>
+                                </TheoryBlock>
+                                <TheoryBlock title="Payback" color="amber">
+                                    <p className="font-bold text-lg">{t('inversio.payback')}</p>
+                                    <p className="mt-2">{t('inversio.payback.desc')}</p>
+                                    <div className="mt-3 p-2 bg-amber-100 rounded">
+                                        <p className="text-sm">⚠️ {t('inversio.payback.warning')}</p>
+                                    </div>
+                                </TheoryBlock>
+                            </div>
+                        </Card>
+
+                        <Card title="VAN" icon="📐">
+                            <FormulaBox formula={"VAN = -I\u2080 + \u03A3 FC/(1+k)\u207F"} desc={t('inversio.formula.van')} />
+                        </Card>
+                    </div>
+                )}
+
+                {tab === 'calculadora' && (
+                    <Card title={t('inversio.tab.calculadora') + ' VAN / TIR / Payback'}>
+                        <div className="grid lg:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                                <Slider label={t('inversio.calc.inv')} value={inv} onChange={setInv} min={10000} max={500000} step={10000} suffix="EUR" />
+                                <Slider label={t('inversio.calc.fc')} value={fc} onChange={setFC} min={1000} max={200000} step={1000} suffix="EUR" />
+                                <Slider label={t('inversio.calc.anys')} value={anys} onChange={setAnys} min={1} max={10} step={1} />
+                                <Slider label={t('inversio.calc.taxa')} value={taxa} onChange={setTaxa} min={1} max={20} step={0.5} suffix="%" />
+                            </div>
+                            <div className="space-y-4">
+                                <ResultCard
+                                    title="VAN"
+                                    value={parseInt(calc.van).toLocaleString() + "EUR"}
+                                    color={parseInt(calc.van) > 0 ? "green" : "red"}
+                                    subtitle={parseInt(calc.van) > 0 ? t('inversio.calc.rendible') : t('inversio.calc.noRendible')}
+                                />
+                                <ResultCard
+                                    title="TIR"
+                                    value={calc.tir + "%"}
+                                    color={parseFloat(calc.tir) > taxa ? "green" : "red"}
+                                    subtitle={parseFloat(calc.tir) > taxa ? `TIR > k (${taxa}%)` : `TIR < k (${taxa}%)`}
+                                />
+                                <ResultCard
+                                    title="Payback"
+                                    value={calc.payback === -1 ? t('inversio.calc.noRecupera') : calc.payback + t('inversio.calc.anys.label')}
+                                    color="amber"
+                                    subtitle={t('inversio.calc.tempsRecuperacio')}
+                                />
+                            </div>
+                        </div>
+                    </Card>
+                )}
+            </div>
+        );
+    };
+
+    // ========================================================================
+    // UNIT 11: Comptabilitat
+    // ========================================================================
+    const Comptabilitat = () => {
+        const [tab, setTab] = useState('balanc');
+
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="📒" title={t('comptabilitat.title')} subtitle={t('comptabilitat.subtitle')} />
+                <WhyImportant>{t('comptabilitat.why')}</WhyImportant>
+
+                <Tabs tabs={[
+                    { id: 'balanc', label: t('comptabilitat.tab.balanc') },
+                    { id: 'pyg', label: t('comptabilitat.tab.pyg') },
+                    { id: 'ratios', label: t('comptabilitat.tab.ratios') },
+                ]} active={tab} onChange={setTab} />
+
+                {tab === 'balanc' && (
+                    <div className="space-y-6">
+                        <Card title={t('comptabilitat.equacio')} icon="⚖️">
+                            <div className="p-6 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-xl border-2 border-blue-300 text-center mb-6">
+                                <p className="font-mono text-2xl text-blue-900 font-black">ACTIU = PASSIU + PATRIMONI NET</p>
+                                <p className="text-sm text-blue-700 mt-2">{t('comptabilitat.equacio.desc')}</p>
+                            </div>
+
+                            <div className="grid md:grid-cols-3 gap-4">
+                                <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                                    <h4 className="font-bold text-blue-700 mb-2">📦 {t('comptabilitat.actiu')}</h4>
+                                    <p className="text-xs text-slate-600 mb-2">{t('comptabilitat.actiu.desc')}</p>
+                                    <p className="text-xs text-slate-500">{t('comptabilitat.actiu.nc')}</p>
+                                    <p className="text-xs text-slate-500 mt-1">{t('comptabilitat.actiu.c')}</p>
+                                </div>
+                                <div className="p-4 bg-red-50 rounded-xl border border-red-200">
+                                    <h4 className="font-bold text-red-700 mb-2">💳 {t('comptabilitat.passiu')}</h4>
+                                    <p className="text-xs text-slate-600 mb-2">{t('comptabilitat.passiu.desc')}</p>
+                                    <p className="text-xs text-slate-500">{t('comptabilitat.passiu.nc')}</p>
+                                    <p className="text-xs text-slate-500 mt-1">{t('comptabilitat.passiu.c')}</p>
+                                </div>
+                                <div className="p-4 bg-green-50 rounded-xl border border-green-200">
+                                    <h4 className="font-bold text-green-700 mb-2">💎 {t('comptabilitat.pn')}</h4>
+                                    <p className="text-xs text-slate-600">{t('comptabilitat.pn.desc')}</p>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+
+                {tab === 'pyg' && (
+                    <Card title={t('comptabilitat.pyg.title')} icon="📈">
+                        <TheoryBlock color="blue">
+                            <p>{t('comptabilitat.pyg.desc')}</p>
+                        </TheoryBlock>
+                        <div className="mt-4 space-y-2">
+                            {[
+                                { key: 'ingressos', color: 'bg-green-50 border-green-200 text-green-700' },
+                                { key: 'despeses', color: 'bg-red-50 border-red-200 text-red-700' },
+                                { key: 'resultatExpl', color: 'bg-blue-50 border-blue-200 text-blue-700 font-bold' },
+                                { key: 'financers', color: 'bg-slate-50 border-slate-200 text-slate-700' },
+                                { key: 'bai', color: 'bg-amber-50 border-amber-200 text-amber-700 font-bold' },
+                                { key: 'impostos', color: 'bg-red-50 border-red-200 text-red-700' },
+                                { key: 'bn', color: 'bg-green-100 border-green-300 text-green-800 font-black text-lg' },
+                            ].map(item => (
+                                <div key={item.key} className={`p-3 rounded-lg border ${item.color}`}>
+                                    <p className="text-sm">{t('comptabilitat.pyg.' + item.key)}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </Card>
+                )}
+
+                {tab === 'ratios' && (
+                    <Card title={t('comptabilitat.ratios.title')} icon="📊">
+                        <div className="space-y-4">
+                            {['liquidesa', 'solvencia', 'endeutament', 'rendibilitat', 'roe', 'fm'].map((r, i) => (
+                                <div key={r} className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="text-lg">{['💧', '🏗️', '📊', '💰', '👤', '🔄'][i]}</span>
+                                        <p className="font-mono font-bold text-blue-800 text-sm">{t('comptabilitat.ratio.' + r)}</p>
+                                    </div>
+                                    <p className="text-xs text-slate-600">{t('comptabilitat.ratio.' + r + '.desc')}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </Card>
+                )}
+            </div>
+        );
+    };
+
+    // ========================================================================
+    // UNIT 12: Marketing
+    // ========================================================================
+    const Marketing = () => {
+        const [tab, setTab] = useState('investigacio');
+
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="📣" title={t('marketing.title')} subtitle={t('marketing.subtitle')} />
+                <WhyImportant>{t('marketing.why')}</WhyImportant>
+
+                <Tabs tabs={[
+                    { id: 'investigacio', label: t('marketing.tab.investigacio') },
+                    { id: 'segmentacio', label: t('marketing.tab.segmentacio') },
+                    { id: 'mix', label: t('marketing.tab.mix') },
+                ]} active={tab} onChange={setTab} />
+
+                {tab === 'investigacio' && (
+                    <Card title={t('marketing.investigacio')} icon="🔍">
+                        <TheoryBlock color="blue">
+                            <p>{t('marketing.investigacio.desc')}</p>
+                        </TheoryBlock>
+                    </Card>
+                )}
+
+                {tab === 'segmentacio' && (
+                    <div className="space-y-6">
+                        <Card title={t('marketing.segmentacio.title')} icon="🎯">
+                            <TheoryBlock color="green">
+                                <p>{t('marketing.segmentacio.desc')}</p>
+                            </TheoryBlock>
+                            <div className="grid md:grid-cols-2 gap-3 mt-4">
+                                {['demografic', 'geografic', 'psicografic', 'conductual'].map((s, i) => (
+                                    <div key={s} className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                                        <span className="text-lg">{['👥', '🌍', '🧠', '🛒'][i]}</span>
+                                        <p className="text-sm text-slate-700 mt-1">{t('marketing.seg.' + s)}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
+
+                        <Card title={t('marketing.posicionament')} icon="📍">
+                            <TheoryBlock color="violet">
+                                <p>{t('marketing.posicionament.desc')}</p>
+                            </TheoryBlock>
+                        </Card>
+                    </div>
+                )}
+
+                {tab === 'mix' && (
+                    <Card title={t('marketing.4p')} icon="🔄">
+                        <div className="grid md:grid-cols-2 gap-4">
+                            {[
+                                { key: 'producte', emoji: '📦', color: 'blue' },
+                                { key: 'preu', emoji: '💰', color: 'green' },
+                                { key: 'distribucio', emoji: '🚚', color: 'amber' },
+                                { key: 'comunicacio', emoji: '📢', color: 'pink' },
+                            ].map(item => (
+                                <TheoryBlock key={item.key} title={item.emoji + ' ' + t('marketing.' + item.key)} color={item.color}>
+                                    <p>{t('marketing.' + item.key + '.desc')}</p>
+                                </TheoryBlock>
+                            ))}
+                        </div>
+                    </Card>
+                )}
+            </div>
+        );
+    };
+
+    // ========================================================================
+    // NAVIGATION AND RENDER
+    // ========================================================================
+    const headerSections = [
+        { id: 'empresa', label: t('sec.empresa'), emoji: '🏢' },
+        { id: 'entorn', label: t('sec.entorn'), emoji: '🌍' },
+        { id: 'rsc', label: t('sec.rsc'), emoji: '🌱' },
+        { id: 'canvas', label: 'Canvas', emoji: '📋' },
+        { id: 'lean', label: 'Lean', emoji: '🚀' },
+        { id: 'pla', label: t('sec.pla'), emoji: '📝' },
+        { id: 'costos', label: t('sec.costos'), emoji: '💰' },
+        { id: 'rrhh', label: t('sec.rrhh'), emoji: '👥' },
+        { id: 'financament', label: t('sec.financament'), emoji: '🏦' },
+        { id: 'inversio', label: t('sec.inversio'), emoji: '📈' },
+        { id: 'comptabilitat', label: t('sec.comptabilitat'), emoji: '📒' },
+        { id: 'marketing', label: t('sec.marketing'), emoji: '📣' },
+    ];
+
+    return (
+        <div className="min-h-screen">
+            <PdeHeader
+                idioma={idioma}
+                setIdioma={(lang) => { setIdioma(lang); PdeLanguageStore.set(lang); }}
+                currentApp="edmn-2bach"
+                sections={headerSections}
+                currentSection={section}
+                setSection={setSection}
+            />
+
+            <main className="max-w-7xl mx-auto px-4 py-8">
+                {section === 'inicio' && <Inicio />}
+                {section === 'empresa' && <Empresa />}
+                {section === 'entorn' && <Entorn />}
+                {section === 'rsc' && <RSC />}
+                {section === 'canvas' && <Canvas />}
+                {section === 'lean' && <Lean />}
+                {section === 'pla' && <Pla />}
+                {section === 'costos' && <Costos />}
+                {section === 'rrhh' && <RRHH />}
+                {section === 'financament' && <Financament />}
+                {section === 'inversio' && <Inversio />}
+                {section === 'comptabilitat' && <Comptabilitat />}
+                {section === 'marketing' && <Marketing />}
+            </main>
+
+            <PdePrevNext sections={headerSections} currentSection={section} setSection={setSection} idioma={idioma} />
+            <PdeFooter appEmoji="💼" appName={t('footer.appname')} idioma={idioma} />
+            <PdeScrollToTop />
+        </div>
+    );
+}
+
+ReactDOM.render(<EdmnApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
