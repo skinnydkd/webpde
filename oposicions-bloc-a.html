@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloc A: Fonaments d'Economia — Oposicions | PDE</title>
+    <meta name="description" content="Temes 1-10 d'oposicions d'Economia. Escassetat, sistemes econòmics, pensament econòmic, creixement i més.">
+    <meta property="og:title" content="Bloc A: Fonaments d'Economia — Oposicions | PDE">
+    <meta property="og:description" content="Temes 1-10 d'oposicions d'Economia. Escassetat, sistemes econòmics, pensament econòmic, creixement i més.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/oposicions-bloc-a">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://profedeeconomia.es/oposicions-bloc-a">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #8b5cf6 #f5f3ff; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f5f3ff; }
+        ::-webkit-scrollbar-thumb { background-color: #8b5cf6; border-radius: 3px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-50 via-white to-violet-50 min-h-screen">
+    <div id="root"></div>
+    <script type="text/babel">
+const { useState, useMemo, useEffect } = React;
+
+function BlocAApp() {
+    const [section, setSection] = useState('inicio');
+    const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+
+    usePdeDeepLink(section, setSection);
+
+    // ════════════════════════════════════════════════════════════════
+    // TRANSLATIONS
+    // ════════════════════════════════════════════════════════════════
+    const pageTranslations = {
+        // Nav / App name
+        'nav.oposicions-bloc-a': { val: "Bloc A: Fonaments d'Economia", es: 'Bloque A: Fundamentos de Economía', en: 'Block A: Economics Fundamentals' },
+        'footer.appname': { val: "Bloc A — Oposicions d'Economia", es: "Bloque A — Oposiciones de Economía", en: 'Block A — Economics Exams' },
+
+        // Inicio
+        'inicio.title': { val: "Bloc A: Fonaments d'Economia", es: 'Bloque A: Fundamentos de Economía', en: 'Block A: Economics Fundamentals' },
+        'inicio.subtitle': { val: "Temes 1-10 de les oposicions d'Economia a Secundària", es: 'Temas 1-10 de las oposiciones de Economía en Secundaria', en: 'Topics 1-10 of the Secondary Economics teaching exams' },
+        'inicio.disponible': { val: 'Disponible', es: 'Disponible', en: 'Available' },
+        'inicio.properament': { val: 'Properament', es: 'Próximamente', en: 'Coming soon' },
+        'inicio.backOpo': { val: '← Tornar a Oposicions', es: '← Volver a Oposiciones', en: '← Back to Exams' },
+
+        // Section labels (for header nav)
+        'sec.inicio': { val: 'Inici', es: 'Inicio', en: 'Home' },
+        'sec.tema1': { val: 'Tema 1', es: 'Tema 1', en: 'Topic 1' },
+        'sec.tema2': { val: 'Tema 2', es: 'Tema 2', en: 'Topic 2' },
+        'sec.tema3': { val: 'Tema 3', es: 'Tema 3', en: 'Topic 3' },
+        'sec.tema4': { val: 'Tema 4', es: 'Tema 4', en: 'Topic 4' },
+        'sec.tema5': { val: 'Tema 5', es: 'Tema 5', en: 'Topic 5' },
+        'sec.tema6': { val: 'Tema 6', es: 'Tema 6', en: 'Topic 6' },
+        'sec.tema7': { val: 'Tema 7', es: 'Tema 7', en: 'Topic 7' },
+        'sec.tema8': { val: 'Tema 8', es: 'Tema 8', en: 'Topic 8' },
+        'sec.tema9': { val: 'Tema 9', es: 'Tema 9', en: 'Topic 9' },
+        'sec.tema10': { val: 'Tema 10', es: 'Tema 10', en: 'Topic 10' },
+
+        // Tabs
+        'tab.complet': { val: 'Tema complet', es: 'Tema completo', en: 'Full topic' },
+        'tab.resum': { val: 'Resum / Esquema', es: 'Resumen / Esquema', en: 'Summary / Outline' },
+
+        // Tema titles
+        'tema1.title': { val: "Economia: ciència de l'escassetat. Objecte i mètode.", es: 'Economía: ciencia de la escasez. Objeto y método.', en: 'Economics: the science of scarcity. Subject and method.' },
+        'tema2.title': { val: "L'escassetat, l'elecció i l'assignació de recursos. El cost d'oportunitat.", es: 'La escasez, la elección y la asignación de recursos. El coste de oportunidad.', en: 'Scarcity, choice and resource allocation. Opportunity cost.' },
+        'tema3.title': { val: "Els agents econòmics. Flux circular de la renda.", es: 'Los agentes económicos. Flujo circular de la renta.', en: 'Economic agents. Circular flow of income.' },
+        'tema4.title': { val: "Els sistemes econòmics. Economia de mercat, planificada i mixta.", es: 'Los sistemas económicos. Economía de mercado, planificada y mixta.', en: 'Economic systems. Market, planned and mixed economies.' },
+        'tema5.title': { val: "El pensament econòmic: evolució i principals corrents.", es: 'El pensamiento económico: evolución y principales corrientes.', en: 'Economic thought: evolution and main currents.' },
+        'tema6.title': { val: "Els factors productius. La funció de producció.", es: 'Los factores productivos. La función de producción.', en: 'Factors of production. The production function.' },
+        'tema7.title': { val: "La divisió del treball, la productivitat i les economies d'escala.", es: 'La división del trabajo, la productividad y las economías de escala.', en: 'Division of labour, productivity and economies of scale.' },
+        'tema8.title': { val: "El creixement econòmic. Desenvolupament i subdesenvolupament.", es: 'El crecimiento económico. Desarrollo y subdesarrollo.', en: 'Economic growth. Development and underdevelopment.' },
+        'tema9.title': { val: "Població i mercat de treball.", es: 'Población y mercado de trabajo.', en: 'Population and labour market.' },
+        'tema10.title': { val: "El medi ambient i l'economia. Desenvolupament sostenible.", es: 'El medio ambiente y la economía. Desarrollo sostenible.', en: 'The environment and the economy. Sustainable development.' },
+    };
+
+    const t = createTranslator(pageTranslations, idioma);
+    const lang = idioma;
+
+    // ════════════════════════════════════════════════════════════════
+    // REUSABLE COMPONENTS
+    // ════════════════════════════════════════════════════════════════
+    const Card = ({ children, className = "", title, icon }) => (
+        <div className={`bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 hover:shadow-md transition-shadow ${className} animate-fade`}>
+            {title && <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100"><span className="text-2xl">{icon}</span><h3 className="font-bold text-slate-800 text-lg">{title}</h3></div>}
+            {children}
+        </div>
+    );
+
+    const Tabs = ({ tabs, active, onChange }) => (
+        <div className="flex flex-wrap gap-1 p-1.5 bg-slate-100 rounded-xl">
+            {tabs.map(tab => (
+                <button key={tab.id} onClick={() => onChange(tab.id)} className={`flex-1 min-w-fit py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${active === tab.id ? 'bg-white shadow-sm text-purple-600' : 'text-slate-600 hover:text-slate-800 hover:bg-white/50'}`}>
+                    {tab.label}
+                </button>
+            ))}
+        </div>
+    );
+
+    const FormulaBox = ({ formula, desc }) => (
+        <div className="my-4 p-5 bg-gradient-to-r from-purple-50 to-violet-50 rounded-xl border border-purple-100">
+            <p className="text-center font-mono text-lg text-purple-800 font-semibold">{formula}</p>
+            {desc && <p className="text-center text-sm text-purple-600 mt-2">{desc}</p>}
+        </div>
+    );
+
+    const TheoryBlock = ({ title, children, color = "slate" }) => {
+        const colors = { slate: "border-slate-300 bg-slate-50", blue: "border-blue-300 bg-blue-50", green: "border-green-300 bg-green-50", amber: "border-amber-300 bg-amber-50", pink: "border-pink-300 bg-pink-50", violet: "border-violet-300 bg-violet-50", red: "border-red-300 bg-red-50", cyan: "border-cyan-300 bg-cyan-50", emerald: "border-emerald-300 bg-emerald-50", purple: "border-purple-300 bg-purple-50" };
+        return (
+            <div className={`border-l-4 ${colors[color] || colors.slate} p-5 rounded-r-xl my-4`}>
+                {title && <h4 className="font-bold text-slate-800 mb-3 text-base">{title}</h4>}
+                <div className="text-slate-700 text-sm leading-relaxed space-y-2">{children}</div>
+            </div>
+        );
+    };
+
+    const SectionTitle = ({ icon, title, subtitle }) => (
+        <div className="mb-8">
+            <div className="flex items-center gap-3 mb-2"><span className="text-3xl">{icon}</span><h1 className="text-3xl font-black text-slate-800">{title}</h1></div>
+            {subtitle && <p className="text-slate-500 ml-12">{subtitle}</p>}
+        </div>
+    );
+
+    const BibliografiaBox = ({ items }) => (
+        <div className="my-6 p-6 bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl border border-slate-200">
+            <h4 className="font-bold text-slate-800 mb-4 text-base flex items-center gap-2">
+                <span>📚</span> Bibliografía
+            </h4>
+            <ul className="space-y-2">
+                {items.map((item, i) => (
+                    <li key={i} className="text-sm text-slate-700 leading-relaxed pl-4 border-l-2 border-slate-200">
+                        {item}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+
+    const ClauBox = ({ children }) => (
+        <div className="my-4 p-5 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200">
+            <div className="flex items-start gap-3">
+                <span className="text-2xl">🔑</span>
+                <div>
+                    <h4 className="font-bold text-amber-700 mb-2">{lang === 'es' ? 'Clave para el 10' : lang === 'en' ? 'Key for top marks' : 'Clau per al 10'}</h4>
+                    <div className="text-sm text-amber-800 space-y-1">{children}</div>
+                </div>
+            </div>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // THEME DATA (for Inicio cards)
+    // ════════════════════════════════════════════════════════════════
+    const temes = [
+        { num: 1, id: 'tema1', available: true },
+        { num: 2, id: 'tema2', available: true },
+        { num: 3, id: 'tema3', available: false },
+        { num: 4, id: 'tema4', available: false },
+        { num: 5, id: 'tema5', available: false },
+        { num: 6, id: 'tema6', available: false },
+        { num: 7, id: 'tema7', available: false },
+        { num: 8, id: 'tema8', available: false },
+        { num: 9, id: 'tema9', available: false },
+        { num: 10, id: 'tema10', available: false },
+    ];
+
+    // ════════════════════════════════════════════════════════════════
+    // SECTION: INICIO
+    // ════════════════════════════════════════════════════════════════
+    const Inicio = () => (
+        <div className="animate-fade">
+            {/* Back link */}
+            <a href="./oposicions" className="inline-flex items-center gap-2 text-sm text-purple-600 hover:text-purple-800 mb-6 transition-colors">
+                {t('inicio.backOpo')}
+            </a>
+
+            {/* Hero */}
+            <div className="text-center mb-10">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold mb-4">
+                    <span>📖</span> Bloc A
+                </div>
+                <h1 className="text-4xl font-black text-slate-800 mb-3">{t('inicio.title')}</h1>
+                <p className="text-slate-500 text-lg max-w-2xl mx-auto">{t('inicio.subtitle')}</p>
+            </div>
+
+            {/* Theme cards grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {temes.map(tema => (
+                    <button
+                        key={tema.id}
+                        onClick={() => { if (tema.available) { setSection(tema.id); pdeSetHashSection(tema.id); pdeScrollToTop(); } }}
+                        className={`text-left p-5 rounded-2xl border transition-all ${
+                            tema.available
+                                ? 'bg-white border-purple-200 hover:shadow-lg hover:border-purple-300 cursor-pointer'
+                                : 'bg-gray-50 border-gray-200 opacity-70 cursor-not-allowed'
+                        }`}
+                    >
+                        <div className="flex items-start gap-3">
+                            <span className={`inline-flex items-center justify-center w-10 h-10 rounded-xl text-sm font-black text-white ${
+                                tema.available ? 'bg-gradient-to-br from-purple-500 to-violet-600' : 'bg-gray-400'
+                            }`}>
+                                T{tema.num}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-slate-800 text-sm leading-snug mb-2">
+                                    {t(`tema${tema.num}.title`)}
+                                </p>
+                                <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${
+                                    tema.available
+                                        ? 'bg-green-100 text-green-700'
+                                        : 'bg-amber-100 text-amber-700'
+                                }`}>
+                                    {tema.available ? '✓ ' + t('inicio.disponible') : '🔒 ' + t('inicio.properament')}
+                                </span>
+                            </div>
+                        </div>
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 1 — Economía: ciencia de la escasez. Objeto y método.
+    // ════════════════════════════════════════════════════════════════
+    const Tema1Complet = () => (
+        <div className="space-y-6 animate-fade">
+            {/* ── INTRODUCCIÓN ────────────────────────────────────── */}
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        La Economía constituye una de las ciencias sociales fundamentales para la comprensión del mundo contemporáneo. Desde las decisiones más cotidianas —qué comprar, cuánto ahorrar, en qué trabajar— hasta los grandes debates sobre política fiscal, desigualdad o sostenibilidad, la ciencia económica ofrece un marco analítico riguroso para entender cómo las sociedades organizan la producción, distribución y consumo de bienes y servicios. En un contexto globalizado, marcado por la incertidumbre y la complejidad, la formación económica resulta indispensable para el ejercicio de una ciudadanía informada y responsable.
+                    </p>
+                    <p>
+                        Desde la perspectiva educativa, la Economía ocupa un lugar destacado en el currículo de Educación Secundaria y Bachillerato. La Ley Orgánica 3/2020, de 29 de diciembre, por la que se modifica la Ley Orgánica 2/2006 (LOMLOE), reconoce la importancia de la alfabetización económica y financiera como parte esencial de la formación integral del alumnado. Las materias de Economía y Emprendimiento (4.º ESO), Economía (1.º Bachillerato) y Empresa y Diseño de Modelos de Negocio (2.º Bachillerato) contribuyen directamente al desarrollo de las competencias clave, en especial la competencia emprendedora (CE) y la competencia ciudadana (CC), así como la competencia matemática y en ciencia, tecnología e ingeniería (STEM).
+                    </p>
+                    <p>
+                        El presente tema aborda, en primer lugar, la definición y delimitación conceptual de la Economía como ciencia; en segundo lugar, el problema económico fundamental de la escasez y la necesidad de elegir; en tercer lugar, el objeto de estudio de la disciplina, distinguiendo entre Microeconomía y Macroeconomía; y, finalmente, el método científico aplicado al análisis económico, incluyendo los instrumentos cuantitativos y cualitativos que emplea. Todo ello se conecta con su relevancia curricular y su aplicación en la práctica docente.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── DESARROLLO ──────────────────────────────────────── */}
+
+            {/* Epígrafe 1 */}
+            <Card title="1. Concepto de Economía" icon="📘">
+                <TheoryBlock title="1.1. Definiciones clásicas y modernas" color="purple">
+                    <p>
+                        La definición más influyente y citada de Economía es la propuesta por <strong>Lionel Robbins</strong> en su obra <em>An Essay on the Nature and Significance of Economic Science</em> (1932): <em>"La Economía es la ciencia que estudia la conducta humana como una relación entre fines y medios escasos que tienen usos alternativos"</em>. Esta definición supuso un punto de inflexión, pues desplazó el foco desde la riqueza material (como defendían los clásicos) hacia el problema de la <strong>elección racional</strong> ante la escasez.
+                    </p>
+                    <p>
+                        Por su parte, <strong>Paul Samuelson</strong>, en su célebre manual <em>Economía</em> (cuya primera edición data de 1948 y que ha alcanzado más de diecinueve ediciones), define la Economía como <em>"el estudio de cómo las sociedades utilizan recursos escasos para producir mercancías valiosas y distribuirlas entre los diferentes individuos"</em>. Esta definición pone el acento en tres dimensiones: la producción, la distribución y el consumo.
+                    </p>
+                    <p>
+                        Otras definiciones relevantes incluyen la de <strong>Alfred Marshall</strong> (1890), quien en sus <em>Principios de Economía</em> la describió como <em>"el estudio de la humanidad en los asuntos ordinarios de la vida"</em>, subrayando la cercanía de la disciplina a la experiencia cotidiana. Más recientemente, <strong>N. Gregory Mankiw</strong> (2020) sintetiza: <em>"La Economía es el estudio del modo en que la sociedad gestiona sus recursos escasos"</em>.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.2. La Economía como ciencia social" color="blue">
+                    <p>
+                        La Economía se inscribe en el ámbito de las <strong>ciencias sociales</strong>, es decir, aquellas disciplinas que estudian el comportamiento humano en sociedad. A diferencia de las ciencias naturales (física, química, biología), las ciencias sociales se enfrentan a la dificultad de que su objeto de estudio —las personas y sus interacciones— es inherentemente complejo, cambiante y no susceptible de experimentación controlada en laboratorio. No obstante, la Economía comparte con las ciencias naturales la aspiración al rigor metodológico, la formulación de hipótesis contrastables y la construcción de modelos explicativos y predictivos.
+                    </p>
+                    <p>
+                        La Economía mantiene estrechas relaciones con otras disciplinas: la <strong>Sociología</strong> (estudio de las estructuras sociales), la <strong>Psicología</strong> (especialmente a través de la Economía conductual), la <strong>Ciencia Política</strong> (análisis de las políticas públicas), el <strong>Derecho</strong> (regulación de la actividad económica), la <strong>Historia</strong> (evolución de los sistemas económicos) y las <strong>Matemáticas y la Estadística</strong> (herramientas de formalización y contrastación).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.3. Economía positiva y Economía normativa" color="green">
+                    <p>
+                        Una distinción fundamental en la disciplina es la que separa la <strong>Economía positiva</strong> de la <strong>Economía normativa</strong>. La Economía positiva describe y explica los fenómenos económicos tal como son, formulando proposiciones contrastables empíricamente. Por ejemplo: <em>"Un aumento del salario mínimo reduce el empleo en determinados sectores"</em> es una afirmación positiva, susceptible de verificación estadística.
+                    </p>
+                    <p>
+                        La Economía normativa, en cambio, formula juicios de valor sobre cómo deberían ser las cosas. Por ejemplo: <em>"El gobierno debería aumentar el salario mínimo para reducir la pobreza"</em> es una afirmación normativa, que depende de valores y preferencias políticas. Ambas dimensiones son complementarias: la Economía positiva proporciona la base factual sobre la que se construyen las recomendaciones de política económica (Economía normativa).
+                    </p>
+                    <p>
+                        Esta distinción, formulada originalmente por <strong>John Neville Keynes</strong> (padre de John Maynard Keynes) en <em>The Scope and Method of Political Economy</em> (1891) y popularizada por <strong>Milton Friedman</strong> en su ensayo <em>"The Methodology of Positive Economics"</em> (1953), sigue siendo un pilar epistemológico de la disciplina.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 2 */}
+            <Card title="2. El problema económico fundamental: la escasez" icon="⚠️">
+                <TheoryBlock title="2.1. Las necesidades humanas" color="amber">
+                    <p>
+                        Las <strong>necesidades humanas</strong> pueden definirse como la sensación de carencia de algo unida al deseo de satisfacerla. Presentan varias características esenciales: son <strong>ilimitadas</strong> (siempre surgen nuevas necesidades), <strong>jerarquizables</strong> (unas son más urgentes que otras), <strong>complementarias</strong> (la satisfacción de una puede generar otra), <strong>recurrentes</strong> (reaparecen periódicamente) y <strong>varían con el tiempo, la cultura y la sociedad</strong>.
+                    </p>
+                    <p>
+                        La clasificación más habitual distingue entre necesidades <strong>primarias</strong> (o básicas: alimentación, vestido, vivienda, salud) y <strong>secundarias</strong> (o de civilización: ocio, cultura, viajes). También se clasifican en <strong>individuales</strong> (comer, vestirse) y <strong>colectivas</strong> (transporte público, seguridad, justicia).
+                    </p>
+                    <p>
+                        La aportación más conocida sobre la jerarquización de necesidades es la <strong>pirámide de Abraham Maslow</strong> (1943), que establece cinco niveles: (1) necesidades fisiológicas, (2) de seguridad, (3) sociales o de pertenencia, (4) de estima o reconocimiento, y (5) de autorrealización. Aunque este modelo ha recibido críticas por su rigidez y su sesgo cultural occidental, sigue siendo una referencia pedagógica útil para ilustrar la jerarquía motivacional.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.2. Los bienes económicos" color="violet">
+                    <p>
+                        Los <strong>bienes</strong> son todos aquellos medios capaces de satisfacer necesidades. Se clasifican según diversos criterios:
+                    </p>
+                    <p>
+                        <strong>Según su disponibilidad:</strong> bienes <em>libres</em> (abundantes y gratuitos, como el aire —aunque cada vez más cuestionable—) y bienes <em>económicos</em> (escasos y con coste, como los alimentos o la vivienda).
+                    </p>
+                    <p>
+                        <strong>Según su función:</strong> bienes de <em>consumo</em> (satisfacen directamente necesidades: ropa, alimentos) y bienes de <em>capital</em> o de inversión (sirven para producir otros bienes: maquinaria, herramientas).
+                    </p>
+                    <p>
+                        <strong>Según su naturaleza jurídica:</strong> bienes <em>privados</em> (excluibles y rivales) y bienes <em>públicos</em> (no excluibles y no rivales, como la defensa nacional o el alumbrado público).
+                    </p>
+                    <p>
+                        <strong>Según su relación entre sí:</strong> bienes <em>complementarios</em> (se consumen conjuntamente: coche y gasolina) y bienes <em>sustitutivos</em> (se pueden reemplazar: mantequilla y margarina).
+                    </p>
+                    <p>
+                        <strong>Según su grado de elaboración:</strong> bienes <em>intermedios</em> (materias primas que se transforman) y bienes <em>finales</em> (listos para el consumo). Además, se distingue entre bienes <em>normales</em> (su demanda crece con la renta) e <em>inferiores</em> (su demanda disminuye al aumentar la renta, como los productos de marca blanca).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.3. La escasez como concepto relativo" color="red">
+                    <p>
+                        La <strong>escasez</strong> es el concepto central de la Economía. No se trata de una escasez absoluta (que ciertos bienes no existan), sino de una escasez <strong>relativa</strong>: los recursos disponibles son insuficientes para satisfacer todas las necesidades y deseos humanos simultáneamente. Como señaló Robbins, la escasez surge de la tensión entre <strong>necesidades ilimitadas</strong> y <strong>recursos finitos</strong>.
+                    </p>
+                    <p>
+                        Es fundamental no confundir escasez con pobreza. La escasez es un hecho universal que afecta a todas las sociedades, incluidas las más ricas. Un país con alto PIB per cápita también se enfrenta a la escasez: debe elegir cómo distribuir sus recursos entre sanidad, educación, defensa, infraestructuras, investigación, etc. La escasez, por tanto, es la <strong>razón de ser de la ciencia económica</strong>: si los recursos fueran ilimitados, no habría necesidad de economizar, elegir ni renunciar.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 3 */}
+            <Card title="3. La elección y el coste de oportunidad" icon="🔄">
+                <TheoryBlock title="3.1. La necesidad de elegir" color="purple">
+                    <p>
+                        Dado que los recursos son escasos y las necesidades ilimitadas, tanto los individuos como las empresas y los gobiernos se ven obligados a <strong>elegir</strong>. Elegir implica inevitablemente <strong>renunciar</strong>: no se puede tener todo, y cada decisión conlleva un coste implícito. La Economía estudia precisamente cómo se realizan estas elecciones y cuáles son sus consecuencias.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.2. El coste de oportunidad" color="blue">
+                    <p>
+                        El <strong>coste de oportunidad</strong> se define como el valor de la <strong>mejor alternativa a la que se renuncia</strong> al tomar una decisión. No se trata de lo que se paga en términos monetarios (coste explícito), sino del beneficio que se deja de obtener al descartar la siguiente mejor opción.
+                    </p>
+                    <p>
+                        <strong>Ejemplo individual:</strong> Un estudiante que decide cursar un máster durante un año renuncia al salario que podría haber obtenido trabajando. Si ese salario habría sido de 25.000 euros, el coste de oportunidad del máster es, como mínimo, de 25.000 euros (más el coste de matrícula).
+                    </p>
+                    <p>
+                        <strong>Ejemplo empresarial:</strong> Una empresa que invierte 100.000 euros en ampliar su fábrica renuncia a invertir ese capital en activos financieros. Si los activos habrían generado un rendimiento del 5 %, el coste de oportunidad de la inversión productiva es de 5.000 euros.
+                    </p>
+                    <p>
+                        <strong>Ejemplo gubernamental:</strong> Un gobierno que destina 10.000 millones de euros a defensa renuncia a destinarlos a sanidad o educación. El coste de oportunidad se mide en hospitales no construidos, profesores no contratados o investigaciones no financiadas.
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="Coste de oportunidad = Valor de la mejor alternativa rechazada"
+                    desc="Concepto central en Economía: toda decisión implica una renuncia"
+                />
+
+                <TheoryBlock title="3.3. La Frontera de Posibilidades de Producción (FPP)" color="green">
+                    <p>
+                        La <strong>Frontera de Posibilidades de Producción (FPP)</strong> es un modelo gráfico que representa las combinaciones máximas de dos bienes (o grupos de bienes) que una economía puede producir con los recursos y la tecnología disponibles en un momento dado. La FPP se construye bajo los siguientes supuestos: (a) la economía produce solo dos bienes, (b) los recursos productivos están dados y son fijos, (c) la tecnología es constante, y (d) todos los recursos se emplean de forma eficiente (pleno empleo).
+                    </p>
+                    <p>
+                        Los <strong>puntos sobre la FPP</strong> representan combinaciones eficientes: la economía utiliza todos sus recursos de forma óptima. Los <strong>puntos interiores</strong> (por debajo de la curva) representan combinaciones ineficientes: hay recursos desempleados o mal utilizados. Los <strong>puntos exteriores</strong> (por encima de la curva) representan combinaciones inalcanzables con los recursos actuales.
+                    </p>
+                    <p>
+                        La <strong>pendiente de la FPP</strong> refleja el coste de oportunidad de producir una unidad adicional de un bien en términos del otro. Esta pendiente se denomina <strong>Relación Marginal de Transformación (RMT)</strong>. La FPP es normalmente <strong>cóncava</strong> (convexa hacia el origen), lo que refleja la <strong>ley de costes de oportunidad crecientes</strong>: a medida que se produce más de un bien, el coste de oportunidad de cada unidad adicional aumenta, porque los recursos no son igualmente aptos para la producción de ambos bienes (ley de rendimientos decrecientes).
+                    </p>
+                    <p>
+                        En el caso particular de que los recursos fueran perfectamente sustituibles, la FPP sería una <strong>línea recta</strong>, lo que indicaría costes de oportunidad constantes.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.4. Desplazamientos de la FPP" color="amber">
+                    <p>
+                        La FPP puede <strong>desplazarse hacia fuera</strong> (crecimiento económico) por varias causas: aumento de la cantidad de recursos disponibles (descubrimiento de nuevos yacimientos, inmigración cualificada), mejoras tecnológicas (innovación de proceso), acumulación de capital (inversión en maquinaria, infraestructuras) y mejora del capital humano (educación, formación profesional, investigación).
+                    </p>
+                    <p>
+                        El desplazamiento puede ser <strong>simétrico</strong> (mejora la producción de ambos bienes por igual) o <strong>asimétrico</strong> (mejora más la producción de un bien que del otro, por ejemplo, una innovación tecnológica en un sector específico). Por el contrario, una <strong>catástrofe natural</strong>, una <strong>guerra</strong> o la <strong>depreciación masiva del capital</strong> desplazarían la FPP hacia dentro.
+                    </p>
+                    <p>
+                        La FPP también permite ilustrar el <strong>dilema entre consumo presente e inversión</strong>: una sociedad que destina más recursos a la inversión (bienes de capital) sacrifica consumo presente pero amplía su FPP futura, logrando mayor crecimiento a largo plazo. Este es uno de los dilemas centrales de la política económica.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 4 */}
+            <Card title="4. Objeto de la Economía: Microeconomía y Macroeconomía" icon="🔍">
+                <TheoryBlock title="4.1. Microeconomía" color="purple">
+                    <p>
+                        La <strong>Microeconomía</strong> estudia el comportamiento económico de los agentes individuales —consumidores, empresas, mercados específicos— y cómo interactúan para determinar los precios y las cantidades de bienes y servicios. Se centra en preguntas como: ¿Cómo decide un consumidor qué comprar? ¿Cómo fija una empresa su precio? ¿Qué ocurre en un mercado cuando se impone un impuesto?
+                    </p>
+                    <p>
+                        Los autores fundamentales de la Microeconomía incluyen a <strong>Alfred Marshall</strong> (1842-1924), creador del concepto de <strong>equilibrio parcial</strong> y de las célebres curvas de oferta y demanda (las "tijeras de Marshall"); <strong>León Walras</strong> (1834-1910), que formuló la teoría del <strong>equilibrio general</strong>, demostrando que todos los mercados de una economía están interconectados y pueden alcanzar un equilibrio simultáneo; y <strong>Vilfredo Pareto</strong> (1848-1923), que desarrolló el concepto de <strong>óptimo de Pareto</strong>, una situación en la que no se puede mejorar el bienestar de un individuo sin empeorar el de otro.
+                    </p>
+                    <p>
+                        Los temas centrales de la Microeconomía incluyen: la teoría del consumidor (utilidad, curvas de indiferencia, restricción presupuestaria), la teoría de la empresa (función de producción, costes, maximización del beneficio), las estructuras de mercado (competencia perfecta, monopolio, oligopolio, competencia monopolística), la teoría de juegos, las externalidades, los bienes públicos y los fallos de mercado.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.2. Macroeconomía" color="blue">
+                    <p>
+                        La <strong>Macroeconomía</strong> estudia la economía en su conjunto, analizando las variables agregadas: el Producto Interior Bruto (PIB), la tasa de inflación, la tasa de desempleo, el tipo de interés, el tipo de cambio, la balanza de pagos y el crecimiento económico. Se centra en preguntas como: ¿Por qué crecen unas economías más que otras? ¿Qué causa la inflación? ¿Cómo puede el gobierno reducir el desempleo?
+                    </p>
+                    <p>
+                        El padre indiscutible de la Macroeconomía moderna es <strong>John Maynard Keynes</strong> (1883-1946), cuya obra <em>Teoría general de la ocupación, el interés y el dinero</em> (1936), publicada en plena Gran Depresión, revolucionó el pensamiento económico al defender la intervención del Estado para estabilizar la economía a través de la política fiscal (gasto público e impuestos). Antes de Keynes, la distinción entre Micro y Macroeconomía no era clara; los economistas clásicos asumían que los mercados se ajustaban automáticamente (Ley de Say).
+                    </p>
+                    <p>
+                        Otros autores fundamentales de la Macroeconomía son <strong>Milton Friedman</strong> (1912-2006), líder del monetarismo y defensor de la política monetaria como instrumento principal; <strong>Robert Lucas</strong> (1937-2023), impulsor de la revolución de las expectativas racionales; y, más recientemente, <strong>Paul Krugman</strong> (Premio Nobel 2008), conocido por sus aportaciones a la nueva geografía económica y al comercio internacional.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.3. Interrelación micro-macro y áreas derivadas" color="green">
+                    <p>
+                        Aunque la distinción entre Microeconomía y Macroeconomía es útil a efectos analíticos y pedagógicos, ambas ramas están estrechamente interrelacionadas. Los <strong>fundamentos microeconómicos de la macroeconomía</strong> constituyen un campo de investigación activo: las variables macroeconómicas (PIB, inflación) son, en última instancia, el resultado agregado de las decisiones de millones de agentes individuales (consumidores, empresas, trabajadores).
+                    </p>
+                    <p>
+                        A partir de estas dos grandes ramas se han desarrollado numerosas <strong>áreas de especialización</strong>: la Economía Internacional (comercio exterior, tipos de cambio, globalización), la Economía Pública (impuestos, gasto público, regulación), la Economía del Desarrollo (pobreza, desigualdad, crecimiento en países en vías de desarrollo), la Economía Laboral (mercado de trabajo, salarios, negociación colectiva), la Economía Industrial (estructura de mercados, competencia, regulación sectorial), la Economía Ambiental (externalidades, cambio climático, desarrollo sostenible) y la Economía Conductual (sesgos cognitivos, toma de decisiones reales).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 5 */}
+            <Card title="5. El método científico en Economía" icon="🔬">
+                <TheoryBlock title="5.1. Características del método científico" color="purple">
+                    <p>
+                        El <strong>método científico</strong> es el procedimiento sistemático que utilizan las ciencias para adquirir conocimiento. Sus fases fundamentales son: (1) <strong>observación</strong> de la realidad y detección de regularidades, (2) <strong>formulación de hipótesis</strong> explicativas, (3) <strong>deducción</strong> de implicaciones contrastables a partir de las hipótesis, (4) <strong>verificación empírica</strong> (contrastación con datos) y (5) <strong>reformulación o aceptación provisional</strong> de la hipótesis.
+                    </p>
+                    <p>
+                        En Economía, el método científico se aplica con ciertas particularidades derivadas de la naturaleza de su objeto de estudio. A diferencia de un físico, un economista no puede aislar variables en un laboratorio (salvo en la Economía experimental, un campo en crecimiento). Además, los fenómenos económicos son influidos por expectativas, instituciones, cultura y política, lo que añade complejidad al análisis. Como señaló <strong>Karl Popper</strong>, las teorías científicas no se pueden <em>verificar</em> definitivamente, solo <em>falsificar</em>: una teoría se mantiene válida mientras no sea refutada por la evidencia.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.2. Método inductivo y método deductivo" color="blue">
+                    <p>
+                        El <strong>método inductivo</strong> parte de la observación de hechos particulares para llegar a leyes o principios generales. El proceso es: observación de casos concretos → detección de regularidades → formulación de una ley general. Por ejemplo, observar que en numerosos mercados un aumento de precio reduce la cantidad demandada permite formular la <strong>ley de la demanda</strong>.
+                    </p>
+                    <p>
+                        El <strong>método deductivo</strong> sigue el camino inverso: parte de axiomas, postulados o principios generales aceptados y, mediante razonamiento lógico, deriva conclusiones particulares que deben ser contrastadas con la realidad. Por ejemplo, a partir del supuesto de que los consumidores maximizan su utilidad, se deduce que un aumento del precio de un bien reducirá su demanda (efecto sustitución).
+                    </p>
+                    <p>
+                        En la práctica, la Economía utiliza ambos métodos de forma complementaria. El método <strong>hipotético-deductivo</strong> (formulación de hipótesis → deducción de implicaciones → contrastación empírica) es el más extendido en la investigación económica contemporánea. La Economía empírica actual, potenciada por el big data y la inteligencia artificial, ha reforzado la vertiente inductiva de la disciplina.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.3. Los modelos económicos" color="green">
+                    <p>
+                        Un <strong>modelo económico</strong> es una representación simplificada de la realidad que selecciona las variables relevantes y las relaciones causales entre ellas, omitiendo los detalles secundarios. Los modelos permiten comprender, explicar y predecir fenómenos económicos. Como dijo <strong>Joan Robinson</strong>, "un modelo que incluyera toda la realidad sería tan inútil como un mapa a escala 1:1".
+                    </p>
+                    <p>
+                        Los modelos pueden ser <strong>verbales</strong> (descripciones lógicas), <strong>gráficos</strong> (como la FPP, las curvas de oferta y demanda, o el modelo IS-LM) o <strong>matemáticos</strong> (ecuaciones y sistemas de ecuaciones). La FPP, estudiada en el epígrafe anterior, es un ejemplo paradigmático de modelo gráfico.
+                    </p>
+                    <p>
+                        Una herramienta fundamental en la construcción de modelos es el supuesto <strong><em>ceteris paribus</em></strong> ("manteniéndose todo lo demás constante"). Este supuesto permite aislar el efecto de una variable sobre otra, controlando las demás. Por ejemplo, al estudiar cómo afecta un aumento del precio de un bien a su cantidad demandada, se asume <em>ceteris paribus</em> que la renta del consumidor, los precios de los demás bienes y las preferencias permanecen constantes.
+                    </p>
+                    <p>
+                        Los modelos también distinguen entre <strong>variables endógenas</strong> (las que el modelo pretende explicar, como el precio de equilibrio) y <strong>variables exógenas</strong> (las que se toman como dadas, como un cambio en la política fiscal). La calidad de un modelo se juzga por su capacidad explicativa y predictiva, no por su realismo absoluto.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.4. El problema de la experimentación" color="amber">
+                    <p>
+                        Una de las principales limitaciones del método científico en Economía es la <strong>dificultad de experimentación</strong>. No es posible (ni ético) crear recesiones o hiperinflaciones en un laboratorio para observar sus efectos. Esta limitación se suple de varias maneras:
+                    </p>
+                    <p>
+                        (a) <strong>Análisis econométrico</strong>: uso de técnicas estadísticas avanzadas para estimar relaciones causales a partir de datos históricos (series temporales, datos de corte transversal, datos de panel).
+                    </p>
+                    <p>
+                        (b) <strong>Experimentos naturales</strong>: situaciones en las que un cambio exógeno (una reforma legislativa, un desastre natural) permite aproximar un experimento controlado. <strong>David Card</strong> y <strong>Joshua Angrist</strong> (Premios Nobel 2021) han sido pioneros en esta metodología.
+                    </p>
+                    <p>
+                        (c) <strong>Economía experimental</strong>: realización de experimentos controlados en laboratorio con participantes humanos, siguiendo el enfoque desarrollado por <strong>Vernon Smith</strong> (Premio Nobel 2002). Los juegos de ultimátum, los mercados experimentales y las subastas son ejemplos típicos.
+                    </p>
+                    <p>
+                        (d) <strong>Ensayos controlados aleatorizados (RCT)</strong>: especialmente en Economía del Desarrollo, como los desarrollados por <strong>Esther Duflo</strong>, <strong>Abhijit Banerjee</strong> y <strong>Michael Kremer</strong> (Premios Nobel 2019).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 6 */}
+            <Card title="6. Instrumentos del análisis económico" icon="📊">
+                <TheoryBlock title="6.1. Análisis gráfico y matemático" color="purple">
+                    <p>
+                        El <strong>análisis gráfico</strong> es una herramienta fundamental en Economía. Los gráficos permiten representar visualmente relaciones entre variables: curvas de oferta y demanda, la FPP, funciones de producción, curvas de costes, el modelo IS-LM, etc. Las relaciones pueden ser <strong>directas</strong> (positivas: cuando una variable aumenta, la otra también, como renta y consumo) o <strong>inversas</strong> (negativas: cuando una variable aumenta, la otra disminuye, como precio y cantidad demandada).
+                    </p>
+                    <p>
+                        El <strong>análisis matemático</strong> permite formalizar las relaciones económicas mediante funciones, ecuaciones y sistemas de ecuaciones. Las funciones de demanda, oferta, producción, costes, utilidad y beneficio son expresiones algebraicas que permiten calcular óptimos (máximos y mínimos) mediante técnicas de derivación e integración. Los <strong>modelos de optimización</strong> —maximización de utilidad sujeta a una restricción presupuestaria, minimización de costes sujeta a un nivel de producción— son el núcleo del análisis microeconómico.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="6.2. Análisis estadístico y econometría" color="blue">
+                    <p>
+                        El <strong>análisis estadístico</strong> proporciona las herramientas para describir, resumir y analizar datos económicos. Se utilizan distintos tipos de datos: <strong>series temporales</strong> (observaciones de una variable a lo largo del tiempo: PIB trimestral, inflación mensual), <strong>datos de corte transversal</strong> (observaciones de múltiples unidades en un momento dado: renta per cápita de los países de la UE en 2024) y <strong>datos de panel</strong> (combinación de ambos: PIB per cápita de 27 países durante 20 años).
+                    </p>
+                    <p>
+                        La <strong>Econometría</strong> es la rama de la Economía que aplica métodos estadísticos y matemáticos para <strong>contrastar empíricamente</strong> las teorías económicas y estimar las relaciones entre variables. La herramienta básica es el <strong>análisis de regresión</strong>, que permite estimar la relación entre una variable dependiente y una o más variables explicativas. La Econometría moderna incluye técnicas como variables instrumentales, diferencias en diferencias, regresión discontinua y métodos de machine learning.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="6.3. El pensamiento marginal y el homo economicus" color="green">
+                    <p>
+                        El <strong>pensamiento marginal</strong> (o análisis marginal) es uno de los principios más importantes de la Economía. Consiste en evaluar las decisiones en función del beneficio y el coste de una unidad adicional ("en el margen"). Los conceptos clave son: la <strong>utilidad marginal</strong> (satisfacción adicional por consumir una unidad más de un bien), el <strong>coste marginal</strong> (coste adicional de producir una unidad más), el <strong>ingreso marginal</strong> (ingreso adicional por vender una unidad más) y la <strong>productividad marginal</strong> (producción adicional por emplear una unidad más de un factor).
+                    </p>
+                    <p>
+                        La regla de decisión óptima establece que una actividad debe continuar mientras el <strong>beneficio marginal supere al coste marginal</strong>, y detenerse cuando ambos se igualen. Esta revolución marginalista, impulsada simultáneamente por <strong>William Stanley Jevons</strong> (1871), <strong>Carl Menger</strong> (1871) y <strong>León Walras</strong> (1874), transformó la Economía.
+                    </p>
+                    <p>
+                        El modelo tradicional de agente económico es el <strong><em>homo economicus</em></strong>: un individuo perfectamente racional, egoísta, con información completa, que maximiza su utilidad (si es consumidor) o su beneficio (si es empresa). Este supuesto ha sido profundamente cuestionado por la <strong>Economía conductual</strong> (<em>behavioral economics</em>), especialmente por <strong>Daniel Kahneman</strong> (Premio Nobel 2002), cuya obra <em>Pensar rápido, pensar despacio</em> (2011) documenta los sesgos cognitivos sistemáticos que alejan las decisiones reales de las predicciones del modelo racional, y por <strong>Richard Thaler</strong> (Premio Nobel 2017), autor de <em>Nudge</em> (2008), que muestra cómo pequeños "empujones" en el diseño de opciones pueden mejorar las decisiones sin restringir la libertad de elección.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 7 */}
+            <Card title="7. Relevancia actual y aplicación docente" icon="🎓">
+                <TheoryBlock title="7.1. La Economía en la vida cotidiana" color="purple">
+                    <p>
+                        La Economía permea todos los aspectos de la vida cotidiana. Cada día, las personas toman decisiones económicas: qué comprar con un presupuesto limitado, cuánto ahorrar para la jubilación, si aceptar o rechazar un empleo, cómo financiar la compra de una vivienda o qué tarifa energética contratar. A nivel social, los debates sobre pensiones, salarios mínimos, tipos impositivos, precios de la vivienda, sostenibilidad ambiental o desigualdad son, en esencia, debates económicos.
+                    </p>
+                    <p>
+                        La <strong>alfabetización económica</strong> —la capacidad de comprender conceptos económicos básicos y aplicarlos en la toma de decisiones— es, por tanto, una necesidad ciudadana de primer orden. Estudios como los de <strong>Annamaria Lusardi</strong> y <strong>Olivia Mitchell</strong> (2014) demuestran que las personas con mayor formación económica y financiera toman mejores decisiones de ahorro, inversión y endeudamiento, y son menos vulnerables al fraude financiero.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="7.2. La Economía en el currículo LOMLOE" color="blue">
+                    <p>
+                        La LOMLOE (Ley Orgánica 3/2020) y sus desarrollos curriculares (Real Decreto 217/2022 para ESO y Real Decreto 243/2022 para Bachillerato) otorgan a la Economía un papel relevante en la formación del alumnado. Las materias específicas incluyen:
+                    </p>
+                    <p>
+                        - <strong>Economía y Emprendimiento</strong> (4.º ESO, optativa): introduce al alumnado en los conceptos económicos básicos y en la cultura emprendedora.<br/>
+                        - <strong>Economía</strong> (1.º Bachillerato, modalidad de Humanidades y Ciencias Sociales): desarrolla el análisis micro y macroeconómico.<br/>
+                        - <strong>Empresa y Diseño de Modelos de Negocio</strong> (2.º Bachillerato): profundiza en la organización empresarial y la innovación.<br/>
+                        - <strong>Fundamentos de Administración y Gestión</strong> (2.º Bachillerato, optativa): complemento práctico sobre gestión empresarial.
+                    </p>
+                    <p>
+                        Estas materias contribuyen especialmente a las <strong>competencias específicas</strong> relacionadas con: comprender el funcionamiento del sistema económico (CE1), analizar el papel de los agentes económicos (CE2), valorar el impacto de la globalización (CE3), desarrollar el espíritu emprendedor (CE4) y fomentar el consumo responsable y la sostenibilidad (CE5).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="7.3. Relación con los ODS y la Economía conductual" color="green">
+                    <p>
+                        La enseñanza de la Economía se vincula directamente con los <strong>Objetivos de Desarrollo Sostenible (ODS)</strong> de la Agenda 2030 de Naciones Unidas. El Tema 1, en particular, se relaciona con: el ODS 1 (Fin de la pobreza), al comprender la escasez como problema universal; el ODS 4 (Educación de calidad), al defender la alfabetización económica; el ODS 8 (Trabajo decente y crecimiento económico), al estudiar los conceptos de producción y productividad; y el ODS 10 (Reducción de las desigualdades), al analizar la distribución de recursos.
+                    </p>
+                    <p>
+                        La <strong>Economía conductual</strong> ofrece aplicaciones docentes especialmente motivadoras. Los <em>nudges</em> (empujones) de Thaler y Sunstein, los experimentos mentales sobre sesgos cognitivos (efecto ancla, aversión a la pérdida, sesgo de confirmación) y los juegos de simulación económica permiten conectar la teoría con la experiencia personal del alumnado, haciendo la materia más atractiva y significativa. La inclusión de estas perspectivas en el aula contribuye a desarrollar el <strong>pensamiento crítico</strong> y la capacidad de cuestionar las propias decisiones económicas.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── CONCLUSIÓN ──────────────────────────────────────── */}
+            <Card title="Conclusión" icon="✅">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        A lo largo de este tema se ha presentado la Economía como una ciencia social rigurosa cuyo objeto de estudio es la asignación de recursos escasos entre fines alternativos. La definición de Robbins (1932) sigue siendo la referencia fundamental, complementada por las aportaciones de Samuelson, Marshall y Mankiw. El problema económico central —la escasez— obliga a elegir, y toda elección implica un coste de oportunidad que la FPP permite representar gráficamente.
+                    </p>
+                    <p>
+                        La distinción entre Microeconomía (comportamiento individual) y Macroeconomía (variables agregadas) estructura el campo de estudio, con figuras clave como Marshall, Walras y Keynes. El método científico en Economía, combinando inducción y deducción, se apoya en modelos simplificados de la realidad, el supuesto <em>ceteris paribus</em> y un arsenal de instrumentos cuantitativos (gráficos, estadísticas, econometría) que dotan a la disciplina de capacidad explicativa y predictiva.
+                    </p>
+                    <p>
+                        La Economía ha evolucionado significativamente en las últimas décadas. La incorporación de la Economía conductual (Kahneman, Thaler) ha enriquecido el modelo del <em>homo economicus</em> con una visión más realista del comportamiento humano. La Economía ecológica ha ampliado el horizonte de la disciplina hacia la sostenibilidad ambiental. Y la revolución de los datos (big data, inteligencia artificial) ha potenciado la vertiente empírica de la investigación.
+                    </p>
+                    <p>
+                        Desde la perspectiva docente, el dominio de estos contenidos es esencial para transmitir al alumnado la relevancia de la Economía en su vida diaria, formar ciudadanos con criterio económico y contribuir al desarrollo de las competencias clave previstas en la LOMLOE. La Economía, lejos de ser una disciplina abstracta, es una herramienta indispensable para comprender y transformar el mundo.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── BIBLIOGRAFÍA ────────────────────────────────────── */}
+            <BibliografiaBox items={[
+                'MANKIW, N.G. (2020): Principios de Economía, 8.ª ed., Cengage Learning.',
+                'SAMUELSON, P. y NORDHAUS, W. (2019): Economía, 19.ª ed., McGraw-Hill.',
+                'KRUGMAN, P. y WELLS, R. (2020): Introducción a la Economía, 4.ª ed., Reverté.',
+                'ROBBINS, L. (1932): An Essay on the Nature and Significance of Economic Science, Macmillan.',
+                'MOCHÓN, F. (2021): Economía. Teoría y Política, 7.ª ed., McGraw-Hill.',
+                'TORRES LÓPEZ, J. (2020): Economía Política, 6.ª ed., Pirámide.',
+                'STIGLITZ, J.E. y WALSH, C.E. (2009): Microeconomía, 4.ª ed., Ariel.',
+                'BLANCHARD, O. (2017): Macroeconomía, 7.ª ed., Pearson.',
+                'KAHNEMAN, D. (2011): Pensar rápido, pensar despacio, Debate.',
+                'THALER, R. y SUNSTEIN, C. (2008): Nudge: Un pequeño empujón, Taurus.',
+                'Ley Orgánica 3/2020, de 29 de diciembre (LOMLOE).',
+                'Real Decreto 217/2022, de 29 de marzo (currículo ESO).',
+                'Real Decreto 243/2022, de 5 de abril (currículo Bachillerato).',
+                'INE (Instituto Nacional de Estadística): www.ine.es',
+                'Banco de España: Informes económicos, www.bde.es',
+            ]} />
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 1 — RESUM / ESQUEMA
+    // ════════════════════════════════════════════════════════════════
+    const Tema1Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-purple-50 rounded-xl border border-purple-200 mb-5">
+                    <p className="text-center font-bold text-purple-800 text-lg">Tema 1: Economía: ciencia de la escasez. Objeto y método.</p>
+                    <p className="text-center text-sm text-purple-600 mt-1">
+                        <em>"La Economía es la ciencia que estudia la conducta humana como una relación entre fines y medios escasos que tienen usos alternativos"</em> — Lionel Robbins (1932)
+                    </p>
+                </div>
+
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. Concepto de Economía</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Definiciones: Robbins (1932) — escasez y elección; Samuelson — producción y distribución; Marshall — asuntos ordinarios de la vida.</li>
+                            <li>Ciencia social: estudia el comportamiento humano en sociedad, con aspiración al rigor metodológico.</li>
+                            <li>Economía positiva (lo que es) vs. normativa (lo que debería ser). Distinción de J.N. Keynes (1891) y Friedman (1953).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. La escasez: problema fundamental</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Necesidades: ilimitadas, jerarquizables, complementarias, recurrentes. Pirámide de Maslow (1943).</li>
+                            <li>Bienes: libres/económicos, consumo/capital, públicos/privados, complementarios/sustitutivos.</li>
+                            <li>Escasez relativa (no absoluta): tensión entre necesidades infinitas y recursos finitos.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. Elección y coste de oportunidad</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Coste de oportunidad = valor de la mejor alternativa rechazada.</li>
+                            <li>FPP: puntos eficientes (sobre), ineficientes (dentro), inalcanzables (fuera).</li>
+                            <li>FPP cóncava → costes de oportunidad crecientes (rendimientos decrecientes).</li>
+                            <li>Desplazamientos: crecimiento económico (fuera), catástrofe (dentro).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. Objeto: Micro y Macro</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Micro: agentes individuales (Marshall, Walras, Pareto). Macro: variables agregadas (Keynes, Friedman).</li>
+                            <li>Áreas derivadas: Economía Internacional, Pública, del Desarrollo, Laboral, Ambiental, Conductual.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">5. Método científico</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Inductivo (particular → general) y deductivo (general → particular). Método hipotético-deductivo.</li>
+                            <li>Modelos: simplificaciones de la realidad. Supuesto ceteris paribus.</li>
+                            <li>Variables endógenas (a explicar) y exógenas (dadas).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">6. Instrumentos de análisis</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Gráfico, matemático, estadístico (series temporales, panel), econométrico.</li>
+                            <li>Pensamiento marginal: decisiones en el margen (Jevons, Menger, Walras, 1871-74).</li>
+                            <li>Homo economicus → críticas de la Economía conductual (Kahneman 2002, Thaler 2017).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">7. Relevancia y aplicación docente</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Currículo LOMLOE: Economía y Emprendimiento (4ESO), Economía (1BACH), EDMN (2BACH).</li>
+                            <li>ODS: pobreza (1), educación (4), trabajo (8), desigualdad (10).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <FormulaBox formula="Coste de oportunidad = Valor de la mejor alternativa rechazada" />
+                <FormulaBox formula="FPP cóncava → Ley de costes de oportunidad crecientes" />
+                <FormulaBox formula="Ceteris paribus → aislar el efecto de una variable sobre otra" />
+
+                <ClauBox>
+                    <p>- Cita siempre a <strong>Robbins (1932)</strong> al definir Economía y a <strong>Keynes (1936)</strong> como padre de la Macroeconomía.</p>
+                    <p>- Distingue claramente Economía positiva de normativa, y método inductivo de deductivo.</p>
+                    <p>- Conecta con la LOMLOE (RD 243/2022) y los ODS para mostrar actualidad y pertinencia curricular.</p>
+                    <p>- Menciona la Economía conductual (Kahneman, Thaler) como evolución contemporánea del paradigma racional.</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 1 — Component wrapper
+    // ════════════════════════════════════════════════════════════════
+    const Tema1 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="📖" title="Tema 1" subtitle={t('tema1.title')} />
+                <Tabs tabs={[
+                    { id: 'complet', label: '📝 ' + t('tab.complet') },
+                    { id: 'resum', label: '📋 ' + t('tab.resum') },
+                ]} active={vista} onChange={setVista} />
+
+                {vista === 'complet' && <Tema1Complet />}
+                {vista === 'resum' && <Tema1Resum />}
+            </div>
+        );
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 2 — La escasez, la elección y la asignación de recursos.
+    //          El coste de oportunidad.
+    // ════════════════════════════════════════════════════════════════
+    const Tema2Complet = () => (
+        <div className="space-y-6 animate-fade">
+            {/* ── INTRODUCCIÓN ────────────────────────────────────── */}
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        El problema central de la Economía —cómo asignar recursos escasos entre usos alternativos que compiten entre sí— constituye el eje vertebrador de la ciencia económica. Si en el Tema 1 se establecieron las bases conceptuales y metodológicas de la Economía, el presente tema profundiza en los tres pilares sobre los que se asienta la disciplina: la escasez, la elección y el coste de oportunidad. Estos conceptos no son abstracciones teóricas alejadas de la realidad: operan en cada decisión individual (¿estudio o trabajo?), empresarial (¿invertimos en I+D o en marketing?) y gubernamental (¿destinamos el presupuesto a sanidad o a infraestructuras?).
+                    </p>
+                    <p>
+                        Desde la perspectiva curricular, este tema conecta directamente con los saberes básicos del bloque "Economía y su entorno" establecidos en el Real Decreto 243/2022 para la materia de Economía de 1.º de Bachillerato, así como con las competencias específicas CE1 (comprensión del funcionamiento del sistema económico) y CE5 (consumo responsable y desarrollo sostenible). La escasez, la elección y el coste de oportunidad son, además, conceptos transversales que aparecen en todas las unidades didácticas posteriores, lo que convierte a este tema en un fundamento imprescindible.
+                    </p>
+                    <p>
+                        El desarrollo del tema se estructura en siete epígrafes: la naturaleza de la escasez, las necesidades y los recursos, la elección económica, el coste de oportunidad, la Frontera de Posibilidades de Producción (FPP), los desplazamientos de la FPP y el crecimiento económico, y los sistemas de asignación de recursos. Se concluye con una síntesis y una bibliografía de referencia.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── DESARROLLO ──────────────────────────────────────── */}
+
+            {/* Epígrafe 1 */}
+            <Card title="1. La escasez: concepto y naturaleza" icon="⚠️">
+                <TheoryBlock title="1.1. Definición de escasez" color="purple">
+                    <p>
+                        La <strong>escasez</strong> puede definirse como la <strong>insuficiencia de recursos disponibles para satisfacer simultáneamente todas las necesidades y deseos humanos</strong>. Es el concepto fundacional de la Economía: si no existiera la escasez, no habría necesidad de economizar, elegir ni renunciar, y la ciencia económica carecería de razón de ser.
+                    </p>
+                    <p>
+                        Es fundamental comprender que la escasez económica es un concepto <strong>relativo</strong>, no absoluto. No significa que un recurso sea raro o inexistente en términos físicos, sino que su cantidad disponible es insuficiente en relación con las necesidades que se pretenden satisfacer con él. El agua, por ejemplo, es abundante en el planeta, pero es escasa en tanto que la demanda de agua potable, para riego, para industria y para uso doméstico supera ampliamente la oferta disponible en muchas regiones. Del mismo modo, el tiempo es un recurso absolutamente escaso: cada persona dispone de 24 horas al día, y debe decidir cómo distribuirlas entre trabajo, ocio, formación, descanso y relaciones sociales.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.2. Escasez vs. pobreza" color="blue">
+                    <p>
+                        Un error conceptual frecuente, especialmente entre el alumnado, es confundir <strong>escasez con pobreza</strong>. La pobreza es una situación de carencia material que afecta a determinados individuos o colectivos; la escasez, en cambio, es un hecho <strong>universal</strong> que afecta a todas las sociedades, incluidas las más ricas. Un millonario se enfrenta a la escasez: su fortuna, por grande que sea, es finita, y debe elegir cómo distribuirla. Un gobierno con recursos abundantes también se enfrenta a la escasez: el presupuesto público es limitado y hay más necesidades que recursos para cubrirlas.
+                    </p>
+                    <p>
+                        Como señalaba <strong>Thomas Sowell</strong> en su obra <em>Economía básica</em> (2007): <em>"La primera lección de la Economía es la escasez: nunca hay suficiente de nada para satisfacer completamente a todos los que lo desean. La primera lección de la Política es ignorar la primera lección de la Economía."</em> Esta cita ilustra con claridad la tensión entre el realismo económico y el voluntarismo político.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.3. La escasez en perspectiva histórica" color="green">
+                    <p>
+                        La escasez ha acompañado a la humanidad a lo largo de toda su historia. En las <strong>sociedades primitivas</strong>, la escasez se manifestaba de forma directa: la supervivencia dependía de la caza, la recolección y las condiciones climáticas. La <strong>revolución neolítica</strong> (hacia el 10.000 a.C.) supuso un primer gran avance al permitir la agricultura y la ganadería, generando excedentes alimentarios que posibilitaron la especialización del trabajo y el nacimiento de las primeras civilizaciones.
+                    </p>
+                    <p>
+                        La <strong>Revolución Industrial</strong> (siglos XVIII-XIX) multiplicó la capacidad productiva de forma exponencial, pero no eliminó la escasez: simplemente transformó su naturaleza. Las nuevas tecnologías generaron necesidades antes inexistentes (transporte, comunicaciones, energía) y ampliaron la brecha entre lo que la humanidad deseaba y lo que podía producir. En el siglo XXI, la <strong>revolución digital</strong> y la <strong>inteligencia artificial</strong> están generando una nueva ola de transformación productiva, pero la escasez persiste: los recursos naturales, el tiempo, la atención y el capital humano cualificado siguen siendo limitados.
+                    </p>
+                    <p>
+                        Resulta relevante señalar que el concepto de escasez también se aplica a bienes inmateriales en la era digital. Aunque el coste marginal de reproducir un archivo digital es prácticamente cero, la <strong>atención humana</strong> es un recurso escaso (como ha analizado <strong>Herbert Simon</strong>, Premio Nobel 1978): en un mundo de información abundante, la escasez se desplaza hacia la capacidad de procesarla.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 2 */}
+            <Card title="2. Las necesidades humanas y los recursos" icon="🧩">
+                <TheoryBlock title="2.1. Las necesidades: concepto y evolución" color="purple">
+                    <p>
+                        Las <strong>necesidades humanas</strong> son el motor de toda actividad económica. Se definen como la sensación de carencia unida al deseo de satisfacerla. Sus características fundamentales ya se enumeraron en el Tema 1: son ilimitadas, jerarquizables, complementarias, recurrentes y culturalmente condicionadas.
+                    </p>
+                    <p>
+                        Las necesidades evolucionan históricamente. En las sociedades preindustriales, las necesidades dominantes eran de subsistencia (alimentación, vestido, cobijo). Con el desarrollo económico, han surgido necesidades cada vez más sofisticadas: educación superior, conectividad digital, viajes internacionales, servicios de salud mental, entretenimiento, identidad de marca. El economista <strong>John Kenneth Galbraith</strong>, en <em>La sociedad opulenta</em> (1958), alertó sobre el fenómeno de las <strong>necesidades creadas</strong>: en las economías avanzadas, buena parte de las necesidades son inducidas por la publicidad y el sistema productivo, lo que cuestiona la idea de que la demanda es soberana y autónoma.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.2. Clasificación de las necesidades" color="blue">
+                    <p>
+                        Las principales clasificaciones de las necesidades son:
+                    </p>
+                    <p>
+                        <strong>Según su naturaleza:</strong> primarias o básicas (imprescindibles para la supervivencia: alimentación, vestido, vivienda, salud) y secundarias o de civilización (mejoran la calidad de vida: ocio, cultura, viajes, tecnología).
+                    </p>
+                    <p>
+                        <strong>Según el sujeto:</strong> individuales (comer, vestirse, dormir) y colectivas (transporte público, seguridad ciudadana, justicia, defensa nacional).
+                    </p>
+                    <p>
+                        <strong>Según el horizonte temporal:</strong> presentes (satisfacción inmediata: comer cuando se tiene hambre) y futuras (ahorro para la jubilación, inversión en educación).
+                    </p>
+                    <p>
+                        La clasificación más influyente sigue siendo la <strong>pirámide de Maslow</strong> (1943), ya descrita en el Tema 1. No obstante, conviene señalar sus <strong>limitaciones</strong>: la jerarquía no es rígida (un artista puede sacrificar necesidades fisiológicas por la autorrealización), presenta un sesgo individualista occidental (en culturas colectivistas, las necesidades sociales pueden preceder a las de estima) y ha sido parcialmente revisada por el propio campo de la psicología motivacional (véase la teoría de la autodeterminación de <strong>Deci y Ryan</strong>, 1985).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.3. Los recursos productivos (factores de producción)" color="green">
+                    <p>
+                        Los <strong>recursos productivos</strong> o <strong>factores de producción</strong> son los inputs que se utilizan para producir bienes y servicios. La clasificación clásica distingue cuatro factores:
+                    </p>
+                    <p>
+                        <strong>1. Tierra (o recursos naturales):</strong> comprende todos los recursos proporcionados por la naturaleza: suelo agrícola, yacimientos minerales, agua, bosques, energía solar, etc. Su retribución es la <strong>renta</strong>. Los fisiócratas (siglo XVIII), liderados por François Quesnay, consideraban la tierra como la única fuente de riqueza.
+                    </p>
+                    <p>
+                        <strong>2. Trabajo:</strong> es la aportación física e intelectual de las personas al proceso productivo. Su retribución es el <strong>salario</strong>. El factor trabajo no es homogéneo: varía en cualificación, experiencia, creatividad y motivación.
+                    </p>
+                    <p>
+                        <strong>3. Capital:</strong> comprende los bienes producidos que se utilizan para producir otros bienes: maquinaria, herramientas, fábricas, infraestructuras de transporte, software. Su retribución es el <strong>interés</strong> (o beneficio del capital). No debe confundirse el capital físico (bienes de producción) con el capital financiero (dinero disponible para invertir).
+                    </p>
+                    <p>
+                        <strong>4. Iniciativa empresarial (o factor empresarial):</strong> es la capacidad de organizar y coordinar los demás factores de producción, asumiendo riesgos y buscando oportunidades de negocio. Su retribución es el <strong>beneficio</strong>. <strong>Joseph Schumpeter</strong> (1942) destacó el papel del empresario innovador como motor de la "destrucción creativa" y del progreso económico.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.4. La tecnología y el capital humano" color="amber">
+                    <p>
+                        La <strong>tecnología</strong> actúa como un multiplicador de los recursos productivos. Una mejora tecnológica permite obtener más producción con la misma cantidad de factores (o la misma producción con menos factores). La tecnología no es un factor de producción en sentido estricto, sino un elemento que <strong>potencia la eficiencia</strong> de todos los demás factores. La Revolución Industrial, la electrificación, la informatización y la actual revolución de la inteligencia artificial son ejemplos históricos de oleadas tecnológicas que han transformado radicalmente la capacidad productiva.
+                    </p>
+                    <p>
+                        El concepto de <strong>capital humano</strong>, desarrollado por <strong>Gary Becker</strong> (1930-2014) en su obra <em>Human Capital</em> (1964, 3.ª ed. 1993), se refiere al conjunto de conocimientos, habilidades, experiencia y capacidades que poseen las personas y que aumentan su productividad. La inversión en capital humano —a través de la educación, la formación profesional, la sanidad y la experiencia laboral— es uno de los principales motores del crecimiento económico a largo plazo, como demostró <strong>Robert Solow</strong> (Premio Nobel 1987) en su modelo de crecimiento neoclásico (1956), donde el "residuo de Solow" (progreso técnico) explica la mayor parte del crecimiento no atribuible a la acumulación de capital físico.
+                    </p>
+                    <p>
+                        <strong>Theodore Schultz</strong> (Premio Nobel 1979), contemporáneo de Becker, fue pionero en considerar la educación como una inversión y no como un gasto, con rendimientos tanto privados (mayores salarios) como sociales (mayor productividad, menor delincuencia, mejor salud pública). Esta perspectiva es especialmente relevante para la práctica docente: el profesor de Economía contribuye directamente a la formación de capital humano.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 3 */}
+            <Card title="3. La elección económica" icon="🤔">
+                <TheoryBlock title="3.1. Las tres preguntas fundamentales" color="purple">
+                    <p>
+                        Ante la escasez, toda sociedad debe responder a <strong>tres preguntas fundamentales</strong>:
+                    </p>
+                    <p>
+                        <strong>¿Qué producir?</strong> Es decir, qué bienes y servicios deben producirse y en qué cantidades. ¿Más sanidad o más defensa? ¿Más coches o más bicicletas? ¿Más vivienda o más investigación? Esta decisión implica elegir y, por tanto, renunciar.
+                    </p>
+                    <p>
+                        <strong>¿Cómo producir?</strong> Con qué combinación de factores productivos y con qué tecnología. ¿Producción intensiva en trabajo (más empleo) o intensiva en capital (más maquinaria)? ¿Agricultura ecológica o convencional? ¿Energía renovable o fósil?
+                    </p>
+                    <p>
+                        <strong>¿Para quién producir?</strong> Cómo se distribuyen los bienes y servicios producidos entre los miembros de la sociedad. ¿Distribución igualitaria? ¿Según la capacidad de pago (mercado)? ¿Según las necesidades (Estado del bienestar)?
+                    </p>
+                    <p>
+                        Estas tres preguntas —formuladas originariamente por <strong>Paul Samuelson</strong>— constituyen el esqueleto de la organización económica y permiten clasificar los diferentes sistemas económicos (que se abordan en el epígrafe 7 del presente tema y, con mayor profundidad, en el Tema 4).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.2. Mecanismos de asignación" color="blue">
+                    <p>
+                        A lo largo de la historia, las sociedades han empleado tres mecanismos básicos para responder a las tres preguntas anteriores:
+                    </p>
+                    <p>
+                        <strong>1. La tradición:</strong> las decisiones económicas se toman siguiendo las costumbres heredadas de generaciones anteriores. Es el mecanismo predominante en las sociedades preindustriales y todavía presente en algunas comunidades rurales e indígenas. Es estable pero poco adaptable a los cambios.
+                    </p>
+                    <p>
+                        <strong>2. La autoridad (planificación central):</strong> un organismo central (el Estado, un dictador, un consejo de planificación) decide qué, cómo y para quién producir. Fue el mecanismo de las economías socialistas del siglo XX (URSS, China maoísta, Cuba). Permite la coordinación de grandes proyectos pero genera ineficiencias por falta de información descentralizada y ausencia de incentivos individuales.
+                    </p>
+                    <p>
+                        <strong>3. El mercado:</strong> las decisiones se coordinan de forma descentralizada a través del sistema de precios. Los consumidores expresan sus preferencias con sus compras (demanda) y los productores responden buscando el beneficio (oferta). Es el mecanismo de las economías capitalistas. <strong>Adam Smith</strong> (1776) describió este proceso como la <em>"mano invisible"</em>: cada individuo, al perseguir su interés propio, contribuye inconscientemente al bienestar colectivo.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.3. Racionalidad económica y sus críticas" color="green">
+                    <p>
+                        El modelo económico estándar asume que los agentes actúan con <strong>racionalidad económica</strong>: los consumidores maximizan su utilidad y las empresas maximizan su beneficio, ambos sobre la base de información completa y preferencias estables. El <strong>análisis marginal</strong> es la herramienta fundamental de la racionalidad económica: un agente racional continúa una actividad mientras el beneficio marginal supere al coste marginal.
+                    </p>
+                    <p>
+                        Sin embargo, el supuesto de racionalidad perfecta ha sido profundamente cuestionado:
+                    </p>
+                    <p>
+                        <strong>Herbert Simon</strong> (Premio Nobel 1978) propuso el concepto de <strong>racionalidad limitada</strong> (<em>bounded rationality</em>): los agentes no optimizan sino que buscan soluciones "suficientemente buenas" (<em>satisficing</em>), porque su capacidad cognitiva, su tiempo y su información son limitados.
+                    </p>
+                    <p>
+                        <strong>Daniel Kahneman</strong> y <strong>Amos Tversky</strong> (1979) demostraron la existencia de <strong>sesgos cognitivos</strong> sistemáticos que alejan las decisiones reales de las predicciones del modelo racional: la aversión a la pérdida (las pérdidas pesan más que las ganancias equivalentes), el efecto ancla (las primeras cifras recibidas condicionan la valoración), el sesgo de disponibilidad (se sobreestiman los eventos más fáciles de recordar), el sesgo de confirmación (se busca información que confirme las creencias previas) y el exceso de confianza, entre otros. Estos hallazgos, publicados como <em>Teoría de las Perspectivas</em> (Prospect Theory), valieron a Kahneman el Premio Nobel de Economía en 2002.
+                    </p>
+                    <p>
+                        <strong>Richard Thaler</strong> (Premio Nobel 2017) llevó estos descubrimientos al terreno de las políticas públicas con el concepto de <strong><em>nudge</em></strong> (empujón): modificaciones sutiles en la presentación de las opciones (la "arquitectura de las decisiones") que orientan las elecciones sin restringir la libertad, como inscribir automáticamente a los trabajadores en planes de pensiones (con opción de salir) en lugar de exigirles que se inscriban voluntariamente.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 4 */}
+            <Card title="4. El coste de oportunidad" icon="💎">
+                <TheoryBlock title="4.1. Definición rigurosa" color="purple">
+                    <p>
+                        El <strong>coste de oportunidad</strong> es uno de los conceptos más importantes y transversales de toda la ciencia económica. Se define como el <strong>valor de la mejor alternativa a la que se renuncia al tomar una decisión</strong>. No se trata de la suma de todas las alternativas descartadas, sino exclusivamente de la mejor de ellas, es decir, de la siguiente opción más valiosa.
+                    </p>
+                    <p>
+                        Este concepto fue formulado explícitamente por el economista austriaco <strong>Friedrich von Wieser</strong> (1851-1926) en su obra <em>Theorie der gesellschaftlichen Wirtschaft</em> (1914), aunque la idea estaba implícita en los escritos de <strong>David Ricardo</strong> (ventaja comparativa) y de otros economistas clásicos. Es el coste real de cualquier decisión, pues captura lo que verdaderamente se sacrifica.
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="Coste de oportunidad = Valor de la mejor alternativa rechazada"
+                    desc="No es la suma de todas las alternativas, sino solo la mejor de ellas"
+                />
+
+                <TheoryBlock title="4.2. Costes explícitos e implícitos" color="blue">
+                    <p>
+                        Los <strong>costes explícitos</strong> son los pagos monetarios directos que se realizan al tomar una decisión: el precio de matrícula de un máster, el coste de las materias primas, el alquiler de un local. Son los costes que aparecen en los libros de contabilidad.
+                    </p>
+                    <p>
+                        Los <strong>costes implícitos</strong> (o costes de oportunidad en sentido estricto) son los costes de las alternativas a las que se renuncia sin que medie un pago directo: el salario que un estudiante deja de percibir mientras estudia, el rendimiento que un empresario podría obtener invirtiendo su capital en otro negocio, el tiempo de ocio que sacrifica un autónomo. Los costes implícitos son tan reales como los explícitos y deben tenerse en cuenta en la toma de decisiones.
+                    </p>
+                    <p>
+                        La distinción entre costes explícitos e implícitos da lugar a dos conceptos de beneficio: el <strong>beneficio contable</strong> (ingresos menos costes explícitos) y el <strong>beneficio económico</strong> (ingresos menos costes explícitos e implícitos). Una empresa puede tener beneficio contable positivo y, sin embargo, beneficio económico negativo si su beneficio contable es inferior al rendimiento que podría obtener en la mejor alternativa.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.3. El coste de oportunidad en diferentes contextos" color="green">
+                    <p>
+                        <strong>A nivel individual:</strong> La decisión de cursar estudios universitarios tiene como coste de oportunidad el salario que se deja de percibir durante cuatro años. Si un trabajador sin titulación gana 20.000 euros anuales, el coste de oportunidad de la carrera es de al menos 80.000 euros (más matrícula, libros, etc.). La inversión se justifica si el diferencial salarial futuro compensa este coste (tasa interna de rendimiento de la educación). Según la OCDE (<em>Education at a Glance</em>, 2023), los titulados universitarios ganan de media un 48 % más que los titulados en educación secundaria superior.
+                    </p>
+                    <p>
+                        <strong>A nivel empresarial:</strong> Una empresa que invierte 500.000 euros en ampliar su planta de producción renuncia a invertir esa cantidad en activos financieros (bonos, acciones) o en un proyecto alternativo. Si el proyecto alternativo habría generado un rendimiento del 8 %, el coste de oportunidad de la inversión productiva es de 40.000 euros anuales. Este concepto es esencial para la evaluación de inversiones (VAN, TIR) y para la decisión entre producir o comprar (<em>make or buy</em>).
+                    </p>
+                    <p>
+                        <strong>A nivel gubernamental:</strong> El presupuesto público es un ejercicio de coste de oportunidad a gran escala. Cada euro destinado a defensa es un euro no destinado a sanidad, educación o investigación. Las decisiones presupuestarias reflejan las prioridades de una sociedad y son el ámbito natural de la Economía Pública. La <strong>curva de "cañones vs. mantequilla"</strong> (un ejemplo clásico de la FPP) ilustra este dilema: una sociedad que destina más recursos a armamento debe renunciar a bienes de consumo, y viceversa.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.4. Costes irrecuperables (sunk costs)" color="amber">
+                    <p>
+                        Un concepto estrechamente relacionado con el coste de oportunidad es el de <strong>costes irrecuperables</strong> (<em>sunk costs</em>): aquellos costes que ya se han incurrido y que no se pueden recuperar independientemente de la decisión que se tome en el futuro. El principio económico establece que los costes irrecuperables <strong>no deben influir en las decisiones futuras</strong>, ya que lo racional es decidir en función de los costes y beneficios futuros (marginales), no de los pasados.
+                    </p>
+                    <p>
+                        Sin embargo, la Economía conductual ha demostrado que las personas caen sistemáticamente en la <strong>falacia de los costes irrecuperables</strong> (<em>sunk cost fallacy</em>): continúan un proyecto porque "ya han invertido mucho" en él, aunque las perspectivas futuras sean negativas. Ejemplos: terminar una película que no gusta porque ya se ha pagado la entrada, mantener un negocio en pérdidas porque "ya se ha invertido demasiado", o persistir en una carrera universitaria inadecuada porque "ya llevo dos años". Reconocer y superar esta falacia es un elemento clave de la alfabetización económica.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 5 */}
+            <Card title="5. La Frontera de Posibilidades de Producción (FPP)" icon="📈">
+                <TheoryBlock title="5.1. Definición y supuestos" color="purple">
+                    <p>
+                        La <strong>Frontera de Posibilidades de Producción (FPP)</strong> es un modelo gráfico que representa el conjunto de combinaciones máximas de dos bienes (o grupos de bienes) que una economía puede producir utilizando todos sus recursos disponibles con la tecnología existente. Es una de las herramientas más potentes y versátiles de la Economía para ilustrar conceptos como escasez, eficiencia, coste de oportunidad y crecimiento económico.
+                    </p>
+                    <p>
+                        La construcción de la FPP se basa en los siguientes <strong>supuestos simplificadores</strong>: (a) la economía produce únicamente <strong>dos bienes</strong> (por ejemplo, alimentos y ordenadores), lo que permite la representación gráfica en dos dimensiones; (b) la cantidad de <strong>recursos productivos es fija</strong> en el período considerado; (c) la <strong>tecnología es constante</strong> (no hay innovación durante el análisis); y (d) los recursos se emplean de forma <strong>eficiente</strong> (pleno empleo de todos los factores).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.2. Interpretación de los puntos" color="blue">
+                    <p>
+                        La FPP permite distinguir tres tipos de puntos:
+                    </p>
+                    <p>
+                        <strong>Puntos sobre la FPP (eficientes):</strong> representan combinaciones de producción que utilizan todos los recursos disponibles de forma óptima. No es posible producir más de un bien sin producir menos del otro. Todas las combinaciones sobre la FPP son <strong>técnicamente eficientes</strong>; la elección entre ellas depende de las preferencias de la sociedad (eficiencia asignativa).
+                    </p>
+                    <p>
+                        <strong>Puntos interiores (ineficientes):</strong> representan combinaciones que no utilizan plenamente los recursos disponibles. La economía está produciendo por debajo de su potencial, lo que puede deberse a desempleo, subutilización del capital, ineficiencias organizativas, corrupción o crisis económicas. Desde un punto interior, es posible aumentar la producción de un bien <em>sin</em> reducir la del otro, simplemente mejorando la eficiencia.
+                    </p>
+                    <p>
+                        <strong>Puntos exteriores (inalcanzables):</strong> representan combinaciones de producción que superan la capacidad actual de la economía. No son alcanzables con los recursos y la tecnología existentes, pero podrían serlo en el futuro si la FPP se desplaza hacia fuera (crecimiento económico).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.3. La pendiente de la FPP: Relación Marginal de Transformación (RMT)" color="green">
+                    <p>
+                        La <strong>pendiente de la FPP</strong> en cada punto mide el coste de oportunidad de producir una unidad adicional de un bien en términos del otro. Esta pendiente se denomina <strong>Relación Marginal de Transformación (RMT)</strong> y se expresa como:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="RMT = |ΔY / ΔX| = Coste de oportunidad de una unidad adicional de X en términos de Y"
+                    desc="La RMT mide cuántas unidades de Y hay que sacrificar para obtener una unidad más de X"
+                />
+
+                <TheoryBlock title="5.4. Concavidad de la FPP: costes de oportunidad crecientes" color="amber">
+                    <p>
+                        La FPP presenta normalmente una forma <strong>cóncava respecto al origen</strong> (convexa vista desde fuera), lo que refleja la <strong>ley de costes de oportunidad crecientes</strong>: a medida que se produce más de un bien, el coste de oportunidad de cada unidad adicional de ese bien es creciente. Esto se debe a que los factores de producción <strong>no son igualmente aptos</strong> para la producción de ambos bienes.
+                    </p>
+                    <p>
+                        Por ejemplo, si una economía produce alimentos y ordenadores: los primeros recursos que se reasignan de alimentos a ordenadores serán los más aptos para la industria tecnológica (ingenieros, fábricas de componentes), por lo que el coste de oportunidad inicial es bajo. Pero a medida que se destinan más recursos a ordenadores, habrá que emplear recursos cada vez menos aptos (agricultores, tierras de cultivo reconvertidas), con lo que el coste de oportunidad será cada vez mayor. Esta es una manifestación de la <strong>ley de rendimientos decrecientes</strong>.
+                    </p>
+                    <p>
+                        En el caso particular de que los recursos fueran <strong>perfectamente sustituibles</strong> (igualmente aptos para ambos bienes), la FPP sería una <strong>línea recta</strong>, indicando un coste de oportunidad <strong>constante</strong>. Este caso es teórico y poco frecuente en la realidad, pero útil como referencia analítica.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 6 */}
+            <Card title="6. Desplazamientos de la FPP y crecimiento económico" icon="🚀">
+                <TheoryBlock title="6.1. Causas de desplazamiento hacia fuera" color="purple">
+                    <p>
+                        La FPP no es estática: puede <strong>desplazarse a lo largo del tiempo</strong>. Un desplazamiento hacia fuera (hacia la derecha y hacia arriba) representa un <strong>crecimiento económico</strong>, es decir, un aumento de la capacidad productiva de la economía. Las principales causas son:
+                    </p>
+                    <p>
+                        <strong>1. Aumento de la cantidad de recursos:</strong> descubrimiento de nuevos yacimientos de materias primas, crecimiento de la población activa (inmigración, incorporación de la mujer al mercado laboral), aumento del stock de capital (construcción de fábricas, infraestructuras).
+                    </p>
+                    <p>
+                        <strong>2. Mejora tecnológica:</strong> innovación de proceso (producir lo mismo con menos recursos) e innovación de producto (crear bienes nuevos o mejorados). La tecnología es el principal motor del crecimiento a largo plazo según los modelos de crecimiento endógeno (<strong>Paul Romer</strong>, Premio Nobel 2018).
+                    </p>
+                    <p>
+                        <strong>3. Acumulación de capital humano:</strong> inversión en educación, formación profesional, investigación y salud (Becker, Schultz, Solow).
+                    </p>
+                    <p>
+                        <strong>4. Mejora institucional:</strong> estado de derecho, protección de la propiedad intelectual, reducción de la corrupción, estabilidad macroeconómica. <strong>Daron Acemoglu</strong> y <strong>James Robinson</strong> (Premio Nobel 2024, <em>Por qué fracasan los países</em>, 2012) han demostrado que las instituciones inclusivas son el factor decisivo del desarrollo económico a largo plazo.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="6.2. Desplazamiento simétrico vs. asimétrico" color="blue">
+                    <p>
+                        Un <strong>desplazamiento simétrico</strong> ocurre cuando la mejora afecta por igual a la producción de ambos bienes: por ejemplo, un aumento general de la población activa o una mejora tecnológica aplicable a todos los sectores. La FPP se desplaza uniformemente hacia fuera.
+                    </p>
+                    <p>
+                        Un <strong>desplazamiento asimétrico</strong> ocurre cuando la mejora afecta más a la producción de un bien que a la del otro: por ejemplo, una innovación tecnológica específica del sector agrícola desplazará la FPP más en el eje de los alimentos que en el de los ordenadores. Gráficamente, la FPP se "estira" más en una dirección.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="6.3. La inversión como motor de crecimiento" color="green">
+                    <p>
+                        Uno de los dilemas más importantes que refleja la FPP es el trade-off entre <strong>consumo presente e inversión</strong>. Una sociedad que destina una mayor proporción de sus recursos a la inversión (bienes de capital, I+D, educación) sacrifica consumo presente, pero amplía su FPP futura, lo que permitirá mayor consumo en el futuro. Por el contrario, una sociedad que privilegia el consumo presente a costa de la inversión experimentará un crecimiento más lento.
+                    </p>
+                    <p>
+                        Este dilema fue formalizado por <strong>Robert Solow</strong> (1956) en su modelo de crecimiento neoclásico, donde la tasa de ahorro (y, por tanto, de inversión) es un determinante clave del nivel de renta per cápita a largo plazo. La <strong>"regla de oro del ahorro"</strong> (Phelps, 1961) establece que la tasa de ahorro óptima es aquella que maximiza el consumo per cápita sostenible a largo plazo.
+                    </p>
+                    <p>
+                        Los países del <strong>sudeste asiático</strong> (Japón, Corea del Sur, Singapur, China) son ejemplos paradigmáticos de economías que priorizaron la inversión y la formación de capital humano durante décadas, sacrificando consumo presente, lo que les permitió desplazar espectacularmente su FPP hacia fuera y alcanzar niveles de desarrollo elevados.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="6.4. Desplazamiento hacia dentro: destrucción de capacidad productiva" color="red">
+                    <p>
+                        La FPP también puede desplazarse <strong>hacia dentro</strong>, lo que representa una reducción de la capacidad productiva. Las causas incluyen: catástrofes naturales (terremotos, pandemias, sequías), guerras y conflictos armados (destrucción de infraestructuras, capital y capital humano), crisis económicas severas que provoquen depreciación del capital sin reposición, emigración masiva de trabajadores cualificados ("fuga de cerebros") o agotamiento de recursos naturales.
+                    </p>
+                    <p>
+                        La pandemia de COVID-19 (2020-2022) es un ejemplo reciente y contundente: la destrucción de empleo, el cierre de empresas, la interrupción de cadenas de suministro y el deterioro de la salud pública desplazaron temporalmente la FPP de muchas economías hacia dentro. La recuperación posterior, impulsada por políticas fiscales expansivas y campañas de vacunación, ilustra cómo es posible volver a desplazar la FPP hacia fuera.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 7 */}
+            <Card title="7. Los sistemas de asignación de recursos" icon="🏛️">
+                <TheoryBlock title="7.1. Economía de mercado" color="purple">
+                    <p>
+                        En una <strong>economía de mercado</strong> (o economía capitalista), las decisiones de qué, cómo y para quién producir se toman de forma descentralizada por millones de agentes económicos individuales —consumidores y empresas— coordinados a través del <strong>sistema de precios</strong>. <strong>Adam Smith</strong> (1723-1790), en su obra <em>La riqueza de las naciones</em> (1776), describió este mecanismo con la célebre metáfora de la <strong>"mano invisible"</strong>: cada individuo, al buscar su propio interés, contribuye de forma inconsciente al bienestar general, como si una mano invisible guiara el mercado hacia la eficiencia.
+                    </p>
+                    <p>
+                        <strong>Ventajas:</strong> incentiva la eficiencia (las empresas que no compiten desaparecen), promueve la innovación (la competencia estimula la búsqueda de ventajas), se adapta a los cambios (los precios transmiten información sobre escasez relativa), respeta la libertad individual (cada persona decide qué consumir y dónde trabajar).
+                    </p>
+                    <p>
+                        <strong>Inconvenientes:</strong> genera desigualdades (la distribución de la renta depende de la dotación inicial de recursos), puede provocar inestabilidad (ciclos económicos, crisis financieras), no resuelve los fallos de mercado (externalidades, bienes públicos, monopolios, información asimétrica) y puede conducir a la sobreexplotación de recursos naturales si estos no tienen precio (tragedia de los comunes, Hardin, 1968).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="7.2. Economía planificada" color="blue">
+                    <p>
+                        En una <strong>economía planificada</strong> (o economía de dirección central), el Estado toma las decisiones fundamentales de asignación a través de un <strong>plan central</strong>. El marco teórico se basa en el pensamiento de <strong>Karl Marx</strong> (1818-1883), quien en <em>El Capital</em> (1867) criticó las contradicciones del capitalismo —explotación, alienación, concentración del capital, crisis periódicas— y propugnó la socialización de los medios de producción.
+                    </p>
+                    <p>
+                        En la práctica, la planificación central fue implementada en la <strong>Unión Soviética</strong> (planes quinquenales desde 1928), <strong>China maoísta</strong>, <strong>Cuba</strong>, <strong>Corea del Norte</strong> y otros países del bloque socialista. El órgano planificador (como el Gosplan soviético) fijaba las cantidades de producción, los precios, los salarios y la distribución de recursos.
+                    </p>
+                    <p>
+                        <strong>Ventajas teóricas:</strong> puede garantizar el pleno empleo, reducir las desigualdades, movilizar recursos masivos para objetivos estratégicos (industrialización, defensa, educación).
+                    </p>
+                    <p>
+                        <strong>Inconvenientes:</strong> <strong>Friedrich Hayek</strong> (Premio Nobel 1974), en <em>Camino de servidumbre</em> (1944) y en su artículo <em>"El uso del conocimiento en la sociedad"</em> (1945), formuló la crítica más penetrante: el planificador central no puede poseer toda la información dispersa que millones de agentes individuales poseen sobre sus circunstancias locales. El sistema de precios de mercado, en cambio, es un mecanismo de transmisión de información extraordinariamente eficiente. Sin precios libres, la planificación central genera escasez selectiva, excedentes innecesarios, ausencia de innovación (sin competencia no hay incentivo para innovar) y pérdida de libertades individuales.
+                    </p>
+                    <p>
+                        La caída del Muro de Berlín (1989) y la disolución de la URSS (1991) marcaron el fracaso histórico de la planificación central como sistema económico generalizado.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="7.3. Economía mixta" color="green">
+                    <p>
+                        En la práctica, la inmensa mayoría de las economías actuales son <strong>economías mixtas</strong>, que combinan los mecanismos de mercado con la intervención del Estado. El sector privado toma la mayor parte de las decisiones de producción y consumo, pero el Estado interviene para corregir los fallos del mercado, proporcionar bienes públicos (defensa, justicia, infraestructuras), redistribuir la renta (impuestos progresivos, transferencias sociales, Estado del bienestar), estabilizar la economía (política fiscal y monetaria) y regular determinados sectores (energía, telecomunicaciones, banca).
+                    </p>
+                    <p>
+                        El grado de intervención estatal varía significativamente entre países. Los países nórdicos (Suecia, Dinamarca, Noruega, Finlandia) representan un modelo de economía mixta con un sector público amplio y un Estado del bienestar generoso. Estados Unidos y el Reino Unido representan un modelo más orientado al mercado, con menor intervención estatal y mayor desregulación. La Unión Europea, en su conjunto, se sitúa en un punto intermedio, con la economía social de mercado como referencia.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="7.4. Comparación de sistemas y nuevos paradigmas" color="amber">
+                    <p>
+                        La siguiente tabla resume las principales características de cada sistema:
+                    </p>
+                    <div className="overflow-x-auto my-3">
+                        <table className="w-full text-xs border-collapse">
+                            <thead>
+                                <tr className="bg-slate-100">
+                                    <th className="border border-slate-300 p-2 text-left">Criterio</th>
+                                    <th className="border border-slate-300 p-2 text-left">Mercado</th>
+                                    <th className="border border-slate-300 p-2 text-left">Planificada</th>
+                                    <th className="border border-slate-300 p-2 text-left">Mixta</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td className="border border-slate-300 p-2">Propiedad</td><td className="border border-slate-300 p-2">Privada</td><td className="border border-slate-300 p-2">Estatal/colectiva</td><td className="border border-slate-300 p-2">Mixta</td></tr>
+                                <tr><td className="border border-slate-300 p-2">Coordinación</td><td className="border border-slate-300 p-2">Precios</td><td className="border border-slate-300 p-2">Plan central</td><td className="border border-slate-300 p-2">Precios + Estado</td></tr>
+                                <tr><td className="border border-slate-300 p-2">Incentivos</td><td className="border border-slate-300 p-2">Beneficio</td><td className="border border-slate-300 p-2">Cumplimiento del plan</td><td className="border border-slate-300 p-2">Beneficio + regulación</td></tr>
+                                <tr><td className="border border-slate-300 p-2">Distribución</td><td className="border border-slate-300 p-2">Según capacidad de pago</td><td className="border border-slate-300 p-2">Según decisión central</td><td className="border border-slate-300 p-2">Mercado + redistribución</td></tr>
+                                <tr><td className="border border-slate-300 p-2">Eficiencia</td><td className="border border-slate-300 p-2">Alta (con fallos)</td><td className="border border-slate-300 p-2">Baja (distorsiones)</td><td className="border border-slate-300 p-2">Variable</td></tr>
+                                <tr><td className="border border-slate-300 p-2">Equidad</td><td className="border border-slate-300 p-2">Baja</td><td className="border border-slate-300 p-2">Teóricamente alta</td><td className="border border-slate-300 p-2">Moderada-alta</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        Como nuevos paradigmas de asignación de recursos, cabe mencionar la <strong>economía circular</strong>, que propone superar el modelo lineal "extraer-producir-consumir-desechar" por un modelo circular en el que los residuos se reintegran como insumos productivos, reduciendo la presión sobre los recursos naturales. La economía circular conecta directamente con los ODS (especialmente el ODS 12: producción y consumo responsables) y con la <strong>economía ecológica</strong>, que cuestiona el crecimiento ilimitado en un planeta de recursos finitos (N. Georgescu-Roegen, H. Daly, K. Raworth y su modelo de la "economía del donut").
+                    </p>
+                    <p>
+                        Estos temas se desarrollan con mayor profundidad en el Tema 4 (sistemas económicos) y en el Tema 10 (medio ambiente y desarrollo sostenible).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── CONCLUSIÓN ──────────────────────────────────────── */}
+            <Card title="Conclusión" icon="✅">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        A lo largo de este tema se ha profundizado en los tres conceptos vertebradores de la ciencia económica: la escasez, la elección y el coste de oportunidad. La escasez, entendida como un hecho relativo y universal, obliga a individuos, empresas y gobiernos a elegir entre alternativas, y toda elección genera un coste de oportunidad que constituye el verdadero coste de las decisiones.
+                    </p>
+                    <p>
+                        La Frontera de Posibilidades de Producción se ha revelado como una herramienta didáctica extraordinariamente versátil, capaz de ilustrar de forma visual e intuitiva conceptos como eficiencia, ineficiencia, coste de oportunidad creciente, crecimiento económico y el dilema entre consumo e inversión. Sus desplazamientos reflejan las dinámicas del desarrollo económico y conectan con la importancia de la innovación, la educación y las instituciones.
+                    </p>
+                    <p>
+                        El estudio de los sistemas de asignación de recursos —mercado, planificación y economía mixta— muestra que no existe un modelo puro ni perfecto: todas las economías modernas combinan mecanismos de mercado con intervención estatal en proporciones variables, y la búsqueda del equilibrio entre eficiencia y equidad sigue siendo el gran debate de la ciencia económica.
+                    </p>
+                    <p>
+                        Desde la perspectiva docente, los conceptos desarrollados en este tema son esenciales para la formación económica del alumnado. El coste de oportunidad, en particular, es un concepto transversal que aparece en prácticamente todos los temas del programa: desde la teoría del consumidor hasta la política fiscal, pasando por la evaluación de inversiones y el comercio internacional. Acercar este concepto a la experiencia cotidiana del alumnado —¿cuál es el coste de oportunidad de pasar dos horas en redes sociales?— es una estrategia pedagógica eficaz para motivar el aprendizaje y desarrollar el pensamiento económico crítico.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── BIBLIOGRAFÍA ────────────────────────────────────── */}
+            <BibliografiaBox items={[
+                'MANKIW, N.G. (2020): Principios de Economía, 8.ª ed., Cengage Learning.',
+                'SAMUELSON, P. y NORDHAUS, W. (2019): Economía, 19.ª ed., McGraw-Hill.',
+                'KRUGMAN, P. y WELLS, R. (2020): Introducción a la Economía, 4.ª ed., Reverté.',
+                'ROBBINS, L. (1932): An Essay on the Nature and Significance of Economic Science, Macmillan.',
+                'MOCHÓN, F. (2021): Economía. Teoría y Política, 7.ª ed., McGraw-Hill.',
+                'TORRES LÓPEZ, J. (2020): Economía Política, 6.ª ed., Pirámide.',
+                'BECKER, G.S. (1993): Human Capital, 3.ª ed., University of Chicago Press.',
+                'SIMON, H. (1955): "A Behavioral Model of Rational Choice", Quarterly Journal of Economics.',
+                'SMITH, A. (1776): La riqueza de las naciones (ed. moderna, Alianza Editorial).',
+                'KAHNEMAN, D. (2011): Pensar rápido, pensar despacio, Debate.',
+                'THALER, R. y SUNSTEIN, C. (2008): Nudge: Un pequeño empujón, Taurus.',
+                'SOWELL, T. (2007): Economía básica, Deusto.',
+                'ACEMOGLU, D. y ROBINSON, J. (2012): Por qué fracasan los países, Deusto.',
+                'Ley Orgánica 3/2020, de 29 de diciembre (LOMLOE).',
+                'Real Decreto 243/2022, de 5 de abril (currículo Bachillerato).',
+                'OCDE (2023): Education at a Glance, OECD Publishing.',
+                'INE (Instituto Nacional de Estadística): www.ine.es',
+            ]} />
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 2 — RESUM / ESQUEMA
+    // ════════════════════════════════════════════════════════════════
+    const Tema2Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-purple-50 rounded-xl border border-purple-200 mb-5">
+                    <p className="text-center font-bold text-purple-800 text-lg">Tema 2: La escasez, la elección y la asignación de recursos. El coste de oportunidad.</p>
+                    <p className="text-center text-sm text-purple-600 mt-1">
+                        <em>"La primera lección de la Economía es la escasez: nunca hay suficiente de nada para satisfacer completamente a todos"</em> — Thomas Sowell
+                    </p>
+                </div>
+
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. La escasez: concepto y naturaleza</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Escasez relativa (no absoluta): recursos insuficientes respecto a las necesidades.</li>
+                            <li>Escasez ≠ pobreza. Universal: afecta a todos los países y personas.</li>
+                            <li>Perspectiva histórica: del neolítico a la era digital. Escasez de atención (Simon).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. Necesidades y recursos</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Necesidades: ilimitadas, jerarquizables. Maslow (1943). Galbraith: necesidades creadas.</li>
+                            <li>Factores de producción: tierra (renta), trabajo (salario), capital (interés), iniciativa empresarial (beneficio).</li>
+                            <li>Capital humano: Becker (1964), Schultz (Nobel 1979). Tecnología como multiplicador (Solow, Romer).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. La elección económica</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>3 preguntas: ¿Qué producir? ¿Cómo? ¿Para quién? (Samuelson).</li>
+                            <li>Mecanismos: tradición, autoridad (planificación), mercado (precios).</li>
+                            <li>Racionalidad limitada (Simon), sesgos cognitivos (Kahneman/Tversky), nudges (Thaler).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. El coste de oportunidad</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Valor de la mejor alternativa rechazada (Wieser, 1914).</li>
+                            <li>Costes explícitos (pagos) vs. implícitos (alternativas). Beneficio contable vs. económico.</li>
+                            <li>Costes irrecuperables (sunk costs): no deben influir en decisiones futuras.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">5. La Frontera de Posibilidades de Producción (FPP)</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Puntos: sobre (eficientes), dentro (ineficientes), fuera (inalcanzables).</li>
+                            <li>Pendiente = RMT (Relación Marginal de Transformación) = coste de oportunidad.</li>
+                            <li>Cóncava → costes crecientes (rendimientos decrecientes). Recta → costes constantes.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">6. Desplazamientos y crecimiento</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Hacia fuera: más recursos, tecnología, capital humano, mejores instituciones (Acemoglu).</li>
+                            <li>Simétrico vs. asimétrico. Inversión hoy = más producción mañana.</li>
+                            <li>Hacia dentro: guerras, catástrofes, pandemias (COVID-19).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">7. Sistemas de asignación</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Mercado: Smith, "mano invisible". Planificada: Marx, Gosplan. Mixta: mayoría actual.</li>
+                            <li>Debate eficiencia vs. equidad. Hayek (1945): el precio como información descentralizada.</li>
+                            <li>Economía circular como nuevo paradigma sostenible (ODS 12).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <FormulaBox formula="Coste de oportunidad = Valor de la mejor alternativa rechazada" />
+                <FormulaBox formula="RMT = |ΔY / ΔX| → Pendiente de la FPP" />
+                <FormulaBox formula="Beneficio económico = Ingresos - Costes explícitos - Costes implícitos" />
+                <FormulaBox formula="FPP cóncava → Costes de oportunidad crecientes (rendimientos decrecientes)" />
+
+                <ClauBox>
+                    <p>- Diferencia siempre <strong>escasez de pobreza</strong>: la escasez es universal, la pobreza es específica.</p>
+                    <p>- Cita a <strong>Wieser (1914)</strong> como formulador explícito del coste de oportunidad y a <strong>Becker (1964)</strong> para el capital humano.</p>
+                    <p>- Explica la concavidad de la FPP por la <strong>ley de rendimientos decrecientes</strong> y la heterogeneidad de los factores.</p>
+                    <p>- Menciona a <strong>Hayek (1945)</strong> para la crítica a la planificación central y a <strong>Acemoglu (2012/2024)</strong> para la importancia de las instituciones.</p>
+                    <p>- Conecta con la LOMLOE, los ODS y la economía circular para mostrar pertinencia curricular y actualidad.</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 2 — Component wrapper
+    // ════════════════════════════════════════════════════════════════
+    const Tema2 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="📖" title="Tema 2" subtitle={t('tema2.title')} />
+                <Tabs tabs={[
+                    { id: 'complet', label: '📝 ' + t('tab.complet') },
+                    { id: 'resum', label: '📋 ' + t('tab.resum') },
+                ]} active={vista} onChange={setVista} />
+
+                {vista === 'complet' && <Tema2Complet />}
+                {vista === 'resum' && <Tema2Resum />}
+            </div>
+        );
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMES 3-10 — Placeholders
+    // ════════════════════════════════════════════════════════════════
+    const TemaPlaceholder = ({ num }) => (
+        <div className="animate-fade text-center py-20">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gray-100 mb-6">
+                <span className="text-4xl">🔒</span>
+            </div>
+            <h2 className="text-2xl font-black text-slate-800 mb-2">
+                {lang === 'es' ? 'Próximamente' : lang === 'en' ? 'Coming soon' : 'Properament'} — Tema {num}
+            </h2>
+            <p className="text-slate-500 max-w-lg mx-auto">
+                {t(`tema${num}.title`)}
+            </p>
+            <button
+                onClick={() => { setSection('inicio'); pdeSetHashSection('inicio'); pdeScrollToTop(); }}
+                className="mt-8 inline-flex items-center gap-2 px-5 py-2.5 bg-purple-100 text-purple-700 rounded-xl font-semibold text-sm hover:bg-purple-200 transition-colors"
+            >
+                ← {t('sec.inicio')}
+            </button>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // NAVIGATION AND RENDER
+    // ════════════════════════════════════════════════════════════════
+    const headerSections = [
+        { id: 'inicio', label: t('sec.inicio'), emoji: '🏠' },
+        { id: 'tema1', label: 'T1', emoji: '📖' },
+        { id: 'tema2', label: 'T2', emoji: '📖' },
+        { id: 'tema3', label: 'T3', emoji: '🔒' },
+        { id: 'tema4', label: 'T4', emoji: '🔒' },
+        { id: 'tema5', label: 'T5', emoji: '🔒' },
+        { id: 'tema6', label: 'T6', emoji: '🔒' },
+        { id: 'tema7', label: 'T7', emoji: '🔒' },
+        { id: 'tema8', label: 'T8', emoji: '🔒' },
+        { id: 'tema9', label: 'T9', emoji: '🔒' },
+        { id: 'tema10', label: 'T10', emoji: '🔒' },
+    ];
+
+    return (
+        <div className="min-h-screen">
+            <PdeHeader
+                idioma={idioma}
+                setIdioma={(lang) => { setIdioma(lang); PdeLanguageStore.set(lang); }}
+                currentApp="oposicions-bloc-a"
+                sections={headerSections}
+                currentSection={section}
+                setSection={setSection}
+            />
+
+            <main className="max-w-7xl mx-auto px-4 py-8">
+                {section === 'inicio' && <Inicio />}
+                {section === 'tema1' && <Tema1 />}
+                {section === 'tema2' && <Tema2 />}
+                {section === 'tema3' && <TemaPlaceholder num={3} />}
+                {section === 'tema4' && <TemaPlaceholder num={4} />}
+                {section === 'tema5' && <TemaPlaceholder num={5} />}
+                {section === 'tema6' && <TemaPlaceholder num={6} />}
+                {section === 'tema7' && <TemaPlaceholder num={7} />}
+                {section === 'tema8' && <TemaPlaceholder num={8} />}
+                {section === 'tema9' && <TemaPlaceholder num={9} />}
+                {section === 'tema10' && <TemaPlaceholder num={10} />}
+            </main>
+
+            <PdePrevNext sections={headerSections} currentSection={section} setSection={setSection} idioma={idioma} />
+            <PdeFooter appEmoji="📖" appName={t('footer.appname')} idioma={idioma} />
+            <PdeScrollToTop />
+        </div>
+    );
+}
+
+ReactDOM.render(<BlocAApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
