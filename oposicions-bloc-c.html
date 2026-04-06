@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloc C: Macroeconomia — Oposicions | PDE</title>
+    <meta name="description" content="Temes 21-30 d'oposicions d'Economia. PIB, oferta/demanda agregades, política fiscal, diner, inflació i més.">
+    <meta property="og:title" content="Bloc C: Macroeconomia — Oposicions | PDE">
+    <meta property="og:description" content="Temes 21-30 d'oposicions d'Economia. PIB, oferta/demanda agregades, política fiscal, diner, inflació i més.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/oposicions-bloc-c">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://profedeeconomia.es/oposicions-bloc-c">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #4f46e5 #eef2ff; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #eef2ff; }
+        ::-webkit-scrollbar-thumb { background-color: #4f46e5; border-radius: 3px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-white to-indigo-50 min-h-screen">
+    <div id="root"></div>
+    <script type="text/babel">
+const { useState, useMemo, useEffect } = React;
+
+function BlocCApp() {
+    const [section, setSection] = useState('inicio');
+    const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+
+    usePdeDeepLink(section, setSection);
+
+    // ════════════════════════════════════════════════════════════════
+    // TRANSLATIONS
+    // ════════════════════════════════════════════════════════════════
+    const pageTranslations = {
+        // Nav / App name
+        'nav.oposicions-bloc-c': { val: 'Bloc C: Macroeconomia', es: 'Bloque C: Macroeconomía', en: 'Block C: Macroeconomics' },
+        'footer.appname': { val: "Bloc C — Oposicions d'Economia", es: "Bloque C — Oposiciones de Economía", en: 'Block C — Economics Exams' },
+
+        // Inicio
+        'inicio.title': { val: 'Bloc C: Macroeconomia', es: 'Bloque C: Macroeconomía', en: 'Block C: Macroeconomics' },
+        'inicio.subtitle': { val: "Temes 21-30 de les oposicions d'Economia a Secundària", es: 'Temas 21-30 de las oposiciones de Economía en Secundaria', en: 'Topics 21-30 of the Secondary Economics teaching exams' },
+        'inicio.disponible': { val: 'Disponible', es: 'Disponible', en: 'Available' },
+        'inicio.properament': { val: 'Properament', es: 'Próximamente', en: 'Coming soon' },
+        'inicio.backOpo': { val: '← Tornar a Oposicions', es: '← Volver a Oposiciones', en: '← Back to Exams' },
+
+        // Section labels (for header nav)
+        'sec.inicio': { val: 'Inici', es: 'Inicio', en: 'Home' },
+        'sec.tema21': { val: 'Tema 21', es: 'Tema 21', en: 'Topic 21' },
+        'sec.tema22': { val: 'Tema 22', es: 'Tema 22', en: 'Topic 22' },
+        'sec.tema23': { val: 'Tema 23', es: 'Tema 23', en: 'Topic 23' },
+        'sec.tema24': { val: 'Tema 24', es: 'Tema 24', en: 'Topic 24' },
+        'sec.tema25': { val: 'Tema 25', es: 'Tema 25', en: 'Topic 25' },
+        'sec.tema26': { val: 'Tema 26', es: 'Tema 26', en: 'Topic 26' },
+        'sec.tema27': { val: 'Tema 27', es: 'Tema 27', en: 'Topic 27' },
+        'sec.tema28': { val: 'Tema 28', es: 'Tema 28', en: 'Topic 28' },
+        'sec.tema29': { val: 'Tema 29', es: 'Tema 29', en: 'Topic 29' },
+        'sec.tema30': { val: 'Tema 30', es: 'Tema 30', en: 'Topic 30' },
+
+        // Tabs
+        'tab.complet': { val: 'Tema complet', es: 'Tema completo', en: 'Full topic' },
+        'tab.resum': { val: 'Resum / Esquema', es: 'Resumen / Esquema', en: 'Summary / Outline' },
+
+        // Tema titles
+        'tema21.title': { val: 'Variables macroeconòmiques: PIB, renda nacional.', es: 'Variables macroeconómicas: PIB, renta nacional.', en: 'Macroeconomic variables: GDP, national income.' },
+        'tema22.title': { val: "L'oferta i demanda agregades. L'equilibri macroeconòmic.", es: 'La oferta y demanda agregadas. El equilibrio macroeconómico.', en: 'Aggregate supply and demand. Macroeconomic equilibrium.' },
+        'tema23.title': { val: "La renda d'equilibri i el multiplicador.", es: 'La renta de equilibrio y el multiplicador.', en: 'Equilibrium income and the multiplier.' },
+        'tema24.title': { val: "El consum, l'estalvi i la inversió.", es: 'El consumo, el ahorro y la inversión.', en: 'Consumption, saving and investment.' },
+        'tema25.title': { val: "El pressupost de l'Estat. Política fiscal.", es: 'El presupuesto del Estado. Política fiscal.', en: 'The State budget. Fiscal policy.' },
+        'tema26.title': { val: 'El dèficit públic i el deute públic.', es: 'El déficit público y la deuda pública.', en: 'Public deficit and public debt.' },
+        'tema27.title': { val: 'El diner: funcions, creació i mesura.', es: 'El dinero: funciones, creación y medida.', en: 'Money: functions, creation and measurement.' },
+        'tema28.title': { val: 'El sistema financer. Intermediaris i mercats.', es: 'El sistema financiero. Intermediarios y mercados.', en: 'The financial system. Intermediaries and markets.' },
+        'tema29.title': { val: 'El Banc Central i la política monetària.', es: 'El Banco Central y la política monetaria.', en: 'The Central Bank and monetary policy.' },
+        'tema30.title': { val: 'La inflació. Causes, efectes i mesura.', es: 'La inflación. Causas, efectos y medida.', en: 'Inflation. Causes, effects and measurement.' },
+
+        // Placeholder
+        'placeholder.msg': { val: 'Aquest tema estarà disponible properament.', es: 'Este tema estará disponible próximamente.', en: 'This topic will be available soon.' },
+    };
+
+    const t = createTranslator(pageTranslations, idioma);
+    const lang = idioma;
+
+    // ════════════════════════════════════════════════════════════════
+    // REUSABLE COMPONENTS
+    // ════════════════════════════════════════════════════════════════
+    const Card = ({ children, className = "", title, icon }) => (
+        <div className={`bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 hover:shadow-md transition-shadow ${className} animate-fade`}>
+            {title && <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100"><span className="text-2xl">{icon}</span><h3 className="font-bold text-slate-800 text-lg">{title}</h3></div>}
+            {children}
+        </div>
+    );
+
+    const Tabs = ({ tabs, active, onChange }) => (
+        <div className="flex flex-wrap gap-1 p-1.5 bg-slate-100 rounded-xl">
+            {tabs.map(tab => (
+                <button key={tab.id} onClick={() => onChange(tab.id)} className={`flex-1 min-w-fit py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${active === tab.id ? 'bg-white shadow-sm text-blue-600' : 'text-slate-600 hover:text-slate-800 hover:bg-white/50'}`}>
+                    {tab.label}
+                </button>
+            ))}
+        </div>
+    );
+
+    const FormulaBox = ({ formula, desc }) => (
+        <div className="my-4 p-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+            <p className="text-center font-mono text-lg text-blue-800 font-semibold">{formula}</p>
+            {desc && <p className="text-center text-sm text-blue-600 mt-2">{desc}</p>}
+        </div>
+    );
+
+    const TheoryBlock = ({ title, children, color = "slate" }) => {
+        const colors = { slate: "border-slate-300 bg-slate-50", blue: "border-blue-300 bg-blue-50", green: "border-green-300 bg-green-50", amber: "border-amber-300 bg-amber-50", pink: "border-pink-300 bg-pink-50", violet: "border-violet-300 bg-violet-50", red: "border-red-300 bg-red-50", cyan: "border-cyan-300 bg-cyan-50", emerald: "border-emerald-300 bg-emerald-50", purple: "border-purple-300 bg-purple-50", rose: "border-rose-300 bg-rose-50", indigo: "border-indigo-300 bg-indigo-50" };
+        return (
+            <div className={`border-l-4 ${colors[color] || colors.slate} p-5 rounded-r-xl my-4`}>
+                {title && <h4 className="font-bold text-slate-800 mb-3 text-base">{title}</h4>}
+                <div className="text-slate-700 text-sm leading-relaxed space-y-2">{children}</div>
+            </div>
+        );
+    };
+
+    const SectionTitle = ({ icon, title, subtitle }) => (
+        <div className="mb-8">
+            <div className="flex items-center gap-3 mb-2"><span className="text-3xl">{icon}</span><h1 className="text-3xl font-black text-slate-800">{title}</h1></div>
+            {subtitle && <p className="text-slate-500 ml-12">{subtitle}</p>}
+        </div>
+    );
+
+    const BibliografiaBox = ({ items }) => (
+        <div className="my-6 p-6 bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl border border-slate-200">
+            <h4 className="font-bold text-slate-800 mb-4 text-base flex items-center gap-2">
+                <span>📚</span> Bibliografía
+            </h4>
+            <ul className="space-y-2">
+                {items.map((item, i) => (
+                    <li key={i} className="text-sm text-slate-700 leading-relaxed pl-4 border-l-2 border-slate-200">
+                        {item}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+
+    const ClauBox = ({ children }) => (
+        <div className="my-4 p-5 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200">
+            <div className="flex items-start gap-3">
+                <span className="text-2xl">🔑</span>
+                <div>
+                    <h4 className="font-bold text-amber-700 mb-2">{lang === 'es' ? 'Clave para el 10' : lang === 'en' ? 'Key for top marks' : 'Clau per al 10'}</h4>
+                    <div className="text-sm text-amber-800 space-y-1">{children}</div>
+                </div>
+            </div>
+        </div>
+    );
+
+    const TemaPlaceholder = ({ num }) => (
+        <div className="animate-fade">
+            <Card>
+                <div className="text-center py-12">
+                    <span className="text-6xl mb-4 block">🔒</span>
+                    <h3 className="text-xl font-bold text-slate-700 mb-2">Tema {num}</h3>
+                    <p className="text-slate-500 mb-2">{t(`tema${num}.title`)}</p>
+                    <p className="text-sm text-blue-600 font-semibold">{t('placeholder.msg')}</p>
+                </div>
+            </Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // THEME DATA (for Inicio cards)
+    // ════════════════════════════════════════════════════════════════
+    const temes = [
+        { num: 21, id: 'tema21', available: true },
+        { num: 22, id: 'tema22', available: true },
+        { num: 23, id: 'tema23', available: false },
+        { num: 24, id: 'tema24', available: false },
+        { num: 25, id: 'tema25', available: false },
+        { num: 26, id: 'tema26', available: false },
+        { num: 27, id: 'tema27', available: false },
+        { num: 28, id: 'tema28', available: false },
+        { num: 29, id: 'tema29', available: false },
+        { num: 30, id: 'tema30', available: false },
+    ];
+
+    // ════════════════════════════════════════════════════════════════
+    // SECTION: INICIO
+    // ════════════════════════════════════════════════════════════════
+    const Inicio = () => (
+        <div className="animate-fade">
+            {/* Back link */}
+            <a href="./oposicions" className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 mb-6 transition-colors">
+                {t('inicio.backOpo')}
+            </a>
+
+            {/* Hero */}
+            <div className="text-center mb-10">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold mb-4">
+                    <span>📖</span> Bloc C
+                </div>
+                <h1 className="text-4xl font-black text-slate-800 mb-3">{t('inicio.title')}</h1>
+                <p className="text-slate-500 text-lg max-w-2xl mx-auto">{t('inicio.subtitle')}</p>
+            </div>
+
+            {/* Theme cards grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {temes.map(tema => (
+                    <button
+                        key={tema.id}
+                        onClick={() => { if (tema.available) { setSection(tema.id); pdeSetHashSection(tema.id); pdeScrollToTop(); } }}
+                        className={`text-left p-5 rounded-2xl border transition-all ${
+                            tema.available
+                                ? 'bg-white border-blue-200 hover:shadow-lg hover:border-blue-300 cursor-pointer'
+                                : 'bg-gray-50 border-gray-200 opacity-70 cursor-not-allowed'
+                        }`}
+                    >
+                        <div className="flex items-start gap-3">
+                            <span className={`inline-flex items-center justify-center w-10 h-10 rounded-xl text-sm font-black text-white ${
+                                tema.available ? 'bg-gradient-to-br from-blue-500 to-indigo-600' : 'bg-gray-400'
+                            }`}>
+                                T{tema.num}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-slate-800 text-sm leading-snug mb-2">
+                                    {t(`tema${tema.num}.title`)}
+                                </p>
+                                <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${
+                                    tema.available
+                                        ? 'bg-green-100 text-green-700'
+                                        : 'bg-amber-100 text-amber-700'
+                                }`}>
+                                    {tema.available ? '✓ ' + t('inicio.disponible') : '🔒 ' + t('inicio.properament')}
+                                </span>
+                            </div>
+                        </div>
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 21 — Variables macroeconómicas: PIB, renta nacional.
+    // ════════════════════════════════════════════════════════════════
+    const Tema21Complet = () => (
+        <div className="space-y-6 animate-fade">
+            {/* ── INTRODUCCIÓN ────────────────────────────────────── */}
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        La <strong>macroeconomía</strong> es la rama de la ciencia económica que estudia el comportamiento de la economía <strong>en su conjunto</strong>. Frente a la microeconomía —que analiza las decisiones individuales de consumidores y empresas—, la macroeconomía se ocupa de los <strong>agregados económicos</strong>: la producción total, el nivel general de precios, el empleo, el crecimiento y las relaciones económicas internacionales. Su nacimiento como disciplina diferenciada se asocia a la obra de <strong>John Maynard Keynes</strong>, <em>Teoría general de la ocupación, el interés y el dinero</em> (1936), aunque sus raíces se remontan a los fisiócratas (Quesnay, <em>Tableau économique</em>, 1758) y a los clásicos (Smith, Ricardo, Say).
+                    </p>
+                    <p>
+                        La necesidad de <strong>medir la actividad económica agregada</strong> de forma sistemática llevó al desarrollo de la <strong>contabilidad nacional</strong>, cuyos principales artífices fueron <strong>Simon Kuznets</strong> (Premio Nobel 1971) y <strong>Richard Stone</strong> (Premio Nobel 1984). El <strong>Producto Interior Bruto (PIB)</strong> se ha convertido en el indicador macroeconómico de referencia, si bien —como el propio Kuznets advirtió— presenta <strong>limitaciones significativas</strong> como medida del bienestar social. Junto al PIB, un conjunto de magnitudes derivadas (PNB, PIN, Renta Nacional, Renta Personal Disponible) y de indicadores alternativos (IDH, IPM, PIB verde) completan el marco analítico del que dispone el economista para comprender la realidad económica de un país.
+                    </p>
+                    <p>
+                        Desde la perspectiva curricular, este tema se enmarca en los saberes básicos del bloque «La realidad económica. Herramientas para entender el mundo con una visión microeconómica y macroeconómica» de la materia de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022), así como en las competencias específicas CE1 (comprensión del funcionamiento del sistema económico) y CE5 (análisis del contexto económico nacional e internacional). La LOMLOE (Ley Orgánica 3/2020) subraya la importancia de que el alumnado comprenda los indicadores macroeconómicos como herramienta para la interpretación informada de la realidad socioeconómica, contribuyendo especialmente a las competencias STEM (tratamiento de datos estadísticos), CC (reflexión sobre desigualdad y desarrollo) y CPSAA (juicio crítico sobre la información económica).
+                    </p>
+                    <p>
+                        El presente tema se estructura en cinco epígrafes: en primer lugar, se delimita el concepto de macroeconomía, sus objetivos e instrumentos; en segundo lugar, se desarrolla el Producto Interior Bruto, sus vías de cálculo y limitaciones; en tercer lugar, se presentan las magnitudes macroeconómicas derivadas y sus relaciones; en cuarto lugar, se analizan los indicadores alternativos al PIB; y en quinto lugar, se aborda la contabilidad nacional. Se concluye con la relevancia curricular, una síntesis integradora y una bibliografía de referencia.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── DESARROLLO ──────────────────────────────────────── */}
+
+            {/* Epígrafe 1 */}
+            <Card title="1. Macroeconomía: concepto y objetivos" icon="📘">
+                <TheoryBlock title="1.1. De la microeconomía a la macroeconomía" color="blue">
+                    <p>
+                        La <strong>microeconomía</strong> estudia las decisiones individuales de hogares y empresas y cómo interactúan en los mercados concretos de bienes, servicios y factores. La <strong>macroeconomía</strong>, en cambio, analiza la economía como un todo, utilizando <strong>variables agregadas</strong> que resumen el comportamiento conjunto de millones de agentes económicos. En palabras de Mankiw (2020), «la macroeconomía es el estudio de los fenómenos que afectan al conjunto de la economía, incluidos la inflación, el desempleo y el crecimiento económico».
+                    </p>
+                    <p>
+                        El nacimiento de la macroeconomía moderna se sitúa en 1936, con la publicación de la <em>Teoría general</em> de <strong>Keynes</strong>. Ante la Gran Depresión (1929-33), Keynes cuestionó la ley de Say («toda oferta crea su propia demanda») y demostró que la economía podía permanecer en equilibrio con desempleo masivo, justificando la intervención del Estado mediante la política fiscal. Este giro intelectual sentó las bases de la macroeconomía como disciplina diferenciada de la microeconomía.
+                    </p>
+                    <p>
+                        Los principales <strong>agregados macroeconómicos</strong> son: el Producto Interior Bruto (PIB), la tasa de inflación, la tasa de desempleo, el tipo de interés, el tipo de cambio, la balanza de pagos y la deuda pública. El estudio de las relaciones entre estos agregados constituye el núcleo de la macroeconomía.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.2. Objetivos macroeconómicos" color="indigo">
+                    <p>
+                        Los principales <strong>objetivos</strong> de la política macroeconómica, en la tradición de Musgrave (1959) y Tinbergen (1952), son:
+                    </p>
+                    <p>
+                        <strong>1. Crecimiento económico sostenido:</strong> aumento del PIB real a lo largo del tiempo, como base para la mejora del nivel de vida. Se mide habitualmente a través de la tasa de variación del PIB real.
+                    </p>
+                    <p>
+                        <strong>2. Pleno empleo:</strong> lograr que todos los factores productivos —especialmente el trabajo— estén utilizados al máximo de su capacidad, minimizando el desempleo involuntario. El concepto de <strong>tasa natural de desempleo</strong> (Friedman, 1968) reconoce que cierto nivel de desempleo (friccional y estructural) es inevitable.
+                    </p>
+                    <p>
+                        <strong>3. Estabilidad de precios:</strong> mantener la inflación en niveles bajos y predecibles. La inflación elevada distorsiona las señales de precios, redistribuye la renta de manera arbitraria y genera incertidumbre. El objetivo del BCE es una inflación del 2 % a medio plazo.
+                    </p>
+                    <p>
+                        <strong>4. Equilibrio exterior:</strong> mantener una posición sostenible de la balanza de pagos, evitando déficits crónicos por cuenta corriente que generen endeudamiento externo excesivo.
+                    </p>
+                    <p>
+                        <strong>5. Distribución equitativa de la renta:</strong> reducir las desigualdades de renta y riqueza para favorecer la cohesión social, mediante el sistema impositivo progresivo y las transferencias del Estado del bienestar.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.3. Instrumentos de política macroeconómica" color="green">
+                    <p>
+                        Para alcanzar estos objetivos, los gobiernos y bancos centrales disponen de cuatro grandes instrumentos:
+                    </p>
+                    <p>
+                        <strong>Política fiscal:</strong> uso del gasto público (G) y los impuestos (T) para influir en la demanda agregada. Expansiva (↑G o ↓T) para estimular la economía; restrictiva (↓G o ↑T) para frenar la inflación. Responsabilidad del gobierno.
+                    </p>
+                    <p>
+                        <strong>Política monetaria:</strong> control de la oferta monetaria (M) y los tipos de interés (i) por parte del banco central. Expansiva (↑M, ↓i) para estimular el crédito y la inversión; restrictiva (↓M, ↑i) para contener la inflación. En la eurozona, responsabilidad del BCE.
+                    </p>
+                    <p>
+                        <strong>Política exterior (comercial y cambiaria):</strong> aranceles, cuotas, acuerdos comerciales y gestión del tipo de cambio para influir en las exportaciones netas (X − M).
+                    </p>
+                    <p>
+                        <strong>Política de rentas:</strong> acuerdos sobre salarios y precios (pactos sociales) para contener la inflación de costes sin recurrir a políticas restrictivas que aumenten el desempleo.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 2 */}
+            <Card title="2. El Producto Interior Bruto (PIB)" icon="📘">
+                <TheoryBlock title="2.1. Definición del PIB" color="blue">
+                    <p>
+                        El <strong>Producto Interior Bruto (PIB)</strong> se define como el <strong>valor de mercado de todos los bienes y servicios finales producidos en el interior de un país durante un período de tiempo determinado</strong> (generalmente un año o un trimestre). Cada palabra de esta definición es relevante:
+                    </p>
+                    <p>
+                        <strong>Valor de mercado:</strong> se valoran los bienes a sus precios de mercado, lo que permite sumar productos heterogéneos (kilos de trigo y automóviles) en una unidad común (euros).
+                    </p>
+                    <p>
+                        <strong>Bienes y servicios finales:</strong> se excluyen los bienes intermedios (materias primas utilizadas en la producción) para evitar la <strong>doble contabilización</strong>. Solo se cuentan los bienes que llegan al usuario final.
+                    </p>
+                    <p>
+                        <strong>Producidos:</strong> se mide la producción corriente, no las transacciones de bienes ya existentes (por ejemplo, la venta de una vivienda de segunda mano no se incluye, aunque sí la comisión del agente inmobiliario).
+                    </p>
+                    <p>
+                        <strong>Interior:</strong> se contabiliza toda la producción realizada dentro de las fronteras del país, independientemente de la nacionalidad de los factores productivos (criterio territorial).
+                    </p>
+                    <p>
+                        <strong>Bruto:</strong> no se descuenta la depreciación (consumo de capital fijo), a diferencia del Producto Interior Neto (PIN).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.2. Las tres vías de cálculo del PIB" color="indigo">
+                    <p>
+                        El PIB puede calcularse por tres vías equivalentes, que deben arrojar el mismo resultado (identidad fundamental de la contabilidad nacional):
+                    </p>
+                    <p>
+                        <strong>a) Vía del gasto (demanda):</strong> suma de todos los gastos en bienes y servicios finales realizados por los agentes económicos. Es la vía más utilizada en los manuales de macroeconomía.
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="PIB = C + I + G + (X − M)"
+                    desc="C = Consumo privado | I = Inversión (FBCF + Δ existencias) | G = Gasto público | X = Exportaciones | M = Importaciones"
+                />
+
+                <TheoryBlock color="indigo">
+                    <p>
+                        <strong>b) Vía de la renta (ingresos):</strong> suma de todas las rentas generadas en el proceso productivo. La producción genera rentas que se distribuyen entre los factores de producción.
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="PIB = RA + EBE + T_ind − Subvenciones"
+                    desc="RA = Remuneración de asalariados | EBE = Excedente bruto de explotación | T_ind = Impuestos indirectos netos"
+                />
+
+                <TheoryBlock color="indigo">
+                    <p>
+                        <strong>c) Vía de la producción (oferta / valor añadido):</strong> suma del valor añadido bruto (VAB) generado por todos los sectores productivos. El valor añadido de cada empresa es la diferencia entre el valor de su producción y el coste de los consumos intermedios.
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="PIB = Σ VAB sectorial + Impuestos netos sobre productos"
+                    desc="VAB = Producción − Consumos intermedios"
+                />
+
+                <TheoryBlock title="2.3. PIB nominal vs. PIB real. El deflactor del PIB" color="green">
+                    <p>
+                        El <strong>PIB nominal</strong> (o PIB a precios corrientes) valora la producción a los precios vigentes en cada año. El problema es que un aumento del PIB nominal puede deberse a un aumento de la producción real o simplemente a un aumento de los precios (inflación). Para aislar el efecto de los cambios en los precios, se calcula el <strong>PIB real</strong> (o PIB a precios constantes), que valora la producción de cada año a los precios de un <strong>año base</strong>.
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="PIB real = (PIB nominal / Deflactor del PIB) × 100"
+                    desc="Deflactor = (PIB nominal / PIB real) × 100 — mide la variación del nivel general de precios"
+                />
+
+                <TheoryBlock color="green">
+                    <p>
+                        El <strong>deflactor del PIB</strong> es un índice de precios que recoge la variación de los precios de todos los bienes y servicios producidos en la economía. A diferencia del IPC, que solo incluye una cesta de bienes de consumo, el deflactor abarca toda la producción (incluida la inversión, el gasto público y las exportaciones netas). El deflactor del año base es, por definición, igual a 100.
+                    </p>
+                    <p>
+                        En la práctica, el INE publica el PIB real utilizando el método de <strong>índices encadenados</strong>, que evita los sesgos derivados de fijar un año base lejano y utiliza ponderaciones que se actualizan anualmente.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.4. PIB per cápita como indicador de nivel de vida" color="amber">
+                    <p>
+                        El <strong>PIB per cápita</strong> (PIBpc) se obtiene dividiendo el PIB entre la población del país. Es el indicador más utilizado para aproximar el <strong>nivel de vida medio</strong> de los habitantes de un país y para realizar <strong>comparaciones internacionales</strong> (ajustado por paridad de poder adquisitivo, PPA).
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="PIBpc = PIB / Población"
+                    desc="Para comparaciones internacionales, se ajusta por Paridad de Poder Adquisitivo (PPA)"
+                />
+
+                <TheoryBlock title="2.5. Limitaciones del PIB" color="red">
+                    <p>
+                        A pesar de su utilidad, el PIB presenta <strong>limitaciones significativas</strong> como indicador de bienestar social, que el opositor debe conocer y exponer críticamente:
+                    </p>
+                    <p>
+                        <strong>1. Economía sumergida:</strong> no recoge las actividades económicas no declaradas (trabajo en negro, actividades ilegales). En España, la economía sumergida se estima entre el 17 % y el 25 % del PIB (según el método empleado).
+                    </p>
+                    <p>
+                        <strong>2. Trabajo doméstico y de cuidados no remunerado:</strong> el PIB no contabiliza la producción de bienes y servicios realizada en el hogar (limpieza, cocina, cuidado de menores y dependientes), que tiene un enorme valor económico y social. Esta omisión tiene una marcada <strong>dimensión de género</strong>, ya que este trabajo recae desproporcionadamente en las mujeres.
+                    </p>
+                    <p>
+                        <strong>3. Externalidades negativas:</strong> el PIB no resta las externalidades negativas (contaminación, agotamiento de recursos naturales). Un vertido tóxico puede incluso <em>aumentar</em> el PIB (por los gastos de limpieza), a pesar de reducir el bienestar.
+                    </p>
+                    <p>
+                        <strong>4. Distribución de la renta:</strong> el PIB per cápita es una media que oculta las desigualdades internas. Dos países con el mismo PIBpc pueden tener niveles de bienestar muy diferentes si la distribución de la renta es distinta.
+                    </p>
+                    <p>
+                        <strong>5. Composición de la producción:</strong> el PIB no distingue entre bienes que aumentan el bienestar (educación, sanidad) y bienes que lo reducen (armamento, reparación de daños). Tampoco valora el ocio ni la calidad de vida.
+                    </p>
+                    <p>
+                        <strong>6. Sostenibilidad medioambiental:</strong> el PIB no tiene en cuenta el agotamiento de los recursos naturales ni la degradación medioambiental, lo que puede dar una imagen engañosa de prosperidad a costa del capital natural.
+                    </p>
+                    <p>
+                        Como señaló el propio <strong>Simon Kuznets</strong> (1934): «el bienestar de una nación difícilmente puede inferirse de una medida de la renta nacional». Robert F. Kennedy (1968) lo expresó de forma memorable: «El PIB mide todo, excepto lo que hace que la vida merezca la pena».
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 3 */}
+            <Card title="3. Otras magnitudes macroeconómicas" icon="📘">
+                <TheoryBlock title="3.1. Producto Nacional Bruto (PNB)" color="blue">
+                    <p>
+                        El <strong>PNB</strong> mide el valor de la producción realizada por los <strong>factores productivos nacionales</strong>, independientemente de dónde se encuentren ubicados (criterio de nacionalidad, frente al criterio territorial del PIB). La relación entre PIB y PNB es:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="PNB = PIB + RFNe − RFNr"
+                    desc="RFNe = Rentas de factores nacionales obtenidas en el exterior | RFNr = Rentas de factores extranjeros obtenidas en el interior"
+                />
+
+                <TheoryBlock color="blue">
+                    <p>
+                        Para países con fuerte inversión extranjera (como Irlanda), el PIB puede ser significativamente mayor que el PNB, ya que gran parte de los beneficios generados en el país son repatriados por empresas multinacionales. Para países con muchos emigrantes que envían remesas, el PNB puede superar al PIB.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.2. Producto Interior Neto (PIN)" color="indigo">
+                    <p>
+                        El <strong>PIN</strong> descuenta del PIB la <strong>depreciación</strong> o <strong>consumo de capital fijo</strong> (CCF), es decir, la pérdida de valor de los bienes de capital debido al desgaste, la obsolescencia y los daños accidentales. El PIN refleja mejor la producción <em>neta</em> disponible para el consumo y la acumulación de capital nuevo.
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="PIN = PIB − Depreciación (CCF)"
+                    desc="CCF = Consumo de capital fijo (amortización del stock de capital)"
+                />
+
+                <TheoryBlock title="3.3. Renta Nacional (RN)" color="green">
+                    <p>
+                        La <strong>Renta Nacional</strong> (RN) mide el total de rentas percibidas por los factores productivos nacionales (trabajo y capital) por su participación en la producción. Se obtiene a partir del Producto Nacional Neto a coste de los factores (PNNcf), descontando los impuestos indirectos netos de subvenciones:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="RN = PNNcf = PIN − T_ind + Subvenciones"
+                    desc="También: RN = PNB − CCF − T_ind + Subvenciones"
+                />
+
+                <TheoryBlock color="green">
+                    <p>
+                        La Renta Nacional se descompone en: <strong>remuneración de asalariados</strong> (salarios, cotizaciones sociales), <strong>rentas de la propiedad</strong> (alquileres), <strong>intereses</strong>, <strong>beneficios empresariales</strong> (dividendos + beneficios no distribuidos) y <strong>rentas mixtas</strong> (de autónomos y empresas sin asalariados).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.4. Renta Personal (RP) y Renta Personal Disponible (RPD)" color="amber">
+                    <p>
+                        La <strong>Renta Personal (RP)</strong> es la renta que efectivamente llega a los hogares. Se obtiene restando de la RN los beneficios no distribuidos, las cotizaciones a la Seguridad Social y los impuestos sobre sociedades, y sumando las transferencias del Estado (pensiones, prestaciones por desempleo, becas).
+                    </p>
+                    <p>
+                        La <strong>Renta Personal Disponible (RPD)</strong> es la renta que los hogares pueden dedicar al consumo o al ahorro, tras pagar los impuestos directos (IRPF y similares):
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="RPD = RP − Impuestos directos"
+                    desc="RPD = Consumo + Ahorro personal"
+                />
+
+                <TheoryBlock title="3.5. Relaciones entre magnitudes (cadena completa)" color="violet">
+                    <p>
+                        La cadena completa de magnitudes macroeconómicas puede resumirse así:
+                    </p>
+                    <p>
+                        <strong>PIB</strong> (criterio territorial, bruto, a precios de mercado)
+                        → <strong>PNB</strong> = PIB + RFNe − RFNr (criterio nacional)
+                        → <strong>PNN</strong> = PNB − Depreciación (neto)
+                        → <strong>RN</strong> = PNN − T_ind + Sub (a coste de los factores)
+                        → <strong>RP</strong> = RN − Bnd − CSS − IS + TR (renta que llega a hogares)
+                        → <strong>RPD</strong> = RP − T_directos (renta disponible para consumo y ahorro)
+                    </p>
+                    <p>
+                        El dominio de esta cadena y la capacidad de transitar entre magnitudes con fluidez es una de las habilidades que el tribunal valora especialmente en la exposición del tema.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 4 */}
+            <Card title="4. Indicadores alternativos al PIB" icon="📘">
+                <TheoryBlock title="4.1. Índice de Desarrollo Humano (IDH)" color="blue">
+                    <p>
+                        El <strong>IDH</strong>, elaborado por el <strong>Programa de las Naciones Unidas para el Desarrollo (PNUD)</strong> desde 1990 (propuesto por Amartya Sen y Mahbub ul Haq), combina tres dimensiones del desarrollo:
+                    </p>
+                    <p>
+                        <strong>1. Salud:</strong> esperanza de vida al nacer. <strong>2. Educación:</strong> años esperados de escolarización y años medios de escolarización. <strong>3. Nivel de vida:</strong> INB per cápita en PPA (dólares internacionales).
+                    </p>
+                    <p>
+                        El IDH toma valores entre 0 y 1. Los países se clasifican en cuatro categorías: desarrollo humano muy alto (≥0,800), alto (0,700-0,799), medio (0,550-0,699) y bajo (&lt;0,550). España se sitúa habitualmente en el grupo de desarrollo humano muy alto (IDH ≈ 0,905 en 2023).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.2. Índice de Pobreza Multidimensional (IPM)" color="indigo">
+                    <p>
+                        El <strong>IPM</strong>, desarrollado por Alkire y Foster (OPHI, Oxford), mide la pobreza más allá del ingreso, considerando <strong>diez indicadores</strong> agrupados en tres dimensiones: salud (nutrición, mortalidad infantil), educación (años de escolarización, asistencia escolar) y nivel de vida (electricidad, saneamiento, agua, vivienda, combustible, activos). Una persona es considerada multidimensionalmente pobre si está privada en al menos un tercio de los indicadores ponderados.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.3. Índice de Progreso Social (IPS)" color="green">
+                    <p>
+                        El <strong>IPS</strong> (Social Progress Imperative) mide el progreso social de un país a través de tres dimensiones: <strong>necesidades humanas básicas</strong> (nutrición, salud, vivienda, seguridad), <strong>fundamentos del bienestar</strong> (acceso a educación, información, salud, sostenibilidad ambiental) y <strong>oportunidades</strong> (derechos personales, libertad, inclusión, acceso a educación superior). A diferencia del IDH, excluye deliberadamente las variables económicas para medir el progreso social de forma independiente del PIB.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.4. PIB verde / Ahorro Neto Ajustado" color="emerald">
+                    <p>
+                        El <strong>Ahorro Neto Ajustado</strong> (Genuine Savings), calculado por el <strong>Banco Mundial</strong>, corrige el ahorro nacional neto descontando el agotamiento de recursos naturales (minerales, energía, bosques) y los daños por contaminación (CO₂), y sumando la inversión en capital humano (gasto en educación). Cuando el ANA es negativo, el país está consumiendo su base de riqueza y su crecimiento es insostenible.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.5. Indicador de Progreso Genuino (GPI) / ISEW" color="amber">
+                    <p>
+                        El <strong>GPI</strong> (Genuine Progress Indicator) y su predecesor, el <strong>ISEW</strong> (Index of Sustainable Economic Welfare, Daly y Cobb, 1989), parten del consumo personal y le suman beneficios no contabilizados por el PIB (trabajo doméstico, voluntariado) y le restan costes ignorados (contaminación, pérdida de ocio, costes del crimen, degradación de recursos). Diversos estudios muestran que, mientras el PIB per cápita ha crecido de forma sostenida desde los años 70, el GPI se ha estancado o incluso retrocedido en muchos países desarrollados.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.6. Felicidad Nacional Bruta y la paradoja de Easterlin" color="violet">
+                    <p>
+                        La <strong>Felicidad Nacional Bruta (FNB)</strong>, promovida por Bután desde 1972, mide el progreso a través de nueve dominios: bienestar psicológico, salud, educación, uso del tiempo, diversidad cultural, buen gobierno, vitalidad comunitaria, diversidad ecológica y nivel de vida.
+                    </p>
+                    <p>
+                        La <strong>paradoja de Easterlin</strong> (1974) señala que, superado un cierto umbral de renta (aproximadamente 75.000 $/año según Kahneman y Deaton, 2010), los aumentos adicionales de renta no se traducen en aumentos significativos de la felicidad subjetiva. Esta paradoja cuestiona la asunción de que más PIB equivale siempre a más bienestar y refuerza la necesidad de indicadores multidimensionales.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 5 */}
+            <Card title="5. La contabilidad nacional" icon="📘">
+                <TheoryBlock title="5.1. El Sistema Europeo de Cuentas (SEC)" color="blue">
+                    <p>
+                        La <strong>contabilidad nacional</strong> es el marco estadístico que permite registrar, de forma sistemática y coherente, todas las transacciones económicas que tienen lugar en un país. En la Unión Europea, el marco de referencia es el <strong>SEC-2010</strong> (Sistema Europeo de Cuentas Nacionales y Regionales, Reglamento UE 549/2013), que es la adaptación europea del <strong>SCN-2008</strong> (Sistema de Cuentas Nacionales de Naciones Unidas).
+                    </p>
+                    <p>
+                        El SEC-2010 clasifica la economía en <strong>sectores institucionales</strong>: sociedades no financieras, sociedades financieras, administraciones públicas, hogares e instituciones sin fines de lucro al servicio de los hogares (ISFLSH), y el resto del mundo. Para cada sector se elaboran cuentas de producción, explotación, renta, capital y financieras.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.2. El INE y la contabilidad nacional de España" color="indigo">
+                    <p>
+                        En España, el <strong>Instituto Nacional de Estadística (INE)</strong> es el organismo responsable de elaborar la <strong>Contabilidad Nacional de España (CNE)</strong>, siguiendo la metodología del SEC-2010. El INE publica las estimaciones del PIB con periodicidad trimestral (avance a los 30 días, primera estimación a los 60 días) y anual. Los datos son revisados periódicamente para incorporar nueva información estadística.
+                    </p>
+                    <p>
+                        El INE también elabora la <strong>Contabilidad Regional de España</strong>, que permite conocer el PIB y la renta por comunidades autónomas, y la <strong>Contabilidad Nacional Trimestral</strong>, fundamental para el seguimiento coyuntural de la economía.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.3. Las tablas input-output" color="green">
+                    <p>
+                        Las <strong>tablas input-output</strong> (o tablas de insumo-producto), desarrolladas por <strong>Wassily Leontief</strong> (Premio Nobel 1973), son una representación matricial de las relaciones intersectoriales de una economía. Cada fila muestra cómo se distribuye la producción de un sector entre los demás sectores (como consumo intermedio) y la demanda final (consumo, inversión, exportaciones). Cada columna muestra qué insumos necesita un sector de los demás sectores y qué valor añadido genera.
+                    </p>
+                    <p>
+                        Las tablas input-output permiten analizar los <strong>efectos multiplicadores</strong> de una variación de la demanda final sobre la producción de todos los sectores (efectos directos e indirectos), calcular los <strong>coeficientes técnicos</strong> y la <strong>matriz inversa de Leontief</strong>, y constituyen una herramienta fundamental para la planificación económica y el análisis de impacto.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 6 */}
+            <Card title="6. Relevancia curricular" icon="📘">
+                <TheoryBlock title="6.1. Marco normativo y curricular" color="blue">
+                    <p>
+                        El estudio de las variables macroeconómicas y la contabilidad nacional se enmarca en la <strong>LOMLOE</strong> (Ley Orgánica 3/2020) y en el <strong>Real Decreto 243/2022</strong> (currículo de Bachillerato). En la materia de <strong>Economía de 1.º de Bachillerato</strong>, los saberes básicos del bloque C («La realidad económica») incluyen explícitamente: «principales magnitudes macroeconómicas», «el producto interior bruto», «la renta nacional y su distribución», «indicadores económicos e indicadores de calidad de vida» y «limitaciones de las variables macroeconómicas como indicadores de bienestar».
+                    </p>
+                    <p>
+                        Las competencias específicas implicadas son: <strong>CE1</strong> (valorar el problema de la escasez y la necesidad de elegir, comprendiendo las variables macroeconómicas básicas), <strong>CE5</strong> (proponer iniciativas que contribuyan al crecimiento económico sostenible e inclusivo), y <strong>CE6</strong> (analizar los problemas económicos actuales mediante el análisis de datos e indicadores económicos).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="6.2. Contribución a las competencias clave" color="indigo">
+                    <p>
+                        <strong>STEM:</strong> tratamiento de datos estadísticos, cálculo del PIB, interpretación de gráficos y tablas macroeconómicas, análisis cuantitativo de la evolución temporal de las magnitudes.
+                    </p>
+                    <p>
+                        <strong>CC (Competencia Ciudadana):</strong> reflexión crítica sobre las limitaciones del PIB como indicador de bienestar, debate sobre la desigualdad, la sostenibilidad y los indicadores alternativos.
+                    </p>
+                    <p>
+                        <strong>CPSAA:</strong> desarrollo del juicio crítico ante la información económica que aparece en los medios de comunicación, comprensión de los indicadores que afectan a la vida cotidiana.
+                    </p>
+                    <p>
+                        <strong>CD (Competencia Digital):</strong> uso de fuentes estadísticas (INE, Eurostat, Banco Mundial) para la obtención y el análisis de datos macroeconómicos.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── CONCLUSIÓN ──────────────────────────────────────── */}
+            <Card title="Conclusión" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        A lo largo de este tema se ha desarrollado el marco conceptual y cuantitativo que permite medir y comprender la actividad económica de un país en su conjunto. El <strong>PIB</strong>, como indicador central de la contabilidad nacional, constituye una herramienta imprescindible para evaluar el desempeño económico, comparar países y orientar la política macroeconómica. Sus tres vías de cálculo (gasto, renta y producción) reflejan la identidad fundamental de que lo que se produce se convierte en renta que, a su vez, se gasta.
+                    </p>
+                    <p>
+                        Sin embargo, el rigor académico y la honestidad intelectual exigen reconocer las <strong>limitaciones del PIB</strong>: no mide la economía sumergida, el trabajo doméstico no remunerado, las externalidades negativas, la distribución de la renta ni la sostenibilidad medioambiental. Los <strong>indicadores alternativos</strong> —IDH, IPM, GPI, Ahorro Neto Ajustado, FNB— enriquecen el análisis y ofrecen una visión más completa del desarrollo y el bienestar.
+                    </p>
+                    <p>
+                        La cadena de magnitudes macroeconómicas (PIB → PNB → PIN → RN → RP → RPD) y la contabilidad nacional (SEC-2010, tablas input-output) proporcionan el armazón estadístico sin el cual la macroeconomía carecería de base empírica. Desde la perspectiva docente, estos contenidos permiten desarrollar el pensamiento crítico del alumnado, invitándole a cuestionar qué miden realmente los indicadores económicos y qué queda fuera de la medición, conectando así con las competencias clave de la LOMLOE y con los desafíos del siglo XXI: la desigualdad, la sostenibilidad y la búsqueda de un desarrollo verdaderamente humano.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── FÓRMULAS RESUMEN ───────────────────────────────── */}
+            <FormulaBox formula="PIB = C + I + G + (X − M)" desc="Vía del gasto: identidad macroeconómica fundamental" />
+            <FormulaBox formula="PIB real = (PIB nominal / Deflactor) × 100" desc="Eliminando el efecto de la variación de precios" />
+            <FormulaBox formula="PIBpc = PIB / Población" desc="Indicador de nivel de vida medio" />
+            <FormulaBox formula="RN = PIN − T_ind + Subvenciones" desc="Renta Nacional a coste de los factores" />
+
+            {/* ── BIBLIOGRAFÍA ────────────────────────────────────── */}
+            <BibliografiaBox items={[
+                'MANKIW, N.G. (2020): Principios de Economía, 8.ª ed., Cengage Learning.',
+                'BLANCHARD, O. (2017): Macroeconomía, 7.ª ed., Pearson.',
+                'SAMUELSON, P. y NORDHAUS, W. (2019): Economía, 19.ª ed., McGraw-Hill.',
+                'KRUGMAN, P. y WELLS, R. (2020): Macroeconomía, 4.ª ed., Reverté.',
+                'MOCHÓN, F. (2021): Economía. Teoría y Política, 7.ª ed., McGraw-Hill.',
+                'DORNBUSCH, R., FISCHER, S. y STARTZ, R. (2014): Macroeconomía, 12.ª ed., McGraw-Hill.',
+                'KUZNETS, S. (1934): National Income, 1929-1932, NBER.',
+                'KEYNES, J.M. (1936): Teoría general de la ocupación, el interés y el dinero (ed. moderna, FCE).',
+                'STIGLITZ, J.E., SEN, A. y FITOUSSI, J.P. (2009): Informe de la Comisión sobre la Medición del Desarrollo Económico y del Progreso Social.',
+                'PNUD (2023): Informe sobre Desarrollo Humano 2023-2024.',
+                'EASTERLIN, R. (1974): "Does Economic Growth Improve the Human Lot?", en David y Reder (eds.).',
+                'Ley Orgánica 3/2020, de 29 de diciembre (LOMLOE).',
+                'Real Decreto 243/2022, de 5 de abril (currículo Bachillerato).',
+                'Reglamento UE 549/2013 (SEC-2010).',
+            ]} />
+
+            {/* ── CLAU ────────────────────────────────────────────── */}
+            <ClauBox>
+                <p>- Domina las <strong>tres vías de cálculo del PIB</strong> (gasto, renta, producción) y sé capaz de transitar entre ellas con fluidez. El tribunal lo valora especialmente.</p>
+                <p>- Distingue <strong>PIB nominal vs. PIB real</strong> y explica el papel del deflactor. Menciona los <strong>índices encadenados</strong> como método moderno.</p>
+                <p>- Recorre la <strong>cadena completa de magnitudes</strong>: PIB → PNB → PIN → RN → RP → RPD. Domina los ajustes en cada paso (RFN, depreciación, T_ind, transferencias, T_directos).</p>
+                <p>- Presenta las <strong>limitaciones del PIB</strong> de forma crítica y fundamentada. Cita a <strong>Kuznets</strong> («el bienestar no puede inferirse de una medida de la renta»). Enumera al menos 4-5 limitaciones concretas.</p>
+                <p>- Incluye <strong>indicadores alternativos</strong>: IDH (Sen, PNUD), IPM, GPI/ISEW, Ahorro Neto Ajustado, FNB. Menciona la <strong>paradoja de Easterlin</strong>.</p>
+                <p>- Cita el marco estadístico: <strong>SEC-2010</strong>, INE, <strong>Leontief</strong> (tablas input-output). Muestra conocimiento institucional.</p>
+                <p>- Conecta con la <strong>LOMLOE</strong> (RD 243/2022, Bloque C) y las competencias STEM, CC, CPSAA y CD.</p>
+            </ClauBox>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 21 — RESUM / ESQUEMA
+    // ════════════════════════════════════════════════════════════════
+    const Tema21Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-blue-50 rounded-xl border border-blue-200 mb-5">
+                    <p className="text-center font-bold text-blue-800 text-lg">Tema 21: Variables macroeconómicas: PIB, renta nacional.</p>
+                    <p className="text-center text-sm text-blue-600 mt-1">
+                        <em>"El bienestar de una nación difícilmente puede inferirse de una medida de la renta nacional"</em> — S. Kuznets (1934)
+                    </p>
+                </div>
+
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. Macroeconomía: concepto y objetivos</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Macro = estudio de la economía en su conjunto (agregados). Keynes, <em>Teoría General</em> (1936).</li>
+                            <li>Objetivos: crecimiento, pleno empleo, estabilidad de precios, equilibrio exterior, distribución equitativa.</li>
+                            <li>Instrumentos: política fiscal (G, T), monetaria (M, i), exterior (aranceles, tipo de cambio), de rentas.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. El PIB</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Definición: valor de mercado de todos los bienes y servicios finales producidos en un país en un período.</li>
+                            <li>Tres vías: gasto (C+I+G+XN), renta (RA+EBE+T_ind−Sub), producción (Σ VAB + impuestos netos s/prod.).</li>
+                            <li>PIB nominal vs. real. Deflactor = (PIBnom/PIBreal) × 100. Índices encadenados (INE).</li>
+                            <li>PIBpc = PIB / Población (ajustado por PPA para comparaciones internacionales).</li>
+                            <li>Limitaciones: economía sumergida, trabajo doméstico, externalidades, distribución, sostenibilidad, composición.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. Otras magnitudes</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>PNB = PIB + RFNe − RFNr (criterio nacional vs. territorial).</li>
+                            <li>PIN = PIB − Depreciación (CCF). Producción neta disponible.</li>
+                            <li>RN = PNNcf = PIN − T_ind + Sub. Total de rentas de los factores nacionales.</li>
+                            <li>RP = RN − Bnd − CSS − IS + Transferencias. RPD = RP − T_directos.</li>
+                            <li>Cadena: PIB → PNB → PNN → RN → RP → RPD.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. Indicadores alternativos</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>IDH (PNUD, Sen): salud + educación + renta. España ≈ 0,905.</li>
+                            <li>IPM (Alkire-Foster, OPHI): 10 indicadores, 3 dimensiones.</li>
+                            <li>IPS: progreso social independiente del PIB.</li>
+                            <li>Ahorro Neto Ajustado (Banco Mundial): corrige por recursos naturales y contaminación.</li>
+                            <li>GPI/ISEW (Daly y Cobb): suma beneficios y resta costes no contabilizados.</li>
+                            <li>FNB (Bután). Paradoja de Easterlin: más renta ≠ más felicidad (a partir de umbral).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">5. Contabilidad nacional</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>SEC-2010 (UE, Reg. 549/2013) basado en SCN-2008 (ONU). Sectores institucionales.</li>
+                            <li>INE: Contabilidad Nacional de España (trimestral y anual).</li>
+                            <li>Tablas input-output (Leontief, Nobel 1973): relaciones intersectoriales, multiplicadores.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">6. Relevancia curricular</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>LOMLOE: Economía 1BACH (RD 243/2022, Bloque C). CE1, CE5, CE6.</li>
+                            <li>Competencias: STEM (datos), CC (desigualdad, sostenibilidad), CPSAA (juicio crítico), CD (fuentes estadísticas).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <FormulaBox formula="PIB = C + I + G + (X − M) → tres vías de cálculo equivalentes" />
+                <FormulaBox formula="PIB real = PIB nominal / Deflactor × 100 | PIBpc = PIB / Población" />
+                <FormulaBox formula="Cadena: PIB → PNB → PIN → RN → RP → RPD" />
+
+                <ClauBox>
+                    <p>- Domina las <strong>tres vías</strong> del PIB y la <strong>cadena PIB→RPD</strong>: el tribunal lo valora especialmente.</p>
+                    <p>- Distingue <strong>nominal vs. real</strong> y explica el deflactor. Menciona <strong>índices encadenados</strong>.</p>
+                    <p>- Presenta las <strong>limitaciones</strong> con espíritu crítico (Kuznets, R.F. Kennedy).</p>
+                    <p>- Incluye al menos 4-5 <strong>indicadores alternativos</strong> (IDH, IPM, GPI, ANA, FNB) y la paradoja de Easterlin.</p>
+                    <p>- Cita el <strong>SEC-2010</strong>, el INE y las tablas input-output de <strong>Leontief</strong>.</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 21 — Component wrapper
+    // ════════════════════════════════════════════════════════════════
+    const Tema21 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="📖" title="Tema 21" subtitle={t('tema21.title')} />
+                <Tabs tabs={[
+                    { id: 'complet', label: '📝 ' + t('tab.complet') },
+                    { id: 'resum', label: '📋 ' + t('tab.resum') },
+                ]} active={vista} onChange={setVista} />
+
+                {vista === 'complet' && <Tema21Complet />}
+                {vista === 'resum' && <Tema21Resum />}
+            </div>
+        );
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 22 — La oferta y demanda agregadas. El equilibrio macroeconómico.
+    // ════════════════════════════════════════════════════════════════
+    const Tema22Complet = () => (
+        <div className="space-y-6 animate-fade">
+            {/* ── INTRODUCCIÓN ────────────────────────────────────── */}
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        El modelo de <strong>oferta y demanda agregadas (OA-DA)</strong> constituye el marco analítico central de la macroeconomía. Así como en microeconomía el equilibrio de un mercado individual se determina por la intersección de la oferta y la demanda de un bien concreto, en macroeconomía el <strong>equilibrio macroeconómico</strong> —el nivel general de precios y la producción total de la economía— se determina por la intersección de la <strong>oferta agregada (OA)</strong> y la <strong>demanda agregada (DA)</strong>. Este modelo permite analizar las causas de las fluctuaciones económicas (expansiones y recesiones), los efectos de las perturbaciones de oferta y demanda, y la eficacia de las políticas macroeconómicas (fiscal y monetaria) para estabilizar la economía.
+                    </p>
+                    <p>
+                        Desde la perspectiva curricular, el modelo OA-DA conecta directamente con los saberes básicos del bloque «La realidad económica» de la materia de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022) y con las competencias específicas CE1 (comprensión del funcionamiento del sistema económico), CE5 (análisis de la política económica) y CE6 (interpretación de la coyuntura económica). La LOMLOE subraya la importancia de que el alumnado comprenda los mecanismos que determinan la actividad económica agregada y las herramientas de política económica disponibles para los gobiernos, contribuyendo especialmente a las competencias STEM (análisis gráfico y modelización), CC (debate sobre la intervención pública) y CPSAA (comprensión del entorno económico).
+                    </p>
+                    <p>
+                        El presente tema se estructura en cuatro epígrafes: en primer lugar, se analiza la demanda agregada, sus componentes y los factores que explican la pendiente negativa de la curva DA; en segundo lugar, se desarrolla la oferta agregada a corto y largo plazo; en tercer lugar, se estudia el equilibrio macroeconómico y las brechas de producción; y en cuarto lugar, se examinan las perturbaciones y las políticas estabilizadoras, incluyendo el debate clásicos-keynesianos. Se concluye con la relevancia curricular, una síntesis integradora y una bibliografía de referencia.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── DESARROLLO ──────────────────────────────────────── */}
+
+            {/* Epígrafe 1 */}
+            <Card title="1. La demanda agregada (DA)" icon="📘">
+                <TheoryBlock title="1.1. Concepto de demanda agregada" color="blue">
+                    <p>
+                        La <strong>demanda agregada (DA)</strong> representa la <strong>cantidad total de bienes y servicios que todos los agentes económicos (hogares, empresas, sector público y sector exterior) están dispuestos a adquirir a cada nivel de precios</strong>, en un período determinado. A diferencia de la demanda microeconómica de un bien individual, la DA se refiere a la producción total de la economía y se relaciona con el nivel general de precios (P).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.2. Componentes de la demanda agregada" color="indigo">
+                    <p>
+                        Los componentes de la DA coinciden con los del PIB calculado por la vía del gasto:
+                    </p>
+                    <p>
+                        <strong>Consumo privado (C):</strong> gasto de los hogares en bienes y servicios (duraderos, no duraderos y servicios). Es el componente más importante (en torno al 55-60 % del PIB en España). Depende de la renta disponible, la riqueza, las expectativas y los tipos de interés.
+                    </p>
+                    <p>
+                        <strong>Inversión (I):</strong> gasto de las empresas en bienes de capital (maquinaria, equipos, construcción) y variación de existencias. Es el componente más volátil del PIB. Depende del tipo de interés, las expectativas de beneficio, la utilización de la capacidad productiva y la confianza empresarial.
+                    </p>
+                    <p>
+                        <strong>Gasto público (G):</strong> gasto de las administraciones públicas en bienes y servicios (excluidas las transferencias, que no son gasto en producción). Incluye consumo público (funcionarios, material) e inversión pública (infraestructuras).
+                    </p>
+                    <p>
+                        <strong>Exportaciones netas (X − M):</strong> diferencia entre exportaciones (bienes y servicios vendidos al exterior) e importaciones (bienes y servicios comprados del exterior). Dependen del tipo de cambio, la renta del resto del mundo, la competitividad y los precios relativos.
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="DA: Y = C + I + G + (X − M)"
+                    desc="Identidad fundamental de la demanda agregada"
+                />
+
+                <TheoryBlock title="1.3. La curva de DA: pendiente negativa" color="green">
+                    <p>
+                        La curva de DA tiene <strong>pendiente negativa</strong> en el plano (Y, P): cuando el nivel general de precios sube, la cantidad total demandada de bienes y servicios disminuye, y viceversa. Esta relación inversa se explica por tres efectos:
+                    </p>
+                    <p>
+                        <strong>1. Efecto riqueza (Pigou):</strong> un aumento del nivel de precios reduce el valor real de los activos financieros de los hogares (dinero, bonos), lo que disminuye su riqueza percibida y, por tanto, su consumo. Arthur Cecil Pigou (1943) formalizó este canal.
+                    </p>
+                    <p>
+                        <strong>2. Efecto tipo de interés (Keynes):</strong> un aumento de precios eleva la demanda de dinero (para transacciones), lo que presiona al alza los tipos de interés. Tipos de interés más altos reducen la inversión y el consumo a crédito. Este es el mecanismo central en el modelo keynesiano.
+                    </p>
+                    <p>
+                        <strong>3. Efecto tipo de cambio (Mundell-Fleming):</strong> un aumento del nivel de precios interno encarece los productos nacionales frente a los extranjeros, lo que reduce las exportaciones (X) y aumenta las importaciones (M), disminuyendo las exportaciones netas (X − M). Robert Mundell (Nobel 1999) y Marcus Fleming desarrollaron este canal en el contexto de economías abiertas.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.4. Desplazamientos de la curva de DA" color="amber">
+                    <p>
+                        La curva de DA se <strong>desplaza a la derecha</strong> (aumento de la DA) cuando, a cada nivel de precios, se demanda más producción total. Esto puede ocurrir por:
+                    </p>
+                    <p>
+                        <strong>Cambios en C:</strong> aumento de la confianza de los consumidores, reducción de impuestos directos, aumento de la riqueza (efecto riqueza positivo).
+                    </p>
+                    <p>
+                        <strong>Cambios en I:</strong> mejora de las expectativas empresariales, avances tecnológicos, reducción de tipos de interés, incentivos fiscales a la inversión.
+                    </p>
+                    <p>
+                        <strong>Cambios en G:</strong> aumento del gasto público (política fiscal expansiva).
+                    </p>
+                    <p>
+                        <strong>Cambios en XN:</strong> crecimiento de la economía mundial, depreciación del tipo de cambio, mejora de la competitividad.
+                    </p>
+                    <p>
+                        <strong>Política fiscal expansiva</strong> (↑G o ↓T) y <strong>política monetaria expansiva</strong> (↑M, ↓i) desplazan la DA a la derecha. Sus contrapartidas restrictivas la desplazan a la izquierda.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 2 */}
+            <Card title="2. La oferta agregada (OA)" icon="📘">
+                <TheoryBlock title="2.1. Concepto de oferta agregada" color="blue">
+                    <p>
+                        La <strong>oferta agregada (OA)</strong> representa la <strong>cantidad total de bienes y servicios que las empresas de la economía están dispuestas a producir y vender a cada nivel de precios</strong>, dados los costes de producción, la tecnología y los recursos disponibles. La forma de la curva de OA es objeto de uno de los debates más importantes de la macroeconomía: el debate entre la visión <strong>clásica/neoclásica</strong> (OA vertical) y la visión <strong>keynesiana</strong> (OA con pendiente positiva o incluso horizontal).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.2. Oferta agregada a corto plazo (OACP)" color="indigo">
+                    <p>
+                        A <strong>corto plazo</strong>, la curva de OA tiene <strong>pendiente positiva</strong>: un aumento del nivel de precios induce a las empresas a producir más. Existen tres modelos que explican esta pendiente positiva:
+                    </p>
+                    <p>
+                        <strong>1. Modelo de salarios rígidos (keynesiano):</strong> los salarios nominales se fijan mediante contratos (convenios colectivos) y no se ajustan inmediatamente a cambios en el nivel de precios. Si los precios suben y los salarios permanecen fijos, el salario real (W/P) disminuye, lo que reduce los costes laborales reales de las empresas e incentiva la contratación y la producción.
+                    </p>
+                    <p>
+                        <strong>2. Modelo de información imperfecta (Lucas):</strong> las empresas pueden confundir un aumento del nivel general de precios con un aumento del precio relativo de su producto, lo que les lleva a aumentar la producción. Robert Lucas (Nobel 1995) formalizó este enfoque en su teoría de las <em>expectativas racionales</em>.
+                    </p>
+                    <p>
+                        <strong>3. Modelo de precios rígidos (neokeynesianos):</strong> algunas empresas no ajustan sus precios inmediatamente (costes de menú, contratos a largo plazo). Las que mantienen precios fijos ven aumentar sus ventas cuando la DA aumenta, lo que eleva la producción total.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.3. Oferta agregada a largo plazo (OALP)" color="green">
+                    <p>
+                        A <strong>largo plazo</strong>, la curva de OA es <strong>vertical</strong> al nivel del <strong>PIB potencial</strong> (Y*), también llamado producción de pleno empleo o producción natural. Esto significa que, a largo plazo, la producción no depende del nivel de precios, sino de los <strong>factores reales de la economía</strong>: la cantidad y calidad del trabajo, el stock de capital, los recursos naturales y la tecnología.
+                    </p>
+                    <p>
+                        A largo plazo, los salarios y los precios son <strong>perfectamente flexibles</strong> y se ajustan completamente a cualquier variación del nivel de precios, de modo que el salario real se mantiene en su nivel de equilibrio y la economía opera en su producción potencial. Esta es la posición de la <strong>escuela clásica y neoclásica</strong>: a largo plazo, la economía tiende por sí sola al pleno empleo.
+                    </p>
+                    <p>
+                        El PIB potencial (Y*) crece a lo largo del tiempo gracias al progreso tecnológico, la acumulación de capital y el crecimiento de la población activa. La <strong>tasa natural de desempleo</strong> (Friedman, 1968; Phelps, 1967) es compatible con el pleno empleo en sentido económico: incluye el desempleo friccional y estructural, pero no el desempleo cíclico.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.4. Desplazamientos de la curva de OA" color="amber">
+                    <p>
+                        La curva de OA se desplaza cuando cambian los <strong>costes de producción</strong> o la <strong>capacidad productiva</strong> de la economía:
+                    </p>
+                    <p>
+                        <strong>Desplazamiento a la derecha (aumento de OA):</strong> avances tecnológicos, reducción de costes de materias primas, disminución de salarios reales, desregulación, mejora del capital humano, descubrimiento de nuevos recursos.
+                    </p>
+                    <p>
+                        <strong>Desplazamiento a la izquierda (disminución de OA):</strong> aumento del precio del petróleo o materias primas (shock de oferta negativo), incremento de salarios, catástrofes naturales, regulaciones más estrictas, aumento de las expectativas de inflación de los trabajadores (que negocian salarios más altos).
+                    </p>
+                    <p>
+                        Los <strong>shocks de oferta negativos</strong> son especialmente problemáticos porque provocan simultáneamente menor producción (recesión) y mayores precios (inflación), una combinación conocida como <strong>estanflación</strong> (concepto acuñado en los años 70 tras las crisis del petróleo de 1973 y 1979).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 3 */}
+            <Card title="3. El equilibrio macroeconómico" icon="📘">
+                <TheoryBlock title="3.1. Equilibrio a corto plazo" color="blue">
+                    <p>
+                        El <strong>equilibrio macroeconómico a corto plazo</strong> se determina en la intersección de la curva de <strong>DA</strong> y la curva de <strong>OACP</strong>. En el punto de equilibrio, la cantidad total de bienes y servicios que los agentes desean comprar (DA) coincide con la cantidad que las empresas desean producir (OACP), determinándose simultáneamente el <strong>nivel de producción de equilibrio (Y*)</strong> y el <strong>nivel general de precios de equilibrio (P*)</strong>.
+                    </p>
+                    <p>
+                        Si el nivel de precios fuera superior al de equilibrio, habría un exceso de oferta agregada (las empresas producirían más de lo que se demanda), lo que presionaría los precios a la baja. Si el nivel de precios fuera inferior al de equilibrio, habría un exceso de demanda agregada, lo que presionaría los precios al alza. El mecanismo de ajuste tiende a llevar la economía hacia el equilibrio.
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="Equilibrio CP: DA = OA_CP → (P*, Y*)"
+                    desc="Intersección de demanda agregada y oferta agregada a corto plazo"
+                />
+
+                <TheoryBlock title="3.2. Equilibrio a largo plazo" color="indigo">
+                    <p>
+                        El <strong>equilibrio macroeconómico a largo plazo</strong> se produce cuando las tres curvas se intersecan en el mismo punto: <strong>DA = OACP = OALP</strong>. En este punto, la producción coincide con el <strong>PIB potencial</strong> (Y*), no hay presiones inflacionistas ni deflacionistas, y la economía opera a su tasa natural de desempleo.
+                    </p>
+                    <p>
+                        En el equilibrio a largo plazo, los precios y salarios se han ajustado completamente, las expectativas de inflación se han cumplido y no hay incentivos para que las empresas modifiquen su nivel de producción. Esta es la situación ideal, pero la economía puede desviarse de ella durante períodos prolongados (ciclo económico).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.3. Brechas de producción" color="green">
+                    <p>
+                        Cuando la producción de equilibrio a corto plazo difiere del PIB potencial, se produce una <strong>brecha de producción</strong> (<em>output gap</em>):
+                    </p>
+                    <p>
+                        <strong>Brecha recesiva (Y &lt; Y*):</strong> la producción efectiva es inferior al PIB potencial. Hay recursos ociosos, desempleo cíclico y presión deflacionista. Se produce cuando la DA es insuficiente para absorber toda la producción potencial (típico de las recesiones).
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="Brecha recesiva: Y < Y_potencial → desempleo cíclico"
+                    desc="La producción efectiva se sitúa por debajo de la capacidad productiva"
+                />
+
+                <TheoryBlock color="green">
+                    <p>
+                        <strong>Brecha expansiva (Y &gt; Y*):</strong> la producción efectiva supera temporalmente al PIB potencial (por sobreutilización de los factores: horas extras, turnos adicionales, retraso del mantenimiento). Hay presión inflacionista. Se produce cuando la DA excede la capacidad productiva normal (típico de los booms).
+                    </p>
+                    <p>
+                        La medición de la brecha de producción es fundamental para la política económica: una brecha recesiva justifica políticas expansivas; una brecha expansiva justifica políticas restrictivas.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.4. Mecanismo de ajuste automático a largo plazo" color="violet">
+                    <p>
+                        Según la <strong>visión clásica/neoclásica</strong>, la economía tiende a autocorregirse a largo plazo sin necesidad de intervención pública:
+                    </p>
+                    <p>
+                        <strong>Brecha recesiva:</strong> el desempleo cíclico presiona los salarios a la baja → los costes de producción disminuyen → la OACP se desplaza a la derecha → la producción aumenta hasta alcanzar Y* (con precios más bajos).
+                    </p>
+                    <p>
+                        <strong>Brecha expansiva:</strong> la sobreutilización de recursos presiona los salarios al alza → los costes de producción aumentan → la OACP se desplaza a la izquierda → la producción se reduce hasta Y* (con precios más altos).
+                    </p>
+                    <p>
+                        Los <strong>keynesianos</strong> cuestionan este mecanismo de ajuste automático argumentando que: (1) los salarios son <strong>rígidos a la baja</strong> (los trabajadores y sindicatos se resisten a recortes salariales); (2) el ajuste es <strong>lento y costoso</strong> (puede tardar años, durante los cuales hay desempleo masivo); (3) como dijo Keynes: «a largo plazo, todos muertos». Por tanto, la intervención del Estado mediante políticas de demanda es necesaria y deseable para acortar las recesiones.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 4 */}
+            <Card title="4. Perturbaciones y políticas" icon="📘">
+                <TheoryBlock title="4.1. Perturbaciones de demanda" color="blue">
+                    <p>
+                        Una <strong>perturbación positiva de demanda</strong> (p. ej., un aumento del gasto público, una reducción de impuestos o un aumento de la confianza de los consumidores) desplaza la curva de DA a la derecha. A corto plazo, la producción (Y) y los precios (P) aumentan: el nuevo equilibrio se sitúa en una posición con mayor producción y precios más altos.
+                    </p>
+                    <p>
+                        Si la economía partía de una brecha recesiva, la expansión de la DA puede acercar la producción al PIB potencial (efecto deseado). Si la economía estaba ya en equilibrio a largo plazo, la expansión genera una brecha expansiva con presión inflacionista.
+                    </p>
+                    <p>
+                        Una <strong>perturbación negativa de demanda</strong> (caída de la inversión, crisis financiera, austeridad fiscal) desplaza la DA a la izquierda, reduciendo la producción y los precios a corto plazo (recesión).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.2. Perturbaciones de oferta" color="indigo">
+                    <p>
+                        Un <strong>shock de oferta negativo</strong> (p. ej., una subida brusca del precio del petróleo, como en las crisis de 1973 y 1979, o una pandemia como la de 2020) desplaza la curva de OACP a la izquierda. El resultado es especialmente problemático: la producción disminuye (recesión) y los precios aumentan (inflación) simultáneamente. Esta combinación se denomina <strong>estanflación</strong> (stagflation = stagnation + inflation).
+                    </p>
+                    <p>
+                        La estanflación plantea un <strong>dilema</strong> para la política económica: si el gobierno aplica políticas expansivas para combatir la recesión, agrava la inflación; si aplica políticas restrictivas para combatir la inflación, agrava la recesión. Este dilema fue especialmente agudo durante las crisis del petróleo y contribuyó al cuestionamiento del paradigma keynesiano y al auge del monetarismo (Friedman).
+                    </p>
+                    <p>
+                        Un <strong>shock de oferta positivo</strong> (innovación tecnológica, caída del precio de la energía) desplaza la OACP a la derecha: la producción aumenta y los precios bajan (escenario ideal).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.3. Políticas de demanda" color="green">
+                    <p>
+                        Las <strong>políticas de demanda</strong> son aquellas que actúan sobre la demanda agregada para estabilizar la economía:
+                    </p>
+                    <p>
+                        <strong>Política fiscal:</strong> el gobierno modifica el gasto público (G) y los impuestos (T). Una <strong>política fiscal expansiva</strong> (↑G o ↓T) desplaza la DA a la derecha, aumentando la producción y el empleo (pero también los precios). Una <strong>política fiscal restrictiva</strong> (↓G o ↑T) desplaza la DA a la izquierda. Es el instrumento keynesiano por excelencia.
+                    </p>
+                    <p>
+                        <strong>Política monetaria:</strong> el banco central modifica la oferta monetaria (M) y los tipos de interés (i). Una <strong>política monetaria expansiva</strong> (↑M, ↓i) abarata el crédito, estimula la inversión y el consumo, y desplaza la DA a la derecha. Una <strong>política monetaria restrictiva</strong> (↓M, ↑i) encarece el crédito y desplaza la DA a la izquierda. En la eurozona, es responsabilidad del BCE.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.4. Políticas de oferta" color="amber">
+                    <p>
+                        Las <strong>políticas de oferta</strong> buscan aumentar la capacidad productiva de la economía (desplazar la OALP y la OACP a la derecha), permitiendo un crecimiento no inflacionista a largo plazo:
+                    </p>
+                    <p>
+                        <strong>Reformas estructurales:</strong> mejora del funcionamiento de los mercados (de trabajo, de productos, financieros), reducción de la burocracia, mejora del marco regulatorio.
+                    </p>
+                    <p>
+                        <strong>Inversión en I+D+i:</strong> fomento de la investigación, el desarrollo y la innovación tecnológica para aumentar la productividad total de los factores.
+                    </p>
+                    <p>
+                        <strong>Inversión en capital humano:</strong> mejora del sistema educativo y de la formación profesional.
+                    </p>
+                    <p>
+                        <strong>Inversión en infraestructuras:</strong> transportes, comunicaciones, energía, que facilitan la actividad productiva.
+                    </p>
+                    <p>
+                        <strong>Desregulación y liberalización:</strong> reducción de barreras de entrada, fomento de la competencia.
+                    </p>
+                    <p>
+                        Las políticas de oferta son complementarias a las de demanda: mientras las políticas de demanda actúan sobre el ciclo económico a corto plazo, las de oferta mejoran el potencial de crecimiento a largo plazo.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.5. El debate clásicos vs. keynesianos" color="violet">
+                    <p>
+                        El modelo OA-DA permite ilustrar una de las controversias más importantes de la historia del pensamiento macroeconómico:
+                    </p>
+                    <p>
+                        <strong>Visión clásica/neoclásica (y monetarista):</strong> la economía tiende al pleno empleo por sí sola, gracias a la flexibilidad de precios y salarios. La intervención del Estado es innecesaria o contraproducente: la política fiscal solo genera inflación a largo plazo (crowding-out) y la política monetaria solo afecta a los precios, no a la producción real (neutralidad del dinero a largo plazo). Las políticas de oferta son preferibles a las de demanda. Representantes: Adam Smith, Say, Marshall, Friedman, Lucas.
+                    </p>
+                    <p>
+                        <strong>Visión keynesiana:</strong> la economía puede permanecer en equilibrio con desempleo (trampa de la liquidez, rigideces). El ajuste automático es lento, incierto y costoso. La intervención del Estado mediante políticas de demanda (fiscal y monetaria) es necesaria para estabilizar la economía y acortar las recesiones. «A largo plazo, todos muertos» (Keynes, 1923). Representantes: Keynes, Samuelson, Hicks, Stiglitz, Krugman.
+                    </p>
+                    <p>
+                        La <strong>síntesis neoclásica</strong> (Hicks, Samuelson) intentó reconciliar ambas visiones: a corto plazo, la economía funciona de forma keynesiana (rigideces, desempleo involuntario, eficacia de las políticas de demanda); a largo plazo, tiende al equilibrio clásico (flexibilidad de precios, neutralidad del dinero). El modelo OA-DA refleja esta síntesis: la OACP tiene pendiente positiva (visión keynesiana del corto plazo) y la OALP es vertical (visión clásica del largo plazo).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 5 */}
+            <Card title="5. Relevancia curricular" icon="📘">
+                <TheoryBlock title="5.1. Marco normativo y propuestas didácticas" color="blue">
+                    <p>
+                        El modelo de oferta y demanda agregadas se enmarca en la <strong>LOMLOE</strong> (Ley Orgánica 3/2020) y en el <strong>Real Decreto 243/2022</strong> (currículo de Bachillerato). En la materia de <strong>Economía de 1.º de Bachillerato</strong>, los saberes básicos incluyen: «funcionamiento del mercado», «papel del Estado en la economía», «políticas macroeconómicas», «crecimiento económico y sus límites». Las competencias específicas implicadas son CE1, CE5 y CE6.
+                    </p>
+                    <p>
+                        Desde la perspectiva didáctica, el modelo OA-DA se presta especialmente al <strong>análisis gráfico</strong>, que permite al alumnado visualizar los efectos de las perturbaciones y las políticas económicas. Se proponen las siguientes actividades:
+                    </p>
+                    <p>
+                        <strong>1. Análisis gráfico de escenarios:</strong> dado un gráfico OA-DA, el alumno debe identificar perturbaciones, desplazamientos y efectos sobre P e Y.
+                    </p>
+                    <p>
+                        <strong>2. Debate clásicos vs. keynesianos:</strong> dividir la clase en dos grupos que defiendan cada visión ante una crisis económica simulada.
+                    </p>
+                    <p>
+                        <strong>3. Estudio de caso:</strong> análisis de la crisis del petróleo de 1973 o la Gran Recesión de 2008 mediante el modelo OA-DA.
+                    </p>
+                    <p>
+                        <strong>Competencias clave:</strong> STEM (modelización gráfica), CC (debate sobre intervención pública), CPSAA (comprensión del entorno económico), CE (análisis de políticas).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── CONCLUSIÓN ──────────────────────────────────────── */}
+            <Card title="Conclusión" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        El modelo de <strong>oferta y demanda agregadas</strong> constituye el marco analítico fundamental de la macroeconomía, análogo al modelo de oferta y demanda de mercado en microeconomía, pero aplicado al conjunto de la economía. La <strong>demanda agregada</strong>, con sus cuatro componentes (C, I, G, X−M) y su pendiente negativa (explicada por los efectos riqueza, tipo de interés y tipo de cambio), refleja el gasto total planeado a cada nivel de precios. La <strong>oferta agregada</strong> distingue entre el corto plazo (pendiente positiva, rigideces de precios y salarios) y el largo plazo (vertical al PIB potencial, flexibilidad completa).
+                    </p>
+                    <p>
+                        El <strong>equilibrio macroeconómico</strong> se determina en la intersección de DA y OA, generándose brechas recesivas (Y &lt; Y*) o expansivas (Y &gt; Y*) cuando la producción difiere del potencial. Las <strong>perturbaciones de demanda</strong> generan movimientos correlativos en producción y precios, mientras que las <strong>perturbaciones de oferta</strong> pueden generar estanflación (combinación perversa de recesión e inflación). Las <strong>políticas de demanda</strong> (fiscal y monetaria) buscan estabilizar el ciclo a corto plazo; las <strong>políticas de oferta</strong> buscan aumentar el potencial productivo a largo plazo.
+                    </p>
+                    <p>
+                        El <strong>debate clásicos-keynesianos</strong>, lejos de ser un asunto meramente histórico, sigue vivo en la actualidad: las respuestas a la Gran Recesión (2008), la pandemia de COVID-19 (2020) y la crisis energética (2022) han reavivado la discusión sobre el papel del Estado y la eficacia de las políticas macroeconómicas. La síntesis neoclásica —keynesianismo a corto plazo, clasicismo a largo plazo— sigue siendo el marco de referencia dominante, y el modelo OA-DA su herramienta pedagógica más poderosa. Desde la perspectiva docente, dominar este modelo y ser capaz de aplicarlo a situaciones reales es una competencia esencial del futuro profesor de Economía.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── FÓRMULAS RESUMEN ───────────────────────────────── */}
+            <FormulaBox formula="DA: Y = C + I + G + (X − M)" desc="Componentes de la demanda agregada" />
+            <FormulaBox formula="Equilibrio CP: DA = OA_CP → (P*, Y*)" desc="Determinación simultánea de producción y nivel de precios" />
+            <FormulaBox formula="Brecha recesiva: Y < Y_potencial → desempleo cíclico" desc="Producción efectiva inferior al potencial" />
+
+            {/* ── BIBLIOGRAFÍA ────────────────────────────────────── */}
+            <BibliografiaBox items={[
+                'MANKIW, N.G. (2020): Principios de Economía, 8.ª ed., Cengage Learning.',
+                'BLANCHARD, O. (2017): Macroeconomía, 7.ª ed., Pearson.',
+                'SAMUELSON, P. y NORDHAUS, W. (2019): Economía, 19.ª ed., McGraw-Hill.',
+                'KRUGMAN, P. y WELLS, R. (2020): Macroeconomía, 4.ª ed., Reverté.',
+                'DORNBUSCH, R., FISCHER, S. y STARTZ, R. (2014): Macroeconomía, 12.ª ed., McGraw-Hill.',
+                'MOCHÓN, F. (2021): Economía. Teoría y Política, 7.ª ed., McGraw-Hill.',
+                'KEYNES, J.M. (1936): Teoría general de la ocupación, el interés y el dinero (ed. moderna, FCE).',
+                'FRIEDMAN, M. (1968): "The Role of Monetary Policy", American Economic Review.',
+                'LUCAS, R.E. (1972): "Expectations and the Neutrality of Money", Journal of Economic Theory.',
+                'PIGOU, A.C. (1943): "The Classical Stationary State", Economic Journal.',
+                'MUNDELL, R. (1963): "Capital Mobility and Stabilization Policy", Canadian Journal of Economics.',
+                'Ley Orgánica 3/2020, de 29 de diciembre (LOMLOE).',
+                'Real Decreto 243/2022, de 5 de abril (currículo Bachillerato).',
+            ]} />
+
+            {/* ── CLAU ────────────────────────────────────────────── */}
+            <ClauBox>
+                <p>- Domina la <strong>pendiente negativa de la DA</strong> y sus tres explicaciones: efecto riqueza (Pigou), tipo de interés (Keynes) y tipo de cambio (Mundell-Fleming).</p>
+                <p>- Distingue <strong>OACP</strong> (pendiente positiva, rigideces) de <strong>OALP</strong> (vertical, PIB potencial). Explica los tres modelos de OACP: salarios rígidos, información imperfecta (Lucas) y precios rígidos.</p>
+                <p>- Presenta las <strong>brechas de producción</strong> (recesiva y expansiva) y el mecanismo de ajuste automático. Diferencia equilibrio CP vs. LP.</p>
+                <p>- Define <strong>estanflación</strong> como resultado de un shock de oferta negativo y explica el dilema de política económica que genera.</p>
+                <p>- Expone el <strong>debate clásicos vs. keynesianos</strong> y la <strong>síntesis neoclásica</strong> como posición conciliadora.</p>
+                <p>- Conecta con la <strong>LOMLOE</strong> (RD 243/2022, Bloque C) y las competencias STEM, CC, CPSAA y CE. Propón actividades de análisis gráfico.</p>
+            </ClauBox>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 22 — RESUM / ESQUEMA
+    // ════════════════════════════════════════════════════════════════
+    const Tema22Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-blue-50 rounded-xl border border-blue-200 mb-5">
+                    <p className="text-center font-bold text-blue-800 text-lg">Tema 22: La oferta y demanda agregadas. El equilibrio macroeconómico.</p>
+                    <p className="text-center text-sm text-blue-600 mt-1">
+                        <em>"A largo plazo, todos muertos"</em> — J.M. Keynes (1923)
+                    </p>
+                </div>
+
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. Demanda agregada (DA)</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>DA = C + I + G + (X − M). Cantidad total demandada a cada nivel de precios.</li>
+                            <li>Pendiente negativa: efecto riqueza (Pigou), tipo de interés (Keynes), tipo de cambio (Mundell-Fleming).</li>
+                            <li>Desplazamientos: cambios en C, I, G, XN. Política fiscal (G, T) y monetaria (M, i).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. Oferta agregada (OA)</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>OACP: pendiente positiva. Modelos: salarios rígidos (keynesiano), información imperfecta (Lucas), precios rígidos (neokeynesianos).</li>
+                            <li>OALP: vertical al PIB potencial (Y*). Factores reales: L, K, recursos, tecnología. Tasa natural de desempleo (Friedman).</li>
+                            <li>Desplazamientos: costes (salarios, materias primas), tecnología, regulación, expectativas.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. Equilibrio macroeconómico</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Equilibrio CP: DA = OACP → (P*, Y*). Equilibrio LP: DA = OACP = OALP.</li>
+                            <li>Brecha recesiva: Y &lt; Y* → desempleo cíclico. Brecha expansiva: Y &gt; Y* → presión inflacionista.</li>
+                            <li>Ajuste automático (clásicos): salarios flexibles corrigen la brecha. Keynesianos: rigideces → ajuste lento y costoso.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. Perturbaciones y políticas</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Shock de demanda +: DA→ derecha → ↑Y, ↑P (CP). Shock de demanda −: DA→ izquierda → ↓Y, ↓P.</li>
+                            <li>Shock de oferta −: OA→ izquierda → <strong>estanflación</strong> (↓Y, ↑P). Dilema de política económica.</li>
+                            <li>Políticas de demanda: fiscal (G, T) y monetaria (M, i) → estabilización a CP.</li>
+                            <li>Políticas de oferta: I+D, educación, infraestructuras, desregulación → potencial LP.</li>
+                            <li>Debate: clásicos (ajuste automático, neutralidad del dinero) vs. keynesianos (intervención necesaria). Síntesis neoclásica.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">5. Relevancia curricular</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>LOMLOE: Economía 1BACH (RD 243/2022, Bloque C). CE1, CE5, CE6.</li>
+                            <li>Competencias: STEM (análisis gráfico), CC (intervención pública), CPSAA, CE.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <FormulaBox formula="DA: Y = C + I + G + (X − M) → pendiente negativa (3 efectos)" />
+                <FormulaBox formula="OACP: pendiente + (rigideces) | OALP: vertical (Y* potencial)" />
+                <FormulaBox formula="Brecha recesiva: Y < Y* | Brecha expansiva: Y > Y* | Estanflación: ↓Y + ↑P" />
+
+                <ClauBox>
+                    <p>- Explica la <strong>pendiente negativa de la DA</strong> con los tres efectos (Pigou, Keynes, Mundell-Fleming).</p>
+                    <p>- Distingue <strong>OACP vs. OALP</strong> y domina los tres modelos de corto plazo.</p>
+                    <p>- Define <strong>estanflación</strong> y el dilema que plantea para la política económica.</p>
+                    <p>- Expone el <strong>debate clásicos-keynesianos</strong> y la síntesis neoclásica.</p>
+                    <p>- Aplica el modelo a <strong>casos reales</strong>: crisis del petróleo (1973), Gran Recesión (2008), COVID-19 (2020).</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 22 — Component wrapper
+    // ════════════════════════════════════════════════════════════════
+    const Tema22 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="📖" title="Tema 22" subtitle={t('tema22.title')} />
+                <Tabs tabs={[
+                    { id: 'complet', label: '📝 ' + t('tab.complet') },
+                    { id: 'resum', label: '📋 ' + t('tab.resum') },
+                ]} active={vista} onChange={setVista} />
+
+                {vista === 'complet' && <Tema22Complet />}
+                {vista === 'resum' && <Tema22Resum />}
+            </div>
+        );
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMES 23-30 — Placeholders (properament)
+    // ════════════════════════════════════════════════════════════════
+    const Tema23 = () => (<div className="space-y-6"><SectionTitle icon="📖" title="Tema 23" subtitle={t('tema23.title')} /><TemaPlaceholder num={23} /></div>);
+    const Tema24 = () => (<div className="space-y-6"><SectionTitle icon="📖" title="Tema 24" subtitle={t('tema24.title')} /><TemaPlaceholder num={24} /></div>);
+    const Tema25 = () => (<div className="space-y-6"><SectionTitle icon="📖" title="Tema 25" subtitle={t('tema25.title')} /><TemaPlaceholder num={25} /></div>);
+    const Tema26 = () => (<div className="space-y-6"><SectionTitle icon="📖" title="Tema 26" subtitle={t('tema26.title')} /><TemaPlaceholder num={26} /></div>);
+    const Tema27 = () => (<div className="space-y-6"><SectionTitle icon="📖" title="Tema 27" subtitle={t('tema27.title')} /><TemaPlaceholder num={27} /></div>);
+    const Tema28 = () => (<div className="space-y-6"><SectionTitle icon="📖" title="Tema 28" subtitle={t('tema28.title')} /><TemaPlaceholder num={28} /></div>);
+    const Tema29 = () => (<div className="space-y-6"><SectionTitle icon="📖" title="Tema 29" subtitle={t('tema29.title')} /><TemaPlaceholder num={29} /></div>);
+    const Tema30 = () => (<div className="space-y-6"><SectionTitle icon="📖" title="Tema 30" subtitle={t('tema30.title')} /><TemaPlaceholder num={30} /></div>);
+
+    // ════════════════════════════════════════════════════════════════
+    // NAVIGATION AND RENDER
+    // ════════════════════════════════════════════════════════════════
+    const headerSections = [
+        { id: 'inicio', label: t('sec.inicio'), emoji: '🏠' },
+        { id: 'tema21', label: 'T21', emoji: '📖' },
+        { id: 'tema22', label: 'T22', emoji: '📖' },
+        { id: 'tema23', label: 'T23', emoji: '📖' },
+        { id: 'tema24', label: 'T24', emoji: '📖' },
+        { id: 'tema25', label: 'T25', emoji: '📖' },
+        { id: 'tema26', label: 'T26', emoji: '📖' },
+        { id: 'tema27', label: 'T27', emoji: '📖' },
+        { id: 'tema28', label: 'T28', emoji: '📖' },
+        { id: 'tema29', label: 'T29', emoji: '📖' },
+        { id: 'tema30', label: 'T30', emoji: '📖' },
+    ];
+
+    return (
+        <div className="min-h-screen">
+            <PdeHeader
+                idioma={idioma}
+                setIdioma={(lang) => { setIdioma(lang); PdeLanguageStore.set(lang); }}
+                currentApp="oposicions-bloc-c"
+                sections={headerSections}
+                currentSection={section}
+                setSection={setSection}
+            />
+
+            <main className="max-w-7xl mx-auto px-4 py-8">
+                {section === 'inicio' && <Inicio />}
+                {section === 'tema21' && <Tema21 />}
+                {section === 'tema22' && <Tema22 />}
+                {section === 'tema23' && <Tema23 />}
+                {section === 'tema24' && <Tema24 />}
+                {section === 'tema25' && <Tema25 />}
+                {section === 'tema26' && <Tema26 />}
+                {section === 'tema27' && <Tema27 />}
+                {section === 'tema28' && <Tema28 />}
+                {section === 'tema29' && <Tema29 />}
+                {section === 'tema30' && <Tema30 />}
+            </main>
+
+            <PdePrevNext sections={headerSections} currentSection={section} setSection={setSection} idioma={idioma} />
+            <PdeFooter appEmoji="📖" appName={t('footer.appname')} idioma={idioma} />
+            <PdeScrollToTop />
+        </div>
+    );
+}
+
+ReactDOM.render(<BlocCApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
