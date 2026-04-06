@@ -182,8 +182,8 @@ function BlocCApp() {
     const temes = [
         { num: 21, id: 'tema21', available: true },
         { num: 22, id: 'tema22', available: true },
-        { num: 23, id: 'tema23', available: false },
-        { num: 24, id: 'tema24', available: false },
+        { num: 23, id: 'tema23', available: true },
+        { num: 24, id: 'tema24', available: true },
         { num: 25, id: 'tema25', available: false },
         { num: 26, id: 'tema26', available: false },
         { num: 27, id: 'tema27', available: false },
@@ -1242,10 +1242,813 @@ function BlocCApp() {
     };
 
     // ════════════════════════════════════════════════════════════════
-    // TEMES 23-30 — Placeholders (properament)
+    // TEMA 23 — COMPLET
     // ════════════════════════════════════════════════════════════════
-    const Tema23 = () => (<div className="space-y-6"><SectionTitle icon="📖" title="Tema 23" subtitle={t('tema23.title')} /><TemaPlaceholder num={23} /></div>);
-    const Tema24 = () => (<div className="space-y-6"><SectionTitle icon="📖" title="Tema 24" subtitle={t('tema24.title')} /><TemaPlaceholder num={24} /></div>);
+    const Tema23Complet = () => (
+        <div className="space-y-6 animate-fade">
+            {/* ── INTRODUCCIÓN ────────────────────────────────────── */}
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        El modelo de la <strong>cruz keynesiana</strong> (modelo renta-gasto) constituye una de las herramientas analíticas más importantes de la macroeconomía. Desarrollado a partir de la <em>Teoría general</em> de John Maynard Keynes (1936), este modelo explica cómo se determina el <strong>nivel de renta de equilibrio</strong> en una economía a través de la interacción entre el gasto agregado planeado y la producción. Su aportación más célebre es el concepto de <strong>multiplicador</strong>: un incremento del gasto autónomo genera un aumento amplificado de la renta, debido a las sucesivas rondas de gasto que se desencadenan en la economía.
+                    </p>
+                    <p>
+                        Desde la perspectiva curricular, el modelo renta-gasto y el multiplicador conectan directamente con los saberes básicos del bloque «La realidad económica» de la materia de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022) y con las competencias específicas CE1 (funcionamiento del sistema económico), CE5 (análisis de la política económica) y CE6 (comprensión de la coyuntura). La LOMLOE subraya la importancia de que el alumnado comprenda los mecanismos de transmisión de las políticas fiscales y su efecto amplificado sobre la actividad económica, contribuyendo a las competencias STEM (resolución numérica, modelización), CC (debate sobre la intervención pública) y CPSAA (comprensión del entorno económico).
+                    </p>
+                    <p>
+                        El presente tema se estructura en cinco epígrafes: en primer lugar, se presenta el modelo renta-gasto simplificado (cruz keynesiana); en segundo lugar, se determina la renta de equilibrio; en tercer lugar, se desarrolla el concepto de multiplicador y sus variantes; en cuarto lugar, se amplía el modelo incorporando el sector público y el sector exterior; y en quinto lugar, se analiza la relevancia curricular. Se concluye con una síntesis integradora y una bibliografía de referencia.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── DESARROLLO ──────────────────────────────────────── */}
+
+            {/* Epígrafe 1 */}
+            <Card title="1. El modelo renta-gasto (cruz keynesiana)" icon="📘">
+                <TheoryBlock title="1.1. Supuestos simplificadores" color="blue">
+                    <p>
+                        El modelo renta-gasto parte de una serie de <strong>supuestos simplificadores</strong> que permiten aislar el mecanismo del multiplicador. En su versión más básica, se asume una <strong>economía cerrada sin sector público</strong> (sin gobierno ni comercio exterior), <strong>precios fijos</strong> (las empresas ajustan la producción, no los precios, ante cambios en la demanda) y <strong>capacidad ociosa</strong> (existen recursos productivos desempleados, de modo que la producción puede expandirse sin presiones inflacionistas). Estos supuestos sitúan el modelo en el <strong>corto plazo keynesiano</strong>, donde la oferta agregada es perfectamente elástica y la producción está determinada exclusivamente por la demanda.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.2. La función de consumo keynesiana" color="indigo">
+                    <p>
+                        La <strong>función de consumo keynesiana</strong> establece que el consumo agregado (C) depende linealmente de la renta disponible (Y):
+                    </p>
+                    <p>
+                        <strong>C = C₀ + c·Y</strong>
+                    </p>
+                    <p>
+                        Donde <strong>C₀</strong> es el <strong>consumo autónomo</strong> (nivel mínimo de consumo independiente de la renta, financiado con ahorros o endeudamiento) y <strong>c</strong> es la <strong>propensión marginal a consumir (PMC)</strong>, que indica la fracción de cada unidad adicional de renta que se destina al consumo. Keynes postuló que 0 &lt; c &lt; 1, es decir, que las familias consumen una parte de cada euro adicional y ahorran el resto. La <strong>ley psicológica fundamental</strong> de Keynes afirma que, como norma general, los individuos tienden a aumentar su consumo cuando aumenta su renta, pero en una proporción menor al aumento de la renta.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.3. La función de ahorro" color="green">
+                    <p>
+                        Dado que la renta se destina íntegramente a consumo o ahorro (Y = C + S), la <strong>función de ahorro</strong> se deriva directamente de la función de consumo:
+                    </p>
+                    <p>
+                        <strong>S = Y − C = Y − (C₀ + c·Y) = −C₀ + (1−c)·Y = −C₀ + s·Y</strong>
+                    </p>
+                    <p>
+                        Donde <strong>s = 1 − c</strong> es la <strong>propensión marginal al ahorro (PMA)</strong>. Si c = 0,8, entonces s = 0,2: de cada euro adicional de renta, 80 céntimos se consumen y 20 se ahorran. El ahorro autónomo es negativo (−C₀), lo que indica que a niveles muy bajos de renta las familias desahorran.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.4. La inversión autónoma" color="amber">
+                    <p>
+                        En el modelo simplificado, la <strong>inversión (I₀)</strong> se considera <strong>autónoma</strong>, es decir, independiente del nivel de renta corriente. La inversión depende fundamentalmente de las <strong>expectativas empresariales</strong> sobre la rentabilidad futura de los proyectos y del <strong>tipo de interés</strong>. Keynes introdujo el concepto de <strong>eficiencia marginal del capital</strong> (EMK): la tasa interna de rendimiento esperada de un proyecto de inversión. Las empresas invertirán siempre que la EMK supere el tipo de interés de mercado (EMK &gt; i). Esta dependencia de las expectativas —lo que Keynes denominó <em>animal spirits</em>— confiere a la inversión un carácter inherentemente volátil e inestable.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.5. Gasto agregado planeado" color="purple">
+                    <p>
+                        Combinando las funciones de consumo e inversión, obtenemos el <strong>gasto agregado planeado (GA)</strong>:
+                    </p>
+                    <p>
+                        <strong>GA = C + I = C₀ + c·Y + I₀ = (C₀ + I₀) + c·Y</strong>
+                    </p>
+                    <p>
+                        El gasto agregado es una función lineal de la renta con pendiente c (la propensión marginal a consumir) y ordenada en el origen igual a la suma de los componentes autónomos (C₀ + I₀). Esta función constituye la <strong>línea de gasto agregado</strong> del modelo de la cruz keynesiana.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <FormulaBox
+                formula="GA = C + I = C₀ + c·Y + I₀ = (C₀ + I₀) + c·Y"
+                desc="Gasto agregado planeado en el modelo simplificado"
+            />
+
+            {/* Epígrafe 2 */}
+            <Card title="2. La renta de equilibrio" icon="📘">
+                <TheoryBlock title="2.1. Condición de equilibrio" color="blue">
+                    <p>
+                        El <strong>equilibrio</strong> en el modelo renta-gasto se alcanza cuando la <strong>producción total (Y) es igual al gasto agregado planeado (GA)</strong>. Es decir, cuando las empresas producen exactamente la cantidad que los agentes económicos desean comprar, de modo que no hay acumulación ni desacumulación involuntaria de existencias:
+                    </p>
+                    <p>
+                        <strong>Y = GA → Y = C₀ + c·Y + I₀</strong>
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.2. Resolución algebraica" color="indigo">
+                    <p>
+                        Resolviendo la ecuación de equilibrio para Y:
+                    </p>
+                    <p>
+                        Y − c·Y = C₀ + I₀ → Y(1 − c) = C₀ + I₀
+                    </p>
+                    <p>
+                        <strong>Y* = (C₀ + I₀) / (1 − c) = (C₀ + I₀) / s</strong>
+                    </p>
+                    <p>
+                        La renta de equilibrio es un múltiplo de los componentes autónomos del gasto, donde el factor de amplificación depende inversamente de la propensión marginal al ahorro (s = 1 − c).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.3. Enfoque alternativo: S = I" color="green">
+                    <p>
+                        El equilibrio también puede expresarse mediante la condición de que las <strong>inyecciones sean iguales a las filtraciones</strong>. En la economía simplificada (sin sector público ni sector exterior), la única inyección es la inversión (I) y la única filtración es el ahorro (S). Así, en equilibrio:
+                    </p>
+                    <p>
+                        <strong>S = I</strong> → −C₀ + s·Y = I₀ → Y* = (C₀ + I₀) / s
+                    </p>
+                    <p>
+                        Ambos enfoques (Y = GA y S = I) conducen al mismo resultado, lo que confirma la consistencia del modelo.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.4. Representación gráfica: la cruz keynesiana" color="amber">
+                    <p>
+                        Gráficamente, la <strong>cruz keynesiana</strong> se construye en un diagrama con la renta (Y) en el eje horizontal y el gasto agregado (GA) en el eje vertical. Se traza una <strong>línea de 45°</strong> que representa todos los puntos donde Y = GA (condición de equilibrio) y la <strong>línea de gasto agregado</strong> (GA = (C₀ + I₀) + c·Y), que tiene pendiente c &lt; 1. El equilibrio se encuentra en la intersección de ambas líneas. A la izquierda del equilibrio, GA &gt; Y (exceso de demanda → las empresas aumentan la producción). A la derecha, GA &lt; Y (exceso de oferta → las empresas reducen la producción). Así, el equilibrio es estable.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.5. Paradoja de la frugalidad" color="purple">
+                    <p>
+                        La <strong>paradoja de la frugalidad</strong> (paradoja del ahorro) es una de las ideas más contraintuitivas de Keynes: si <strong>todos los hogares intentan ahorrar más</strong> (aumento de s, disminución de c), el resultado agregado es una <strong>caída de la renta de equilibrio</strong> (Y*), de modo que el <strong>ahorro total no aumenta finalmente</strong> (o incluso disminuye). El mecanismo es el siguiente: un aumento de s reduce el consumo → disminuye el gasto agregado → caen las ventas y la producción → se reduce la renta → cae el ahorro inducido. En equilibrio, S sigue siendo igual a I₀ (que es autónoma), pero con un nivel de renta más bajo. Esta paradoja subraya el papel central de la demanda en la determinación de la renta.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <FormulaBox
+                formula="Y* = (C₀ + I₀) / (1 − c) = (C₀ + I₀) / s"
+                desc="Renta de equilibrio en el modelo simplificado"
+            />
+
+            {/* Epígrafe 3 */}
+            <Card title="3. El multiplicador" icon="📘">
+                <TheoryBlock title="3.1. Concepto" color="blue">
+                    <p>
+                        El <strong>multiplicador</strong> es el concepto más importante del modelo renta-gasto. Mide el <strong>efecto amplificado</strong> que un cambio en el gasto autónomo (inversión, consumo autónomo, gasto público) produce sobre la renta de equilibrio. Un incremento del gasto autónomo genera un aumento de la renta que es <strong>varias veces superior</strong> al incremento inicial del gasto. El multiplicador fue originalmente desarrollado por Richard Kahn (1931) en el contexto de los programas de obras públicas, y Keynes lo incorporó como pieza central de su teoría.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.2. Derivación del multiplicador simple" color="indigo">
+                    <p>
+                        A partir de la expresión de la renta de equilibrio Y* = (C₀ + I₀) / (1 − c), si se produce un incremento del gasto autónomo (por ejemplo, ΔI₀):
+                    </p>
+                    <p>
+                        <strong>ΔY = ΔI₀ / (1 − c) = ΔI₀ / s</strong>
+                    </p>
+                    <p>
+                        El <strong>multiplicador simple</strong> es:
+                    </p>
+                    <p>
+                        <strong>k = 1 / (1 − c) = 1 / s</strong>
+                    </p>
+                    <p>
+                        Cuanto mayor sea la propensión marginal a consumir (c), mayor será el multiplicador, porque una mayor proporción de cada incremento de renta se traduce en nuevo gasto.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.3. Ejemplo numérico" color="green">
+                    <p>
+                        Supongamos que la propensión marginal a consumir es c = 0,8 (y por tanto s = 0,2). El multiplicador será:
+                    </p>
+                    <p>
+                        k = 1 / (1 − 0,8) = 1 / 0,2 = <strong>5</strong>
+                    </p>
+                    <p>
+                        Si la inversión autónoma aumenta en ΔI₀ = 100 millones de euros:
+                    </p>
+                    <p>
+                        ΔY = k · ΔI₀ = 5 × 100 = <strong>500 millones de euros</strong>
+                    </p>
+                    <p>
+                        Es decir, un incremento de la inversión de 100 genera un aumento de la renta de equilibrio de 500: el efecto final es cinco veces el impulso inicial.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.4. Proceso de propagación" color="amber">
+                    <p>
+                        El efecto multiplicador se explica por una <strong>cadena de gastos sucesivos</strong>. El incremento inicial del gasto (ΔI₀ = 100) se convierte en renta para los factores productivos. De esos 100, se consumen c·100 = 80 y se ahorran 20. Esos 80 de consumo se convierten en renta para otros agentes, que consumen c·80 = 64 y ahorran 16. Y así sucesivamente. La suma total es una <strong>serie geométrica</strong>:
+                    </p>
+                    <p>
+                        ΔY = 100 + 100·c + 100·c² + 100·c³ + … = 100 · (1 / (1−c)) = 100 · 5 = 500
+                    </p>
+                    <p>
+                        El proceso converge porque 0 &lt; c &lt; 1, de modo que cada ronda sucesiva de gasto es menor que la anterior.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.5. El multiplicador con sector público" color="purple">
+                    <p>
+                        Cuando se incorpora el <strong>sector público</strong> con impuestos proporcionales a la renta (T = t·Y, donde t es el tipo impositivo medio), la renta disponible pasa a ser Yd = Y − T = Y(1−t), y la función de consumo se convierte en C = C₀ + c·Y(1−t). El multiplicador con sector público es:
+                    </p>
+                    <p>
+                        <strong>k = 1 / (1 − c(1−t))</strong>
+                    </p>
+                    <p>
+                        Este multiplicador es <strong>menor</strong> que el simple (1/(1−c)) porque los impuestos actúan como <strong>estabilizador automático</strong>: parte de cada incremento de renta se drena vía impuestos antes de convertirse en consumo.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.6. El multiplicador con sector exterior" color="rose">
+                    <p>
+                        Cuando se incorporan las <strong>importaciones</strong> como función de la renta (M = M₀ + m·Y, donde m es la <strong>propensión marginal a importar</strong>), parte de cada incremento de renta se destina a comprar bienes extranjeros (fuga de demanda). El multiplicador con sector público y sector exterior es:
+                    </p>
+                    <p>
+                        <strong>k = 1 / (1 − c(1−t) + m)</strong>
+                    </p>
+                    <p>
+                        Este multiplicador es aún menor, ya que las importaciones representan una filtración adicional del flujo circular de la renta. En economías muy abiertas (m alto), el multiplicador puede ser significativamente reducido.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.7. El multiplicador del presupuesto equilibrado (Haavelmo)" color="cyan">
+                    <p>
+                        El <strong>teorema de Haavelmo</strong> (1945) establece que un aumento simultáneo e igual del gasto público y de los impuestos (ΔG = ΔT, presupuesto equilibrado) tiene un efecto expansivo neto sobre la renta. El <strong>multiplicador del presupuesto equilibrado es igual a 1</strong>: ΔY = ΔG = ΔT. Esto se debe a que el multiplicador del gasto público (1/(1−c)) es mayor que el multiplicador de los impuestos (−c/(1−c)), ya que ΔG se convierte íntegramente en demanda en la primera ronda, mientras que ΔT solo reduce el consumo en c·ΔT (una fracción c de lo recaudado). Trygve Haavelmo recibió el Premio Nobel de Economía en 1989.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <FormulaBox formula="Multiplicador simple: k = 1/(1 − c) = 1/s" desc="Efecto amplificado del gasto autónomo sobre la renta" />
+            <FormulaBox formula="Multiplicador con sector público: k = 1/(1 − c(1−t))" desc="Los impuestos reducen el multiplicador (estabilizador automático)" />
+
+            {/* Epígrafe 4 */}
+            <Card title="4. Ampliación del modelo" icon="📘">
+                <TheoryBlock title="4.1. Incorporación del sector público" color="blue">
+                    <p>
+                        Al incorporar el <strong>sector público</strong>, el gasto agregado incluye el gasto público (G) y la renta disponible se ve modificada por los impuestos (T) y las transferencias (TR). Si los impuestos son proporcionales (T = t·Y) y las transferencias son autónomas:
+                    </p>
+                    <p>
+                        GA = C₀ + c·(Y − t·Y + TR) + I₀ + G = (C₀ + c·TR + I₀ + G) + c(1−t)·Y
+                    </p>
+                    <p>
+                        La renta de equilibrio con sector público es:
+                    </p>
+                    <p>
+                        <strong>Y* = (C₀ + I₀ + G + c·TR − c·T₀) / (1 − c(1−t))</strong>
+                    </p>
+                    <p>
+                        Donde T₀ son los impuestos autónomos (de suma fija) y t el tipo impositivo proporcional. El gasto público y las transferencias tienen efecto expansivo; los impuestos tienen efecto contractivo.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.2. Incorporación del sector exterior" color="indigo">
+                    <p>
+                        Al incorporar el <strong>sector exterior</strong>, se añaden las exportaciones (X, autónomas, determinadas por la renta del resto del mundo y la competitividad) y las importaciones (M = M₀ + m·Y, que dependen de la renta nacional). Las exportaciones netas son:
+                    </p>
+                    <p>
+                        XN = X − M₀ − m·Y
+                    </p>
+                    <p>
+                        La propensión marginal a importar (m) indica qué fracción de cada unidad adicional de renta se destina a comprar bienes del exterior. Las importaciones constituyen una <strong>filtración</strong> (fuga de demanda interna hacia el exterior) que reduce el multiplicador.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.3. Modelo completo" color="green">
+                    <p>
+                        El modelo renta-gasto <strong>completo</strong> (con consumo, inversión, sector público y sector exterior) determina la renta de equilibrio como:
+                    </p>
+                    <p>
+                        <strong>Y* = (C₀ + I₀ + G + X − M₀ − c·T₀ + c·TR) / (1 − c(1−t) + m)</strong>
+                    </p>
+                    <p>
+                        El denominador 1 − c(1−t) + m refleja las tres filtraciones del flujo circular: el ahorro (1−c por unidad de renta disponible), los impuestos (t por unidad de renta bruta) y las importaciones (m por unidad de renta). Cuanto mayores sean las filtraciones, menor será el multiplicador y menor el efecto de las políticas de demanda.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.4. Limitaciones del modelo keynesiano simple" color="amber">
+                    <p>
+                        El modelo renta-gasto presenta varias <strong>limitaciones</strong> que deben tenerse en cuenta: (1) <strong>precios fijos</strong>: el modelo ignora los ajustes de precios, lo que es razonable solo a corto plazo y con capacidad ociosa; (2) <strong>tipo de interés dado</strong>: no se modela la interacción con el mercado monetario (para ello se requiere el modelo IS-LM); (3) <strong>oferta pasiva</strong>: se asume que la oferta se adapta automáticamente a la demanda, sin restricciones de capacidad; (4) <strong>expectativas simplificadas</strong>: la inversión se trata como autónoma, sin modelar las expectativas de forma endógena. Estas limitaciones fueron superadas por modelos posteriores (IS-LM, OA-DA), pero el modelo renta-gasto sigue siendo fundamental como introducción pedagógica a la macroeconomía keynesiana.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <FormulaBox formula="Y* = (C₀ + I₀ + G + X − M₀ − cT₀ + cTR) / (1 − c(1−t) + m)" desc="Renta de equilibrio del modelo completo" />
+
+            {/* Epígrafe 5 */}
+            <Card title="5. Relevancia curricular" icon="📘">
+                <TheoryBlock title="5.1. Marco normativo y competencias" color="blue">
+                    <p>
+                        El modelo renta-gasto y el multiplicador se enmarcan en los saberes básicos del bloque «La realidad económica» de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022), conectando con las competencias específicas CE1 (comprensión del funcionamiento del sistema económico), CE5 (análisis de la política económica) y CE6 (interpretación de la coyuntura). La resolución algebraica y numérica del modelo desarrolla las competencias <strong>STEM</strong> (modelización matemática, series geométricas, resolución de ecuaciones). El análisis del multiplicador fiscal y el debate sobre la intervención pública contribuyen a las competencias <strong>CC</strong> (ciudadana) y <strong>CPSAA</strong> (comprensión del entorno socioeconómico). La comparación de multiplicadores en distintos escenarios fomenta el pensamiento crítico y la capacidad de <strong>CE</strong> (emprendedora).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── CONCLUSIÓN ──────────────────────────────────────── */}
+            <Card title="Conclusión" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        El modelo de la <strong>cruz keynesiana</strong> constituye el punto de partida del análisis macroeconómico de la determinación de la renta. Su lógica es sencilla pero poderosa: en una economía con precios rígidos y capacidad ociosa, la <strong>producción se ajusta a la demanda</strong>, y el gasto agregado planeado determina el nivel de renta de equilibrio. La condición Y = GA (o equivalentemente S = I) define el equilibrio, que puede resolverse algebraica y gráficamente.
+                    </p>
+                    <p>
+                        El <strong>multiplicador</strong> es la aportación más influyente del modelo: un incremento del gasto autónomo genera un aumento amplificado de la renta a través de sucesivas rondas de consumo inducido. El multiplicador simple (k = 1/(1−c)) se reduce al incorporar impuestos (estabilizadores automáticos) y propensión a importar, lo que explica por qué las políticas fiscales son menos eficaces en economías abiertas con elevada presión fiscal. La <strong>paradoja de la frugalidad</strong> ilustra de forma brillante la diferencia entre la racionalidad individual y los resultados agregados.
+                    </p>
+                    <p>
+                        La <strong>ampliación del modelo</strong> con sector público y sector exterior proporciona una visión más realista, aunque el modelo sigue siendo una simplificación que ignora los precios, los tipos de interés y las expectativas endógenas. Desde la perspectiva docente, el modelo renta-gasto es una herramienta pedagógica de primer orden: permite introducir los conceptos de equilibrio macroeconómico, multiplicador, estabilizadores automáticos y paradoja de la frugalidad con rigor y accesibilidad, preparando al alumnado para modelos más complejos (IS-LM, OA-DA).
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── FÓRMULAS RESUMEN ───────────────────────────────── */}
+            <FormulaBox formula="Y* = (C₀ + I₀) / (1 − c)" desc="Renta de equilibrio básica" />
+            <FormulaBox formula="Multiplicador simple: k = 1/(1 − c) = 1/s" desc="Efecto amplificado del gasto autónomo" />
+            <FormulaBox formula="Multiplicador con sector público: k = 1/(1 − c(1−t))" desc="Los impuestos actúan como estabilizador automático" />
+            <FormulaBox formula="Paradoja de la frugalidad: ↑s → ↓Y → S no cambia" desc="El intento colectivo de ahorrar más reduce la renta sin aumentar el ahorro total" />
+
+            {/* ── BIBLIOGRAFÍA ────────────────────────────────────── */}
+            <BibliografiaBox items={[
+                'KEYNES, J.M. (1936): Teoría general de la ocupación, el interés y el dinero (ed. moderna, FCE).',
+                'MANKIW, N.G. (2020): Principios de Economía, 8.ª ed., Cengage Learning.',
+                'BLANCHARD, O. (2017): Macroeconomía, 7.ª ed., Pearson.',
+                'SAMUELSON, P. y NORDHAUS, W. (2019): Economía, 19.ª ed., McGraw-Hill.',
+                'KRUGMAN, P. y WELLS, R. (2020): Macroeconomía, 4.ª ed., Reverté.',
+                'DORNBUSCH, R., FISCHER, S. y STARTZ, R. (2014): Macroeconomía, 12.ª ed., McGraw-Hill.',
+                'MOCHÓN, F. (2021): Economía. Teoría y Política, 7.ª ed., McGraw-Hill.',
+                'KAHN, R. (1931): "The Relation of Home Investment to Unemployment", Economic Journal.',
+                'HAAVELMO, T. (1945): "Multiplier Effects of a Balanced Budget", Econometrica.',
+                'Ley Orgánica 3/2020, de 29 de diciembre (LOMLOE).',
+                'Real Decreto 243/2022, de 5 de abril (currículo Bachillerato).',
+            ]} />
+
+            {/* ── CLAU ────────────────────────────────────────────── */}
+            <ClauBox>
+                <p>- Presenta el modelo renta-gasto como <strong>determinación de la renta por la demanda</strong> (supuestos: precios fijos, capacidad ociosa).</p>
+                <p>- Desarrolla la <strong>función de consumo</strong> (C = C₀ + c·Y) y la de ahorro (S = −C₀ + s·Y). Define PMC y PMA.</p>
+                <p>- Resuelve el equilibrio por dos vías: <strong>Y = GA</strong> y <strong>S = I</strong>. Representa gráficamente la cruz keynesiana.</p>
+                <p>- Deriva el <strong>multiplicador simple</strong> (k = 1/(1−c)) y demuestra el proceso de propagación (serie geométrica).</p>
+                <p>- Incorpora el <strong>sector público</strong> (k = 1/(1−c(1−t))) y el <strong>sector exterior</strong> (k = 1/(1−c(1−t)+m)). Menciona el teorema de Haavelmo (k = 1 con presupuesto equilibrado).</p>
+                <p>- Explica la <strong>paradoja de la frugalidad</strong>: racionalidad individual ≠ resultado agregado.</p>
+                <p>- Conecta con la <strong>LOMLOE</strong> (RD 243/2022, Bloque C) y competencias STEM, CC, CPSAA.</p>
+            </ClauBox>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 23 — RESUM / ESQUEMA
+    // ════════════════════════════════════════════════════════════════
+    const Tema23Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-blue-50 rounded-xl border border-blue-200 mb-5">
+                    <p className="text-center font-bold text-blue-800 text-lg">Tema 23: La renta de equilibrio y el multiplicador.</p>
+                    <p className="text-center text-sm text-blue-600 mt-1">
+                        <em>"El gasto de uno es el ingreso de otro"</em> — J.M. Keynes (1936)
+                    </p>
+                </div>
+
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. Modelo renta-gasto (cruz keynesiana)</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Supuestos: economía cerrada sin sector público, precios fijos, capacidad ociosa.</li>
+                            <li>Consumo: C = C₀ + c·Y (0 &lt; c &lt; 1). Ahorro: S = −C₀ + s·Y (s = 1−c).</li>
+                            <li>Inversión autónoma (I₀): depende de expectativas y tipo de interés (EMK &gt; i).</li>
+                            <li>Gasto agregado: GA = (C₀ + I₀) + c·Y.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. Renta de equilibrio</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Y = GA → Y* = (C₀ + I₀) / (1−c). Enfoque alternativo: S = I.</li>
+                            <li>Cruz keynesiana: intersección de GA con la línea de 45°.</li>
+                            <li>Paradoja de la frugalidad: ↑s → ↓Y → S no aumenta.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. El multiplicador</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Simple: k = 1/(1−c) = 1/s. Serie geométrica de gastos sucesivos.</li>
+                            <li>Con sector público: k = 1/(1−c(1−t)). Impuestos como estabilizador automático.</li>
+                            <li>Con sector exterior: k = 1/(1−c(1−t)+m). Importaciones reducen el efecto.</li>
+                            <li>Presupuesto equilibrado (Haavelmo): multiplicador = 1.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. Modelo ampliado</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Con sector público: Y* = (C₀ + I₀ + G − cT) / (1−c(1−t)).</li>
+                            <li>Completo: Y* = (C₀ + I₀ + G + X − M₀ − cT₀ + cTR) / (1−c(1−t)+m).</li>
+                            <li>Limitaciones: precios fijos, tipo de interés dado, oferta pasiva, expectativas simplificadas.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">5. Relevancia curricular</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>LOMLOE: Economía 1BACH (RD 243/2022, Bloque C). CE1, CE5, CE6.</li>
+                            <li>Competencias: STEM (modelización, series), CC (intervención), CPSAA, CE.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <FormulaBox formula="Y* = (C₀ + I₀) / (1 − c) → Multiplicador k = 1/(1−c)" />
+                <FormulaBox formula="Con sector público: k = 1/(1−c(1−t)) | Con exterior: k = 1/(1−c(1−t)+m)" />
+                <FormulaBox formula="Paradoja frugalidad: ↑s → ↓Y → S no cambia | Haavelmo: k = 1" />
+
+                <ClauBox>
+                    <p>- Domina la <strong>cruz keynesiana</strong>: función de consumo, línea de 45°, equilibrio Y = GA.</p>
+                    <p>- Deriva el <strong>multiplicador</strong> en sus tres versiones (simple, con sector público, con sector exterior).</p>
+                    <p>- Explica la <strong>paradoja de la frugalidad</strong> y el <strong>teorema de Haavelmo</strong>.</p>
+                    <p>- Resuelve problemas numéricos con datos concretos (c, t, m).</p>
+                    <p>- Señala las <strong>limitaciones</strong> del modelo y su superación (IS-LM, OA-DA).</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 23 — Component wrapper
+    // ════════════════════════════════════════════════════════════════
+    const Tema23 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="📖" title="Tema 23" subtitle={t('tema23.title')} />
+                <Tabs tabs={[
+                    { id: 'complet', label: '📝 ' + t('tab.complet') },
+                    { id: 'resum', label: '📋 ' + t('tab.resum') },
+                ]} active={vista} onChange={setVista} />
+
+                {vista === 'complet' && <Tema23Complet />}
+                {vista === 'resum' && <Tema23Resum />}
+            </div>
+        );
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 24 — COMPLET
+    // ════════════════════════════════════════════════════════════════
+    const Tema24Complet = () => (
+        <div className="space-y-6 animate-fade">
+            {/* ── INTRODUCCIÓN ────────────────────────────────────── */}
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        El <strong>consumo, el ahorro y la inversión</strong> constituyen las tres variables macroeconómicas fundamentales que determinan el nivel de actividad económica, el crecimiento a largo plazo y el bienestar de las sociedades. El consumo representa la mayor parte del PIB (en torno al 55-60 % en España); el ahorro es la parte de la renta no consumida, fuente de financiación de la inversión; y la inversión es el motor del crecimiento económico, al aumentar el stock de capital productivo y la capacidad futura de la economía.
+                    </p>
+                    <p>
+                        Desde la perspectiva curricular, estas tres variables conectan directamente con los saberes básicos del bloque «La realidad económica» de la materia de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022) y con las competencias específicas CE1 (funcionamiento del sistema económico), CE4 (análisis del papel del ahorro y la inversión), CE5 (análisis de la política económica) y CE6 (comprensión de la coyuntura). La LOMLOE subraya la importancia de que el alumnado comprenda las decisiones de consumo, ahorro e inversión como determinantes del crecimiento y la estabilidad, contribuyendo a las competencias STEM (análisis cuantitativo), CC (debate sobre la política económica), CPSAA (planificación financiera personal) y CE (emprendimiento e inversión).
+                    </p>
+                    <p>
+                        El presente tema se estructura en cinco epígrafes: en primer lugar, se analiza el consumo y sus principales teorías; en segundo lugar, se estudia el ahorro y sus determinantes; en tercer lugar, se desarrolla la inversión, sus tipos y modelos explicativos; en cuarto lugar, se examina la relación entre ahorro, inversión y crecimiento; y en quinto lugar, se analiza la relevancia curricular. Se concluye con una síntesis integradora y una bibliografía de referencia.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── DESARROLLO ──────────────────────────────────────── */}
+
+            {/* Epígrafe 1 */}
+            <Card title="1. El consumo" icon="📘">
+                <TheoryBlock title="1.1. Función de consumo keynesiana" color="blue">
+                    <p>
+                        La <strong>función de consumo keynesiana</strong> establece una relación lineal entre el consumo agregado (C) y la renta disponible (Yd):
+                    </p>
+                    <p>
+                        <strong>C = C₀ + c·Yd</strong> (donde 0 &lt; c &lt; 1)
+                    </p>
+                    <p>
+                        Donde C₀ es el <strong>consumo autónomo</strong> (consumo mínimo independiente de la renta) y c es la <strong>propensión marginal al consumo (PMC)</strong>, que indica cuánto aumenta el consumo por cada unidad adicional de renta disponible. La <strong>propensión media al consumo</strong> (C/Yd) disminuye a medida que aumenta la renta, ya que el componente autónomo C₀/Yd pierde peso relativo. Esta relación fue el punto de partida de Keynes en su <em>Teoría general</em> (1936).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.2. Ley psicológica fundamental de Keynes" color="indigo">
+                    <p>
+                        Keynes formuló la <strong>ley psicológica fundamental</strong>: «como regla general y en promedio, los hombres están dispuestos a aumentar su consumo a medida que su renta crece, pero no en la misma proporción en que crece su renta». Esto implica que 0 &lt; c &lt; 1: el consumo crece con la renta, pero <strong>menos que proporcionalmente</strong>. En consecuencia, la <strong>propensión media al consumo</strong> (C/Y) disminuye a medida que aumenta la renta (los hogares más ricos ahorran una proporción mayor de su renta). Esta predicción se cumple bien en los datos de sección cruzada (comparando hogares con distinta renta en un momento dado), pero no tan bien en los datos de series temporales (a lo largo del tiempo, la propensión media al consumo se mantiene relativamente estable). Esta discrepancia motivó las teorías posteriores.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.3. Hipótesis de la renta permanente (Friedman, 1957)" color="green">
+                    <p>
+                        Milton Friedman propuso la <strong>hipótesis de la renta permanente</strong> en su obra <em>A Theory of the Consumption Function</em> (1957). Según esta teoría, el consumo no depende de la renta corriente sino de la <strong>renta permanente</strong>: la renta media esperada a lo largo de la vida. Los individuos distinguen entre cambios <strong>permanentes</strong> de renta (que afectan al consumo en proporción 1:1) y cambios <strong>transitorios</strong> (que se ahorran casi íntegramente). La renta corriente se descompone en: Y = Y_P + Y_T (permanente + transitoria), y el consumo depende solo de la permanente: C = k·Y_P. Esto explica por qué la propensión media al consumo es estable a largo plazo (cuando Y_T → 0 en promedio).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.4. Hipótesis del ciclo vital (Modigliani, 1954)" color="amber">
+                    <p>
+                        Franco Modigliani (Nobel 1985) y Richard Brumberg desarrollaron la <strong>hipótesis del ciclo vital</strong>, que sostiene que los individuos planifican su consumo a lo largo de toda su vida para <strong>mantener un nivel de consumo estable</strong>. Durante la <strong>juventud</strong> (formación), los ingresos son bajos y se endeudan; durante la <strong>vida activa</strong>, ahorran acumulando riqueza; durante la <strong>jubilación</strong>, desahorran consumiendo lo acumulado. El consumo depende de la riqueza total (financiera y humana) más que de la renta corriente: C = (1/T)·(W + R·Y_L), donde W es la riqueza acumulada, Y_L los años de vida laboral restantes y T los años de vida restantes. Esta teoría explica los patrones de ahorro por grupos de edad y la importancia de la demografía para el ahorro nacional.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.5. Hipótesis de la renta relativa (Duesenberry)" color="purple">
+                    <p>
+                        James Duesenberry propuso la <strong>hipótesis de la renta relativa</strong> (1949), que introduce dos ideas fundamentales: (1) el <strong>efecto demostración</strong>: el consumo de un individuo depende no solo de su renta absoluta, sino de su <strong>posición relativa</strong> respecto a su grupo de referencia (los hogares tienden a imitar los patrones de consumo de los hogares con mayor renta); (2) el <strong>efecto trinquete</strong> (ratchet effect): los hábitos de consumo son <strong>asimétricos</strong>, ya que es fácil aumentar el nivel de consumo cuando la renta sube, pero resulta muy difícil reducirlo cuando la renta baja (rigidez a la baja del consumo). Esta teoría explica por qué el consumo no cae proporcionalmente durante las recesiones.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.6. Factores determinantes del consumo" color="rose">
+                    <p>
+                        Más allá de la renta disponible, los principales <strong>factores determinantes del consumo</strong> son: (1) la <strong>riqueza</strong> (efecto riqueza: un aumento en el valor de activos financieros o inmobiliarios incentiva el consumo); (2) el <strong>tipo de interés</strong> (un aumento del tipo de interés encarece el crédito al consumo y aumenta el rendimiento del ahorro, pero el efecto neto sobre el consumo es ambiguo: efecto sustitución vs. efecto renta); (3) las <strong>expectativas</strong> (sobre la renta futura, la inflación y la estabilidad laboral); (4) la <strong>distribución de la renta</strong> (los hogares con menor renta tienen mayor propensión marginal al consumo, por lo que políticas redistributivas pueden aumentar el consumo agregado); (5) las <strong>condiciones crediticias</strong> (acceso al crédito, restricciones de liquidez).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <FormulaBox
+                formula="C = C₀ + c·Yd (0 < c < 1)"
+                desc="Función de consumo keynesiana: el consumo depende de la renta disponible"
+            />
+
+            {/* Epígrafe 2 */}
+            <Card title="2. El ahorro" icon="📘">
+                <TheoryBlock title="2.1. Relación ahorro-consumo" color="blue">
+                    <p>
+                        El <strong>ahorro (S)</strong> es la parte de la renta disponible que no se consume: <strong>S = Yd − C</strong>. Sustituyendo la función de consumo keynesiana:
+                    </p>
+                    <p>
+                        <strong>S = Yd − (C₀ + c·Yd) = −C₀ + (1−c)·Yd = −C₀ + s·Yd</strong>
+                    </p>
+                    <p>
+                        Donde s = 1 − c es la <strong>propensión marginal al ahorro (PMA)</strong>. El ahorro es una función creciente de la renta disponible: a mayor renta, mayor ahorro tanto en términos absolutos como relativos (mayor propensión media al ahorro). El ahorro autónomo (−C₀) es negativo, lo que indica que a niveles muy bajos de renta las familias desahorran (consumen más de lo que ganan, recurriendo a ahorros previos o endeudamiento).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.2. Motivos del ahorro" color="indigo">
+                    <p>
+                        Keynes identificó varios <strong>motivos del ahorro</strong>: (1) <strong>precaución</strong>: reserva para imprevistos (enfermedad, desempleo); (2) <strong>inversión</strong>: acumulación de capital para proyectos productivos o financieros; (3) <strong>ciclo vital</strong>: provisión para la jubilación (Modigliani); (4) <strong>herencia</strong>: deseo de dejar patrimonio a los descendientes (motivo altruista); (5) <strong>mejora</strong>: aspiración a aumentar el nivel de vida futuro; (6) <strong>independencia</strong>: libertad para emprender o tomar decisiones sin presiones financieras; (7) <strong>avaricia</strong>: satisfacción intrínseca de acumular riqueza.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.3. Ahorro y tipo de interés" color="green">
+                    <p>
+                        La relación entre ahorro y tipo de interés es <strong>ambigua</strong> en la teoría económica, ya que operan dos fuerzas contrapuestas: (1) el <strong>efecto sustitución</strong>: un aumento del tipo de interés hace más atractivo el ahorro (mayor rendimiento), incentivando la sustitución de consumo presente por consumo futuro; (2) el <strong>efecto renta</strong>: un aumento del tipo de interés significa que se necesita ahorrar menos para alcanzar un determinado objetivo financiero futuro (la misma renta financiera se consigue con menos ahorro). El <strong>efecto neto</strong> depende de cuál de los dos domine: la evidencia empírica sugiere que la elasticidad-interés del ahorro es pequeña y positiva, pero no siempre significativa.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.4. El ahorro nacional" color="amber">
+                    <p>
+                        El <strong>ahorro nacional (S_N)</strong> es la suma del <strong>ahorro privado</strong> y el <strong>ahorro público</strong>: S_N = S_privado + S_público. El ahorro privado incluye el ahorro de las familias (Yd − C) y el ahorro empresarial (beneficios no distribuidos). El <strong>ahorro público</strong> es la diferencia entre los ingresos y los gastos del sector público: S_público = T − G. Cuando T &gt; G, hay superávit público (ahorro público positivo); cuando T &lt; G, hay déficit público (desahorro público). El ahorro nacional es fundamental porque financia la inversión: en una economía cerrada, S_N = I; en una economía abierta, S_N = I + XN (cuenta corriente).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.5. Identidad ahorro-inversión" color="purple">
+                    <p>
+                        En una <strong>economía cerrada sin gobierno</strong>, la identidad contable fundamental es <strong>S = I</strong>: todo lo que se ahorra financia la inversión, y toda inversión requiere ahorro previo o simultáneo. Esta identidad ex post (contable) siempre se cumple, pero el mecanismo de ajuste difiere según la escuela económica: para los <strong>clásicos</strong>, el tipo de interés ajusta el ahorro a la inversión (en el mercado de fondos prestables); para los <strong>keynesianos</strong>, es la renta la que se ajusta (vía multiplicador) hasta que el ahorro generado iguala a la inversión autónoma.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <FormulaBox
+                formula="S = Yd − C = −C₀ + s·Yd"
+                desc="Función de ahorro: la parte de la renta disponible no consumida"
+            />
+
+            {/* Epígrafe 3 */}
+            <Card title="3. La inversión" icon="📘">
+                <TheoryBlock title="3.1. Concepto y tipos" color="blue">
+                    <p>
+                        La <strong>inversión</strong> en macroeconomía se refiere al gasto en <strong>bienes de capital</strong> que aumentan la capacidad productiva futura de la economía. Se denomina <strong>formación bruta de capital</strong> e incluye tres componentes: (1) <strong>inversión en equipo</strong> (maquinaria, herramientas, equipos informáticos, vehículos de producción); (2) <strong>inversión en construcción</strong> (edificios industriales, viviendas, infraestructuras); (3) <strong>variación de existencias</strong> (cambios en los inventarios de materias primas, productos en curso y productos terminados). Es fundamental distinguir la inversión (variable flujo que añade capital nuevo) de la riqueza o patrimonio (variable stock).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.2. Inversión bruta vs. neta" color="indigo">
+                    <p>
+                        La <strong>inversión bruta (IB)</strong> es el gasto total en bienes de capital, incluyendo la reposición del capital desgastado. La <strong>inversión neta (IN)</strong> es la inversión bruta menos la <strong>depreciación (D)</strong> (consumo de capital fijo):
+                    </p>
+                    <p>
+                        <strong>IB = IN + D</strong>
+                    </p>
+                    <p>
+                        La inversión neta mide el <strong>aumento real del stock de capital</strong>: si IN &gt; 0, el stock de capital crece y la capacidad productiva aumenta; si IN = 0, solo se repone el capital desgastado; si IN &lt; 0, el stock de capital disminuye (descapitalización). El crecimiento económico a largo plazo requiere inversión neta positiva y sostenida.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.3. Determinantes de la inversión" color="green">
+                    <p>
+                        Los principales <strong>determinantes de la inversión</strong> son: (1) el <strong>tipo de interés</strong>: el coste de oportunidad de la inversión; un aumento del tipo de interés encarece la financiación y reduce la inversión (relación inversa). (2) Las <strong>expectativas empresariales</strong>: las perspectivas sobre la demanda futura, los beneficios esperados y la confianza empresarial. Keynes denominó <em>animal spirits</em> a este componente irracional y volátil de las expectativas que impulsa las decisiones de inversión. (3) El <strong>nivel de actividad económica</strong>: un mayor nivel de producción y ventas incentiva la inversión para ampliar la capacidad (modelo del acelerador). (4) La <strong>política fiscal</strong>: incentivos fiscales a la inversión (deducciones, amortización acelerada). (5) Los <strong>avances tecnológicos</strong>: nuevas tecnologías crean oportunidades de inversión rentable.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.4. La eficiencia marginal del capital (Keynes)" color="amber">
+                    <p>
+                        Keynes introdujo el concepto de <strong>eficiencia marginal del capital (EMK)</strong>: la <strong>tasa interna de rendimiento (TIR)</strong> esperada del último proyecto de inversión, es decir, la tasa de descuento que iguala el coste del bien de capital con el valor presente de los rendimientos futuros esperados que generará a lo largo de su vida útil. La regla de decisión de inversión es: <strong>invertir si EMK &gt; i</strong> (tasa de interés de mercado). Cuanto mayor sea la EMK respecto a i, más proyectos de inversión serán rentables. La <strong>función de inversión</strong> relaciona inversamente el volumen de inversión con el tipo de interés: a menor i, más proyectos superan el umbral de rentabilidad.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.5. La función de inversión" color="purple">
+                    <p>
+                        La <strong>función de inversión</strong> expresa la inversión como función del tipo de interés, las expectativas y el nivel de renta:
+                    </p>
+                    <p>
+                        <strong>I = I(i, expectativas, Y)</strong>
+                    </p>
+                    <p>
+                        La relación con el <strong>tipo de interés es inversa</strong>: gráficamente, la curva de inversión tiene pendiente negativa en el plano (I, i). Desplazamientos de la curva se producen por cambios en las expectativas (optimismo/pesimismo), innovaciones tecnológicas, cambios en la política fiscal o variaciones en la demanda esperada. La <strong>volatilidad de la inversión</strong> es una de las principales fuentes de las fluctuaciones del ciclo económico.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.6. Modelo del acelerador" color="rose">
+                    <p>
+                        El <strong>modelo del acelerador</strong> (Clark, 1917) establece que la inversión neta es proporcional al <strong>cambio en la producción</strong> (no al nivel de producción):
+                    </p>
+                    <p>
+                        <strong>I_neta = v · ΔY</strong>
+                    </p>
+                    <p>
+                        Donde v es la <strong>relación capital-producto</strong> (capital necesario por unidad de producción). Si ΔY &gt; 0 (la economía crece), se necesita inversión neta positiva para ampliar la capacidad. Si ΔY = 0 (la economía se estanca), la inversión neta es cero (solo reposición). Si ΔY &lt; 0 (recesión), la inversión neta es negativa. El acelerador explica la <strong>amplificación de las fluctuaciones</strong>: pequeñas variaciones en la demanda generan grandes variaciones en la inversión, lo que contribuye a la inestabilidad cíclica.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.7. La q de Tobin" color="cyan">
+                    <p>
+                        James Tobin (Nobel 1981) propuso la <strong>q de Tobin</strong> como indicador de la decisión de inversión:
+                    </p>
+                    <p>
+                        <strong>q = Valor de mercado de la empresa / Coste de reposición del capital</strong>
+                    </p>
+                    <p>
+                        Si <strong>q &gt; 1</strong>: el mercado valora la empresa por encima del coste de sus activos → es rentable invertir (comprar capital nuevo es más barato que comprar una empresa existente). Si <strong>q &lt; 1</strong>: el mercado infravalora la empresa → no es rentable invertir (es más barato adquirir una empresa existente que construir capital nuevo). La q de Tobin integra las expectativas del mercado financiero con las decisiones de inversión real, proporcionando un puente entre la macroeconomía financiera y la real.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <FormulaBox
+                formula="Invertir si EMK > i (tasa de interés)"
+                desc="Regla de decisión keynesiana: eficiencia marginal del capital vs. tipo de interés"
+            />
+            <FormulaBox
+                formula="q de Tobin: q > 1 → invertir"
+                desc="Valor de mercado / coste de reposición: si q > 1, la inversión es rentable"
+            />
+
+            {/* Epígrafe 4 */}
+            <Card title="4. Ahorro, inversión y crecimiento" icon="📘">
+                <TheoryBlock title="4.1. La identidad S = I en economía abierta" color="blue">
+                    <p>
+                        En una <strong>economía abierta</strong>, la identidad ahorro-inversión se amplía: <strong>S − I = XN</strong> (exportaciones netas = cuenta corriente). Si un país ahorra más de lo que invierte (S &gt; I), exporta el excedente de ahorro al resto del mundo (superávit por cuenta corriente). Si un país invierte más de lo que ahorra (I &gt; S), necesita financiación exterior (déficit por cuenta corriente). Esta identidad conecta las decisiones internas de ahorro e inversión con los desequilibrios exteriores y los flujos internacionales de capital.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.2. El mercado de fondos prestables" color="indigo">
+                    <p>
+                        El <strong>mercado de fondos prestables</strong> es el modelo que explica cómo se determina el tipo de interés real de equilibrio en la economía. La <strong>oferta de fondos prestables</strong> proviene del ahorro (nacional y exterior): a mayor tipo de interés, mayor incentivo para ahorrar (pendiente positiva). La <strong>demanda de fondos prestables</strong> proviene de la inversión: a mayor tipo de interés, menor inversión rentable (pendiente negativa). El <strong>tipo de interés de equilibrio</strong> se determina en la intersección de ambas curvas, igualando la cantidad de fondos que los ahorradores desean prestar con la que los inversores desean tomar prestada.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.3. Crowding out (efecto expulsión)" color="green">
+                    <p>
+                        El <strong>crowding out</strong> o <strong>efecto expulsión</strong> se produce cuando el <strong>déficit público</strong> (G &gt; T) reduce la inversión privada. El mecanismo es el siguiente: el gobierno financia su déficit emitiendo deuda pública → aumenta la demanda de fondos prestables → sube el tipo de interés → se encarece la financiación para las empresas → cae la inversión privada. El efecto expulsión puede ser <strong>parcial</strong> (la inversión privada disminuye, pero menos que el aumento del gasto público) o <strong>total</strong> (la inversión privada cae en la misma cuantía, anulando el efecto fiscal). Los keynesianos argumentan que el crowding out es menor en situaciones de recesión y capacidad ociosa; los clásicos consideran que es significativo siempre.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.4. Ahorro y crecimiento: modelo de Solow" color="amber">
+                    <p>
+                        El <strong>modelo de crecimiento de Solow</strong> (Nobel 1987) establece que la <strong>tasa de ahorro</strong> es un determinante fundamental del nivel de renta per cápita a largo plazo. Una mayor tasa de ahorro implica más inversión → mayor acumulación de capital → mayor producción per cápita en el estado estacionario. Sin embargo, el ahorro no afecta a la <strong>tasa de crecimiento</strong> a largo plazo (que depende del progreso tecnológico), sino al <strong>nivel</strong> de renta. La <strong>regla de oro de la acumulación de capital</strong> (Phelps, 1961) identifica la tasa de ahorro óptima que maximiza el consumo per cápita a largo plazo: aquella en la que el producto marginal del capital iguala la tasa de depreciación más la tasa de crecimiento de la población y la tecnología (PMK = δ + n + g).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 5 */}
+            <Card title="5. Relevancia curricular" icon="📘">
+                <TheoryBlock title="5.1. Marco normativo y competencias" color="blue">
+                    <p>
+                        El consumo, el ahorro y la inversión se enmarcan en los saberes básicos del bloque «La realidad económica» de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022), conectando con las competencias específicas CE1 (funcionamiento del sistema económico), CE4 (papel del ahorro y la inversión en el crecimiento), CE5 (análisis de la política económica) y CE6 (comprensión de la coyuntura). El estudio de las funciones de consumo y ahorro desarrolla las competencias <strong>STEM</strong> (análisis cuantitativo, funciones lineales, propensiones marginales). Las teorías del consumo (Keynes, Friedman, Modigliani) fomentan el <strong>pensamiento crítico</strong> y la comparación de modelos alternativos. La relación ahorro-inversión-crecimiento contribuye a las competencias <strong>CC</strong> (debate sobre la política fiscal) y <strong>CPSAA</strong> (planificación financiera personal). La decisión de inversión empresarial conecta con la competencia <strong>CE</strong> (emprendedora).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── CONCLUSIÓN ──────────────────────────────────────── */}
+            <Card title="Conclusión" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        El <strong>consumo, el ahorro y la inversión</strong> son las tres piezas fundamentales del rompecabezas macroeconómico. El consumo, como componente mayoritario del PIB, ha sido objeto de una rica tradición teórica: desde la función lineal keynesiana hasta las sofisticadas hipótesis de la renta permanente (Friedman) y del ciclo vital (Modigliani), que incorporan la dimensión intertemporal y las expectativas. Cada teoría ilumina aspectos distintos del comportamiento del consumidor: la renta corriente, la renta esperada, la riqueza total y la posición relativa.
+                    </p>
+                    <p>
+                        El <strong>ahorro</strong>, como contrapartida del consumo, es la fuente interna de financiación de la inversión. La identidad S = I (en economía cerrada) o S − I = XN (en economía abierta) conecta las decisiones individuales de ahorro con la inversión productiva y los desequilibrios exteriores. La <strong>inversión</strong>, determinada por el tipo de interés, las expectativas (animal spirits), el acelerador y la q de Tobin, es el motor del crecimiento económico pero también la principal fuente de inestabilidad cíclica por su volatilidad inherente.
+                    </p>
+                    <p>
+                        La relación entre ahorro, inversión y crecimiento, formalizada en el <strong>modelo de Solow</strong>, muestra que la tasa de ahorro determina el nivel de renta per cápita a largo plazo, mientras que el progreso tecnológico determina la tasa de crecimiento sostenido. El <strong>efecto crowding out</strong> recuerda que la política fiscal tiene límites: el déficit público puede desplazar inversión privada, reduciendo el efecto neto sobre la actividad. Desde la perspectiva docente, este tema permite integrar microeconomía (decisiones individuales), macroeconomía (equilibrio agregado) y crecimiento económico, proporcionando una visión completa del funcionamiento de la economía.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── FÓRMULAS RESUMEN ───────────────────────────────── */}
+            <FormulaBox formula="C = C₀ + c·Yd (0 < c < 1)" desc="Función de consumo keynesiana" />
+            <FormulaBox formula="S = Yd − C = −C₀ + s·Yd" desc="Función de ahorro (s = 1 − c)" />
+            <FormulaBox formula="Invertir si EMK > i (tasa de interés)" desc="Regla de decisión de inversión keynesiana" />
+            <FormulaBox formula="q de Tobin: q > 1 → invertir" desc="Valor de mercado / coste de reposición del capital" />
+
+            {/* ── BIBLIOGRAFÍA ────────────────────────────────────── */}
+            <BibliografiaBox items={[
+                'KEYNES, J.M. (1936): Teoría general de la ocupación, el interés y el dinero (ed. moderna, FCE).',
+                'FRIEDMAN, M. (1957): A Theory of the Consumption Function, Princeton University Press.',
+                'MODIGLIANI, F. y BRUMBERG, R. (1954): "Utility Analysis and the Consumption Function", en Post-Keynesian Economics, Rutgers University Press.',
+                'DUESENBERRY, J.S. (1949): Income, Saving and the Theory of Consumer Behavior, Harvard University Press.',
+                'SOLOW, R.M. (1956): "A Contribution to the Theory of Economic Growth", Quarterly Journal of Economics.',
+                'TOBIN, J. (1969): "A General Equilibrium Approach to Monetary Theory", Journal of Money, Credit and Banking.',
+                'MANKIW, N.G. (2020): Principios de Economía, 8.ª ed., Cengage Learning.',
+                'BLANCHARD, O. (2017): Macroeconomía, 7.ª ed., Pearson.',
+                'DORNBUSCH, R., FISCHER, S. y STARTZ, R. (2014): Macroeconomía, 12.ª ed., McGraw-Hill.',
+                'MOCHÓN, F. (2021): Economía. Teoría y Política, 7.ª ed., McGraw-Hill.',
+                'Ley Orgánica 3/2020, de 29 de diciembre (LOMLOE).',
+                'Real Decreto 243/2022, de 5 de abril (currículo Bachillerato).',
+            ]} />
+
+            {/* ── CLAU ────────────────────────────────────────────── */}
+            <ClauBox>
+                <p>- Desarrolla la <strong>función de consumo keynesiana</strong> (C = C₀ + c·Yd) y contrástala con Friedman (renta permanente), Modigliani (ciclo vital) y Duesenberry (renta relativa).</p>
+                <p>- Define <strong>ahorro</strong> como S = Yd − C, sus motivos y la ambigüedad del efecto del tipo de interés (sustitución vs. renta).</p>
+                <p>- Explica la <strong>inversión</strong>: tipos (equipo, construcción, existencias), determinantes (tipo de interés, expectativas, acelerador) y la regla EMK &gt; i.</p>
+                <p>- Presenta la <strong>q de Tobin</strong> (q &gt; 1 → invertir) como puente entre finanzas y macroeconomía real.</p>
+                <p>- Conecta S = I con la <strong>economía abierta</strong> (S − I = XN) y el <strong>crowding out</strong> (déficit público → ↑i → ↓I privada).</p>
+                <p>- Relaciona ahorro y crecimiento a través del <strong>modelo de Solow</strong> y la regla de oro (Phelps).</p>
+                <p>- Conecta con la <strong>LOMLOE</strong> (RD 243/2022, Bloque C) y competencias STEM, CC, CPSAA, CE.</p>
+            </ClauBox>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 24 — RESUM / ESQUEMA
+    // ════════════════════════════════════════════════════════════════
+    const Tema24Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-blue-50 rounded-xl border border-blue-200 mb-5">
+                    <p className="text-center font-bold text-blue-800 text-lg">Tema 24: El consumo, el ahorro y la inversión.</p>
+                    <p className="text-center text-sm text-blue-600 mt-1">
+                        <em>"La inversión está guiada por los animal spirits, no por el cálculo racional"</em> — J.M. Keynes (1936)
+                    </p>
+                </div>
+
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. El consumo</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Keynes: C = C₀ + c·Yd (0 &lt; c &lt; 1). Ley psicológica fundamental.</li>
+                            <li>Friedman (1957): renta permanente. Modigliani (1954): ciclo vital.</li>
+                            <li>Duesenberry: renta relativa (efecto demostración + efecto trinquete).</li>
+                            <li>Factores: renta disponible, riqueza, tipo de interés, expectativas, distribución.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. El ahorro</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>S = Yd − C = −C₀ + s·Yd. Motivos: precaución, inversión, ciclo vital, herencia.</li>
+                            <li>Tipo de interés: efecto sustitución vs. efecto renta (efecto neto ambiguo).</li>
+                            <li>Ahorro nacional = privado + público (T − G). S = I (economía cerrada).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. La inversión</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Formación bruta de capital: equipo + construcción + existencias. IB = IN + D.</li>
+                            <li>Determinantes: tipo de interés (inverso), expectativas (animal spirits), nivel de actividad.</li>
+                            <li>EMK (Keynes): invertir si TIR esperada &gt; i. Función de inversión: pendiente negativa.</li>
+                            <li>Acelerador: I_neta = v·ΔY. q de Tobin: q &gt; 1 → invertir.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. Ahorro, inversión y crecimiento</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Economía abierta: S − I = XN (cuenta corriente). Mercado de fondos prestables.</li>
+                            <li>Crowding out: déficit público → ↑i → ↓I privada.</li>
+                            <li>Solow: tasa de ahorro → nivel de Y/L a largo plazo. Regla de oro (Phelps).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">5. Relevancia curricular</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>LOMLOE: Economía 1BACH (RD 243/2022, Bloque C). CE1, CE4, CE5, CE6.</li>
+                            <li>Competencias: STEM (análisis cuantitativo), CC, CPSAA (planificación financiera), CE.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <FormulaBox formula="C = C₀ + c·Yd | S = −C₀ + s·Yd (c + s = 1)" />
+                <FormulaBox formula="Invertir si EMK > i | q de Tobin > 1 → invertir" />
+                <FormulaBox formula="S = I (cerrada) | S − I = XN (abierta) | Crowding out: G↑ → i↑ → I↓" />
+
+                <ClauBox>
+                    <p>- Contrasta las <strong>cuatro teorías del consumo</strong>: Keynes (renta corriente), Friedman (permanente), Modigliani (ciclo vital), Duesenberry (relativa).</p>
+                    <p>- Explica la <strong>decisión de inversión</strong> con EMK, acelerador y q de Tobin.</p>
+                    <p>- Conecta ahorro-inversión con la <strong>economía abierta</strong> (S − I = XN) y el crowding out.</p>
+                    <p>- Relaciona ahorro y crecimiento con el <strong>modelo de Solow</strong>.</p>
+                    <p>- Usa <strong>ejemplos numéricos</strong> para las funciones de consumo y ahorro.</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 24 — Component wrapper
+    // ════════════════════════════════════════════════════════════════
+    const Tema24 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="📖" title="Tema 24" subtitle={t('tema24.title')} />
+                <Tabs tabs={[
+                    { id: 'complet', label: '📝 ' + t('tab.complet') },
+                    { id: 'resum', label: '📋 ' + t('tab.resum') },
+                ]} active={vista} onChange={setVista} />
+
+                {vista === 'complet' && <Tema24Complet />}
+                {vista === 'resum' && <Tema24Resum />}
+            </div>
+        );
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMES 25-30 — Placeholders (properament)
+    // ════════════════════════════════════════════════════════════════
     const Tema25 = () => (<div className="space-y-6"><SectionTitle icon="📖" title="Tema 25" subtitle={t('tema25.title')} /><TemaPlaceholder num={25} /></div>);
     const Tema26 = () => (<div className="space-y-6"><SectionTitle icon="📖" title="Tema 26" subtitle={t('tema26.title')} /><TemaPlaceholder num={26} /></div>);
     const Tema27 = () => (<div className="space-y-6"><SectionTitle icon="📖" title="Tema 27" subtitle={t('tema27.title')} /><TemaPlaceholder num={27} /></div>);
