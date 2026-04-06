@@ -172,8 +172,8 @@ function BlocBApp() {
         { num: 16, id: 'tema16', available: true },
         { num: 17, id: 'tema17', available: true },
         { num: 18, id: 'tema18', available: true },
-        { num: 19, id: 'tema19', available: false },
-        { num: 20, id: 'tema20', available: false },
+        { num: 19, id: 'tema19', available: true },
+        { num: 20, id: 'tema20', available: true },
     ];
 
     // ════════════════════════════════════════════════════════════════
@@ -3902,27 +3902,756 @@ function BlocBApp() {
     };
 
     // ════════════════════════════════════════════════════════════════
-    // TEMES 19-20 — Placeholders
+    // TEMA 19 — COMPLET
     // ════════════════════════════════════════════════════════════════
-    const TemaPlaceholder = ({ num }) => (
-        <div className="animate-fade text-center py-20">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gray-100 mb-6">
-                <span className="text-4xl">🔒</span>
-            </div>
-            <h2 className="text-2xl font-black text-slate-800 mb-2">
-                {lang === 'es' ? 'Próximamente' : lang === 'en' ? 'Coming soon' : 'Properament'} — Tema {num}
-            </h2>
-            <p className="text-slate-500 max-w-lg mx-auto">
-                {t(`tema${num}.title`)}
-            </p>
-            <button
-                onClick={() => { setSection('inicio'); pdeSetHashSection('inicio'); pdeScrollToTop(); }}
-                className="mt-8 inline-flex items-center gap-2 px-5 py-2.5 bg-pink-100 text-pink-700 rounded-xl font-semibold text-sm hover:bg-pink-200 transition-colors"
-            >
-                ← {t('sec.inicio')}
-            </button>
+    const Tema19Complet = () => (
+        <div className="space-y-6 animate-fade">
+            {/* ── INTRODUCCIÓN ────────────────────────────────────── */}
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        La <strong>empresa</strong> constituye el agente económico fundamental en cualquier sistema de economía de mercado: es la unidad de producción que organiza y combina los factores productivos para generar bienes y servicios destinados al intercambio. Su estudio representa el puente natural entre la microeconomía —donde la empresa es un agente optimizador— y la economía de la empresa —donde se analiza su gestión interna, su estrategia y su organización—.
+                    </p>
+                    <p>
+                        A lo largo de la historia del pensamiento económico, la empresa ha pasado de ser una <strong>caja negra</strong> (enfoque neoclásico) a convertirse en un objeto de análisis multidimensional: Coase (1937) se preguntó por qué existen las empresas; Williamson (1975) profundizó en los costes de transacción; Jensen y Meckling (1976) analizaron los conflictos de agencia; Penrose (1959) y Barney (1991) centraron la ventaja competitiva en los recursos internos; y Schumpeter (1942) otorgó al empresario el papel protagonista de la innovación y el cambio económico.
+                    </p>
+                    <p>
+                        Desde la perspectiva curricular, este tema se enmarca en los saberes básicos del bloque «La empresa y su entorno» de Economía de la Empresa de 2.º de Bachillerato (Real Decreto 243/2022, LOMLOE), conectando con las competencias específicas CE1 (análisis del papel de la empresa), CE2 (formas jurídicas y tipos empresariales) y la competencia emprendedora (CE). Asimismo, enlaza con Economía de 1.º de Bachillerato (agentes económicos, funcionamiento del mercado).
+                    </p>
+                    <p>
+                        El tema se estructura en cinco epígrafes: concepto y elementos de la empresa; teorías de la empresa; clasificación; la figura del empresario; y relevancia curricular.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── 1. CONCEPTO DE EMPRESA ────────────────────────────── */}
+            <Card title="1. Concepto de empresa" icon="📘">
+                <TheoryBlock title="1.1. Definición económica" color="purple">
+                    <p>
+                        La empresa es la <strong>unidad económica de producción</strong> que combina factores productivos (trabajo, capital, recursos naturales, tecnología y organización) para obtener bienes y servicios destinados al mercado con <strong>ánimo de lucro</strong>. Esta definición distingue la empresa de otros conceptos relacionados pero no equivalentes:
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Negocio</strong>: actividad con ánimo de lucro que puede no requerir estructura organizativa formal.</li>
+                        <li><strong>Industria</strong>: conjunto de empresas que producen bienes o servicios similares (sector automovilístico, sector farmacéutico).</li>
+                        <li><strong>Sector</strong>: agrupación más amplia de actividades económicas (primario, secundario, terciario).</li>
+                        <li><strong>Establecimiento/planta</strong>: unidad física de producción; una empresa puede tener varios establecimientos.</li>
+                    </ul>
+                    <p>
+                        La empresa crea valor al transformar inputs en outputs cuyo valor de mercado supera el coste de los factores empleados. En este sentido, el <strong>beneficio</strong> (ingresos − costes) actúa como señal de eficiencia en la asignación de recursos.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.2. Elementos de la empresa" color="blue">
+                    <p>Toda empresa integra cuatro tipos de elementos:</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Elementos humanos</strong>: el empresario (propietario y/o gestor) y los trabajadores. La dirección planifica, organiza, dirige y controla; los empleados ejecutan las tareas operativas.</li>
+                        <li><strong>Elementos materiales (capital físico)</strong>: capital fijo (maquinaria, instalaciones, vehículos) y capital circulante (materias primas, existencias, tesorería).</li>
+                        <li><strong>Elementos inmateriales</strong>: tecnología, patentes, marcas, <em>know-how</em>, reputación, cultura organizativa, capital relacional. Estos activos intangibles son cada vez más determinantes de la ventaja competitiva (Barney, 1991).</li>
+                        <li><strong>Organización</strong>: el diseño de la estructura que coordina personas, recursos y procesos para alcanzar los objetivos. La organización es el «pegamento» que integra los demás elementos.</li>
+                    </ul>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.3. Funciones de la empresa" color="green">
+                    <p>La empresa desempeña funciones económicas y sociales fundamentales:</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Función productiva</strong>: transforma factores en bienes y servicios, creando valor añadido (PIB = suma del valor añadido de todas las empresas).</li>
+                        <li><strong>Función comercial</strong>: identifica necesidades del mercado, diseña productos, fija precios, distribuye y comunica (marketing).</li>
+                        <li><strong>Función financiera</strong>: capta recursos (financiación propia y ajena), los invierte y gestiona la tesorería para garantizar la solvencia.</li>
+                        <li><strong>Función social</strong>: genera empleo (demanda de trabajo), impulsa la innovación tecnológica, contribuye al desarrollo territorial, paga impuestos y, crecientemente, asume responsabilidades medioambientales y sociales (RSC).</li>
+                    </ul>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── 2. TEORÍAS DE LA EMPRESA ──────────────────────────── */}
+            <Card title="2. Teorías de la empresa" icon="📘">
+                <TheoryBlock title="2.1. Teoría neoclásica" color="amber">
+                    <p>
+                        En el enfoque neoclásico (Marshall, Walras), la empresa es una <strong>función de producción</strong>: una «caja negra» que transforma inputs en outputs. Su único objetivo es la <strong>maximización del beneficio</strong> (π = IT − CT), y la decisión óptima se alcanza cuando el ingreso marginal iguala al coste marginal (IMg = CMg).
+                    </p>
+                    <p>
+                        Esta visión simplificada permite un análisis formal elegante, pero ignora la organización interna, los conflictos de intereses entre propietarios y directivos, y los costes de coordinación. Precisamente estas limitaciones motivaron el desarrollo de teorías alternativas.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.2. Teoría de los costes de transacción" color="pink">
+                    <p>
+                        <strong>Ronald Coase</strong> (1937), en su artículo seminal <em>«The Nature of the Firm»</em>, planteó la pregunta fundamental: ¿por qué existen las empresas si el mercado es un mecanismo eficiente de asignación? La respuesta: porque utilizar el mercado tiene <strong>costes de transacción</strong> (buscar información, negociar contratos, vigilar su cumplimiento). La empresa surge cuando organizar internamente una actividad es más barato que contratarla en el mercado.
+                    </p>
+                    <p>
+                        <strong>Oliver Williamson</strong> (1975) amplió este enfoque identificando tres factores que elevan los costes de transacción: <strong>especificidad de activos</strong> (inversiones que pierden valor fuera de la relación), <strong>racionalidad limitada</strong> (imposibilidad de prever todas las contingencias contractuales) y <strong>oportunismo</strong> (riesgo de comportamiento estratégico desleal). Cuanto mayores son estos factores, más conveniente es la integración vertical (internalizar la actividad en la empresa).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.3. Teoría de la agencia" color="violet">
+                    <p>
+                        <strong>Jensen y Meckling</strong> (1976) analizaron la empresa como un <strong>nexo de contratos</strong> entre agentes con intereses potencialmente divergentes. La relación de agencia surge cuando una parte (el <strong>principal</strong>, típicamente el accionista) delega la toma de decisiones en otra (el <strong>agente</strong>, el directivo).
+                    </p>
+                    <p>
+                        Los <strong>problemas de agencia</strong> aparecen porque: (a) existe <strong>asimetría de información</strong> (el directivo sabe más que el accionista sobre la marcha real de la empresa); (b) los intereses no están alineados (el directivo puede preferir crecimiento, prestigio o seguridad laboral a maximizar el valor para el accionista). Los <strong>mecanismos de control</strong> incluyen: el consejo de administración, la auditoría externa, la retribución vinculada a resultados (<em>stock options</em>), y la disciplina del mercado de capitales (OPAs hostiles).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.4. Teoría de recursos y capacidades" color="red">
+                    <p>
+                        <strong>Edith Penrose</strong> (1959) concibió la empresa como un conjunto de <strong>recursos productivos</strong> cuya combinación única determina su potencial de crecimiento. <strong>Jay Barney</strong> (1991) formalizó esta idea con el marco <strong>VRIN</strong>: una empresa obtiene ventaja competitiva sostenible cuando posee recursos que son:
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>V</strong>aliosos: permiten explotar oportunidades o neutralizar amenazas.</li>
+                        <li><strong>R</strong>aros: no están disponibles para muchos competidores.</li>
+                        <li><strong>I</strong>nimitables: son difíciles de replicar (complejidad social, dependencia histórica, ambigüedad causal).</li>
+                        <li><strong>N</strong>o sustituibles: no existen equivalentes estratégicos.</li>
+                    </ul>
+                    <p>
+                        Esta perspectiva desplaza el foco de la estructura del sector (Porter) a los <strong>activos internos</strong> de la empresa como fuente de ventaja competitiva. Las <strong>capacidades dinámicas</strong> (Teece, Pisano y Shuen, 1997) extienden el marco al explicar cómo las empresas renuevan sus recursos en entornos cambiantes.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.5. Otras aportaciones" color="cyan">
+                    <ul className="list-disc pl-5 space-y-2">
+                        <li><strong>Schumpeter</strong> (1942): el empresario como <strong>innovador</strong> que introduce «nuevas combinaciones» (nuevos productos, procesos, mercados, fuentes de aprovisionamiento, formas de organización). La innovación genera <strong>destrucción creativa</strong>: las empresas innovadoras desplazan a las obsoletas, impulsando el progreso económico.</li>
+                        <li><strong>Frank Knight</strong> (1921): distingue entre <strong>riesgo</strong> (probabilidad cuantificable) e <strong>incertidumbre</strong> (no cuantificable). El empresario es quien asume la incertidumbre residual y, por ello, recibe el beneficio como recompensa.</li>
+                        <li><strong>Enfoque evolucionista</strong> (Nelson y Winter, 1982): las empresas son repositorios de <strong>rutinas organizativas</strong> (habilidades, procedimientos, reglas de decisión) que evolucionan por selección, imitación y mutación, de forma análoga a la evolución biológica.</li>
+                    </ul>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── 3. CLASIFICACIÓN DE LAS EMPRESAS ─────────────────── */}
+            <Card title="3. Clasificación de las empresas" icon="📘">
+                <TheoryBlock title="3.1. Según la actividad" color="purple">
+                    <p>
+                        La clasificación sectorial clásica (Fisher, 1935; Clark, 1940) distingue:
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Sector primario</strong>: actividades extractivas y agrícolas (agricultura, ganadería, pesca, minería, silvicultura).</li>
+                        <li><strong>Sector secundario</strong>: actividades de transformación (industria manufacturera, construcción, energía).</li>
+                        <li><strong>Sector terciario</strong>: servicios (comercio, transporte, turismo, educación, sanidad, finanzas, telecomunicaciones).</li>
+                    </ul>
+                    <p>
+                        La <strong>terciarización</strong> de las economías desarrolladas ha llevado a que en España más del 75% del PIB y el empleo correspondan al sector servicios. Algunos autores hablan de un sector cuaternario (I+D, tecnologías de la información) y quinario (servicios superiores de decisión).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.2. Según la dimensión" color="blue">
+                    <p>
+                        La Unión Europea (Recomendación 2003/361/CE) establece los criterios de clasificación:
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Microempresa</strong>: {'<'} 10 trabajadores, facturación ≤ 2 M€, balance ≤ 2 M€.</li>
+                        <li><strong>Pequeña empresa</strong>: {'<'} 50 trabajadores, facturación ≤ 10 M€, balance ≤ 10 M€.</li>
+                        <li><strong>Mediana empresa</strong>: {'<'} 250 trabajadores, facturación ≤ 50 M€, balance ≤ 43 M€.</li>
+                        <li><strong>Gran empresa</strong>: ≥ 250 trabajadores o supera los umbrales anteriores.</li>
+                    </ul>
+                    <p>
+                        Las <strong>PYME</strong> (micro + pequeñas + medianas) representan más del 99% del tejido empresarial español y europeo. Son fundamentales para el empleo, la innovación incremental y la cohesión territorial, aunque enfrentan desventajas en economías de escala, acceso a financiación y capacidad exportadora.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.3. Según la propiedad" color="green">
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Empresa privada</strong>: capital y gestión en manos de particulares. Objetivo principal: maximizar beneficios.</li>
+                        <li><strong>Empresa pública</strong>: capital total o mayoritariamente estatal. Objetivo: interés general (servicios públicos, sectores estratégicos). Ejemplo: RENFE, Correos.</li>
+                        <li><strong>Empresa mixta</strong>: participación conjunta de capital público y privado.</li>
+                        <li><strong>Cooperativa</strong>: propiedad colectiva de los socios-trabajadores, decisiones democráticas (un socio = un voto). Ej.: Mondragón.</li>
+                        <li><strong>Economía social</strong>: cooperativas, mutualidades, fundaciones, asociaciones, empresas de inserción, centros especiales de empleo. Principios: primacía de las personas, gestión democrática, interés general.</li>
+                    </ul>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.4. Según la forma jurídica" color="amber">
+                    <p>La forma jurídica determina la responsabilidad, el capital mínimo y la fiscalidad:</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Empresario individual (autónomo)</strong>: responsabilidad ilimitada, sin capital mínimo, IRPF.</li>
+                        <li><strong>Sociedad Limitada (SL)</strong>: responsabilidad limitada al capital aportado, mínimo 1 € (Ley Crea y Crece, 2022), Impuesto de Sociedades.</li>
+                        <li><strong>Sociedad Anónima (SA)</strong>: responsabilidad limitada, capital mínimo 60.000 €, acciones transmisibles, obligación de auditoría si supera ciertos umbrales.</li>
+                        <li><strong>Sociedad Cooperativa</strong>: socios trabajadores, capital variable, gestión democrática, régimen fiscal favorable.</li>
+                        <li>Otras: Sociedad Laboral, Sociedad Comanditaria, Comunidad de Bienes, Emprendedor de Responsabilidad Limitada (ERL).</li>
+                    </ul>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.5. Según el ámbito geográfico" color="pink">
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Local</strong>: opera en un municipio o comarca.</li>
+                        <li><strong>Regional</strong>: alcance autonómico o pluriprovincial.</li>
+                        <li><strong>Nacional</strong>: presencia en todo el territorio del país.</li>
+                        <li><strong>Multinacional</strong>: opera en varios países con filiales, manteniendo la sede central en el país de origen. La inversión directa extranjera (IDE) es su vehículo de expansión.</li>
+                        <li><strong>Global/transnacional</strong>: red integrada sin clara centralización nacional; cadenas globales de valor (Gereffi). Ejemplo: Apple, Inditex, Samsung.</li>
+                    </ul>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── 4. EL EMPRESARIO ─────────────────────────────────── */}
+            <Card title="4. El empresario" icon="📘">
+                <TheoryBlock title="4.1. Evolución del concepto" color="purple">
+                    <p>La figura del empresario ha evolucionado a lo largo de la historia del pensamiento económico:</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Richard Cantillon</strong> (siglo XVIII): primer teórico del empresario como <strong>tomador de riesgo</strong>. Compra a precios ciertos (costes) y vende a precios inciertos (mercado).</li>
+                        <li><strong>Jean-Baptiste Say</strong> (1803): el empresario como <strong>coordinador de factores productivos</strong> que organiza la producción de forma eficiente.</li>
+                        <li><strong>Alfred Marshall</strong> (1890): eleva la organización empresarial a <strong>cuarto factor productivo</strong>, junto a tierra, trabajo y capital.</li>
+                        <li><strong>Joseph Schumpeter</strong> (1912, 1942): el empresario como <strong>innovador</strong> que introduce «nuevas combinaciones» y desencadena la <em>destrucción creativa</em>.</li>
+                        <li><strong>Frank Knight</strong> (1921): el empresario como gestor de la <strong>incertidumbre</strong> (no del riesgo asegurable). El beneficio es la recompensa por asumir lo imprevisible.</li>
+                        <li><strong>Israel Kirzner</strong> (1973): el empresario como poseedor de <strong><em>alertness</em></strong> (capacidad de detectar oportunidades de beneficio que otros no perciben), esencial para el proceso de mercado.</li>
+                    </ul>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.2. Funciones del empresario" color="blue">
+                    <p>El empresario desempeña funciones interrelacionadas:</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Planificación</strong>: fija objetivos, analiza el entorno (DAFO/PESTEL) y diseña estrategias.</li>
+                        <li><strong>Organización</strong>: diseña la estructura, asigna recursos y establece procedimientos.</li>
+                        <li><strong>Dirección</strong>: lidera, motiva, comunica y gestiona equipos humanos.</li>
+                        <li><strong>Control</strong>: mide resultados, compara con los objetivos y aplica medidas correctoras (ciclo de Deming: PDCA).</li>
+                        <li><strong>Toma de decisiones bajo incertidumbre</strong>: selecciona la alternativa óptima con información incompleta.</li>
+                        <li><strong>Innovación</strong>: introduce mejoras continuas y rupturas tecnológicas.</li>
+                        <li><strong>Asunción de riesgo</strong>: compromete su patrimonio y reputación en un resultado incierto.</li>
+                    </ul>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.3. La figura del emprendedor" color="green">
+                    <p>
+                        El <strong>emprendimiento</strong> (<em>entrepreneurship</em>) se ha convertido en una prioridad educativa y de política económica. La LOMLOE incluye la <strong>competencia emprendedora (CE)</strong> como una de las ocho competencias clave, y tanto Economía de 1.º como EDMN de 2.º de Bachillerato integran saberes relacionados con la iniciativa empresarial.
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Emprendimiento</strong>: creación de nuevas empresas, identificación de oportunidades, asunción de riesgos calculados.</li>
+                        <li><strong>Intraemprendimiento</strong> (<em>intrapreneurship</em>): innovación dentro de organizaciones existentes (Pinchot, 1985).</li>
+                        <li><strong>Ecosistema emprendedor</strong>: condiciones institucionales, financieras, educativas y culturales que facilitan la creación de empresas (Isenberg, 2011). Incluye: acceso a financiación (capital riesgo, <em>business angels</em>, <em>crowdfunding</em>), marcos regulatorios ágiles, formación emprendedora, redes de apoyo (incubadoras, aceleradoras).</li>
+                    </ul>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── 5. RELEVANCIA CURRICULAR ─────────────────────────── */}
+            <Card title="5. Relevancia curricular" icon="📘">
+                <TheoryBlock title="Conexión con la LOMLOE" color="purple">
+                    <p>
+                        Este tema conecta directamente con los saberes básicos del bloque «La empresa y su entorno» de <strong>Economía de la Empresa de 2.º de Bachillerato</strong> (Real Decreto 243/2022), así como con el bloque de agentes económicos de <strong>Economía de 1.º de Bachillerato</strong>.
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>CE1</strong>: Analizar el papel de la empresa en la economía y su interrelación con el entorno.</li>
+                        <li><strong>CE2</strong>: Reconocer las formas jurídicas y los tipos de empresa, valorando sus características.</li>
+                        <li><strong>Competencia emprendedora (CE)</strong>: creatividad, iniciativa, planificación de proyectos, asunción de riesgos.</li>
+                        <li><strong>STEM</strong>: modelización económica, razonamiento cuantitativo.</li>
+                        <li><strong>CC</strong>: responsabilidad social, impacto de la empresa en la comunidad.</li>
+                        <li><strong>CPSAA</strong>: toma de decisiones informada, pensamiento crítico sobre modelos económicos.</li>
+                    </ul>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── CONCLUSIÓN ───────────────────────────────────────── */}
+            <Card title="Conclusión" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        A lo largo de este tema se ha analizado la empresa desde una perspectiva integral. En primer lugar, se ha definido la empresa como <strong>unidad de producción</strong> que combina factores para crear valor, identificando sus elementos humanos, materiales, inmateriales y organizativos, así como sus funciones productiva, comercial, financiera y social.
+                    </p>
+                    <p>
+                        En segundo lugar, se han revisado las principales <strong>teorías de la empresa</strong>: desde la visión neoclásica (función de producción, maximización de beneficios) hasta las aportaciones de Coase y Williamson (costes de transacción), Jensen y Meckling (teoría de la agencia), Penrose y Barney (recursos y capacidades VRIN) y Schumpeter (empresario innovador, destrucción creativa).
+                    </p>
+                    <p>
+                        En tercer lugar, se ha establecido una <strong>clasificación multidimensional</strong> de las empresas (actividad, dimensión, propiedad, forma jurídica, ámbito geográfico), con especial atención al tejido PYME español y a las formas de la economía social. Finalmente, se ha trazado la <strong>evolución del concepto de empresario</strong> —de Cantillon a Kirzner—, subrayando las funciones de planificación, organización, dirección, control, innovación y asunción de riesgo.
+                    </p>
+                    <p>
+                        El tema es de máxima relevancia docente: constituye el cimiento sobre el que se construyen los restantes temas de economía de la empresa (organización, producción, financiación, marketing, estrategia), y conecta con la competencia emprendedora que la LOMLOE sitúa como transversal en todas las etapas educativas.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── BIBLIOGRAFÍA ────────────────────────────────────── */}
+            <BibliografiaBox items={[
+                'COASE, R.H. (1937): "The Nature of the Firm", Economica, 4(16), pp. 386-405.',
+                'WILLIAMSON, O.E. (1975): Markets and Hierarchies: Analysis and Antitrust Implications, Free Press.',
+                'PENROSE, E. (1959): The Theory of the Growth of the Firm, Oxford University Press.',
+                'SCHUMPETER, J.A. (1942): Capitalism, Socialism and Democracy, Harper & Brothers.',
+                'KNIGHT, F.H. (1921): Risk, Uncertainty and Profit, Houghton Mifflin.',
+                'BARNEY, J.B. (1991): "Firm Resources and Sustained Competitive Advantage", Journal of Management, 17(1).',
+                'JENSEN, M.C. y MECKLING, W.H. (1976): "Theory of the Firm: Managerial Behavior, Agency Costs and Ownership Structure", Journal of Financial Economics, 3(4).',
+                'MANKIW, N.G. (2020): Principios de Economía, 8.ª ed., Cengage Learning.',
+                'MOCHÓN, F. (2021): Economía. Teoría y Política, 7.ª ed., McGraw-Hill.',
+                'Ley Orgánica 3/2020, de 29 de diciembre (LOMLOE).',
+                'Real Decreto 243/2022, de 5 de abril (currículo Bachillerato).',
+            ]} />
+
+            {/* ── CLAU ────────────────────────────────────────────── */}
+            <ClauBox>
+                <p>- Define la empresa como <strong>unidad de producción</strong> con ánimo de lucro. Distingue empresa de negocio, industria y sector.</p>
+                <p>- Domina las <strong>teorías</strong>: neoclásica (caja negra), <strong>Coase</strong> (costes de transacción), <strong>Williamson</strong> (especificidad, oportunismo), <strong>Jensen-Meckling</strong> (agencia), <strong>Penrose-Barney</strong> (recursos VRIN).</p>
+                <p>- Conoce la evolución del concepto de <strong>empresario</strong>: Cantillon (riesgo) → Say (coordinador) → Marshall (4.º factor) → Schumpeter (innovador) → Knight (incertidumbre) → Kirzner (<em>alertness</em>).</p>
+                <p>- Clasifica empresas por <strong>5 criterios</strong>: actividad (Fisher-Clark), dimensión (criterios UE), propiedad, forma jurídica (SA, SL, cooperativa) y ámbito geográfico.</p>
+                <p>- Las PYME representan <strong>{'>'}99%</strong> del tejido empresarial español. Conoce las cifras UE de clasificación.</p>
+                <p>- Conecta con LOMLOE (CE1, CE2), competencia emprendedora (CE), y vincula con Economía 1.º Bach y EDMN 2.º Bach.</p>
+            </ClauBox>
         </div>
     );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 19 — RESUM / ESQUEMA
+    // ════════════════════════════════════════════════════════════════
+    const Tema19Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-pink-50 rounded-xl border border-pink-200 mb-5">
+                    <p className="text-center font-bold text-pink-800 text-lg">Tema 19: La empresa. Teoría y tipos. El empresario.</p>
+                    <p className="text-center text-sm text-pink-600 mt-1">
+                        <em>"La empresa existe porque usar el mercado tiene costes"</em> — R.H. Coase (1937)
+                    </p>
+                </div>
+
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. Concepto de empresa</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>Definición</strong>: unidad de producción que combina factores para obtener bienes/servicios con ánimo de lucro.</li>
+                            <li><strong>Elementos</strong>: humanos (empresario, trabajadores), materiales (capital fijo/circulante), inmateriales (tecnología, marca, <em>know-how</em>), organización.</li>
+                            <li><strong>Funciones</strong>: productiva, comercial, financiera, social (empleo, innovación, desarrollo territorial).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. Teorías de la empresa</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>Neoclásica</strong>: empresa = función de producción, max beneficio (IMg = CMg).</li>
+                            <li><strong>Costes de transacción</strong>: Coase (1937), Williamson (1975). Empresa vs mercado; especificidad, racionalidad limitada, oportunismo.</li>
+                            <li><strong>Agencia</strong>: Jensen-Meckling (1976). Principal-agente, asimetría de información, mecanismos de control.</li>
+                            <li><strong>Recursos y capacidades</strong>: Penrose (1959), Barney (1991). Recursos VRIN → ventaja competitiva sostenible.</li>
+                            <li><strong>Otras</strong>: Schumpeter (destrucción creativa), Knight (incertidumbre), Nelson-Winter (rutinas evolutivas).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. Clasificación</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>Actividad</strong>: primario, secundario, terciario (Fisher-Clark).</li>
+                            <li><strong>Dimensión</strong>: micro ({'<'}10), pequeña ({'<'}50), mediana ({'<'}250), grande (≥250). Criterios UE.</li>
+                            <li><strong>Propiedad</strong>: privada, pública, mixta, cooperativa, economía social.</li>
+                            <li><strong>Forma jurídica</strong>: autónomo, SL (1 €), SA (60.000 €), cooperativa. Responsabilidad limitada vs ilimitada.</li>
+                            <li><strong>Ámbito</strong>: local, regional, nacional, multinacional, global.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. El empresario</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>Evolución</strong>: Cantillon (riesgo) → Say (coordinador) → Marshall (4.º factor) → Schumpeter (innovador) → Knight (incertidumbre) → Kirzner (<em>alertness</em>).</li>
+                            <li><strong>Funciones</strong>: planificación, organización, dirección, control, innovación, asunción de riesgo.</li>
+                            <li><strong>Emprendimiento</strong>: competencia CE (LOMLOE), intraemprendimiento, ecosistema emprendedor.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <FormulaBox formula="π = IT − CT   |   Beneficio = Ingresos Totales − Costes Totales" />
+                <FormulaBox formula="Empresa internaliza si: Costes organización interna < Costes de transacción del mercado" />
+
+                <ClauBox>
+                    <p>- Estructura en <strong>5 epígrafes</strong>: concepto → teorías → clasificación → empresario → currículo.</p>
+                    <p>- Domina las <strong>4 teorías clave</strong>: neoclásica, costes de transacción (Coase-Williamson), agencia (Jensen-Meckling), recursos VRIN (Penrose-Barney).</p>
+                    <p>- Conoce la <strong>evolución del empresario</strong>: Cantillon → Say → Marshall → Schumpeter → Knight → Kirzner.</p>
+                    <p>- Clasifica por <strong>5 criterios</strong>: actividad, dimensión (UE), propiedad, forma jurídica, ámbito geográfico.</p>
+                    <p>- Conecta con LOMLOE (CE1, CE2), competencia emprendedora, Economía 1.º y EDMN 2.º Bach.</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 19 — Component wrapper
+    // ════════════════════════════════════════════════════════════════
+    const Tema19 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="📖" title="Tema 19" subtitle={t('tema19.title')} />
+                <Tabs tabs={[
+                    { id: 'complet', label: '📝 ' + t('tab.complet') },
+                    { id: 'resum', label: '📋 ' + t('tab.resum') },
+                ]} active={vista} onChange={setVista} />
+
+                {vista === 'complet' && <Tema19Complet />}
+                {vista === 'resum' && <Tema19Resum />}
+            </div>
+        );
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 20 — COMPLET
+    // ════════════════════════════════════════════════════════════════
+    const Tema20Complet = () => (
+        <div className="space-y-6 animate-fade">
+            {/* ── INTRODUCCIÓN ────────────────────────────────────── */}
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        Si el tema anterior abordó la empresa desde la teoría económica —por qué existe, qué tipos hay, quién la dirige—, este tema desciende al interior de la organización para analizar <strong>cómo se estructura, qué funciones desempeña y qué objetivos persigue</strong>. Pasamos, por tanto, de la empresa como agente del mercado a la empresa como <strong>organización</strong> que necesita diseñar su arquitectura interna para alcanzar sus fines.
+                    </p>
+                    <p>
+                        El estudio de la organización empresarial tiene raíces en los trabajos pioneros de <strong>Fayol</strong> (administración clásica), <strong>Taylor</strong> (organización científica del trabajo) y <strong>Weber</strong> (burocracia), y ha evolucionado con las aportaciones de <strong>Mintzberg</strong> (configuraciones estructurales), la escuela de relaciones humanas (<strong>Mayo</strong>, <strong>Maslow</strong>, <strong>Herzberg</strong>) y los enfoques contemporáneos de gestión (calidad total, <em>lean</em>, responsabilidad social corporativa).
+                    </p>
+                    <p>
+                        Desde la perspectiva curricular, este tema se enmarca en los saberes básicos del bloque «La empresa y su entorno» y «Organización y gestión» de Economía de la Empresa de 2.º de Bachillerato (Real Decreto 243/2022, LOMLOE), conectando con las competencias específicas CE1 (análisis organizativo), CE3 (gestión de áreas funcionales) y CE5 (responsabilidad social). La comprensión de la estructura organizativa, las áreas funcionales y los objetivos empresariales es esencial para el desarrollo de las competencias STEM (modelización), CE (iniciativa emprendedora) y CC (ética empresarial).
+                    </p>
+                    <p>
+                        El tema se estructura en cuatro epígrafes: la organización empresarial (principios y tipos); la estructura organizativa (Mintzberg, organigramas); las funciones o áreas funcionales; y los objetivos de la empresa (incluida la RSC y el gobierno corporativo).
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── 1. LA ORGANIZACIÓN EMPRESARIAL ────────────────────── */}
+            <Card title="1. La organización empresarial" icon="📘">
+                <TheoryBlock title="1.1. Concepto de organización" color="purple">
+                    <p>
+                        La <strong>organización</strong> es el proceso mediante el cual se diseña la estructura interna de la empresa para alcanzar sus objetivos de forma eficiente. Implica dos dimensiones fundamentales:
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>División del trabajo</strong>: descomponer la actividad global en tareas especializadas (Adam Smith, 1776: fábrica de alfileres).</li>
+                        <li><strong>Coordinación</strong>: integrar las tareas divididas para que el resultado sea coherente y sinérgico.</li>
+                    </ul>
+                    <p>
+                        Organizar, por tanto, es decidir <em>quién hace qué</em>, <em>cómo se relacionan las partes</em> y <em>quién decide qué</em>. La estructura resultante define las relaciones de autoridad, comunicación y responsabilidad dentro de la empresa.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.2. Principios organizativos clásicos" color="blue">
+                    <p>Los autores clásicos establecieron principios que siguen vigentes (con matices):</p>
+                    <ul className="list-disc pl-5 space-y-2">
+                        <li><strong>Henri Fayol</strong> (1916): formuló <strong>14 principios de administración</strong> (división del trabajo, autoridad-responsabilidad, disciplina, unidad de mando, unidad de dirección, subordinación del interés particular al general, remuneración, centralización, cadena escalar, orden, equidad, estabilidad del personal, iniciativa, espíritu de equipo). Definió las cinco funciones de la dirección: prever, organizar, mandar, coordinar y controlar.</li>
+                        <li><strong>Frederick W. Taylor</strong> (1911): <strong>organización científica del trabajo</strong> (<em>scientific management</em>). Estudio de tiempos y movimientos, selección científica del trabajador, incentivos salariales por rendimiento, separación planificación-ejecución. Revolucionó la productividad fabril pero fue criticado por deshumanizar el trabajo.</li>
+                        <li><strong>Max Weber</strong> (1922): modelo de <strong>burocracia ideal</strong>: reglas escritas, jerarquía clara, especialización funcional, impersonalidad, carrera profesional basada en méritos. Garantiza previsibilidad y equidad, pero puede generar rigidez y lentitud.</li>
+                    </ul>
+                    <p>Principios organizativos clave: <strong>unidad de mando</strong> (cada subordinado, un solo jefe), <strong>jerarquía</strong> (cadena escalar de autoridad), <strong>especialización</strong> (cada unidad se centra en una función) y <strong><em>span of control</em></strong> (número de subordinados que un directivo puede supervisar eficazmente; determina si la estructura es alta/estrecha o plana/amplia).</p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.3. Organización formal e informal" color="green">
+                    <p>
+                        La <strong>organización formal</strong> es la estructura oficial, diseñada deliberadamente por la dirección: organigramas, manuales de funciones, procedimientos escritos. Define las relaciones de autoridad, responsabilidad y comunicación establecidas.
+                    </p>
+                    <p>
+                        La <strong>organización informal</strong> surge espontáneamente de las relaciones personales, afinidades, hábitos y normas no escritas entre los miembros. <strong>Elton Mayo</strong> (experimentos de Hawthorne, 1924-1932) demostró que los factores sociales y psicológicos influyen en la productividad tanto o más que las condiciones físicas del trabajo.
+                    </p>
+                    <p>
+                        La dirección eficaz reconoce la organización informal, la canaliza y la aprovecha. Ignorarla genera conflictos; reprimirla, resistencia. Los líderes informales pueden ser aliados o adversarios del cambio organizativo.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── 2. ESTRUCTURA ORGANIZATIVA ─────────────────────────── */}
+            <Card title="2. Estructura organizativa" icon="📘">
+                <TheoryBlock title="2.1. Concepto" color="amber">
+                    <p>
+                        <strong>Henry Mintzberg</strong> (1979) definió la estructura organizativa como «el conjunto de formas en que se divide el trabajo en tareas distintas y se logra la coordinación entre ellas». Identificó <strong>cinco partes fundamentales</strong> de toda organización:
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Ápice estratégico</strong>: alta dirección, responsable de la estrategia global.</li>
+                        <li><strong>Línea media</strong>: directivos intermedios que conectan el ápice con el núcleo operativo.</li>
+                        <li><strong>Núcleo de operaciones</strong>: trabajadores que realizan el trabajo básico de producción.</li>
+                        <li><strong>Tecnoestructura</strong>: analistas que diseñan sistemas, planifican y controlan (controllers, ingenieros de procesos).</li>
+                        <li><strong>Staff de apoyo</strong>: unidades que prestan servicios internos (asesoría jurídica, cafetería, relaciones públicas).</li>
+                    </ul>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.2. Tipos de estructura" color="pink">
+                    <ul className="list-disc pl-5 space-y-2">
+                        <li><strong>Estructura lineal/jerárquica</strong>: autoridad directa del superior sobre el subordinado. Simple, clara, unidad de mando. Adecuada para PYME. Limitación: sobrecarga del directivo, falta de especialización.</li>
+                        <li><strong>Estructura funcional</strong>: la organización se divide por funciones especializadas (producción, marketing, finanzas, RRHH). Alta especialización pero puede romper la unidad de mando (un trabajador puede recibir órdenes de varios jefes funcionales).</li>
+                        <li><strong>Estructura divisional</strong>: la empresa se divide en unidades autónomas (divisiones) por <strong>producto</strong>, <strong>mercado/cliente</strong> o <strong>zona geográfica</strong>. Cada división funciona casi como una empresa independiente. Adecuada para empresas grandes y diversificadas. Riesgo: duplicación de recursos.</li>
+                        <li><strong>Estructura matricial</strong>: combina la organización funcional y la de proyectos. Cada empleado tiene un jefe funcional y un jefe de proyecto. Alta flexibilidad pero doble autoridad puede generar conflictos.</li>
+                        <li><strong>Estructura en red/trébol</strong> (Handy, 1989): núcleo profesional reducido + subcontratación + trabajo flexible + clientes como coproductores. Propia de la era digital y la economía del conocimiento. Empresa-red, organización virtual.</li>
+                    </ul>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.3. Organigramas" color="violet">
+                    <p>
+                        El <strong>organigrama</strong> es la representación gráfica de la estructura organizativa formal. Muestra las unidades, los niveles jerárquicos y las relaciones de autoridad.
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Vertical</strong>: la jerarquía se representa de arriba abajo. El más habitual.</li>
+                        <li><strong>Horizontal</strong>: de izquierda a derecha. Útil para estructuras planas.</li>
+                        <li><strong>Circular</strong>: la dirección en el centro, las unidades en anillos concéntricos. Menos jerárquico visualmente.</li>
+                    </ul>
+                    <p>
+                        <strong>Utilidad</strong>: visión global de la estructura, identificación de responsabilidades, herramienta de comunicación interna y externa. <strong>Limitaciones</strong>: no refleja la organización informal, puede quedar obsoleto rápidamente, simplifica relaciones complejas.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.4. Centralización vs descentralización" color="red">
+                    <p>
+                        La <strong>centralización</strong> concentra la toma de decisiones en la alta dirección; la <strong>descentralización</strong> la delega a niveles inferiores o unidades periféricas.
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Ventajas de la centralización</strong>: coherencia, control, visión global, aprovechamiento de la experiencia directiva.</li>
+                        <li><strong>Ventajas de la descentralización</strong>: rapidez de respuesta, motivación del personal, adaptación local, desarrollo de directivos.</li>
+                        <li><strong>Factores que influyen</strong>: tamaño de la empresa, dispersión geográfica, complejidad del entorno, cultura organizativa, capacitación de los mandos intermedios.</li>
+                    </ul>
+                    <p>
+                        La tendencia actual en entornos dinámicos y complejos es hacia la <strong>descentralización</strong> (empowerment, equipos autónomos, organizaciones ágiles), manteniendo un núcleo estratégico centralizado.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── 3. FUNCIONES / ÁREAS FUNCIONALES ──────────────────── */}
+            <Card title="3. Las funciones o áreas funcionales de la empresa" icon="📘">
+                <TheoryBlock title="3.1. Función de producción/operaciones" color="purple">
+                    <p>Engloba todas las actividades de transformación de inputs en outputs:</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Planificación de la producción</strong>: decisiones de capacidad, localización, distribución en planta, programación (MRP, ERP).</li>
+                        <li><strong>Gestión de inventarios</strong>: modelo de Wilson (lote económico), sistema <strong>just-in-time</strong> (JIT) desarrollado por Toyota (Ohno, 1988): producir lo necesario, cuando es necesario, en la cantidad necesaria. Eliminación de desperdicios (<em>muda</em>).</li>
+                        <li><strong>Calidad total</strong> (TQM): <strong>Deming</strong> (ciclo PDCA, 14 puntos), <strong>Juran</strong> (trilogía de la calidad), <strong>Ishikawa</strong> (diagrama causa-efecto). La calidad como responsabilidad de todos, no solo del departamento de control.</li>
+                        <li><strong><em>Lean manufacturing</em></strong>: producción ajustada, eliminación sistemática de desperdicios, mejora continua (<em>kaizen</em>), herramientas 5S, kanban, poka-yoke.</li>
+                    </ul>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.2. Función comercial/marketing" color="blue">
+                    <p>Conecta la empresa con el mercado y el consumidor:</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Investigación de mercados</strong>: recogida y análisis de información sobre consumidores, competencia y entorno. Métodos: encuestas, paneles, observación, <em>big data</em>.</li>
+                        <li><strong>Marketing mix (4P)</strong> — McCarthy (1960):
+                            <ul className="list-disc pl-5 mt-1 space-y-0.5">
+                                <li><strong>Producto</strong>: diseño, marca, ciclo de vida, cartera de productos.</li>
+                                <li><strong>Precio</strong>: estrategias de fijación (costes, competencia, valor percibido), discriminación de precios.</li>
+                                <li><strong>Distribución (<em>Place</em>)</strong>: canales (directo, corto, largo), logística, e-commerce.</li>
+                                <li><strong>Comunicación (<em>Promotion</em>)</strong>: publicidad, promoción de ventas, relaciones públicas, venta personal, marketing digital.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Marketing digital y CRM</strong>: redes sociales, SEO/SEM, inbound marketing, gestión de la relación con el cliente (<em>Customer Relationship Management</em>).</li>
+                    </ul>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.3. Función financiera" color="green">
+                    <p>Gestiona los flujos monetarios de la empresa:</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Inversión</strong>: selección de proyectos (VAN, TIR, payback), presupuesto de capital.</li>
+                        <li><strong>Financiación</strong>: fuentes propias (capital social, reservas, autofinanciación) y ajenas (préstamos, empréstitos, leasing, factoring, crédito comercial). Coste de capital, estructura financiera óptima (Modigliani-Miller, <em>trade-off theory</em>).</li>
+                        <li><strong>Gestión de tesorería</strong>: cash flow, fondo de maniobra, gestión de cobros y pagos.</li>
+                        <li><strong>Análisis financiero</strong>: ratios de liquidez, solvencia, rentabilidad (ROA, ROE), endeudamiento. Estados financieros: balance, cuenta de pérdidas y ganancias, estado de flujos de efectivo.</li>
+                    </ul>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.4. Función de recursos humanos" color="amber">
+                    <p>Gestiona el factor humano, el activo más valioso:</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Reclutamiento y selección</strong>: atracción de candidatos, proceso de selección (entrevistas, tests, assessment center).</li>
+                        <li><strong>Formación y desarrollo</strong>: planes de formación, gestión del talento, planes de carrera.</li>
+                        <li><strong>Evaluación del desempeño</strong>: sistemas de evaluación, feedback 360°, gestión por objetivos (Drucker).</li>
+                        <li><strong>Motivación</strong>:
+                            <ul className="list-disc pl-5 mt-1 space-y-0.5">
+                                <li><strong>Maslow</strong> (1943): pirámide de necesidades (fisiológicas → seguridad → sociales → estima → autorrealización).</li>
+                                <li><strong>Herzberg</strong> (1959): factores higiénicos (evitan insatisfacción) vs motivadores (generan satisfacción).</li>
+                                <li><strong>McGregor</strong> (1960): Teoría X (trabajador pasivo, necesita control) vs Teoría Y (trabajador proactivo, busca responsabilidad).</li>
+                                <li><strong>Vroom</strong> (1964): teoría de las expectativas (motivación = expectativa × instrumentalidad × valencia).</li>
+                            </ul>
+                        </li>
+                        <li><strong>Liderazgo</strong>: estilos autocrático, democrático y <em>laissez-faire</em> (Lewin). Liderazgo transformacional vs transaccional (Burns, Bass).</li>
+                    </ul>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.5. Función de I+D+i" color="pink">
+                    <p>Motor de la competitividad a largo plazo:</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Investigación básica</strong>: generación de conocimiento sin aplicación inmediata.</li>
+                        <li><strong>Investigación aplicada</strong>: orientada a resolver problemas prácticos concretos.</li>
+                        <li><strong>Desarrollo tecnológico</strong>: transformación del conocimiento en productos, procesos o prototipos.</li>
+                        <li><strong>Innovación</strong> (Manual de Oslo, OCDE):
+                            <ul className="list-disc pl-5 mt-1 space-y-0.5">
+                                <li>De <strong>producto</strong>: bienes o servicios nuevos o significativamente mejorados.</li>
+                                <li>De <strong>proceso</strong>: mejoras en los métodos de producción o distribución.</li>
+                                <li><strong>Organizativa</strong>: nuevas prácticas de gestión, organización del trabajo o relaciones externas.</li>
+                                <li>De <strong>marketing</strong>: cambios significativos en diseño, envase, posicionamiento o precio.</li>
+                            </ul>
+                        </li>
+                        <li>España invierte ≈ 1,4% del PIB en I+D (2023), por debajo de la media UE (≈ 2,2%) y lejos de los líderes (Suecia ≈ 3,4%, Alemania ≈ 3,1%).</li>
+                    </ul>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── 4. OBJETIVOS DE LA EMPRESA ──────────────────────────── */}
+            <Card title="4. Objetivos de la empresa" icon="📘">
+                <TheoryBlock title="4.1. Maximización del beneficio" color="purple">
+                    <p>
+                        El enfoque <strong>clásico/neoclásico</strong> asume que el objetivo de la empresa es maximizar el beneficio (π = IT − CT). <strong>Milton Friedman</strong> (1970) sostuvo que «la responsabilidad social de la empresa es incrementar sus beneficios»: el directivo debe maximizar el valor para el accionista (<em>shareholder value</em>) dentro del marco legal. Este enfoque sigue siendo dominante en la economía financiera.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.2. Otros objetivos" color="blue">
+                    <p>La realidad empresarial muestra una pluralidad de objetivos, a menudo coexistentes:</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Crecimiento</strong> (Marris, 1964): los directivos pueden preferir el crecimiento de la empresa (más poder, estatus, remuneración) al máximo beneficio.</li>
+                        <li><strong>Poder de mercado</strong>: aumentar la cuota de mercado para influir en precios y condiciones.</li>
+                        <li><strong>Supervivencia</strong>: en entornos turbulentos, la continuidad puede ser el objetivo prioritario.</li>
+                        <li><strong>Satisfacción</strong> (Simon, 1955): <strong>racionalidad limitada</strong> → los agentes no maximizan sino que buscan resultados «satisfactorios» (<em>satisficing</em>). Los directivos persiguen niveles aceptables de beneficio, crecimiento y cuota.</li>
+                        <li><strong>Objetivos sociales</strong>: empleo, desarrollo local, sostenibilidad medioambiental, bienestar de los trabajadores.</li>
+                    </ul>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.3. Responsabilidad Social Corporativa (RSC)" color="green">
+                    <p>
+                        La RSC implica que la empresa integra voluntariamente preocupaciones sociales, medioambientales y éticas en su estrategia y operaciones, más allá de las obligaciones legales.
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Triple bottom line</strong> (Elkington, 1997): la empresa debe generar valor en tres dimensiones — <strong>económica</strong> (beneficios), <strong>social</strong> (personas) y <strong>medioambiental</strong> (planeta). <em>People, Planet, Profit</em>.</li>
+                        <li><strong>Stakeholders vs shareholders</strong>: <strong>Freeman</strong> (1984) amplió el enfoque de Friedman: la empresa debe considerar los intereses de todos los <strong>grupos de interés</strong> (<em>stakeholders</em>): trabajadores, clientes, proveedores, comunidad local, medio ambiente, administraciones públicas, no solo los accionistas (<em>shareholders</em>).</li>
+                        <li><strong>ODS (Objetivos de Desarrollo Sostenible)</strong>: la Agenda 2030 de Naciones Unidas establece 17 objetivos que las empresas pueden integrar en su estrategia.</li>
+                        <li><strong>ESG</strong> (<em>Environmental, Social, Governance</em>): criterios de inversión responsable que evalúan el impacto medioambiental, social y de gobernanza de las empresas.</li>
+                        <li><strong>Economía del bien común</strong> (Felber, 2010): mide el éxito empresarial no solo por beneficios financieros, sino por la contribución al bien común (dignidad humana, solidaridad, sostenibilidad, participación democrática).</li>
+                    </ul>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.4. Gobierno corporativo" color="amber">
+                    <p>
+                        El <strong>gobierno corporativo</strong> es el conjunto de normas, principios y procedimientos que regulan la estructura y el funcionamiento de los órganos de gobierno de la empresa, especialmente en las sociedades cotizadas donde la <strong>separación propiedad-gestión</strong> es máxima.
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Consejo de administración</strong>: órgano colegiado que supervisa la gestión, nombra y controla a los directivos, aprueba la estrategia. Composición: consejeros ejecutivos, dominicales e independientes.</li>
+                        <li><strong>Transparencia</strong>: información financiera y no financiera (informes de sostenibilidad, memoria de RSC), auditoría externa, comité de auditoría.</li>
+                        <li><strong>Códigos de buen gobierno</strong> en España: Informe Olivencia (1998), Informe Aldama (2003), Código Unificado de Buen Gobierno (CNMV, 2006, actualizado en 2015 y 2020). Principio «cumplir o explicar» (<em>comply or explain</em>).</li>
+                    </ul>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── 5. RELEVANCIA CURRICULAR ─────────────────────────── */}
+            <Card title="5. Relevancia curricular" icon="📘">
+                <TheoryBlock title="Conexión con la LOMLOE" color="purple">
+                    <p>
+                        Este tema conecta directamente con los saberes básicos de los bloques «Organización y gestión» y «La empresa y su entorno» de <strong>Economía de la Empresa de 2.º de Bachillerato</strong> (Real Decreto 243/2022).
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>CE1</strong>: Analizar la estructura organizativa de la empresa y su relación con el entorno.</li>
+                        <li><strong>CE3</strong>: Gestionar las áreas funcionales de la empresa aplicando criterios de eficiencia.</li>
+                        <li><strong>CE5</strong>: Valorar la responsabilidad social de la empresa y su impacto en la sociedad y el medio ambiente.</li>
+                        <li><strong>Competencia emprendedora (CE)</strong>: diseño organizativo, gestión de equipos, liderazgo.</li>
+                        <li><strong>STEM</strong>: modelización de procesos productivos, herramientas cuantitativas de gestión.</li>
+                        <li><strong>CC</strong>: ética empresarial, RSC, gobierno corporativo, ODS.</li>
+                    </ul>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── CONCLUSIÓN ───────────────────────────────────────── */}
+            <Card title="Conclusión" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        A lo largo de este tema se ha analizado la empresa como organización desde cuatro perspectivas complementarias. En primer lugar, la <strong>organización empresarial</strong>: los principios clásicos (Fayol, Taylor, Weber), la dialéctica entre organización formal e informal (Mayo, Hawthorne) y los conceptos de división del trabajo y coordinación.
+                    </p>
+                    <p>
+                        En segundo lugar, la <strong>estructura organizativa</strong>: el modelo de Mintzberg (cinco partes), los tipos de estructura (lineal, funcional, divisional, matricial, en red) y las herramientas de representación (organigramas). Se ha analizado el continuo centralización-descentralización y la tendencia actual hacia organizaciones más planas y ágiles.
+                    </p>
+                    <p>
+                        En tercer lugar, las <strong>áreas funcionales</strong>: producción (JIT, calidad total, <em>lean</em>), marketing (4P, CRM), finanzas (inversión, financiación, análisis), recursos humanos (motivación: Maslow, Herzberg, McGregor, Vroom; liderazgo) e I+D+i (innovación según el Manual de Oslo).
+                    </p>
+                    <p>
+                        Finalmente, los <strong>objetivos de la empresa</strong>: desde la maximización del beneficio (Friedman) hasta la pluralidad de fines (crecimiento, supervivencia, satisficing de Simon), la RSC (triple bottom line, stakeholders de Freeman, ODS, ESG, economía del bien común) y el gobierno corporativo (códigos de buen gobierno). El tema cierra el Bloc B conectando la teoría económica con la gestión empresarial, pilar de la formación en Economía de la Empresa.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── BIBLIOGRAFÍA ────────────────────────────────────── */}
+            <BibliografiaBox items={[
+                'MINTZBERG, H. (1979): The Structuring of Organizations, Prentice Hall.',
+                'FAYOL, H. (1916): Administration industrielle et générale, Dunod.',
+                'TAYLOR, F.W. (1911): The Principles of Scientific Management, Harper & Brothers.',
+                'PORTER, M.E. (1985): Competitive Advantage, Free Press.',
+                'DRUCKER, P.F. (1954): The Practice of Management, Harper & Row.',
+                'MASLOW, A. (1943): "A Theory of Human Motivation", Psychological Review, 50(4).',
+                'HERZBERG, F. (1959): The Motivation to Work, John Wiley & Sons.',
+                'MANKIW, N.G. (2020): Principios de Economía, 8.ª ed., Cengage Learning.',
+                'MOCHÓN, F. (2021): Economía. Teoría y Política, 7.ª ed., McGraw-Hill.',
+                'BUENO CAMPOS, E. (2019): Organización de Empresas, 3.ª ed., Pirámide.',
+                'Ley Orgánica 3/2020, de 29 de diciembre (LOMLOE).',
+                'Real Decreto 243/2022, de 5 de abril (currículo Bachillerato).',
+            ]} />
+
+            {/* ── CLAU ────────────────────────────────────────────── */}
+            <ClauBox>
+                <p>- Domina los <strong>3 clásicos</strong>: Fayol (14 principios), Taylor (OCT), Weber (burocracia). Conoce sus aportaciones y limitaciones.</p>
+                <p>- Distingue <strong>organización formal</strong> (diseñada, organigramas) e <strong>informal</strong> (espontánea, Mayo/Hawthorne). La dirección eficaz integra ambas.</p>
+                <p>- Conoce <strong>Mintzberg</strong> (5 partes de la organización) y los <strong>5 tipos de estructura</strong>: lineal, funcional, divisional, matricial, en red/trébol (Handy).</p>
+                <p>- En <strong>RRHH</strong>: Maslow (pirámide), Herzberg (higiénicos/motivadores), McGregor (X/Y), Vroom (expectativas). En <strong>producción</strong>: JIT, TQM, <em>lean</em>.</p>
+                <p>- Diferencia <strong>maximización de beneficio</strong> (Friedman) de <strong>RSC</strong> (triple bottom line, stakeholders de Freeman, ESG, ODS). Conoce <strong>gobierno corporativo</strong> (códigos CNMV).</p>
+                <p>- Conecta con LOMLOE (CE1, CE3, CE5), competencia emprendedora, STEM, CC, y cierra Bloc B vinculando teoría económica con gestión.</p>
+            </ClauBox>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 20 — RESUM / ESQUEMA
+    // ════════════════════════════════════════════════════════════════
+    const Tema20Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-pink-50 rounded-xl border border-pink-200 mb-5">
+                    <p className="text-center font-bold text-pink-800 text-lg">Tema 20: La empresa como organización. Estructura, funciones y objetivos.</p>
+                    <p className="text-center text-sm text-pink-600 mt-1">
+                        <em>"La estructura sigue a la estrategia"</em> — Alfred Chandler (1962)
+                    </p>
+                </div>
+
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. Organización empresarial</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>Concepto</strong>: diseño de la estructura para alcanzar objetivos. División del trabajo + coordinación.</li>
+                            <li><strong>Clásicos</strong>: Fayol (14 principios, 5 funciones directivas), Taylor (OCT, tiempos y movimientos), Weber (burocracia ideal).</li>
+                            <li><strong>Principios</strong>: unidad de mando, jerarquía, especialización, <em>span of control</em>.</li>
+                            <li><strong>Formal vs informal</strong>: estructura oficial vs relaciones espontáneas (Mayo, Hawthorne).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. Estructura organizativa</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>Mintzberg</strong>: 5 partes (ápice estratégico, línea media, núcleo de operaciones, tecnoestructura, staff de apoyo).</li>
+                            <li><strong>Tipos</strong>: lineal, funcional, divisional (producto/mercado/zona), matricial, en red/trébol (Handy).</li>
+                            <li><strong>Organigramas</strong>: vertical, horizontal, circular. Útiles pero limitados (no reflejan lo informal).</li>
+                            <li><strong>Centralización vs descentralización</strong>: tendencia actual → descentralización (<em>empowerment</em>).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. Áreas funcionales</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>Producción</strong>: planificación, JIT (Toyota), calidad total (Deming, Juran, Ishikawa), <em>lean manufacturing</em>.</li>
+                            <li><strong>Marketing</strong>: investigación de mercados, 4P (McCarthy: producto, precio, distribución, comunicación), CRM, marketing digital.</li>
+                            <li><strong>Finanzas</strong>: inversión (VAN, TIR), financiación (propia/ajena), análisis financiero (ROA, ROE, ratios).</li>
+                            <li><strong>RRHH</strong>: selección, formación, motivación (Maslow, Herzberg, McGregor X/Y, Vroom), liderazgo.</li>
+                            <li><strong>I+D+i</strong>: investigación básica/aplicada, desarrollo, innovación (Manual de Oslo: producto, proceso, organizativa, marketing).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. Objetivos</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>Max beneficio</strong>: enfoque clásico, Friedman (1970): <em>shareholder value</em>.</li>
+                            <li><strong>Otros</strong>: crecimiento (Marris), supervivencia, satisfacción (Simon: <em>satisficing</em>).</li>
+                            <li><strong>RSC</strong>: triple bottom line (Elkington), stakeholders (Freeman), ODS, ESG, economía del bien común (Felber).</li>
+                            <li><strong>Gobierno corporativo</strong>: consejo de administración, transparencia, códigos de buen gobierno (CNMV).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <FormulaBox formula="Motivación (Vroom) = Expectativa × Instrumentalidad × Valencia" />
+                <FormulaBox formula="Triple Bottom Line: People + Planet + Profit" />
+
+                <ClauBox>
+                    <p>- Estructura en <strong>4 epígrafes</strong>: organización → estructura → funciones → objetivos + currículo.</p>
+                    <p>- Domina <strong>Fayol</strong> (14 principios), <strong>Taylor</strong> (OCT), <strong>Weber</strong> (burocracia) y <strong>Mintzberg</strong> (5 partes).</p>
+                    <p>- Conoce los <strong>5 tipos de estructura</strong> y cuándo aplicar cada uno (PYME → lineal, gran empresa diversificada → divisional).</p>
+                    <p>- En RRHH domina las <strong>4 teorías de motivación</strong>: Maslow, Herzberg, McGregor, Vroom. En producción: JIT, TQM, <em>lean</em>.</p>
+                    <p>- Diferencia <strong>Friedman</strong> (beneficio) de <strong>Freeman</strong> (stakeholders) y <strong>RSC</strong> (triple bottom line, ESG, ODS, Felber).</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 20 — Component wrapper
+    // ════════════════════════════════════════════════════════════════
+    const Tema20 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="📖" title="Tema 20" subtitle={t('tema20.title')} />
+                <Tabs tabs={[
+                    { id: 'complet', label: '📝 ' + t('tab.complet') },
+                    { id: 'resum', label: '📋 ' + t('tab.resum') },
+                ]} active={vista} onChange={setVista} />
+
+                {vista === 'complet' && <Tema20Complet />}
+                {vista === 'resum' && <Tema20Resum />}
+            </div>
+        );
+    };
 
     // ════════════════════════════════════════════════════════════════
     // NAVIGATION AND RENDER
@@ -3937,8 +4666,8 @@ function BlocBApp() {
         { id: 'tema16', label: 'T16', emoji: '📖' },
         { id: 'tema17', label: 'T17', emoji: '📖' },
         { id: 'tema18', label: 'T18', emoji: '📖' },
-        { id: 'tema19', label: 'T19', emoji: '🔒' },
-        { id: 'tema20', label: 'T20', emoji: '🔒' },
+        { id: 'tema19', label: 'T19', emoji: '📖' },
+        { id: 'tema20', label: 'T20', emoji: '📖' },
     ];
 
     return (
@@ -3962,8 +4691,8 @@ function BlocBApp() {
                 {section === 'tema16' && <Tema16 />}
                 {section === 'tema17' && <Tema17 />}
                 {section === 'tema18' && <Tema18 />}
-                {section === 'tema19' && <TemaPlaceholder num={19} />}
-                {section === 'tema20' && <TemaPlaceholder num={20} />}
+                {section === 'tema19' && <Tema19 />}
+                {section === 'tema20' && <Tema20 />}
             </main>
 
             <PdePrevNext sections={headerSections} currentSection={section} setSection={setSection} idioma={idioma} />
