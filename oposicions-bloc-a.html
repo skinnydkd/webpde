@@ -172,8 +172,8 @@ function BlocAApp() {
         { num: 6, id: 'tema6', available: true },
         { num: 7, id: 'tema7', available: true },
         { num: 8, id: 'tema8', available: true },
-        { num: 9, id: 'tema9', available: false },
-        { num: 10, id: 'tema10', available: false },
+        { num: 9, id: 'tema9', available: true },
+        { num: 10, id: 'tema10', available: true },
     ];
 
     // ════════════════════════════════════════════════════════════════
@@ -4240,27 +4240,944 @@ function BlocAApp() {
     };
 
     // ════════════════════════════════════════════════════════════════
-    // TEMES 9-10 — Placeholders
+    // TEMA 9 — Población y mercado de trabajo.
     // ════════════════════════════════════════════════════════════════
-    const TemaPlaceholder = ({ num }) => (
-        <div className="animate-fade text-center py-20">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gray-100 mb-6">
-                <span className="text-4xl">🔒</span>
-            </div>
-            <h2 className="text-2xl font-black text-slate-800 mb-2">
-                {lang === 'es' ? 'Próximamente' : lang === 'en' ? 'Coming soon' : 'Properament'} — Tema {num}
-            </h2>
-            <p className="text-slate-500 max-w-lg mx-auto">
-                {t(`tema${num}.title`)}
-            </p>
-            <button
-                onClick={() => { setSection('inicio'); pdeSetHashSection('inicio'); pdeScrollToTop(); }}
-                className="mt-8 inline-flex items-center gap-2 px-5 py-2.5 bg-purple-100 text-purple-700 rounded-xl font-semibold text-sm hover:bg-purple-200 transition-colors"
-            >
-                ← {t('sec.inicio')}
-            </button>
+    const Tema9Complet = () => (
+        <div className="space-y-6 animate-fade">
+            {/* ── INTRODUCCIÓN ────────────────────────────────────── */}
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        La <strong>población</strong> constituye una de las variables económicas más relevantes y transversales de la ciencia económica. El tamaño, la estructura, la dinámica y la distribución de la población determinan en gran medida la capacidad productiva de una economía, la demanda agregada de bienes y servicios, las necesidades de gasto público (sanidad, pensiones, educación) y, en última instancia, el bienestar social. La demografía —la ciencia que estudia la población— proporciona al análisis económico datos e indicadores imprescindibles para comprender el presente y anticipar el futuro de las sociedades.
+                    </p>
+                    <p>
+                        El <strong>mercado de trabajo</strong> es, junto al mercado de bienes y servicios y al mercado financiero, uno de los tres grandes mercados que articulan la actividad económica. En él se intercambia un factor productivo esencial: el trabajo humano. El funcionamiento de este mercado determina los niveles de empleo y desempleo, los salarios, las condiciones laborales y, por extensión, la distribución de la renta y la cohesión social. El <strong>desempleo</strong> —la incapacidad de una economía para proporcionar trabajo a todas las personas que lo desean— constituye uno de los problemas económicos y sociales más graves, con consecuencias que van más allá de la pérdida de producción: deterioro del bienestar psicológico, exclusión social, desigualdad creciente y erosión del capital humano.
+                    </p>
+                    <p>
+                        Desde la perspectiva educativa, la Ley Orgánica 3/2020 (LOMLOE) y el Real Decreto 243/2022 incluyen el estudio de la población, el mercado de trabajo y el desempleo entre los saberes básicos de Economía de 1.º de Bachillerato. Estos contenidos se conectan directamente con la competencia ciudadana (CC), la competencia personal, social y de aprender a aprender (CPSAA) y la competencia emprendedora (CE), además de contribuir a la comprensión del ODS 8 (trabajo decente y crecimiento económico) y del ODS 10 (reducción de las desigualdades).
+                    </p>
+                    <p>
+                        El presente tema aborda, en primer lugar, la relación entre demografía y economía; en segundo lugar, los conceptos de población activa e inactiva; en tercer lugar, el funcionamiento del mercado de trabajo; en cuarto lugar, los tipos y causas del desempleo; en quinto lugar, las políticas de empleo; en sexto lugar, las características del mercado de trabajo en España; y, finalmente, los desafíos futuros del mercado laboral. Todo ello se conecta con su relevancia curricular y con propuestas para la práctica docente.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── DESARROLLO ──────────────────────────────────────── */}
+
+            {/* Epígrafe 1 */}
+            <Card title="1. Demografía y economía" icon="📘">
+                <TheoryBlock title="1.1. Conceptos demográficos básicos" color="purple">
+                    <p>
+                        La <strong>demografía</strong> es la ciencia que estudia las poblaciones humanas en su dimensión cuantitativa: tamaño, estructura, distribución y dinámica. Para el análisis económico, los indicadores demográficos fundamentales son los siguientes:
+                    </p>
+                    <p>
+                        <strong>Tasa bruta de natalidad (TBN):</strong> número de nacimientos por cada 1.000 habitantes en un año. Refleja la capacidad reproductiva de una sociedad y está influida por factores culturales, económicos (coste de crianza), institucionales (políticas de conciliación) y biológicos. <strong>Tasa bruta de mortalidad (TBM):</strong> número de defunciones por cada 1.000 habitantes en un año. <strong>Tasa de fecundidad:</strong> número medio de hijos por mujer en edad fértil (15-49 años). La tasa de reemplazo generacional se sitúa en torno a 2,1 hijos por mujer. <strong>Esperanza de vida al nacer:</strong> número medio de años que viviría un recién nacido si se mantuvieran las tasas de mortalidad actuales. <strong>Saldo migratorio:</strong> diferencia entre inmigrantes y emigrantes en un período determinado.
+                    </p>
+                    <p>
+                        El <strong>crecimiento natural o vegetativo</strong> de la población se calcula como la diferencia entre nacimientos y defunciones (TBN − TBM), mientras que el <strong>crecimiento total</strong> añade el saldo migratorio.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.2. La transición demográfica" color="blue">
+                    <p>
+                        La <strong>teoría de la transición demográfica</strong>, formulada originalmente por Warren Thompson (1929) y Frank Notestein (1945), describe el proceso histórico por el que las sociedades pasan de un régimen demográfico antiguo (alta natalidad y alta mortalidad) a uno moderno (baja natalidad y baja mortalidad). Este proceso se divide en cuatro fases:
+                    </p>
+                    <p>
+                        <strong>Fase 1 (régimen demográfico antiguo):</strong> alta natalidad y alta mortalidad, crecimiento vegetativo bajo o nulo. Corresponde a las sociedades preindustriales. <strong>Fase 2 (primera transición):</strong> la mortalidad desciende drásticamente (mejoras sanitarias, alimentarias, higiénicas) mientras la natalidad permanece alta → fuerte crecimiento demográfico (explosión demográfica). <strong>Fase 3 (segunda transición):</strong> la natalidad desciende gradualmente (urbanización, educación femenina, acceso a métodos anticonceptivos, incorporación de la mujer al mercado laboral) → el crecimiento se desacelera. <strong>Fase 4 (régimen demográfico moderno):</strong> baja natalidad y baja mortalidad → crecimiento vegetativo bajo o incluso negativo. Es la situación actual de los países desarrollados.
+                    </p>
+                    <p>
+                        Algunos demógrafos añaden una <strong>quinta fase</strong> (segunda transición demográfica), caracterizada por tasas de fecundidad muy por debajo del nivel de reemplazo, retraso en la edad del matrimonio y la maternidad, diversificación de las formas familiares y envejecimiento acelerado de la población.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.3. La pirámide de población" color="green">
+                    <p>
+                        La <strong>pirámide de población</strong> es una representación gráfica de la estructura de una población por edad y sexo. Existen tres tipos principales: <strong>Pirámide expansiva</strong> (o pagoda): base ancha y cúspide estrecha, típica de países en fase 2 de la transición demográfica, con alta natalidad y población joven (ej.: Níger, Mali). <strong>Pirámide estacionaria</strong> (o campana): forma relativamente uniforme, típica de países en fase 3, con natalidad y mortalidad moderadas (ej.: algunos países de Latinoamérica). <strong>Pirámide regresiva</strong> (o urna invertida): base estrecha y parte central y superior abultada, típica de países en fase 4-5, con baja natalidad y envejecimiento (ej.: Japón, Alemania, España).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.4. El envejecimiento de la población" color="amber">
+                    <p>
+                        El <strong>envejecimiento de la población</strong> es uno de los fenómenos demográficos más relevantes del siglo XXI. Sus causas principales son la caída de la fecundidad (menos jóvenes) y el aumento de la esperanza de vida (más mayores). Las consecuencias económicas son profundas: aumento del <strong>gasto en pensiones</strong> (más pensionistas, menos cotizantes), incremento del <strong>gasto sanitario y en dependencia</strong>, reducción de la <strong>población activa</strong> (menor oferta de trabajo), posible caída del <strong>ahorro agregado</strong> (hipótesis del ciclo vital de Modigliani) y presión sobre las <strong>finanzas públicas</strong>.
+                    </p>
+                    <p>
+                        La <strong>tasa de dependencia</strong> (población menor de 16 + mayor de 65 / población en edad de trabajar) es un indicador clave: cuanto mayor sea, más personas dependientes debe sostener cada trabajador. En España, esta ratio se ha deteriorado notablemente y seguirá haciéndolo según las proyecciones del INE.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.5. Inmigración, emigración e impacto económico" color="pink">
+                    <p>
+                        Las <strong>migraciones</strong> —movimientos de población entre territorios— tienen un impacto económico significativo tanto en los países de origen como en los de destino. Para los <strong>países receptores</strong>: aumento de la oferta de trabajo (especialmente en sectores con escasez de mano de obra), contribución al crecimiento del PIB, aporte a la Seguridad Social, rejuvenecimiento de la pirámide de población, diversidad cultural e innovación. Para los <strong>países de origen</strong>: pérdida de capital humano (fuga de cerebros), pero también remesas (transferencias de dinero de los emigrantes a sus familias, que representan más del 5% del PIB en muchos países en desarrollo) y transferencia de conocimiento en caso de retorno.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.6. La demografía española" color="violet">
+                    <p>
+                        España se encuentra en una fase avanzada de la transición demográfica, con características estructurales preocupantes: <strong>baja natalidad</strong> (la tasa de fecundidad es de aproximadamente 1,16 hijos por mujer, muy por debajo del nivel de reemplazo de 2,1), <strong>envejecimiento acelerado</strong> (más del 20% de la población tiene más de 65 años), <strong>alta esperanza de vida</strong> (más de 83 años, una de las más altas del mundo), <strong>crecimiento vegetativo negativo</strong> (más defunciones que nacimientos desde 2015) y <strong>dependencia del saldo migratorio</strong> como única fuente de crecimiento demográfico. A estos factores se suma el fenómeno de la <strong>"España vacía"</strong> o <strong>"España vaciada"</strong>: la despoblación del interior rural (la llamada "Serranía Celtibérica" tiene una densidad de población inferior a la de Laponia), con enormes desafíos para la provisión de servicios públicos, el mantenimiento del territorio y la cohesión territorial.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 2 */}
+            <Card title="2. Población activa e inactiva" icon="👥">
+                <TheoryBlock title="2.1. Clasificación de la población" color="purple">
+                    <p>
+                        La clasificación de la población en relación con el mercado de trabajo parte de la <strong>población en edad de trabajar (PET)</strong>, que en España comprende a todas las personas de <strong>16 años o más</strong> (la edad mínima legal para trabajar). La PET se divide en dos grandes grupos:
+                    </p>
+                    <p>
+                        <strong>Población activa:</strong> todas las personas en edad de trabajar que o bien tienen un empleo (<strong>ocupados</strong>) o bien lo buscan activamente (<strong>parados</strong>). La población activa = ocupados + parados.
+                    </p>
+                    <p>
+                        <strong>Población inactiva:</strong> todas las personas en edad de trabajar que ni tienen empleo ni lo buscan activamente. Incluye a <strong>estudiantes</strong> a tiempo completo, <strong>jubilados y pensionistas</strong>, personas dedicadas a <strong>labores del hogar</strong>, personas con <strong>incapacidad permanente</strong>, personas que han desistido de buscar empleo (<strong>desanimados</strong>) y otros colectivos (rentistas, voluntarios, etc.).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.2. Tasas fundamentales" color="blue">
+                    <p>
+                        Las tres tasas fundamentales que describen la situación del mercado de trabajo son:
+                    </p>
+                    <p>
+                        <strong>Tasa de actividad:</strong> mide la proporción de la PET que participa activamente en el mercado de trabajo (ya sea trabajando o buscando empleo). Tasa de actividad = (Población activa / PET) × 100.
+                    </p>
+                    <p>
+                        <strong>Tasa de empleo:</strong> mide la proporción de la PET que efectivamente tiene un empleo. Tasa de empleo = (Población ocupada / PET) × 100.
+                    </p>
+                    <p>
+                        <strong>Tasa de paro (o tasa de desempleo):</strong> mide la proporción de la población activa que, deseando trabajar y buscando activamente empleo, no lo encuentra. Tasa de paro = (Población parada / Población activa) × 100. Esta es la tasa más citada en los medios de comunicación y el indicador central del mercado de trabajo.
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox formula="Tasa de actividad = (Activa / PET) × 100" />
+                <FormulaBox formula="Tasa de empleo = (Ocupada / PET) × 100" />
+                <FormulaBox formula="Tasa de paro = (Parada / Activa) × 100" />
+
+                <TheoryBlock title="2.3. EPA y SEPE: dos fuentes, dos mediciones" color="green">
+                    <p>
+                        En España, existen dos fuentes principales para medir el desempleo, que ofrecen datos diferentes:
+                    </p>
+                    <p>
+                        La <strong>Encuesta de Población Activa (EPA)</strong>, elaborada trimestralmente por el <strong>Instituto Nacional de Estadística (INE)</strong>, es una encuesta muestral que entrevista a unas 65.000 familias (aproximadamente 160.000 personas). Sigue la metodología de la Organización Internacional del Trabajo (OIT) y es la fuente oficial comparable internacionalmente. Clasifica como parado a toda persona de 16 o más años que: (1) no tiene empleo, (2) busca activamente empleo y (3) está disponible para trabajar en las dos semanas siguientes.
+                    </p>
+                    <p>
+                        El <strong>Servicio Público de Empleo Estatal (SEPE)</strong> publica mensualmente el <strong>paro registrado</strong>, que contabiliza a las personas inscritas como demandantes de empleo en las oficinas de empleo. Las cifras del SEPE suelen ser inferiores a las de la EPA, porque no todas las personas desempleadas se inscriben (especialmente los desanimados) y porque el SEPE excluye a determinados colectivos (estudiantes que buscan su primer empleo a tiempo parcial, mayores de 65 años, etc.).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 3 */}
+            <Card title="3. El mercado de trabajo" icon="⚙️">
+                <TheoryBlock title="3.1. La oferta de trabajo" color="purple">
+                    <p>
+                        La <strong>oferta de trabajo</strong> representa la cantidad de horas de trabajo que las personas están dispuestas a ofrecer a cada nivel de salario. La decisión individual de cuánto trabajar depende de la elección entre <strong>ocio y trabajo</strong>: un salario más alto tiene dos efectos contrapuestos. El <strong>efecto sustitución</strong> incentiva trabajar más (el ocio se vuelve más caro en términos de ingreso renunciado). El <strong>efecto renta</strong> permite trabajar menos para mantener el mismo nivel de vida (se es más rico y se puede "comprar" más ocio).
+                    </p>
+                    <p>
+                        A salarios bajos, domina el efecto sustitución y la curva de oferta tiene pendiente positiva (más salario → más horas ofrecidas). Pero a partir de cierto nivel de salario, puede dominar el efecto renta, generando una curva de oferta <strong>"doblada hacia atrás"</strong> (backward-bending): más salario → menos horas ofrecidas. La <strong>oferta agregada de trabajo</strong> de una economía depende del tamaño de la población activa, la tasa de actividad, las preferencias individuales ocio-trabajo, la estructura demográfica y las políticas fiscales y sociales (impuestos sobre el trabajo, prestaciones sociales).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.2. La demanda de trabajo" color="blue">
+                    <p>
+                        La <strong>demanda de trabajo</strong> proviene de las empresas y depende de la <strong>productividad marginal del trabajo (PMgL)</strong>: el aumento de la producción que genera contratar una unidad adicional de trabajo. Formalmente, PMgL = ΔIT / ΔL, donde ΔIT es el incremento del ingreso total y ΔL el incremento del factor trabajo.
+                    </p>
+                    <p>
+                        En un mercado competitivo, las empresas maximizadoras de beneficios contratan trabajadores hasta el punto en que el <strong>valor de la productividad marginal</strong> (PMgL × P, donde P es el precio del producto) iguala al salario (W). Es decir, la condición de equilibrio es: <strong>W = PMgL × P</strong>. Si el salario es inferior al valor de la productividad marginal, la empresa obtiene beneficios contratando un trabajador adicional; si es superior, pierde dinero y reduce la plantilla. La curva de demanda de trabajo es la propia curva de productividad marginal del trabajo, que tiene <strong>pendiente negativa</strong> por la ley de rendimientos decrecientes: cada trabajador adicional aporta menos que el anterior (manteniendo los demás factores constantes).
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox formula="W = PMgL × P" desc="En equilibrio competitivo, el salario iguala al valor de la productividad marginal del trabajo." />
+
+                <TheoryBlock title="3.3. Salario de equilibrio" color="green">
+                    <p>
+                        En el <strong>modelo competitivo</strong>, el salario de equilibrio se determina por la intersección de la oferta y la demanda de trabajo. A ese salario, la cantidad de trabajo ofrecida iguala la cantidad demandada y no existe desempleo involuntario (salvo el friccional). Si el salario está por encima del equilibrio, hay exceso de oferta de trabajo (desempleo); si está por debajo, hay exceso de demanda (escasez de trabajadores).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.4. Mercados de trabajo no competitivos" color="amber">
+                    <p>
+                        En la práctica, los mercados de trabajo rara vez se ajustan al modelo perfectamente competitivo. Los principales elementos de imperfección son:
+                    </p>
+                    <p>
+                        <strong>Sindicatos (poder de negociación de los trabajadores):</strong> los sindicatos negocian colectivamente salarios y condiciones laborales, pudiendo fijar salarios por encima del nivel competitivo. Esto puede aumentar la renta de los trabajadores sindicados pero generar desempleo entre los no sindicados (modelo de insiders-outsiders de Lindbeck y Snower, 1988).
+                    </p>
+                    <p>
+                        <strong>Monopsonio (un solo demandante de trabajo):</strong> cuando una empresa es el único o principal empleador de una zona (ej.: una gran fábrica en un pueblo), tiene poder de mercado para fijar salarios por debajo del nivel competitivo. El monopsonista maximiza beneficios contratando menos trabajadores a un salario menor que el competitivo.
+                    </p>
+                    <p>
+                        <strong>Salario mínimo:</strong> el establecimiento de un salario mínimo interprofesional (SMI) por encima del salario de equilibrio genera un debate central en economía laboral. La teoría neoclásica predice que genera desempleo (exceso de oferta). Sin embargo, estudios empíricos como el de <strong>Card y Krueger (1994)</strong> —que analizaron el efecto del aumento del salario mínimo en restaurantes de comida rápida en Nueva Jersey— encontraron que un aumento moderado del salario mínimo no necesariamente reduce el empleo, especialmente en mercados con poder de monopsonio. Este debate sigue abierto y es uno de los más activos de la economía laboral contemporánea.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 4 */}
+            <Card title="4. El desempleo: tipos y causas" icon="📊">
+                <TheoryBlock title="4.1. Desempleo friccional" color="purple">
+                    <p>
+                        El <strong>desempleo friccional</strong> es el que se produce durante el proceso de búsqueda de empleo entre un trabajo y otro. Es inevitable en cualquier economía dinámica: siempre hay personas que dejan un empleo voluntariamente para buscar otro mejor, jóvenes que acceden por primera vez al mercado de trabajo, personas que se reincorporan tras un período de inactividad, etc. El desempleo friccional es generalmente de <strong>corta duración</strong> y refleja el tiempo necesario para que trabajadores y empleadores se encuentren (problemas de información, movilidad geográfica, proceso de selección). Es compatible con una economía saludable y eficiente.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.2. Desempleo estructural" color="blue">
+                    <p>
+                        El <strong>desempleo estructural</strong> surge cuando existe un <strong>desajuste</strong> entre las cualificaciones que poseen los trabajadores y las que demandan las empresas (mismatch de habilidades), entre la localización geográfica de los trabajadores y la de los puestos vacantes, o cuando el cambio tecnológico destruye empleos más rápido de lo que los crea en otros sectores. El desempleo estructural es de <strong>larga duración</strong> y más difícil de resolver: requiere políticas de formación, reciclaje profesional, movilidad geográfica e inversión en nuevos sectores. Ejemplos: mineros desplazados por la transición energética, trabajadores de la industria textil desplazados por la deslocalización, empleados de banca desplazados por la digitalización.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.3. Desempleo cíclico" color="green">
+                    <p>
+                        El <strong>desempleo cíclico</strong> (o keynesiano) es el que se produce como consecuencia de las recesiones económicas: cuando la demanda agregada cae, las empresas reducen la producción y despiden trabajadores. Es el componente más volátil del desempleo y el que justifica las políticas macroeconómicas anticíclicas (fiscal y monetaria expansiva en recesión). En España, el desempleo cíclico fue especialmente severo durante la Gran Recesión de 2008-2013, cuando la tasa de paro pasó del 8% al 27%.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.4. Desempleo estacional" color="amber">
+                    <p>
+                        El <strong>desempleo estacional</strong> se produce por las fluctuaciones regulares de la actividad económica ligadas a las estaciones del año o a períodos específicos. Es especialmente relevante en sectores como el <strong>turismo</strong> (verano y festivos), la <strong>agricultura</strong> (siembra y cosecha), el <strong>comercio</strong> (rebajas, Navidad) y la <strong>construcción</strong> (clima). Para eliminar este componente del análisis, las estadísticas oficiales publican datos <strong>desestacionalizados</strong>.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.5. Tasa natural de desempleo y NAIRU" color="pink">
+                    <p>
+                        <strong>Milton Friedman</strong> (1968) introdujo el concepto de <strong>tasa natural de desempleo</strong>: el nivel de desempleo que existe cuando la economía está en su nivel de producción potencial, es decir, cuando solo existe desempleo friccional y estructural (no hay desempleo cíclico). La tasa natural no es "natural" en el sentido de inmutable: depende de las instituciones del mercado de trabajo (regulación, prestaciones, formación), la eficiencia del emparejamiento entre trabajadores y empleos, y la estructura productiva de la economía.
+                    </p>
+                    <p>
+                        Un concepto relacionado es la <strong>NAIRU</strong> (Non-Accelerating Inflation Rate of Unemployment): la tasa de desempleo por debajo de la cual la inflación tiende a acelerarse. Si el desempleo cae por debajo de la NAIRU, los trabajadores ganan poder de negociación, los salarios suben por encima de la productividad, los costes se trasladan a precios y la inflación se acelera. Este concepto es central para la política monetaria de los bancos centrales.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.6. La curva de Phillips" color="violet">
+                    <p>
+                        En 1958, <strong>A.W. Phillips</strong> publicó un estudio empírico que mostraba una <strong>relación inversa entre la tasa de desempleo y la tasa de variación de los salarios nominales</strong> en el Reino Unido (1861-1957). Posteriormente, <strong>Samuelson y Solow (1960)</strong> reformularon esta relación como un trade-off entre desempleo e inflación: <em>menos desempleo → más inflación, y viceversa</em>.
+                    </p>
+                    <p>
+                        Esta relación fue cuestionada en los años 70 por la <strong>estanflación</strong> (alta inflación + alto desempleo simultáneamente). <strong>Friedman</strong> y <strong>Phelps</strong> argumentaron que la curva de Phillips solo funciona a <strong>corto plazo</strong> (cuando las expectativas de inflación no se han ajustado). A <strong>largo plazo</strong>, la curva de Phillips es vertical en la tasa natural de desempleo: no hay trade-off permanente entre desempleo e inflación. Los <strong>nuevos keynesianos</strong> han desarrollado versiones más sofisticadas de la curva de Phillips que incorporan expectativas, rigideces nominales y costes de ajuste.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 5 */}
+            <Card title="5. Políticas de empleo" icon="🏛️">
+                <TheoryBlock title="5.1. Políticas activas de empleo" color="purple">
+                    <p>
+                        Las <strong>políticas activas de empleo</strong> son aquellas que buscan mejorar el funcionamiento del mercado de trabajo, facilitar la inserción laboral y reducir el desempleo estructural. Incluyen:
+                    </p>
+                    <p>
+                        <strong>Formación profesional y reciclaje:</strong> programas de capacitación para actualizar las competencias de los trabajadores desempleados o en riesgo de exclusión (formación profesional para el empleo, programas de recualificación digital, certificados de profesionalidad). <strong>Programas de empleo:</strong> planes de empleo público temporal, programas de empleo juvenil (como el Sistema Nacional de Garantía Juvenil en España), incentivos a la contratación de colectivos vulnerables (jóvenes, mayores de 45 años, personas con discapacidad, parados de larga duración). <strong>Incentivos al emprendimiento:</strong> subvenciones a la creación de empresas, tarifa plana de autónomos, viveros de empresas, asesoramiento empresarial. <strong>Servicios públicos de empleo:</strong> intermediación laboral, orientación profesional, bolsas de empleo, portales de empleo (SEPE, servicios autonómicos).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.2. Políticas pasivas de empleo" color="blue">
+                    <p>
+                        Las <strong>políticas pasivas de empleo</strong> proporcionan protección económica a las personas desempleadas mientras buscan un nuevo empleo. Las principales son:
+                    </p>
+                    <p>
+                        <strong>Prestaciones por desempleo (contributivas):</strong> el trabajador que ha cotizado un período mínimo tiene derecho a una prestación proporcional a su salario anterior durante un tiempo limitado (en España, entre 4 y 24 meses según la cotización acumulada). <strong>Subsidios por desempleo (asistenciales):</strong> ayudas para personas que han agotado la prestación contributiva o no tienen derecho a ella. <strong>Rentas mínimas de inserción:</strong> prestaciones de carácter asistencial para personas en situación de pobreza y exclusión social. En España, el <strong>Ingreso Mínimo Vital (IMV)</strong>, creado en 2020, garantiza un nivel mínimo de renta a los hogares en situación de vulnerabilidad.
+                    </p>
+                    <p>
+                        El diseño de las políticas pasivas plantea un dilema: prestaciones demasiado generosas o prolongadas pueden crear <strong>desincentivos a la búsqueda de empleo</strong> (trampa de la pobreza, moral hazard), mientras que prestaciones insuficientes pueden provocar <strong>pobreza, exclusión social y deterioro del capital humano</strong> de los desempleados.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.3. Flexibilidad vs. seguridad: el debate de la flexiseguridad" color="green">
+                    <p>
+                        El concepto de <strong>flexiseguridad</strong> (flexicurity), inspirado en el <strong>modelo danés</strong>, propone combinar tres elementos: <strong>flexibilidad</strong> en el mercado de trabajo (facilidad de contratación y despido, adaptabilidad de las condiciones laborales), <strong>generosas prestaciones por desempleo</strong> (protección durante las transiciones) y <strong>políticas activas de empleo intensivas</strong> (formación, reciclaje, intermediación). La idea es que la seguridad no se proporciona protegiendo el puesto de trabajo concreto (como en el modelo mediterráneo), sino protegiendo al <strong>trabajador</strong> en sus transiciones entre empleos.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.4. Reformas laborales en España" color="amber">
+                    <p>
+                        España ha experimentado múltiples reformas laborales en las últimas décadas. La <strong>reforma de 2012</strong> (Real Decreto-ley 3/2012) introdujo: abaratamiento del despido improcedente (de 45 a 33 días por año), prioridad del convenio de empresa sobre el sectorial, facilitación de la flexibilidad interna (modificación de condiciones de trabajo), ampliación del período de prueba. La <strong>reforma de 2021</strong> (Real Decreto-ley 32/2021) introdujo cambios en sentido contrario: restricción de la contratación temporal (el contrato indefinido pasa a ser la norma), recuperación de la ultraactividad de los convenios colectivos, limitación de la subcontratación y regulación del contrato fijo-discontinuo. El impacto de esta reforma ha sido una notable caída de la tasa de temporalidad.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.5. Tipos de contrato y negociación colectiva" color="pink">
+                    <p>
+                        Los principales tipos de contrato de trabajo en España son: <strong>contrato indefinido</strong> (ordinario, fijo-discontinuo), <strong>contrato temporal</strong> (por circunstancias de la producción, por sustitución) y <strong>contrato formativo</strong> (en alternancia, para la obtención de la práctica profesional). Tras la reforma de 2021, se eliminaron la mayoría de modalidades de contrato temporal y se impulsó la contratación indefinida.
+                    </p>
+                    <p>
+                        La <strong>negociación colectiva</strong> es el proceso mediante el cual sindicatos y patronal acuerdan las condiciones laborales (salarios, jornada, vacaciones, clasificación profesional) a través de <strong>convenios colectivos</strong>. En España, la negociación colectiva tiene una cobertura amplia (más del 80% de los asalariados están cubiertos por un convenio) y se articula en varios niveles: convenio de empresa, convenio sectorial provincial, convenio sectorial estatal.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 6 */}
+            <Card title="6. El mercado de trabajo en España" icon="🇪🇸">
+                <TheoryBlock title="6.1. Características estructurales" color="purple">
+                    <p>
+                        El mercado de trabajo español presenta una serie de <strong>características estructurales</strong> que lo diferencian de otros mercados europeos: <strong>Alta tasa de desempleo estructural:</strong> históricamente, España ha tenido una tasa de paro sistemáticamente superior a la media de la UE, incluso en períodos de crecimiento económico. Las causas son múltiples: rigidez del mercado, desajuste formativo, modelo productivo intensivo en empleo poco cualificado (construcción, turismo, hostelería). <strong>Elevada temporalidad:</strong> hasta la reforma de 2021, más del 25% de los asalariados tenían contrato temporal (frente al 14% de media en la UE), generando precariedad, rotación, baja productividad y escasa inversión en formación por parte de las empresas.
+                    </p>
+                    <p>
+                        <strong>Dualidad del mercado (insiders/outsiders):</strong> el mercado de trabajo español ha estado marcado por una fuerte dualidad entre trabajadores con contrato indefinido y alta protección (insiders) y trabajadores temporales con escasa protección y alta rotación (outsiders). Esta dualidad tiene efectos negativos sobre la productividad, la formación y la desigualdad. <strong>Desempleo juvenil:</strong> la tasa de paro juvenil (16-24 años) en España es estructuralmente muy elevada, habiendo superado el 55% durante la crisis de 2012-2013. <strong>Brecha de género:</strong> aunque la participación femenina ha crecido notablemente, persisten diferencias significativas en tasas de actividad, empleo, temporalidad, parcialidad involuntaria y salarios entre hombres y mujeres.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="6.2. Evolución reciente" color="blue">
+                    <p>
+                        La evolución del mercado de trabajo español en las últimas décadas puede resumirse en varias fases: <strong>2000-2007 (expansión):</strong> fuerte creación de empleo, impulsada por la burbuja inmobiliaria y el sector de la construcción. La tasa de paro bajó hasta el 8% en 2007. <strong>2008-2013 (Gran Recesión):</strong> destrucción masiva de empleo, especialmente en construcción. La tasa de paro alcanzó el 26,9% en el primer trimestre de 2013 (más de 6 millones de parados). <strong>2014-2019 (recuperación):</strong> lenta recuperación del empleo, con alta temporalidad y precariedad. <strong>2020 (COVID-19):</strong> caída abrupta del empleo, amortiguada por los ERTEs (Expedientes de Regulación Temporal de Empleo). <strong>2021-presente:</strong> recuperación del empleo, reforma laboral de 2021, caída de la temporalidad, debate sobre la calidad del empleo.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="6.3. Salario Mínimo Interprofesional (SMI)" color="green">
+                    <p>
+                        El <strong>Salario Mínimo Interprofesional (SMI)</strong> es la retribución mínima que debe percibir un trabajador por una jornada legal completa. En España, el SMI ha experimentado subidas significativas en los últimos años: de 735,90 €/mes en 2018 a 1.134 €/mes en 14 pagas en 2024, un aumento superior al 50% en seis años. El debate sobre el SMI enfrenta dos posiciones: quienes argumentan que reduce la pobreza laboral, la desigualdad salarial y estimula el consumo, y quienes advierten que un SMI excesivamente alto puede destruir empleo, especialmente entre los colectivos más vulnerables (jóvenes, poco cualificados, zonas de bajo coste de vida). La evidencia empírica sugiere que subidas moderadas del SMI tienen efectos limitados sobre el empleo pero significativos sobre la reducción de la desigualdad salarial.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="6.4. Brecha salarial de género" color="amber">
+                    <p>
+                        La <strong>brecha salarial de género</strong> —la diferencia entre el salario medio de hombres y mujeres— es un fenómeno persistente en España y en la mayoría de países del mundo. Según datos de Eurostat, la brecha salarial en España se sitúa en torno al 9-12% (brecha ajustada) y es mayor si se consideran las diferencias en jornada, sectores y ocupaciones (brecha no ajustada, superior al 20%). Las causas son múltiples: <strong>segregación horizontal</strong> (las mujeres se concentran en sectores peor remunerados: sanidad, educación, cuidados), <strong>segregación vertical</strong> (techo de cristal: menor presencia femenina en puestos directivos), <strong>parcialidad involuntaria</strong> (las mujeres trabajan a tiempo parcial en mayor proporción, a menudo por responsabilidades de cuidado), <strong>penalización por maternidad</strong> y <strong>discriminación directa</strong>. Las medidas para reducir la brecha incluyen: planes de igualdad en empresas, transparencia salarial, permisos de paternidad igualitarios (como los 16 semanas establecidos en España desde 2021), políticas de conciliación y corresponsabilidad.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 7 */}
+            <Card title="7. Desafíos futuros del mercado laboral" icon="🔮">
+                <TheoryBlock title="7.1. Automatización e inteligencia artificial" color="purple">
+                    <p>
+                        El avance de la <strong>automatización</strong>, la <strong>robótica</strong> y la <strong>inteligencia artificial (IA)</strong> está transformando profundamente el mercado de trabajo. El estudio de <strong>Frey y Osborne (2013)</strong>, de la Universidad de Oxford, estimó que el <strong>47% de los empleos</strong> en Estados Unidos estaban en alto riesgo de ser automatizados en las próximas dos décadas. Estudios posteriores (OCDE, McKinsey Global Institute) han matizado esta cifra, señalando que lo que se automatiza son <strong>tareas</strong>, no empleos completos, y que la automatización también <strong>crea</strong> nuevos empleos (en diseño, mantenimiento, supervisión, programación, análisis de datos, etc.) y <strong>transforma</strong> los existentes.
+                    </p>
+                    <p>
+                        La IA generativa (como los modelos de lenguaje de gran escala) representa un salto cualitativo: por primera vez, la automatización afecta no solo a tareas rutinarias y manuales, sino también a tareas cognitivas complejas (redacción, análisis, programación, diseño, atención al cliente). Esto genera incertidumbre sobre el futuro de profesiones tradicionalmente consideradas "seguras" frente a la automatización (abogados, contables, periodistas, traductores, programadores).
+                    </p>
+                    <p>
+                        El impacto neto sobre el empleo dependerá de la velocidad de la innovación tecnológica, de la capacidad de adaptación de los trabajadores (formación continua, reciclaje), de las políticas públicas (regulación, fiscalidad de los robots, inversión en educación) y de la creación de nuevos sectores y ocupaciones que hoy no existen.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="7.2. Economía de plataformas (gig economy)" color="blue">
+                    <p>
+                        La <strong>economía de plataformas</strong> o <strong>gig economy</strong> se refiere al modelo de trabajo intermediado por plataformas digitales (Uber, Deliveroo, Glovo, Amazon Mechanical Turk, Upwork, etc.), en el que los trabajadores realizan tareas puntuales o "gigs" a demanda, generalmente como trabajadores autónomos. Este modelo plantea desafíos regulatorios fundamentales: ¿son estos trabajadores <strong>autónomos</strong> (con libertad y flexibilidad pero sin protección social) o <strong>asalariados encubiertos</strong> (falsos autónomos)?
+                    </p>
+                    <p>
+                        En España, la <strong>Ley Rider</strong> (Real Decreto-ley 9/2021) estableció la presunción de laboralidad para los repartidores de plataformas digitales, convirtiéndolos en asalariados con derechos laborales plenos. A nivel europeo, la propuesta de Directiva sobre trabajo en plataformas digitales busca establecer criterios comunes para la clasificación de estos trabajadores.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="7.3. Teletrabajo post-COVID" color="green">
+                    <p>
+                        La pandemia de COVID-19 aceleró drásticamente la adopción del <strong>teletrabajo</strong>: millones de trabajadores pasaron del trabajo presencial al remoto de forma abrupta. Esta experiencia ha transformado las expectativas de trabajadores y empresas. En España, la <strong>Ley 10/2021 de trabajo a distancia</strong> regula el teletrabajo, estableciendo el derecho a la compensación de gastos, la voluntariedad, la reversibilidad, la desconexión digital y la igualdad de derechos entre trabajadores presenciales y remotos.
+                    </p>
+                    <p>
+                        El teletrabajo presenta ventajas (flexibilidad, conciliación, reducción de desplazamientos, acceso a talento global) e inconvenientes (aislamiento social, dificultad de desconexión, desigualdad entre trabajadores que pueden y no pueden teletrabajar, riesgo de presentismo digital, efectos sobre el desarrollo profesional). El modelo <strong>híbrido</strong> (combinación de presencial y remoto) se ha consolidado como la opción predominante en muchas empresas y sectores.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="7.4. Renta básica universal" color="amber">
+                    <p>
+                        La <strong>renta básica universal (RBU)</strong> es una propuesta que plantea garantizar a todo ciudadano una renta periódica suficiente para cubrir las necesidades básicas, de forma <strong>incondicional</strong> (sin requisitos de renta, situación laboral o disposición a trabajar), <strong>universal</strong> (para todos los ciudadanos) e <strong>individual</strong> (no basada en el hogar). Sus defensores (<strong>Philippe Van Parijs</strong>, <strong>Guy Standing</strong>, <strong>Thomas Piketty</strong>) argumentan que: (1) simplifica el sistema de protección social (eliminando la burocracia y el estigma de las prestaciones condicionadas), (2) elimina la trampa de la pobreza (no desincentiva el trabajo, ya que no se pierde al encontrar empleo), (3) proporciona seguridad económica frente a la automatización y la inestabilidad laboral, (4) empodera a los trabajadores (pueden rechazar empleos precarios), (5) reconoce el trabajo no remunerado (doméstico, voluntario, de cuidados).
+                    </p>
+                    <p>
+                        Sus detractores argumentan que: (1) el coste fiscal es enorme (multiplicar una renta básica por toda la población adulta arroja cifras de decenas o centenares de miles de millones), (2) puede desincentivas el trabajo (aunque la evidencia de los experimentos piloto —Finlandia, Kenia, Stockton en EE.UU.— no confirma este temor), (3) es políticamente difícil de implementar. El debate sobre la RBU ha cobrado fuerza con la pandemia de COVID-19 y el avance de la IA.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="7.5. Formación continua y reciclaje profesional" color="pink">
+                    <p>
+                        En un mercado laboral en transformación acelerada, la <strong>formación continua</strong> (lifelong learning) se convierte en una necesidad estructural. La OCDE estima que el 14% de los empleos actuales son altamente automatizables y otro 32% sufrirá cambios significativos, lo que exigirá <strong>reciclaje profesional (reskilling)</strong> y <strong>mejora de competencias (upskilling)</strong> a escala masiva. Las competencias más demandadas combinan habilidades técnicas (digitales, STEM, programación, análisis de datos) con habilidades transversales (creatividad, pensamiento crítico, resolución de problemas complejos, inteligencia emocional, comunicación, trabajo en equipo).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="7.6. ODS 8 y conexión curricular" color="violet">
+                    <p>
+                        El <strong>ODS 8</strong> (Trabajo decente y crecimiento económico) establece como meta promover el crecimiento económico sostenido, inclusivo y sostenible, el empleo pleno y productivo y el trabajo decente para todos. El concepto de <strong>"trabajo decente"</strong> (decent work), acuñado por la <strong>OIT</strong>, incluye cuatro pilares: empleo productivo y libremente elegido, derechos laborales (libertad sindical, negociación colectiva, eliminación del trabajo forzoso e infantil, no discriminación), protección social y diálogo social.
+                    </p>
+                    <p>
+                        <strong>Aplicación docente:</strong> (1) Analizar la pirámide de población de España (datos del INE) y compararla con la de un país en desarrollo. (2) Calcular las tasas de actividad, empleo y paro con datos reales de la EPA. (3) Debate: ¿es el salario mínimo una herramienta eficaz contra la pobreza? Argumentos a favor y en contra. (4) Estudio de caso: la Ley Rider y la regulación de las plataformas digitales. (5) Simulación de negociación colectiva entre "sindicato" y "patronal". (6) Reflexión sobre el futuro del trabajo: ¿qué empleos existirán en 2040? (7) Análisis de la brecha salarial de género con datos de Eurostat.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── CONCLUSIÓN ──────────────────────────────────────── */}
+            <Card title="Conclusión" icon="✅">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        La población y el mercado de trabajo constituyen dos dimensiones fundamentales e interrelacionadas de la realidad económica. La dinámica demográfica —con fenómenos como el envejecimiento, la caída de la fecundidad, las migraciones y la despoblación rural— condiciona de forma decisiva la oferta de trabajo, las necesidades de gasto público, el sistema de pensiones y la capacidad de crecimiento de las economías. España, con una pirámide de población cada vez más regresiva y una dependencia creciente de la inmigración como fuente de crecimiento demográfico, enfrenta desafíos estructurales de primer orden.
+                    </p>
+                    <p>
+                        El mercado de trabajo, por su parte, se ha revelado como uno de los ámbitos más complejos y controvertidos de la política económica. La teoría económica ofrece marcos analíticos potentes —desde el modelo competitivo de oferta y demanda de trabajo hasta los modelos de salarios de eficiencia, insiders-outsiders y negociación—, pero la realidad del mercado laboral está profundamente condicionada por las instituciones, la regulación, la negociación colectiva, la cultura empresarial y las políticas públicas. El desempleo, en sus diferentes variantes (friccional, estructural, cíclico), sigue siendo el gran problema irresuelto de muchas economías, con consecuencias devastadoras sobre el bienestar individual y la cohesión social.
+                    </p>
+                    <p>
+                        El mercado de trabajo español presenta características estructurales preocupantes —alta tasa de paro, dualidad, temporalidad, desempleo juvenil, brecha de género— que las sucesivas reformas laborales han intentado abordar con resultados desiguales. La reforma de 2021 ha logrado una reducción notable de la temporalidad, pero quedan pendientes desafíos de fondo: la mejora de la productividad, la reducción del desempleo estructural, la integración de los jóvenes, la adaptación a la revolución tecnológica y la transición hacia un modelo productivo más sostenible y basado en el conocimiento.
+                    </p>
+                    <p>
+                        El futuro del trabajo está marcado por la incertidumbre: la automatización, la inteligencia artificial, la economía de plataformas, el teletrabajo y los cambios demográficos están transformando radicalmente el panorama laboral. La formación continua, la flexiseguridad, la negociación colectiva adaptativa y el debate sobre la renta básica universal serán elementos centrales del mercado de trabajo del siglo XXI. El futuro docente de Economía tiene la responsabilidad de transmitir estos contenidos con rigor analítico, sensibilidad social y espíritu crítico, preparando al alumnado para comprender y navegar un mundo laboral en constante transformación.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── BIBLIOGRAFÍA ────────────────────────────────────── */}
+            <BibliografiaBox items={[
+                'FRIEDMAN, M. (1968): "The Role of Monetary Policy", American Economic Review, 58(1), pp. 1-17.',
+                'PHILLIPS, A.W. (1958): "The Relation between Unemployment and the Rate of Change of Money Wage Rates in the United Kingdom, 1861-1957", Economica, 25(100), pp. 283-299.',
+                'CARD, D. y KRUEGER, A. (1994): "Minimum Wages and Employment: A Case Study of the Fast-Food Industry in New Jersey and Pennsylvania", American Economic Review, 84(4), pp. 772-793.',
+                'FREY, C. y OSBORNE, M. (2013): "The Future of Employment: How Susceptible Are Jobs to Computerisation?", Oxford Martin School Working Paper.',
+                'VAN PARIJS, P. y VANDERBORGHT, Y. (2017): Ingreso básico: una propuesta radical para una sociedad libre, Grano de Sal.',
+                'MANKIW, N.G. (2020): Principios de Economía, 8.ª ed., Cengage Learning.',
+                'BLANCHARD, O. (2017): Macroeconomía, 7.ª ed., Pearson.',
+                'LINDBECK, A. y SNOWER, D. (1988): The Insider-Outsider Theory of Employment and Unemployment, MIT Press.',
+                'INE: Encuesta de Población Activa (EPA). Publicación trimestral.',
+                'SEPE: Estadísticas de paro registrado y contratos. Publicación mensual.',
+                'EUROSTAT: Labour Force Survey. European Labour Market Statistics.',
+                'OIT: Informe Mundial sobre el Empleo y las Perspectivas Sociales (ediciones anuales).',
+                'OCDE (2019): The Future of Work. OECD Employment Outlook.',
+                'Ley Orgánica 3/2020, de 29 de diciembre (LOMLOE). Real Decreto 243/2022, de 5 de abril.',
+                'Real Decreto-ley 32/2021, de 28 de diciembre (reforma laboral). Real Decreto-ley 9/2021 (Ley Rider).',
+                'ONU (2015): Agenda 2030 para el Desarrollo Sostenible. ODS 8: Trabajo decente y crecimiento económico.',
+            ]} />
         </div>
     );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 9 — RESUM / ESQUEMA
+    // ════════════════════════════════════════════════════════════════
+    const Tema9Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-purple-50 rounded-xl border border-purple-200 mb-5">
+                    <p className="text-center font-bold text-purple-800 text-lg">Tema 9: Población y mercado de trabajo.</p>
+                    <p className="text-center text-sm text-purple-600 mt-1">
+                        <em>"El desempleo es la peor forma de exclusión social"</em> — OIT
+                    </p>
+                </div>
+
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. Demografía y economía</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>Indicadores:</strong> TBN, TBM, fecundidad, esperanza de vida, saldo migratorio.</li>
+                            <li><strong>Transición demográfica:</strong> 4 fases (alta-alta → baja natalidad, baja mortalidad).</li>
+                            <li><strong>Pirámides:</strong> expansiva (pagoda), estacionaria (campana), regresiva (urna).</li>
+                            <li><strong>Envejecimiento:</strong> más gasto en pensiones/sanidad, menor población activa, tasa de dependencia.</li>
+                            <li><strong>España:</strong> fecundidad ~1,16, envejecimiento, crecimiento vegetativo negativo, "España vacía".</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. Población activa e inactiva</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>PET</strong> (16+) = Activa (ocupados + parados) + Inactiva (estudiantes, jubilados, hogar...).</li>
+                            <li><strong>EPA</strong> (INE, trimestral, metodología OIT) vs. <strong>SEPE</strong> (mensual, paro registrado).</li>
+                            <li>EPA suele dar cifras de paro superiores al SEPE.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. El mercado de trabajo</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>Oferta:</strong> decisión ocio-trabajo, efecto sustitución vs. renta, curva "doblada hacia atrás".</li>
+                            <li><strong>Demanda:</strong> PMgL, condición competitiva W = PMgL × P.</li>
+                            <li><strong>Imperfecciones:</strong> sindicatos (insiders-outsiders), monopsonio, salario mínimo (Card y Krueger).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. El desempleo: tipos y causas</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>Friccional:</strong> búsqueda entre empleos (corta duración, inevitable).</li>
+                            <li><strong>Estructural:</strong> desajuste cualificación/demanda, cambio tecnológico (larga duración).</li>
+                            <li><strong>Cíclico:</strong> ligado a recesiones (keynesiano). <strong>Estacional:</strong> turismo, agricultura.</li>
+                            <li><strong>Tasa natural</strong> (Friedman) = friccional + estructural. <strong>NAIRU.</strong></li>
+                            <li><strong>Curva de Phillips:</strong> relación inversa desempleo-inflación (corto plazo). Vertical a largo plazo.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">5. Políticas de empleo</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>Activas:</strong> formación, programas de empleo, incentivos contratación, emprendimiento.</li>
+                            <li><strong>Pasivas:</strong> prestaciones por desempleo, subsidios, IMV (2020).</li>
+                            <li><strong>Flexiseguridad</strong> (modelo danés): flexibilidad + prestaciones generosas + políticas activas.</li>
+                            <li><strong>Reformas:</strong> 2012 (flexibilización, abaratamiento despido) vs. 2021 (reducción temporalidad).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">6. El mercado de trabajo en España</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Alta tasa de paro (histórica), dualidad insiders/outsiders, temporalidad, paro juvenil, brecha de género.</li>
+                            <li>Crisis 2008-2013: paro &gt;26%. Recuperación. COVID-19 (ERTEs). Reforma 2021.</li>
+                            <li><strong>SMI:</strong> de 735,90 €/mes (2018) a 1.134 €/mes (2024). Debate sobre efectos.</li>
+                            <li><strong>Brecha salarial:</strong> ~9-12% ajustada. Segregación horizontal/vertical, techo de cristal, penalización maternidad.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">7. Desafíos futuros</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>Automatización/IA:</strong> Frey y Osborne (47% automatizable). IA generativa: tareas cognitivas.</li>
+                            <li><strong>Gig economy:</strong> Uber, Deliveroo, Ley Rider (2021). Debate autónomos vs. asalariados.</li>
+                            <li><strong>Teletrabajo:</strong> post-COVID, modelo híbrido, Ley 10/2021.</li>
+                            <li><strong>Renta básica universal:</strong> Van Parijs, Piketty. Incondicional, universal, individual.</li>
+                            <li><strong>Formación continua:</strong> reskilling + upskilling. ODS 8: trabajo decente.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <FormulaBox formula="Tasa de actividad = (Activa / PET) × 100" />
+                <FormulaBox formula="Tasa de empleo = (Ocupada / PET) × 100" />
+                <FormulaBox formula="Tasa de paro = (Parada / Activa) × 100" />
+                <FormulaBox formula="W = PMgL × P    (equilibrio competitivo)" />
+
+                <ClauBox>
+                    <p>- Domina las <strong>tres tasas</strong> (actividad, empleo, paro) y sabe calcularlas con datos reales de la EPA.</p>
+                    <p>- Conoce los <strong>4 tipos de desempleo</strong> (friccional, estructural, cíclico, estacional) y la <strong>tasa natural</strong> (Friedman) + NAIRU.</p>
+                    <p>- Explica la <strong>curva de Phillips</strong>: trade-off CP vs. vertical LP (Friedman-Phelps vs. Phillips original).</p>
+                    <p>- Diferencia <strong>políticas activas</strong> (formación, intermediación) de <strong>pasivas</strong> (prestaciones, IMV).</p>
+                    <p>- Conoce las <strong>características estructurales</strong> del mercado español: alta tasa de paro, dualidad, temporalidad, paro juvenil.</p>
+                    <p>- Aborda los <strong>desafíos futuros</strong>: automatización (Frey/Osborne), gig economy, teletrabajo, RBU (Van Parijs).</p>
+                    <p>- Conecta con la <strong>LOMLOE</strong> y el <strong>ODS 8</strong>. Cita autores: Friedman, Phillips, Card/Krueger, Frey/Osborne, Van Parijs.</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 9 — Component wrapper
+    // ════════════════════════════════════════════════════════════════
+    const Tema9 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="📖" title="Tema 9" subtitle={t('tema9.title')} />
+                <Tabs tabs={[
+                    { id: 'complet', label: '📝 ' + t('tab.complet') },
+                    { id: 'resum', label: '📋 ' + t('tab.resum') },
+                ]} active={vista} onChange={setVista} />
+
+                {vista === 'complet' && <Tema9Complet />}
+                {vista === 'resum' && <Tema9Resum />}
+            </div>
+        );
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 10 — El medio ambiente y la economía. Desarrollo sostenible.
+    // ════════════════════════════════════════════════════════════════
+    const Tema10Complet = () => (
+        <div className="space-y-6 animate-fade">
+            {/* ── INTRODUCCIÓN ────────────────────────────────────── */}
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        La relación entre <strong>actividad económica y medio ambiente</strong> constituye uno de los grandes temas del siglo XXI. Durante siglos, el pensamiento económico dominante trató la naturaleza como un mero proveedor de recursos ilimitados y un receptor inagotable de residuos. Hoy sabemos que esta concepción era profundamente errónea: los <strong>recursos naturales son finitos</strong>, los ecosistemas tienen <strong>capacidades de absorción limitadas</strong> y la actividad económica genera <strong>externalidades ambientales</strong> —contaminación, cambio climático, pérdida de biodiversidad, agotamiento de recursos— cuyo coste recae sobre el conjunto de la sociedad y, especialmente, sobre las generaciones futuras y los países más vulnerables.
+                    </p>
+                    <p>
+                        El <strong>desarrollo sostenible</strong> —definido por el Informe Brundtland (1987) como aquel que "satisface las necesidades del presente sin comprometer la capacidad de las generaciones futuras para satisfacer las propias"— se ha convertido en el paradigma rector de la política económica, ambiental y social a nivel mundial. La <strong>Agenda 2030</strong> de Naciones Unidas, con sus <strong>17 Objetivos de Desarrollo Sostenible (ODS)</strong>, establece un marco universal para avanzar simultáneamente en las dimensiones económica, social y ambiental del desarrollo.
+                    </p>
+                    <p>
+                        El <strong>cambio climático</strong>, causado fundamentalmente por las emisiones de gases de efecto invernadero derivadas de la quema de combustibles fósiles, la deforestación y la agricultura industrial, representa la mayor amenaza global del siglo XXI. El <strong>Acuerdo de París (2015)</strong> estableció el objetivo de limitar el calentamiento global a 1,5-2°C respecto a los niveles preindustriales, un objetivo que exige una transformación radical del modelo económico y energético mundial.
+                    </p>
+                    <p>
+                        Desde la perspectiva educativa, la Ley Orgánica 3/2020 (LOMLOE) otorga al medio ambiente y al desarrollo sostenible un papel transversal en el currículo. La educación para el desarrollo sostenible (EDS) y los ODS se integran como ejes vertebradores de la enseñanza, contribuyendo al desarrollo de la competencia ciudadana (CC), la competencia en ciencia, tecnología e ingeniería (STEM) y la competencia personal, social y de aprender a aprender (CPSAA). Las materias de Economía abordan expresamente las externalidades, los bienes públicos, los fallos del mercado, la política ambiental y la sostenibilidad.
+                    </p>
+                    <p>
+                        El presente tema aborda, en primer lugar, la relación entre economía y medio ambiente; en segundo lugar, las externalidades ambientales y los fallos del mercado; en tercer lugar, el cambio climático como problema económico; en cuarto lugar, los instrumentos de política ambiental; en quinto lugar, el concepto de desarrollo sostenible; en sexto lugar, los nuevos paradigmas económicos alternativos; y, finalmente, la relevancia curricular y la aplicación docente. Todo ello con el rigor analítico y la sensibilidad ambiental que exige la formación de las nuevas generaciones.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── DESARROLLO ──────────────────────────────────────── */}
+
+            {/* Epígrafe 1 */}
+            <Card title="1. Economía y medio ambiente: una relación compleja" icon="📘">
+                <TheoryBlock title="1.1. La economía como subsistema del ecosistema" color="purple">
+                    <p>
+                        La visión convencional de la economía representa el sistema económico como un flujo circular cerrado entre hogares y empresas: los hogares ofrecen factores productivos (trabajo, capital, tierra) a las empresas y reciben rentas a cambio; las empresas producen bienes y servicios que los hogares consumen. En este esquema, la <strong>naturaleza</strong> aparece, en el mejor de los casos, como un factor productivo más (la "tierra" de los clásicos), pero no como el sistema que contiene y sustenta toda la actividad económica.
+                    </p>
+                    <p>
+                        <strong>Nicholas Georgescu-Roegen</strong> (1906-1994), considerado el padre de la <strong>bioeconomía</strong> o <strong>economía ecológica</strong>, revolucionó esta visión al aplicar las <strong>leyes de la termodinámica</strong> al análisis económico. La <strong>primera ley</strong> (conservación de la energía) establece que la energía ni se crea ni se destruye, solo se transforma. La <strong>segunda ley</strong> (entropía) establece que en todo proceso de transformación la energía se degrada irreversiblemente: pasa de formas concentradas y útiles (baja entropía: petróleo, minerales) a formas dispersas e inútiles (alta entropía: calor residual, residuos). Toda actividad económica, por tanto, <strong>transforma recursos de baja entropía en residuos de alta entropía</strong>: el crecimiento económico ilimitado en un planeta con recursos finitos y capacidad de absorción limitada es, desde la perspectiva termodinámica, una imposibilidad física.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.2. El modelo económico lineal" color="blue">
+                    <p>
+                        El modelo económico dominante desde la Revolución Industrial sigue un esquema <strong>lineal</strong>: <strong>extraer → producir → consumir → desechar</strong>. Este modelo trata los recursos naturales como insumos baratos e ilimitados y el medio ambiente como un sumidero gratuito de residuos. El resultado es un crecimiento económico que genera simultáneamente bienestar material (para una parte de la humanidad) y degradación ambiental acumulativa (para todos). La alternativa, la <strong>economía circular</strong>, propone cerrar los ciclos de materiales y energía: diseñar productos para la durabilidad, la reparabilidad, la reutilización y el reciclaje, minimizando la extracción de recursos vírgenes y la generación de residuos.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.3. Recursos naturales: clasificación" color="green">
+                    <p>
+                        Los recursos naturales se clasifican en tres categorías: <strong>Recursos renovables:</strong> aquellos que se regeneran a una tasa natural (bosques, pesquerías, agua dulce, energía solar, eólica). Pueden explotarse indefinidamente si la tasa de extracción no supera la tasa de regeneración. <strong>Recursos no renovables:</strong> aquellos cuya tasa de regeneración es nula o insignificante en escala humana (petróleo, gas natural, carbón, minerales metálicos). Su agotamiento es inevitable si se explotan; la cuestión es a qué ritmo. <strong>Recursos de flujo:</strong> energías que fluyen continuamente con independencia de la actividad humana (radiación solar, viento, mareas). Son inagotables pero requieren tecnología para su aprovechamiento.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.4. Funciones económicas del medio ambiente" color="amber">
+                    <p>
+                        El medio ambiente cumple tres funciones económicas fundamentales: (1) <strong>Proveedor de recursos:</strong> materias primas (minerales, madera, agua), alimentos (agricultura, pesca), energía (fósiles, renovables). (2) <strong>Receptor de residuos:</strong> absorción y procesamiento de los desechos de la actividad económica (emisiones atmosféricas, vertidos hídricos, residuos sólidos). La capacidad de absorción del medio ambiente es limitada: cuando se supera, se produce contaminación. (3) <strong>Proveedor de servicios ecosistémicos:</strong> regulación del clima, polinización, purificación del agua, recreo, paisaje, valores culturales y espirituales. Estos servicios son esenciales para la vida humana pero carecen de precio de mercado, lo que lleva a su sobreexplotación y degradación.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.5. Los bienes ambientales como bienes públicos" color="pink">
+                    <p>
+                        Muchos bienes ambientales presentan las características de los <strong>bienes públicos</strong>: <strong>no exclusión</strong> (no es posible o es muy costoso impedir que alguien disfrute de ellos: aire limpio, clima estable, capa de ozono) y <strong>no rivalidad</strong> (el uso por una persona no reduce la disponibilidad para otra, al menos hasta cierto umbral). Estas características generan el <strong>problema del polizón (free-rider)</strong>: los agentes económicos tienen incentivos para disfrutar del bien público sin contribuir a su provisión o conservación, confiando en que otros lo harán. El resultado es una <strong>provisión insuficiente</strong> de bienes ambientales y una <strong>degradación excesiva</strong> del medio ambiente: un fallo del mercado que justifica la intervención pública.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 2 */}
+            <Card title="2. Las externalidades ambientales" icon="🏭">
+                <TheoryBlock title="2.1. Concepto de externalidad" color="purple">
+                    <p>
+                        Una <strong>externalidad</strong> se produce cuando la actividad de un agente económico (productor o consumidor) afecta al bienestar de otro agente <strong>sin que dicho efecto se refleje en el precio de mercado</strong>. El concepto fue formalizado por <strong>Arthur Cecil Pigou</strong> en <em>The Economics of Welfare</em> (1920), una obra fundacional de la economía del bienestar. Las externalidades representan un <strong>fallo del mercado</strong>: los precios no reflejan todos los costes (externalidades negativas) o todos los beneficios (externalidades positivas) de la actividad económica, lo que lleva a una asignación ineficiente de los recursos.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.2. Externalidades negativas ambientales" color="blue">
+                    <p>
+                        Las <strong>externalidades negativas ambientales</strong> son los costes que la actividad económica impone al medio ambiente y a la sociedad sin que se reflejen en el precio del producto. Los ejemplos más significativos incluyen: <strong>contaminación atmosférica</strong> (emisiones de CO₂, SO₂, NOₓ, partículas en suspensión) procedente de la industria, el transporte y la generación de energía, que causa problemas respiratorios, lluvia ácida y cambio climático; <strong>contaminación del agua</strong> (vertidos industriales, agrícolas y urbanos) que degrada ríos, acuíferos y mares; <strong>deforestación</strong> (destrucción de bosques para agricultura, ganadería, urbanización) que provoca pérdida de biodiversidad, erosión del suelo y liberación de CO₂; <strong>agotamiento de recursos no renovables</strong> (petróleo, minerales) cuyo coste para las generaciones futuras no se refleja en el precio actual; <strong>pérdida de biodiversidad</strong> (extinción de especies, destrucción de hábitats) con consecuencias irreversibles para los ecosistemas.
+                    </p>
+                    <p>
+                        Cuando existe una externalidad negativa, el <strong>coste social</strong> (coste privado + coste externo) es superior al <strong>coste privado</strong> que soporta el productor. Como resultado, el mercado produce una cantidad <strong>superior al óptimo social</strong>: hay sobreproducción del bien contaminante.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.3. Externalidades positivas ambientales" color="green">
+                    <p>
+                        Las <strong>externalidades positivas ambientales</strong> se producen cuando una actividad genera beneficios ambientales que no se reflejan en el precio de mercado. Ejemplos: la <strong>biodiversidad</strong> (los ecosistemas proporcionan servicios —polinización, regulación del clima, purificación del agua— cuyo valor no se refleja en los precios de mercado), la <strong>captura de carbono</strong> por los bosques (un bosque absorbe CO₂ de la atmósfera, beneficiando a toda la humanidad sin recibir compensación), la <strong>agricultura ecológica</strong> (que preserva la calidad del suelo y del agua). Cuando existe una externalidad positiva, el <strong>beneficio social</strong> es superior al <strong>beneficio privado</strong>, y el mercado produce una cantidad <strong>inferior al óptimo social</strong>: hay infraproducción del bien beneficioso.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.4. La tragedia de los comunes" color="amber">
+                    <p>
+                        <strong>Garrett Hardin</strong> publicó en 1968 su influyente artículo <em>"The Tragedy of the Commons"</em> en la revista <em>Science</em>. En él describe un escenario en el que un recurso compartido de acceso abierto (un pasto comunal, un banco de peces, la atmósfera) es sobreexplotado porque cada usuario individual tiene incentivos para maximizar su propio beneficio a corto plazo, sin internalizar el coste que impone a los demás usuarios. El resultado es la <strong>degradación o agotamiento del recurso</strong>: cada pastor añade una oveja más al pasto comunal (el beneficio es privado, el coste de la degradación se reparte entre todos), hasta que el pasto se destruye.
+                    </p>
+                    <p>
+                        Las soluciones a la tragedia de los comunes incluyen: <strong>privatización</strong> (asignar derechos de propiedad para que el propietario internalice los costes), <strong>regulación estatal</strong> (cuotas, prohibiciones, estándares) y <strong>gestión comunitaria</strong>. <strong>Elinor Ostrom</strong> (Premio Nobel de Economía 2009) demostró que las comunidades locales pueden gestionar eficazmente los recursos comunes sin necesidad de privatización ni regulación estatal, a través de instituciones de gobernanza colectiva basadas en reglas claras, sanciones graduales y participación de los usuarios.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.5. Soluciones a las externalidades" color="pink">
+                    <p>
+                        <strong>Soluciones pigouvianas (Arthur Cecil Pigou):</strong> el gobierno interviene para <strong>internalizar la externalidad</strong> mediante instrumentos fiscales. Un <strong>impuesto pigouviano</strong> grava la actividad contaminante en una cantidad igual al coste marginal externo, de modo que el coste privado iguale al coste social. Ejemplo: un impuesto sobre las emisiones de CO₂ (impuesto al carbono). Una <strong>subvención pigouviana</strong> subsidia la actividad que genera externalidades positivas (subvenciones a las energías renovables, a la reforestación, a la agricultura ecológica).
+                    </p>
+                    <p>
+                        <strong>Teorema de Coase (Ronald Coase, 1960):</strong> si los <strong>derechos de propiedad</strong> están bien definidos y los <strong>costes de transacción son suficientemente bajos</strong>, las partes afectadas por una externalidad pueden llegar a un <strong>acuerdo privado</strong> que resuelva la externalidad de forma eficiente, sin necesidad de intervención pública. El resultado será eficiente independientemente de a quién se asignen inicialmente los derechos de propiedad (aunque la distribución de la renta sí dependerá de ello). En la práctica, los costes de transacción suelen ser elevados (especialmente en problemas ambientales globales como el cambio climático, donde hay millones de afectados), por lo que el teorema de Coase tiene aplicabilidad limitada en el ámbito ambiental.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 3 */}
+            <Card title="3. El cambio climático como problema económico" icon="🌡️">
+                <TheoryBlock title="3.1. Causas y evidencia científica" color="purple">
+                    <p>
+                        El <strong>cambio climático</strong> es el aumento de la temperatura media global causado por la acumulación de <strong>gases de efecto invernadero (GEI)</strong> en la atmósfera, principalmente <strong>CO₂</strong> (procedente de la quema de combustibles fósiles y la deforestación), <strong>metano (CH₄)</strong> (ganadería, vertederos, extracción de gas) y <strong>óxido nitroso (N₂O)</strong> (agricultura, industria). El <strong>Panel Intergubernamental de Expertos sobre el Cambio Climático (IPCC)</strong>, en su Sexto Informe de Evaluación (2021-2023), establece con un nivel de confianza muy alto que la influencia humana ha calentado el planeta aproximadamente 1,1°C respecto a los niveles preindustriales y que este calentamiento es "inequívocamente" causado por las actividades humanas.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.2. El Informe Stern (2006)" color="blue">
+                    <p>
+                        El <strong>Informe Stern sobre la Economía del Cambio Climático</strong>, encargado por el gobierno británico al economista <strong>Nicholas Stern</strong>, fue un hito en la economía ambiental. Su conclusión principal fue contundente: <em>"el coste de no actuar contra el cambio climático será mucho mayor que el coste de actuar"</em>. Stern estimó que no actuar podría reducir el PIB mundial entre un 5% y un 20% de forma permanente, mientras que estabilizar las emisiones costaría alrededor del 1% del PIB mundial anual. El informe fue criticado por algunos economistas (como William Nordhaus) por utilizar una tasa de descuento muy baja, que daba un peso elevado al bienestar de las generaciones futuras, pero su impacto político fue enorme y contribuyó a situar el cambio climático en la agenda económica global.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.3. El Acuerdo de París (2015)" color="green">
+                    <p>
+                        El <strong>Acuerdo de París</strong>, adoptado en la COP21 (diciembre de 2015) por 196 países, es el tratado internacional más importante sobre cambio climático. Sus objetivos principales son: <strong>limitar el calentamiento global a bien por debajo de 2°C</strong> respecto a los niveles preindustriales, con esfuerzos para limitarlo a <strong>1,5°C</strong>; que cada país presente <strong>Contribuciones Determinadas a Nivel Nacional (NDC)</strong> con sus compromisos de reducción de emisiones, revisadas al alza cada cinco años; movilizar <strong>100.000 millones de dólares anuales</strong> de los países desarrollados para financiar la adaptación y mitigación en los países en desarrollo.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.4. Mecanismos de mercado para combatir el cambio climático" color="amber">
+                    <p>
+                        Los dos principales instrumentos de mercado para reducir las emisiones de GEI son:
+                    </p>
+                    <p>
+                        <strong>Comercio de derechos de emisión (cap-and-trade):</strong> el gobierno fija un tope (cap) máximo de emisiones y distribuye permisos de emisión entre las empresas (por subasta o asignación gratuita). Las empresas que emiten menos de lo permitido pueden vender sus excedentes a las que emiten más, creando un <strong>mercado de carbono</strong>. El sistema más importante del mundo es el <strong>EU ETS</strong> (European Union Emissions Trading System), que cubre unas 10.000 instalaciones industriales y de generación eléctrica en la UE. Este mecanismo combina la certidumbre ambiental (se fija la cantidad total de emisiones) con la eficiencia económica (las reducciones se realizan donde el coste es menor).
+                    </p>
+                    <p>
+                        <strong>Impuesto al carbono (carbon tax):</strong> un impuesto que grava cada tonelada de CO₂ emitida a un precio fijo. Es un impuesto pigouviano que internaliza el coste de la externalidad climática. Sus ventajas son la simplicidad, la previsibilidad del coste para las empresas y la recaudación que genera (que puede usarse para reducir otros impuestos o financiar la transición energética). Su inconveniente principal es que no garantiza un nivel de emisiones determinado (depende de cómo respondan los agentes al precio). Países como Suecia, Canadá y varios estados de EE.UU. han implementado impuestos al carbono.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.5. El Pacto Verde Europeo y la justicia climática" color="pink">
+                    <p>
+                        El <strong>Pacto Verde Europeo</strong> (European Green Deal, 2019) es la estrategia de la Comisión Europea para convertir a la UE en el primer continente <strong>climáticamente neutro en 2050</strong>. Incluye: la Ley Europea del Clima, la revisión del EU ETS, el mecanismo de ajuste en frontera de carbono (CBAM, para evitar la "fuga de carbono"), la estrategia de biodiversidad, el plan de acción de economía circular y el Fondo de Transición Justa (para ayudar a las regiones más dependientes de los combustibles fósiles).
+                    </p>
+                    <p>
+                        La <strong>justicia climática</strong> es un concepto fundamental: los países más pobres y vulnerables son los que menos han contribuido históricamente al cambio climático (las emisiones acumuladas proceden mayoritariamente de los países industrializados) pero son los que más sufren sus consecuencias (sequías, inundaciones, subida del nivel del mar, fenómenos meteorológicos extremos). La justicia climática exige que los países ricos asuman una mayor responsabilidad en la reducción de emisiones y en la financiación de la adaptación de los países en desarrollo.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 4 */}
+            <Card title="4. Instrumentos de política ambiental" icon="🏛️">
+                <TheoryBlock title="4.1. Regulación directa (command and control)" color="purple">
+                    <p>
+                        La <strong>regulación directa</strong> o <strong>command and control</strong> consiste en la imposición de <strong>normas, prohibiciones y estándares</strong> obligatorios por parte del gobierno. Ejemplos: estándares de emisiones máximas para vehículos e industrias, prohibición de determinadas sustancias contaminantes (CFCs, amianto, plásticos de un solo uso), estándares de calidad ambiental (niveles máximos de contaminantes en el aire o el agua), normas de eficiencia energética en edificios y electrodomésticos. La regulación directa tiene la ventaja de la certidumbre (se sabe exactamente qué está prohibido o permitido), pero puede ser ineficiente (no tiene en cuenta que los costes de reducción varían entre empresas) y costosa de supervisar y hacer cumplir.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.2. Instrumentos económicos" color="blue">
+                    <p>
+                        Los <strong>instrumentos económicos</strong> utilizan los incentivos del mercado para alcanzar objetivos ambientales. Además de los ya mencionados impuestos ambientales y permisos de emisión, incluyen: <strong>subvenciones a tecnologías limpias</strong> (energías renovables, vehículos eléctricos, eficiencia energética), <strong>depósitos reembolsables</strong> (el consumidor paga un depósito al comprar un envase que se devuelve al reciclarlo, incentivando la recogida selectiva) y <strong>tarifas por generación de residuos</strong> (pagar en proporción a la cantidad de residuos generados, incentivando la reducción y el reciclaje).
+                    </p>
+                    <p>
+                        La ventaja de los instrumentos económicos es que logran el objetivo ambiental al <strong>menor coste posible</strong>: cada agente elige la forma más barata de reducir su contaminación. Su inconveniente es que el resultado ambiental puede ser incierto (depende de la respuesta de los agentes al incentivo) y que requieren un diseño cuidadoso para evitar efectos indeseados.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.3. Principios y herramientas complementarias" color="green">
+                    <p>
+                        El principio <strong>"quien contamina paga"</strong> (Polluter Pays Principle, adoptado por la OCDE en 1972) establece que el contaminador debe asumir el coste de las medidas para prevenir y controlar la contaminación, en lugar de trasladarlo a la sociedad. Es el fundamento de los impuestos ambientales y de la responsabilidad por daños al medio ambiente.
+                    </p>
+                    <p>
+                        La <strong>Evaluación de Impacto Ambiental (EIA)</strong> es un procedimiento administrativo que evalúa los efectos ambientales previsibles de un proyecto (construcción de una carretera, una fábrica, un embalse) antes de su autorización. Es obligatoria en la UE y en España para determinados proyectos. El <strong>etiquetado ecológico</strong> (ecolabel) y las <strong>certificaciones ambientales</strong> (ISO 14001, EMAS) informan a los consumidores y a las organizaciones sobre el desempeño ambiental de productos y empresas, facilitando decisiones de compra y gestión más sostenibles.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 5 */}
+            <Card title="5. El desarrollo sostenible" icon="♻️">
+                <TheoryBlock title="5.1. El Informe Brundtland (1987)" color="purple">
+                    <p>
+                        El concepto de <strong>desarrollo sostenible</strong> fue popularizado por el <strong>Informe Brundtland</strong> (<em>"Nuestro futuro común"</em>), publicado en 1987 por la Comisión Mundial sobre el Medio Ambiente y el Desarrollo de las Naciones Unidas, presidida por Gro Harlem Brundtland. Su definición se ha convertido en la más citada de la literatura: <em>"El desarrollo sostenible es aquel que satisface las necesidades del presente sin comprometer la capacidad de las generaciones futuras para satisfacer sus propias necesidades"</em>. Esta definición contiene dos conceptos clave: el concepto de <strong>necesidades</strong> (en particular, las necesidades esenciales de los pobres del mundo, a las que debería otorgarse prioridad preponderante) y la idea de <strong>limitaciones</strong> impuestas por el estado de la tecnología y la organización social sobre la capacidad del medio ambiente para satisfacer las necesidades presentes y futuras.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.2. Triple dimensión del desarrollo sostenible" color="blue">
+                    <p>
+                        El desarrollo sostenible se apoya en <strong>tres dimensiones interdependientes</strong> (los "tres pilares"): <strong>Dimensión económica:</strong> crecimiento que genera empleo, innovación y bienestar, con una distribución equitativa de la riqueza, sin agotar los recursos naturales ni degradar el medio ambiente. <strong>Dimensión social:</strong> equidad, inclusión, acceso universal a servicios básicos (salud, educación, vivienda, agua), reducción de la pobreza y la desigualdad, igualdad de género, participación ciudadana, respeto a los derechos humanos. <strong>Dimensión ambiental:</strong> conservación de los ecosistemas, uso racional de los recursos naturales, reducción de la contaminación, protección de la biodiversidad, lucha contra el cambio climático. La sostenibilidad exige equilibrar simultáneamente las tres dimensiones: un crecimiento económico que destruya el medio ambiente o aumente la desigualdad no es sostenible; una protección ambiental que condene a la pobreza a millones de personas tampoco lo es.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.3. Indicadores de sostenibilidad" color="green">
+                    <p>
+                        Para medir el progreso hacia la sostenibilidad se han desarrollado diversos indicadores: <strong>Huella ecológica:</strong> mide la superficie de tierra y agua biológicamente productiva que necesita una persona, población o actividad para producir los recursos que consume y absorber los residuos que genera, expresada en hectáreas globales (hag). Si la huella ecológica de un país supera su biocapacidad, vive en <strong>déficit ecológico</strong> (la humanidad actualmente utiliza el equivalente a 1,7 planetas). <strong>Huella de carbono:</strong> mide las emisiones totales de GEI (en toneladas de CO₂ equivalente) asociadas a una persona, organización, producto o actividad. <strong>Huella hídrica:</strong> mide el volumen total de agua dulce utilizada directa e indirectamente para producir los bienes y servicios consumidos por una persona o país.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.4. Agenda 2030 y los ODS" color="amber">
+                    <p>
+                        La <strong>Agenda 2030 para el Desarrollo Sostenible</strong>, aprobada por la Asamblea General de las Naciones Unidas en septiembre de 2015, establece <strong>17 Objetivos de Desarrollo Sostenible (ODS)</strong> y 169 metas que abarcan las dimensiones económica, social y ambiental del desarrollo. Los ODS más directamente relacionados con el contenido de este tema son: <strong>ODS 6</strong> (agua limpia y saneamiento), <strong>ODS 7</strong> (energía asequible y no contaminante), <strong>ODS 11</strong> (ciudades y comunidades sostenibles), <strong>ODS 12</strong> (producción y consumo responsables), <strong>ODS 13</strong> (acción por el clima), <strong>ODS 14</strong> (vida submarina), <strong>ODS 15</strong> (vida de ecosistemas terrestres).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.5. Economía circular" color="pink">
+                    <p>
+                        La <strong>economía circular</strong> propone sustituir el modelo lineal (extraer-producir-consumir-desechar) por un modelo cíclico que minimice la extracción de recursos y la generación de residuos. Se basa en las <strong>7R</strong>: <strong>Rediseñar</strong> (crear productos para la durabilidad, reparabilidad y reciclaje), <strong>Reducir</strong> (minimizar el uso de materiales y energía), <strong>Reutilizar</strong> (dar un segundo uso a los productos), <strong>Reparar</strong> (alargar la vida útil de los productos), <strong>Renovar</strong> (actualizar y mejorar los productos), <strong>Recuperar</strong> (recoger y revalorizar materiales al final de su vida útil), <strong>Reciclar</strong> (transformar residuos en nuevos recursos).
+                    </p>
+                    <p>
+                        El concepto de <strong>Cradle to Cradle</strong> (de la cuna a la cuna), desarrollado por <strong>William McDonough y Michael Braungart</strong>, propone que todos los materiales sean diseñados como <strong>nutrientes biológicos</strong> (que se reintegran de forma segura en la biosfera) o como <strong>nutrientes técnicos</strong> (que se reciclan indefinidamente sin pérdida de calidad). La UE ha adoptado un <strong>Plan de Acción para la Economía Circular</strong> como parte del Pacto Verde Europeo.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 6 */}
+            <Card title="6. Nuevos paradigmas económicos" icon="🌱">
+                <TheoryBlock title="6.1. Economía ecológica" color="purple">
+                    <p>
+                        La <strong>economía ecológica</strong>, cuyos principales representantes son <strong>Nicholas Georgescu-Roegen</strong> y <strong>Herman Daly</strong>, propone que la economía debe operar dentro de los <strong>límites biofísicos del planeta</strong>. Daly desarrolló el concepto de <strong>economía de estado estacionario</strong> (steady-state economy): una economía en la que el flujo de materia y energía (throughput) se mantiene constante en un nivel sostenible, compatible con la capacidad de regeneración de los ecosistemas. El crecimiento cuantitativo (más producción) se sustituye por el <strong>desarrollo cualitativo</strong> (mejor producción, más eficiente, más equitativa, más satisfactoria). La economía ecológica critica la <strong>obsesión por el PIB</strong> como medida de bienestar y propone indicadores alternativos que reflejen el capital natural, el bienestar social y los límites planetarios.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="6.2. Economía del decrecimiento" color="blue">
+                    <p>
+                        El movimiento del <strong>decrecimiento</strong> (décroissance), cuyo principal teórico es <strong>Serge Latouche</strong>, va más allá de la economía ecológica y propone una <strong>reducción voluntaria y planificada de la producción y el consumo</strong> en las sociedades ricas, para reducir la presión sobre los ecosistemas y permitir un mayor espacio ecológico para los países en desarrollo. El decrecimiento no es una recesión (caída involuntaria del PIB), sino una <strong>transformación consciente</strong> del modelo económico y social: menos producción material, menos consumismo, pero más tiempo libre, más relaciones sociales, más bienestar subjetivo, más equidad. Sus críticos señalan que el decrecimiento podría generar desempleo masivo, conflictos sociales y una reducción del bienestar material, especialmente para los más pobres.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="6.3. Economía rosquilla (Doughnut Economics)" color="green">
+                    <p>
+                        <strong>Kate Raworth</strong> propuso en 2017 el modelo de la <strong>economía rosquilla</strong> (Doughnut Economics), que ofrece una imagen visual poderosa del espacio seguro y justo para la humanidad. La rosquilla tiene dos fronteras: el <strong>suelo social</strong> (la rosquilla interior), que representa las necesidades básicas que deben satisfacerse para todos (alimentación, salud, educación, vivienda, igualdad, participación política, energía, agua, empleo, ingresos — basadas en los ODS), y el <strong>techo ecológico</strong> (la rosquilla exterior), que representa los <strong>nueve límites planetarios</strong> que no deben sobrepasarse (cambio climático, acidificación oceánica, contaminación química, carga de nitrógeno y fósforo, uso de agua dulce, cambio de uso del suelo, pérdida de biodiversidad, contaminación atmosférica, agotamiento de la capa de ozono — basados en el marco de <strong>Johan Rockström</strong>). El objetivo de la economía no es el crecimiento indefinido del PIB, sino <strong>operar dentro de la rosquilla</strong>: satisfacer las necesidades de todos sin sobrepasar los límites del planeta.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="6.4. Economía del bien común y economía azul" color="amber">
+                    <p>
+                        La <strong>Economía del Bien Común</strong>, propuesta por el economista austríaco <strong>Christian Felber</strong>, plantea reorientar la economía hacia el bien común en lugar de la maximización del beneficio privado. Propone un <strong>Balance del Bien Común</strong> (BBC) para las empresas, que mida su contribución a valores como la dignidad humana, la solidaridad, la sostenibilidad ecológica, la justicia social y la democracia. Las empresas con mejor BBC recibirían ventajas fiscales, acceso prioritario a la contratación pública y mejores condiciones de crédito. La <strong>Economía Azul</strong>, propuesta por el empresario belga <strong>Gunter Pauli</strong>, se inspira en los <strong>ecosistemas naturales</strong> para diseñar sistemas productivos en los que los residuos de un proceso se conviertan en insumos de otro, eliminando el concepto de residuo. Pauli identifica decenas de innovaciones inspiradas en la naturaleza (biomimética) que pueden generar empleo, reducir costes y eliminar residuos simultáneamente.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="6.5. Green New Deal" color="pink">
+                    <p>
+                        El concepto de <strong>Green New Deal</strong> (Nuevo Pacto Verde) propone una <strong>inversión pública masiva</strong> en la transición ecológica —energías renovables, eficiencia energética, transporte público, rehabilitación de edificios, infraestructuras verdes, investigación y desarrollo— como motor de creación de empleo, crecimiento económico y reducción de emisiones. Inspirado en el New Deal de Franklin D. Roosevelt (1933), el Green New Deal concibe la transición ecológica no como un coste sino como una <strong>oportunidad económica y social</strong>: la mayor fuente de inversión, innovación y empleo de las próximas décadas. El Pacto Verde Europeo se inspira en esta filosofía.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 7 */}
+            <Card title="7. Relevancia curricular y aplicación docente" icon="🎓">
+                <TheoryBlock title="7.1. El medio ambiente en la LOMLOE" color="purple">
+                    <p>
+                        La Ley Orgánica 3/2020 (LOMLOE) y los reales decretos que desarrollan el currículo otorgan al medio ambiente y al desarrollo sostenible un papel <strong>transversal</strong> en la enseñanza. La educación para el desarrollo sostenible (EDS) se integra como eje vertebrador, contribuyendo especialmente a la <strong>competencia ciudadana (CC)</strong> (participación responsable en la sociedad, compromiso con la justicia social y ambiental), la <strong>competencia en ciencia, tecnología e ingeniería (STEM)</strong> (comprensión de los procesos ambientales y sus interacciones con la actividad humana) y la <strong>competencia personal, social y de aprender a aprender (CPSAA)</strong> (desarrollo de valores, actitudes y hábitos sostenibles).
+                    </p>
+                    <p>
+                        En las materias de Economía (1.º Bachillerato) y Economía de la Empresa (2.º Bachillerato), los <strong>saberes básicos</strong> incluyen expresamente: externalidades y fallos del mercado, bienes públicos, política ambiental, desarrollo sostenible, responsabilidad social corporativa y economía circular. Los ODS constituyen un marco de referencia explícito para el diseño de situaciones de aprendizaje.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="7.2. Actividades didácticas propuestas" color="blue">
+                    <p>
+                        <strong>Actividades propuestas:</strong> (1) <strong>Cálculo de la huella ecológica personal</strong> mediante calculadoras online (Global Footprint Network) y debate sobre los resultados. (2) <strong>Debate: crecimiento vs. decrecimiento</strong>. Dos grupos defienden posiciones opuestas con argumentos económicos y ambientales. (3) <strong>Análisis de noticias ambientales:</strong> identificar externalidades, bienes públicos, políticas ambientales y ODS en noticias de prensa. (4) <strong>Simulación de un mercado de carbono</strong> en el aula: asignar permisos de emisión a "empresas" y permitir su compraventa. (5) <strong>Proyecto interdisciplinar:</strong> economía + ciencias naturales + tecnología: diseñar un producto siguiendo los principios de la economía circular y el Cradle to Cradle. (6) <strong>Estudio de caso:</strong> el Pacto Verde Europeo y sus implicaciones para España. (7) <strong>Reflexión:</strong> ¿España está dentro de la "rosquilla" de Kate Raworth? Analizar indicadores de suelo social y techo ecológico.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── CONCLUSIÓN ──────────────────────────────────────── */}
+            <Card title="Conclusión" icon="✅">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        La relación entre economía y medio ambiente ha pasado de ser una cuestión marginal a convertirse en el desafío central de la ciencia económica y de la política pública del siglo XXI. Durante demasiado tiempo, el modelo económico dominante trató la naturaleza como un mero proveedor de recursos baratos y un sumidero gratuito de residuos, ignorando los costes ambientales y sociales de la actividad económica. Las externalidades ambientales —contaminación, cambio climático, pérdida de biodiversidad, agotamiento de recursos— representan un fallo del mercado de proporciones globales que exige la intervención decidida de los poderes públicos y la transformación profunda del modelo productivo y de consumo.
+                    </p>
+                    <p>
+                        La teoría económica ofrece instrumentos potentes para abordar estos problemas: los impuestos pigouvianos, los mercados de derechos de emisión, el teorema de Coase, la regulación directa y la evaluación de impacto ambiental constituyen un arsenal de herramientas que, bien diseñadas e implementadas, pueden alinear los incentivos económicos con los objetivos ambientales. El desafío no es técnico sino político: la transición ecológica exige voluntad política, cooperación internacional, inversión pública y privada a gran escala y una distribución justa de los costes y beneficios.
+                    </p>
+                    <p>
+                        El desarrollo sostenible —en su triple dimensión económica, social y ambiental— se ha consolidado como el paradigma rector del siglo XXI. La Agenda 2030, con sus 17 ODS, proporciona un marco universal de referencia. Los nuevos paradigmas económicos —economía ecológica, decrecimiento, economía rosquilla, economía del bien común, economía circular— enriquecen el debate y ofrecen alternativas al crecimiento ilimitado del PIB como indicador de progreso.
+                    </p>
+                    <p>
+                        El cambio climático, como la mayor amenaza global de nuestro tiempo, exige una respuesta urgente y coordinada. El Acuerdo de París, el Pacto Verde Europeo y los mecanismos de mercado para la reducción de emisiones representan avances significativos, pero insuficientes frente a la magnitud del desafío. La justicia climática —la idea de que los países ricos, principales responsables históricos del cambio climático, deben asumir una responsabilidad proporcional— es un imperativo ético y económico.
+                    </p>
+                    <p>
+                        El futuro docente de Economía tiene la responsabilidad y el privilegio de formar a las nuevas generaciones en la comprensión de estos desafíos y en el compromiso con un modelo de desarrollo que sea simultáneamente próspero, justo y sostenible. La LOMLOE, con su énfasis en los ODS y la educación para el desarrollo sostenible, proporciona el marco normativo; la ciencia económica, las herramientas analíticas; y la vocación docente, la motivación para transformar el mundo desde las aulas.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── BIBLIOGRAFÍA ────────────────────────────────────── */}
+            <BibliografiaBox items={[
+                'PIGOU, A.C. (1920): The Economics of Welfare, Macmillan.',
+                'COASE, R. (1960): "The Problem of Social Cost", Journal of Law and Economics, 3, pp. 1-44.',
+                'HARDIN, G. (1968): "The Tragedy of the Commons", Science, 162(3859), pp. 1243-1248.',
+                'STERN, N. (2006): The Economics of Climate Change: The Stern Review, Cambridge University Press.',
+                'GEORGESCU-ROEGEN, N. (1971): The Entropy Law and the Economic Process, Harvard University Press.',
+                'DALY, H. (1996): Beyond Growth: The Economics of Sustainable Development, Beacon Press.',
+                'RAWORTH, K. (2017): Doughnut Economics: Seven Ways to Think Like a 21st-Century Economist, Random House.',
+                'LATOUCHE, S. (2009): Pequeño tratado del decrecimiento sereno, Icaria.',
+                'FELBER, C. (2012): La economía del bien común, Deusto.',
+                'McDONOUGH, W. y BRAUNGART, M. (2002): Cradle to Cradle: Remaking the Way We Make Things, North Point Press.',
+                'MEADOWS, D. et al. (1972): Los límites del crecimiento, Informe al Club de Roma.',
+                'OSTROM, E. (1990): Governing the Commons, Cambridge University Press.',
+                'ONU (2015): Agenda 2030 para el Desarrollo Sostenible. 17 Objetivos de Desarrollo Sostenible.',
+                'IPCC (2021-2023): Sexto Informe de Evaluación. Cambio Climático.',
+                'Comisión Europea (2019): Pacto Verde Europeo. COM(2019) 640 final.',
+                'ROCKSTRÖM, J. et al. (2009): "A safe operating space for humanity", Nature, 461, pp. 472-475.',
+                'Ley Orgánica 3/2020, de 29 de diciembre (LOMLOE). Real Decreto 243/2022, de 5 de abril.',
+                'PAULI, G. (2010): The Blue Economy, Paradigm Publications.',
+            ]} />
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 10 — RESUM / ESQUEMA
+    // ════════════════════════════════════════════════════════════════
+    const Tema10Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-purple-50 rounded-xl border border-purple-200 mb-5">
+                    <p className="text-center font-bold text-purple-800 text-lg">Tema 10: El medio ambiente y la economía. Desarrollo sostenible.</p>
+                    <p className="text-center text-sm text-purple-600 mt-1">
+                        <em>"El desarrollo sostenible satisface las necesidades del presente sin comprometer las de las generaciones futuras"</em> — Brundtland, 1987
+                    </p>
+                </div>
+
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. Economía y medio ambiente</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>Georgescu-Roegen:</strong> la economía como subsistema del ecosistema. Leyes de la termodinámica: entropía.</li>
+                            <li><strong>Modelo lineal:</strong> extraer → producir → consumir → desechar.</li>
+                            <li><strong>Recursos:</strong> renovables (bosques, agua), no renovables (petróleo, minerales), flujo (solar, viento).</li>
+                            <li><strong>Funciones:</strong> proveedor de recursos, receptor de residuos, servicios ecosistémicos.</li>
+                            <li><strong>Bienes públicos:</strong> no exclusión + no rivalidad → problema del free-rider.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. Las externalidades ambientales</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>Externalidad</strong> (Pigou, 1920): coste/beneficio no reflejado en el precio de mercado.</li>
+                            <li><strong>Negativas:</strong> contaminación, deforestación → coste social &gt; coste privado → sobreproducción.</li>
+                            <li><strong>Positivas:</strong> biodiversidad, captura de carbono → beneficio social &gt; privado → infraproducción.</li>
+                            <li><strong>Tragedia de los comunes</strong> (Hardin, 1968). Solución: Ostrom (gobernanza comunitaria).</li>
+                            <li><strong>Pigou:</strong> impuestos/subvenciones. <strong>Coase:</strong> negociación privada (si costes de transacción bajos).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. El cambio climático</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>GEI:</strong> CO₂, CH₄, N₂O. IPCC: +1,1°C (causado por actividades humanas).</li>
+                            <li><strong>Informe Stern (2006):</strong> coste de no actuar &gt; coste de actuar.</li>
+                            <li><strong>Acuerdo de París (2015):</strong> limitar a 1,5-2°C. NDC cada 5 años.</li>
+                            <li><strong>EU ETS:</strong> cap-and-trade. <strong>Impuesto al carbono:</strong> Pigou aplicado.</li>
+                            <li><strong>Pacto Verde Europeo (2019):</strong> neutralidad climática en 2050. Justicia climática.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. Instrumentos de política ambiental</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>Regulación directa:</strong> normas, prohibiciones, estándares (certidumbre, pero potencialmente ineficiente).</li>
+                            <li><strong>Instrumentos económicos:</strong> impuestos, permisos, subvenciones, depósitos (eficiencia).</li>
+                            <li><strong>Principio "quien contamina paga"</strong> (OCDE, 1972). EIA. Etiquetado ecológico (ISO 14001).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">5. El desarrollo sostenible</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>Brundtland (1987):</strong> "satisfacer necesidades presentes sin comprometer las futuras".</li>
+                            <li><strong>Triple dimensión:</strong> económica + social + ambiental.</li>
+                            <li><strong>Indicadores:</strong> huella ecológica (hag), huella de carbono (tCO₂eq), huella hídrica.</li>
+                            <li><strong>Agenda 2030:</strong> 17 ODS. ODS 6, 7, 11, 12, 13, 14, 15.</li>
+                            <li><strong>Economía circular:</strong> 7R. <strong>Cradle to Cradle</strong> (McDonough y Braungart).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">6. Nuevos paradigmas económicos</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>Economía ecológica</strong> (Georgescu-Roegen, Daly): límites biofísicos, estado estacionario.</li>
+                            <li><strong>Decrecimiento</strong> (Latouche): menos producción, más bienestar.</li>
+                            <li><strong>Economía rosquilla</strong> (Raworth, 2017): suelo social + techo ecológico (Rockström).</li>
+                            <li><strong>Economía del bien común</strong> (Felber): Balance del Bien Común.</li>
+                            <li><strong>Economía azul</strong> (Pauli): imitar ecosistemas naturales (biomimética).</li>
+                            <li><strong>Green New Deal:</strong> inversión pública masiva en transición ecológica.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">7. Relevancia curricular</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>LOMLOE: EDS transversal. Competencias CC, STEM, CPSAA.</li>
+                            <li>Actividades: huella ecológica, debate crecimiento vs. decrecimiento, simulación mercado de carbono.</li>
+                            <li>Proyectos interdisciplinares: economía + ciencias naturales + tecnología.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <FormulaBox formula="Coste social = Coste privado + Coste externo" desc="Con externalidad negativa: el mercado sobreproducirá el bien contaminante." />
+                <FormulaBox formula="Huella ecológica > Biocapacidad → Déficit ecológico" desc="La humanidad utiliza actualmente ~1,7 planetas." />
+
+                <ClauBox>
+                    <p>- Domina los conceptos de <strong>externalidad</strong> (Pigou), <strong>teorema de Coase</strong> y <strong>tragedia de los comunes</strong> (Hardin) con ejemplos ambientales.</p>
+                    <p>- Diferencia <strong>instrumentos de política ambiental</strong>: regulación directa vs. económicos (impuestos, permisos, subvenciones).</p>
+                    <p>- Conoce el <strong>Informe Stern</strong>, el <strong>Acuerdo de París</strong> y el <strong>EU ETS</strong> con sus implicaciones económicas.</p>
+                    <p>- Explica el <strong>desarrollo sostenible</strong> (Brundtland) con su triple dimensión y los indicadores (huellas ecológica, carbono, hídrica).</p>
+                    <p>- Compara los <strong>nuevos paradigmas</strong>: ecológica (Daly), decrecimiento (Latouche), rosquilla (Raworth), bien común (Felber), azul (Pauli).</p>
+                    <p>- Conecta con la <strong>LOMLOE</strong>, la <strong>Agenda 2030</strong> y los <strong>ODS 6, 7, 11, 12, 13, 14, 15</strong>. Interdisciplinariedad.</p>
+                    <p>- Cita con rigor: Pigou, Coase, Hardin, Ostrom, Stern, Georgescu-Roegen, Daly, Raworth, Latouche, Felber, Rockström, IPCC.</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 10 — Component wrapper
+    // ════════════════════════════════════════════════════════════════
+    const Tema10 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="📖" title="Tema 10" subtitle={t('tema10.title')} />
+                <Tabs tabs={[
+                    { id: 'complet', label: '📝 ' + t('tab.complet') },
+                    { id: 'resum', label: '📋 ' + t('tab.resum') },
+                ]} active={vista} onChange={setVista} />
+
+                {vista === 'complet' && <Tema10Complet />}
+                {vista === 'resum' && <Tema10Resum />}
+            </div>
+        );
+    };
 
     // ════════════════════════════════════════════════════════════════
     // NAVIGATION AND RENDER
@@ -4275,8 +5192,8 @@ function BlocAApp() {
         { id: 'tema6', label: 'T6', emoji: '📖' },
         { id: 'tema7', label: 'T7', emoji: '📖' },
         { id: 'tema8', label: 'T8', emoji: '📖' },
-        { id: 'tema9', label: 'T9', emoji: '🔒' },
-        { id: 'tema10', label: 'T10', emoji: '🔒' },
+        { id: 'tema9', label: 'T9', emoji: '📖' },
+        { id: 'tema10', label: 'T10', emoji: '📖' },
     ];
 
     return (
@@ -4300,8 +5217,8 @@ function BlocAApp() {
                 {section === 'tema6' && <Tema6 />}
                 {section === 'tema7' && <Tema7 />}
                 {section === 'tema8' && <Tema8 />}
-                {section === 'tema9' && <TemaPlaceholder num={9} />}
-                {section === 'tema10' && <TemaPlaceholder num={10} />}
+                {section === 'tema9' && <Tema9 />}
+                {section === 'tema10' && <Tema10 />}
             </main>
 
             <PdePrevNext sections={headerSections} currentSection={section} setSection={setSection} idioma={idioma} />
