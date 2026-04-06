@@ -163,19 +163,6 @@ function BlocCApp() {
         </div>
     );
 
-    const TemaPlaceholder = ({ num }) => (
-        <div className="animate-fade">
-            <Card>
-                <div className="text-center py-12">
-                    <span className="text-6xl mb-4 block">🔒</span>
-                    <h3 className="text-xl font-bold text-slate-700 mb-2">Tema {num}</h3>
-                    <p className="text-slate-500 mb-2">{t(`tema${num}.title`)}</p>
-                    <p className="text-sm text-blue-600 font-semibold">{t('placeholder.msg')}</p>
-                </div>
-            </Card>
-        </div>
-    );
-
     // ════════════════════════════════════════════════════════════════
     // THEME DATA (for Inicio cards)
     // ════════════════════════════════════════════════════════════════
@@ -188,8 +175,8 @@ function BlocCApp() {
         { num: 26, id: 'tema26', available: true },
         { num: 27, id: 'tema27', available: true },
         { num: 28, id: 'tema28', available: true },
-        { num: 29, id: 'tema29', available: false },
-        { num: 30, id: 'tema30', available: false },
+        { num: 29, id: 'tema29', available: true },
+        { num: 30, id: 'tema30', available: true },
     ];
 
     // ════════════════════════════════════════════════════════════════
@@ -3742,10 +3729,784 @@ function BlocCApp() {
     };
 
     // ════════════════════════════════════════════════════════════════
-    // TEMES 29-30 — Placeholders (properament)
+    // TEMA 29 — El Banco Central y la política monetaria
     // ════════════════════════════════════════════════════════════════
-    const Tema29 = () => (<div className="space-y-6"><SectionTitle icon="📖" title="Tema 29" subtitle={t('tema29.title')} /><TemaPlaceholder num={29} /></div>);
-    const Tema30 = () => (<div className="space-y-6"><SectionTitle icon="📖" title="Tema 30" subtitle={t('tema30.title')} /><TemaPlaceholder num={30} /></div>);
+    const Tema29Complet = () => (
+        <div className="space-y-6 animate-fade">
+            {/* ── INTRODUCCIÓN ────────────────────────────────────── */}
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        El <strong>Banco Central</strong> es la institución que ostenta el monopolio de emisión de moneda y actúa como <strong>autoridad monetaria</strong> de una economía. Su misión fundamental es preservar la <strong>estabilidad de precios</strong>, condición necesaria para el crecimiento sostenible, la planificación económica y la equidad distributiva. En la eurozona, esta función recae en el <strong>Banco Central Europeo (BCE)</strong>, que desde 1999 dirige la política monetaria común para los Estados miembros que comparten el euro.
+                    </p>
+                    <p>
+                        La relevancia del Banco Central trasciende la mera gestión técnica de la oferta monetaria: sus decisiones sobre tipos de interés, liquidez y supervisión bancaria condicionan el crédito, la inversión, el empleo y, en definitiva, el bienestar de los ciudadanos. Las crisis financieras de 2008 y la pandemia de 2020 pusieron de manifiesto tanto el poder como los límites de la política monetaria, impulsando el uso de <strong>instrumentos no convencionales</strong> como la expansión cuantitativa (QE) y los tipos de interés negativos.
+                    </p>
+                    <p>
+                        Desde la perspectiva curricular, este tema se enmarca en los saberes básicos del bloque «La realidad económica» de la materia de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022) y conecta con las competencias específicas CE1 (funcionamiento del sistema económico), CE3 (política económica) y CE5 (análisis del contexto económico). La LOMLOE destaca la importancia de comprender las instituciones económicas y su impacto en la vida cotidiana de los ciudadanos.
+                    </p>
+                    <p>
+                        El presente tema se estructura en cinco epígrafes: en primer lugar, se define el Banco Central y sus funciones; en segundo lugar, se analiza el BCE y el Eurosistema; en tercer lugar, se estudian los instrumentos de política monetaria; en cuarto lugar, se explica el mecanismo de transmisión; y en quinto lugar, se desarrollan las políticas monetarias expansiva y restrictiva. Se concluye con la relevancia curricular, una síntesis integradora y una bibliografía de referencia.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── DESARROLLO ──────────────────────────────────────── */}
+
+            {/* Epígrafe 1 */}
+            <Card title="1. El Banco Central: concepto y funciones" icon="📘">
+                <TheoryBlock title="1.1. Definición" color="blue">
+                    <p>
+                        El <strong>Banco Central</strong> es la institución pública responsable de la <strong>política monetaria</strong>, la <strong>estabilidad de precios</strong> y la <strong>supervisión del sistema financiero</strong> de un país o área monetaria. A diferencia de los bancos comerciales, no opera con el público general: es el «banco de los bancos» y el «banco del Estado». Su actuación condiciona las variables monetarias fundamentales —oferta monetaria, tipos de interés, tipo de cambio— y, a través de ellas, la actividad económica real.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.2. Funciones del Banco Central" color="green">
+                    <p>
+                        <strong>a) Emisión de billetes y monedas:</strong> el Banco Central detenta el <strong>monopolio legal</strong> de emisión de moneda de curso legal. Esta prerrogativa le confiere el control sobre la base monetaria (M0) y es la fuente última de liquidez del sistema.
+                    </p>
+                    <p>
+                        <strong>b) Política monetaria:</strong> diseña y ejecuta la política monetaria con el objetivo de mantener la estabilidad de precios, utilizando instrumentos como los tipos de interés oficiales, las operaciones de mercado abierto y los coeficientes de reservas.
+                    </p>
+                    <p>
+                        <strong>c) Banco de bancos (prestamista de última instancia):</strong> proporciona liquidez a las entidades de crédito cuando estas no pueden obtenerla en el mercado interbancario. Este papel, formulado por <strong>Bagehot</strong> (1873) en <em>Lombard Street</em>, establece que el Banco Central debe prestar libremente a entidades solventes pero ilíquidas, a un tipo penalizador y con buen colateral, para evitar pánicos bancarios sistémicos.
+                    </p>
+                    <p>
+                        <strong>d) Banco del Estado:</strong> actúa como agente financiero del Gobierno, gestionando la tesorería pública, las emisiones de deuda y las reservas de divisas. No obstante, en la eurozona se prohíbe la financiación monetaria directa del déficit público (art. 123 TFUE).
+                    </p>
+                    <p>
+                        <strong>e) Gestión de reservas de divisas:</strong> administra las reservas internacionales (oro y divisas), que sirven para intervenir en los mercados de cambios y garantizar la solvencia exterior.
+                    </p>
+                    <p>
+                        <strong>f) Supervisión y regulación bancaria:</strong> vigila la solvencia, liquidez y buenas prácticas de las entidades de crédito, contribuyendo a la estabilidad del sistema financiero en su conjunto.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.3. Independencia del Banco Central" color="amber">
+                    <p>
+                        La <strong>independencia del Banco Central</strong> respecto del poder político es una de las cuestiones más debatidas en economía monetaria. <strong>Kydland y Prescott</strong> (1977) demostraron que los gobiernos enfrentan un problema de <strong>inconsistencia temporal</strong>: aunque a largo plazo la estabilidad de precios es óptima, a corto plazo existe la tentación de aplicar políticas monetarias expansivas para estimular el empleo antes de unas elecciones, generando inflación inesperada. La solución es delegar la política monetaria en una institución independiente con mandato claro de estabilidad de precios.
+                    </p>
+                    <p>
+                        Se distinguen dos grados de independencia: la <strong>independencia de objetivos</strong> (el Banco Central fija sus propias metas) y la <strong>independencia de instrumentos</strong> (el objetivo lo fija el Parlamento, pero el Banco Central elige libremente los medios para alcanzarlo). El BCE goza de ambas. No obstante, existe un <strong>debate democrático</strong> legítimo: una institución no electa con enorme poder económico requiere mecanismos de rendición de cuentas (<em>accountability</em>), transparencia y comunicación con el Parlamento y la ciudadanía.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 2 */}
+            <Card title="2. El Banco Central Europeo (BCE)" icon="📘">
+                <TheoryBlock title="2.1. Creación y marco institucional" color="blue">
+                    <p>
+                        El BCE fue creado por el <strong>Tratado de Maastricht</strong> (1992) como pilar de la <strong>Unión Económica y Monetaria (UEM)</strong>. Comenzó a operar en 1998 y asumió la dirección de la política monetaria del euro en enero de 1999. El <strong>Eurosistema</strong> está formado por el BCE y los <strong>Bancos Centrales Nacionales (BCN)</strong> de los países de la zona euro, mientras que el <strong>Sistema Europeo de Bancos Centrales (SEBC)</strong> incluye además a los BCN de los Estados miembros de la UE que no han adoptado el euro.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.2. Objetivo principal" color="green">
+                    <p>
+                        El objetivo primordial del BCE es mantener la <strong>estabilidad de precios</strong>. Inicialmente se definió como una tasa de inflación «inferior pero cercana al 2%» a medio plazo. En la <strong>revisión estratégica de 2021</strong>, el Consejo de Gobierno adoptó un objetivo de inflación del <strong>2% simétrico</strong>: las desviaciones por encima y por debajo se consideran igualmente indeseables, lo que implica que tras períodos de inflación inferior al 2%, se tolera temporalmente una inflación moderadamente superior.
+                    </p>
+                    <p>
+                        Sin perjuicio de la estabilidad de precios, el BCE apoya las políticas económicas generales de la UE (crecimiento, empleo, cohesión social), pero siempre como objetivo secundario y subordinado al principal.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.3. Órganos de gobierno" color="amber">
+                    <p>
+                        <strong>a) Comité Ejecutivo:</strong> compuesto por el presidente, el vicepresidente y cuatro miembros, nombrados por el Consejo Europeo por un mandato de ocho años no renovable. Ejecuta la política monetaria según las orientaciones del Consejo de Gobierno.
+                    </p>
+                    <p>
+                        <strong>b) Consejo de Gobierno:</strong> principal órgano decisorio, integrado por los seis miembros del Comité Ejecutivo y los gobernadores de los BCN de la zona euro. Adopta las decisiones sobre tipos de interés y estrategia monetaria (sistema de rotación de voto desde 2015 por el aumento de miembros).
+                    </p>
+                    <p>
+                        <strong>c) Consejo General:</strong> órgano transitorio compuesto por el presidente, el vicepresidente y los gobernadores de todos los BCN del SEBC (zona euro y no euro). Funciones consultivas y de coordinación estadística.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.4. El Banco de España como BCN del Eurosistema" color="violet">
+                    <p>
+                        El <strong>Banco de España</strong> es el BCN español y forma parte del Eurosistema. Su gobernador participa en el Consejo de Gobierno del BCE. A nivel nacional, el BdE ejecuta la política monetaria del Eurosistema, supervisa las entidades de crédito (en coordinación con el MUS/SSM del BCE desde 2014), gestiona las reservas de divisas asignadas, opera el sistema de pagos y elabora estadísticas económicas y financieras. Además, es responsable de la <strong>Central de Información de Riesgos (CIR)</strong> y de la protección de los usuarios de servicios bancarios.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 3 */}
+            <Card title="3. Instrumentos de política monetaria" icon="📘">
+                <TheoryBlock title="3.1. Operaciones de mercado abierto (OMA)" color="blue">
+                    <p>
+                        Las OMA consisten en la <strong>compra y venta de títulos de deuda pública</strong> (y otros activos elegibles) por parte del Banco Central en el mercado secundario. Son el instrumento más flexible y utilizado. Cuando el BCE <strong>compra</strong> títulos, inyecta liquidez al sistema (política expansiva); cuando <strong>vende</strong>, drena liquidez (política restrictiva).
+                    </p>
+                    <p>
+                        La modalidad más importante son las <strong>Operaciones Principales de Financiación (OPF)</strong>: préstamos a una semana (tipo <em>repo</em>) mediante subasta a tipo fijo o variable. El tipo de interés de las OPF es el <strong>tipo oficial del BCE</strong>, la referencia central de toda la política monetaria de la eurozona.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.2. Facilidades permanentes" color="green">
+                    <p>
+                        Las facilidades permanentes son instrumentos a iniciativa de las entidades de crédito, disponibles diariamente:
+                    </p>
+                    <p>
+                        <strong>a) Facilidad marginal de crédito:</strong> permite a los bancos obtener liquidez overnight del Banco Central, a un tipo superior al oficial. Constituye el <strong>techo del corredor de tipos</strong>.
+                    </p>
+                    <p>
+                        <strong>b) Facilidad de depósito:</strong> permite a los bancos depositar sus excedentes de liquidez en el Banco Central, a un tipo inferior al oficial. Constituye el <strong>suelo del corredor de tipos</strong>. Su importancia creció enormemente cuando el BCE fijó tipos negativos en la facilidad de depósito (2014-2022), penalizando el exceso de liquidez ociosa para estimular el crédito.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.3. Coeficiente de reservas mínimas obligatorias" color="amber">
+                    <p>
+                        El <strong>coeficiente de reservas mínimas</strong> (encaje bancario) obliga a las entidades de crédito a mantener un porcentaje mínimo de sus depósitos como reservas en el Banco Central. Actualmente, el coeficiente en la eurozona es del <strong>1%</strong>. Un aumento del coeficiente reduce la capacidad de creación de dinero del sistema bancario (reduce el multiplicador monetario), mientras que una disminución la amplía. Es un instrumento poco flexible y de uso infrecuente.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.4. Forward guidance" color="violet">
+                    <p>
+                        El <strong><em>forward guidance</em></strong> (orientación prospectiva) consiste en la <strong>comunicación explícita de las intenciones futuras</strong> del Banco Central sobre la trayectoria de tipos de interés y otras medidas de política monetaria. Su objetivo es <strong>guiar las expectativas</strong> de los mercados y los agentes económicos, reduciendo la incertidumbre y reforzando la eficacia de las decisiones presentes. Ejemplo: «Los tipos permanecerán en los niveles actuales o inferiores hasta que la inflación converja al 2%».
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.5. Instrumentos no convencionales" color="pink">
+                    <p>
+                        Ante la crisis de 2008 y la proximidad al límite inferior cero (<em>zero lower bound</em>), los principales bancos centrales desplegaron instrumentos no convencionales:
+                    </p>
+                    <p>
+                        <strong>a) Expansión cuantitativa (QE — <em>Quantitative Easing</em>):</strong> compra masiva de activos financieros (deuda pública y privada) para inyectar liquidez, reducir los tipos a largo plazo y estimular la economía. El BCE implementó el <strong>APP</strong> (<em>Asset Purchase Programme</em>, 2015) y el <strong>PEPP</strong> (<em>Pandemic Emergency Purchase Programme</em>, 2020), acumulando billones de euros en activos.
+                    </p>
+                    <p>
+                        <strong>b) Tipos de interés negativos:</strong> la facilidad de depósito del BCE se situó en territorio negativo entre 2014 y 2022 (hasta −0,50%), penalizando a los bancos por mantener excedentes de liquidez ociosos.
+                    </p>
+                    <p>
+                        <strong>c) TLTRO (<em>Targeted Longer-Term Refinancing Operations</em>):</strong> préstamos a largo plazo condicionados a la concesión de crédito a empresas y hogares, con tipos potencialmente inferiores al tipo oficial (incluso negativos), incentivando directamente el canal crediticio.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 4 */}
+            <Card title="4. Mecanismo de transmisión de la política monetaria" icon="📘">
+                <TheoryBlock title="4.1. Canal del tipo de interés" color="blue">
+                    <p>
+                        Es el canal principal y más directo: el <strong>tipo oficial del BCE</strong> influye en los <strong>tipos del mercado interbancario</strong> (Euríbor), que a su vez determinan los <strong>tipos bancarios</strong> aplicados al crédito y los depósitos de empresas y hogares. Tipos más bajos → abarata el crédito → ↑consumo (C) e ↑inversión (I) → ↑demanda agregada (DA) → ↑producción (Y) y posiblemente ↑precios (P). La cadena inversa opera con tipos más altos.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.2. Canal del crédito" color="green">
+                    <p>
+                        Más allá del precio del crédito (tipo de interés), este canal opera a través de la <strong>disponibilidad y las condiciones de financiación</strong>. Cuando el Banco Central inyecta liquidez, los bancos disponen de más recursos para prestar y relajan las condiciones (menores garantías, plazos más largos). En sentido restrictivo, los bancos endurecen las condiciones crediticias, racionando el crédito a empresas y hogares con mayor riesgo. Bernanke y Gertler (1995) destacaron la importancia del <strong>acelerador financiero</strong>: las condiciones crediticias amplifican los ciclos económicos.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.3. Canal del tipo de cambio" color="amber">
+                    <p>
+                        Las variaciones del tipo de interés oficial afectan a los <strong>flujos internacionales de capital</strong>: tipos más altos atraen capital extranjero → ↑demanda de la moneda → <strong>apreciación</strong> → encarecimiento de las exportaciones y abaratamiento de las importaciones → ↓exportaciones netas (XN). Inversamente, tipos más bajos → depreciación → ↑competitividad exterior → ↑XN. Este canal es especialmente relevante en economías abiertas.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.4. Canal de expectativas y confianza" color="violet">
+                    <p>
+                        Las decisiones y comunicaciones del Banco Central configuran las <strong>expectativas de inflación</strong> y de actividad económica de los agentes. Un Banco Central creíble que comunica firmemente su compromiso con la estabilidad de precios <strong>ancla las expectativas de inflación</strong>, reduciendo la incertidumbre y facilitando la fijación de precios y salarios. La credibilidad del Banco Central es, por tanto, un activo institucional que potencia la eficacia de la política monetaria.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.5. Canal de la riqueza" color="pink">
+                    <p>
+                        Las decisiones de política monetaria influyen en los <strong>precios de los activos</strong> (acciones, bonos, vivienda). Tipos más bajos → ↑precios de activos → los hogares perciben un aumento de su riqueza (<strong>efecto riqueza</strong>) → ↑consumo. Este canal fue especialmente relevante durante el QE, cuando la compra masiva de activos por parte de los bancos centrales impulsó las cotizaciones bursátiles y los precios inmobiliarios, aunque también suscitó debates sobre el aumento de la <strong>desigualdad de riqueza</strong>.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 5 */}
+            <Card title="5. Política monetaria expansiva y restrictiva" icon="📘">
+                <TheoryBlock title="5.1. Política monetaria expansiva" color="blue">
+                    <p>
+                        Se aplica en contextos de <strong>recesión, desempleo elevado o riesgo deflacionario</strong>. El Banco Central <strong>↓tipos de interés</strong> y/o <strong>↑liquidez</strong> (compra de activos, reducción de reservas obligatorias) → ↑crédito disponible → ↑inversión empresarial (I) y ↑consumo de los hogares (C) → ↑demanda agregada (DA) → ↑producción (Y) y ↑empleo. El coste potencial es un incremento de la inflación (↑P) si la economía se acerca al pleno empleo.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.2. Política monetaria restrictiva" color="green">
+                    <p>
+                        Se aplica en contextos de <strong>inflación elevada o sobrecalentamiento económico</strong>. El Banco Central <strong>↑tipos de interés</strong> y/o <strong>↓liquidez</strong> (venta de activos, aumento de reservas obligatorias) → ↓crédito → ↓inversión (I) y ↓consumo (C) → ↓demanda agregada (DA) → ↓presión inflacionaria. El coste potencial es una desaceleración económica (↓Y) y un aumento del desempleo a corto plazo. El proceso de endurecimiento monetario del BCE en 2022-2023 (de 0% a 4,50% en el tipo de depósito) ejemplifica esta política.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.3. Trampa de la liquidez" color="amber">
+                    <p>
+                        Concepto formulado por <strong>Keynes</strong>: cuando los tipos de interés se sitúan en niveles cercanos a cero (<em>zero lower bound</em>), la política monetaria convencional pierde eficacia. Los agentes prefieren mantener liquidez en lugar de invertir o prestar, porque el coste de oportunidad es nulo y esperan que los tipos suban. En esta situación, la inyección de liquidez adicional no se traduce en crédito ni en gasto: el dinero queda «atrapado» en el sistema bancario. Esto justifica el recurso a <strong>instrumentos no convencionales</strong> (QE, tipos negativos, TLTRO) y refuerza el papel de la <strong>política fiscal</strong> como estímulo alternativo.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.4. La regla de Taylor" color="violet">
+                    <p>
+                        <strong>John Taylor</strong> (1993) propuso una regla normativa para guiar la fijación del tipo de interés oficial: <strong>i = r* + π + α(π − π*) + β(Y − Y*)</strong>, donde <em>i</em> es el tipo de interés nominal objetivo, <em>r*</em> es el tipo de interés real de equilibrio, <em>π</em> es la inflación observada, <em>π*</em> es el objetivo de inflación, <em>Y</em> es la producción efectiva y <em>Y*</em> es la producción potencial. Con los coeficientes originales (α = β = 0,5), la regla prescribe subir los tipos cuando la inflación supera el objetivo o cuando la producción supera su potencial, y viceversa. Aunque ningún banco central la aplica mecánicamente, la regla de Taylor sirve como <strong>referencia analítica</strong> ampliamente utilizada.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.5. Debate PM vs. PF: monetaristas y keynesianos" color="pink">
+                    <p>
+                        Los <strong>monetaristas</strong> (<strong>Friedman</strong>) defienden la primacía de la política monetaria: «la inflación es siempre y en todas partes un fenómeno monetario», y abogan por reglas monetarias estables frente a la discrecionalidad. Los <strong>keynesianos</strong> subrayan los límites de la PM (trampa de la liquidez, retardos, incertidumbre en la transmisión) y defienden el papel activo de la <strong>política fiscal</strong> para estabilizar la demanda agregada, especialmente en recesiones profundas. En la práctica, la <strong>coordinación</strong> entre ambas políticas (<em>policy mix</em>) es esencial: la crisis de 2008-2012 y la pandemia de 2020 demostraron que PM y PF deben actuar conjuntamente para maximizar su eficacia.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 6 */}
+            <Card title="6. Relevancia curricular" icon="📘">
+                <TheoryBlock title="6.1. Encuadre LOMLOE" color="blue">
+                    <p>
+                        La política monetaria y el Banco Central se enmarcan en la materia de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022), dentro del bloque «La realidad económica». Las competencias específicas más directamente vinculadas son: <strong>CE1</strong> (funcionamiento del sistema económico y papel del dinero), <strong>CE3</strong> (política económica y sus efectos) y <strong>CE5</strong> (análisis del contexto económico, con especial atención a las decisiones del BCE).
+                    </p>
+                    <p>
+                        Desde la perspectiva competencial, este tema contribuye a: <strong>STEM5</strong> (análisis cuantitativo de la relación tipos-inflación-producción); <strong>CC1-CC2</strong> (comprensión de las instituciones europeas y el debate sobre la independencia del Banco Central); <strong>CPSAA5</strong> (toma de decisiones informadas sobre ahorro y endeudamiento en función de la coyuntura monetaria); <strong>CE1-CE2</strong> (comprensión del entorno financiero para el emprendimiento); y <strong>CCL</strong> (argumentación sobre dilemas de política monetaria).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── CONCLUSIÓN ──────────────────────────────────────── */}
+            <Card title="Conclusión" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        El Banco Central es la <strong>autoridad monetaria</strong> que garantiza la estabilidad de precios y la solidez del sistema financiero. Sus funciones —emisión monetaria, política monetaria, prestamista de última instancia, banco del Estado, gestión de reservas y supervisión bancaria— lo convierten en una pieza institucional clave de cualquier economía moderna.
+                    </p>
+                    <p>
+                        El <strong>BCE</strong>, con su mandato de estabilidad de precios (2% simétrico), dirige la política monetaria de la eurozona mediante un conjunto de instrumentos que incluyen las <strong>operaciones de mercado abierto</strong> (OPF como referencia), las <strong>facilidades permanentes</strong> (corredor de tipos), el <strong>coeficiente de reservas</strong>, el <strong><em>forward guidance</em></strong> y, en situaciones excepcionales, los <strong>instrumentos no convencionales</strong> (QE, tipos negativos, TLTRO).
+                    </p>
+                    <p>
+                        El <strong>mecanismo de transmisión</strong> opera a través de múltiples canales —tipo de interés, crédito, tipo de cambio, expectativas y riqueza—, trasladando las decisiones del BCE a la economía real. La <strong>política monetaria expansiva</strong> estimula la demanda pero puede generar inflación, mientras que la <strong>restrictiva</strong> controla los precios pero puede frenar el crecimiento. La <strong>regla de Taylor</strong> proporciona un marco analítico de referencia. El debate entre monetaristas y keynesianos subraya la necesidad de un <em>policy mix</em> adecuado, combinando PM y PF según el contexto macroeconómico.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── FÓRMULAS RESUMEN ───────────────────────────────── */}
+            <FormulaBox formula="Regla de Taylor: i = r* + π + 0,5(π − π*) + 0,5(Y − Y*)/Y*" desc="Referencia normativa para la fijación del tipo de interés oficial" />
+            <FormulaBox formula="PM expansiva: ↓i → ↑I, ↑C → ↑DA → ↑Y" desc="Cadena de transmisión de la política monetaria expansiva" />
+            <FormulaBox formula="Trampa de liquidez: i ≈ 0 → PM convencional ineficaz" desc="Justificación del recurso a instrumentos no convencionales" />
+
+            {/* ── BIBLIOGRAFÍA ────────────────────────────────────── */}
+            <BibliografiaBox items={[
+                'BAGEHOT, W. (1873): Lombard Street: A Description of the Money Market, Henry S. King & Co.',
+                'KYDLAND, F.E. y PRESCOTT, E.C. (1977): "Rules Rather than Discretion: The Inconsistency of Optimal Plans", Journal of Political Economy.',
+                'FRIEDMAN, M. (1968): "The Role of Monetary Policy", American Economic Review.',
+                'TAYLOR, J.B. (1993): "Discretion versus Policy Rules in Practice", Carnegie-Rochester Conference Series on Public Policy.',
+                'BERNANKE, B.S. y GERTLER, M. (1995): "Inside the Black Box: The Credit Channel of Monetary Policy Transmission", Journal of Economic Perspectives.',
+                'KEYNES, J.M. (1936): The General Theory of Employment, Interest and Money, Macmillan.',
+                'MISHKIN, F.S. (2019): The Economics of Money, Banking, and Financial Markets, 12.ª ed., Pearson.',
+                'MANKIW, N.G. (2020): Principios de Economía, 8.ª ed., Cengage Learning.',
+                'DE GRAUWE, P. (2020): Economics of Monetary Union, 13.ª ed., Oxford University Press.',
+                'BCE (2021): Revisión de la estrategia de política monetaria del BCE, Frankfurt.',
+                'BCE (2023): Informe Anual del BCE, Frankfurt.',
+                'Ley Orgánica 3/2020, de 29 de diciembre (LOMLOE).',
+                'Real Decreto 243/2022, de 5 de abril (currículo Bachillerato).',
+            ]} />
+
+            {/* ── CLAU ────────────────────────────────────────────── */}
+            <ClauBox>
+                <p>- Define el Banco Central como <strong>autoridad monetaria</strong> con funciones de emisión, política monetaria, prestamista de última instancia y supervisión.</p>
+                <p>- Explica la <strong>independencia del BC</strong> (Kydland-Prescott, inconsistencia temporal) y el debate democrático.</p>
+                <p>- Desarrolla el <strong>BCE</strong>: Maastricht, Eurosistema, objetivo 2% simétrico, órganos de gobierno.</p>
+                <p>- Presenta los <strong>instrumentos</strong>: OMA (OPF), facilidades permanentes (corredor), reservas, forward guidance, QE/TLTRO.</p>
+                <p>- Analiza el <strong>mecanismo de transmisión</strong>: canales del tipo de interés, crédito, tipo de cambio, expectativas y riqueza.</p>
+                <p>- Distingue <strong>PM expansiva vs. restrictiva</strong>, la trampa de la liquidez (Keynes) y la regla de Taylor.</p>
+                <p>- Aborda el debate <strong>monetaristas vs. keynesianos</strong> y la necesidad de <em>policy mix</em>.</p>
+                <p>- Incluye referencias clave: Bagehot (1873), Friedman (1968), Taylor (1993), Bernanke-Gertler (1995).</p>
+            </ClauBox>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 29 — RESUM / ESQUEMA
+    // ════════════════════════════════════════════════════════════════
+    const Tema29Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-blue-50 rounded-xl border border-blue-200 mb-5">
+                    <p className="text-center font-bold text-blue-800 text-lg">Tema 29: El Banco Central y la política monetaria.</p>
+                    <p className="text-center text-sm text-blue-600 mt-1">
+                        <em>"La inflación es siempre y en todas partes un fenómeno monetario"</em> — M. Friedman
+                    </p>
+                </div>
+
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. Concepto y funciones</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Definición: institución responsable de la política monetaria, estabilidad de precios y supervisión financiera.</li>
+                            <li>Funciones: emisión (monopolio), PM, banco de bancos (Bagehot, prestamista última instancia), banco del Estado, reservas divisas, supervisión.</li>
+                            <li>Independencia: Kydland-Prescott (inconsistencia temporal). Objetivos vs. instrumentos. Debate democrático.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. El BCE</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Maastricht (1992), Eurosistema (BCE + BCN zona euro), SEBC.</li>
+                            <li>Objetivo: estabilidad de precios → 2% simétrico (revisión 2021).</li>
+                            <li>Órganos: Comité Ejecutivo, Consejo de Gobierno, Consejo General.</li>
+                            <li>Banco de España como BCN del Eurosistema.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. Instrumentos de PM</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>OMA: compra/venta títulos, OPF (repo semanal, tipo oficial BCE).</li>
+                            <li>Facilidades permanentes: crédito (techo) y depósito (suelo) → corredor de tipos.</li>
+                            <li>Coeficiente reservas mínimas: 1% zona euro.</li>
+                            <li>Forward guidance: comunicación de intenciones futuras.</li>
+                            <li>No convencionales: QE (APP, PEPP), tipos negativos, TLTRO.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. Mecanismo de transmisión</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Canal tipo de interés: tipo oficial → interbancario → bancario → C, I → DA → Y, P.</li>
+                            <li>Canal del crédito: disponibilidad y condiciones (Bernanke-Gertler, acelerador financiero).</li>
+                            <li>Canal tipo de cambio: i → flujos capital → tipo cambio → XN.</li>
+                            <li>Canal expectativas: credibilidad BC → anclaje expectativas inflación.</li>
+                            <li>Canal riqueza: precios activos → efecto riqueza → consumo.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">5. PM expansiva y restrictiva</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Expansiva: ↓i, ↑liquidez → ↑crédito, ↑I, ↑C → ↑DA → ↑Y (riesgo ↑P).</li>
+                            <li>Restrictiva: ↑i, ↓liquidez → ↓crédito → ↓DA → ↓inflación (riesgo ↓Y).</li>
+                            <li>Trampa de liquidez (Keynes): i ≈ 0 → PM ineficaz → QE.</li>
+                            <li>Regla de Taylor: i = r* + π + 0,5(π − π*) + 0,5(Y − Y*)/Y*.</li>
+                            <li>Debate: monetaristas (Friedman, reglas) vs. keynesianos (PF activa, policy mix).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">6. Relevancia curricular</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>LOMLOE: Economía 1BACH (RD 243/2022). CE1, CE3, CE5.</li>
+                            <li>Competencias: STEM5, CC1-CC2, CPSAA5, CE1-CE2, CCL.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <FormulaBox formula="Regla de Taylor: i = r* + π + 0,5(π − π*) + 0,5(Y − Y*)/Y*" />
+                <FormulaBox formula="PM expansiva: ↓i → ↑I, ↑C → ↑DA → ↑Y" />
+                <FormulaBox formula="Trampa de liquidez: i ≈ 0 → PM convencional ineficaz" />
+
+                <ClauBox>
+                    <p>- Define el BC como <strong>autoridad monetaria</strong>: emisión, PM, prestamista última instancia, supervisión.</p>
+                    <p>- Explica la <strong>independencia</strong> (Kydland-Prescott) y los órganos del <strong>BCE</strong> (Maastricht, 2% simétrico).</p>
+                    <p>- Presenta los <strong>instrumentos</strong>: OMA, facilidades permanentes, reservas, forward guidance, QE/TLTRO.</p>
+                    <p>- Analiza los <strong>5 canales de transmisión</strong>: tipo de interés, crédito, tipo de cambio, expectativas, riqueza.</p>
+                    <p>- Distingue <strong>PM expansiva vs. restrictiva</strong>, trampa de liquidez y regla de Taylor.</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 29 — Component wrapper
+    // ════════════════════════════════════════════════════════════════
+    const Tema29 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="📖" title="Tema 29" subtitle={t('tema29.title')} />
+                <Tabs tabs={[
+                    { id: 'complet', label: '📝 ' + t('tab.complet') },
+                    { id: 'resum', label: '📋 ' + t('tab.resum') },
+                ]} active={vista} onChange={setVista} />
+
+                {vista === 'complet' && <Tema29Complet />}
+                {vista === 'resum' && <Tema29Resum />}
+            </div>
+        );
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 30 — La inflación. Causas, efectos y medida
+    // ════════════════════════════════════════════════════════════════
+    const Tema30Complet = () => (
+        <div className="space-y-6 animate-fade">
+            {/* ── INTRODUCCIÓN ────────────────────────────────────── */}
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        La <strong>inflación</strong> —el aumento generalizado y sostenido del nivel de precios— es uno de los <strong>problemas macroeconómicos más persistentes</strong> y con mayor impacto en la vida cotidiana de los ciudadanos. Erosiona el poder adquisitivo, distorsiona las señales de precios, redistribuye arbitrariamente la renta y la riqueza, y genera incertidumbre que dificulta la planificación económica. La historia ofrece episodios dramáticos: la hiperinflación alemana de 1923, la espiral inflacionaria de los años 70, la hiperinflación argentina de los 80 o el reciente brote inflacionario global de 2021-2023 tras la pandemia y la guerra de Ucrania.
+                    </p>
+                    <p>
+                        Comprender las <strong>causas</strong> de la inflación (demanda, costes, monetaria, estructural, importada, expectativas), sus <strong>efectos</strong> sobre la economía real y las <strong>políticas anti-inflacionarias</strong> disponibles es esencial para la formación económica del alumnado. La <strong>curva de Phillips</strong>, uno de los debates centrales de la macroeconomía del siglo XX, ilustra la compleja relación entre inflación y desempleo y la evolución del pensamiento económico desde el trade-off simple hasta la tasa natural de desempleo y las expectativas racionales.
+                    </p>
+                    <p>
+                        Desde la perspectiva curricular, este tema se enmarca en los saberes básicos del bloque «La realidad económica» de la materia de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022) y conecta con las competencias específicas CE1 (funcionamiento del sistema económico), CE3 (política económica) y CE5 (análisis del contexto económico). La LOMLOE subraya la importancia de que el alumnado comprenda los fenómenos macroeconómicos que afectan a su entorno y desarrolle un pensamiento crítico sobre las políticas económicas.
+                    </p>
+                    <p>
+                        El presente tema se estructura en cinco epígrafes: en primer lugar, se define y mide la inflación; en segundo lugar, se analizan las teorías y causas; en tercer lugar, se estudian los efectos; en cuarto lugar, se desarrolla la curva de Phillips; y en quinto lugar, se abordan las políticas anti-inflacionarias. Se concluye con la relevancia curricular, una síntesis integradora y una bibliografía de referencia.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── DESARROLLO ──────────────────────────────────────── */}
+
+            {/* Epígrafe 1 */}
+            <Card title="1. Concepto y medición de la inflación" icon="📘">
+                <TheoryBlock title="1.1. Definición" color="blue">
+                    <p>
+                        La <strong>inflación</strong> se define como el <strong>aumento generalizado y sostenido del nivel general de precios</strong> de una economía a lo largo del tiempo. No se trata de la subida de un producto concreto, sino de un incremento persistente del conjunto de precios. Conceptos relacionados: <strong>deflación</strong> (caída generalizada y sostenida de precios), <strong>desinflación</strong> (reducción de la tasa de inflación, que sigue siendo positiva), <strong>estanflación</strong> (inflación elevada con estancamiento económico y alto desempleo) e <strong>hiperinflación</strong> (inflación extrema, convencionalmente superior al 50% mensual según Cagan, 1956).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.2. El IPC (Índice de Precios al Consumo)" color="green">
+                    <p>
+                        El <strong>IPC</strong> es el indicador más utilizado para medir la inflación. Se elabora a partir de una <strong>cesta de la compra</strong> representativa del consumo medio de los hogares, con ponderaciones que reflejan la importancia relativa de cada grupo de bienes y servicios (alimentación, vivienda, transporte, etc.). En España, lo elabora el <strong>INE</strong> (Instituto Nacional de Estadística), con una metodología armonizada a nivel europeo. La cesta se actualiza periódicamente para reflejar los cambios en los hábitos de consumo.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.3. La tasa de inflación" color="amber">
+                    <p>
+                        La <strong>tasa de inflación</strong> mide la variación porcentual del IPC entre dos períodos: <strong>π = (IPC_t − IPC_&#123;t-1&#125;) / IPC_&#123;t-1&#125; × 100</strong>. Puede calcularse en tasa interanual (respecto al mismo mes del año anterior) o en tasa intermensual. Es la medida más habitual para comunicar la evolución de los precios y orientar la política monetaria.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.4. El deflactor del PIB" color="violet">
+                    <p>
+                        El <strong>deflactor del PIB</strong> es un índice de precios más amplio que el IPC: mide la variación de precios de <strong>todos los bienes y servicios producidos en la economía</strong> (no solo los de consumo). A diferencia del IPC, incluye bienes de inversión, exportaciones y gasto público, y excluye las importaciones. Se calcula como el cociente entre el PIB nominal y el PIB real, multiplicado por 100. Su principal ventaja es su mayor cobertura; su inconveniente es que se publica con menor frecuencia y mayor retardo.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.5. IPC armonizado (IPCA)" color="pink">
+                    <p>
+                        El <strong>IPCA</strong> (<em>Índice de Precios al Consumo Armonizado</em>) se elabora con una metodología común para todos los países de la UE, lo que permite la <strong>comparación homogénea de la inflación</strong> entre Estados miembros. Es el indicador de referencia del BCE para evaluar la estabilidad de precios en la eurozona y la convergencia nominal exigida por los criterios de Maastricht.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.6. Inflación subyacente (core)" color="emerald">
+                    <p>
+                        La <strong>inflación subyacente</strong> (<em>core inflation</em>) excluye los componentes más volátiles del IPC: <strong>energía</strong> y <strong>alimentos no elaborados</strong>. Su propósito es identificar la <strong>tendencia de fondo</strong> de la inflación, eliminando las oscilaciones transitorias causadas por las fluctuaciones del petróleo o las condiciones climáticas. Es un indicador clave para la toma de decisiones de política monetaria, ya que refleja las presiones inflacionarias estructurales.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 2 */}
+            <Card title="2. Teorías y causas de la inflación" icon="📘">
+                <TheoryBlock title="2.1. Inflación de demanda" color="blue">
+                    <p>
+                        Se produce cuando la <strong>demanda agregada crece por encima de la capacidad productiva</strong> de la economía (oferta agregada a corto plazo), generando una <strong>brecha inflacionaria</strong>. El exceso de demanda presiona los precios al alza. Causas habituales: políticas fiscales y monetarias expansivas excesivas, aumento del consumo o la inversión, boom exportador. Gráficamente, se representa como un desplazamiento de la curva DA hacia la derecha a lo largo de una curva OA con pendiente positiva.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.2. Inflación de costes" color="green">
+                    <p>
+                        Se origina por un <strong>aumento de los costes de producción</strong> que las empresas trasladan a los precios finales: subidas salariales por encima de la productividad, encarecimiento de materias primas (petróleo, gas, metales), incremento de impuestos indirectos o márgenes empresariales. Gráficamente, se representa como un desplazamiento de la curva OA hacia la izquierda → ↑P y ↓Y (estanflación).
+                    </p>
+                    <p>
+                        Un caso especialmente pernicioso es la <strong>espiral salarios-precios</strong>: los trabajadores demandan subidas salariales para compensar la pérdida de poder adquisitivo → las empresas trasladan el mayor coste laboral a los precios → nueva pérdida de poder adquisitivo → nuevas demandas salariales... Este mecanismo de retroalimentación puede perpetuar la inflación.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.3. Inflación monetaria (monetarismo)" color="amber">
+                    <p>
+                        <strong>Milton Friedman</strong> sintetizó la posición monetarista con su célebre afirmación: <em>«la inflación es siempre y en todas partes un fenómeno monetario»</em>. Según la <strong>ecuación cuantitativa del dinero</strong> (Fisher): <strong>M · V = P · Y</strong>, donde M es la cantidad de dinero, V la velocidad de circulación, P el nivel de precios e Y la producción real. Si V es estable a largo plazo y Y tiende al pleno empleo, un aumento de la oferta monetaria (ΔM) se traduce proporcionalmente en un aumento de los precios (ΔP). La implicación de política es clara: controlar la oferta monetaria es condición necesaria y suficiente para controlar la inflación.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.4. Inflación estructural" color="violet">
+                    <p>
+                        Enfoque que atribuye la inflación a <strong>rigideces y deficiencias estructurales</strong> de la economía: mercados poco competitivos (poder de mercado de oligopolios), regulaciones que impiden el ajuste de precios, cláusulas de <strong>indexación</strong> automática (salarios, alquileres vinculados al IPC), ineficiencias productivas y cuellos de botella sectoriales. La inflación estructural tiende a ser persistente y difícil de combatir solo con política monetaria, requiriendo reformas estructurales de fondo.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.5. Inflación importada" color="pink">
+                    <p>
+                        La <strong>depreciación del tipo de cambio</strong> encarece las importaciones (materias primas, bienes intermedios, energía), elevando los costes de producción internos y, por tanto, los precios. En economías abiertas y dependientes de importaciones energéticas (como la europea), este canal es especialmente relevante. Ejemplo: la depreciación del euro frente al dólar en 2022 amplificó el impacto de la subida del precio del petróleo y el gas natural sobre la inflación europea.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.6. Expectativas de inflación" color="emerald">
+                    <p>
+                        Las <strong>expectativas de inflación</strong> de los agentes económicos pueden convertirse en una <strong>profecía autocumplida</strong>: si trabajadores, empresas e inversores esperan que los precios suban, incorporan esa expectativa a sus decisiones (demandas salariales, fijación de precios, tipos de interés), generando efectivamente la inflación esperada.
+                    </p>
+                    <p>
+                        <strong>Friedman</strong> (1968) formalizó las <strong>expectativas adaptativas</strong>: los agentes ajustan sus expectativas en función de la inflación pasada reciente. <strong>Lucas</strong> y <strong>Muth</strong> propusieron las <strong>expectativas racionales</strong>: los agentes utilizan toda la información disponible (incluida la política económica anunciada) para formar sus expectativas, lo que limita la capacidad de la política monetaria para generar efectos reales sistemáticos (solo las sorpresas monetarias afectan a la producción).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 3 */}
+            <Card title="3. Efectos de la inflación" icon="📘">
+                <TheoryBlock title="3.1. Pérdida de poder adquisitivo" color="blue">
+                    <p>
+                        El efecto más directo e inmediato: la inflación <strong>reduce el valor real del dinero</strong>. Perjudica especialmente a los perceptores de <strong>rentas fijas</strong> (pensionistas, asalariados con contratos no indexados, titulares de renta fija) cuyo ingreso nominal no se ajusta automáticamente. En cambio, <strong>beneficia a los deudores</strong>: el valor real de sus deudas disminuye si los tipos de interés nominales no compensan plenamente la inflación (tipo de interés real negativo).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.2. Redistribución arbitraria de la renta y la riqueza" color="green">
+                    <p>
+                        La inflación actúa como un <strong>impuesto oculto y regresivo</strong> que redistribuye renta y riqueza de forma no deliberada ni democráticamente decidida: de acreedores a deudores, de ahorradores a inversores en activos reales, de rentas fijas a rentas variables. Esta redistribución es particularmente injusta porque afecta más a los grupos con menor capacidad de protegerse (hogares de renta baja, personas mayores con ahorros en depósitos bancarios).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.3. Incertidumbre" color="amber">
+                    <p>
+                        La inflación elevada y volátil <strong>dificulta la planificación económica</strong> tanto de empresas como de hogares. Las empresas no pueden calcular con fiabilidad la rentabilidad futura de sus proyectos de inversión → ↑prima de riesgo → ↓inversión. Los hogares postergan decisiones de consumo e inversión. La incertidumbre sobre los precios futuros reduce la eficiencia del sistema de precios como mecanismo de asignación de recursos, uno de los argumentos centrales de <strong>Hayek</strong> sobre las virtudes del sistema de precios.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.4. Pérdida de competitividad exterior" color="violet">
+                    <p>
+                        Si la inflación nacional es <strong>superior a la de los socios comerciales</strong> (π_nacional &gt; π_exterior), los productos nacionales se encarecen relativamente → ↓exportaciones, ↑importaciones → deterioro de la balanza comercial y posible pérdida de empleo en sectores exportadores. En un régimen de tipo de cambio flexible, la depreciación puede compensar parcialmente; en una unión monetaria (eurozona), esta válvula de escape no existe, lo que amplifica el problema de competitividad.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.5. Fiscal drag (deslizamiento fiscal)" color="pink">
+                    <p>
+                        Con un sistema de IRPF con tramos no ajustados automáticamente por la inflación, el aumento de la renta nominal (aunque la renta real no crezca) puede empujar a los contribuyentes a <strong>tramos impositivos superiores</strong>, incrementando su presión fiscal real sin que el legislador lo haya decidido explícitamente. Este efecto —denominado <strong><em>fiscal drag</em></strong> o <strong><em>bracket creep</em></strong>— supone una subida encubierta de impuestos que afecta especialmente a las rentas medias.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.6. Costes de menú y costes de suela de zapato" color="emerald">
+                    <p>
+                        <strong>Mankiw</strong> sistematizó estos costes microeconómicos de la inflación: los <strong>costes de menú</strong> son los recursos que las empresas deben dedicar a actualizar frecuentemente sus precios (catálogos, etiquetas, programación de precios, comunicación a clientes); los <strong>costes de suela de zapato</strong> (<em>shoe-leather costs</em>) se refieren a la mayor gestión de efectivo que deben realizar los agentes para minimizar sus tenencias de dinero cuando la inflación es alta (más visitas al banco, mayor frecuencia de transacciones financieras), con el consiguiente coste de tiempo y esfuerzo.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 4 */}
+            <Card title="4. La curva de Phillips" icon="📘">
+                <TheoryBlock title="4.1. Phillips original (1958)" color="blue">
+                    <p>
+                        <strong>A.W. Phillips</strong> (1958) documentó empíricamente una <strong>relación inversa estable entre la tasa de variación de los salarios nominales y la tasa de desempleo</strong> en el Reino Unido durante el período 1861-1957. A menor desempleo, mayor presión al alza sobre los salarios (mayor poder negociador de los trabajadores), y viceversa.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.2. Samuelson y Solow (1960)" color="green">
+                    <p>
+                        <strong>Samuelson y Solow</strong> reinterpretaron la relación de Phillips como un <strong><em>trade-off</em> entre inflación y desempleo</strong>: las autoridades podían elegir entre menor desempleo a costa de mayor inflación, o menor inflación a costa de mayor desempleo. La curva de Phillips se convirtió así en un «menú de opciones» para los <em>policy-makers</em>, sugiriendo que existía una relación explotable de forma permanente.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.3. Crítica de Friedman y Phelps (1968)" color="amber">
+                    <p>
+                        <strong>Friedman</strong> (1967/68) y <strong>Phelps</strong> (1967) cuestionaron la estabilidad del trade-off a largo plazo. Introdujeron el concepto de <strong>tasa natural de desempleo</strong> (<strong>NAIRU</strong> — <em>Non-Accelerating Inflation Rate of Unemployment</em>): el nivel de desempleo compatible con una inflación estable, determinado por factores estructurales del mercado laboral. Formularon la <strong>curva de Phillips aumentada por expectativas</strong>: a corto plazo puede existir un trade-off si la inflación es inesperada, pero a largo plazo los agentes ajustan sus expectativas y el desempleo retorna a su tasa natural. La curva de Phillips a largo plazo es <strong>vertical</strong> en la NAIRU: no hay trade-off permanente entre inflación y desempleo.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.4. Lucas y la crítica de Lucas (1976)" color="violet">
+                    <p>
+                        <strong>Robert Lucas</strong> (1976) radicalizó la crítica con el supuesto de <strong>expectativas racionales</strong>: si los agentes anticipan correctamente la política monetaria, incluso el trade-off a corto plazo desaparece (solo las <strong>sorpresas monetarias</strong> tienen efectos reales). La <strong>crítica de Lucas</strong> advertía que los modelos econométricos basados en relaciones históricas (como la curva de Phillips original) no son válidos para evaluar cambios de política, porque los parámetros del modelo cambian cuando cambia la regla de política.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.5. La estanflación de los años 70" color="pink">
+                    <p>
+                        Los <strong>shocks petroleros de 1973 y 1979</strong> provocaron simultáneamente alta inflación y alto desempleo (<strong>estanflación</strong>), una combinación que la curva de Phillips original no podía explicar (predecía una relación inversa, no simultánea). La estanflación constituyó la <strong>refutación empírica</strong> del trade-off simple de Samuelson-Solow y validó las predicciones de Friedman y Phelps: la inflación se había acelerado porque las expectativas adaptativas habían desplazado la curva de Phillips a corto plazo hacia arriba, mientras que el desempleo se mantenía elevado por el shock de oferta.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 5 */}
+            <Card title="5. Políticas anti-inflacionarias" icon="📘">
+                <TheoryBlock title="5.1. Política monetaria restrictiva" color="blue">
+                    <p>
+                        El instrumento principal: el Banco Central <strong>↑tipos de interés</strong> → ↓crédito → ↓consumo e inversión → ↓demanda agregada → ↓presión sobre los precios. Es la herramienta más directa y eficaz contra la inflación de demanda, pero conlleva un <strong>coste a corto plazo</strong> en términos de menor crecimiento y mayor desempleo (ratio de sacrificio). El endurecimiento del BCE en 2022-2023 (de 0% a 4,50%) y de la Fed (de 0,25% a 5,50%) ejemplifican esta política ante el brote inflacionario post-pandemia.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.2. Política fiscal restrictiva" color="green">
+                    <p>
+                        <strong>↓gasto público (G)</strong> y/o <strong>↑impuestos (T)</strong> reducen la demanda agregada y contribuyen a moderar la inflación. La consolidación fiscal es especialmente relevante cuando la inflación tiene un componente de demanda alimentado por un déficit público excesivo. Sin embargo, la política fiscal tiene <strong>retardos más largos</strong> (proceso legislativo) y está sujeta a presiones políticas que dificultan la adopción de medidas impopulares.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.3. Políticas de rentas" color="amber">
+                    <p>
+                        Consisten en el <strong>control directo de precios y salarios</strong> por parte del gobierno: congelación de precios, topes salariales, pactos sociales entre gobierno, sindicatos y patronal. Pueden ser útiles a <strong>corto plazo</strong> para romper la espiral salarios-precios y anclar expectativas, pero la evidencia histórica muestra que son <strong>poco eficaces a largo plazo</strong>: generan escasez, mercados negros y distorsiones en la asignación de recursos cuando los controles se mantienen demasiado tiempo.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.4. Políticas de oferta" color="violet">
+                    <p>
+                        Abordan las causas estructurales de la inflación actuando sobre la capacidad productiva de la economía: <strong>↑competencia</strong> (desregulación, política antitrust), <strong>↑productividad</strong> (inversión en I+D+i, formación, infraestructuras), <strong>flexibilización de mercados</strong> (laboral, bienes, servicios), reducción de trabas burocráticas. A diferencia de las políticas de demanda, las políticas de oferta permiten reducir la inflación <strong>sin sacrificar crecimiento</strong> (desplazamiento de la OA hacia la derecha), pero sus efectos se manifiestan a <strong>medio y largo plazo</strong>.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.5. Inflation targeting" color="pink">
+                    <p>
+                        El <strong><em>inflation targeting</em></strong> (fijación de objetivos explícitos de inflación) se ha convertido en el marco dominante de política monetaria desde los años 90. El Banco Central anuncia públicamente un <strong>objetivo numérico de inflación</strong> (2% el BCE, 2% la Fed), se compromete a alcanzarlo y rinde cuentas de su cumplimiento. La transparencia y la credibilidad del compromiso permiten <strong>anclar las expectativas de inflación</strong> de los agentes, reduciendo la inercia inflacionaria y los costes de desinflación. La evidencia empírica muestra que los países con <em>inflation targeting</em> han logrado tasas de inflación más bajas y estables que aquellos sin un marco explícito.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 6 */}
+            <Card title="6. Relevancia curricular" icon="📘">
+                <TheoryBlock title="6.1. Encuadre LOMLOE" color="blue">
+                    <p>
+                        La inflación y sus efectos se enmarcan en la materia de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022), dentro del bloque «La realidad económica». Las competencias específicas más directamente vinculadas son: <strong>CE1</strong> (funcionamiento del sistema económico), <strong>CE3</strong> (política económica y sus efectos sobre la inflación y el empleo) y <strong>CE5</strong> (análisis del contexto económico, interpretación de indicadores como el IPC).
+                    </p>
+                    <p>
+                        Desde la perspectiva competencial, este tema contribuye a: <strong>STEM5</strong> (cálculo e interpretación del IPC, tasas de inflación, análisis cuantitativo de la curva de Phillips); <strong>CC1-CC2</strong> (comprensión de los efectos redistributivos de la inflación y el debate sobre las políticas anti-inflacionarias); <strong>CPSAA5</strong> (toma de decisiones informadas sobre ahorro, inversión y endeudamiento en contextos inflacionarios); <strong>CE1-CE2</strong> (comprensión de cómo la inflación afecta a la actividad empresarial y al emprendimiento); y <strong>CCL</strong> (argumentación sobre las causas y remedios de la inflación).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── CONCLUSIÓN ──────────────────────────────────────── */}
+            <Card title="Conclusión" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        La inflación es un <strong>fenómeno macroeconómico complejo</strong> con múltiples causas (demanda, costes, monetaria, estructural, importada, expectativas) y efectos significativos sobre el bienestar económico: pérdida de poder adquisitivo, redistribución arbitraria de renta, incertidumbre, pérdida de competitividad y distorsiones fiscales. Su medición mediante el <strong>IPC</strong>, el <strong>deflactor del PIB</strong> y la <strong>inflación subyacente</strong> proporciona las herramientas analíticas necesarias para su seguimiento y diagnóstico.
+                    </p>
+                    <p>
+                        La <strong>curva de Phillips</strong> resume la evolución del pensamiento macroeconómico: del trade-off simple (Samuelson-Solow) a la tasa natural de desempleo (Friedman-Phelps, NAIRU) y las expectativas racionales (Lucas). La estanflación de los años 70 demostró que no existe un trade-off permanente explotable por las autoridades.
+                    </p>
+                    <p>
+                        Las <strong>políticas anti-inflacionarias</strong> incluyen la política monetaria restrictiva (instrumento principal), la política fiscal restrictiva, las políticas de rentas (eficacia limitada a LP) y las políticas de oferta (efectos a medio-largo plazo). El marco de <strong><em>inflation targeting</em></strong> ha demostrado ser eficaz para anclar las expectativas y reducir la inflación con menores costes en términos de producción y empleo. La coordinación entre política monetaria y fiscal (<em>policy mix</em>) resulta esencial para gestionar episodios inflacionarios complejos como el experimentado tras la pandemia de 2020.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── FÓRMULAS RESUMEN ───────────────────────────────── */}
+            <FormulaBox formula="π = (IPC_t − IPC_{t-1}) / IPC_{t-1} × 100" desc="Tasa de inflación: variación porcentual del IPC entre dos períodos" />
+            <FormulaBox formula="M · V = P · Y (ecuación cuantitativa de Fisher)" desc="Relación entre oferta monetaria, velocidad, precios y producción" />
+            <FormulaBox formula="Curva de Phillips LP: vertical en la NAIRU" desc="A largo plazo no hay trade-off entre inflación y desempleo" />
+
+            {/* ── BIBLIOGRAFÍA ────────────────────────────────────── */}
+            <BibliografiaBox items={[
+                'PHILLIPS, A.W. (1958): "The Relation between Unemployment and the Rate of Change of Money Wage Rates in the United Kingdom, 1861-1957", Economica.',
+                'SAMUELSON, P.A. y SOLOW, R.M. (1960): "Analytical Aspects of Anti-Inflation Policy", American Economic Review.',
+                'FRIEDMAN, M. (1968): "The Role of Monetary Policy", American Economic Review.',
+                'PHELPS, E.S. (1967): "Phillips Curves, Expectations of Inflation and Optimal Unemployment over Time", Economica.',
+                'LUCAS, R.E. (1976): "Econometric Policy Evaluation: A Critique", Carnegie-Rochester Conference Series on Public Policy.',
+                'CAGAN, P. (1956): "The Monetary Dynamics of Hyperinflation", en Studies in the Quantity Theory of Money, University of Chicago Press.',
+                'FISHER, I. (1911): The Purchasing Power of Money, Macmillan.',
+                'MANKIW, N.G. (2020): Principios de Economía, 8.ª ed., Cengage Learning.',
+                'BLANCHARD, O. (2021): Macroeconomics, 8.ª ed., Pearson.',
+                'MISHKIN, F.S. (2019): The Economics of Money, Banking, and Financial Markets, 12.ª ed., Pearson.',
+                'INE (2023): Metodología del Índice de Precios al Consumo, Instituto Nacional de Estadística.',
+                'BCE (2021): Revisión de la estrategia de política monetaria del BCE, Frankfurt.',
+                'Ley Orgánica 3/2020, de 29 de diciembre (LOMLOE).',
+                'Real Decreto 243/2022, de 5 de abril (currículo Bachillerato).',
+            ]} />
+
+            {/* ── CLAU ────────────────────────────────────────────── */}
+            <ClauBox>
+                <p>- Define inflación como <strong>aumento generalizado y sostenido de precios</strong>; distingue deflación, desinflación, estanflación, hiperinflación.</p>
+                <p>- Explica la <strong>medición</strong>: IPC (cesta de la compra, INE), deflactor del PIB, IPCA, inflación subyacente.</p>
+                <p>- Desarrolla <strong>6 causas</strong>: demanda, costes (espiral salarios-precios), monetaria (Friedman, M·V=P·Y), estructural, importada, expectativas.</p>
+                <p>- Analiza los <strong>efectos</strong>: poder adquisitivo, redistribución, incertidumbre, competitividad, fiscal drag, costes de menú.</p>
+                <p>- Presenta la <strong>curva de Phillips</strong>: Phillips (1958) → Samuelson-Solow (trade-off) → Friedman-Phelps (NAIRU, vertical LP) → Lucas (expectativas racionales).</p>
+                <p>- Aborda <strong>5 políticas anti-inflacionarias</strong>: PM restrictiva, PF restrictiva, rentas, oferta, inflation targeting.</p>
+                <p>- Incluye referencias clave: Phillips (1958), Friedman (1968), Lucas (1976), Cagan (1956), Fisher (1911).</p>
+            </ClauBox>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 30 — RESUM / ESQUEMA
+    // ════════════════════════════════════════════════════════════════
+    const Tema30Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-blue-50 rounded-xl border border-blue-200 mb-5">
+                    <p className="text-center font-bold text-blue-800 text-lg">Tema 30: La inflación. Causas, efectos y medida.</p>
+                    <p className="text-center text-sm text-blue-600 mt-1">
+                        <em>"La inflación es siempre y en todas partes un fenómeno monetario"</em> — M. Friedman
+                    </p>
+                </div>
+
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. Concepto y medición</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Definición: aumento generalizado y sostenido de precios. Deflación, desinflación, estanflación, hiperinflación.</li>
+                            <li>IPC: cesta de la compra (INE), ponderaciones, variación porcentual.</li>
+                            <li>Tasa de inflación: π = (IPC_t − IPC_&#123;t-1&#125;) / IPC_&#123;t-1&#125; × 100.</li>
+                            <li>Deflactor del PIB: más amplio, producción nacional, PIBnom/PIBreal × 100.</li>
+                            <li>IPCA: comparación UE. Subyacente (core): excluye energía y alimentos no elaborados.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. Causas</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Demanda: exceso DA → brecha inflacionaria.</li>
+                            <li>Costes: ↑salarios, materias primas → OA izquierda → ↑P, ↓Y (espiral salarios-precios).</li>
+                            <li>Monetaria (Friedman): M·V = P·Y → ΔM → ΔP si V estable.</li>
+                            <li>Estructural: rigideces, poder mercado, indexación.</li>
+                            <li>Importada: depreciación tipo cambio → encarecimiento importaciones.</li>
+                            <li>Expectativas: profecía autocumplida. Adaptativas (Friedman) vs. racionales (Lucas, Muth).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. Efectos</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Pérdida poder adquisitivo: perjudica rentas fijas, beneficia deudores.</li>
+                            <li>Redistribución arbitraria: impuesto oculto y regresivo.</li>
+                            <li>Incertidumbre: ↑prima riesgo, ↓inversión, ↓eficiencia sistema precios.</li>
+                            <li>Competitividad: π_nac &gt; π_ext → ↓exportaciones.</li>
+                            <li>Fiscal drag: tramos IRPF no ajustados → subida encubierta impuestos.</li>
+                            <li>Costes de menú y suela de zapato (Mankiw).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. Curva de Phillips</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Phillips (1958): relación inversa salarios-desempleo (UK 1861-1957).</li>
+                            <li>Samuelson-Solow (1960): trade-off inflación-desempleo, «menú de opciones».</li>
+                            <li>Friedman-Phelps (1968): NAIRU, CP aumentada por expectativas, LP vertical.</li>
+                            <li>Lucas (1976): expectativas racionales, crítica de Lucas.</li>
+                            <li>Estanflación años 70: refutación empírica del trade-off simple.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">5. Políticas anti-inflacionarias</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>PM restrictiva: ↑tipos → ↓DA → ↓π (coste: ↑desempleo CP).</li>
+                            <li>PF restrictiva: ↓G, ↑T.</li>
+                            <li>Políticas de rentas: control precios/salarios (poco eficaces LP).</li>
+                            <li>Políticas de oferta: ↑competencia, ↑productividad (efectos M/LP).</li>
+                            <li>Inflation targeting: 2% BCE/Fed, credibilidad, anclaje expectativas.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">6. Relevancia curricular</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>LOMLOE: Economía 1BACH (RD 243/2022). CE1, CE3, CE5.</li>
+                            <li>Competencias: STEM5, CC1-CC2, CPSAA5, CE1-CE2, CCL.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <FormulaBox formula="π = (IPC_t − IPC_{t-1}) / IPC_{t-1} × 100" />
+                <FormulaBox formula="M · V = P · Y (ecuación cuantitativa de Fisher)" />
+                <FormulaBox formula="Curva de Phillips LP: vertical en la NAIRU" />
+
+                <ClauBox>
+                    <p>- Define inflación y sus <strong>variantes</strong> (deflación, desinflación, estanflación, hiperinflación).</p>
+                    <p>- Explica la <strong>medición</strong>: IPC, deflactor, IPCA, subyacente.</p>
+                    <p>- Desarrolla <strong>6 causas</strong>: demanda, costes, monetaria, estructural, importada, expectativas.</p>
+                    <p>- Analiza <strong>6 efectos</strong>: poder adquisitivo, redistribución, incertidumbre, competitividad, fiscal drag, costes de menú.</p>
+                    <p>- Presenta la <strong>curva de Phillips</strong>: trade-off CP → NAIRU (vertical LP) → expectativas racionales.</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 30 — Component wrapper
+    // ════════════════════════════════════════════════════════════════
+    const Tema30 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="📖" title="Tema 30" subtitle={t('tema30.title')} />
+                <Tabs tabs={[
+                    { id: 'complet', label: '📝 ' + t('tab.complet') },
+                    { id: 'resum', label: '📋 ' + t('tab.resum') },
+                ]} active={vista} onChange={setVista} />
+
+                {vista === 'complet' && <Tema30Complet />}
+                {vista === 'resum' && <Tema30Resum />}
+            </div>
+        );
+    };
 
     // ════════════════════════════════════════════════════════════════
     // NAVIGATION AND RENDER
