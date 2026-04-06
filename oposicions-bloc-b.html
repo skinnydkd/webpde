@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloc B: Microeconomia — Oposicions | PDE</title>
+    <meta name="description" content="Temes 11-20 d'oposicions d'Economia. Demanda, oferta, equilibri, competència, monopoli i més.">
+    <meta property="og:title" content="Bloc B: Microeconomia — Oposicions | PDE">
+    <meta property="og:description" content="Temes 11-20 d'oposicions d'Economia. Demanda, oferta, equilibri, competència, monopoli i més.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/oposicions-bloc-b">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://profedeeconomia.es/oposicions-bloc-b">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #e11d48 #fff1f2; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #fff1f2; }
+        ::-webkit-scrollbar-thumb { background-color: #e11d48; border-radius: 3px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pink-50 via-white to-rose-50 min-h-screen">
+    <div id="root"></div>
+    <script type="text/babel">
+const { useState, useMemo, useEffect } = React;
+
+function BlocBApp() {
+    const [section, setSection] = useState('inicio');
+    const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+
+    usePdeDeepLink(section, setSection);
+
+    // ════════════════════════════════════════════════════════════════
+    // TRANSLATIONS
+    // ════════════════════════════════════════════════════════════════
+    const pageTranslations = {
+        // Nav / App name
+        'nav.oposicions-bloc-b': { val: 'Bloc B: Microeconomia', es: 'Bloque B: Microeconomía', en: 'Block B: Microeconomics' },
+        'footer.appname': { val: "Bloc B — Oposicions d'Economia", es: "Bloque B — Oposiciones de Economía", en: 'Block B — Economics Exams' },
+
+        // Inicio
+        'inicio.title': { val: 'Bloc B: Microeconomia', es: 'Bloque B: Microeconomía', en: 'Block B: Microeconomics' },
+        'inicio.subtitle': { val: "Temes 11-20 de les oposicions d'Economia a Secundària", es: 'Temas 11-20 de las oposiciones de Economía en Secundaria', en: 'Topics 11-20 of the Secondary Economics teaching exams' },
+        'inicio.disponible': { val: 'Disponible', es: 'Disponible', en: 'Available' },
+        'inicio.properament': { val: 'Properament', es: 'Próximamente', en: 'Coming soon' },
+        'inicio.backOpo': { val: '← Tornar a Oposicions', es: '← Volver a Oposiciones', en: '← Back to Exams' },
+
+        // Section labels (for header nav)
+        'sec.inicio': { val: 'Inici', es: 'Inicio', en: 'Home' },
+        'sec.tema11': { val: 'Tema 11', es: 'Tema 11', en: 'Topic 11' },
+        'sec.tema12': { val: 'Tema 12', es: 'Tema 12', en: 'Topic 12' },
+        'sec.tema13': { val: 'Tema 13', es: 'Tema 13', en: 'Topic 13' },
+        'sec.tema14': { val: 'Tema 14', es: 'Tema 14', en: 'Topic 14' },
+        'sec.tema15': { val: 'Tema 15', es: 'Tema 15', en: 'Topic 15' },
+        'sec.tema16': { val: 'Tema 16', es: 'Tema 16', en: 'Topic 16' },
+        'sec.tema17': { val: 'Tema 17', es: 'Tema 17', en: 'Topic 17' },
+        'sec.tema18': { val: 'Tema 18', es: 'Tema 18', en: 'Topic 18' },
+        'sec.tema19': { val: 'Tema 19', es: 'Tema 19', en: 'Topic 19' },
+        'sec.tema20': { val: 'Tema 20', es: 'Tema 20', en: 'Topic 20' },
+
+        // Tabs
+        'tab.complet': { val: 'Tema complet', es: 'Tema completo', en: 'Full topic' },
+        'tab.resum': { val: 'Resum / Esquema', es: 'Resumen / Esquema', en: 'Summary / Outline' },
+
+        // Tema titles
+        'tema11.title': { val: "La demanda. La utilitat. L'elasticitat-preu.", es: 'La demanda. La utilidad. La elasticidad-precio.', en: 'Demand. Utility. Price elasticity.' },
+        'tema12.title': { val: "L'oferta. Costos de producció i benefici empresarial.", es: 'La oferta. Costes de producción y beneficio empresarial.', en: 'Supply. Production costs and business profit.' },
+        'tema13.title': { val: "L'equilibri de mercat. Variacions i intervencions.", es: 'El equilibrio de mercado. Variaciones e intervenciones.', en: 'Market equilibrium. Changes and interventions.' },
+        'tema14.title': { val: 'La competència perfecta.', es: 'La competencia perfecta.', en: 'Perfect competition.' },
+        'tema15.title': { val: 'El monopoli.', es: 'El monopolio.', en: 'Monopoly.' },
+        'tema16.title': { val: "L'oligopoli i la competència monopolística.", es: 'El oligopolio y la competencia monopolística.', en: 'Oligopoly and monopolistic competition.' },
+        'tema17.title': { val: 'Fallades de mercat. Externalitats i béns públics.', es: 'Fallos de mercado. Externalidades y bienes públicos.', en: 'Market failures. Externalities and public goods.' },
+        'tema18.title': { val: 'La distribució de la renda. Desigualtat i pobresa.', es: 'La distribución de la renta. Desigualdad y pobreza.', en: 'Income distribution. Inequality and poverty.' },
+        'tema19.title': { val: "L'empresa. Teoria i tipus. L'empresari.", es: 'La empresa. Teoría y tipos. El empresario.', en: 'The firm. Theory and types. The entrepreneur.' },
+        'tema20.title': { val: "L'empresa com a organització. Estructura, funcions i objectius.", es: 'La empresa como organización. Estructura, funciones y objetivos.', en: 'The firm as an organization. Structure, functions and objectives.' },
+    };
+
+    const t = createTranslator(pageTranslations, idioma);
+    const lang = idioma;
+
+    // ════════════════════════════════════════════════════════════════
+    // REUSABLE COMPONENTS
+    // ════════════════════════════════════════════════════════════════
+    const Card = ({ children, className = "", title, icon }) => (
+        <div className={`bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 hover:shadow-md transition-shadow ${className} animate-fade`}>
+            {title && <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100"><span className="text-2xl">{icon}</span><h3 className="font-bold text-slate-800 text-lg">{title}</h3></div>}
+            {children}
+        </div>
+    );
+
+    const Tabs = ({ tabs, active, onChange }) => (
+        <div className="flex flex-wrap gap-1 p-1.5 bg-slate-100 rounded-xl">
+            {tabs.map(tab => (
+                <button key={tab.id} onClick={() => onChange(tab.id)} className={`flex-1 min-w-fit py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${active === tab.id ? 'bg-white shadow-sm text-pink-600' : 'text-slate-600 hover:text-slate-800 hover:bg-white/50'}`}>
+                    {tab.label}
+                </button>
+            ))}
+        </div>
+    );
+
+    const FormulaBox = ({ formula, desc }) => (
+        <div className="my-4 p-5 bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl border border-pink-100">
+            <p className="text-center font-mono text-lg text-pink-800 font-semibold">{formula}</p>
+            {desc && <p className="text-center text-sm text-pink-600 mt-2">{desc}</p>}
+        </div>
+    );
+
+    const TheoryBlock = ({ title, children, color = "slate" }) => {
+        const colors = { slate: "border-slate-300 bg-slate-50", blue: "border-blue-300 bg-blue-50", green: "border-green-300 bg-green-50", amber: "border-amber-300 bg-amber-50", pink: "border-pink-300 bg-pink-50", violet: "border-violet-300 bg-violet-50", red: "border-red-300 bg-red-50", cyan: "border-cyan-300 bg-cyan-50", emerald: "border-emerald-300 bg-emerald-50", purple: "border-purple-300 bg-purple-50", rose: "border-rose-300 bg-rose-50" };
+        return (
+            <div className={`border-l-4 ${colors[color] || colors.slate} p-5 rounded-r-xl my-4`}>
+                {title && <h4 className="font-bold text-slate-800 mb-3 text-base">{title}</h4>}
+                <div className="text-slate-700 text-sm leading-relaxed space-y-2">{children}</div>
+            </div>
+        );
+    };
+
+    const SectionTitle = ({ icon, title, subtitle }) => (
+        <div className="mb-8">
+            <div className="flex items-center gap-3 mb-2"><span className="text-3xl">{icon}</span><h1 className="text-3xl font-black text-slate-800">{title}</h1></div>
+            {subtitle && <p className="text-slate-500 ml-12">{subtitle}</p>}
+        </div>
+    );
+
+    const BibliografiaBox = ({ items }) => (
+        <div className="my-6 p-6 bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl border border-slate-200">
+            <h4 className="font-bold text-slate-800 mb-4 text-base flex items-center gap-2">
+                <span>📚</span> Bibliografía
+            </h4>
+            <ul className="space-y-2">
+                {items.map((item, i) => (
+                    <li key={i} className="text-sm text-slate-700 leading-relaxed pl-4 border-l-2 border-slate-200">
+                        {item}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+
+    const ClauBox = ({ children }) => (
+        <div className="my-4 p-5 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200">
+            <div className="flex items-start gap-3">
+                <span className="text-2xl">🔑</span>
+                <div>
+                    <h4 className="font-bold text-amber-700 mb-2">{lang === 'es' ? 'Clave para el 10' : lang === 'en' ? 'Key for top marks' : 'Clau per al 10'}</h4>
+                    <div className="text-sm text-amber-800 space-y-1">{children}</div>
+                </div>
+            </div>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // THEME DATA (for Inicio cards)
+    // ════════════════════════════════════════════════════════════════
+    const temes = [
+        { num: 11, id: 'tema11', available: true },
+        { num: 12, id: 'tema12', available: true },
+        { num: 13, id: 'tema13', available: false },
+        { num: 14, id: 'tema14', available: false },
+        { num: 15, id: 'tema15', available: false },
+        { num: 16, id: 'tema16', available: false },
+        { num: 17, id: 'tema17', available: false },
+        { num: 18, id: 'tema18', available: false },
+        { num: 19, id: 'tema19', available: false },
+        { num: 20, id: 'tema20', available: false },
+    ];
+
+    // ════════════════════════════════════════════════════════════════
+    // SECTION: INICIO
+    // ════════════════════════════════════════════════════════════════
+    const Inicio = () => (
+        <div className="animate-fade">
+            {/* Back link */}
+            <a href="./oposicions" className="inline-flex items-center gap-2 text-sm text-pink-600 hover:text-pink-800 mb-6 transition-colors">
+                {t('inicio.backOpo')}
+            </a>
+
+            {/* Hero */}
+            <div className="text-center mb-10">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-pink-100 text-pink-700 rounded-full text-sm font-semibold mb-4">
+                    <span>📖</span> Bloc B
+                </div>
+                <h1 className="text-4xl font-black text-slate-800 mb-3">{t('inicio.title')}</h1>
+                <p className="text-slate-500 text-lg max-w-2xl mx-auto">{t('inicio.subtitle')}</p>
+            </div>
+
+            {/* Theme cards grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {temes.map(tema => (
+                    <button
+                        key={tema.id}
+                        onClick={() => { if (tema.available) { setSection(tema.id); pdeSetHashSection(tema.id); pdeScrollToTop(); } }}
+                        className={`text-left p-5 rounded-2xl border transition-all ${
+                            tema.available
+                                ? 'bg-white border-pink-200 hover:shadow-lg hover:border-pink-300 cursor-pointer'
+                                : 'bg-gray-50 border-gray-200 opacity-70 cursor-not-allowed'
+                        }`}
+                    >
+                        <div className="flex items-start gap-3">
+                            <span className={`inline-flex items-center justify-center w-10 h-10 rounded-xl text-sm font-black text-white ${
+                                tema.available ? 'bg-gradient-to-br from-pink-500 to-rose-600' : 'bg-gray-400'
+                            }`}>
+                                T{tema.num}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-slate-800 text-sm leading-snug mb-2">
+                                    {t(`tema${tema.num}.title`)}
+                                </p>
+                                <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${
+                                    tema.available
+                                        ? 'bg-green-100 text-green-700'
+                                        : 'bg-amber-100 text-amber-700'
+                                }`}>
+                                    {tema.available ? '✓ ' + t('inicio.disponible') : '🔒 ' + t('inicio.properament')}
+                                </span>
+                            </div>
+                        </div>
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 11 — La demanda. La utilidad. La elasticidad-precio.
+    // ════════════════════════════════════════════════════════════════
+    const Tema11Complet = () => (
+        <div className="space-y-6 animate-fade">
+            {/* ── INTRODUCCIÓN ────────────────────────────────────── */}
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        La <strong>demanda</strong> es uno de los pilares fundamentales del análisis microeconómico. Junto con la oferta, constituye el mecanismo central a través del cual los mercados asignan recursos escasos entre usos alternativos. Comprender cómo los consumidores toman sus decisiones de consumo, qué factores determinan la cantidad demandada de un bien y cómo reacciona la demanda ante variaciones en los precios es esencial para entender el funcionamiento de cualquier sistema económico basado en el mercado.
+                    </p>
+                    <p>
+                        Desde la perspectiva curricular, este tema conecta directamente con los saberes básicos del bloque "Funcionamiento del mercado" establecidos en el Real Decreto 243/2022 para la materia de Economía de 1.º de Bachillerato, así como con las competencias específicas CE1 (comprensión del funcionamiento del sistema económico) y CE3 (análisis del comportamiento de los agentes económicos). La LOMLOE (Ley Orgánica 3/2020) subraya la importancia de que el alumnado comprenda los mecanismos de mercado como herramienta para la toma de decisiones informadas, contribuyendo especialmente a las competencias STEM (modelización matemática de la demanda y la elasticidad), CE (competencia emprendedora, al comprender las decisiones de consumo) y CPSAA (competencia personal, social y de aprender a aprender, a través de la reflexión sobre los propios hábitos de consumo).
+                    </p>
+                    <p>
+                        El presente tema se estructura en cuatro epígrafes: en primer lugar, se analiza la demanda individual y de mercado, incluyendo la ley de la demanda, sus determinantes y la distinción entre movimientos y desplazamientos; en segundo lugar, se desarrolla la teoría de la utilidad, desde el enfoque cardinal (utilidad marginal decreciente) hasta el ordinal (curvas de indiferencia y restricción presupuestaria); en tercer lugar, se aborda la elasticidad-precio de la demanda y otras elasticidades relevantes; y, finalmente, se conecta con la relevancia curricular y las posibilidades didácticas. Se concluye con una síntesis integradora y una bibliografía de referencia.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── DESARROLLO ──────────────────────────────────────── */}
+
+            {/* Epígrafe 1 */}
+            <Card title="1. La demanda individual y de mercado" icon="📘">
+                <TheoryBlock title="1.1. Concepto de demanda. Ley de la demanda" color="pink">
+                    <p>
+                        La <strong>demanda</strong> de un bien o servicio se define como la <strong>cantidad que los consumidores están dispuestos y son capaces de adquirir a cada nivel de precios</strong>, en un período de tiempo determinado, manteniéndose constantes el resto de factores (<em>ceteris paribus</em>). No debe confundirse con el deseo (querer algo) ni con la necesidad (carecer de algo): la demanda implica tanto el deseo como la capacidad adquisitiva para satisfacerlo.
+                    </p>
+                    <p>
+                        La <strong>ley de la demanda</strong> establece una relación inversa entre el precio de un bien y la cantidad demandada del mismo: cuando el precio sube, la cantidad demandada disminuye; cuando el precio baja, la cantidad demandada aumenta, <em>ceteris paribus</em>. Esta relación, que constituye una de las regularidades empíricas más robustas de la ciencia económica, puede formalizarse como:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="Qd = f(P), con ∂Qd/∂P < 0"
+                    desc="La cantidad demandada es función inversa del precio"
+                />
+
+                <TheoryBlock title="1.2. La tabla de demanda y la curva de demanda" color="blue">
+                    <p>
+                        La <strong>tabla de demanda</strong> (o plan de demanda) es una representación numérica que relaciona diferentes niveles de precios con las cantidades demandadas correspondientes. A partir de la tabla de demanda se construye la <strong>curva de demanda</strong>, que es su representación gráfica: se sitúa el precio (P) en el eje de ordenadas y la cantidad demandada (Qd) en el eje de abscisas. La curva de demanda tiene pendiente negativa, reflejando la relación inversa entre precio y cantidad.
+                    </p>
+                    <p>
+                        Conviene señalar que la convención de representar el precio en el eje vertical y la cantidad en el horizontal fue establecida por <strong>Alfred Marshall</strong> (1890) en sus <em>Principios de Economía</em>, y se ha mantenido por tradición, aunque matemáticamente la variable independiente (precio) debería situarse en el eje horizontal. Esta "inversión marshalliana" es una convención que el opositor debe conocer y dominar.
+                    </p>
+                    <p>
+                        La forma funcional más habitual de la curva de demanda lineal es:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="Qd = a − b·P    (con a, b > 0)"
+                    desc="a = demanda autónoma (cantidad cuando P = 0) | b = sensibilidad de la demanda al precio"
+                />
+
+                <TheoryBlock title="1.3. Desplazamientos vs. movimientos a lo largo de la curva" color="green">
+                    <p>
+                        Es fundamental distinguir entre dos tipos de cambios en la demanda:
+                    </p>
+                    <p>
+                        Un <strong>movimiento a lo largo de la curva de demanda</strong> se produce cuando varía el precio del bien, manteniéndose constantes todos los demás factores. Al subir el precio, nos movemos hacia arriba y a la izquierda a lo largo de la curva (menor cantidad demandada); al bajar el precio, nos movemos hacia abajo y a la derecha (mayor cantidad demandada). Este movimiento refleja un cambio en la <em>cantidad demandada</em>.
+                    </p>
+                    <p>
+                        Un <strong>desplazamiento de la curva de demanda</strong> se produce cuando varía alguno de los factores distintos del precio propio del bien: la renta del consumidor, los precios de bienes relacionados, los gustos, las expectativas o la población. Cuando alguno de estos factores cambia, la curva se desplaza íntegramente hacia la derecha (aumento de la demanda: se demanda más a cada precio) o hacia la izquierda (disminución de la demanda: se demanda menos a cada precio). Este cambio refleja una variación en la <em>demanda</em> propiamente dicha.
+                    </p>
+                    <p>
+                        Esta distinción es una de las fuentes de error más frecuentes entre el alumnado y, por tanto, es un punto clave en la evaluación. El opositor debe dominarla con precisión terminológica y gráfica.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.4. Factores determinantes de la demanda" color="amber">
+                    <p>
+                        Los principales <strong>factores que determinan la demanda</strong> (y que provocan desplazamientos de la curva) son:
+                    </p>
+                    <p>
+                        <strong>1. La renta del consumidor:</strong> Un aumento de la renta incrementa la demanda de <strong>bienes normales</strong> (desplazamiento a la derecha) pero reduce la demanda de <strong>bienes inferiores</strong> (desplazamiento a la izquierda). Esta relación fue estudiada sistemáticamente por <strong>Ernst Engel</strong> (1821-1896), quien formuló las <strong>leyes de Engel</strong>: a medida que la renta aumenta, la proporción del gasto destinada a alimentación disminuye (Ley de Engel), mientras que aumenta la proporción destinada a vivienda, vestido, sanidad, ocio y ahorro.
+                    </p>
+                    <p>
+                        <strong>2. Los precios de los bienes relacionados:</strong> Si el bien X es <strong>sustitutivo</strong> del bien Y (Coca-Cola y Pepsi, mantequilla y margarina), un aumento del precio de X incrementa la demanda de Y (desplazamiento a la derecha de la curva de demanda de Y). Si el bien X es <strong>complementario</strong> del bien Y (coche y gasolina, impresora y tinta), un aumento del precio de X reduce la demanda de Y (desplazamiento a la izquierda).
+                    </p>
+                    <p>
+                        <strong>3. Los gustos y preferencias:</strong> Cambios en los gustos de los consumidores —por modas, publicidad, tendencias sociales, concienciación ecológica— desplazan la curva de demanda. El auge de la alimentación ecológica o la movilidad sostenible son ejemplos actuales.
+                    </p>
+                    <p>
+                        <strong>4. Las expectativas:</strong> Si los consumidores esperan que el precio de un bien suba en el futuro, anticipan sus compras (aumento de la demanda presente). Si esperan un aumento de su renta futura, pueden aumentar su consumo presente. Las expectativas son un factor clave en mercados como el inmobiliario o el bursátil.
+                    </p>
+                    <p>
+                        <strong>5. El tamaño del mercado (población):</strong> Un aumento de la población o del número de consumidores potenciales desplaza la demanda del mercado hacia la derecha. La inmigración, el envejecimiento demográfico o la urbanización afectan a la demanda agregada.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.5. De la demanda individual a la demanda de mercado" color="rose">
+                    <p>
+                        La <strong>demanda individual</strong> refleja las decisiones de un único consumidor. La <strong>demanda de mercado</strong> es la suma horizontal de todas las demandas individuales de los consumidores que participan en un mercado determinado. Gráficamente, para cada nivel de precios, se suman las cantidades demandadas por todos los consumidores.
+                    </p>
+                    <p>
+                        Si en un mercado hay <em>n</em> consumidores, la demanda de mercado es:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="Qd_mercado(P) = Σᵢ₌₁ⁿ Qd_i(P)"
+                    desc="Agregación horizontal: se suman las cantidades demandadas por cada consumidor a cada precio"
+                />
+            </Card>
+
+            {/* Epígrafe 2 */}
+            <Card title="2. La teoría de la utilidad" icon="📘">
+                <TheoryBlock title="2.1. Concepto de utilidad. Utilidad total y marginal" color="pink">
+                    <p>
+                        La <strong>utilidad</strong> es un concepto central de la teoría del consumidor. Se define como la <strong>satisfacción o bienestar que un individuo obtiene del consumo de un bien o servicio</strong>. Aunque la utilidad es un concepto subjetivo y no directamente observable, es el fundamento teórico sobre el que se construye toda la teoría de la demanda.
+                    </p>
+                    <p>
+                        La <strong>utilidad total (UT)</strong> es la satisfacción acumulada que obtiene un consumidor por el consumo de una determinada cantidad de un bien. La <strong>utilidad marginal (UMg)</strong> es la satisfacción adicional que proporciona el consumo de una unidad más de ese bien:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="UMg = ΔUT / ΔQ = dUT / dQ"
+                    desc="La utilidad marginal mide la variación de la utilidad total al consumir una unidad adicional"
+                />
+
+                <TheoryBlock title="2.2. Ley de la utilidad marginal decreciente" color="blue">
+                    <p>
+                        La <strong>ley de la utilidad marginal decreciente</strong> (también conocida como primera ley de Gossen) establece que, a medida que un individuo consume unidades sucesivas de un mismo bien, la utilidad marginal de cada unidad adicional tiende a disminuir. El primer vaso de agua cuando se tiene sed proporciona una satisfacción enorme; el segundo, algo menos; el tercero, aún menos; y así sucesivamente. Llega un punto en que la utilidad marginal puede ser nula (saciedad) o incluso negativa (desutilidad).
+                    </p>
+                    <p>
+                        Esta ley fue formulada independientemente por tres autores en la denominada <strong>revolución marginalista</strong> de la década de 1870: <strong>William Stanley Jevons</strong> (<em>The Theory of Political Economy</em>, 1871) en Inglaterra, <strong>Carl Menger</strong> (<em>Grundsätze der Volkswirtschaftslehre</em>, 1871) en Austria, y <strong>Léon Walras</strong> (<em>Éléments d'économie politique pure</em>, 1874) en Suiza. Esta triple convergencia independiente es uno de los episodios más notables de la historia del pensamiento económico.
+                    </p>
+                    <p>
+                        La ley de la utilidad marginal decreciente proporciona una explicación teórica de la ley de la demanda: si la satisfacción adicional que proporciona cada unidad consumida es cada vez menor, el consumidor solo estará dispuesto a comprar más unidades si el precio disminuye. De este modo, la relación inversa entre precio y cantidad demandada se fundamenta en el comportamiento psicológico del consumidor.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.3. El equilibrio del consumidor: la equimarginalidad" color="green">
+                    <p>
+                        Un consumidor racional que desea maximizar su utilidad total, dado su presupuesto limitado, debe distribuir su gasto entre los distintos bienes de forma que la <strong>utilidad marginal por unidad monetaria gastada sea igual para todos los bienes</strong>. Este principio se conoce como <strong>principio de equimarginalidad</strong> o <strong>segunda ley de Gossen</strong>:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="UMgₐ / Pₐ = UMgᵦ / Pᵦ = ... = UMgₙ / Pₙ"
+                    desc="Equilibrio del consumidor: la utilidad marginal por euro gastado debe ser igual para todos los bienes"
+                />
+
+                <TheoryBlock color="green">
+                    <p>
+                        Si la utilidad marginal por euro gastado en un bien A fuera mayor que la del bien B, el consumidor podría aumentar su utilidad total reasignando gasto del bien B al bien A. Al consumir más de A, su utilidad marginal disminuye (ley de UMg decreciente); al consumir menos de B, su utilidad marginal aumenta. El proceso continúa hasta que se igualan las ratios UMg/P para todos los bienes.
+                    </p>
+                    <p>
+                        Este resultado fue formalizado por <strong>Hermann Heinrich Gossen</strong> (1854) en su obra <em>Entwickelung der Gesetze des menschlichen Verkehrs</em>, aunque pasó desapercibida en su época y fue redescubierta por Jevons y Walras.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.4. La paradoja del valor: agua y diamantes" color="amber">
+                    <p>
+                        Una de las cuestiones más célebres de la historia del pensamiento económico es la <strong>paradoja del valor</strong> (o paradoja del agua y los diamantes), planteada por <strong>Adam Smith</strong> (1776): ¿por qué el agua, que es esencial para la vida, tiene un precio tan bajo, mientras que los diamantes, que son superfluos, tienen un precio tan elevado?
+                    </p>
+                    <p>
+                        Los economistas clásicos (Smith, Ricardo) no lograron resolver satisfactoriamente esta paradoja porque confundían el <strong>valor de uso</strong> (utilidad total) con el <strong>valor de cambio</strong> (precio). La solución vino de la mano de los marginalistas: el precio de un bien no depende de su utilidad total, sino de su <strong>utilidad marginal</strong>. El agua tiene una utilidad total enorme, pero como es abundante, su utilidad marginal (la satisfacción que proporciona un litro adicional) es muy baja. Los diamantes tienen una utilidad total menor, pero como son escasos, su utilidad marginal es muy alta. El precio refleja la utilidad marginal, no la utilidad total.
+                    </p>
+                    <p>
+                        Esta resolución fue una de las grandes contribuciones de la revolución marginalista y demostró la superioridad del análisis marginal sobre el análisis basado en el valor-trabajo de los clásicos y de Marx.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.5. De la utilidad cardinal a la ordinal: curvas de indiferencia" color="pink">
+                    <p>
+                        El enfoque de la utilidad cardinal (Jevons, Menger, Walras, Marshall) asume que la utilidad es <strong>medible numéricamente</strong> en unidades abstractas (<em>útiles</em>). Este supuesto fue criticado por ser excesivamente restrictivo: en la práctica, los consumidores no asignan valores numéricos a su satisfacción, sino que <strong>ordenan</strong> sus preferencias (prefieren A a B, o son indiferentes entre C y D).
+                    </p>
+                    <p>
+                        El enfoque <strong>ordinal</strong>, desarrollado por <strong>Francis Y. Edgeworth</strong> (1881) y perfeccionado por <strong>Vilfredo Pareto</strong> (1906) y <strong>John Hicks</strong> y <strong>Roy Allen</strong> (1934), introduce el instrumento de las <strong>curvas de indiferencia</strong>: cada curva representa el conjunto de combinaciones de dos bienes que proporcionan al consumidor el mismo nivel de satisfacción. Las curvas de indiferencia tienen las siguientes propiedades:
+                    </p>
+                    <p>
+                        (a) Tienen <strong>pendiente negativa</strong>: para mantener la misma utilidad, al consumir más de un bien hay que consumir menos del otro. (b) Son <strong>convexas respecto al origen</strong>: reflejan la diversificación del consumo (los consumidores prefieren combinaciones equilibradas). (c) <strong>No se cortan entre sí</strong>: sería lógicamente inconsistente. (d) Las curvas más alejadas del origen representan niveles de utilidad <strong>más altos</strong>.
+                    </p>
+                    <p>
+                        La pendiente de la curva de indiferencia en cada punto se denomina <strong>Relación Marginal de Sustitución (RMS)</strong> y mide la cantidad de un bien que el consumidor está dispuesto a ceder por una unidad adicional del otro, manteniendo constante su nivel de utilidad:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="RMS = |ΔY / ΔX| = UMgₓ / UMgᵧ"
+                    desc="RMS decreciente → curvas de indiferencia convexas (preferencia por la diversificación)"
+                />
+
+                <TheoryBlock title="2.6. La restricción presupuestaria y el óptimo del consumidor" color="blue">
+                    <p>
+                        El consumidor no puede situarse en la curva de indiferencia más alta posible sin restricciones: su elección está limitada por su <strong>restricción presupuestaria</strong>, que expresa que el gasto total no puede superar la renta disponible:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="Pₓ · X + Pᵧ · Y = M"
+                    desc="M = renta | Pₓ, Pᵧ = precios de los bienes X e Y"
+                />
+
+                <TheoryBlock color="blue">
+                    <p>
+                        La recta presupuestaria tiene pendiente −Pₓ/Pᵧ y se desplaza paralelamente hacia fuera si aumenta la renta, o rota si varía el precio relativo de uno de los bienes.
+                    </p>
+                    <p>
+                        El <strong>óptimo del consumidor</strong> se alcanza en el punto donde la recta presupuestaria es <strong>tangente</strong> a la curva de indiferencia más alta alcanzable. En ese punto, la pendiente de la curva de indiferencia (RMS) es igual a la pendiente de la recta presupuestaria (ratio de precios):
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="RMS = Pₓ / Pᵧ   →   UMgₓ / UMgᵧ = Pₓ / Pᵧ   →   UMgₓ / Pₓ = UMgᵧ / Pᵧ"
+                    desc="El óptimo del consumidor: la condición de tangencia reproduce la equimarginalidad"
+                />
+
+                <TheoryBlock title="2.7. Efecto renta y efecto sustitución" color="green">
+                    <p>
+                        Cuando varía el precio de un bien, la cantidad demandada cambia por dos razones que conviene separar analíticamente:
+                    </p>
+                    <p>
+                        <strong>Efecto sustitución:</strong> al bajar el precio del bien X (manteniéndose constante el del bien Y), X se abarata en términos relativos, lo que incentiva al consumidor a sustituir Y por X. Este efecto es siempre negativo (más cantidad cuando baja el precio) y refuerza la ley de la demanda.
+                    </p>
+                    <p>
+                        <strong>Efecto renta:</strong> al bajar el precio de X, el poder adquisitivo real del consumidor aumenta (puede comprar más con la misma renta monetaria). Si X es un bien normal, este aumento de poder adquisitivo lleva a consumir más de X (efecto renta positivo), reforzando la ley de la demanda. Si X es un bien inferior, el efecto renta es negativo (al tener más poder adquisitivo, se consume menos del bien inferior), pero normalmente no supera al efecto sustitución, por lo que la ley de la demanda se mantiene.
+                    </p>
+                    <p>
+                        La descomposición del efecto total en efecto sustitución y efecto renta fue formalizada por <strong>Eugen Slutsky</strong> (1915) y posteriormente refinada por <strong>John Hicks</strong> (1939, Premio Nobel 1972). La ecuación de Slutsky establece que: Efecto total = Efecto sustitución + Efecto renta.
+                    </p>
+                    <p>
+                        Una excepción teórica a la ley de la demanda son los <strong>bienes Giffen</strong>: bienes inferiores en los que el efecto renta negativo supera al efecto sustitución, dando lugar a una curva de demanda con pendiente positiva (al subir el precio, aumenta la cantidad demandada). El ejemplo clásico es el de las patatas durante la hambruna irlandesa (1845-1849), aunque su existencia empírica ha sido debatida. <strong>Robert Jensen y Nolan Miller</strong> (2008) documentaron evidencia de comportamiento Giffen en el consumo de arroz y fideos en China.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 3 */}
+            <Card title="3. La elasticidad-precio de la demanda" icon="📘">
+                <TheoryBlock title="3.1. Concepto y cálculo de la elasticidad-precio" color="pink">
+                    <p>
+                        La <strong>elasticidad-precio de la demanda (Ep)</strong> mide la <strong>sensibilidad de la cantidad demandada ante variaciones en el precio</strong>. Formalmente, se define como el cociente entre la variación porcentual de la cantidad demandada y la variación porcentual del precio:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="Ep = (ΔQ/Q) / (ΔP/P) = (ΔQ/ΔP) × (P/Q)"
+                    desc="Ep es generalmente negativo (ley de la demanda). Se suele trabajar con |Ep| (valor absoluto)"
+                />
+
+                <TheoryBlock color="pink">
+                    <p>
+                        Para evitar el problema de que la elasticidad difiera según el sentido de la variación (aumento o disminución del precio), se utiliza frecuentemente la <strong>fórmula del punto medio (o elasticidad arco)</strong>:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="Ep = [(Q₂ − Q₁) / ((Q₂ + Q₁)/2)] / [(P₂ − P₁) / ((P₂ + P₁)/2)]"
+                    desc="Fórmula del punto medio: usa los promedios de P y Q como base"
+                />
+
+                <TheoryBlock title="3.2. Tipos de elasticidad-precio" color="blue">
+                    <p>
+                        Según el valor absoluto de la elasticidad, se distinguen los siguientes casos:
+                    </p>
+                    <p>
+                        <strong>Demanda elástica (|Ep| &gt; 1):</strong> la cantidad demandada varía porcentualmente más que el precio. Ejemplo: bienes de lujo, bienes con muchos sustitutivos. Un aumento del 10 % en el precio reduce la cantidad demandada en más de un 10 %.
+                    </p>
+                    <p>
+                        <strong>Demanda inelástica (|Ep| &lt; 1):</strong> la cantidad demandada varía porcentualmente menos que el precio. Ejemplo: bienes de primera necesidad (pan, leche, medicamentos), bienes sin sustitutivos cercanos (gasolina). Un aumento del 10 % en el precio reduce la cantidad demandada en menos de un 10 %.
+                    </p>
+                    <p>
+                        <strong>Demanda unitaria (|Ep| = 1):</strong> la cantidad demandada varía en la misma proporción que el precio.
+                    </p>
+                    <p>
+                        <strong>Demanda perfectamente elástica (|Ep| → ∞):</strong> cualquier variación mínima del precio provoca una variación infinita de la cantidad demandada. La curva de demanda es horizontal. Se da en mercados de competencia perfecta desde la perspectiva de la empresa individual.
+                    </p>
+                    <p>
+                        <strong>Demanda perfectamente inelástica (|Ep| = 0):</strong> la cantidad demandada no varía ante cambios en el precio. La curva de demanda es vertical. Ejemplo teórico: la insulina para un diabético (dentro de ciertos rangos de precio).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.3. Factores determinantes de la elasticidad" color="green">
+                    <p>
+                        Los principales factores que determinan el valor de la elasticidad-precio de la demanda son:
+                    </p>
+                    <p>
+                        <strong>1. Disponibilidad de bienes sustitutivos:</strong> cuantos más sustitutivos cercanos tenga un bien, más elástica será su demanda. Si sube el precio de la Coca-Cola, los consumidores pueden pasarse fácilmente a la Pepsi. Si sube el precio de la gasolina, no hay un sustitutivo inmediato.
+                    </p>
+                    <p>
+                        <strong>2. Carácter del bien (necesidad vs. lujo):</strong> los bienes de primera necesidad (pan, electricidad, agua) tienen demanda inelástica porque no se puede prescindir fácilmente de ellos. Los bienes de lujo (viajes, joyas, coches deportivos) tienen demanda más elástica.
+                    </p>
+                    <p>
+                        <strong>3. Horizonte temporal:</strong> la demanda tiende a ser más elástica a largo plazo que a corto plazo, porque los consumidores disponen de más tiempo para ajustar su comportamiento, buscar alternativas y modificar sus hábitos. A corto plazo, un aumento del precio del petróleo apenas reduce la demanda; a largo plazo, incentiva la compra de coches eléctricos, el uso del transporte público y la inversión en energías renovables.
+                    </p>
+                    <p>
+                        <strong>4. Peso del bien en el presupuesto del consumidor:</strong> los bienes que representan una proporción significativa del gasto total (vivienda, alimentación) tienden a tener demanda más elástica que los bienes con peso presupuestario reducido (sal, cerillas, chicles).
+                    </p>
+                    <p>
+                        <strong>5. Definición del mercado:</strong> cuanto más ampliamente se defina el mercado, más inelástica será la demanda (la demanda de alimentos es inelástica; la demanda de yogures de fresa de una marca concreta es muy elástica).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.4. Elasticidad e ingreso total: relación fundamental" color="amber">
+                    <p>
+                        Una de las aplicaciones más importantes de la elasticidad-precio es su relación con el <strong>ingreso total (IT = P × Q)</strong>. Esta relación es crucial para las decisiones empresariales sobre precios:
+                    </p>
+                    <p>
+                        <strong>Si la demanda es elástica (|Ep| &gt; 1):</strong> una reducción del precio aumenta el ingreso total (el aumento porcentual de la cantidad vendida supera a la reducción porcentual del precio). Inversamente, un aumento del precio reduce el ingreso total. Ejemplo: una empresa de ocio que reduce el precio de las entradas y vende muchas más.
+                    </p>
+                    <p>
+                        <strong>Si la demanda es inelástica (|Ep| &lt; 1):</strong> una reducción del precio reduce el ingreso total (el aumento porcentual de la cantidad vendida es inferior a la reducción porcentual del precio). Inversamente, un aumento del precio aumenta el ingreso total. Ejemplo: la OPEP sube el precio del petróleo y sus ingresos crecen porque la demanda apenas disminuye.
+                    </p>
+                    <p>
+                        <strong>Si la demanda es unitaria (|Ep| = 1):</strong> el ingreso total no varía ante cambios en el precio.
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="|Ep| > 1 → ↓P ⇒ ↑IT    |    |Ep| < 1 → ↓P ⇒ ↓IT    |    |Ep| = 1 → IT constante"
+                    desc="Relación entre elasticidad e ingreso total: clave para la estrategia de precios"
+                />
+
+                <TheoryBlock title="3.5. Otras elasticidades: elasticidad-renta y elasticidad cruzada" color="pink">
+                    <p>
+                        Además de la elasticidad-precio, existen otras elasticidades relevantes para el análisis de la demanda:
+                    </p>
+                    <p>
+                        <strong>Elasticidad-renta de la demanda (Ey):</strong> mide la sensibilidad de la cantidad demandada ante variaciones en la renta del consumidor:
+                    </p>
+                    <p>
+                        <strong>Ey = (ΔQ/Q) / (ΔY/Y)</strong>, donde Y = renta.
+                    </p>
+                    <p>
+                        Si Ey &gt; 0: <strong>bien normal</strong> (la demanda crece con la renta). Dentro de los normales: si 0 &lt; Ey &lt; 1, es un <strong>bien de primera necesidad</strong> (la demanda crece menos que proporcionalmente con la renta); si Ey &gt; 1, es un <strong>bien de lujo</strong> o superior (la demanda crece más que proporcionalmente). Si Ey &lt; 0: <strong>bien inferior</strong> (la demanda disminuye al aumentar la renta). La <strong>curva de Engel</strong> relaciona la renta con la cantidad demandada de un bien.
+                    </p>
+                    <p>
+                        <strong>Elasticidad cruzada de la demanda (Exy):</strong> mide la sensibilidad de la cantidad demandada de un bien X ante variaciones en el precio de otro bien Y:
+                    </p>
+                    <p>
+                        <strong>Exy = (ΔQx/Qx) / (ΔPy/Py)</strong>
+                    </p>
+                    <p>
+                        Si Exy &gt; 0: los bienes son <strong>sustitutivos</strong> (al subir el precio de Y, aumenta la demanda de X). Si Exy &lt; 0: los bienes son <strong>complementarios</strong> (al subir el precio de Y, disminuye la demanda de X). Si Exy ≈ 0: los bienes son <strong>independientes</strong>.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 4 */}
+            <Card title="4. Relevancia curricular y didáctica" icon="📘">
+                <TheoryBlock title="4.1. Conexión con la LOMLOE y el currículo de Bachillerato" color="pink">
+                    <p>
+                        Los contenidos desarrollados en este tema se integran en el bloque de saberes básicos "Funcionamiento del mercado" de la materia de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022, Bloque B). Los criterios de evaluación asociados exigen que el alumnado sea capaz de: representar gráficamente las curvas de oferta y demanda, identificar los factores que las desplazan, calcular e interpretar la elasticidad-precio, y analizar las decisiones de consumo utilizando el concepto de utilidad marginal.
+                    </p>
+                    <p>
+                        También se conecta con la materia de <strong>Economía y Emprendimiento de 4.º ESO</strong> (RD 217/2022), donde se introduce el concepto de mercado y el comportamiento del consumidor a un nivel más elemental.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.2. Competencias clave implicadas" color="blue">
+                    <p>
+                        <strong>STEM:</strong> la modelización matemática de la demanda (funciones, derivadas, elasticidades), la representación gráfica y el cálculo algebraico del equilibrio del consumidor desarrollan directamente la competencia matemática y en ciencia, tecnología e ingeniería.
+                    </p>
+                    <p>
+                        <strong>CE (Competencia emprendedora):</strong> la comprensión de la elasticidad permite valorar las decisiones de precios de las empresas y entender la estrategia comercial desde la perspectiva del consumidor.
+                    </p>
+                    <p>
+                        <strong>CPSAA (Competencia personal, social y de aprender a aprender):</strong> la reflexión sobre los propios hábitos de consumo, la influencia de la publicidad en las preferencias y la toma de decisiones racionales contribuyen al autoconocimiento y la autonomía personal.
+                    </p>
+                    <p>
+                        <strong>CC (Competencia ciudadana):</strong> el análisis de la demanda de bienes públicos, las externalidades del consumo y la responsabilidad del consumidor conectan con la formación cívica y la sostenibilidad.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.3. Propuestas de actividades didácticas" color="green">
+                    <p>
+                        <strong>1. Simulación de mercado:</strong> organizar un mercado ficticio en el aula donde los alumnos actúen como compradores y vendedores, observando cómo se forman los precios y cómo reacciona la demanda. Esta actividad se inspira en los <strong>experimentos de mercado de Vernon Smith</strong> (Premio Nobel 2002).
+                    </p>
+                    <p>
+                        <strong>2. Cálculo de elasticidades reales:</strong> proporcionar datos de precios y cantidades de bienes cotidianos (gasolina, entradas de cine, suscripciones digitales) para que los alumnos calculen elasticidades-precio e interpreten los resultados.
+                    </p>
+                    <p>
+                        <strong>3. Análisis de la paradoja del valor:</strong> debate guiado sobre la paradoja del agua y los diamantes, conectando con la revolución marginalista y la diferencia entre valor de uso y valor de cambio.
+                    </p>
+                    <p>
+                        <strong>4. Mapas de indiferencia personal:</strong> los alumnos construyen sus propios mapas de curvas de indiferencia para pares de bienes que consumen habitualmente (ej.: horas de estudio vs. horas de ocio), reflexionando sobre sus preferencias y la restricción presupuestaria (de tiempo, en este caso).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── CONCLUSIÓN ──────────────────────────────────────── */}
+            <Card title="Conclusión" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        A lo largo de este tema se ha desarrollado el análisis completo de la demanda desde tres perspectivas complementarias. En primer lugar, la perspectiva descriptiva: la ley de la demanda, la curva de demanda, sus determinantes y la distinción fundamental entre movimientos a lo largo de la curva y desplazamientos de la misma. En segundo lugar, la perspectiva teórica: la teoría de la utilidad, desde el enfoque cardinal de los marginalistas (Jevons, Menger, Walras) hasta el enfoque ordinal de las curvas de indiferencia (Edgeworth, Pareto, Hicks), pasando por la resolución de la paradoja del valor y la determinación del equilibrio del consumidor. En tercer lugar, la perspectiva cuantitativa: la elasticidad-precio de la demanda como instrumento de medición de la sensibilidad del consumidor, junto con sus aplicaciones en la estrategia de precios y la política económica.
+                    </p>
+                    <p>
+                        La descomposición del efecto de una variación de precios en efecto sustitución y efecto renta (Slutsky, Hicks) constituye una de las aportaciones más elegantes de la teoría microeconómica y permite explicar no solo la forma de la curva de demanda, sino también las excepciones teóricas (bienes Giffen). La elasticidad, por su parte, trasciende el análisis de la demanda para convertirse en un concepto transversal de la Economía, aplicable a la oferta, al mercado de trabajo, a la política fiscal y al comercio internacional.
+                    </p>
+                    <p>
+                        Desde la perspectiva docente, los contenidos de este tema son esenciales para la formación económica del alumnado de Bachillerato y conectan directamente con las competencias clave de la LOMLOE. La utilización de ejemplos cotidianos, simulaciones de mercado y cálculo de elasticidades reales facilita un aprendizaje significativo y competencial, acercando la teoría económica a la experiencia del alumnado y promoviendo el desarrollo del pensamiento crítico y la alfabetización económica.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── BIBLIOGRAFÍA ────────────────────────────────────── */}
+            <BibliografiaBox items={[
+                'MANKIW, N.G. (2020): Principios de Economía, 8.ª ed., Cengage Learning.',
+                'KRUGMAN, P. y WELLS, R. (2020): Introducción a la Economía: Microeconomía, 4.ª ed., Reverté.',
+                'SAMUELSON, P. y NORDHAUS, W. (2019): Economía, 19.ª ed., McGraw-Hill.',
+                'VARIAN, H.R. (2016): Microeconomía intermedia, 9.ª ed., Antoni Bosch.',
+                'PINDYCK, R.S. y RUBINFELD, D.L. (2018): Microeconomía, 9.ª ed., Pearson.',
+                'MOCHÓN, F. (2021): Economía. Teoría y Política, 7.ª ed., McGraw-Hill.',
+                'STIGLITZ, J.E. y WALSH, C.E. (2009): Microeconomía, 4.ª ed., Ariel.',
+                'MARSHALL, A. (1890): Principios de Economía (ed. moderna, Síntesis).',
+                'HICKS, J.R. (1939): Value and Capital, Oxford University Press.',
+                'SLUTSKY, E. (1915): "Sulla teoria del bilancio del consumatore", Giornale degli Economisti.',
+                'JENSEN, R. y MILLER, N. (2008): "Giffen Behavior and Subsistence Consumption", American Economic Review.',
+                'Ley Orgánica 3/2020, de 29 de diciembre (LOMLOE).',
+                'Real Decreto 243/2022, de 5 de abril (currículo Bachillerato).',
+                'Real Decreto 217/2022, de 29 de marzo (currículo ESO).',
+            ]} />
+
+            {/* ── CLAU ────────────────────────────────────────────── */}
+            <ClauBox>
+                <p>- Distingue siempre <strong>movimiento a lo largo de la curva</strong> (cambia el precio) de <strong>desplazamiento de la curva</strong> (cambia otro factor). Error frecuente y muy penalizado.</p>
+                <p>- Cita la <strong>revolución marginalista</strong> (Jevons, Menger, Walras, 1871-74) y la resolución de la <strong>paradoja del valor</strong> como hito del pensamiento económico.</p>
+                <p>- Domina la condición de equilibrio del consumidor tanto en versión cardinal (<strong>UMg/P iguales</strong>) como ordinal (<strong>RMS = Pₓ/Pᵧ, tangencia</strong>).</p>
+                <p>- Conoce la <strong>ecuación de Slutsky</strong>: efecto total = efecto sustitución + efecto renta. Menciona los <strong>bienes Giffen</strong> como excepción teórica.</p>
+                <p>- Relaciona <strong>elasticidad e ingreso total</strong>: es la aplicación práctica más importante. Aporta ejemplos reales (OPEP, bienes de lujo).</p>
+                <p>- Conecta con la <strong>LOMLOE</strong> (RD 243/2022, Bloque B) y las competencias STEM, CE, CPSAA y CC.</p>
+            </ClauBox>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 11 — RESUM / ESQUEMA
+    // ════════════════════════════════════════════════════════════════
+    const Tema11Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-pink-50 rounded-xl border border-pink-200 mb-5">
+                    <p className="text-center font-bold text-pink-800 text-lg">Tema 11: La demanda. La utilidad. La elasticidad-precio.</p>
+                    <p className="text-center text-sm text-pink-600 mt-1">
+                        <em>"La cantidad demandada de un bien disminuye cuando sube su precio, ceteris paribus"</em> — Ley de la demanda
+                    </p>
+                </div>
+
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. Demanda individual y de mercado</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Ley de demanda: relación inversa P-Q. Curva con pendiente negativa (convención de Marshall).</li>
+                            <li><strong>Movimiento</strong> a lo largo (cambia P) vs. <strong>desplazamiento</strong> (cambia renta, gustos, P_otros, expectativas, población).</li>
+                            <li>Factores: renta (normales/inferiores), P sustitutivos/complementarios, gustos, expectativas, población.</li>
+                            <li>Demanda de mercado = Σ demandas individuales (agregación horizontal).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. Teoría de la utilidad</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>UT y UMg. Ley de UMg decreciente (1.ª Ley de Gossen). Marginalistas: Jevons, Menger, Walras (1871-74).</li>
+                            <li>Equilibrio consumidor cardinal: UMgₐ/Pₐ = UMgᵦ/Pᵦ (equimarginalidad, 2.ª Ley de Gossen).</li>
+                            <li>Paradoja del valor (agua-diamantes): precio = UMg, no UT. Solución marginalista.</li>
+                            <li>Enfoque ordinal: curvas de indiferencia (Edgeworth, Pareto). RMS = UMgₓ/UMgᵧ.</li>
+                            <li>Restricción presupuestaria: Pₓ·X + Pᵧ·Y = M. Óptimo: tangencia → RMS = Pₓ/Pᵧ.</li>
+                            <li>Efecto sustitución + efecto renta (Slutsky 1915, Hicks 1939). Bienes Giffen: excepción teórica.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. Elasticidad-precio</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Ep = (ΔQ/Q)/(ΔP/P). Fórmula del punto medio para evitar asimetría.</li>
+                            <li>Tipos: elástica (&gt;1), inelástica (&lt;1), unitaria (=1), perfectamente elástica (∞), perfectamente inelástica (0).</li>
+                            <li>Factores: sustitutivos, necesidad vs. lujo, horizonte temporal, peso en presupuesto, definición del mercado.</li>
+                            <li>Elasticidad e IT: |Ep|&gt;1 → ↓P⇒↑IT. |Ep|&lt;1 → ↓P⇒↓IT. |Ep|=1 → IT constante.</li>
+                            <li>Elasticidad-renta (Ey): normales (&gt;0), inferiores (&lt;0), lujo (&gt;1). Leyes de Engel.</li>
+                            <li>Elasticidad cruzada (Exy): sustitutivos (&gt;0), complementarios (&lt;0).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. Relevancia curricular</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>LOMLOE: Economía 1BACH (RD 243/2022, Bloque B). Economía y Emprendimiento 4ESO.</li>
+                            <li>Competencias: STEM (modelización), CE (estrategia de precios), CPSAA (hábitos de consumo), CC.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <FormulaBox formula="Qd = f(P), ∂Qd/∂P < 0 → Ley de la demanda" />
+                <FormulaBox formula="Equilibrio: UMgₐ/Pₐ = UMgᵦ/Pᵦ  |  RMS = Pₓ/Pᵧ (tangencia)" />
+                <FormulaBox formula="Ep = (ΔQ/Q) / (ΔP/P)  |  |Ep|>1 → ↓P⇒↑IT  |  |Ep|<1 → ↓P⇒↓IT" />
+
+                <ClauBox>
+                    <p>- Domina la distinción <strong>movimiento vs. desplazamiento</strong> de la curva de demanda: error frecuente muy penalizado.</p>
+                    <p>- Cita la <strong>revolución marginalista</strong> (1871-74) y resuelve la <strong>paradoja del valor</strong> con la UMg.</p>
+                    <p>- Presenta el equilibrio del consumidor en versión <strong>cardinal</strong> y <strong>ordinal</strong> (tangencia).</p>
+                    <p>- Relaciona <strong>elasticidad con ingreso total</strong>: aplicación clave para estrategia empresarial.</p>
+                    <p>- Conoce las <strong>tres elasticidades</strong>: precio, renta (Engel) y cruzada (sustitutivos/complementarios).</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 11 — Component wrapper
+    // ════════════════════════════════════════════════════════════════
+    const Tema11 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="📖" title="Tema 11" subtitle={t('tema11.title')} />
+                <Tabs tabs={[
+                    { id: 'complet', label: '📝 ' + t('tab.complet') },
+                    { id: 'resum', label: '📋 ' + t('tab.resum') },
+                ]} active={vista} onChange={setVista} />
+
+                {vista === 'complet' && <Tema11Complet />}
+                {vista === 'resum' && <Tema11Resum />}
+            </div>
+        );
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 12 — La oferta. Costes de producción y beneficio empresarial.
+    // ════════════════════════════════════════════════════════════════
+    const Tema12Complet = () => (
+        <div className="space-y-6 animate-fade">
+            {/* ── INTRODUCCIÓN ────────────────────────────────────── */}
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        Si el Tema 11 analizaba el lado de la demanda —cómo los consumidores toman sus decisiones de gasto—, el presente tema aborda el otro pilar fundamental del mercado: la <strong>oferta</strong>. La oferta representa las decisiones de producción de las empresas y está íntimamente ligada a la <strong>estructura de costes</strong> y a la búsqueda del <strong>beneficio empresarial</strong>. Comprender cómo las empresas determinan qué cantidad producir, a qué precio ofrecer sus productos y cuándo es rentable continuar operando o cerrar, es esencial para entender el funcionamiento de los mercados y la asignación eficiente de recursos.
+                    </p>
+                    <p>
+                        Desde la perspectiva curricular, este tema se enmarca en el bloque de saberes básicos "Funcionamiento del mercado" de la materia de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022), así como en el bloque "La función productiva" de <strong>Empresa y Diseño de Modelos de Negocio de 2.º de Bachillerato</strong>. Las competencias específicas implicadas son: CE1 (comprensión del funcionamiento del sistema económico), CE2 (análisis del papel de las empresas como agentes económicos) y CE4 (desarrollo del espíritu emprendedor). La LOMLOE subraya la importancia de la alfabetización económica y empresarial para la formación integral del alumnado, contribuyendo especialmente a las competencias STEM (análisis matemático de costes y beneficios), CE (toma de decisiones empresariales) y CPSAA (planificación y evaluación de proyectos).
+                    </p>
+                    <p>
+                        El desarrollo del tema se estructura en cuatro epígrafes: en primer lugar, la oferta individual y de mercado, con su ley, sus determinantes y la distinción entre movimientos y desplazamientos; en segundo lugar, la teoría de costes de producción a corto y largo plazo; en tercer lugar, el beneficio empresarial, la condición de maximización y las decisiones de producir o cerrar; y, finalmente, la relevancia curricular y las posibilidades didácticas. Se concluye con una síntesis integradora y una bibliografía de referencia.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── DESARROLLO ──────────────────────────────────────── */}
+
+            {/* Epígrafe 1 */}
+            <Card title="1. La oferta individual y de mercado" icon="📘">
+                <TheoryBlock title="1.1. Concepto de oferta. Ley de la oferta" color="pink">
+                    <p>
+                        La <strong>oferta</strong> de un bien o servicio se define como la <strong>cantidad que los productores están dispuestos y son capaces de vender a cada nivel de precios</strong>, en un período de tiempo determinado, manteniéndose constantes el resto de factores (<em>ceteris paribus</em>). Al igual que la demanda, la oferta no es una cantidad fija, sino una relación funcional entre el precio y la cantidad ofrecida.
+                    </p>
+                    <p>
+                        La <strong>ley de la oferta</strong> establece una relación directa (positiva) entre el precio de un bien y la cantidad ofrecida: cuando el precio sube, la cantidad ofrecida aumenta; cuando el precio baja, la cantidad ofrecida disminuye, <em>ceteris paribus</em>. La justificación económica es intuitiva: a precios más altos, producir resulta más rentable, lo que incentiva a las empresas existentes a aumentar su producción y atrae a nuevas empresas al mercado. Formalmente:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="Qs = f(P), con ∂Qs/∂P > 0"
+                    desc="La cantidad ofrecida es función directa del precio"
+                />
+
+                <TheoryBlock title="1.2. Curva de oferta. Movimientos vs. desplazamientos" color="blue">
+                    <p>
+                        La <strong>curva de oferta</strong> es la representación gráfica de la relación entre el precio y la cantidad ofrecida. Siguiendo la convención marshalliana, se sitúa el precio en el eje de ordenadas y la cantidad en el de abscisas. La curva de oferta tiene <strong>pendiente positiva</strong>, reflejando la ley de la oferta. La forma funcional lineal más habitual es:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="Qs = c + d·P    (con d > 0)"
+                    desc="c = oferta autónoma | d = sensibilidad de la oferta al precio"
+                />
+
+                <TheoryBlock color="blue">
+                    <p>
+                        Al igual que en la demanda, es esencial distinguir entre un <strong>movimiento a lo largo de la curva de oferta</strong> (causado por una variación del precio del bien, que altera la cantidad ofrecida) y un <strong>desplazamiento de la curva de oferta</strong> (causado por variaciones en otros factores distintos del precio, que alteran la oferta en su conjunto).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.3. Factores determinantes de la oferta" color="green">
+                    <p>
+                        Los principales <strong>factores que desplazan la curva de oferta</strong> son:
+                    </p>
+                    <p>
+                        <strong>1. Los costes de producción:</strong> Un aumento de los costes de los factores productivos (salarios, materias primas, energía, alquileres) reduce la oferta a cada precio (desplazamiento a la izquierda). Una reducción de costes aumenta la oferta (desplazamiento a la derecha). Los costes de producción son el determinante más importante de la oferta.
+                    </p>
+                    <p>
+                        <strong>2. La tecnología:</strong> Una mejora tecnológica permite producir más con los mismos recursos (o lo mismo con menos recursos), lo que desplaza la curva de oferta hacia la derecha. La innovación tecnológica —desde la mecanización hasta la digitalización y la inteligencia artificial— ha sido históricamente el principal motor de los desplazamientos de la oferta.
+                    </p>
+                    <p>
+                        <strong>3. Los precios de los factores productivos:</strong> Un aumento del precio del trabajo (salarios), del capital (tipos de interés), de la tierra (alquileres) o de las materias primas incrementa los costes de producción y, por tanto, reduce la oferta. Las políticas salariales, la regulación laboral y los precios de la energía son factores determinantes.
+                    </p>
+                    <p>
+                        <strong>4. Las expectativas:</strong> Si los productores esperan que el precio de su producto suba en el futuro, pueden reducir la oferta presente (retener existencias para venderlas más tarde). Si esperan una subida de costes futuros, pueden adelantar producción.
+                    </p>
+                    <p>
+                        <strong>5. El número de empresas en el mercado:</strong> La entrada de nuevas empresas desplaza la oferta de mercado hacia la derecha; la salida de empresas la desplaza hacia la izquierda. La facilidad de entrada y salida depende de las barreras de entrada (legales, tecnológicas, de capital, de marca).
+                    </p>
+                    <p>
+                        <strong>6. Las políticas gubernamentales:</strong> Impuestos sobre la producción (desplazan la oferta a la izquierda, al aumentar los costes), subvenciones (la desplazan a la derecha, al reducir los costes), regulaciones ambientales, sanitarias y laborales.
+                    </p>
+                    <p>
+                        <strong>7. Condiciones naturales y climatológicas:</strong> especialmente relevantes en la agricultura. Una sequía o una helada reduce drásticamente la oferta de productos agrícolas.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.4. De la oferta individual a la de mercado" color="amber">
+                    <p>
+                        La <strong>oferta de mercado</strong> se obtiene mediante la <strong>agregación horizontal</strong> de las ofertas individuales de todas las empresas que operan en un mercado: para cada nivel de precios, se suman las cantidades ofrecidas por cada empresa. Si hay <em>m</em> empresas:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="Qs_mercado(P) = Σⱼ₌₁ᵐ Qs_j(P)"
+                    desc="Agregación horizontal: suma de las cantidades ofrecidas por cada empresa a cada precio"
+                />
+            </Card>
+
+            {/* Epígrafe 2 */}
+            <Card title="2. La teoría de costes de producción" icon="📘">
+                <TheoryBlock title="2.1. Costes a corto plazo: fijos, variables y totales" color="pink">
+                    <p>
+                        En el análisis económico, el <strong>corto plazo</strong> se define como el período en el que al menos un factor productivo es fijo (generalmente, el capital: instalaciones, maquinaria). En el <strong>largo plazo</strong>, todos los factores son variables. Esta distinción, debida a <strong>Alfred Marshall</strong> (1890), es fundamental para la teoría de costes.
+                    </p>
+                    <p>
+                        A corto plazo, los costes se clasifican en:
+                    </p>
+                    <p>
+                        <strong>Costes fijos (CF):</strong> son aquellos que no dependen del nivel de producción. Se incurren aunque la empresa no produzca nada: alquiler del local, seguros, amortización de la maquinaria, salarios de directivos permanentes, cuotas de préstamos. CF = constante.
+                    </p>
+                    <p>
+                        <strong>Costes variables (CV):</strong> son aquellos que varían con el nivel de producción: materias primas, energía consumida en la producción, mano de obra directa, comisiones de ventas. CV = CV(Q), con CV(0) = 0 y CV creciente con Q.
+                    </p>
+                    <p>
+                        <strong>Costes totales (CT):</strong> son la suma de los costes fijos y los costes variables:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="CT = CF + CV(Q)"
+                    desc="Los costes totales son la suma de costes fijos (constantes) y costes variables (función de Q)"
+                />
+
+                <TheoryBlock title="2.2. Costes medios y coste marginal" color="blue">
+                    <p>
+                        A partir de los costes totales se derivan los <strong>costes unitarios</strong> (por unidad producida), que son fundamentales para la toma de decisiones:
+                    </p>
+                    <p>
+                        <strong>Coste fijo medio (CFMe):</strong> CFMe = CF / Q. Es decreciente con Q (los costes fijos se "reparten" entre más unidades). Este fenómeno explica el interés de las empresas por producir a gran escala.
+                    </p>
+                    <p>
+                        <strong>Coste variable medio (CVMe):</strong> CVMe = CV / Q. Inicialmente decreciente (por la eficiencia de la especialización), luego creciente (por los rendimientos decrecientes del factor variable).
+                    </p>
+                    <p>
+                        <strong>Coste total medio (CMe o CTMe):</strong> CMe = CT / Q = CFMe + CVMe. Tiene forma de <strong>U</strong>: inicialmente decreciente (dominan los costes fijos que se diluyen) y posteriormente creciente (dominan los rendimientos decrecientes). El punto mínimo del CMe se denomina <strong>escala eficiente</strong> o <strong>dimensión óptima de producción a corto plazo</strong>.
+                    </p>
+                    <p>
+                        <strong>Coste marginal (CMg):</strong> es el coste adicional de producir una unidad más:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="CMg = ΔCT / ΔQ = dCT / dQ = dCV / dQ"
+                    desc="El CMg no depende de los costes fijos (CF es constante → dCF/dQ = 0)"
+                />
+
+                <TheoryBlock title="2.3. Relación entre CMg y CMe" color="green">
+                    <p>
+                        La relación entre el coste marginal y el coste medio es una de las más importantes de la teoría de costes y tiene una interpretación intuitiva sencilla:
+                    </p>
+                    <p>
+                        <strong>Cuando CMg &lt; CMe:</strong> producir una unidad adicional cuesta menos que el promedio, por lo que el CMe desciende. Es como si un estudiante que tiene un promedio de 7 sacara un 9 en el siguiente examen: su media sube.
+                    </p>
+                    <p>
+                        <strong>Cuando CMg &gt; CMe:</strong> producir una unidad adicional cuesta más que el promedio, por lo que el CMe asciende.
+                    </p>
+                    <p>
+                        <strong>Cuando CMg = CMe:</strong> el CMe está en su punto mínimo. La curva de CMg <strong>corta a la curva de CMe por su punto mínimo</strong>. Esta es una propiedad matemática fundamental (relación entre marginal y media) que se repite en otros contextos (CMg y CVMe, productividad marginal y productividad media).
+                    </p>
+                    <p>
+                        La misma relación se aplica al CVMe: la curva de CMg corta también a la curva de CVMe por su punto mínimo, que se sitúa a un nivel de producción inferior al mínimo del CMe.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.4. Costes a largo plazo: todos los costes son variables" color="amber">
+                    <p>
+                        A <strong>largo plazo</strong>, la empresa puede ajustar todos sus factores productivos, incluido el capital. No existen costes fijos: todos los costes son variables. La empresa puede elegir su <strong>escala de producción</strong> (tamaño de la planta) de forma óptima.
+                    </p>
+                    <p>
+                        La <strong>curva de coste medio a largo plazo (CMeLP)</strong> es la <strong>envolvente</strong> de todas las curvas de coste medio a corto plazo correspondientes a los diferentes tamaños de planta posibles. Cada punto de la CMeLP representa el coste mínimo de producir cada nivel de output, eligiendo la escala de planta óptima para ese nivel de producción.
+                    </p>
+                    <p>
+                        La forma de la CMeLP depende de los <strong>rendimientos a escala</strong>:
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.5. Economías y deseconomías de escala. Dimensión óptima" color="pink">
+                    <p>
+                        <strong>Economías de escala</strong> (rendimientos crecientes a escala): al aumentar la producción, el CMe a largo plazo disminuye. Las causas incluyen: especialización del trabajo (Adam Smith, 1776), uso de tecnología más eficiente (maquinaria de gran escala), poder de negociación con proveedores (descuentos por volumen), reparto de costes fijos indivisibles (I+D, publicidad, marketing), eficiencias financieras (acceso a financiación más barata).
+                    </p>
+                    <p>
+                        <strong>Deseconomías de escala</strong> (rendimientos decrecientes a escala): a partir de cierto tamaño, el CMe a largo plazo aumenta. Las causas incluyen: dificultades de coordinación y gestión (burocratización), problemas de comunicación interna, desmotivación de los trabajadores, rigidez organizativa, pérdida de flexibilidad ante cambios del mercado.
+                    </p>
+                    <p>
+                        <strong>Rendimientos constantes a escala:</strong> el CMe a largo plazo permanece constante al variar la escala de producción.
+                    </p>
+                    <p>
+                        La <strong>dimensión óptima</strong> (o escala mínima eficiente, EME) es el nivel de producción a partir del cual la empresa agota las economías de escala y alcanza el mínimo de su CMeLP. La EME varía enormemente entre sectores: es muy grande en industrias como la automoción, la siderurgia o las telecomunicaciones (lo que explica la concentración empresarial en estos sectores) y relativamente pequeña en la hostelería, el comercio minorista o los servicios profesionales.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.6. La curva de costes totales a largo plazo (envolvente)" color="blue">
+                    <p>
+                        La <strong>curva de costes totales a largo plazo (CTLP)</strong> muestra el coste mínimo total de producir cada nivel de output cuando la empresa puede elegir libremente su escala de planta. La relación con las curvas de corto plazo es que la CTLP es tangente a cada curva de CTCP en exactamente un punto, correspondiente al nivel de producción para el que esa escala de planta es la óptima.
+                    </p>
+                    <p>
+                        <strong>Jacob Viner</strong> (1931) fue uno de los primeros en formalizar la relación entre las curvas de costes a corto y largo plazo, aunque cometió un célebre error en su primer artículo al pedir a su dibujante que la curva de CMeLP pasara por los puntos mínimos de las curvas de CMeCP. En realidad, la CMeLP es tangente a las curvas de CMeCP, pero solo pasa por el punto mínimo de la curva de CMeCP que corresponde a la escala óptima a largo plazo (la que minimiza el CMeLP).
+                    </p>
+                    <p>
+                        El análisis de costes a largo plazo tiene implicaciones directas para la <strong>política de competencia</strong>: en sectores con economías de escala muy importantes (monopolio natural), una sola empresa puede producir a menor coste que varias, lo que plantea dilemas entre eficiencia productiva y competencia.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 3 */}
+            <Card title="3. El beneficio empresarial" icon="📘">
+                <TheoryBlock title="3.1. Ingresos: ingreso total, medio y marginal" color="pink">
+                    <p>
+                        Para analizar el beneficio empresarial es necesario comprender primero la estructura de ingresos:
+                    </p>
+                    <p>
+                        <strong>Ingreso total (IT):</strong> es el importe total que recibe la empresa por la venta de su producción. IT = P × Q, donde P es el precio de venta y Q la cantidad vendida.
+                    </p>
+                    <p>
+                        <strong>Ingreso medio (IMe):</strong> es el ingreso por unidad vendida. IMe = IT / Q = P. El ingreso medio coincide con el precio.
+                    </p>
+                    <p>
+                        <strong>Ingreso marginal (IMg):</strong> es el ingreso adicional que obtiene la empresa por vender una unidad más:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="IMg = ΔIT / ΔQ = dIT / dQ"
+                    desc="En competencia perfecta: IMg = P (constante). En monopolio: IMg < P (decreciente)"
+                />
+
+                <TheoryBlock title="3.2. Beneficio: conceptos fundamentales" color="blue">
+                    <p>
+                        El <strong>beneficio (B)</strong> se define como la diferencia entre los ingresos totales y los costes totales:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="B = IT − CT = (P × Q) − CT = (P − CMe) × Q"
+                    desc="Beneficio total. También: B unitario = P − CMe"
+                />
+
+                <TheoryBlock color="blue">
+                    <p>
+                        Conviene distinguir dos conceptos de beneficio:
+                    </p>
+                    <p>
+                        <strong>Beneficio contable:</strong> IT − costes explícitos (los que implican un desembolso monetario: salarios, materias primas, alquileres).
+                    </p>
+                    <p>
+                        <strong>Beneficio económico:</strong> IT − costes explícitos − costes implícitos (el coste de oportunidad de los recursos propios: el salario que el empresario podría ganar como empleado, el rendimiento que podría obtener invirtiendo su capital en otra actividad). Cuando el beneficio económico es cero, la empresa obtiene un <strong>beneficio normal</strong>: cubre todos los costes, incluyendo el coste de oportunidad, pero no obtiene rentas extraordinarias. Un <strong>beneficio económico positivo</strong> (beneficio extraordinario o supranormal) indica que la empresa obtiene rendimientos superiores a los que podría obtener en su mejor alternativa.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.3. Condición de maximización del beneficio: IMg = CMg" color="green">
+                    <p>
+                        La condición fundamental para la <strong>maximización del beneficio</strong> establece que la empresa debe producir aquella cantidad en la que el ingreso marginal se iguala al coste marginal:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="IMg = CMg"
+                    desc="Condición de primer orden para la maximización del beneficio"
+                />
+
+                <TheoryBlock color="green">
+                    <p>
+                        La intuición es la siguiente: si IMg &gt; CMg, producir una unidad más genera más ingreso que coste, por lo que el beneficio aumenta; conviene producir más. Si IMg &lt; CMg, producir una unidad más cuesta más de lo que genera; conviene producir menos. El beneficio se maximiza cuando IMg = CMg. Como condición de segundo orden, se requiere que la curva de CMg corte a la de IMg desde abajo (CMg debe ser creciente en el punto de intersección).
+                    </p>
+                    <p>
+                        Esta regla es <strong>universal</strong>: se aplica en todas las estructuras de mercado (competencia perfecta, monopolio, oligopolio, competencia monopolística), aunque la forma de la curva de IMg varía según la estructura. En competencia perfecta, IMg = P (constante), por lo que la condición se simplifica a P = CMg.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.4. Umbral de rentabilidad / punto muerto" color="amber">
+                    <p>
+                        El <strong>umbral de rentabilidad</strong> (o punto muerto, o <em>break-even point</em>) es el nivel de producción a partir del cual la empresa comienza a obtener beneficios. En el punto muerto, los ingresos totales igualan a los costes totales: IT = CT, y por tanto B = 0.
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="Q* = CF / (P − CVu)"
+                    desc="Q* = punto muerto | CF = costes fijos | P = precio | CVu = coste variable unitario"
+                />
+
+                <TheoryBlock color="amber">
+                    <p>
+                        La expresión (P − CVu) se denomina <strong>margen de contribución unitario</strong>: es la parte de cada euro de venta que contribuye a cubrir los costes fijos y generar beneficio. Una vez cubiertos los costes fijos (Q ≥ Q*), cada unidad adicional vendida aporta beneficio en la cuantía del margen de contribución.
+                    </p>
+                    <p>
+                        El análisis del punto muerto es una herramienta de gestión muy utilizada en la práctica empresarial para evaluar la viabilidad de nuevos productos, calcular objetivos de ventas y analizar el apalancamiento operativo (grado en que la estructura de costes fijos amplifica las variaciones del beneficio ante cambios en las ventas). Es especialmente relevante en la enseñanza de Empresa y Diseño de Modelos de Negocio (2.º Bachillerato).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.5. La decisión de producir o cerrar a corto plazo" color="pink">
+                    <p>
+                        A corto plazo, una empresa que incurre en pérdidas (B &lt; 0) debe decidir si continúa produciendo o cesa temporalmente su actividad. La regla de decisión es:
+                    </p>
+                    <p>
+                        <strong>Si P ≥ CVMe (en el punto IMg = CMg):</strong> la empresa debe seguir produciendo, incluso con pérdidas. La razón es que los ingresos cubren todos los costes variables y parte de los costes fijos. Si cerrara, las pérdidas serían mayores (iguales a los costes fijos totales). Producir minimiza las pérdidas.
+                    </p>
+                    <p>
+                        <strong>Si P &lt; CVMe:</strong> la empresa debe cerrar temporalmente. No cubre ni siquiera los costes variables, por lo que cada unidad producida incrementa las pérdidas. Es preferible cerrar y asumir las pérdidas derivadas de los costes fijos (que se incurren igualmente).
+                    </p>
+                    <p>
+                        <strong>El punto de cierre</strong> se sitúa en el mínimo de la curva de CVMe: es el precio mínimo al que la empresa está dispuesta a producir. La <strong>curva de oferta a corto plazo de la empresa</strong> en competencia perfecta coincide con la curva de CMg por encima del mínimo del CVMe.
+                    </p>
+                    <p>
+                        A <strong>largo plazo</strong>, el criterio es más exigente: la empresa solo permanecerá en el mercado si P ≥ CMe (cubre todos los costes, incluidos los fijos convertidos en variables). Si P &lt; CMe de forma persistente, la empresa abandonará el mercado.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 4 */}
+            <Card title="4. Relevancia curricular y didáctica" icon="📘">
+                <TheoryBlock title="4.1. Conexión curricular" color="pink">
+                    <p>
+                        Los contenidos de este tema se integran en dos materias fundamentales del currículo LOMLOE:
+                    </p>
+                    <p>
+                        <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022, Bloque B — Funcionamiento del mercado): la ley de la oferta, la curva de oferta, los factores determinantes y la elasticidad de la oferta.
+                    </p>
+                    <p>
+                        <strong>Empresa y Diseño de Modelos de Negocio de 2.º de Bachillerato</strong> (RD 243/2022): la estructura de costes empresariales, el umbral de rentabilidad, la toma de decisiones de producción y la maximización del beneficio.
+                    </p>
+                    <p>
+                        También se conecta con <strong>Economía y Emprendimiento de 4.º ESO</strong> (RD 217/2022), donde se introducen conceptos básicos de costes y viabilidad empresarial.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.2. Competencias clave" color="blue">
+                    <p>
+                        <strong>STEM:</strong> cálculo de costes, representación gráfica de curvas (CT, CMe, CMg), determinación algebraica del punto muerto y la condición IMg = CMg. El análisis de costes es un campo especialmente adecuado para desarrollar la competencia matemática aplicada.
+                    </p>
+                    <p>
+                        <strong>CE (Competencia emprendedora):</strong> la comprensión de la estructura de costes, el punto muerto y las decisiones de producción son herramientas esenciales para el emprendimiento. Permiten evaluar la viabilidad de un proyecto empresarial antes de lanzarlo.
+                    </p>
+                    <p>
+                        <strong>CPSAA:</strong> la planificación financiera, la evaluación de riesgos (¿qué ocurre si las ventas no alcanzan el punto muerto?) y la toma de decisiones bajo incertidumbre contribuyen al desarrollo de la autonomía y la responsabilidad personal.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.3. Propuestas didácticas" color="green">
+                    <p>
+                        <strong>1. Simulación de empresa:</strong> los alumnos crean una empresa ficticia, definen su estructura de costes (fijos y variables), calculan el punto muerto y toman decisiones de producción a diferentes precios de mercado.
+                    </p>
+                    <p>
+                        <strong>2. Análisis de casos reales:</strong> estudiar la estructura de costes de empresas conocidas (una aerolínea low cost vs. una tradicional, un supermercado vs. una tienda gourmet) para identificar economías de escala, costes fijos y variables, y estrategias de precios.
+                    </p>
+                    <p>
+                        <strong>3. Gráficas interactivas:</strong> utilizar herramientas digitales (GeoGebra, Desmos, Excel) para representar las curvas de costes, mover parámetros y observar cómo cambian el CMg, el CMe, el punto muerto y el beneficio.
+                    </p>
+                    <p>
+                        <strong>4. Debate sobre la decisión de cerrar:</strong> plantear un escenario en el que una empresa incurre en pérdidas y debatir si debe seguir produciendo o cerrar, aplicando el criterio P vs. CVMe. Conectar con casos reales de empresas en dificultades.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── CONCLUSIÓN ──────────────────────────────────────── */}
+            <Card title="Conclusión" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        A lo largo de este tema se ha desarrollado el análisis completo del lado de la oferta del mercado, articulado en tres bloques fundamentales. En primer lugar, la <strong>oferta</strong> como relación funcional entre precio y cantidad ofrecida, con la ley de la oferta, sus determinantes y la distinción entre movimientos y desplazamientos, en perfecta simetría con el análisis de la demanda del Tema 11.
+                    </p>
+                    <p>
+                        En segundo lugar, la <strong>teoría de costes</strong>, que constituye el fundamento microeconómico de las decisiones de producción: la distinción entre costes fijos y variables a corto plazo, la relación entre coste marginal y coste medio (con la propiedad de que el CMg corta al CMe por su mínimo), y la extensión al largo plazo a través de las economías y deseconomías de escala y la curva envolvente de costes medios a largo plazo. La dimensión óptima de la empresa y la escala mínima eficiente son conceptos con implicaciones directas para la estructura de los mercados y la política de competencia.
+                    </p>
+                    <p>
+                        En tercer lugar, el <strong>beneficio empresarial</strong> como motor de las decisiones de producción: la condición de maximización IMg = CMg, el análisis del umbral de rentabilidad (punto muerto) y la decisión de producir o cerrar a corto plazo (criterio P ≥ CVMe). Estos instrumentos analíticos son indispensables tanto para la comprensión teórica del funcionamiento de los mercados como para la práctica de la gestión empresarial.
+                    </p>
+                    <p>
+                        Desde la perspectiva docente, los contenidos de este tema son esenciales para las materias de Economía y de Empresa y Diseño de Modelos de Negocio, y permiten un tratamiento profundamente competencial: el cálculo de costes y puntos muertos desarrolla la competencia STEM, la simulación de decisiones empresariales fomenta la competencia emprendedora, y el debate sobre la viabilidad y el cierre de empresas contribuye a formar ciudadanos con criterio económico y capacidad de juicio crítico.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── BIBLIOGRAFÍA ────────────────────────────────────── */}
+            <BibliografiaBox items={[
+                'MANKIW, N.G. (2020): Principios de Economía, 8.ª ed., Cengage Learning.',
+                'KRUGMAN, P. y WELLS, R. (2020): Introducción a la Economía: Microeconomía, 4.ª ed., Reverté.',
+                'SAMUELSON, P. y NORDHAUS, W. (2019): Economía, 19.ª ed., McGraw-Hill.',
+                'VARIAN, H.R. (2016): Microeconomía intermedia, 9.ª ed., Antoni Bosch.',
+                'PINDYCK, R.S. y RUBINFELD, D.L. (2018): Microeconomía, 9.ª ed., Pearson.',
+                'MOCHÓN, F. (2021): Economía. Teoría y Política, 7.ª ed., McGraw-Hill.',
+                'STIGLITZ, J.E. y WALSH, C.E. (2009): Microeconomía, 4.ª ed., Ariel.',
+                'MARSHALL, A. (1890): Principios de Economía (ed. moderna, Síntesis).',
+                'VINER, J. (1931): "Cost Curves and Supply Curves", Zeitschrift für Nationalökonomie.',
+                'Ley Orgánica 3/2020, de 29 de diciembre (LOMLOE).',
+                'Real Decreto 243/2022, de 5 de abril (currículo Bachillerato).',
+                'Real Decreto 217/2022, de 29 de marzo (currículo ESO).',
+            ]} />
+
+            {/* ── CLAU ────────────────────────────────────────────── */}
+            <ClauBox>
+                <p>- Distingue <strong>movimiento a lo largo de la curva de oferta</strong> (cambia el precio) de <strong>desplazamiento</strong> (cambian costes, tecnología, expectativas, n.º de empresas).</p>
+                <p>- Domina la relación <strong>CMg-CMe</strong>: el CMg corta al CMe y al CVMe por sus puntos mínimos. Explica la forma de U de los costes medios.</p>
+                <p>- Presenta la condición <strong>IMg = CMg</strong> como regla universal de maximización del beneficio, válida en todas las estructuras de mercado.</p>
+                <p>- Calcula y explica el <strong>punto muerto</strong>: Q* = CF / (P − CVu). Herramienta esencial para la evaluación de viabilidad empresarial.</p>
+                <p>- Conoce el criterio de <strong>producir o cerrar</strong> a corto plazo: P ≥ CVMe → producir; P &lt; CVMe → cerrar. La curva de oferta de la empresa = CMg por encima del mín. CVMe.</p>
+                <p>- Conecta <strong>economías de escala</strong> con la estructura del mercado (escala mínima eficiente → concentración sectorial) y con la <strong>LOMLOE</strong> (RD 243/2022).</p>
+            </ClauBox>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 12 — RESUM / ESQUEMA
+    // ════════════════════════════════════════════════════════════════
+    const Tema12Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-pink-50 rounded-xl border border-pink-200 mb-5">
+                    <p className="text-center font-bold text-pink-800 text-lg">Tema 12: La oferta. Costes de producción y beneficio empresarial.</p>
+                    <p className="text-center text-sm text-pink-600 mt-1">
+                        <em>"La empresa maximiza su beneficio produciendo donde el ingreso marginal iguala al coste marginal"</em> — Regla de maximización
+                    </p>
+                </div>
+
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. La oferta individual y de mercado</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Ley de oferta: relación directa P-Q. Curva con pendiente positiva.</li>
+                            <li><strong>Movimiento</strong> a lo largo (cambia P) vs. <strong>desplazamiento</strong> (cambian costes, tecnología, expectativas, n.º empresas, regulación).</li>
+                            <li>Factores: costes de producción, tecnología, precios factores, expectativas, n.º empresas, políticas, clima.</li>
+                            <li>Oferta de mercado = Σ ofertas individuales (agregación horizontal).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. Teoría de costes de producción</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Corto plazo: CF (constantes) + CV (función de Q) = CT. Marshall: al menos un factor fijo.</li>
+                            <li>CFMe = CF/Q (decreciente). CVMe = CV/Q. CMe = CT/Q = CFMe + CVMe (forma de U).</li>
+                            <li>CMg = ΔCT/ΔQ = dCV/dQ. Corta al CMe y al CVMe por sus mínimos.</li>
+                            <li>Largo plazo: todos los costes variables. CMeLP = envolvente de las CMeCP (Viner, 1931).</li>
+                            <li>Economías de escala (↓CMe) → especialización, tecnología, poder negociación.</li>
+                            <li>Deseconomías de escala (↑CMe) → burocratización, coordinación. EME = escala mínima eficiente.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. El beneficio empresarial</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>IT = P×Q. IMe = P. IMg = ΔIT/ΔQ (= P en competencia perfecta).</li>
+                            <li>B = IT − CT = (P − CMe) × Q. Beneficio contable vs. económico (incluye costes implícitos).</li>
+                            <li>Maximización: <strong>IMg = CMg</strong> (regla universal). 2.ª condición: CMg creciente en el punto.</li>
+                            <li>Punto muerto: Q* = CF / (P − CVu). Margen de contribución = P − CVu.</li>
+                            <li>Decisión CP: P ≥ CVMe → producir. P &lt; CVMe → cerrar. Curva de oferta = CMg por encima de mín. CVMe.</li>
+                            <li>Decisión LP: P ≥ CMe → permanecer. P &lt; CMe → abandonar el mercado.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. Relevancia curricular</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>LOMLOE: Economía 1BACH (Bloque B), EDMN 2BACH (función productiva).</li>
+                            <li>Competencias: STEM (cálculo costes), CE (viabilidad empresarial), CPSAA (planificación).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <FormulaBox formula="CT = CF + CV(Q)    |    CMg = ΔCT/ΔQ" />
+                <FormulaBox formula="B = IT − CT = (P − CMe) × Q    |    Maximización: IMg = CMg" />
+                <FormulaBox formula="Punto muerto: Q* = CF / (P − CVu)" />
+                <FormulaBox formula="Producir si P ≥ CVMe    |    Cerrar si P < CVMe" />
+
+                <ClauBox>
+                    <p>- Domina la <strong>relación CMg-CMe</strong> (corte por el mínimo) y explica la <strong>forma de U</strong> de las curvas de costes medios.</p>
+                    <p>- Presenta <strong>IMg = CMg</strong> como regla universal (todas las estructuras de mercado).</p>
+                    <p>- Calcula el <strong>punto muerto</strong> y explica el <strong>margen de contribución</strong>.</p>
+                    <p>- Conecta <strong>economías de escala</strong> con la estructura del mercado y la dimensión óptima.</p>
+                    <p>- Conoce el criterio de <strong>producir o cerrar</strong>: P vs. CVMe (corto plazo), P vs. CMe (largo plazo).</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 12 — Component wrapper
+    // ════════════════════════════════════════════════════════════════
+    const Tema12 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="📖" title="Tema 12" subtitle={t('tema12.title')} />
+                <Tabs tabs={[
+                    { id: 'complet', label: '📝 ' + t('tab.complet') },
+                    { id: 'resum', label: '📋 ' + t('tab.resum') },
+                ]} active={vista} onChange={setVista} />
+
+                {vista === 'complet' && <Tema12Complet />}
+                {vista === 'resum' && <Tema12Resum />}
+            </div>
+        );
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMES 13-20 — Placeholders
+    // ════════════════════════════════════════════════════════════════
+    const TemaPlaceholder = ({ num }) => (
+        <div className="animate-fade text-center py-20">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gray-100 mb-6">
+                <span className="text-4xl">🔒</span>
+            </div>
+            <h2 className="text-2xl font-black text-slate-800 mb-2">
+                {lang === 'es' ? 'Próximamente' : lang === 'en' ? 'Coming soon' : 'Properament'} — Tema {num}
+            </h2>
+            <p className="text-slate-500 max-w-lg mx-auto">
+                {t(`tema${num}.title`)}
+            </p>
+            <button
+                onClick={() => { setSection('inicio'); pdeSetHashSection('inicio'); pdeScrollToTop(); }}
+                className="mt-8 inline-flex items-center gap-2 px-5 py-2.5 bg-pink-100 text-pink-700 rounded-xl font-semibold text-sm hover:bg-pink-200 transition-colors"
+            >
+                ← {t('sec.inicio')}
+            </button>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // NAVIGATION AND RENDER
+    // ════════════════════════════════════════════════════════════════
+    const headerSections = [
+        { id: 'inicio', label: t('sec.inicio'), emoji: '🏠' },
+        { id: 'tema11', label: 'T11', emoji: '📖' },
+        { id: 'tema12', label: 'T12', emoji: '📖' },
+        { id: 'tema13', label: 'T13', emoji: '🔒' },
+        { id: 'tema14', label: 'T14', emoji: '🔒' },
+        { id: 'tema15', label: 'T15', emoji: '🔒' },
+        { id: 'tema16', label: 'T16', emoji: '🔒' },
+        { id: 'tema17', label: 'T17', emoji: '🔒' },
+        { id: 'tema18', label: 'T18', emoji: '🔒' },
+        { id: 'tema19', label: 'T19', emoji: '🔒' },
+        { id: 'tema20', label: 'T20', emoji: '🔒' },
+    ];
+
+    return (
+        <div className="min-h-screen">
+            <PdeHeader
+                idioma={idioma}
+                setIdioma={(lang) => { setIdioma(lang); PdeLanguageStore.set(lang); }}
+                currentApp="oposicions-bloc-b"
+                sections={headerSections}
+                currentSection={section}
+                setSection={setSection}
+            />
+
+            <main className="max-w-7xl mx-auto px-4 py-8">
+                {section === 'inicio' && <Inicio />}
+                {section === 'tema11' && <Tema11 />}
+                {section === 'tema12' && <Tema12 />}
+                {section === 'tema13' && <TemaPlaceholder num={13} />}
+                {section === 'tema14' && <TemaPlaceholder num={14} />}
+                {section === 'tema15' && <TemaPlaceholder num={15} />}
+                {section === 'tema16' && <TemaPlaceholder num={16} />}
+                {section === 'tema17' && <TemaPlaceholder num={17} />}
+                {section === 'tema18' && <TemaPlaceholder num={18} />}
+                {section === 'tema19' && <TemaPlaceholder num={19} />}
+                {section === 'tema20' && <TemaPlaceholder num={20} />}
+            </main>
+
+            <PdePrevNext sections={headerSections} currentSection={section} setSection={setSection} idioma={idioma} />
+            <PdeFooter appEmoji="📖" appName={t('footer.appname')} idioma={idioma} />
+            <PdeScrollToTop />
+        </div>
+    );
+}
+
+ReactDOM.render(<BlocBApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
