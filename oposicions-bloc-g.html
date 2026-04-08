@@ -104,10 +104,10 @@ function BlocGApp() {
     const temes = [
         { num: 61, id: 'tema61', available: true },
         { num: 62, id: 'tema62', available: true },
-        { num: 63, id: 'tema63', available: false },
-        { num: 64, id: 'tema64', available: false },
-        { num: 65, id: 'tema65', available: false },
-        { num: 66, id: 'tema66', available: false },
+        { num: 63, id: 'tema63', available: true },
+        { num: 64, id: 'tema64', available: true },
+        { num: 65, id: 'tema65', available: true },
+        { num: 66, id: 'tema66', available: true },
     ];
 
     // ════════════════════════════════════════════════════════════════
@@ -251,14 +251,176 @@ function BlocGApp() {
     const Tema62 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="📈" title="Tema 62" subtitle={t('tema62.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema62Complet />}{vista === 'resum' && <Tema62Resum />}</div>); };
 
     // ════════════════════════════════════════════════════════════════
-    // PLACEHOLDER — Temes 63-66
+    // TEMA 63 — Seguros. Principios y modalidades.
     // ════════════════════════════════════════════════════════════════
-    const Placeholder = ({ num }) => (
+    const Tema63Complet = () => (
         <div className="space-y-6 animate-fade">
-            <SectionTitle icon="💹" title={`Tema ${num}`} subtitle={t(`tema${num}.title`)} />
-            <Card><div className="text-center py-16"><span className="text-6xl mb-4 block">🚧</span><p className="text-lg font-semibold text-slate-600 mb-2">{t('placeholder.msg')}</p></div></Card>
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3"><p>El <strong>seguro</strong> es un contrato por el cual el asegurador se obliga, a cambio de una <strong>prima</strong>, a indemnizar al asegurado por los daños derivados de un <strong>siniestro</strong> (evento incierto). Es el mecanismo fundamental de transferencia y mutualización del riesgo en las economías modernas. El sector asegurador español mueve más de 60.000 millones de euros anuales en primas.</p><p>Este tema conecta con los contenidos de educación financiera y sistema financiero de <strong>Economía de 1.º de Bachillerato</strong>. Se estructura en: principios del seguro, elementos del contrato, modalidades y el sector asegurador español.</p></div>
+            </Card>
+            <Card title="1. Principios del seguro" icon="📘">
+                <TheoryBlock title="1.1. Concepto y base técnica" color="teal"><p>El seguro se basa en la <strong>ley de los grandes números</strong>: aunque el siniestro individual es aleatorio, en una masa grande de asegurados las pérdidas totales son predecibles estadísticamente. El asegurador calcula la <strong>prima pura</strong> (esperanza matemática de la pérdida: probabilidad × cuantía del siniestro) y le añade recargos (gastos de gestión, beneficio, margen de seguridad) para obtener la <strong>prima comercial</strong>.</p></TheoryBlock>
+                <TheoryBlock title="1.2. Principios fundamentales" color="cyan"><p><strong>Buena fe:</strong> ambas partes deben actuar con honestidad; el asegurado debe declarar fielmente el riesgo.<br/><strong>Interés asegurable:</strong> el asegurado debe tener un interés legítimo en la cosa asegurada (no se puede asegurar lo que no es tuyo).<br/><strong>Indemnización:</strong> el seguro compensa el daño pero no enriquece al asegurado (principio indemnizatorio); la indemnización no puede superar el valor del daño real.<br/><strong>Subrogación:</strong> el asegurador, tras pagar la indemnización, se subroga en los derechos del asegurado contra el causante del daño.<br/><strong>Contribución y reparto:</strong> si hay varios seguros sobre el mismo riesgo, cada asegurador contribuye proporcionalmente.</p></TheoryBlock>
+            </Card>
+            <Card title="2. Elementos del contrato de seguro" icon="📘">
+                <TheoryBlock title="2.1. Elementos personales" color="teal"><p><strong>Asegurador:</strong> la compañía de seguros (debe ser una SA, mutua o cooperativa autorizada por la DGSFP).<br/><strong>Tomador:</strong> quien contrata y paga la prima.<br/><strong>Asegurado:</strong> titular del interés asegurado (puede coincidir con el tomador).<br/><strong>Beneficiario:</strong> quien recibe la indemnización (en seguros de vida puede ser un tercero).<br/><strong>Mediadores:</strong> agentes de seguros (vinculados a una compañía) y corredores (independientes, asesoran al cliente).</p></TheoryBlock>
+                <TheoryBlock title="2.2. Elementos formales y reales" color="cyan"><p><strong>Póliza:</strong> documento del contrato. Contiene: datos del asegurado, riesgo cubierto, capital asegurado, prima, duración, franquicia, exclusiones.<br/><strong>Prima:</strong> precio del seguro. Puede ser única o periódica (anual).<br/><strong>Siniestro:</strong> materialización del riesgo cubierto.<br/><strong>Capital asegurado:</strong> cantidad máxima que pagará el asegurador.<br/><strong>Franquicia:</strong> cantidad que el asegurado asume en cada siniestro antes de que el asegurador pague (reduce la prima y el riesgo moral).</p></TheoryBlock>
+            </Card>
+            <Card title="3. Modalidades de seguro" icon="📘">
+                <TheoryBlock title="3.1. Seguros personales" color="teal"><p><strong>Seguro de vida:</strong> en caso de fallecimiento (vida-riesgo: paga a los beneficiarios) o supervivencia (vida-ahorro: el asegurado cobra al vencimiento). Mixtos: combinan ambos. Unit-linked: ligados a fondos de inversión.<br/><strong>Seguro de accidentes:</strong> cubre lesiones corporales por accidente.<br/><strong>Seguro de salud (enfermedad):</strong> cubre gastos médicos, hospitalización, pruebas diagnósticas. Complementa la sanidad pública. Principales: Adeslas, Sanitas, DKV, Asisa.</p></TheoryBlock>
+                <TheoryBlock title="3.2. Seguros patrimoniales (de daños)" color="cyan"><p><strong>Seguro de incendio y daños materiales:</strong> cubre daños al patrimonio por incendio, explosión, catástrofes naturales.<br/><strong>Seguro del hogar:</strong> multirriesgo que cubre continente (edificio) + contenido (muebles, objetos) + responsabilidad civil.<br/><strong>Seguro de automóvil:</strong> obligatorio (seguro a terceros: cubre daños a terceros por accidente) o voluntario (todo riesgo: incluye daños propios, robo, lunas). El más contratado en España.<br/><strong>Seguro de responsabilidad civil:</strong> cubre las indemnizaciones que el asegurado deba pagar a terceros por daños causados.<br/><strong>Otros:</strong> seguro de transporte (marítimo, terrestre, aéreo), seguro de crédito (impago de clientes), seguro agrario (pérdida de cosechas — Agroseguro), seguro de caución.</p></TheoryBlock>
+                <TheoryBlock title="3.3. Seguros de prestación de servicios" color="teal"><p><strong>Asistencia en viaje:</strong> cobertura médica, repatriación, pérdida de equipaje en viajes.<br/><strong>Defensa jurídica:</strong> cobertura de gastos legales.<br/><strong>Decesos:</strong> cobertura de los gastos del sepelio. Muy extendido en España (más de 20 millones de asegurados).</p></TheoryBlock>
+            </Card>
+            <Card title="4. El sector asegurador español" icon="📘">
+                <TheoryBlock color="teal"><p>El sector asegurador español genera más de <strong>60.000 millones de euros en primas anuales</strong> y emplea a más de 50.000 personas. Las principales compañías: <strong>Mapfre</strong> (la mayor española, con presencia global), <strong>Mutua Madrileña</strong>, <strong>Línea Directa</strong>, <strong>Santalucía</strong>, <strong>Pelayo</strong>, <strong>Catalana Occidente</strong>, <strong>Zurich</strong>, <strong>Allianz</strong>, <strong>AXA</strong>, <strong>Generali</strong>. El <strong>Consorcio de Compensación de Seguros</strong> (CCS) es una entidad pública que cubre riesgos extraordinarios (terremotos, inundaciones, terrorismo) y actúa como fondo de garantía cuando el asegurador es insolvente. La supervisión corresponde a la <strong>DGSFP</strong> y a la normativa europea <strong>Solvencia II</strong>.</p></TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="teal"><p>El seguro transfiere riesgo del asegurado al asegurador a cambio de una prima, basándose en la ley de los grandes números. Los principios son: buena fe, interés asegurable, indemnización (no enriquecimiento), subrogación. El contrato (póliza) incluye: partes, prima, capital, franquicia. Las modalidades son: personales (vida, accidentes, salud), patrimoniales (hogar, auto —obligatorio—, RC, crédito, agrario) y de servicios (viaje, decesos). El sector español: 60.000 M€ en primas. Mapfre líder. CCS para riesgos extraordinarios. Supervisión: DGSFP + Solvencia II.</p></TheoryBlock>
+            </Card>
+            <BibliografiaBox items={["Ley 50/1980, de 8 de octubre, de Contrato de Seguro.","Ley 20/2015, de 14 de julio, de ordenación, supervisión y solvencia de las entidades aseguradoras.","DGSFP. Informe del sector de seguros. www.dgsfp.mineco.es","UNESPA. El seguro en cifras. www.unespa.es","Mapfre. Diccionario de seguros. www.fundacionmapfre.org","Directiva Solvencia II (2009/138/CE).","Consorcio de Compensación de Seguros. www.consorseguros.es","Bueno Campos, E. (2022). Curso básico de Economía de la Empresa. Pirámide.","Castelo, J. & Guardiola, A. (2010). Diccionario Mapfre de Seguros. Mapfre."]} />
         </div>
     );
+    const Tema63Resum = () => (
+        <div className="space-y-5 animate-fade"><Card>
+            <div className="p-4 bg-teal-50 rounded-xl border border-teal-200 mb-5"><p className="text-center font-bold text-teal-800 text-lg">Tema 63: Assegurances. Principis i modalitats.</p><p className="text-center text-sm text-teal-600 mt-1"><em>"Transferir el risc: de l'auto obligatori a l'assegurança de vida"</em></p></div>
+            <div className="space-y-4 text-sm text-slate-700">
+                <div><h4 className="font-bold text-slate-800 mb-1">1. Principis</h4><ul className="list-disc pl-5 space-y-1"><li>Llei grans nombres: sinistre individual aleatori → pèrdues col·lectives predibles.</li><li>Bona fe, interès assegurable, indemnització (no enriquiment), subrogació.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">2. Elements contracte</h4><ul className="list-disc pl-5 space-y-1"><li>Persones: assegurador (cia.), prenedor, assegurat, beneficiari, mediadors (agents/corredors).</li><li>Pòlissa, prima, sinistre, capital assegurat, franquícia.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">3. Modalitats</h4><ul className="list-disc pl-5 space-y-1"><li>Personals: vida (risc, estalvi, mixt), accidents, salut (Adeslas, Sanitas).</li><li>Patrimonials: llar, auto (obligatori: tercers; voluntari: tot risc), RC, crèdit, agrari.</li><li>Serveis: viatge, defensa jurídica, decessos (20+ M assegurats a Espanya).</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">4. Sector espanyol</h4><ul className="list-disc pl-5 space-y-1"><li>60.000 M€ primes/any. Mapfre líder. CCS: riscos extraordinaris. DGSFP + Solvència II.</li></ul></div>
+            </div>
+            <ClauBox><p>- Explica la <strong>base tècnica</strong> (llei grans nombres, prima pura).</p><p>- Detalla les <strong>3 categories</strong> (personals, patrimonials, serveis) amb exemples.</p><p>- Inclou l'<strong>auto obligatori</strong> i el <strong>CCS</strong> (riscos extraordinaris).</p></ClauBox>
+        </Card></div>
+    );
+    const Tema63 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="🛡️" title="Tema 63" subtitle={t('tema63.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema63Complet />}{vista === 'resum' && <Tema63Resum />}</div>); };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 64 — Planificación financiera personal. Ahorro e inversión.
+    // ════════════════════════════════════════════════════════════════
+    const Tema64Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3"><p>La <strong>planificación financiera personal</strong> es el proceso de gestionar los ingresos, gastos, ahorro, inversión, endeudamiento, seguros y fiscalidad de una persona o familia para alcanzar sus objetivos vitales (comprar una vivienda, financiar estudios, preparar la jubilación, crear un fondo de emergencia). La <strong>educación financiera</strong> —entender conceptos como interés compuesto, inflación, diversificación, endeudamiento responsable— es esencial para la autonomía y el bienestar de los ciudadanos.</p><p>Este tema es transversal en el currículo LOMLOE (educación financiera como competencia clave) y se conecta con los contenidos de Economía de 1.º de Bachillerato. Se estructura en: presupuesto personal, ahorro, inversión, endeudamiento responsable y planificación de la jubilación.</p></div>
+            </Card>
+            <Card title="1. El presupuesto personal" icon="📘">
+                <TheoryBlock title="1.1. Ingresos, gastos y ahorro" color="teal"><p><strong>Presupuesto:</strong> plan que detalla los ingresos y gastos previstos para un periodo (mensual, anual). Permite controlar las finanzas, detectar gastos innecesarios y generar ahorro.<br/><strong>Regla 50/30/20</strong> (Elizabeth Warren): 50 % del ingreso neto a necesidades (vivienda, alimentación, transporte), 30 % a deseos (ocio, viajes, ropa), 20 % a ahorro e inversión.<br/><strong>Fondo de emergencia:</strong> ahorro líquido equivalente a 3-6 meses de gastos fijos, para imprevistos (pérdida de empleo, avería, enfermedad). Es la primera prioridad de ahorro.</p></TheoryBlock>
+            </Card>
+            <Card title="2. El ahorro" icon="📘">
+                <TheoryBlock title="2.1. Productos de ahorro" color="teal"><p><strong>Cuentas de ahorro / depósitos a la vista:</strong> liquidez total, rentabilidad muy baja (pero cubiertos por el FGD hasta 100.000 €).<br/><strong>Depósitos a plazo fijo:</strong> mayor rentabilidad a cambio de menor liquidez (penalización por cancelación anticipada).<br/><strong>Letras del Tesoro:</strong> deuda pública a CP (3, 6, 12 meses). Muy seguras, rentabilidad moderada.<br/><strong>Cuentas remuneradas:</strong> cuentas corrientes con interés (ofrecidas por neobancos y fintech).</p></TheoryBlock>
+                <TheoryBlock title="2.2. El interés compuesto" color="cyan"><p>El <strong>interés compuesto</strong> es la «octava maravilla del mundo» (atribuido a Einstein): los intereses generados se reinvierten y generan a su vez nuevos intereses. La fórmula: <strong>Cf = Ci × (1 + i)ⁿ</strong>, donde Ci = capital inicial, i = tipo de interés por periodo, n = número de periodos, Cf = capital final.<br/><strong>Ejemplo:</strong> 10.000 € al 5 % anual durante 30 años = 10.000 × 1,05³⁰ = <strong>43.219 €</strong> (más del cuádruple). La clave es empezar pronto y ser constante.</p></TheoryBlock>
+                <FormulaBox formula="Cf = Ci × (1 + i)ⁿ | 10.000€ al 5% durant 30 anys = 43.219€" desc="Interès compost: el temps és el millor aliat de l'estalviador" />
+            </Card>
+            <Card title="3. La inversión" icon="📘">
+                <TheoryBlock title="3.1. Perfil inversor" color="teal"><p>Antes de invertir, el inversor debe definir su <strong>perfil</strong>: <strong>horizonte temporal</strong> (CP, MP, LP), <strong>tolerancia al riesgo</strong> (conservador, moderado, agresivo), <strong>objetivos</strong> (complemento jubilación, compra vivienda, educación hijos) y <strong>situación financiera</strong> (ingresos, gastos, deudas, patrimonio). Los test de conveniencia/idoneidad (MiFID II) ayudan a determinar el perfil.</p></TheoryBlock>
+                <TheoryBlock title="3.2. Productos de inversión" color="cyan"><p><strong>Fondos de inversión:</strong> diversificación profesional. Tipos: renta fija, variable, mixtos, indexados, garantizados. Comisiones: gestión, depósito, suscripción, reembolso. Fiscalidad: tributan al realizar la plusvalía (19-28 % sobre ganancias).<br/><strong>ETFs:</strong> fondos cotizados, comisiones bajas, réplica de índices.<br/><strong>Acciones:</strong> inversión directa en empresas cotizadas. Mayor riesgo y potencial de rentabilidad.<br/><strong>Inmuebles:</strong> inversión tradicional en España. Alquiler + revalorización. Ilíquido, concentración de riesgo.<br/><strong>Planes de pensiones:</strong> ahorro finalista para jubilación. Ventaja fiscal: aportaciones deducibles en IRPF (máx. 1.500 €/año). Ilíquidos hasta jubilación/contingencias. Tributan como rendimiento del trabajo al rescate (tipo marginal IRPF).<br/><strong>Roboadvisors:</strong> plataformas de inversión automatizada basadas en algoritmos (Indexa Capital, Finizens, MyInvestor). Carteras diversificadas de fondos indexados con comisiones bajas.</p></TheoryBlock>
+            </Card>
+            <Card title="4. Endeudamiento responsable" icon="📘">
+                <TheoryBlock title="4.1. Tipos de deuda" color="teal"><p><strong>Deuda buena:</strong> financia activos que generan valor o se revalorizan (hipoteca para vivienda habitual, préstamo para formación). Tipo de interés bajo, plazo largo.<br/><strong>Deuda mala:</strong> financia consumo que se deprecia (préstamos al consumo para vacaciones, electrónica, tarjetas de crédito revolving). Tipo de interés alto, plazo corto.<br/><strong>Regla del 35 %:</strong> la cuota total de deudas (hipoteca + otros préstamos) no debería superar el 35 % de los ingresos netos mensuales.<br/><strong>TAE (Tasa Anual Equivalente):</strong> indicador que incluye el tipo de interés nominal + comisiones + gastos, permitiendo comparar ofertas. Obligatorio informar (Banco de España).</p></TheoryBlock>
+            </Card>
+            <Card title="5. Planificación de la jubilación" icon="📘">
+                <TheoryBlock color="teal"><p>El sistema público de pensiones (reparto) puede no ser suficiente para mantener el nivel de vida. La <strong>tasa de sustitución</strong> (pensión / último salario) es ~80 % en España (la más alta de la OCDE), pero tenderá a reducirse por el envejecimiento. Es recomendable complementar con ahorro privado: planes de pensiones, fondos de inversión, inmuebles, PIAS (Planes Individuales de Ahorro Sistemático). <strong>Empezar pronto</strong> es clave: gracias al interés compuesto, ahorrar 200 €/mes desde los 25 años genera mucho más que ahorrar 400 €/mes desde los 45.</p></TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="teal"><p>La planificació financera personal comprén pressupost (regla 50/30/20), fons d'emergència (3-6 mesos), estalvi (dipòsits, lletres, comptes), inversió (fons, ETFs, accions, immobles, plans pensions, roboadvisors — segons perfil inversor: horitzó, risc, objectius) i endeutament responsable (regla 35%, TAE, deute bo vs. dolent). L'interès compost (Cf = Ci×(1+i)ⁿ) és la clau: el temps multiplica l'estalvi. Planificar la jubilació aviat és essencial davant la reducció prevista de la taxa de substitució.</p></TheoryBlock>
+            </Card>
+            <BibliografiaBox items={["Banco de España. Portal del Cliente Bancario. clientebancario.bde.es","CNMV. Guía de educación financiera. www.cnmv.es","Kiyosaki, R. (1997). Padre rico, padre pobre. Aguilar.","Warren, E. & Tyagi, A. W. (2005). All Your Worth. Free Press.","Finanzas para Mortales. Programa de educación financiera de Santander. www.finanzasparamortales.es","Plan de Educación Financiera (Banco de España + CNMV). www.finanzasparatodos.es","Bogle, J. (2007). The Little Book of Common Sense Investing. Wiley.","Inverco. Guía de fondos de inversión. www.inverco.es","Indexa Capital. Blog de inversión indexada. www.indexacapital.com","OCDE. Financial Literacy and Inclusion: Results from PISA."]} />
+        </div>
+    );
+    const Tema64Resum = () => (
+        <div className="space-y-5 animate-fade"><Card>
+            <div className="p-4 bg-teal-50 rounded-xl border border-teal-200 mb-5"><p className="text-center font-bold text-teal-800 text-lg">Tema 64: Planificació financera personal. Estalvi i inversió.</p><p className="text-center text-sm text-teal-600 mt-1"><em>"Cf = Ci × (1+i)ⁿ: l'interès compost és el millor aliat de l'estalviador"</em></p></div>
+            <div className="space-y-4 text-sm text-slate-700">
+                <div><h4 className="font-bold text-slate-800 mb-1">1. Pressupost</h4><ul className="list-disc pl-5 space-y-1"><li>Regla 50/30/20: necessitats / desitjos / estalvi. Fons emergència: 3-6 mesos despeses.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">2. Estalvi</h4><ul className="list-disc pl-5 space-y-1"><li>Comptes, dipòsits a termini, lletres Tresor. FGD: 100.000€.</li><li>Interès compost: Cf = Ci×(1+i)ⁿ. 10.000€ al 5% × 30 anys = 43.219€.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">3. Inversió</h4><ul className="list-disc pl-5 space-y-1"><li>Perfil: horitzó, tolerància risc, objectius. MiFID II: test conveniència.</li><li>Fons (diversificació), ETFs (baixos costos), accions, immobles, plans pensions (1.500€/any deduïble), roboadvisors.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">4. Endeutament</h4><ul className="list-disc pl-5 space-y-1"><li>Deute bo (hipoteca, formació) vs. dolent (consum, revolving). Regla 35%. TAE per comparar.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">5. Jubilació</h4><ul className="list-disc pl-5 space-y-1"><li>Taxa substitució ~80% (baixarà). Complementar: plans pensions, fons, PIAS. Començar aviat!</li></ul></div>
+            </div>
+            <FormulaBox formula="Cf = Ci × (1+i)ⁿ | Regla 50/30/20 | Regla 35% endeutament" desc="3 fórmules/regles clau per a la planificació financera personal" />
+            <ClauBox><p>- Centra en <strong>educació financera pràctica</strong> aplicable a l'alumnat.</p><p>- Domina l'<strong>interès compost</strong> amb exemples numèrics.</p><p>- Diferencia <strong>deute bo vs. dolent</strong> i la regla del 35%.</p><p>- Inclou <strong>productes actuals</strong>: roboadvisors, ETFs, neobancs.</p></ClauBox>
+        </Card></div>
+    );
+    const Tema64 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="🏦" title="Tema 64" subtitle={t('tema64.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema64Complet />}{vista === 'resum' && <Tema64Resum />}</div>); };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 65 — El sistema tributario español.
+    // ════════════════════════════════════════════════════════════════
+    const Tema65Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3"><p>El <strong>sistema tributario</strong> es el conjunto de tributos (impuestos, tasas y contribuciones especiales) que financian el gasto público. En España, la presión fiscal (~38 % del PIB) es inferior a la media de la UE (~41 %). El artículo 31.1 de la Constitución establece los principios del deber de contribuir: <strong>capacidad económica, igualdad, progresividad y no confiscatoriedad</strong>.</p><p>Este tema conecta con CE3 de <strong>Economía de 1.º de Bachillerato</strong> (sector público, política fiscal) y con los contenidos transversales de ciudadanía fiscal. Se estructura en: concepto de tributo, principios constitucionales, estructura del sistema, principales figuras y la AEAT.</p></div>
+            </Card>
+            <Card title="1. Concepto y clasificación de tributos" icon="📘">
+                <TheoryBlock title="1.1. Tipos de tributos" color="teal"><p><strong>Impuestos:</strong> tributos exigidos sin contraprestación directa. Son la principal fuente de ingresos públicos. Se clasifican en <em>directos</em> (gravan la renta o patrimonio del contribuyente: IRPF, IS, IP, ISD) e <em>indirectos</em> (gravan el consumo o las transacciones: IVA, IIEE, ITP-AJD).<br/><strong>Tasas:</strong> tributos por la utilización del dominio público o la prestación de un servicio público que beneficia especialmente al obligado (tasa de basuras, tasa de expedición de DNI).<br/><strong>Contribuciones especiales:</strong> tributos por la realización de obras públicas que benefician especialmente a un grupo de contribuyentes (apertura de una calle que revaloriza los inmuebles colindantes).</p></TheoryBlock>
+                <TheoryBlock title="1.2. Elementos del impuesto" color="cyan"><p><strong>Hecho imponible:</strong> circunstancia que genera la obligación tributaria (obtener renta, poseer un patrimonio, comprar un bien).<br/><strong>Sujeto pasivo (contribuyente):</strong> persona obligada al pago.<br/><strong>Base imponible:</strong> cuantificación del hecho imponible (la renta obtenida, el valor del inmueble).<br/><strong>Base liquidable:</strong> base imponible − reducciones.<br/><strong>Tipo impositivo:</strong> porcentaje o tarifa que se aplica a la base (puede ser proporcional —tipo fijo— o progresivo —tipos crecientes por tramos—).<br/><strong>Cuota íntegra:</strong> base liquidable × tipo. <strong>Cuota líquida:</strong> cuota íntegra − deducciones. <strong>Cuota diferencial:</strong> cuota líquida − retenciones y pagos a cuenta.</p></TheoryBlock>
+            </Card>
+            <Card title="2. Estructura del sistema tributario español" icon="📘">
+                <TheoryBlock title="2.1. Niveles de gobierno" color="teal"><p><strong>Estado:</strong> IRPF (compartido 50 % con CCAA), IS, IVA (compartido 50 %), IIEE (compartido 58 %), aranceles.<br/><strong>CCAA:</strong> 50 % IRPF (con capacidad normativa sobre tipos y deducciones), 50 % IVA, 58 % IIEE, Impuesto sobre el Patrimonio, ISD (Sucesiones y Donaciones, con grandes diferencias entre CCAA), ITP-AJD, tributos propios, tributos cedidos.<br/><strong>Entidades locales:</strong> IBI (Impuesto sobre Bienes Inmuebles), IAE (Impuesto sobre Actividades Económicas), IVTM (Impuesto sobre Vehículos), IIVTNU (plusvalía municipal), ICIO (Impuesto sobre Construcciones).<br/><strong>Régimen foral:</strong> País Vasco y Navarra recaudan todos los impuestos y pagan un cupo/aportación al Estado.</p></TheoryBlock>
+            </Card>
+            <Card title="3. La AEAT y la lucha contra el fraude" icon="📘">
+                <TheoryBlock color="teal"><p>La <strong>AEAT</strong> (Agencia Estatal de Administración Tributaria, 1992) gestiona, inspecciona y recauda los tributos estatales. España es líder en administración tributaria electrónica: Renta Web (borrador IRPF), SII (IVA en tiempo real), big data. La lucha contra el <strong>fraude fiscal</strong> y la economía sumergida (17-22 % del PIB) es prioritaria: listas de morosos (&gt;600.000 €), límite de pagos en efectivo (1.000 €), intercambio automático de información bancaria (CRS/OCDE), impuesto mínimo global del 15 % (Pilar 2 OCDE).</p></TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="teal"><p>El sistema tributari espanyol es fonamenta en l'art. 31.1 CE: capacitat econòmica, igualtat, progressivitat, no confiscatorietat. Els tributs es classifiquen en impostos (directes: IRPF, IS, IP, ISD; indirectes: IVA, IIEE, ITP), taxes i contribucions especials. Els elements de l'impost: fet imposable, subjecte passiu, base imposable, base liquidable, tipus, quota. El sistema es reparteix entre Estat, CCAA (50% IRPF, ISD amb grans diferències), EELL (IBI, IAE) i règim foral (País Basc, Navarra). L'AEAT gestiona amb tecnologia punta (Renta Web, SII, big data). La pressió fiscal (~38% PIB) és inferior a la mitjana UE (~41%).</p></TheoryBlock>
+            </Card>
+            <BibliografiaBox items={["Constitución Española, artículo 31.","Ley 58/2003, de 17 de diciembre, General Tributaria.","AEAT. Portal de la Agencia Tributaria. www.agenciatributaria.es","Ministerio de Hacienda. Presupuestos Generales del Estado.","AIReF. Informes sobre ingresos tributarios. www.airef.es","Eurostat. Taxation trends in the EU. ec.europa.eu/eurostat","OCDE. Revenue Statistics: Spain. www.oecd.org","Lago, S. et al. (2021). El sistema fiscal español. Thomson-Civitas.","Comisión Europea. Fiscalidad en España: informes periódicos."]} />
+        </div>
+    );
+    const Tema65Resum = () => (
+        <div className="space-y-5 animate-fade"><Card>
+            <div className="p-4 bg-teal-50 rounded-xl border border-teal-200 mb-5"><p className="text-center font-bold text-teal-800 text-lg">Tema 65: El sistema tributari espanyol.</p><p className="text-center text-sm text-teal-600 mt-1"><em>"Art. 31.1 CE: capacitat econòmica, igualtat, progressivitat"</em></p></div>
+            <div className="space-y-4 text-sm text-slate-700">
+                <div><h4 className="font-bold text-slate-800 mb-1">1. Tributs</h4><ul className="list-disc pl-5 space-y-1"><li>Impostos (directes/indirectes), taxes (contraprestació), contribucions especials (obra pública).</li><li>Elements: fet imposable, subjecte passiu, base imposable, base liquidable, tipus, quota.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">2. Nivells</h4><ul className="list-disc pl-5 space-y-1"><li>Estat: IRPF (50%), IS, IVA (50%), IIEE (58%). CCAA: 50% IRPF, ISD, ITP, Patrimoni.</li><li>EELL: IBI, IAE, IVTM, plusvàlua, ICIO. Foral: PB i Navarra recapten tot.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">3. AEAT</h4><ul className="list-disc pl-5 space-y-1"><li>Renta Web, SII, big data. Frau: efectiu ≤1.000€, morosos &gt;600.000€, CRS/OCDE, Pilar 2 (15%).</li><li>Pressió fiscal: ~38% PIB (UE: ~41%). Bretxa fiscal: ~3 pp.</li></ul></div>
+            </div>
+            <ClauBox><p>- Estructura per <strong>nivells de govern</strong> (Estat, CCAA, EELL, foral).</p><p>- Diferencia <strong>impostos directes vs. indirectes</strong> amb figures concretes.</p><p>- Inclou els <strong>elements tècnics</strong> de l'impost (base, tipus, quota).</p></ClauBox>
+        </Card></div>
+    );
+    const Tema65 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="🏛️" title="Tema 65" subtitle={t('tema65.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema65Complet />}{vista === 'resum' && <Tema65Resum />}</div>); };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 66 — Impuestos directos e indirectos. IRPF e IVA.
+    // ════════════════════════════════════════════════════════════════
+    const Tema66Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3"><p>El <strong>IRPF</strong> (Impuesto sobre la Renta de las Personas Físicas) y el <strong>IVA</strong> (Impuesto sobre el Valor Añadido) son los dos pilares del sistema tributario español: juntos representan más del 60 % de la recaudación total. El IRPF es el principal impuesto directo (progresivo, grava la renta) y el IVA es el principal impuesto indirecto (proporcional, grava el consumo). Su comprensión es esencial tanto para la formación del futuro ciudadano como para la preparación de oposiciones.</p><p>Este tema se enmarca en CE3 de <strong>Economía de 1.º de Bachillerato</strong> y en los contenidos transversales de educación financiera y ciudadanía fiscal.</p></div>
+            </Card>
+            <Card title="1. El IRPF" icon="📘">
+                <TheoryBlock title="1.1. Características" color="teal"><p>Impuesto <strong>directo, personal, subjetivo, progresivo y periódico</strong> (periodo impositivo: año natural). Grava la <strong>renta</strong> obtenida por las personas físicas residentes en España. Es el impuesto que más recauda (~90.000 M€, ~8,5 % del PIB). Es <strong>compartido</strong> (50 % Estado, 50 % CCAA, que tienen capacidad normativa sobre tipos y deducciones).</p></TheoryBlock>
+                <TheoryBlock title="1.2. Base imponible: tipos de renta" color="cyan"><p><strong>Rendimientos del trabajo:</strong> salarios, pensiones, prestaciones por desempleo. La gran mayoría de la base imponible.<br/><strong>Rendimientos del capital:</strong> inmobiliario (alquileres) y mobiliario (intereses, dividendos).<br/><strong>Rendimientos de actividades económicas:</strong> beneficios de autónomos y profesionales (estimación directa o por módulos).<br/><strong>Ganancias y pérdidas patrimoniales:</strong> plusvalías por venta de inmuebles, acciones, fondos de inversión.<br/><strong>Imputaciones de renta:</strong> inmuebles urbanos no alquilados (imputación de renta inmobiliaria).</p></TheoryBlock>
+                <TheoryBlock title="1.3. Liquidación simplificada" color="teal"><p><strong>Base imponible general</strong> (trabajo, actividades, capital inmobiliario) → reducciones (aportaciones a planes de pensiones, pensiones compensatorias, mínimos personal y familiar) → <strong>Base liquidable general</strong> → se aplica la <strong>tarifa progresiva por tramos</strong> (estatal + autonómica):</p><p>0 − 12.450 €: 19 % | 12.450 − 20.200 €: 24 % | 20.200 − 35.200 €: 30 % | 35.200 − 60.000 €: 37 % | 60.000 − 300.000 €: 45 % | &gt;300.000 €: 47 % (tipos orientativos 2024, varían según CCAA).</p><p><strong>Base imponible del ahorro</strong> (intereses, dividendos, plusvalías) → tarifa del ahorro: 19 % (hasta 6.000 €), 21 % (6.000-50.000), 23 % (50.000-200.000), 27 % (200.000-300.000), 28 % (&gt;300.000).</p><p>Cuota íntegra − deducciones (vivienda habitual anterior a 2013, donativos, maternidad, etc.) = <strong>Cuota líquida</strong> − Retenciones practicadas = <strong>Cuota diferencial</strong> (a pagar o a devolver).</p></TheoryBlock>
+                <FormulaBox formula="IRPF: Tarifa progressiva per trams (19% → 47%)" desc="Més renda → tipus marginal més alt. El més recaptador (~90.000 M€)" />
+            </Card>
+            <Card title="2. El IVA" icon="📘">
+                <TheoryBlock title="2.1. Características" color="teal"><p>Impuesto <strong>indirecto, real, objetivo, proporcional e instantáneo</strong>. Grava el <strong>consumo</strong>: se aplica en cada fase de la cadena de producción-distribución sobre el <strong>valor añadido</strong> en esa fase. El consumidor final soporta todo el IVA; las empresas intermedias son meros recaudadores (deducen el IVA soportado en sus compras del IVA repercutido en sus ventas y liquidan la diferencia a Hacienda). Armonizado a nivel de la UE (Directiva IVA 2006/112/CE). No se aplica en Canarias (IGIC), Ceuta y Melilla (IPSI).</p></TheoryBlock>
+                <TheoryBlock title="2.2. Tipos impositivos" color="cyan"><p><strong>Tipo general: 21 %</strong> — se aplica a la mayoría de bienes y servicios.<br/><strong>Tipo reducido: 10 %</strong> — alimentos (excepto los superreducidos), agua, medicamentos de uso animal, transporte de viajeros, hostelería, vivienda nueva, espectáculos culturales y deportivos.<br/><strong>Tipo superreducido: 4 %</strong> — pan, leche, huevos, frutas, verduras, cereales, quesos, libros, periódicos, medicamentos de uso humano, sillas de ruedas, vivienda de protección oficial.<br/><strong>Tipo 0 % (exento con derecho a deducción):</strong> exportaciones, entregas intracomunitarias.</p></TheoryBlock>
+                <TheoryBlock title="2.3. Mecánica de liquidación" color="teal"><p>Cada empresa en la cadena: <strong>IVA repercutido</strong> (cobrado a clientes) − <strong>IVA soportado</strong> (pagado a proveedores) = <strong>Liquidación a Hacienda</strong> (positiva: ingresa; negativa: solicita devolución o compensa).<br/><strong>Ejemplo:</strong> un fabricante vende un producto por 1.000 € + 21 % IVA = 1.210 €. Ha comprado materias primas por 600 € + 21 % IVA = 726 €. Liquidación: 210 € (repercutido) − 126 € (soportado) = <strong>84 € a ingresar</strong>.</p></TheoryBlock>
+                <FormulaBox formula="IVA a ingressar = IVA repercutit − IVA suportat" desc="21% general | 10% reduït | 4% superreduït. El consumidor final suporta tot." />
+            </Card>
+            <Card title="3. Comparación IRPF vs. IVA" icon="📘">
+                <TheoryBlock color="teal"><p><strong>IRPF:</strong> directe, personal, progressiu (qui més guanya, més paga proporcionalment). Més equitatiu (s'adapta a la capacitat econòmica del contribuent), però més complex i susceptible d'elusió/evasió.<br/><strong>IVA:</strong> indirecte, real, proporcional (el mateix tipus per a tots). Més eficient en la recaptació (difícil d'evadir — cadascú vigila que l'anterior pague), però <strong>regressiu</strong> en termes relatius (les famílies de renda baixa destinen una proporció major dels seus ingressos al consum, i per tant paguen proporcionalment més IVA). Els tipus reduïts i superreduïts intenten mitigar aquesta regressivitat en béns bàsics.</p></TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="teal"><p>L'IRPF és el principal impost directe: progressiu per trams (19-47%), grava la renda (treball, capital, activitats, plusvàlues), recapta ~90.000 M€. L'IVA és el principal indirecte: proporcional (21/10/4%), grava el consum en cada fase (valor afegit), el consumidor final suporta tot. L'IRPF és més equitatiu (s'adapta a la capacitat econòmica) però complex; l'IVA és més eficient però regressiu (les rendes baixes paguen proporcionalment més). Junts representen &gt;60% de la recaptació total. La comprensió d'ambdós és essencial per a la ciutadania fiscal.</p></TheoryBlock>
+            </Card>
+            <BibliografiaBox items={["Ley 35/2006 del IRPF (texto consolidado).","Ley 37/1992 del IVA (texto consolidado).","AEAT. Manual práctico del IRPF e IVA. www.agenciatributaria.es","Lago, S. et al. (2021). El sistema fiscal español. Thomson-Civitas.","AIReF. Informes sobre el sistema tributario. www.airef.es","Directiva 2006/112/CE del Consejo (sistema común del IVA).","Eurostat. Taxation trends in the EU.","Ministerio de Hacienda. Estadísticas tributarias. www.hacienda.gob.es","OCDE. Tax Policy Reviews: Spain. www.oecd.org","Albi, E., González-Páramo, J. M. & Zubiri, I. (2017). Economía Pública. Ariel."]} />
+        </div>
+    );
+    const Tema66Resum = () => (
+        <div className="space-y-5 animate-fade"><Card>
+            <div className="p-4 bg-teal-50 rounded-xl border border-teal-200 mb-5"><p className="text-center font-bold text-teal-800 text-lg">Tema 66: Impostos directes i indirectes. IRPF i IVA.</p><p className="text-center text-sm text-teal-600 mt-1"><em>"IRPF (progressiu, 19-47%) + IVA (proporcional, 21/10/4%) = >60% recaptació"</em></p></div>
+            <div className="space-y-4 text-sm text-slate-700">
+                <div><h4 className="font-bold text-slate-800 mb-1">1. IRPF</h4><ul className="list-disc pl-5 space-y-1"><li>Directe, personal, progressiu, periòdic. ~90.000 M€. Compartit 50% Estat / 50% CCAA.</li><li>Rendes: treball, capital (immobiliari + mobiliari), activitats econòmiques, guanys patrimonials.</li><li>Tarifa: 19% (fins 12.450€) → 47% (&gt;300.000€). Estalvi: 19-28%.</li><li>Liquidació: BI − reduccions = BL × tarifa = Quota − deduccions − retencions = Diferencial.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">2. IVA</h4><ul className="list-disc pl-5 space-y-1"><li>Indirecte, real, proporcional, instantani. Grava consum (valor afegit cada fase).</li><li>Tipus: 21% general, 10% reduït, 4% superreduït, 0% exportacions.</li><li>Mecànica: IVA repercutit − IVA suportat = liquidació Hisenda.</li><li>No s'aplica a Canàries (IGIC), Ceuta i Melilla (IPSI).</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">3. Comparació</h4><ul className="list-disc pl-5 space-y-1"><li>IRPF: equitatiu (progressiu) però complex. IVA: eficient però regressiu (rendes baixes paguen més % ingressos).</li></ul></div>
+            </div>
+            <FormulaBox formula="IRPF: 19-47% progressiu | IVA: 21/10/4% proporcional" desc="Junts: >60% recaptació. IRPF = equitat; IVA = eficiència" />
+            <ClauBox><p>- Detalla la <strong>tarifa progressiva de l'IRPF</strong> per trams amb tipus.</p><p>- Explica la <strong>mecànica de liquidació de l'IVA</strong> (repercutit − suportat).</p><p>- Compara <strong>equitat (IRPF) vs. eficiència (IVA)</strong> amb la regressivitat.</p><p>- Inclou els <strong>3 tipus d'IVA</strong> amb productes concrets a cada un.</p></ClauBox>
+        </Card></div>
+    );
+    const Tema66 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="📑" title="Tema 66" subtitle={t('tema66.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema66Complet />}{vista === 'resum' && <Tema66Resum />}</div>); };
 
     // ════════════════════════════════════════════════════════════════
     // NAVIGATION AND RENDER
@@ -267,10 +429,10 @@ function BlocGApp() {
         { id: 'inicio', label: t('sec.inicio'), emoji: '🏠' },
         { id: 'tema61', label: 'T61', emoji: '💹' },
         { id: 'tema62', label: 'T62', emoji: '📈' },
-        { id: 'tema63', label: 'T63', emoji: '💹' },
-        { id: 'tema64', label: 'T64', emoji: '💹' },
-        { id: 'tema65', label: 'T65', emoji: '💹' },
-        { id: 'tema66', label: 'T66', emoji: '💹' },
+        { id: 'tema63', label: 'T63', emoji: '🛡️' },
+        { id: 'tema64', label: 'T64', emoji: '🏦' },
+        { id: 'tema65', label: 'T65', emoji: '🏛️' },
+        { id: 'tema66', label: 'T66', emoji: '📑' },
     ];
 
     return (
@@ -280,10 +442,10 @@ function BlocGApp() {
                 {section === 'inicio' && <Inicio />}
                 {section === 'tema61' && <Tema61 />}
                 {section === 'tema62' && <Tema62 />}
-                {section === 'tema63' && <Placeholder num={63} />}
-                {section === 'tema64' && <Placeholder num={64} />}
-                {section === 'tema65' && <Placeholder num={65} />}
-                {section === 'tema66' && <Placeholder num={66} />}
+                {section === 'tema63' && <Tema63 />}
+                {section === 'tema64' && <Tema64 />}
+                {section === 'tema65' && <Tema65 />}
+                {section === 'tema66' && <Tema66 />}
             </main>
             <PdePrevNext sections={headerSections} currentSection={section} setSection={setSection} idioma={idioma} />
             <PdeFooter appEmoji="💹" appName={t('footer.appname')} idioma={idioma} />
