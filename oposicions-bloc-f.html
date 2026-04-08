@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloc F: Economia de l'Empresa — Oposicions | PDE</title>
+    <meta name="description" content="Temes 49-60 d'oposicions d'Economia. Empresa, entorn, producció, organització, marketing, finances, comptabilitat.">
+    <meta property="og:title" content="Bloc F: Economia de l'Empresa — Oposicions | PDE">
+    <meta property="og:description" content="Temes 49-60 d'oposicions d'Economia. Empresa, entorn, producció, organització, marketing, finances, comptabilitat.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/oposicions-bloc-f">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://profedeeconomia.es/oposicions-bloc-f">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏢</text></svg>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #e11d48 #fff1f2; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #fff1f2; }
+        ::-webkit-scrollbar-thumb { background-color: #e11d48; border-radius: 3px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-rose-50 via-white to-red-50 min-h-screen">
+    <div id="root"></div>
+    <script type="text/babel">
+const { useState, useMemo, useEffect } = React;
+
+function BlocFApp() {
+    const [section, setSection] = useState('inicio');
+    const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+
+    usePdeDeepLink(section, setSection);
+
+    // ════════════════════════════════════════════════════════════════
+    // TRANSLATIONS
+    // ════════════════════════════════════════════════════════════════
+    const pageTranslations = {
+        'nav.oposicions-bloc-f': { val: "Bloc F: Economia de l'Empresa", es: 'Bloque F: Economía de la Empresa', en: 'Block F: Business Economics' },
+        'footer.appname': { val: "Bloc F — Oposicions d'Economia", es: "Bloque F — Oposiciones de Economía", en: 'Block F — Economics Exams' },
+
+        'inicio.title': { val: "Bloc F: Economia de l'Empresa", es: 'Bloque F: Economía de la Empresa', en: 'Block F: Business Economics' },
+        'inicio.subtitle': { val: "Temes 49-60 de les oposicions d'Economia a Secundària", es: 'Temas 49-60 de las oposiciones de Economía en Secundaria', en: 'Topics 49-60 of the Secondary Economics teaching exams' },
+        'inicio.disponible': { val: 'Disponible', es: 'Disponible', en: 'Available' },
+        'inicio.properament': { val: 'Properament', es: 'Próximamente', en: 'Coming soon' },
+        'inicio.backOpo': { val: '← Tornar a Oposicions', es: '← Volver a Oposiciones', en: '← Back to Exams' },
+
+        'sec.inicio': { val: 'Inici', es: 'Inicio', en: 'Home' },
+        'sec.tema49': { val: 'Tema 49', es: 'Tema 49', en: 'Topic 49' },
+        'sec.tema50': { val: 'Tema 50', es: 'Tema 50', en: 'Topic 50' },
+        'sec.tema51': { val: 'Tema 51', es: 'Tema 51', en: 'Topic 51' },
+        'sec.tema52': { val: 'Tema 52', es: 'Tema 52', en: 'Topic 52' },
+        'sec.tema53': { val: 'Tema 53', es: 'Tema 53', en: 'Topic 53' },
+        'sec.tema54': { val: 'Tema 54', es: 'Tema 54', en: 'Topic 54' },
+        'sec.tema55': { val: 'Tema 55', es: 'Tema 55', en: 'Topic 55' },
+        'sec.tema56': { val: 'Tema 56', es: 'Tema 56', en: 'Topic 56' },
+        'sec.tema57': { val: 'Tema 57', es: 'Tema 57', en: 'Topic 57' },
+        'sec.tema58': { val: 'Tema 58', es: 'Tema 58', en: 'Topic 58' },
+        'sec.tema59': { val: 'Tema 59', es: 'Tema 59', en: 'Topic 59' },
+        'sec.tema60': { val: 'Tema 60', es: 'Tema 60', en: 'Topic 60' },
+
+        'tab.complet': { val: 'Tema complet', es: 'Tema completo', en: 'Full topic' },
+        'tab.resum': { val: 'Resum / Esquema', es: 'Resumen / Esquema', en: 'Summary / Outline' },
+
+        'tema49.title': { val: "L'empresa: concepte, elements i funcions.", es: 'La empresa: concepto, elementos y funciones.', en: 'The firm: concept, elements and functions.' },
+        'tema50.title': { val: "Anàlisi de l'entorn general i específic.", es: 'Análisis del entorno general y específico.', en: 'Analysis of the general and specific environment.' },
+        'tema51.title': { val: 'La localització i dimensió empresarial.', es: 'La localización y dimensión empresarial.', en: 'Business location and size.' },
+        'tema52.title': { val: 'La funció de producció. Costos i punt mort.', es: 'La función de producción. Costes y punto muerto.', en: 'The production function. Costs and break-even.' },
+        'tema53.title': { val: "L'organització empresarial. Estructura.", es: 'La organización empresarial. Estructura.', en: 'Business organization. Structure.' },
+        'tema54.title': { val: "La direcció de l'empresa. Planificació i control.", es: 'La dirección de la empresa. Planificación y control.', en: 'Business management. Planning and control.' },
+        'tema55.title': { val: 'La gestió de recursos humans. Motivació i lideratge.', es: 'La gestión de recursos humanos. Motivación y liderazgo.', en: 'Human resource management. Motivation and leadership.' },
+        'tema56.title': { val: 'La funció comercial. El mix de marketing.', es: 'La función comercial. El mix de marketing.', en: 'The commercial function. The marketing mix.' },
+        'tema57.title': { val: 'La funció financera. Fonts de finançament.', es: 'La función financiera. Fuentes de financiación.', en: 'The financial function. Sources of financing.' },
+        'tema58.title': { val: "La selecció d'inversions. VAN, TIR, Payback.", es: 'La selección de inversiones. VAN, TIR, Payback.', en: 'Investment selection. NPV, IRR, Payback.' },
+        'tema59.title': { val: 'Patrimoni empresarial. Balanç de situació.', es: 'Patrimonio empresarial. Balance de situación.', en: 'Business assets. Balance sheet.' },
+        'tema60.title': { val: "Compte de resultats. Anàlisi economicofinancera.", es: 'Cuenta de resultados. Análisis económico-financiero.', en: 'Income statement. Economic-financial analysis.' },
+
+        'placeholder.msg': { val: 'Aquest tema estarà disponible properament.', es: 'Este tema estará disponible próximamente.', en: 'This topic will be available soon.' },
+    };
+
+    const t = createTranslator(pageTranslations, idioma);
+    const lang = idioma;
+
+    // ════════════════════════════════════════════════════════════════
+    // REUSABLE COMPONENTS
+    // ════════════════════════════════════════════════════════════════
+    const Card = ({ children, className = "", title, icon }) => (
+        <div className={`bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 hover:shadow-md transition-shadow ${className} animate-fade`}>
+            {title && <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100"><span className="text-2xl">{icon}</span><h3 className="font-bold text-slate-800 text-lg">{title}</h3></div>}
+            {children}
+        </div>
+    );
+
+    const Tabs = ({ tabs, active, onChange }) => (
+        <div className="flex flex-wrap gap-1 p-1.5 bg-slate-100 rounded-xl">
+            {tabs.map(tab => (
+                <button key={tab.id} onClick={() => onChange(tab.id)} className={`flex-1 min-w-fit py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${active === tab.id ? 'bg-white shadow-sm text-rose-600' : 'text-slate-600 hover:text-slate-800 hover:bg-white/50'}`}>
+                    {tab.label}
+                </button>
+            ))}
+        </div>
+    );
+
+    const FormulaBox = ({ formula, desc }) => (
+        <div className="my-4 p-5 bg-gradient-to-r from-rose-50 to-red-50 rounded-xl border border-rose-100">
+            <p className="text-center font-mono text-lg text-rose-800 font-semibold">{formula}</p>
+            {desc && <p className="text-center text-sm text-rose-600 mt-2">{desc}</p>}
+        </div>
+    );
+
+    const TheoryBlock = ({ title, children, color = "slate" }) => {
+        const colors = { slate: "border-slate-300 bg-slate-50", blue: "border-blue-300 bg-blue-50", green: "border-green-300 bg-green-50", amber: "border-amber-300 bg-amber-50", pink: "border-pink-300 bg-pink-50", violet: "border-violet-300 bg-violet-50", red: "border-red-300 bg-red-50", cyan: "border-cyan-300 bg-cyan-50", emerald: "border-emerald-300 bg-emerald-50", purple: "border-purple-300 bg-purple-50", rose: "border-rose-300 bg-rose-50", indigo: "border-indigo-300 bg-indigo-50", teal: "border-teal-300 bg-teal-50", orange: "border-orange-300 bg-orange-50" };
+        return (
+            <div className={`border-l-4 ${colors[color] || colors.slate} p-5 rounded-r-xl my-4`}>
+                {title && <h4 className="font-bold text-slate-800 mb-3 text-base">{title}</h4>}
+                <div className="text-slate-700 text-sm leading-relaxed space-y-2">{children}</div>
+            </div>
+        );
+    };
+
+    const SectionTitle = ({ icon, title, subtitle }) => (
+        <div className="mb-8">
+            <div className="flex items-center gap-3 mb-2"><span className="text-3xl">{icon}</span><h1 className="text-3xl font-black text-slate-800">{title}</h1></div>
+            {subtitle && <p className="text-slate-500 ml-12">{subtitle}</p>}
+        </div>
+    );
+
+    const BibliografiaBox = ({ items }) => (
+        <div className="my-6 p-6 bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl border border-slate-200">
+            <h4 className="font-bold text-slate-800 mb-4 text-base flex items-center gap-2"><span>📚</span> Bibliografía</h4>
+            <ul className="space-y-2">{items.map((item, i) => (<li key={i} className="text-sm text-slate-700 leading-relaxed pl-4 border-l-2 border-slate-200">{item}</li>))}</ul>
+        </div>
+    );
+
+    const ClauBox = ({ children }) => (
+        <div className="my-4 p-5 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200">
+            <div className="flex items-start gap-3">
+                <span className="text-2xl">🔑</span>
+                <div>
+                    <h4 className="font-bold text-amber-700 mb-2">{lang === 'es' ? 'Clave para el 10' : lang === 'en' ? 'Key for top marks' : 'Clau per al 10'}</h4>
+                    <div className="text-sm text-amber-800 space-y-1">{children}</div>
+                </div>
+            </div>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // THEME DATA
+    // ════════════════════════════════════════════════════════════════
+    const temes = [
+        { num: 49, id: 'tema49', available: true },
+        { num: 50, id: 'tema50', available: true },
+        { num: 51, id: 'tema51', available: false },
+        { num: 52, id: 'tema52', available: false },
+        { num: 53, id: 'tema53', available: false },
+        { num: 54, id: 'tema54', available: false },
+        { num: 55, id: 'tema55', available: false },
+        { num: 56, id: 'tema56', available: false },
+        { num: 57, id: 'tema57', available: false },
+        { num: 58, id: 'tema58', available: false },
+        { num: 59, id: 'tema59', available: false },
+        { num: 60, id: 'tema60', available: false },
+    ];
+
+    // ════════════════════════════════════════════════════════════════
+    // SECTION: INICIO
+    // ════════════════════════════════════════════════════════════════
+    const Inicio = () => (
+        <div className="animate-fade">
+            <a href="./oposicions" className="inline-flex items-center gap-2 text-sm text-rose-600 hover:text-rose-800 mb-6 transition-colors">{t('inicio.backOpo')}</a>
+            <div className="text-center mb-10">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-rose-100 text-rose-700 rounded-full text-sm font-semibold mb-4"><span>🏢</span> Bloc F</div>
+                <h1 className="text-4xl font-black text-slate-800 mb-3">{t('inicio.title')}</h1>
+                <p className="text-slate-500 text-lg max-w-2xl mx-auto">{t('inicio.subtitle')}</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {temes.map(tema => (
+                    <button key={tema.id} onClick={() => { if (tema.available) { setSection(tema.id); pdeSetHashSection(tema.id); pdeScrollToTop(); } }}
+                        className={`text-left p-5 rounded-2xl border transition-all ${tema.available ? 'bg-white border-rose-200 hover:shadow-lg hover:border-rose-300 cursor-pointer' : 'bg-gray-50 border-gray-200 opacity-70 cursor-not-allowed'}`}>
+                        <div className="flex items-start gap-3">
+                            <span className={`inline-flex items-center justify-center w-10 h-10 rounded-xl text-sm font-black text-white ${tema.available ? 'bg-gradient-to-br from-red-500 to-rose-600' : 'bg-gray-400'}`}>T{tema.num}</span>
+                            <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-slate-800 text-sm leading-snug mb-2">{t(`tema${tema.num}.title`)}</p>
+                                <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${tema.available ? 'bg-rose-100 text-rose-700' : 'bg-gray-100 text-gray-500'}`}>
+                                    {tema.available ? '✓ ' + t('inicio.disponible') : '🔒 ' + t('inicio.properament')}
+                                </span>
+                            </div>
+                        </div>
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 49 — La empresa: concepto, elementos y funciones.
+    // ════════════════════════════════════════════════════════════════
+    const Tema49Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        La <strong>empresa</strong> es la unidad económica fundamental de las economías de mercado: es la institución que organiza los factores productivos (trabajo, capital, recursos naturales, tecnología, conocimiento) para producir bienes y servicios destinados al mercado con el objetivo de obtener un beneficio. La empresa es, simultáneamente, una unidad de producción, una unidad financiera, una unidad de decisión y una organización social.
+                    </p>
+                    <p>
+                        El estudio de la empresa es el eje vertebrador de la materia de <strong>Economía de la Empresa de 2.º de Bachillerato</strong> (RD 243/2022) y está presente en múltiples competencias específicas: CE1 (la empresa como sistema y sus funciones), CE2 (análisis del entorno), CE3 (organización y dirección), CE4 (función productiva), CE5 (función comercial) y CE6 (función financiera y contable). La LOMLOE subraya la importancia de formar al alumnado en la comprensión de la iniciativa empresarial, el emprendimiento y la responsabilidad social.
+                    </p>
+                    <p>
+                        El presente tema se estructura en cinco epígrafes: concepto de empresa y evolución del pensamiento empresarial, elementos de la empresa, funciones, clasificación de las empresas y el empresario y el emprendimiento.
+                    </p>
+                </div>
+            </Card>
+
+            <Card title="1. Concepto de empresa y evolución del pensamiento" icon="📘">
+                <TheoryBlock title="1.1. Concepto de empresa" color="rose">
+                    <p>
+                        La empresa puede definirse desde múltiples perspectivas: <strong>económica</strong> (unidad de producción que combina factores para obtener bienes y servicios), <strong>jurídica</strong> (persona física o jurídica que ejerce una actividad económica organizada), <strong>sociológica</strong> (organización social con relaciones de poder, cultura e intereses diversos) y <strong>sistémica</strong> (sistema abierto que interactúa con su entorno, formado por subsistemas interrelacionados).
+                    </p>
+                    <p>
+                        Una definición integradora: la empresa es una <strong>organización de recursos humanos, materiales, financieros y tecnológicos</strong>, coordinados bajo una dirección, que realiza actividades de producción y/o distribución de bienes o servicios con el fin de satisfacer necesidades del mercado y obtener un beneficio, asumiendo riesgo.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.2. Evolución del pensamiento sobre la empresa" color="red">
+                    <p>
+                        <strong>Adam Smith (1776):</strong> la empresa como unidad de producción que se beneficia de la división del trabajo y la especialización.<br/>
+                        <strong>Economía neoclásica (Marshall, Walras):</strong> la empresa como «caja negra» que maximiza el beneficio en competencia perfecta. Función de producción y costes.<br/>
+                        <strong>Knight (1921):</strong> el empresario como agente que asume <strong>incertidumbre</strong> (riesgo no asegurable) y obtiene el beneficio como recompensa.<br/>
+                        <strong>Schumpeter (1912, 1942):</strong> el empresario <strong>innovador</strong> como motor de la «destrucción creativa» — introduce nuevos productos, procesos, mercados, fuentes de aprovisionamiento u organizaciones que transforman la economía.<br/>
+                        <strong>Coase (1937):</strong> la empresa como alternativa al mercado — existe porque los <strong>costes de transacción</strong> (buscar información, negociar, vigilar contratos) hacen más eficiente coordinar internamente que contratar en el mercado.<br/>
+                        <strong>Simon (1947):</strong> racionalidad limitada — los directivos no maximizan sino que buscan soluciones <strong>satisfactorias</strong> (satisficing).<br/>
+                        <strong>Teoría de la agencia (Jensen y Meckling, 1976):</strong> conflictos de intereses entre <strong>principal</strong> (propietarios/accionistas) y <strong>agente</strong> (directivos). Costes de agencia, gobierno corporativo.<br/>
+                        <strong>Enfoque de recursos y capacidades (Penrose, 1959; Barney, 1991):</strong> la empresa como conjunto único de recursos y capacidades que generan <strong>ventaja competitiva sostenible</strong>.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title="2. Elementos de la empresa" icon="📘">
+                <TheoryBlock title="2.1. Elementos tangibles e intangibles" color="rose">
+                    <p>
+                        <strong>Factores humanos:</strong> trabajadores (operarios, técnicos, administrativos), directivos (alta dirección, mandos intermedios) y el empresario/emprendedor. El <strong>capital humano</strong> (conocimientos, habilidades, experiencia, creatividad) es el factor más determinante de la competitividad.<br/>
+                        <strong>Factores materiales:</strong> capital fijo (terrenos, edificios, maquinaria, equipos informáticos, vehículos) y capital circulante (materias primas, productos en curso, productos terminados, existencias).<br/>
+                        <strong>Factores financieros:</strong> recursos financieros propios (capital social, reservas, beneficios retenidos) y ajenos (préstamos bancarios, emisión de obligaciones, proveedores, leasing).<br/>
+                        <strong>Factores intangibles:</strong> tecnología (patentes, know-how, software), marca e imagen (reputación, fidelidad de clientes), organización (rutinas, procesos, cultura corporativa), relaciones (con clientes, proveedores, instituciones). Los <strong>activos intangibles</strong> representan una proporción creciente del valor de las empresas (en las empresas del S&P 500, más del 90 % del valor de mercado es intangible).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.2. La empresa como sistema" color="red">
+                    <p>
+                        La teoría general de sistemas (Bertalanffy) aplicada a la empresa (Kast y Rosenzweig) la concibe como un <strong>sistema abierto</strong>: recibe inputs del entorno (materias primas, trabajo, capital, información), los transforma mediante un proceso de producción y genera outputs (bienes, servicios, salarios, dividendos, impuestos, externalidades). El <strong>feedback</strong> (información de retorno del mercado: ventas, quejas, competencia) permite la adaptación continua.
+                    </p>
+                    <p>
+                        Los <strong>subsistemas</strong> funcionales de la empresa son: producción/operaciones, comercial/marketing, financiero, recursos humanos, I+D/innovación, y dirección/administración. La <strong>sinergia</strong> (el todo es más que la suma de las partes) es la característica fundamental del sistema empresa.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title="3. Funciones de la empresa" icon="📘">
+                <TheoryBlock title="3.1. Funciones económicas" color="rose">
+                    <p>
+                        <strong>1. Función de producción:</strong> transformar inputs en outputs con la mayor eficiencia posible (minimizar costes para un nivel de producción dado, o maximizar la producción para un nivel de costes dado).<br/>
+                        <strong>2. Función de creación de valor:</strong> la empresa crea valor cuando el precio que los consumidores están dispuestos a pagar por sus productos supera el coste de los recursos utilizados. El <strong>valor añadido</strong> = Producción − Consumos intermedios.<br/>
+                        <strong>3. Función de coordinación de factores:</strong> la empresa organiza y coordina trabajo, capital y tecnología de forma más eficiente que el mercado (Coase).<br/>
+                        <strong>4. Función de asunción de riesgo:</strong> el empresario adelanta los factores productivos (paga salarios, compra materias primas, invierte en maquinaria) antes de conocer si el producto se venderá y a qué precio. Asume el riesgo de pérdida (Knight).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.2. Funciones sociales" color="red">
+                    <p>
+                        <strong>1. Creación de empleo:</strong> las empresas son la principal fuente de empleo en las economías de mercado.<br/>
+                        <strong>2. Generación y distribución de renta:</strong> la empresa distribuye la renta generada entre los factores: salarios (trabajadores), intereses (prestamistas), beneficios (propietarios/accionistas), impuestos (Estado), amortizaciones (reposición de capital).<br/>
+                        <strong>3. Motor de innovación:</strong> la empresa es el principal agente de innovación (Schumpeter): introduce nuevos productos, procesos y modelos de negocio que transforman la economía.<br/>
+                        <strong>4. Desarrollo del territorio:</strong> las empresas fijan población, generan infraestructuras y dinamizan el entorno local.<br/>
+                        <strong>5. Responsabilidad social corporativa (RSC):</strong> la empresa contemporánea asume compromisos con sus <strong>stakeholders</strong> (grupos de interés: trabajadores, clientes, proveedores, comunidad, medio ambiente) más allá de la maximización del beneficio.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title="4. Clasificación de las empresas" icon="📘">
+                <TheoryBlock title="4.1. Según la forma jurídica" color="rose">
+                    <p>
+                        <strong>Empresario individual (autónomo):</strong> persona física que ejerce la actividad en nombre propio, con responsabilidad ilimitada.<br/>
+                        <strong>Sociedad Limitada (SL/SRL):</strong> capital mínimo 1 € (tras Ley Crea y Crece, 2022), responsabilidad limitada al capital aportado, mínimo 1 socio. La forma más común en España (más de 1,2 millones de SL).<br/>
+                        <strong>Sociedad Anónima (SA):</strong> capital mínimo 60.000 €, dividido en acciones. Puede cotizar en Bolsa. Adecuada para grandes empresas.<br/>
+                        <strong>Sociedad Cooperativa:</strong> propiedad colectiva, gestión democrática (un socio = un voto), reparto de excedentes según la actividad cooperativizada. Ejemplo: Mondragón (mayor grupo cooperativo del mundo).<br/>
+                        <strong>Otras:</strong> Sociedad Laboral (mayoría del capital en manos de los trabajadores), Sociedad Comanditaria, Comunidad de Bienes, Emprendedor de Responsabilidad Limitada.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.2. Según el tamaño" color="red">
+                    <p>
+                        La clasificación de la UE (Recomendación 2003/361/CE) según número de trabajadores, volumen de negocio y balance total:
+                    </p>
+                    <p>
+                        <strong>Microempresa:</strong> &lt;10 trabajadores y facturación ≤2 M€. El 93 % de las empresas españolas.<br/>
+                        <strong>Pequeña empresa:</strong> &lt;50 trabajadores y facturación ≤10 M€.<br/>
+                        <strong>Mediana empresa:</strong> &lt;250 trabajadores y facturación ≤50 M€.<br/>
+                        <strong>Gran empresa:</strong> ≥250 trabajadores o facturación &gt;50 M€.
+                    </p>
+                    <p>
+                        En España, las <strong>pymes</strong> (micro + pequeñas + medianas) representan el 99,8 % del tejido empresarial y generan el 62 % del empleo. Sin embargo, las grandes empresas (0,2 %) generan el 38 % del empleo y concentran la mayor parte de las exportaciones, la inversión en I+D y la productividad.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.3. Según otros criterios" color="rose">
+                    <p>
+                        <strong>Según la propiedad del capital:</strong> privadas, públicas (Estado como accionista mayoritario: Correos, Paradores, AENA parcialmente), mixtas.<br/>
+                        <strong>Según el sector de actividad:</strong> primario (agricultura, pesca), secundario (industria, construcción), terciario (servicios), cuaternario (I+D, TIC, consultoría).<br/>
+                        <strong>Según el ámbito geográfico:</strong> locales, regionales, nacionales, multinacionales/transnacionales.<br/>
+                        <strong>Según el grado de integración:</strong> empresa individual, grupo empresarial (holding), clúster, red empresarial, franquicia.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title="5. El empresario y el emprendimiento" icon="📘">
+                <TheoryBlock title="5.1. Evolución del concepto de empresario" color="rose">
+                    <p>
+                        <strong>Cantillon (1755):</strong> primer teórico del empresario — el que compra a precios ciertos y vende a precios inciertos (asunción de riesgo).<br/>
+                        <strong>Say (1803):</strong> el empresario como coordinador de los factores de producción.<br/>
+                        <strong>Knight (1921):</strong> empresario = tomador de decisiones bajo incertidumbre; el beneficio es la recompensa por asumir riesgo no asegurable.<br/>
+                        <strong>Schumpeter (1912):</strong> empresario innovador. Motor de la destrucción creativa.<br/>
+                        <strong>Kirzner (1973):</strong> empresario como descubridor de oportunidades de beneficio no explotadas (alertness).<br/>
+                        <strong>Empresario actual:</strong> líder, estratega, innovador, gestor de equipos, comunicador. Separación propiedad-control (Berle y Means, 1932): en las grandes empresas, los propietarios (accionistas) delegan la gestión en directivos profesionales.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.2. Emprendimiento y ecosistema emprendedor" color="red">
+                    <p>
+                        El <strong>emprendimiento</strong> es el proceso de crear, desarrollar y gestionar una nueva empresa o proyecto. El ecosistema emprendedor incluye: acceso a financiación (business angels, capital riesgo, crowdfunding, préstamos ICO), formación (universidades, escuelas de negocios, FP), marcos regulatorios (Ley de Startups 2022: incentivos fiscales, visa de nómada digital, stock options), incubadoras y aceleradoras, cultura emprendedora y redes de apoyo.
+                    </p>
+                    <p>
+                        España ha mejorado su ecosistema emprendedor: Barcelona y Madrid son hubs de startups reconocidos en Europa (Glovo, Cabify, Wallbox, Typeform, Factorial). Sin embargo, la tasa de actividad emprendedora temprana (TEA) en España (~6 %, según GEM) sigue por debajo de la media de las economías avanzadas (~10 %).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title="6. Relevancia curricular" icon="🎓">
+                <TheoryBlock color="violet">
+                    <p>
+                        Este tema es el punto de partida de <strong>Economía de la Empresa de 2.º de Bachillerato</strong> (RD 243/2022), conectando con CE1 (la empresa como sistema), CE2 (análisis del entorno) y los contenidos transversales de emprendimiento y educación financiera. Contribuye a las competencias <strong>CE</strong> (comprensión de la iniciativa empresarial, emprendimiento), <strong>CC</strong> (responsabilidad social, stakeholders), <strong>STEM</strong> (análisis cuantitativo de datos empresariales) y <strong>CPSAA</strong> (liderazgo, trabajo en equipo, toma de decisiones). La Ley de Startups (2022) y el ecosistema emprendedor español ofrecen conexiones con la actualidad.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="rose">
+                    <p>
+                        La empresa es la unidad económica que combina factores productivos para crear bienes y servicios con ánimo de beneficio. La teoría ha evolucionado desde la «caja negra» neoclásica hasta los enfoques de costes de transacción (Coase), innovación (Schumpeter), agencia (Jensen-Meckling) y recursos y capacidades (Penrose-Barney). Sus elementos son humanos, materiales, financieros e intangibles, y funciona como sistema abierto con subsistemas interrelacionados. Sus funciones son económicas (producción, valor añadido, coordinación, riesgo) y sociales (empleo, renta, innovación, RSC). Se clasifica por forma jurídica (SL, SA, cooperativa), tamaño (micro/pyme/gran empresa — 99,8 % son pymes), propiedad, sector y ámbito. El concepto de empresario ha evolucionado desde Cantillon (riesgo) y Schumpeter (innovación) hasta el empresario contemporáneo y el ecosistema emprendedor (Ley de Startups 2022).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <BibliografiaBox items={[
+                "Bueno Campos, E. (2022). Curso básico de Economía de la Empresa, 6.ª ed. Pirámide.",
+                "Coase, R. (1937). The Nature of the Firm. Economica.",
+                "Schumpeter, J. A. (1912/1934). Teoría del desenvolvimiento económico. FCE.",
+                "Knight, F. (1921). Risk, Uncertainty and Profit. Hart, Schaffner & Marx.",
+                "Jensen, M. & Meckling, W. (1976). Theory of the Firm. Journal of Financial Economics.",
+                "Penrose, E. (1959). The Theory of the Growth of the Firm. Wiley.",
+                "Barney, J. (1991). Firm Resources and Sustained Competitive Advantage. Journal of Management.",
+                "Porter, M. (1985). Competitive Advantage. Free Press.",
+                "INE. Directorio Central de Empresas (DIRCE). www.ine.es",
+                "GEM España. Global Entrepreneurship Monitor: Informe España. www.gem-spain.com",
+            ]} />
+        </div>
+    );
+
+    const Tema49Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-rose-50 rounded-xl border border-rose-200 mb-5">
+                    <p className="text-center font-bold text-rose-800 text-lg">Tema 49: L'empresa: concepte, elements i funcions.</p>
+                    <p className="text-center text-sm text-rose-600 mt-1"><em>"L'empresa com a sistema obert que combina factors per crear valor"</em></p>
+                </div>
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. Concepte i teories</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Definició: organització de recursos humans, materials, financers i tecnològics per produir béns/serveis amb ànim de lucre.</li>
+                            <li>Neoclàssics: «caixa negra», maximització benefici. Coase (1937): costos de transacció.</li>
+                            <li>Schumpeter: innovació, destrucció creativa. Knight: incertesa, benefici com a recompensa.</li>
+                            <li>Agència (Jensen-Meckling): conflicte principal-agent. Recursos i capacitats (Penrose, Barney).</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. Elements</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Humans: treballadors, directius, empresari. Capital humà = factor clau.</li>
+                            <li>Materials: fix (maquinària, edificis) + circulant (matèries primeres, existències).</li>
+                            <li>Financers: propis (capital, reserves) + aliens (préstecs, obligacions).</li>
+                            <li>Intangibles: tecnologia, marca, organització, relacions. &gt;90% valor S&P 500.</li>
+                            <li>Sistema obert: inputs → transformació → outputs → feedback. Subsistemes funcionals. Sinergia.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. Funcions</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Econòmiques: producció, creació valor (VA), coordinació factors (Coase), assumpció risc (Knight).</li>
+                            <li>Socials: ocupació, distribució renda, innovació, desenvolupament territorial, RSC/stakeholders.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. Classificació</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Forma jurídica: autònom, SL (capital 1€, +1,2M a Espanya), SA (60.000€, accions), cooperativa (Mondragón).</li>
+                            <li>Mida UE: micro (&lt;10), xicoteta (&lt;50), mitjana (&lt;250), gran (≥250). Pimes = 99,8%, 62% ocupació.</li>
+                            <li>Propietat: privada, pública, mixta. Sector: primari/secundari/terciari/quaternari.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">5. Empresari i emprenedoria</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Cantillon (risc), Say (coordinador), Knight (incertesa), Schumpeter (innovador), Kirzner (oportunitats).</li>
+                            <li>Ecosistema: business angels, VC, Llei Startups 2022. BCN i Madrid hubs europeus. TEA ~6%.</li>
+                        </ul>
+                    </div>
+                </div>
+                <FormulaBox formula="VA = Producció − Consums intermedis" desc="L'empresa crea valor quan el preu supera el cost dels recursos" />
+                <ClauBox>
+                    <p>- Presenta les <strong>teories clau</strong>: Coase (costos transacció), Schumpeter (innovació), agència, recursos.</p>
+                    <p>- Diferencia <strong>elements tangibles i intangibles</strong> (intangibles &gt;90% valor).</p>
+                    <p>- Explica l'empresa com a <strong>sistema obert</strong> amb subsistemes i feedback.</p>
+                    <p>- Classifica per <strong>forma jurídica, mida, propietat i sector</strong>.</p>
+                    <p>- Connecta amb <strong>emprenedoria actual</strong> (Llei Startups, ecosistema).</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    const Tema49 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="🏢" title="Tema 49" subtitle={t('tema49.title')} />
+                <Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />
+                {vista === 'complet' && <Tema49Complet />}
+                {vista === 'resum' && <Tema49Resum />}
+            </div>
+        );
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 50 — Análisis del entorno general y específico.
+    // ════════════════════════════════════════════════════════════════
+    const Tema50Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        La empresa no opera en el vacío: está inmersa en un <strong>entorno</strong> que condiciona sus decisiones, oportunidades y amenazas. El análisis del entorno es una de las tareas fundamentales de la <strong>dirección estratégica</strong>: comprender las fuerzas externas que afectan a la empresa es imprescindible para formular estrategias competitivas eficaces. La capacidad de adaptación al entorno (y, en algunos casos, de moldearlo) determina la supervivencia y el éxito empresarial.
+                    </p>
+                    <p>
+                        Este tema se enmarca en <strong>Economía de la Empresa de 2.º de Bachillerato</strong> (RD 243/2022), CE2 (análisis del entorno empresarial) y CE1 (la empresa como sistema abierto). El presente tema se estructura en cinco epígrafes: concepto de entorno, análisis del entorno general (PESTEL), análisis del entorno específico (cinco fuerzas de Porter), análisis interno (cadena de valor, VRIO) y herramientas integradoras (DAFO).
+                    </p>
+                </div>
+            </Card>
+
+            <Card title="1. Concepto y tipos de entorno empresarial" icon="📘">
+                <TheoryBlock title="1.1. El entorno empresarial" color="rose">
+                    <p>
+                        El <strong>entorno empresarial</strong> es el conjunto de factores externos a la empresa que influyen en su actividad y resultados. Se distinguen dos niveles:
+                    </p>
+                    <p>
+                        <strong>Entorno general (macroentorno):</strong> factores que afectan a todas las empresas de una economía, independientemente del sector. Son poco controlables por la empresa individual.<br/>
+                        <strong>Entorno específico (microentorno o entorno competitivo):</strong> factores que afectan específicamente a las empresas de un sector o industria concreto. La empresa puede influir parcialmente en ellos.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.2. Características del entorno actual" color="red">
+                    <p>
+                        El entorno contemporáneo se caracteriza por: <strong>complejidad</strong> (múltiples variables interrelacionadas), <strong>dinamismo</strong> (cambios rápidos e impredecibles), <strong>incertidumbre</strong> (dificultad para prever el futuro), <strong>globalización</strong> (interdependencia de mercados) y <strong>disrupción tecnológica</strong> (inteligencia artificial, digitalización, plataformas). El acrónimo <strong>VUCA</strong> (Volatilidad, Incertidumbre, Complejidad, Ambigüedad) describe este entorno.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title="2. Análisis del entorno general: PESTEL" icon="📘">
+                <TheoryBlock title="2.1. El modelo PESTEL" color="rose">
+                    <p>
+                        El análisis <strong>PESTEL</strong> es la herramienta más utilizada para sistematizar el estudio del macroentorno. Identifica seis dimensiones:
+                    </p>
+                    <p>
+                        <strong>P — Político:</strong> estabilidad política, política fiscal, regulación laboral, política comercial, subvenciones, política industrial, legislación de competencia, protección al consumidor.<br/>
+                        <strong>E — Económico:</strong> ciclo económico (expansión/recesión), tipos de interés, inflación, tipo de cambio, PIB, nivel de empleo/desempleo, renta disponible, distribución de la renta, política monetaria del BCE.<br/>
+                        <strong>S — Social/Sociocultural:</strong> demografía (envejecimiento, migración, urbanización), valores y actitudes (sostenibilidad, igualdad, conciliación), estilos de vida, nivel educativo, distribución de la renta, movimientos sociales.<br/>
+                        <strong>T — Tecnológico:</strong> innovación tecnológica, I+D, digitalización, inteligencia artificial, automatización, comercio electrónico, ciberseguridad, protección de datos, tecnologías disruptivas.<br/>
+                        <strong>E — Ecológico/Medioambiental:</strong> cambio climático, regulación ambiental (emisiones, residuos), economía circular, energías renovables, escasez de recursos, conciencia ecológica del consumidor, taxonomía verde de la UE.<br/>
+                        <strong>L — Legal:</strong> legislación mercantil, protección de datos (RGPD), propiedad intelectual, normativa de seguridad e higiene, legislación fiscal, normativa sectorial (alimentaria, farmacéutica, financiera).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.2. Aplicación del PESTEL" color="red">
+                    <p>
+                        El análisis PESTEL no es una lista exhaustiva sino una <strong>herramienta de reflexión estratégica</strong>: se trata de identificar los factores del macroentorno que son <strong>más relevantes</strong> para la empresa o sector concreto, valorar si representan <strong>oportunidades o amenazas</strong>, y anticipar su evolución probable. Ejemplo: para una empresa de energías renovables, los factores ecológicos (regulación verde), tecnológicos (eficiencia de paneles solares) y políticos (subvenciones) serán más determinantes que para una empresa textil.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title="3. Análisis del entorno específico: las cinco fuerzas de Porter" icon="📘">
+                <TheoryBlock title="3.1. El modelo de las cinco fuerzas (1980)" color="rose">
+                    <p>
+                        <strong>Michael Porter</strong> propuso en <em>Competitive Strategy</em> (1980) un modelo para analizar la <strong>estructura competitiva de un sector</strong> y determinar su atractivo (rentabilidad potencial). Las cinco fuerzas son:
+                    </p>
+                    <p>
+                        <strong>1. Rivalidad entre competidores existentes:</strong> intensidad de la competencia entre las empresas que ya operan en el sector. Depende de: número y equilibrio de competidores, crecimiento del sector (en sectores maduros o en declive, la rivalidad es mayor), diferenciación del producto, costes fijos (sectores con altos costes fijos tienden a guerras de precios), barreras de salida.
+                    </p>
+                    <p>
+                        <strong>2. Amenaza de nuevos entrantes:</strong> riesgo de que nuevas empresas se incorporen al sector, atraídas por su rentabilidad. Depende de las <strong>barreras de entrada</strong>: economías de escala, inversión inicial, acceso a canales de distribución, diferenciación de marca, regulación, patentes, costes de cambio para el cliente.
+                    </p>
+                    <p>
+                        <strong>3. Amenaza de productos sustitutivos:</strong> bienes o servicios de otros sectores que satisfacen la misma necesidad (ej.: el tren sustituye al avión en distancias medias; el streaming sustituye al cine). Cuanto más sustitutos y mejor su relación calidad-precio, menor la rentabilidad del sector.
+                    </p>
+                    <p>
+                        <strong>4. Poder de negociación de los proveedores:</strong> capacidad de los proveedores para imponer condiciones (precios, calidad, plazos). Mayor poder cuando: pocos proveedores, inputs diferenciados o sin sustitutos, alto coste de cambio de proveedor, amenaza de integración vertical hacia adelante.
+                    </p>
+                    <p>
+                        <strong>5. Poder de negociación de los clientes:</strong> capacidad de los clientes para presionar a la baja los precios o exigir mayor calidad. Mayor poder cuando: pocos clientes grandes, productos estandarizados, bajo coste de cambio, alta información del cliente, amenaza de integración vertical hacia atrás.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.2. Sexta fuerza: complementadores" color="red">
+                    <p>
+                        Brandenburger y Nalebuff (1996) añadieron una sexta fuerza: los <strong>complementadores</strong> — empresas cuyos productos o servicios aumentan el valor del producto de la empresa analizada (ej.: las apps complementan los smartphones; los videojuegos complementan las consolas). Un sector con fuertes complementadores puede ser más atractivo.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title="4. Análisis interno: recursos, capacidades y cadena de valor" icon="📘">
+                <TheoryBlock title="4.1. El análisis VRIO" color="rose">
+                    <p>
+                        El modelo <strong>VRIO</strong> (Barney, 1991) evalúa los recursos y capacidades internos de la empresa para determinar si generan ventaja competitiva sostenible. Un recurso o capacidad debe cumplir cuatro condiciones:
+                    </p>
+                    <p>
+                        <strong>V — Valioso:</strong> ¿permite explotar oportunidades o neutralizar amenazas?<br/>
+                        <strong>R — Raro:</strong> ¿lo poseen pocos competidores?<br/>
+                        <strong>I — Inimitable:</strong> ¿es difícil o costoso de copiar? (por historia única, complejidad social, ambigüedad causal, patentes).<br/>
+                        <strong>O — Organizado:</strong> ¿la empresa está organizada para explotar el recurso? (estructura, procesos, incentivos).
+                    </p>
+                    <p>
+                        Si las cuatro condiciones se cumplen → <strong>ventaja competitiva sostenible</strong>. Si falla alguna → ventaja temporal, paridad o desventaja.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.2. La cadena de valor (Porter, 1985)" color="red">
+                    <p>
+                        La <strong>cadena de valor</strong> descompone las actividades de la empresa en actividades <strong>primarias</strong> y de <strong>apoyo</strong> para identificar dónde se crea (o destruye) valor:
+                    </p>
+                    <p>
+                        <strong>Actividades primarias:</strong> logística interna (recepción, almacenamiento), operaciones (fabricación, montaje), logística externa (distribución), marketing y ventas, servicio posventa.<br/>
+                        <strong>Actividades de apoyo:</strong> infraestructura de la empresa (dirección, finanzas, planificación), gestión de recursos humanos, desarrollo tecnológico (I+D), aprovisionamiento (compras).
+                    </p>
+                    <p>
+                        El <strong>margen</strong> es la diferencia entre el valor total generado y el coste total de las actividades. La ventaja competitiva surge cuando la empresa realiza las actividades estratégicamente relevantes de forma más eficiente (liderazgo en costes) o diferenciada (diferenciación) que sus competidores.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title="5. Herramientas integradoras: DAFO y estrategias" icon="📘">
+                <TheoryBlock title="5.1. El análisis DAFO (SWOT)" color="rose">
+                    <p>
+                        El análisis <strong>DAFO</strong> (Debilidades, Amenazas, Fortalezas, Oportunidades) integra el análisis externo (oportunidades y amenazas del entorno general y específico) con el análisis interno (fortalezas y debilidades de los recursos y capacidades):
+                    </p>
+                    <p>
+                        <strong>Fortalezas (interno +):</strong> ventajas competitivas, recursos valiosos, marca reconocida, tecnología propia, equipo talentoso.<br/>
+                        <strong>Debilidades (interno −):</strong> carencias de recursos, falta de financiación, tecnología obsoleta, baja productividad, marca débil.<br/>
+                        <strong>Oportunidades (externo +):</strong> crecimiento del mercado, cambio regulatorio favorable, nueva tecnología aprovechable, tendencia social afín.<br/>
+                        <strong>Amenazas (externo −):</strong> nueva competencia, recesión económica, regulación adversa, cambio tecnológico disruptivo, subida de costes.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.2. De DAFO a estrategias" color="red">
+                    <p>
+                        La matriz DAFO no es solo un diagnóstico, sino una herramienta para formular <strong>estrategias</strong>:
+                    </p>
+                    <p>
+                        <strong>FO (maxi-maxi):</strong> usar fortalezas para aprovechar oportunidades (estrategias ofensivas).<br/>
+                        <strong>FA (maxi-mini):</strong> usar fortalezas para contrarrestar amenazas (estrategias defensivas).<br/>
+                        <strong>DO (mini-maxi):</strong> superar debilidades para aprovechar oportunidades (estrategias de reorientación).<br/>
+                        <strong>DA (mini-mini):</strong> minimizar debilidades y evitar amenazas (estrategias de supervivencia).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title="6. Relevancia curricular" icon="🎓">
+                <TheoryBlock color="violet">
+                    <p>
+                        Este tema conecta directamente con CE2 de <strong>Economía de la Empresa de 2.º de Bachillerato</strong> (RD 243/2022): análisis del entorno general y específico, identificación de oportunidades y amenazas, análisis DAFO. También con CE1 (empresa como sistema abierto) y con la competencia STEM (análisis estructurado de datos), CE (emprendimiento: evaluar un mercado), CPSAA (juicio crítico, toma de decisiones bajo incertidumbre) y CCL (lectura de informes sectoriales y planes estratégicos). La aplicación de herramientas como PESTEL, cinco fuerzas y DAFO a casos reales es un recurso pedagógico muy eficaz.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="rose">
+                    <p>
+                        El entorno empresarial se analiza a dos niveles: el macroentorno (PESTEL: político, económico, social, tecnológico, ecológico, legal) y el microentorno o entorno competitivo (cinco fuerzas de Porter: rivalidad, entrantes, sustitutos, proveedores, clientes). El análisis interno evalúa los recursos y capacidades (VRIO: valioso, raro, inimitable, organizado) y descompone las actividades en la cadena de valor (Porter: primarias + apoyo → margen). El análisis DAFO integra ambos: fortalezas y debilidades internas con oportunidades y amenazas externas, generando cuatro tipos de estrategias (FO, FA, DO, DA). El entorno VUCA actual (volátil, incierto, complejo, ambiguo) exige un análisis continuo y una capacidad de adaptación rápida.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <BibliografiaBox items={[
+                "Porter, M. (1980). Competitive Strategy: Techniques for Analyzing Industries and Competitors. Free Press.",
+                "Porter, M. (1985). Competitive Advantage: Creating and Sustaining Superior Performance. Free Press.",
+                "Barney, J. (1991). Firm Resources and Sustained Competitive Advantage. Journal of Management.",
+                "Johnson, G., Scholes, K. & Whittington, R. (2020). Exploring Strategy, 12.ª ed. Pearson.",
+                "Guerras, L. A. & Navas, J. E. (2022). La dirección estratégica de la empresa, 6.ª ed. Thomson-Civitas.",
+                "Mintzberg, H. (1994). The Rise and Fall of Strategic Planning. Free Press.",
+                "Brandenburger, A. & Nalebuff, B. (1996). Co-opetition. Currency Doubleday.",
+                "Bueno Campos, E. (2022). Curso básico de Economía de la Empresa, 6.ª ed. Pirámide.",
+                "Grant, R. M. (2021). Contemporary Strategy Analysis, 11.ª ed. Wiley.",
+                "Navas, J. E. & Guerras, L. A. (2018). Fundamentos de dirección estratégica de la empresa. Thomson.",
+            ]} />
+        </div>
+    );
+
+    const Tema50Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-rose-50 rounded-xl border border-rose-200 mb-5">
+                    <p className="text-center font-bold text-rose-800 text-lg">Tema 50: Anàlisi de l'entorn general i específic.</p>
+                    <p className="text-center text-sm text-rose-600 mt-1"><em>"PESTEL + Porter + DAFO: les 3 ferramentes d'anàlisi estratègica"</em></p>
+                </div>
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. Entorn empresarial</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>General (macroentorn): afecta totes les empreses. Específic (microentorn): afecta el sector.</li>
+                            <li>VUCA: Volatilitat, Incertesa, Complexitat, Ambigüitat. Entorn actual.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. PESTEL (macroentorn)</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li><strong>P</strong>olític: estabilitat, regulació, subvencions, política comercial.</li>
+                            <li><strong>E</strong>conòmic: cicle, tipus interès, inflació, PIB, ocupació, tipus canvi.</li>
+                            <li><strong>S</strong>ocial: demografia, valors, estils de vida, educació, migració.</li>
+                            <li><strong>T</strong>ecnològic: innovació, IA, digitalització, e-commerce, ciberseguretat.</li>
+                            <li><strong>E</strong>cològic: canvi climàtic, regulació ambiental, economia circular, renovables.</li>
+                            <li><strong>L</strong>egal: mercantil, RGPD, propietat intel·lectual, normativa sectorial.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. Cinc forces de Porter (microentorn)</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>1. Rivalitat entre competidors: nombre, creixement sector, diferenciació, costos fixos.</li>
+                            <li>2. Amenaça nous entrants: barreres d'entrada (escala, inversió, marca, patents).</li>
+                            <li>3. Amenaça substitutius: productes d'altres sectors que satisfan la mateixa necessitat.</li>
+                            <li>4. Poder proveïdors: pocs, inputs diferenciats, cost canvi alt, integració vertical.</li>
+                            <li>5. Poder clients: pocs, producte estandarditzat, informació alta, cost canvi baix.</li>
+                            <li>+6a: Complementadors (Brandenburger-Nalebuff): augmenten el valor del producte.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. Anàlisi intern</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>VRIO (Barney): Valuós, Rar, Inimitable, Organitzat → avantatge competitiu sostenible.</li>
+                            <li>Cadena de valor (Porter): activitats primàries (logística, operacions, marketing, servei) + suport (RRHH, I+D, compres, infraestructura). Marge = valor − cost.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">5. DAFO (SWOT)</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Intern: Fortaleses (+) i Debilitats (−). Extern: Oportunitats (+) i Amenaces (−).</li>
+                            <li>Estratègies: FO (ofensiva), FA (defensiva), DO (reorientació), DA (supervivència).</li>
+                        </ul>
+                    </div>
+                </div>
+                <FormulaBox formula="PESTEL → Oportunitats/Amenaces | VRIO → Fortaleses/Debilitats | DAFO → Estratègies" desc="Integració anàlisi extern + intern = direcció estratègica" />
+                <ClauBox>
+                    <p>- Estructura en <strong>3 nivells</strong>: macroentorn (PESTEL) + microentorn (Porter) + intern (VRIO, cadena valor).</p>
+                    <p>- Detalla les <strong>5+1 forces de Porter</strong> amb factors determinants de cada una.</p>
+                    <p>- Explica <strong>VRIO</strong> i la <strong>cadena de valor</strong> com a ferramentes d'anàlisi intern.</p>
+                    <p>- Integra tot en el <strong>DAFO</strong> i les 4 estratègies resultants.</p>
+                    <p>- Connecta amb <strong>VUCA</strong> i la necessitat d'adaptació contínua.</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    const Tema50 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="🔍" title="Tema 50" subtitle={t('tema50.title')} />
+                <Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />
+                {vista === 'complet' && <Tema50Complet />}
+                {vista === 'resum' && <Tema50Resum />}
+            </div>
+        );
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // PLACEHOLDER — Temes 51-60
+    // ════════════════════════════════════════════════════════════════
+    const Placeholder = ({ num }) => (
+        <div className="space-y-6 animate-fade">
+            <SectionTitle icon="🏢" title={`Tema ${num}`} subtitle={t(`tema${num}.title`)} />
+            <Card><div className="text-center py-16"><span className="text-6xl mb-4 block">🚧</span><p className="text-lg font-semibold text-slate-600 mb-2">{t('placeholder.msg')}</p></div></Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // NAVIGATION AND RENDER
+    // ════════════════════════════════════════════════════════════════
+    const headerSections = [
+        { id: 'inicio', label: t('sec.inicio'), emoji: '🏠' },
+        { id: 'tema49', label: 'T49', emoji: '🏢' },
+        { id: 'tema50', label: 'T50', emoji: '🔍' },
+        { id: 'tema51', label: 'T51', emoji: '🏢' },
+        { id: 'tema52', label: 'T52', emoji: '🏢' },
+        { id: 'tema53', label: 'T53', emoji: '🏢' },
+        { id: 'tema54', label: 'T54', emoji: '🏢' },
+        { id: 'tema55', label: 'T55', emoji: '🏢' },
+        { id: 'tema56', label: 'T56', emoji: '🏢' },
+        { id: 'tema57', label: 'T57', emoji: '🏢' },
+        { id: 'tema58', label: 'T58', emoji: '🏢' },
+        { id: 'tema59', label: 'T59', emoji: '🏢' },
+        { id: 'tema60', label: 'T60', emoji: '🏢' },
+    ];
+
+    return (
+        <div className="min-h-screen">
+            <PdeHeader idioma={idioma} setIdioma={(lang) => { setIdioma(lang); PdeLanguageStore.set(lang); }} currentApp="oposicions-bloc-f" sections={headerSections} currentSection={section} setSection={setSection} />
+            <main className="max-w-7xl mx-auto px-4 py-8">
+                {section === 'inicio' && <Inicio />}
+                {section === 'tema49' && <Tema49 />}
+                {section === 'tema50' && <Tema50 />}
+                {section === 'tema51' && <Placeholder num={51} />}
+                {section === 'tema52' && <Placeholder num={52} />}
+                {section === 'tema53' && <Placeholder num={53} />}
+                {section === 'tema54' && <Placeholder num={54} />}
+                {section === 'tema55' && <Placeholder num={55} />}
+                {section === 'tema56' && <Placeholder num={56} />}
+                {section === 'tema57' && <Placeholder num={57} />}
+                {section === 'tema58' && <Placeholder num={58} />}
+                {section === 'tema59' && <Placeholder num={59} />}
+                {section === 'tema60' && <Placeholder num={60} />}
+            </main>
+            <PdePrevNext sections={headerSections} currentSection={section} setSection={setSection} idioma={idioma} />
+            <PdeFooter appEmoji="🏢" appName={t('footer.appname')} idioma={idioma} />
+            <PdeScrollToTop />
+        </div>
+    );
+}
+
+ReactDOM.render(<BlocFApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
