@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloc G: Sistema Financer — Oposicions | PDE</title>
+    <meta name="description" content="Temes 61-66 d'oposicions d'Economia. Actius financers, borsa, assegurances, planificació financera, sistema tributari, IRPF i IVA.">
+    <meta property="og:title" content="Bloc G: Sistema Financer — Oposicions | PDE">
+    <meta property="og:description" content="Temes 61-66 d'oposicions d'Economia. Actius financers, borsa, assegurances, planificació financera, sistema tributari, IRPF i IVA.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/oposicions-bloc-g">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://profedeeconomia.es/oposicions-bloc-g">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💹</text></svg>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #0d9488 #f0fdfa; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f0fdfa; }
+        ::-webkit-scrollbar-thumb { background-color: #0d9488; border-radius: 3px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-teal-50 via-white to-cyan-50 min-h-screen">
+    <div id="root"></div>
+    <script type="text/babel">
+const { useState, useMemo, useEffect } = React;
+
+function BlocGApp() {
+    const [section, setSection] = useState('inicio');
+    const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+
+    usePdeDeepLink(section, setSection);
+
+    const pageTranslations = {
+        'nav.oposicions-bloc-g': { val: 'Bloc G: Sistema Financer', es: 'Bloque G: Sistema Financiero', en: 'Block G: Financial System' },
+        'footer.appname': { val: "Bloc G — Oposicions d'Economia", es: "Bloque G — Oposiciones de Economía", en: 'Block G — Economics Exams' },
+        'inicio.title': { val: 'Bloc G: Sistema Financer', es: 'Bloque G: Sistema Financiero', en: 'Block G: Financial System' },
+        'inicio.subtitle': { val: "Temes 61-66 de les oposicions d'Economia a Secundària", es: 'Temas 61-66 de las oposiciones de Economía en Secundaria', en: 'Topics 61-66 of the Secondary Economics teaching exams' },
+        'inicio.disponible': { val: 'Disponible', es: 'Disponible', en: 'Available' },
+        'inicio.properament': { val: 'Properament', es: 'Próximamente', en: 'Coming soon' },
+        'inicio.backOpo': { val: '← Tornar a Oposicions', es: '← Volver a Oposiciones', en: '← Back to Exams' },
+        'sec.inicio': { val: 'Inici', es: 'Inicio', en: 'Home' },
+        'sec.tema61': { val: 'Tema 61', es: 'Tema 61', en: 'Topic 61' },
+        'sec.tema62': { val: 'Tema 62', es: 'Tema 62', en: 'Topic 62' },
+        'sec.tema63': { val: 'Tema 63', es: 'Tema 63', en: 'Topic 63' },
+        'sec.tema64': { val: 'Tema 64', es: 'Tema 64', en: 'Topic 64' },
+        'sec.tema65': { val: 'Tema 65', es: 'Tema 65', en: 'Topic 65' },
+        'sec.tema66': { val: 'Tema 66', es: 'Tema 66', en: 'Topic 66' },
+        'tab.complet': { val: 'Tema complet', es: 'Tema completo', en: 'Full topic' },
+        'tab.resum': { val: 'Resum / Esquema', es: 'Resumen / Esquema', en: 'Summary / Outline' },
+        'tema61.title': { val: 'Actius financers. Renda fixa i variable.', es: 'Activos financieros. Renta fija y variable.', en: 'Financial assets. Fixed and variable income.' },
+        'tema62.title': { val: 'La Borsa de Valors. Funcionament i índexs.', es: 'La Bolsa de Valores. Funcionamiento e índices.', en: 'The Stock Exchange. Operation and indices.' },
+        'tema63.title': { val: 'Assegurances. Principis i modalitats.', es: 'Seguros. Principios y modalidades.', en: 'Insurance. Principles and types.' },
+        'tema64.title': { val: 'Planificació financera personal. Estalvi i inversió.', es: 'Planificación financiera personal. Ahorro e inversión.', en: 'Personal financial planning. Saving and investment.' },
+        'tema65.title': { val: 'El sistema tributari espanyol.', es: 'El sistema tributario español.', en: 'The Spanish tax system.' },
+        'tema66.title': { val: 'Impostos directes i indirectes. IRPF i IVA.', es: 'Impuestos directos e indirectos. IRPF e IVA.', en: 'Direct and indirect taxes. Income tax and VAT.' },
+        'placeholder.msg': { val: 'Aquest tema estarà disponible properament.', es: 'Este tema estará disponible próximamente.', en: 'This topic will be available soon.' },
+    };
+
+    const t = createTranslator(pageTranslations, idioma);
+    const lang = idioma;
+
+    // ════════════════════════════════════════════════════════════════
+    // REUSABLE COMPONENTS
+    // ════════════════════════════════════════════════════════════════
+    const Card = ({ children, className = "", title, icon }) => (
+        <div className={`bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 hover:shadow-md transition-shadow ${className} animate-fade`}>
+            {title && <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100"><span className="text-2xl">{icon}</span><h3 className="font-bold text-slate-800 text-lg">{title}</h3></div>}
+            {children}
+        </div>
+    );
+    const Tabs = ({ tabs, active, onChange }) => (
+        <div className="flex flex-wrap gap-1 p-1.5 bg-slate-100 rounded-xl">
+            {tabs.map(tab => (<button key={tab.id} onClick={() => onChange(tab.id)} className={`flex-1 min-w-fit py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${active === tab.id ? 'bg-white shadow-sm text-teal-600' : 'text-slate-600 hover:text-slate-800 hover:bg-white/50'}`}>{tab.label}</button>))}
+        </div>
+    );
+    const FormulaBox = ({ formula, desc }) => (
+        <div className="my-4 p-5 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-xl border border-teal-100">
+            <p className="text-center font-mono text-lg text-teal-800 font-semibold">{formula}</p>
+            {desc && <p className="text-center text-sm text-teal-600 mt-2">{desc}</p>}
+        </div>
+    );
+    const TheoryBlock = ({ title, children, color = "slate" }) => {
+        const colors = { slate: "border-slate-300 bg-slate-50", blue: "border-blue-300 bg-blue-50", green: "border-green-300 bg-green-50", amber: "border-amber-300 bg-amber-50", pink: "border-pink-300 bg-pink-50", violet: "border-violet-300 bg-violet-50", red: "border-red-300 bg-red-50", cyan: "border-cyan-300 bg-cyan-50", emerald: "border-emerald-300 bg-emerald-50", purple: "border-purple-300 bg-purple-50", rose: "border-rose-300 bg-rose-50", indigo: "border-indigo-300 bg-indigo-50", teal: "border-teal-300 bg-teal-50", orange: "border-orange-300 bg-orange-50" };
+        return (<div className={`border-l-4 ${colors[color] || colors.slate} p-5 rounded-r-xl my-4`}>{title && <h4 className="font-bold text-slate-800 mb-3 text-base">{title}</h4>}<div className="text-slate-700 text-sm leading-relaxed space-y-2">{children}</div></div>);
+    };
+    const SectionTitle = ({ icon, title, subtitle }) => (<div className="mb-8"><div className="flex items-center gap-3 mb-2"><span className="text-3xl">{icon}</span><h1 className="text-3xl font-black text-slate-800">{title}</h1></div>{subtitle && <p className="text-slate-500 ml-12">{subtitle}</p>}</div>);
+    const BibliografiaBox = ({ items }) => (<div className="my-6 p-6 bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl border border-slate-200"><h4 className="font-bold text-slate-800 mb-4 text-base flex items-center gap-2"><span>📚</span> Bibliografía</h4><ul className="space-y-2">{items.map((item, i) => (<li key={i} className="text-sm text-slate-700 leading-relaxed pl-4 border-l-2 border-slate-200">{item}</li>))}</ul></div>);
+    const ClauBox = ({ children }) => (<div className="my-4 p-5 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200"><div className="flex items-start gap-3"><span className="text-2xl">🔑</span><div><h4 className="font-bold text-amber-700 mb-2">{lang === 'es' ? 'Clave para el 10' : lang === 'en' ? 'Key for top marks' : 'Clau per al 10'}</h4><div className="text-sm text-amber-800 space-y-1">{children}</div></div></div></div>);
+
+    // ════════════════════════════════════════════════════════════════
+    // THEME DATA
+    // ════════════════════════════════════════════════════════════════
+    const temes = [
+        { num: 61, id: 'tema61', available: true },
+        { num: 62, id: 'tema62', available: true },
+        { num: 63, id: 'tema63', available: false },
+        { num: 64, id: 'tema64', available: false },
+        { num: 65, id: 'tema65', available: false },
+        { num: 66, id: 'tema66', available: false },
+    ];
+
+    // ════════════════════════════════════════════════════════════════
+    // INICIO
+    // ════════════════════════════════════════════════════════════════
+    const Inicio = () => (
+        <div className="animate-fade">
+            <a href="./oposicions" className="inline-flex items-center gap-2 text-sm text-teal-600 hover:text-teal-800 mb-6 transition-colors">{t('inicio.backOpo')}</a>
+            <div className="text-center mb-10">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-teal-100 text-teal-700 rounded-full text-sm font-semibold mb-4"><span>💹</span> Bloc G</div>
+                <h1 className="text-4xl font-black text-slate-800 mb-3">{t('inicio.title')}</h1>
+                <p className="text-slate-500 text-lg max-w-2xl mx-auto">{t('inicio.subtitle')}</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {temes.map(tema => (
+                    <button key={tema.id} onClick={() => { if (tema.available) { setSection(tema.id); pdeSetHashSection(tema.id); pdeScrollToTop(); } }}
+                        className={`text-left p-5 rounded-2xl border transition-all ${tema.available ? 'bg-white border-teal-200 hover:shadow-lg hover:border-teal-300 cursor-pointer' : 'bg-gray-50 border-gray-200 opacity-70 cursor-not-allowed'}`}>
+                        <div className="flex items-start gap-3">
+                            <span className={`inline-flex items-center justify-center w-10 h-10 rounded-xl text-sm font-black text-white ${tema.available ? 'bg-gradient-to-br from-teal-500 to-cyan-600' : 'bg-gray-400'}`}>T{tema.num}</span>
+                            <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-slate-800 text-sm leading-snug mb-2">{t(`tema${tema.num}.title`)}</p>
+                                <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${tema.available ? 'bg-teal-100 text-teal-700' : 'bg-gray-100 text-gray-500'}`}>{tema.available ? '✓ ' + t('inicio.disponible') : '🔒 ' + t('inicio.properament')}</span>
+                            </div>
+                        </div>
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 61 — Activos financieros. Renta fija y variable.
+    // ════════════════════════════════════════════════════════════════
+    const Tema61Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>Los <strong>activos financieros</strong> son títulos o contratos que representan un derecho para su titular (el inversor) y una obligación para el emisor. Constituyen el mecanismo fundamental a través del cual el sistema financiero canaliza el ahorro hacia la inversión. La distinción entre <strong>renta fija</strong> (deuda) y <strong>renta variable</strong> (acciones) es esencial para comprender los mercados financieros, la gestión de carteras y la educación financiera del ciudadano.</p>
+                    <p>Este tema se enmarca en los contenidos de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022) sobre el sistema financiero y los mercados, y en los contenidos transversales de educación financiera. Se estructura en: concepto y características, renta fija, renta variable, fondos de inversión y relación rentabilidad-riesgo.</p>
+                </div>
+            </Card>
+            <Card title="1. Concepto y características de los activos financieros" icon="📘">
+                <TheoryBlock title="1.1. Definición" color="teal"><p>Un <strong>activo financiero</strong> es un título emitido por una unidad económica deficitaria (empresa, Estado) que representa una deuda (renta fija) o una participación en la propiedad (renta variable) y que otorga a su titular el derecho a recibir flujos de caja futuros (intereses, dividendos, reembolso del principal).</p></TheoryBlock>
+                <TheoryBlock title="1.2. Tres características fundamentales" color="cyan"><p><strong>1. Rentabilidad:</strong> rendimiento que proporciona el activo (intereses, dividendos, plusvalías). Puede ser fija (conocida de antemano — bonos) o variable (incierta — acciones).<br/><strong>2. Riesgo:</strong> probabilidad de que el rendimiento real difiera del esperado. Incluye: riesgo de crédito (impago del emisor), riesgo de mercado (fluctuaciones de precio), riesgo de tipo de interés, riesgo de liquidez, riesgo de tipo de cambio.<br/><strong>3. Liquidez:</strong> facilidad para convertir el activo en dinero sin pérdida significativa de valor. El dinero es el activo más líquido; un inmueble, el menos.</p><p><strong>Relación fundamental:</strong> a mayor rentabilidad esperada, mayor riesgo. A mayor liquidez, menor rentabilidad. No existe la inversión de alta rentabilidad, bajo riesgo y alta liquidez simultáneamente (triángulo imposible).</p></TheoryBlock>
+                <FormulaBox formula="Rentabilitat ↑ ↔ Risc ↑ | Liquiditat ↑ ↔ Rentabilitat ↓" desc="El triangle impossible: no es pot tindre tot alhora" />
+            </Card>
+            <Card title="2. Renta fija" icon="📘">
+                <TheoryBlock title="2.1. Concepto" color="teal"><p>Los activos de <strong>renta fija</strong> representan un <strong>préstamo</strong> del inversor al emisor: el inversor presta dinero y recibe a cambio intereses periódicos (cupón) y la devolución del principal al vencimiento. El rendimiento es predecible (de ahí «fija»), aunque el precio de mercado puede fluctuar si se vende antes del vencimiento.</p></TheoryBlock>
+                <TheoryBlock title="2.2. Tipos de renta fija" color="cyan">
+                    <p><strong>Deuda pública:</strong><br/>— <em>Letras del Tesoro:</em> CP (3, 6, 12 meses). Emitidas al descuento (se compra por debajo del nominal y se cobra el nominal al vencimiento). Riesgo muy bajo.<br/>— <em>Bonos del Estado:</em> MP (2-5 años). Cupón anual.<br/>— <em>Obligaciones del Estado:</em> LP (10, 15, 30, 50 años). Cupón anual.</p>
+                    <p><strong>Renta fija privada (corporativa):</strong><br/>— <em>Pagarés de empresa:</em> CP. Similares a las letras.<br/>— <em>Bonos y obligaciones corporativas:</em> emitidos por empresas. Mayor riesgo (y mayor rentabilidad) que la deuda pública. Las <em>agencias de rating</em> (Moody's, S&P, Fitch) califican la solvencia del emisor: investment grade (BBB o superior) vs. high yield/bono basura (BB o inferior).</p>
+                </TheoryBlock>
+                <TheoryBlock title="2.3. Precio y tipo de interés" color="teal"><p>El precio de un bono en el mercado secundario tiene una <strong>relación inversa</strong> con el tipo de interés: cuando los tipos suben, el precio de los bonos baja (porque los bonos existentes con cupones más bajos son menos atractivos), y viceversa. Esta es la fuente principal de riesgo de mercado de la renta fija.</p></TheoryBlock>
+            </Card>
+            <Card title="3. Renta variable" icon="📘">
+                <TheoryBlock title="3.1. Las acciones" color="teal"><p>Las <strong>acciones</strong> representan una participación en la <strong>propiedad</strong> de una sociedad anónima. El accionista es copropietario y tiene derechos: <strong>económicos</strong> (dividendos, participación en el patrimonio en caso de liquidación, suscripción preferente en ampliaciones) y <strong>políticos</strong> (voto en la Junta General de Accionistas, información). La rentabilidad proviene de: <strong>dividendos</strong> (parte del beneficio distribuida) + <strong>plusvalías</strong> (ganancia por venta a precio superior al de compra).</p></TheoryBlock>
+                <TheoryBlock title="3.2. Valoración de acciones" color="cyan"><p><strong>Valor nominal:</strong> valor que figura en los estatutos (capital social / n.º acciones).<br/><strong>Valor contable (teórico):</strong> patrimonio neto / n.º acciones.<br/><strong>Valor de mercado (cotización):</strong> precio al que se compra/vende en Bolsa. Determinado por oferta y demanda, expectativas de beneficios, tipos de interés, sentimiento del mercado.<br/><strong>PER (Price Earnings Ratio):</strong> Cotización / BPA (Beneficio Por Acción). Indica cuántos años de beneficios se pagan por la acción. PER alto → acción «cara» (o expectativas altas); PER bajo → acción «barata» (o expectativas bajas).</p></TheoryBlock>
+                <FormulaBox formula="PER = Cotització / BPA | Rendibilitat acció = (Dividends + Plusvàlua) / Preu compra" desc="PER alt → cara o expectatives altes. PER baix → barata o expectatives baixes." />
+            </Card>
+            <Card title="4. Fondos de inversión y otros vehículos" icon="📘">
+                <TheoryBlock title="4.1. Fondos de inversión" color="teal"><p>Un <strong>fondo de inversión</strong> es un patrimonio colectivo formado por las aportaciones de múltiples inversores (partícipes), gestionado por una <strong>sociedad gestora</strong> profesional y custodiado por una <strong>entidad depositaria</strong>. La diversificación reduce el riesgo. Tipos: fondos de renta fija, renta variable, mixtos, garantizados, indexados (replican un índice), temáticos (tecnología, ESG), monetarios. En España, más de 350.000 M€ de patrimonio gestionado.</p></TheoryBlock>
+                <TheoryBlock title="4.2. ETFs, planes de pensiones y otros" color="cyan"><p><strong>ETF (Exchange-Traded Fund):</strong> fondo cotizado en Bolsa como una acción. Comisiones bajas, liquidez alta. Replican índices (IBEX 35, S&P 500).<br/><strong>Planes de pensiones:</strong> ahorro a largo plazo para la jubilación. Ventajas fiscales (aportaciones deducibles en IRPF, con límite de 1.500 €/año). Ilíquidos (solo rescatables en jubilación, incapacidad, paro LP o a los 10 años).<br/><strong>Criptoactivos:</strong> Bitcoin, Ethereum. Activos digitales descentralizados, alta volatilidad, regulación en desarrollo (MiCA en la UE).<br/><strong>Derivados:</strong> futuros, opciones, swaps. Instrumentos cuyo valor depende de un activo subyacente. Uso: cobertura de riesgos y especulación.</p></TheoryBlock>
+            </Card>
+            <Card title="5. La relación rentabilidad-riesgo y la diversificación" icon="📘">
+                <TheoryBlock color="teal"><p><strong>Harry Markowitz</strong> (1952, Teoría Moderna de Carteras) demostró que la <strong>diversificación</strong> —combinar activos con correlaciones bajas o negativas— reduce el riesgo de una cartera sin reducir proporcionalmente la rentabilidad esperada. El <strong>riesgo diversificable</strong> (específico de una empresa) se elimina; el <strong>riesgo sistemático</strong> (de mercado) no. El modelo <strong>CAPM</strong> (Sharpe, 1964) establece que la rentabilidad esperada de un activo depende de su beta (sensibilidad al mercado): E(Ri) = Rf + βi × (E(Rm) − Rf).</p></TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="teal"><p>Los activos financieros se caracterizan por rentabilidad, riesgo y liquidez (triángulo imposible). La renta fija (letras, bonos, obligaciones) representa un préstamo: cupón + devolución; precio inverso a tipos. La renta variable (acciones) representa propiedad: dividendos + plusvalías; valoración por PER. Los fondos de inversión diversifican (350.000 M€ en España); los ETFs cotizan como acciones. Planes de pensiones: ahorro jubilación con ventaja fiscal. Markowitz: la diversificación reduce el riesgo diversificable. CAPM: rentabilidad esperada función de beta.</p></TheoryBlock>
+            </Card>
+            <BibliografiaBox items={["Brealey, R., Myers, S. & Allen, F. (2020). Principios de Finanzas Corporativas. McGraw-Hill.","Markowitz, H. (1952). Portfolio Selection. Journal of Finance.","Sharpe, W. (1964). Capital Asset Prices. Journal of Finance.","CNMV. Guía de productos financieros para inversores. www.cnmv.es","Banco de España. Portal del Cliente Bancario. www.bde.es","Tesoro Público. Valores del Tesoro. www.tesoro.es","Inverco. Estadísticas de fondos de inversión. www.inverco.es","Malkiel, B. (2019). A Random Walk Down Wall Street, 12.ª ed. Norton.","Bodie, Z., Kane, A. & Marcus, A. (2021). Investments, 12.ª ed. McGraw-Hill.","Reglamento MiCA (UE) 2023/1114 sobre mercados de criptoactivos."]} />
+        </div>
+    );
+    const Tema61Resum = () => (
+        <div className="space-y-5 animate-fade"><Card>
+            <div className="p-4 bg-teal-50 rounded-xl border border-teal-200 mb-5"><p className="text-center font-bold text-teal-800 text-lg">Tema 61: Actius financers. Renda fixa i variable.</p><p className="text-center text-sm text-teal-600 mt-1"><em>"Rentabilitat ↔ Risc ↔ Liquiditat: el triangle impossible"</em></p></div>
+            <div className="space-y-4 text-sm text-slate-700">
+                <div><h4 className="font-bold text-slate-800 mb-1">1. Característiques</h4><ul className="list-disc pl-5 space-y-1"><li>Rentabilitat, risc, liquiditat. Triangle impossible: no es pot maximitzar tot.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">2. Renda fixa</h4><ul className="list-disc pl-5 space-y-1"><li>Préstec al emissor. Cupó + devolució principal. Preu invers a tipus interès.</li><li>Pública: lletres (CP), bons (MP), obligacions (LP). Privada: pagarés, bons corporatius. Rating: S&P, Moody's.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">3. Renda variable</h4><ul className="list-disc pl-5 space-y-1"><li>Accions = propietat. Dividends + plusvàlues. Drets econòmics i polítics.</li><li>Valor nominal, comptable, de mercat. PER = Cotització/BPA.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">4. Fons i altres</h4><ul className="list-disc pl-5 space-y-1"><li>Fons inversió: patrimoni col·lectiu, gestora, diversificació. 350.000 M€ Espanya.</li><li>ETF (fons cotitzat), plans pensions (1.500€/any deduïble), criptoactius (MiCA), derivats.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">5. Diversificació</h4><ul className="list-disc pl-5 space-y-1"><li>Markowitz: diversificar redueix risc diversificable. CAPM (Sharpe): E(Ri) = Rf + β(Rm−Rf).</li></ul></div>
+            </div>
+            <ClauBox><p>- Explica el <strong>triangle impossible</strong> (rentabilitat-risc-liquiditat).</p><p>- Diferencia <strong>renda fixa vs. variable</strong> amb instruments concrets.</p><p>- Inclou <strong>fons, ETFs, plans pensions, criptoactius</strong>.</p><p>- Connecta amb <strong>Markowitz i CAPM</strong> (diversificació, beta).</p></ClauBox>
+        </Card></div>
+    );
+    const Tema61 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="💹" title="Tema 61" subtitle={t('tema61.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema61Complet />}{vista === 'resum' && <Tema61Resum />}</div>); };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 62 — La Bolsa de Valores. Funcionamiento e índices.
+    // ════════════════════════════════════════════════════════════════
+    const Tema62Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>La <strong>Bolsa de Valores</strong> es el mercado organizado donde se compran y venden activos financieros, principalmente acciones y bonos. Cumple funciones esenciales: canaliza el ahorro hacia la inversión productiva, proporciona liquidez a los inversores, valora las empresas cotizadas y facilita la transparencia informativa. La Bolsa es, además, un barómetro de la confianza económica y un mecanismo de asignación eficiente de recursos.</p>
+                    <p>Este tema se enmarca en los contenidos de <strong>Economía de 1.º de Bachillerato</strong> y de educación financiera. Se estructura en: concepto y funciones, mercado primario y secundario, la Bolsa española (BME), los índices bursátiles y la regulación.</p>
+                </div>
+            </Card>
+            <Card title="1. Concepto y funciones de la Bolsa" icon="📘">
+                <TheoryBlock title="1.1. Funciones" color="teal">
+                    <p><strong>1. Canalización del ahorro:</strong> permite a las empresas obtener financiación emitiendo acciones (ampliaciones de capital) u obligaciones.<br/><strong>2. Liquidez:</strong> los inversores pueden vender sus títulos en cualquier momento al precio de mercado.<br/><strong>3. Valoración:</strong> la cotización refleja (en teoría) el valor de la empresa según las expectativas del mercado.<br/><strong>4. Información y transparencia:</strong> las empresas cotizadas deben publicar información financiera periódica (hechos relevantes, cuentas anuales, informes trimestrales).<br/><strong>5. Protección del inversor:</strong> regulación (CNMV), normas de conducta, prohibición de información privilegiada y manipulación de mercado.</p>
+                </TheoryBlock>
+            </Card>
+            <Card title="2. Mercado primario y secundario" icon="📘">
+                <TheoryBlock title="2.1. Mercado primario (de emisión)" color="teal"><p>Donde se emiten y colocan por primera vez los títulos: <strong>OPV</strong> (Oferta Pública de Venta: la empresa sale a Bolsa vendiendo acciones al público), <strong>OPS</strong> (Oferta Pública de Suscripción: ampliación de capital con nuevas acciones), emisión de bonos y obligaciones. Participan: la empresa emisora, los bancos de inversión (colocadores) y los inversores.</p></TheoryBlock>
+                <TheoryBlock title="2.2. Mercado secundario (de negociación)" color="cyan"><p>Donde se compran y venden los títulos ya emitidos entre inversores. La Bolsa propiamente dicha es un mercado secundario. <strong>No aporta financiación directa a la empresa</strong> (el dinero va de un inversor a otro), pero proporciona liquidez y valoración. Sin un mercado secundario eficiente, nadie compraría en el primario (no podría vender después).</p></TheoryBlock>
+            </Card>
+            <Card title="3. La Bolsa española: BME" icon="📘">
+                <TheoryBlock title="3.1. Estructura" color="teal"><p><strong>BME (Bolsas y Mercados Españoles)</strong>, adquirida por el grupo suizo <strong>SIX</strong> en 2020, opera: las cuatro bolsas históricas (Madrid, Barcelona, Bilbao, Valencia) integradas en el <strong>SIBE</strong> (Sistema de Interconexión Bursátil), el mercado de renta fija (AIAF), el mercado de derivados (<strong>MEFF</strong> — futuros y opciones sobre IBEX y acciones), el mercado alternativo bursátil (<strong>BME Growth</strong>, para pymes y empresas en crecimiento) y la entidad de contrapartida central (<strong>BME Clearing</strong>).</p></TheoryBlock>
+                <TheoryBlock title="3.2. Funcionamiento de la contratación" color="cyan"><p>El SIBE funciona como un mercado electrónico continuo: las órdenes de compra y venta se cruzan automáticamente por precio y prioridad temporal. <strong>Horario:</strong> subasta de apertura (8:30-9:00), mercado abierto (9:00-17:30), subasta de cierre (17:30-17:35). Tipos de órdenes: a mercado, limitada, por lo mejor, stop-loss.</p></TheoryBlock>
+            </Card>
+            <Card title="4. Los índices bursátiles" icon="📘">
+                <TheoryBlock title="4.1. Concepto" color="teal"><p>Un <strong>índice bursátil</strong> es un indicador estadístico que refleja la evolución del precio de un conjunto de acciones representativas de un mercado o sector. Se utiliza como referencia (benchmark) para medir el rendimiento de carteras de inversión.</p></TheoryBlock>
+                <TheoryBlock title="4.2. Principales índices" color="cyan">
+                    <p><strong>IBEX 35:</strong> índice de referencia de la Bolsa española. Incluye las 35 empresas con mayor liquidez y capitalización: Inditex, Santander, BBVA, Iberdrola, Telefónica, Amadeus, Ferrovial, CaixaBank, Repsol, Cellnex, etc. Ponderado por capitalización bursátil ajustada por free float. Base 3.000 (30/12/1989).<br/><strong>S&P 500 (EE. UU.):</strong> 500 mayores empresas de EE. UU. El índice de referencia mundial.<br/><strong>Dow Jones Industrial Average:</strong> 30 grandes empresas industriales de EE. UU. Histórico (1896) pero ponderado por precio (menos representativo).<br/><strong>NASDAQ Composite:</strong> empresas tecnológicas (Apple, Microsoft, Amazon, Google, Meta, Tesla).<br/><strong>Euro Stoxx 50:</strong> 50 mayores empresas de la zona euro.<br/><strong>FTSE 100 (Londres), DAX 40 (Fráncfort), CAC 40 (París), Nikkei 225 (Tokio).</strong></p>
+                </TheoryBlock>
+                <FormulaBox formula="IBEX 35: 35 empreses amb major liquiditat i capitalització de la Borsa espanyola" desc="Base 3.000 (30/12/1989). Ponderat per capitalització ajustada per free float." />
+            </Card>
+            <Card title="5. Regulación y protección del inversor" icon="📘">
+                <TheoryBlock color="teal"><p>La <strong>CNMV</strong> supervisa los mercados de valores españoles: autoriza la admisión a cotización, vigila la transparencia informativa, investiga y sanciona el uso de <strong>información privilegiada</strong> (insider trading) y la <strong>manipulación de mercado</strong>. La regulación europea (MiFID II, Reglamento de Abuso de Mercado) armoniza las normas a nivel de la UE. La <strong>protección del inversor minorista</strong> incluye: test de conveniencia/idoneidad, información previa obligatoria (KID), restricciones a productos complejos, fondo de garantía de inversiones (100.000 € por titular).</p></TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="teal"><p>La Bolsa canaliza ahorro, proporciona liquidez, valora empresas y exige transparencia. Se distingue mercado primario (emisión: OPV, OPS) y secundario (negociación entre inversores). BME/SIX opera el SIBE (contratación electrónica), MEFF (derivados), BME Growth (pymes) y AIAF (renta fija). El IBEX 35 (35 empresas, base 3.000 en 1989) es el índice de referencia español; el S&P 500 es la referencia mundial. La CNMV supervisa, con regulación europea armonizada (MiFID II). La protección del inversor incluye fondo de garantía (100.000 €) y restricciones a productos complejos.</p></TheoryBlock>
+            </Card>
+            <BibliografiaBox items={["CNMV. Guía del inversor. www.cnmv.es","BME/SIX. Estadísticas del mercado. www.bolsasymercados.es","Ley del Mercado de Valores (texto refundido, RDL 4/2015).","Directiva MiFID II (2014/65/UE).","Malkiel, B. (2019). A Random Walk Down Wall Street. Norton.","Brealey, R. et al. (2020). Principios de Finanzas Corporativas. McGraw-Hill.","Bodie, Z., Kane, A. & Marcus, A. (2021). Investments. McGraw-Hill.","Banco de España. Informe de Estabilidad Financiera.","Fama, E. (1970). Efficient Capital Markets. Journal of Finance.","Bloomberg / Reuters. Datos de mercado en tiempo real."]} />
+        </div>
+    );
+    const Tema62Resum = () => (
+        <div className="space-y-5 animate-fade"><Card>
+            <div className="p-4 bg-teal-50 rounded-xl border border-teal-200 mb-5"><p className="text-center font-bold text-teal-800 text-lg">Tema 62: La Borsa de Valors. Funcionament i índexs.</p><p className="text-center text-sm text-teal-600 mt-1"><em>"IBEX 35, S&P 500, NASDAQ: els termòmetres de l'economia"</em></p></div>
+            <div className="space-y-4 text-sm text-slate-700">
+                <div><h4 className="font-bold text-slate-800 mb-1">1. Funcions</h4><ul className="list-disc pl-5 space-y-1"><li>Canalitzar estalvi, liquiditat, valoració, transparència, protecció inversor.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">2. Mercats</h4><ul className="list-disc pl-5 space-y-1"><li>Primari: emissió (OPV, OPS). Secundari: negociació entre inversors (la Borsa pròpiament).</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">3. BME/SIX</h4><ul className="list-disc pl-5 space-y-1"><li>SIBE (contratació electrònica, 9-17:30), MEFF (derivats), BME Growth (pimes), AIAF (renda fixa).</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">4. Índexs</h4><ul className="list-disc pl-5 space-y-1"><li>IBEX 35 (Espanya), S&P 500 (EUA, referència mundial), NASDAQ (tech), Euro Stoxx 50, DAX, CAC, Nikkei.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">5. Regulació</h4><ul className="list-disc pl-5 space-y-1"><li>CNMV. MiFID II. Insider trading prohibit. Fons garantia inversions: 100.000€.</li></ul></div>
+            </div>
+            <ClauBox><p>- Diferencia <strong>mercat primari vs. secundari</strong> (funció de cadascun).</p><p>- Detalla l'<strong>estructura de BME/SIX</strong> (SIBE, MEFF, Growth, AIAF).</p><p>- Enumera els <strong>principals índexs mundials</strong> amb les seues característiques.</p><p>- Inclou <strong>regulació</strong> (CNMV, MiFID II, insider trading).</p></ClauBox>
+        </Card></div>
+    );
+    const Tema62 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="📈" title="Tema 62" subtitle={t('tema62.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema62Complet />}{vista === 'resum' && <Tema62Resum />}</div>); };
+
+    // ════════════════════════════════════════════════════════════════
+    // PLACEHOLDER — Temes 63-66
+    // ════════════════════════════════════════════════════════════════
+    const Placeholder = ({ num }) => (
+        <div className="space-y-6 animate-fade">
+            <SectionTitle icon="💹" title={`Tema ${num}`} subtitle={t(`tema${num}.title`)} />
+            <Card><div className="text-center py-16"><span className="text-6xl mb-4 block">🚧</span><p className="text-lg font-semibold text-slate-600 mb-2">{t('placeholder.msg')}</p></div></Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // NAVIGATION AND RENDER
+    // ════════════════════════════════════════════════════════════════
+    const headerSections = [
+        { id: 'inicio', label: t('sec.inicio'), emoji: '🏠' },
+        { id: 'tema61', label: 'T61', emoji: '💹' },
+        { id: 'tema62', label: 'T62', emoji: '📈' },
+        { id: 'tema63', label: 'T63', emoji: '💹' },
+        { id: 'tema64', label: 'T64', emoji: '💹' },
+        { id: 'tema65', label: 'T65', emoji: '💹' },
+        { id: 'tema66', label: 'T66', emoji: '💹' },
+    ];
+
+    return (
+        <div className="min-h-screen">
+            <PdeHeader idioma={idioma} setIdioma={(lang) => { setIdioma(lang); PdeLanguageStore.set(lang); }} currentApp="oposicions-bloc-g" sections={headerSections} currentSection={section} setSection={setSection} />
+            <main className="max-w-7xl mx-auto px-4 py-8">
+                {section === 'inicio' && <Inicio />}
+                {section === 'tema61' && <Tema61 />}
+                {section === 'tema62' && <Tema62 />}
+                {section === 'tema63' && <Placeholder num={63} />}
+                {section === 'tema64' && <Placeholder num={64} />}
+                {section === 'tema65' && <Placeholder num={65} />}
+                {section === 'tema66' && <Placeholder num={66} />}
+            </main>
+            <PdePrevNext sections={headerSections} currentSection={section} setSection={setSection} idioma={idioma} />
+            <PdeFooter appEmoji="💹" appName={t('footer.appname')} idioma={idioma} />
+            <PdeScrollToTop />
+        </div>
+    );
+}
+
+ReactDOM.render(<BlocGApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
