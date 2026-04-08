@@ -165,8 +165,8 @@ function BlocFApp() {
         { num: 54, id: 'tema54', available: true },
         { num: 55, id: 'tema55', available: true },
         { num: 56, id: 'tema56', available: true },
-        { num: 57, id: 'tema57', available: false },
-        { num: 58, id: 'tema58', available: false },
+        { num: 57, id: 'tema57', available: true },
+        { num: 58, id: 'tema58', available: true },
         { num: 59, id: 'tema59', available: false },
         { num: 60, id: 'tema60', available: false },
     ];
@@ -1547,7 +1547,142 @@ function BlocFApp() {
     const Tema56 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="📢" title="Tema 56" subtitle={t('tema56.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema56Complet />}{vista === 'resum' && <Tema56Resum />}</div>); };
 
     // ════════════════════════════════════════════════════════════════
-    // PLACEHOLDER — Temes 57-60
+    // TEMA 57 — La función financiera. Fuentes de financiación.
+    // ════════════════════════════════════════════════════════════════
+    const Tema57Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>La <strong>función financiera</strong> obtiene y gestiona los recursos económicos necesarios para que la empresa pueda funcionar: invertir en activos (maquinaria, existencias, I+D) y financiar sus operaciones (pagar salarios, proveedores, impuestos). La decisión de financiación —de dónde obtener los fondos— es complementaria a la decisión de inversión —en qué emplear los fondos (Tema 58).</p>
+                    <p>Este tema se enmarca en CE6 de <strong>Economía de la Empresa de 2.º de Bachillerato</strong> (RD 243/2022). Se estructura en: concepto, clasificación de fuentes de financiación, autofinanciación, financiación ajena, coste de capital y nuevas formas de financiación.</p>
+                </div>
+            </Card>
+            <Card title="1. Clasificación de las fuentes de financiación" icon="📘">
+                <TheoryBlock title="1.1. Criterios de clasificación" color="rose">
+                    <p><strong>Según la propiedad:</strong> financiación propia (no exigible: capital social, reservas, beneficios retenidos) y financiación ajena (exigible: deudas con terceros, préstamos, empréstitos, proveedores).<br/><strong>Según el plazo:</strong> a largo plazo o capitales permanentes (&gt;1 año: capital, reservas, préstamos a LP, empréstitos, leasing) y a corto plazo (&lt;1 año: crédito bancario, descuento de efectos, proveedores, factoring, póliza de crédito).<br/><strong>Según el origen:</strong> interna o autofinanciación (generada por la propia empresa: beneficios no distribuidos, amortizaciones, provisiones) y externa (aportada desde fuera: ampliaciones de capital, préstamos, subvenciones).</p>
+                </TheoryBlock>
+            </Card>
+            <Card title="2. Financiación propia" icon="📘">
+                <TheoryBlock title="2.1. Capital social" color="rose">
+                    <p>Aportaciones de los socios/accionistas al constituir la empresa o en <strong>ampliaciones de capital</strong>. En una SA, se materializa en acciones; en una SL, en participaciones sociales. Es la financiación más estable (no tiene vencimiento ni genera intereses obligatorios), pero diluye el control de los accionistas existentes.</p>
+                </TheoryBlock>
+                <TheoryBlock title="2.2. Autofinanciación" color="red">
+                    <p><strong>Autofinanciación de enriquecimiento (reservas):</strong> beneficios no distribuidos como dividendos. Tipos: reserva legal (obligatoria, 10 % del beneficio hasta el 20 % del capital social), reservas voluntarias, reservas estatutarias. Aumentan el patrimonio neto.<br/><strong>Autofinanciación de mantenimiento:</strong> fondos destinados a mantener el valor del patrimonio. <em>Amortizaciones:</em> reflejan la pérdida de valor (depreciación) del inmovilizado por uso, obsolescencia o paso del tiempo. Se imputan como coste y generan un fondo para reponer el activo al final de su vida útil. <em>Provisiones:</em> fondos para cubrir pérdidas futuras probables (impagos, garantías, litigios).<br/><strong>Ventajas:</strong> no genera coste financiero explícito, aumenta la autonomía, no requiere garantías. <strong>Inconvenientes:</strong> limita el reparto de dividendos (puede generar conflicto con los accionistas), es limitada (depende de los beneficios), puede generar ineficiencia (inversiones no rentables financiadas con fondos «gratuitos»).</p>
+                </TheoryBlock>
+            </Card>
+            <Card title="3. Financiación ajena" icon="📘">
+                <TheoryBlock title="3.1. A largo plazo" color="rose">
+                    <p><strong>Préstamos bancarios a LP:</strong> la entidad financiera entrega una cantidad (principal) que la empresa devuelve con intereses en cuotas periódicas (sistema francés, cuotas constantes; sistema americano, intereses + devolución final).<br/><strong>Empréstitos (emisión de obligaciones):</strong> la empresa emite títulos de deuda (obligaciones, bonos) que los inversores compran. La empresa paga intereses periódicos (cupón) y devuelve el principal al vencimiento. Accesible principalmente para grandes empresas.<br/><strong>Leasing (arrendamiento financiero):</strong> la empresa de leasing adquiere el bien (maquinaria, vehículo, local) y lo alquila a la empresa usuaria por una cuota periódica, con opción de compra al final del contrato. Ventaja: no requiere desembolso inicial, cuotas deducibles. <strong>Renting:</strong> similar pero sin opción de compra y con mantenimiento incluido.<br/><strong>Subvenciones:</strong> transferencias no reembolsables de las AAPP o la UE. No son deuda, pero pueden estar condicionadas (inversión, empleo, I+D, transición ecológica).</p>
+                </TheoryBlock>
+                <TheoryBlock title="3.2. A corto plazo" color="red">
+                    <p><strong>Crédito comercial (proveedores):</strong> aplazamiento del pago a proveedores (30, 60, 90 días). Es la fuente de financiación a CP más utilizada y, aparentemente, gratuita (aunque pierde descuentos por pronto pago).<br/><strong>Préstamos bancarios a CP:</strong> cantidad fija, devolución en &lt;1 año.<br/><strong>Póliza de crédito (línea de crédito):</strong> el banco pone a disposición un límite; la empresa dispone de lo que necesita y paga intereses solo por lo utilizado (más una comisión de disponibilidad). Flexible.<br/><strong>Descuento de efectos comerciales:</strong> la empresa anticipa el cobro de letras de cambio, pagarés o facturas descontándolos en el banco (que cobra intereses y comisiones).<br/><strong>Factoring:</strong> cesión de las facturas pendientes de cobro a una entidad (factor) que adelanta el importe (menos comisión y intereses) y, opcionalmente, asume el riesgo de impago (factoring sin recurso).<br/><strong>Confirming:</strong> gestión del pago a proveedores a través de una entidad financiera que ofrece al proveedor cobro anticipado.</p>
+                </TheoryBlock>
+            </Card>
+            <Card title="4. Coste de capital y estructura financiera" icon="📘">
+                <TheoryBlock title="4.1. Coste de cada fuente" color="rose">
+                    <p><strong>Coste de la deuda (ki):</strong> tipo de interés que paga la empresa, ajustado por el ahorro fiscal (los intereses son deducibles en el IS): ki* = ki × (1 − t), donde t = tipo impositivo.<br/><strong>Coste de los fondos propios (ke):</strong> la rentabilidad mínima exigida por los accionistas (coste de oportunidad). Es mayor que el coste de la deuda porque los accionistas asumen más riesgo (cobran después de los acreedores).<br/><strong>Coste medio ponderado del capital (WACC):</strong> media ponderada del coste de la deuda y de los fondos propios, según su proporción en la estructura financiera.</p>
+                </TheoryBlock>
+                <FormulaBox formula="WACC = ke × (E/(E+D)) + ki×(1−t) × (D/(E+D))" desc="E = fons propis, D = deute, ke = cost equity, ki = cost deute, t = tipus IS" />
+            </Card>
+            <Card title="5. Nuevas formas de financiación" icon="📘">
+                <TheoryBlock color="rose"><p><strong>Business angels:</strong> inversors privats que aporten capital i experiència a startups en fases inicials.<br/><strong>Capital riesgo (venture capital):</strong> fons que invertixen en empreses amb alt potencial de creixement a canvi d'una participació.<br/><strong>Crowdfunding:</strong> finançament col·lectiu a través de plataformes (reward-based: Kickstarter; equity-based: Crowdcube; lending-based: October).<br/><strong>ICO/financiación pública:</strong> línies ICO (préstecs bonificats), ENISA (préstecs participatius per a emprenedors), CDTI (finançament I+D), fons Next Generation EU.<br/><strong>Emisión de acciones (Bolsa):</strong> OPV (Oferta Pública de Venta) per a empreses que volen cotitzar.</p></TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="rose"><p>La funció financera obté i gestiona recursos. Les fonts es classifiquen per propietat (pròpia/aliena), plaç (LP/CP) i origen (interna/externa). La financiació pròpia inclou capital social, reserves i autofinançament (amortitzacions, provisions). L'aliena a LP: préstecs, empréstits, leasing, subvencions. A CP: proveïdors, pòlissa de crèdit, descompte d'efectes, factoring. El WACC pondera el cost de cada font. Noves formes: business angels, VC, crowdfunding, ICO/ENISA, borsa.</p></TheoryBlock>
+            </Card>
+            <BibliografiaBox items={["Brealey, R., Myers, S. & Allen, F. (2020). Principios de Finanzas Corporativas, 13.ª ed. McGraw-Hill.","Bueno Campos, E. (2022). Curso básico de Economía de la Empresa. Pirámide.","Suárez, A. S. (2014). Decisiones óptimas de inversión y financiación en la empresa, 22.ª ed. Pirámide.","Ross, S., Westerfield, R. & Jordan, B. (2019). Fundamentals of Corporate Finance, 12.ª ed. McGraw-Hill.","Banco de España. Central de Información de Riesgos. www.bde.es","ICO. Líneas de financiación. www.ico.es","ENISA. Préstamos participativos. www.enisa.es","Ley 5/2015 de Fomento de la Financiación Empresarial.","CNMV. Plataformas de financiación participativa. www.cnmv.es","Modigliani, F. & Miller, M. (1958). The Cost of Capital. American Economic Review."]} />
+        </div>
+    );
+    const Tema57Resum = () => (
+        <div className="space-y-5 animate-fade"><Card>
+            <div className="p-4 bg-rose-50 rounded-xl border border-rose-200 mb-5"><p className="text-center font-bold text-rose-800 text-lg">Tema 57: La funció financera. Fonts de finançament.</p><p className="text-center text-sm text-rose-600 mt-1"><em>"D'on vénen els diners: pròpia, aliena, LP, CP, interna, externa"</em></p></div>
+            <div className="space-y-4 text-sm text-slate-700">
+                <div><h4 className="font-bold text-slate-800 mb-1">1. Classificació</h4><ul className="list-disc pl-5 space-y-1"><li>Propietat: pròpia (no exigible) vs. aliena (exigible).</li><li>Plaç: LP (&gt;1 any) vs. CP (&lt;1 any). Origen: interna (autofinançament) vs. externa.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">2. Finançament propi</h4><ul className="list-disc pl-5 space-y-1"><li>Capital social (accions/participacions). Ampliacions de capital.</li><li>Autofinançament enriquiment: reserves (legal 10%→20% capital, voluntàries).</li><li>Autofinançament manteniment: amortitzacions (depreciació) + provisions (pèrdues futures).</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">3. Finançament alié</h4><ul className="list-disc pl-5 space-y-1"><li>LP: préstecs bancaris, empréstits (obligacions), leasing, renting, subvencions.</li><li>CP: proveïdors (crèdit comercial), pòlissa crèdit, descompte efectes, factoring, confirming.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">4. Cost i noves formes</h4><ul className="list-disc pl-5 space-y-1"><li>WACC = ke×(E/V) + ki×(1−t)×(D/V). Cost deute &lt; cost equity (risc menor).</li><li>Business angels, VC, crowdfunding, ICO/ENISA, OPV (borsa).</li></ul></div>
+            </div>
+            <FormulaBox formula="WACC = ke × (E/(E+D)) + ki×(1−t) × (D/(E+D))" desc="Cost mitjà ponderat del capital: integra cost de fons propis i deute" />
+            <ClauBox><p>- Classifica per <strong>3 criteris</strong> (propietat, plaç, origen) amb exemples.</p><p>- Diferencia <strong>autofinançament d'enriquiment vs. manteniment</strong>.</p><p>- Detalla les <strong>6 fonts a CP</strong> (proveïdors, pòlissa, descompte, factoring, confirming, préstec).</p><p>- Inclou <strong>WACC</strong> i noves formes (crowdfunding, VC, business angels).</p></ClauBox>
+        </Card></div>
+    );
+    const Tema57 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="💰" title="Tema 57" subtitle={t('tema57.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema57Complet />}{vista === 'resum' && <Tema57Resum />}</div>); };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 58 — La selección de inversiones. VAN, TIR, Payback.
+    // ════════════════════════════════════════════════════════════════
+    const Tema58Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>La <strong>decisión de inversión</strong> —en qué activos emplear los recursos financieros— es, junto con la de financiación, la decisión más importante de la empresa. Una inversión compromete fondos a largo plazo con la expectativa de obtener rendimientos futuros superiores al coste del capital. Los métodos de selección de inversiones permiten evaluar y comparar proyectos para elegir los más rentables.</p>
+                    <p>Este tema es <strong>esencial para los supuestos prácticos de oposiciones</strong> y se enmarca en CE6 de <strong>Economía de la Empresa de 2.º de Bachillerato</strong> (RD 243/2022). Se estructura en: concepto de inversión, métodos estáticos (Payback), métodos dinámicos (VAN, TIR) y comparación de criterios.</p>
+                </div>
+            </Card>
+            <Card title="1. Concepto y variables de una inversión" icon="📘">
+                <TheoryBlock title="1.1. Definición y tipos" color="rose">
+                    <p>Una <strong>inversión</strong> es el acto de renunciar a una satisfacción presente (dinero) para obtener un beneficio futuro. En sentido empresarial: desembolso de fondos para adquirir activos (maquinaria, tecnología, stocks, I+D) que generarán flujos de caja futuros.<br/><strong>Tipos:</strong> inversiones productivas (ampliar capacidad), inversiones de reemplazo (sustituir equipos obsoletos), inversiones en I+D, inversiones financieras (acciones, bonos).</p>
+                </TheoryBlock>
+                <TheoryBlock title="1.2. Variables de un proyecto de inversión" color="red">
+                    <p><strong>Desembolso inicial (A o D₀):</strong> cantidad invertida en el momento 0.<br/><strong>Flujos netos de caja (Qᵢ):</strong> cobros − pagos generados por la inversión en cada periodo i. Q₁, Q₂, ..., Qₙ.<br/><strong>Duración (n):</strong> número de periodos (años) de vida útil del proyecto.<br/><strong>Tasa de descuento (k):</strong> coste del capital o rentabilidad mínima exigida (WACC).<br/><strong>Valor residual (VR):</strong> valor del activo al final de su vida útil (se suma al último flujo de caja).</p>
+                </TheoryBlock>
+            </Card>
+            <Card title="2. Métodos estáticos" icon="📘">
+                <TheoryBlock title="2.1. Payback (plazo de recuperación)" color="rose">
+                    <p>El <strong>Payback</strong> es el tiempo que tarda la inversión en recuperar el desembolso inicial con los flujos de caja generados.</p>
+                    <p><strong>Con flujos constantes:</strong> Payback = A / Q<br/><strong>Con flujos variables:</strong> se acumulan los flujos hasta igualar A.<br/><strong>Criterio:</strong> se elige la inversión con menor Payback (recupera antes). Se acepta si el Payback &lt; plazo máximo establecido por la empresa.</p>
+                    <p><strong>Ventajas:</strong> simplicidad, liquidez (favorece proyectos que recuperan rápido).<br/><strong>Inconvenientes:</strong> <em>no tiene en cuenta el valor temporal del dinero</em> (un euro hoy vale más que un euro mañana), <em>ignora los flujos posteriores a la recuperación</em> (un proyecto que genera grandes flujos después del Payback es desechado), no mide la rentabilidad real.</p>
+                </TheoryBlock>
+                <FormulaBox formula="Payback = A / Q (flujos constants) | Acumular Qᵢ fins ΣQᵢ ≥ A (variables)" desc="Temps de recuperació. No considera el valor temporal del diner." />
+            </Card>
+            <Card title="3. Métodos dinámicos" icon="📘">
+                <TheoryBlock title="3.1. Valor Actual Neto (VAN)" color="rose">
+                    <p>El <strong>VAN</strong> (Valor Actual Neto, NPV en inglés) es la diferencia entre el valor actual de los flujos de caja futuros y el desembolso inicial. Actualiza todos los flujos al momento presente utilizando la tasa de descuento k:</p>
+                    <p><strong>VAN = −A + Q₁/(1+k)¹ + Q₂/(1+k)² + ... + Qₙ/(1+k)ⁿ</strong></p>
+                    <p><strong>Criterio:</strong> VAN &gt; 0 → la inversión genera valor (se acepta). VAN = 0 → indiferente. VAN &lt; 0 → destruye valor (se rechaza). Entre varios proyectos, se elige el de <strong>mayor VAN</strong>.</p>
+                    <p><strong>Ventajas:</strong> tiene en cuenta el valor temporal del dinero, considera todos los flujos de caja, mide la creación de valor en términos absolutos (euros), es el método teóricamente más correcto.<br/><strong>Inconvenientes:</strong> requiere estimar flujos futuros (incertidumbre), la elección de la tasa de descuento k es crítica y subjetiva.</p>
+                </TheoryBlock>
+                <TheoryBlock title="3.2. Tasa Interna de Rentabilidad (TIR)" color="red">
+                    <p>La <strong>TIR</strong> (Tasa Interna de Rentabilidad, IRR en inglés) es la tasa de descuento que hace el VAN = 0. Es la rentabilidad del proyecto:</p>
+                    <p><strong>0 = −A + Q₁/(1+r)¹ + Q₂/(1+r)² + ... + Qₙ/(1+r)ⁿ</strong></p>
+                    <p>Donde <strong>r = TIR</strong>. Se resuelve por interpolación o con calculadora/hoja de cálculo.</p>
+                    <p><strong>Criterio:</strong> TIR &gt; k → la inversión rinde más que el coste de capital (se acepta). TIR = k → indiferente. TIR &lt; k → rinde menos que el coste de capital (se rechaza). Entre varios proyectos, se elige el de <strong>mayor TIR</strong>.</p>
+                    <p><strong>Ventajas:</strong> tiene en cuenta el valor temporal del dinero, proporciona una medida relativa de rentabilidad (porcentaje), intuitiva para comunicar.<br/><strong>Inconvenientes:</strong> puede dar resultados ambiguos con flujos no convencionales (múltiples TIR), supone reinversión de los flujos intermedios a la propia TIR (supuesto discutible), puede contradecir al VAN en proyectos mutuamente excluyentes de distinta escala o duración.</p>
+                </TheoryBlock>
+                <FormulaBox formula="VAN = −A + Σ Qᵢ/(1+k)ⁱ | TIR: VAN = 0 → r" desc="VAN > 0 → acceptar. TIR > k → acceptar. En cas de conflicte, prioritzar VAN." />
+            </Card>
+            <Card title="4. Comparación de criterios y ejemplo" icon="📘">
+                <TheoryBlock title="4.1. VAN vs. TIR: ¿cuándo discrepan?" color="rose">
+                    <p>Para proyectos <strong>independientes</strong> (aceptar/rechazar), VAN y TIR dan el mismo resultado. Para proyectos <strong>mutuamente excluyentes</strong> (elegir uno), pueden discrepar cuando difieren en tamaño (inversión inicial) o en el perfil temporal de los flujos. En caso de conflicto, <strong>se prioriza el VAN</strong> (mide la creación de valor absoluta).</p>
+                </TheoryBlock>
+                <TheoryBlock title="4.2. Ejemplo numérico" color="red">
+                    <p><strong>Proyecto X:</strong> A = 10.000 €. Flujos: Q₁ = 4.000, Q₂ = 5.000, Q₃ = 4.000. k = 8 %.<br/>VAN = −10.000 + 4.000/1,08 + 5.000/1,08² + 4.000/1,08³ = −10.000 + 3.703,70 + 4.286,69 + 3.175,33 = <strong>1.165,72 €</strong>. VAN &gt; 0 → se acepta.<br/>TIR: por interpolación, <strong>r ≈ 14,5 %</strong> &gt; 8 % → se acepta.<br/>Payback: 4.000 + 5.000 = 9.000 (año 2) + 1.000/4.000 del año 3 = <strong>2 años y 3 meses</strong>.</p>
+                </TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="rose"><p>La selecció d'inversions avalua projectes amb 3 mètodes: Payback (temps de recuperació — simple però no considera valor temporal), VAN (valor actual net dels fluxos descomptats − desemborsament — el més correcte, en €) i TIR (taxa que fa VAN=0 — rentabilitat en %). Criteris: Payback mínim, VAN&gt;0 (i màxim), TIR&gt;k. En conflicte VAN vs. TIR, prioritzar VAN. Variables clau: desemborsament A, fluxos Qᵢ, durada n, taxa k, valor residual. Tema essencial per als supòsits pràctics.</p></TheoryBlock>
+            </Card>
+            <BibliografiaBox items={["Suárez, A. S. (2014). Decisiones óptimas de inversión y financiación en la empresa, 22.ª ed. Pirámide.","Brealey, R., Myers, S. & Allen, F. (2020). Principios de Finanzas Corporativas, 13.ª ed. McGraw-Hill.","Bueno Campos, E. (2022). Curso básico de Economía de la Empresa. Pirámide.","Ross, S., Westerfield, R. & Jordan, B. (2019). Fundamentals of Corporate Finance. McGraw-Hill.","Fernández, P. (2019). Valoración de Empresas, 7.ª ed. Gestión 2000.","Mankiw, N. G. (2021). Principios de Economía, 9.ª ed. Cengage."]} />
+        </div>
+    );
+    const Tema58Resum = () => (
+        <div className="space-y-5 animate-fade"><Card>
+            <div className="p-4 bg-rose-50 rounded-xl border border-rose-200 mb-5"><p className="text-center font-bold text-rose-800 text-lg">Tema 58: La selecció d'inversions. VAN, TIR, Payback.</p><p className="text-center text-sm text-rose-600 mt-1"><em>"VAN > 0 → acceptar. TIR > k → acceptar. Payback = rapidesa de recuperació."</em></p></div>
+            <div className="space-y-4 text-sm text-slate-700">
+                <div><h4 className="font-bold text-slate-800 mb-1">1. Variables</h4><ul className="list-disc pl-5 space-y-1"><li>Desemborsament A, fluxos Qᵢ, durada n, taxa k (WACC), valor residual VR.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">2. Payback</h4><ul className="list-disc pl-5 space-y-1"><li>Payback = A/Q (constants) o acumular fins ΣQᵢ ≥ A. Criteri: mínim.</li><li>Limitació: no considera valor temporal ni fluxos posteriors a la recuperació.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">3. VAN</h4><ul className="list-disc pl-5 space-y-1"><li>VAN = −A + ΣQᵢ/(1+k)ⁱ. VAN&gt;0 → acceptar, màxim VAN.</li><li>Avantatge: valor temporal, tots els fluxos, creació valor absoluta (€). El més correcte.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">4. TIR</h4><ul className="list-disc pl-5 space-y-1"><li>TIR = taxa r on VAN=0. TIR&gt;k → acceptar. Rentabilitat relativa (%).</li><li>Limitació: múltiples TIR, reinversió a r, conflicte amb VAN en excloents.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">5. Exemple</h4><ul className="list-disc pl-5 space-y-1"><li>A=10.000, Q=(4.000, 5.000, 4.000), k=8%. VAN=1.165,72€. TIR≈14,5%. Payback=2a 3m.</li></ul></div>
+            </div>
+            <FormulaBox formula="VAN = −A + Σ Qᵢ/(1+k)ⁱ | TIR: VAN=0 | Payback = A/Q" desc="3 mètodes. En conflicte VAN vs. TIR → prioritzar VAN" />
+            <ClauBox><p>- Domina les <strong>3 fórmules</strong> i sap calcular-les (supòsits pràctics!).</p><p>- Explica <strong>avantatges i inconvenients</strong> de cada mètode.</p><p>- En conflicte VAN vs. TIR → <strong>prioritzar VAN</strong>.</p><p>- Inclou <strong>exemple numèric complet</strong> amb els 3 mètodes.</p></ClauBox>
+        </Card></div>
+    );
+    const Tema58 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="📊" title="Tema 58" subtitle={t('tema58.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema58Complet />}{vista === 'resum' && <Tema58Resum />}</div>); };
+
+    // ════════════════════════════════════════════════════════════════
+    // PLACEHOLDER — Temes 59-60
     // ════════════════════════════════════════════════════════════════
     const Placeholder = ({ num }) => (
         <div className="space-y-6 animate-fade">
@@ -1569,8 +1704,8 @@ function BlocFApp() {
         { id: 'tema54', label: 'T54', emoji: '🎯' },
         { id: 'tema55', label: 'T55', emoji: '👥' },
         { id: 'tema56', label: 'T56', emoji: '📢' },
-        { id: 'tema57', label: 'T57', emoji: '🏢' },
-        { id: 'tema58', label: 'T58', emoji: '🏢' },
+        { id: 'tema57', label: 'T57', emoji: '💰' },
+        { id: 'tema58', label: 'T58', emoji: '📊' },
         { id: 'tema59', label: 'T59', emoji: '🏢' },
         { id: 'tema60', label: 'T60', emoji: '🏢' },
     ];
@@ -1588,8 +1723,8 @@ function BlocFApp() {
                 {section === 'tema54' && <Tema54 />}
                 {section === 'tema55' && <Tema55 />}
                 {section === 'tema56' && <Tema56 />}
-                {section === 'tema57' && <Placeholder num={57} />}
-                {section === 'tema58' && <Placeholder num={58} />}
+                {section === 'tema57' && <Tema57 />}
+                {section === 'tema58' && <Tema58 />}
                 {section === 'tema59' && <Placeholder num={59} />}
                 {section === 'tema60' && <Placeholder num={60} />}
             </main>
