@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloc E: Economia Espanyola i Europea — Oposicions | PDE</title>
+    <meta name="description" content="Temes 39-48 d'oposicions d'Economia. Economia espanyola, sectors productius, mercat de treball, sistema financer, UE i PAC.">
+    <meta property="og:title" content="Bloc E: Economia Espanyola i Europea — Oposicions | PDE">
+    <meta property="og:description" content="Temes 39-48 d'oposicions d'Economia. Economia espanyola, sectors productius, mercat de treball, sistema financer, UE i PAC.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/oposicions-bloc-e">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://profedeeconomia.es/oposicions-bloc-e">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇪🇸</text></svg>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #d97706 #fffbeb; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #fffbeb; }
+        ::-webkit-scrollbar-thumb { background-color: #d97706; border-radius: 3px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-white to-orange-50 min-h-screen">
+    <div id="root"></div>
+    <script type="text/babel">
+const { useState, useMemo, useEffect } = React;
+
+function BlocEApp() {
+    const [section, setSection] = useState('inicio');
+    const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+
+    usePdeDeepLink(section, setSection);
+
+    // ════════════════════════════════════════════════════════════════
+    // TRANSLATIONS
+    // ════════════════════════════════════════════════════════════════
+    const pageTranslations = {
+        // Nav / App name
+        'nav.oposicions-bloc-e': { val: 'Bloc E: Economia Espanyola i Europea', es: 'Bloque E: Economía Española y Europea', en: 'Block E: Spanish & European Economy' },
+        'footer.appname': { val: "Bloc E — Oposicions d'Economia", es: "Bloque E — Oposiciones de Economía", en: 'Block E — Economics Exams' },
+
+        // Inicio
+        'inicio.title': { val: 'Bloc E: Economia Espanyola i Europea', es: 'Bloque E: Economía Española y Europea', en: 'Block E: Spanish & European Economy' },
+        'inicio.subtitle': { val: "Temes 39-48 de les oposicions d'Economia a Secundària", es: 'Temas 39-48 de las oposiciones de Economía en Secundaria', en: 'Topics 39-48 of the Secondary Economics teaching exams' },
+        'inicio.disponible': { val: 'Disponible', es: 'Disponible', en: 'Available' },
+        'inicio.properament': { val: 'Properament', es: 'Próximamente', en: 'Coming soon' },
+        'inicio.backOpo': { val: '← Tornar a Oposicions', es: '← Volver a Oposiciones', en: '← Back to Exams' },
+
+        // Section labels (for header nav)
+        'sec.inicio': { val: 'Inici', es: 'Inicio', en: 'Home' },
+        'sec.tema39': { val: 'Tema 39', es: 'Tema 39', en: 'Topic 39' },
+        'sec.tema40': { val: 'Tema 40', es: 'Tema 40', en: 'Topic 40' },
+        'sec.tema41': { val: 'Tema 41', es: 'Tema 41', en: 'Topic 41' },
+        'sec.tema42': { val: 'Tema 42', es: 'Tema 42', en: 'Topic 42' },
+        'sec.tema43': { val: 'Tema 43', es: 'Tema 43', en: 'Topic 43' },
+        'sec.tema44': { val: 'Tema 44', es: 'Tema 44', en: 'Topic 44' },
+        'sec.tema45': { val: 'Tema 45', es: 'Tema 45', en: 'Topic 45' },
+        'sec.tema46': { val: 'Tema 46', es: 'Tema 46', en: 'Topic 46' },
+        'sec.tema47': { val: 'Tema 47', es: 'Tema 47', en: 'Topic 47' },
+        'sec.tema48': { val: 'Tema 48', es: 'Tema 48', en: 'Topic 48' },
+
+        // Tabs
+        'tab.complet': { val: 'Tema complet', es: 'Tema completo', en: 'Full topic' },
+        'tab.resum': { val: 'Resum / Esquema', es: 'Resumen / Esquema', en: 'Summary / Outline' },
+
+        // Tema titles
+        'tema39.title': { val: "L'economia espanyola: característiques i estructura productiva.", es: 'La economía española: características y estructura productiva.', en: 'The Spanish economy: characteristics and productive structure.' },
+        'tema40.title': { val: "L'agricultura i la pesca a Espanya.", es: 'La agricultura y la pesca en España.', en: 'Agriculture and fishing in Spain.' },
+        'tema41.title': { val: "La indústria a Espanya.", es: 'La industria en España.', en: 'Industry in Spain.' },
+        'tema42.title': { val: 'El sector serveis a Espanya. El turisme.', es: 'El sector servicios en España. El turismo.', en: 'The service sector in Spain. Tourism.' },
+        'tema43.title': { val: "El sector públic a Espanya.", es: 'El sector público en España.', en: 'The public sector in Spain.' },
+        'tema44.title': { val: "El mercat de treball a Espanya. L'atur.", es: 'El mercado de trabajo en España. El desempleo.', en: 'The labour market in Spain. Unemployment.' },
+        'tema45.title': { val: 'El sistema financer espanyol.', es: 'El sistema financiero español.', en: 'The Spanish financial system.' },
+        'tema46.title': { val: "L'economia de la Unió Europea.", es: 'La economía de la Unión Europea.', en: 'The economy of the European Union.' },
+        'tema47.title': { val: 'La política agrària comunitària (PAC).', es: 'La política agraria comunitaria (PAC).', en: 'The Common Agricultural Policy (CAP).' },
+        'tema48.title': { val: 'Les polítiques regionals i estructurals de la UE.', es: 'Las políticas regionales y estructurales de la UE.', en: 'EU regional and structural policies.' },
+
+        // Placeholder
+        'placeholder.msg': { val: 'Aquest tema estarà disponible properament.', es: 'Este tema estará disponible próximamente.', en: 'This topic will be available soon.' },
+    };
+
+    const t = createTranslator(pageTranslations, idioma);
+    const lang = idioma;
+
+    // ════════════════════════════════════════════════════════════════
+    // REUSABLE COMPONENTS
+    // ════════════════════════════════════════════════════════════════
+    const Card = ({ children, className = "", title, icon }) => (
+        <div className={`bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 hover:shadow-md transition-shadow ${className} animate-fade`}>
+            {title && <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100"><span className="text-2xl">{icon}</span><h3 className="font-bold text-slate-800 text-lg">{title}</h3></div>}
+            {children}
+        </div>
+    );
+
+    const Tabs = ({ tabs, active, onChange }) => (
+        <div className="flex flex-wrap gap-1 p-1.5 bg-slate-100 rounded-xl">
+            {tabs.map(tab => (
+                <button key={tab.id} onClick={() => onChange(tab.id)} className={`flex-1 min-w-fit py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${active === tab.id ? 'bg-white shadow-sm text-amber-600' : 'text-slate-600 hover:text-slate-800 hover:bg-white/50'}`}>
+                    {tab.label}
+                </button>
+            ))}
+        </div>
+    );
+
+    const FormulaBox = ({ formula, desc }) => (
+        <div className="my-4 p-5 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-100">
+            <p className="text-center font-mono text-lg text-amber-800 font-semibold">{formula}</p>
+            {desc && <p className="text-center text-sm text-amber-600 mt-2">{desc}</p>}
+        </div>
+    );
+
+    const TheoryBlock = ({ title, children, color = "slate" }) => {
+        const colors = { slate: "border-slate-300 bg-slate-50", blue: "border-blue-300 bg-blue-50", green: "border-green-300 bg-green-50", amber: "border-amber-300 bg-amber-50", pink: "border-pink-300 bg-pink-50", violet: "border-violet-300 bg-violet-50", red: "border-red-300 bg-red-50", cyan: "border-cyan-300 bg-cyan-50", emerald: "border-emerald-300 bg-emerald-50", purple: "border-purple-300 bg-purple-50", rose: "border-rose-300 bg-rose-50", indigo: "border-indigo-300 bg-indigo-50", teal: "border-teal-300 bg-teal-50", orange: "border-orange-300 bg-orange-50" };
+        return (
+            <div className={`border-l-4 ${colors[color] || colors.slate} p-5 rounded-r-xl my-4`}>
+                {title && <h4 className="font-bold text-slate-800 mb-3 text-base">{title}</h4>}
+                <div className="text-slate-700 text-sm leading-relaxed space-y-2">{children}</div>
+            </div>
+        );
+    };
+
+    const SectionTitle = ({ icon, title, subtitle }) => (
+        <div className="mb-8">
+            <div className="flex items-center gap-3 mb-2"><span className="text-3xl">{icon}</span><h1 className="text-3xl font-black text-slate-800">{title}</h1></div>
+            {subtitle && <p className="text-slate-500 ml-12">{subtitle}</p>}
+        </div>
+    );
+
+    const BibliografiaBox = ({ items }) => (
+        <div className="my-6 p-6 bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl border border-slate-200">
+            <h4 className="font-bold text-slate-800 mb-4 text-base flex items-center gap-2">
+                <span>📚</span> Bibliografía
+            </h4>
+            <ul className="space-y-2">
+                {items.map((item, i) => (
+                    <li key={i} className="text-sm text-slate-700 leading-relaxed pl-4 border-l-2 border-slate-200">
+                        {item}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+
+    const ClauBox = ({ children }) => (
+        <div className="my-4 p-5 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200">
+            <div className="flex items-start gap-3">
+                <span className="text-2xl">🔑</span>
+                <div>
+                    <h4 className="font-bold text-amber-700 mb-2">{lang === 'es' ? 'Clave para el 10' : lang === 'en' ? 'Key for top marks' : 'Clau per al 10'}</h4>
+                    <div className="text-sm text-amber-800 space-y-1">{children}</div>
+                </div>
+            </div>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // THEME DATA (for Inicio cards)
+    // ════════════════════════════════════════════════════════════════
+    const temes = [
+        { num: 39, id: 'tema39', available: true },
+        { num: 40, id: 'tema40', available: true },
+        { num: 41, id: 'tema41', available: false },
+        { num: 42, id: 'tema42', available: false },
+        { num: 43, id: 'tema43', available: false },
+        { num: 44, id: 'tema44', available: false },
+        { num: 45, id: 'tema45', available: false },
+        { num: 46, id: 'tema46', available: false },
+        { num: 47, id: 'tema47', available: false },
+        { num: 48, id: 'tema48', available: false },
+    ];
+
+    // ════════════════════════════════════════════════════════════════
+    // SECTION: INICIO
+    // ════════════════════════════════════════════════════════════════
+    const Inicio = () => (
+        <div className="animate-fade">
+            {/* Back link */}
+            <a href="./oposicions" className="inline-flex items-center gap-2 text-sm text-amber-600 hover:text-amber-800 mb-6 transition-colors">
+                {t('inicio.backOpo')}
+            </a>
+
+            {/* Hero */}
+            <div className="text-center mb-10">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-amber-100 text-amber-700 rounded-full text-sm font-semibold mb-4">
+                    <span>🇪🇸</span> Bloc E
+                </div>
+                <h1 className="text-4xl font-black text-slate-800 mb-3">{t('inicio.title')}</h1>
+                <p className="text-slate-500 text-lg max-w-2xl mx-auto">{t('inicio.subtitle')}</p>
+            </div>
+
+            {/* Theme cards grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {temes.map(tema => (
+                    <button
+                        key={tema.id}
+                        onClick={() => { if (tema.available) { setSection(tema.id); pdeSetHashSection(tema.id); pdeScrollToTop(); } }}
+                        className={`text-left p-5 rounded-2xl border transition-all ${
+                            tema.available
+                                ? 'bg-white border-amber-200 hover:shadow-lg hover:border-amber-300 cursor-pointer'
+                                : 'bg-gray-50 border-gray-200 opacity-70 cursor-not-allowed'
+                        }`}
+                    >
+                        <div className="flex items-start gap-3">
+                            <span className={`inline-flex items-center justify-center w-10 h-10 rounded-xl text-sm font-black text-white ${
+                                tema.available ? 'bg-gradient-to-br from-amber-500 to-orange-600' : 'bg-gray-400'
+                            }`}>
+                                T{tema.num}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-slate-800 text-sm leading-snug mb-2">
+                                    {t(`tema${tema.num}.title`)}
+                                </p>
+                                <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${
+                                    tema.available
+                                        ? 'bg-amber-100 text-amber-700'
+                                        : 'bg-gray-100 text-gray-500'
+                                }`}>
+                                    {tema.available ? '✓ ' + t('inicio.disponible') : '🔒 ' + t('inicio.properament')}
+                                </span>
+                            </div>
+                        </div>
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 39 — La economía española: características y estructura productiva.
+    // ════════════════════════════════════════════════════════════════
+    const Tema39Complet = () => (
+        <div className="space-y-6 animate-fade">
+            {/* ── INTRODUCCIÓN ────────────────────────────────────── */}
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        La <strong>economía española</strong> constituye uno de los casos más interesantes de transformación económica contemporánea. España pasó de ser una economía agraria, autárquica y relativamente atrasada a mediados del siglo XX a convertirse en la <strong>cuarta economía de la zona euro</strong> y la decimotercera del mundo por PIB nominal (FMI, 2024). Esta transformación no fue lineal: estuvo marcada por etapas de fuerte crecimiento (el «milagro económico» de los años 60, el boom posterior a la adhesión a la CEE en 1986, la expansión inmobiliaria de 1997-2007) y por crisis profundas (la crisis del petróleo de 1973, la reconversión industrial de los 80, la Gran Recesión de 2008-2013 y el impacto de la pandemia COVID-19 en 2020).
+                    </p>
+                    <p>
+                        El estudio de la economía española es esencial para comprender la realidad económica en la que se desenvuelve el alumnado y para conectar los conceptos teóricos de la ciencia económica con datos, instituciones y políticas concretas. Desde la perspectiva curricular, este tema se enmarca en los saberes básicos del bloque «La economía española e internacional» de la materia de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022) y en las competencias específicas CE1 (funcionamiento del sistema económico), CE3 (papel del sector público) y CE4 (contexto económico nacional e internacional). La LOMLOE (Ley Orgánica 3/2020) enfatiza la necesidad de que el alumnado comprenda las características estructurales de la economía española, contribuyendo a las competencias CC (ciudadanía activa), STEM (análisis cuantitativo de datos macroeconómicos) y CE (comprensión de la iniciativa económica).
+                    </p>
+                    <p>
+                        El presente tema se estructura en cinco epígrafes: en primer lugar, se aborda la evolución histórica de la economía española; en segundo lugar, se analizan sus características estructurales; en tercer lugar, se examina la estructura productiva por sectores; en cuarto lugar, se estudia la inserción exterior de la economía española; y en quinto lugar, se identifican los principales retos y desafíos actuales.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── DESARROLLO ──────────────────────────────────────── */}
+
+            {/* Epígrafe 1 */}
+            <Card title="1. Evolución histórica de la economía española" icon="📘">
+                <TheoryBlock title="1.1. La autarquía y el primer franquismo (1939-1959)" color="amber">
+                    <p>
+                        Tras la Guerra Civil (1936-1939), el régimen franquista impuso un modelo de <strong>autarquía económica</strong> inspirado en los fascismos europeos: intervención estatal masiva, sustitución de importaciones, racionamiento, control de precios y restricción del comercio exterior. El resultado fue una economía estancada: en 1959, el PIB per cápita español apenas superaba el 60 % del promedio europeo occidental. El aislamiento internacional (exclusión de las Naciones Unidas hasta 1955, del Plan Marshall) agravó la situación.
+                    </p>
+                    <p>
+                        La autarquía generó un <strong>mercado negro</strong> (estraperlo), escasez crónica de bienes de consumo, inflación reprimida, atraso tecnológico y una agricultura de subsistencia que mantenía a más del 40 % de la población activa en el sector primario.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.2. El Plan de Estabilización y el desarrollismo (1959-1973)" color="orange">
+                    <p>
+                        El <strong>Plan de Estabilización de 1959</strong>, impulsado por los tecnócratas del Opus Dei (López Rodó, Ullastres, Navarro Rubio) con el apoyo del FMI y la OCDE, marcó el giro hacia la liberalización: devaluación de la peseta, apertura comercial parcial, disciplina fiscal, atracción de inversión extranjera y eliminación de controles de precios. A partir de 1960, España experimentó el llamado <strong>«milagro económico español»</strong>: el PIB creció a una media del 7 % anual entre 1960 y 1973, la tasa más alta de Europa occidental junto con Italia y Japón.
+                    </p>
+                    <p>
+                        Los <strong>Planes de Desarrollo</strong> (I: 1964-1967; II: 1968-1971; III: 1972-1975), de carácter indicativo (no vinculante para el sector privado), canalizaron la inversión pública hacia los <strong>polos de desarrollo</strong> (Vigo, Valladolid, Zaragoza, Sevilla, etc.) para fomentar la industrialización regional. Los motores del crecimiento fueron: la <strong>industrialización</strong> (especialmente automoción, siderurgia, química), las <strong>remesas de emigrantes</strong> (más de un millón de españoles emigraron a Alemania, Francia y Suiza), el <strong>turismo</strong> (España se convirtió en el primer destino turístico de masas de Europa) y la <strong>inversión extranjera directa</strong>.
+                    </p>
+                    <p>
+                        Este periodo transformó radicalmente la estructura productiva: el sector primario pasó del 40 % al 20 % del empleo, mientras la industria y los servicios crecieron aceleradamente. Sin embargo, el crecimiento fue desequilibrado: elevada inflación, déficits exteriores recurrentes, desigualdad regional persistente y ausencia de libertades políticas y sindicales.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.3. La crisis y la Transición (1973-1985)" color="amber">
+                    <p>
+                        La <strong>crisis del petróleo de 1973</strong> golpeó duramente a una economía altamente dependiente de las importaciones energéticas. La tardía reacción del régimen franquista (que subsidió los precios del petróleo para evitar conflictos sociales) agravó los desequilibrios. La muerte de Franco (1975) y la Transición democrática añadieron incertidumbre política.
+                    </p>
+                    <p>
+                        Los <strong>Pactos de la Moncloa</strong> (1977), firmados por el gobierno de Suárez y los principales partidos políticos (incluido el PCE de Carrillo), constituyeron un hito: combinaron <strong>ajuste macroeconómico</strong> (contención salarial, devaluación, restricción monetaria) con <strong>reformas estructurales</strong> (reforma fiscal, Estatuto de los Trabajadores, reconocimiento del derecho de huelga).
+                    </p>
+                    <p>
+                        La <strong>reconversión industrial</strong> de los años 80 (siderurgia, construcción naval, minería, textil) fue dolorosa pero necesaria: sectores obsoletos y sobredimensionados se reestructuraron con elevados costes sociales (desempleo, conflictividad laboral). El paro alcanzó el 21 % en 1985.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.4. La integración europea y la modernización (1986-2007)" color="orange">
+                    <p>
+                        La <strong>adhesión a la Comunidad Económica Europea</strong> (1 de enero de 1986) fue el hito más transformador de la economía española contemporánea. Supuso: <strong>apertura comercial plena</strong> (eliminación de aranceles intracomunitarios), acceso a los <strong>fondos estructurales y de cohesión</strong> (España fue el principal beneficiario neto hasta la ampliación de 2004, recibiendo más de 150.000 millones de euros entre 1986 y 2013), modernización de infraestructuras (AVE, autopistas, aeropuertos), convergencia regulatoria y normativa, y atracción de inversión extranjera.
+                    </p>
+                    <p>
+                        La entrada en el <strong>Sistema Monetario Europeo</strong> (1989) y la posterior adopción del <strong>euro</strong> (1999, circulación en 2002) eliminaron el riesgo cambiario y redujeron drásticamente los tipos de interés, pero también privaron a España del instrumento de la devaluación competitiva.
+                    </p>
+                    <p>
+                        Entre 1997 y 2007 España vivió una <strong>expansión extraordinaria</strong> impulsada por los bajos tipos de interés (convergencia hacia la zona euro), la inmigración masiva (la población extranjera pasó de 500.000 a 5,5 millones), el boom inmobiliario y de la construcción (que llegó a representar el 12 % del PIB y el 13 % del empleo), y el consumo financiado con crédito. El PIB per cápita español alcanzó el 105 % de la media de la UE-27 en 2007. Sin embargo, este modelo de crecimiento acumuló graves desequilibrios: burbuja inmobiliaria, endeudamiento privado excesivo (las familias y empresas españolas debían más del 200 % del PIB), déficit por cuenta corriente del 10 % del PIB y baja productividad.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.5. La Gran Recesión y la recuperación (2008-2019)" color="amber">
+                    <p>
+                        El estallido de la burbuja inmobiliaria y la crisis financiera global (2008) provocaron la recesión más profunda desde la Guerra Civil. El PIB cayó un 9 % acumulado entre 2008 y 2013, el desempleo se disparó al <strong>26,9 %</strong> (2013, récord histórico), el sistema bancario requirió un <strong>rescate europeo</strong> de hasta 100.000 millones de euros (2012, a través del MEDE, del que se utilizaron 41.300 millones), la prima de riesgo alcanzó los 649 puntos básicos (julio 2012) y el déficit público superó el 11 % del PIB en 2009.
+                    </p>
+                    <p>
+                        Las respuestas incluyeron: <strong>austeridad fiscal</strong> (recortes de gasto, subidas de impuestos, reforma del artículo 135 de la Constitución para incluir la estabilidad presupuestaria), <strong>reforma laboral</strong> (2012, flexibilización del despido y de la negociación colectiva), <strong>reestructuración bancaria</strong> (creación de la SAREB, fusiones de cajas de ahorro) y <strong>devaluación interna</strong> (moderación salarial para recuperar competitividad).
+                    </p>
+                    <p>
+                        A partir de 2014 se inició una <strong>recuperación robusta</strong>: el PIB creció por encima del 3 % anual entre 2015 y 2017, impulsado por las exportaciones (que ganaron cuota de mercado mundial), el turismo (España se convirtió en el segundo destino turístico mundial por número de visitantes), los bajos precios del petróleo y la política monetaria expansiva del BCE (tipos de interés al 0 %, programa de compra de activos). El empleo creció hasta recuperar niveles precrisis a finales de 2019, aunque con mayor temporalidad y parcialidad.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.6. La pandemia y el contexto actual (2020-presente)" color="orange">
+                    <p>
+                        La <strong>pandemia COVID-19</strong> (2020) provocó una caída del PIB del 11,2 %, la mayor entre las grandes economías europeas, debido a la elevada dependencia del turismo y la hostelería. La respuesta incluyó los <strong>ERTE</strong> (Expedientes de Regulación Temporal de Empleo, que llegaron a cubrir 3,4 millones de trabajadores), el <strong>Ingreso Mínimo Vital</strong>, las líneas de avales del ICO y, a nivel europeo, el programa <strong>Next Generation EU</strong> (España es el segundo mayor beneficiario con 163.000 millones de euros en transferencias y préstamos).
+                    </p>
+                    <p>
+                        La recuperación posterior (2021-2024) fue progresiva: el PIB prepandemia se recuperó en el segundo trimestre de 2023. Sin embargo, la crisis energética derivada de la guerra de Ucrania (2022), la inflación (que alcanzó el 10,8 % en julio de 2022), las subidas de tipos del BCE y las tensiones geopolíticas han añadido nuevos desafíos. En 2024, el PIB per cápita español se sitúa en torno al 88 % de la media de la UE-27.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 2 */}
+            <Card title="2. Características estructurales de la economía española" icon="📘">
+                <TheoryBlock title="2.1. Terciarización y desindustrialización" color="amber">
+                    <p>
+                        La economía española ha experimentado una profunda <strong>terciarización</strong>: el sector servicios representa actualmente alrededor del <strong>74 % del PIB</strong> y el <strong>77 % del empleo</strong>. La industria (incluida la energía) aporta aproximadamente el 16 % del PIB (frente al 20 % de la media de la UE), la construcción en torno al 6 % y el sector primario menos del 3 %. Esta estructura refleja la convergencia hacia el patrón de las economías avanzadas, pero con una participación industrial inferior a la de Alemania (24 %), Italia (19 %) o Francia (17 %), lo que constituye un debate recurrente sobre la necesidad de <strong>reindustrialización</strong>.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.2. Dualidad del mercado laboral" color="orange">
+                    <p>
+                        El mercado de trabajo español presenta una <strong>dualidad estructural</strong> entre trabajadores con contratos indefinidos (elevada protección) y trabajadores con contratos temporales (alta rotación). Históricamente, la tasa de temporalidad española fue la más alta de la UE (superior al 30 %), aunque la <strong>reforma laboral de 2021</strong> la ha reducido significativamente (por debajo del 18 % en 2024). Otras características: elevado desempleo estructural (la tasa de paro raramente baja del 10-12 %, incluso en fases expansivas), desempleo juvenil muy elevado (superior al 25 %), brecha de género persistente y peso significativo de la economía sumergida (estimada entre el 17 % y el 22 % del PIB según diversos estudios).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.3. Desequilibrios territoriales" color="amber">
+                    <p>
+                        España presenta una <strong>acusada desigualdad territorial</strong>. Las comunidades autónomas con mayor PIB per cápita (País Vasco, Madrid, Navarra, Cataluña) superan ampliamente a las de menor nivel (Extremadura, Andalucía, Castilla-La Mancha). El PIB per cápita del País Vasco es aproximadamente el doble que el de Extremadura. La «<strong>España vaciada</strong>» refleja el despoblamiento rural del interior (Castilla y León, Aragón, Extremadura), con densidades inferiores a 12 hab/km², frente a la concentración en las áreas metropolitanas costeras y Madrid.
+                    </p>
+                    <p>
+                        Los mecanismos de corrección incluyen el <strong>sistema de financiación autonómica</strong> (Fondo de Garantía de Servicios Públicos Fundamentales), los fondos europeos de cohesión y las políticas de reto demográfico.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.4. Déficit de productividad e innovación" color="orange">
+                    <p>
+                        La <strong>productividad total de los factores</strong> (PTF) española ha crecido menos que la media europea desde los años 90. España invierte en I+D+i aproximadamente el <strong>1,4 % del PIB</strong> (2023), muy por debajo de la media de la UE (2,2 %) y del objetivo del 3 % fijado por la Estrategia Europa 2020. El tejido empresarial está dominado por <strong>microempresas y pymes</strong> (el 99,8 % de las empresas tiene menos de 250 trabajadores; el 95 % tiene menos de 10), que invierten menos en I+D, internacionalización y digitalización. El <strong>nivel educativo</strong> ha mejorado, pero persisten tasas de abandono escolar temprano superiores a la media europea (13,6 % frente al 9,6 % de la UE en 2023).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.5. Dependencia energética" color="amber">
+                    <p>
+                        España importa aproximadamente el <strong>70 % de la energía</strong> que consume (petróleo, gas natural), una dependencia superior a la media europea (~55 %). La <strong>transición energética</strong> está avanzando significativamente: en 2023, las energías renovables (eólica, solar fotovoltaica, hidráulica) generaron más del 50 % de la electricidad, convirtiendo a España en uno de los líderes europeos en energía solar. Sin embargo, la dependencia de combustibles fósiles para el transporte y la industria sigue siendo elevada.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 3 */}
+            <Card title="3. La estructura productiva: los tres sectores" icon="📘">
+                <TheoryBlock title="3.1. El sector primario" color="amber">
+                    <p>
+                        El sector primario (agricultura, ganadería, silvicultura y pesca) aporta menos del <strong>3 % del PIB</strong> y emplea alrededor del <strong>4 % de la población activa</strong>. A pesar de su reducido peso, España es una <strong>potencia agroalimentaria</strong>: primer productor mundial de aceite de oliva, primer exportador de frutas y hortalizas de la UE, con una industria agroalimentaria que representa el primer sector industrial manufacturero del país. La <strong>Política Agrícola Común (PAC)</strong> es determinante: España recibe aproximadamente 7.000 millones de euros anuales en ayudas directas y desarrollo rural. (Este sector se desarrolla en profundidad en el Tema 40.)
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.2. El sector secundario" color="orange">
+                    <p>
+                        La industria manufacturera y la energía representan alrededor del <strong>16 % del PIB</strong>. Los subsectores más relevantes son: <strong>automoción</strong> (España es el segundo fabricante de vehículos de la UE y el octavo del mundo), <strong>agroalimentario</strong>, <strong>químico y farmacéutico</strong>, <strong>metalúrgico</strong>, <strong>cerámico</strong> (Castellón es líder mundial) y <strong>textil-moda</strong> (Inditex). La geografía industrial se concentra en Cataluña, País Vasco, Comunidad Valenciana, Madrid y Aragón.
+                    </p>
+                    <p>
+                        La <strong>construcción</strong>, tradicionalmente un sector clave (llegó a representar el 12 % del PIB en 2006-2007), se contrajo drásticamente tras la crisis de 2008 y actualmente aporta en torno al 6 % del PIB, con una recuperación gradual vinculada a la rehabilitación energética de edificios y las inversiones del Plan de Recuperación.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.3. El sector terciario" color="amber">
+                    <p>
+                        Los servicios representan aproximadamente el <strong>74 % del PIB</strong> y el <strong>77 % del empleo</strong>. Los subsectores principales son:
+                    </p>
+                    <p>
+                        <strong>Turismo:</strong> España es la segunda potencia turística mundial por número de visitantes internacionales (85 millones en 2023) y la segunda por ingresos. El turismo contribuye directa e indirectamente alrededor del <strong>12,8 % del PIB</strong> y emplea a más de 2,6 millones de personas. (Se desarrolla en el Tema 42.)
+                    </p>
+                    <p>
+                        <strong>Comercio:</strong> tanto minorista como mayorista, es uno de los principales empleadores. La distribución comercial ha experimentado una transformación con la expansión de las grandes superficies, el comercio electrónico y la logística.
+                    </p>
+                    <p>
+                        <strong>Servicios financieros, inmobiliarios y profesionales:</strong> aportan conjuntamente más del 20 % del PIB. El sector bancario español, tras la profunda reestructuración de 2008-2015, está dominado por cinco grandes entidades (Santander, BBVA, CaixaBank, Sabadell, Bankinter).
+                    </p>
+                    <p>
+                        <strong>Administración pública, sanidad y educación:</strong> los servicios públicos representan alrededor del 18 % del PIB, reflejando el modelo de Estado del bienestar español.
+                    </p>
+                    <p>
+                        <strong>Transporte y logística:</strong> España cuenta con una de las mejores redes de infraestructuras de Europa (segunda red de AVE del mundo por kilómetros, tras China), puertos estratégicos (Algeciras, Valencia, Barcelona) y una posición geográfica privilegiada como puente entre Europa y África/América Latina.
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="PIB España (2024) ≈ 1,46 billones € | PIBpc ≈ 30.400 €"
+                    desc="Cuarta economía de la zona euro (tras Alemania, Francia e Italia)"
+                />
+            </Card>
+
+            {/* Epígrafe 4 */}
+            <Card title="4. La inserción exterior de la economía española" icon="📘">
+                <TheoryBlock title="4.1. Comercio exterior de bienes y servicios" color="amber">
+                    <p>
+                        La economía española ha experimentado una <strong>apertura comercial creciente</strong>: la suma de exportaciones e importaciones de bienes y servicios supera el 70 % del PIB. Las <strong>exportaciones de bienes</strong> alcanzaron 371.000 millones de euros en 2023, con un crecimiento sostenido que ha llevado a España a ganar cuota de mercado mundial (del 1,6 % al 1,8 % entre 2010 y 2023). Los principales productos exportados son: automóviles y componentes, productos agroalimentarios (frutas, hortalizas, aceite, vino, carne de cerdo), productos químicos y farmacéuticos, maquinaria y bienes de equipo.
+                    </p>
+                    <p>
+                        El <strong>destino principal</strong> de las exportaciones es la UE (aproximadamente el 65 %), siendo Francia, Alemania, Italia y Portugal los principales socios. Fuera de la UE destacan Reino Unido, Estados Unidos, Marruecos y China.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.2. La balanza por cuenta corriente" color="orange">
+                    <p>
+                        Históricamente, España tuvo una <strong>balanza por cuenta corriente deficitaria</strong>, que alcanzó un déficit récord del 10 % del PIB en 2007 (indicador del sobrecalentamiento de la economía). Uno de los cambios estructurales más significativos derivados de la crisis de 2008 fue la <strong>corrección del déficit exterior</strong>: la balanza por cuenta corriente ha registrado superávit desde 2013, gracias al crecimiento de las exportaciones, la contención de las importaciones, el superávit turístico y la moderación salarial. En 2023, la balanza por cuenta corriente registró un superávit del 2,6 % del PIB.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.3. Inversión extranjera directa (IED)" color="amber">
+                    <p>
+                        España es un receptor significativo de <strong>IED</strong> (stock acumulado superior a 500.000 millones de euros) y simultáneamente un inversor importante en el exterior (las grandes empresas españolas — Santander, Telefónica, Iberdrola, Ferrovial, Inditex — tienen una presencia global significativa, especialmente en América Latina, Europa y EE. UU.). La internacionalización de la empresa española es uno de los cambios estructurales más positivos de las últimas décadas.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 5 */}
+            <Card title="5. Retos y desafíos actuales de la economía española" icon="📘">
+                <TheoryBlock title="5.1. Retos económicos" color="amber">
+                    <p>
+                        <strong>Productividad y digitalización:</strong> elevar la productividad mediante la inversión en I+D+i (acercarse al 3 % del PIB), la digitalización del tejido empresarial (especialmente pymes), la formación continua y la atracción de talento.<br/>
+                        <strong>Sostenibilidad del sistema de pensiones:</strong> el envejecimiento demográfico (la tasa de dependencia de mayores de 65 años pasará del 30 % al 50 % en 2050) presiona el sistema de reparto. Las reformas de 2021-2023 (revalorización con el IPC, MEI —Mecanismo de Equidad Intergeneracional—, incentivos a la jubilación demorada) buscan garantizar la sostenibilidad.<br/>
+                        <strong>Deuda pública:</strong> la ratio deuda/PIB alcanzó el 120 % tras la pandemia y se sitúa en torno al 107 % en 2024, por encima del límite del 60 % del Pacto de Estabilidad.<br/>
+                        <strong>Acceso a la vivienda:</strong> los precios de la vivienda y los alquileres han crecido por encima de los salarios, especialmente en las grandes ciudades, generando un problema de accesibilidad para los jóvenes.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.2. Retos sociales y demográficos" color="orange">
+                    <p>
+                        <strong>Envejecimiento demográfico:</strong> España tiene una de las tasas de fecundidad más bajas del mundo (1,16 hijos por mujer en 2023), y la inmigración se ha convertido en el principal factor de crecimiento poblacional.<br/>
+                        <strong>Desigualdad:</strong> el coeficiente de Gini español (33,0 en 2023) es superior a la media de la UE (29,6), con una desigualdad que se concentra en el acceso a la vivienda, la precariedad laboral y la brecha territorial.<br/>
+                        <strong>Transición ecológica:</strong> descarbonización de la economía, cumplimiento de los compromisos del Acuerdo de París y del Pacto Verde Europeo (reducción del 55 % de las emisiones para 2030), transición justa para las comarcas dependientes de actividades contaminantes.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.3. Los fondos Next Generation EU" color="amber">
+                    <p>
+                        El <strong>Plan de Recuperación, Transformación y Resiliencia</strong> (PRTR), financiado con fondos Next Generation EU, es el mayor programa de inversión pública de la historia reciente de España: 163.000 millones de euros (80.000 en transferencias directas y 83.000 en préstamos). Se articula en cuatro ejes: <strong>transición ecológica</strong> (39 % del total), <strong>transformación digital</strong> (28 %), <strong>cohesión social y territorial</strong>, y <strong>igualdad de género</strong>. El PRTR incluye reformas estructurales asociadas (mercado laboral, pensiones, vivienda, formación profesional, fiscalidad) y su ejecución se extiende hasta 2026.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title="6. Relevancia curricular" icon="🎓">
+                <TheoryBlock color="violet">
+                    <p>
+                        Este tema es transversal en el currículo de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022), conectando con CE1 (funcionamiento del sistema económico), CE3 (papel del sector público), CE4 (contexto económico nacional e internacional) y CE5 (formación de una ciudadanía económicamente responsable). Contribuye de forma destacada a las competencias <strong>CC</strong> (ciudadanía activa, comprensión de la realidad española), <strong>STEM</strong> (análisis de datos del INE, Eurostat, Banco de España), <strong>CE</strong> (iniciativa económica en el contexto español) y <strong>CCL</strong> (lectura de informes económicos). La conexión con la realidad próxima del alumnado (empleo, vivienda, precios, desigualdad) facilita un aprendizaje significativo y fomenta el juicio crítico.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="amber">
+                    <p>
+                        La economía española ha protagonizado una transformación extraordinaria desde la autarquía franquista hasta convertirse en la cuarta economía de la zona euro. Los hitos clave fueron el Plan de Estabilización (1959), el «milagro económico» de los 60, los Pactos de la Moncloa (1977), la adhesión a la CEE (1986), la adopción del euro (1999) y la recuperación tras la Gran Recesión. La estructura productiva refleja una economía terciarizada (servicios 74 % del PIB) con fortalezas en turismo, agroalimentario y automoción, pero con debilidades en productividad, inversión en I+D y desigualdad territorial. La corrección del déficit exterior, la internacionalización empresarial y la transición energética son logros recientes. Los retos actuales incluyen el envejecimiento demográfico, la sostenibilidad de las pensiones, la deuda pública, el acceso a la vivienda, la brecha de productividad y la transición ecológica, en un contexto marcado por los fondos Next Generation EU.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <BibliografiaBox items={[
+                "Banco de España. Informe Anual (varios años). www.bde.es",
+                "García Delgado, J. L. & Myro, R. (dir.) (2021). Lecciones de economía española, 16.ª ed. Thomson-Civitas.",
+                "Tamames, R. & Rueda, A. (2022). Estructura económica de España, 27.ª ed. Alianza Editorial.",
+                "INE. Contabilidad Nacional de España. www.ine.es",
+                "Comisión Europea. Previsiones económicas para España (varios años).",
+                "FMI. World Economic Outlook (varios años). www.imf.org",
+                "OCDE. Economic Surveys: Spain (varios años). www.oecd.org",
+                "Fuentes Quintana, E. (dir.) (2004). Economía y economistas españoles. Galaxia Gutenberg.",
+                "Plan de Recuperación, Transformación y Resiliencia del Gobierno de España (2021).",
+                "Eurostat. Estadísticas económicas. ec.europa.eu/eurostat",
+            ]} />
+        </div>
+    );
+
+    const Tema39Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-amber-50 rounded-xl border border-amber-200 mb-5">
+                    <p className="text-center font-bold text-amber-800 text-lg">Tema 39: L'economia espanyola: característiques i estructura productiva.</p>
+                    <p className="text-center text-sm text-amber-600 mt-1">
+                        <em>"De l'autarquia a la quarta economia de la zona euro"</em>
+                    </p>
+                </div>
+
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. Evolució històrica</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Autarquia franquista (1939-59): intervenció, racionament, estancament. PIBpc = 60% mitjana europea.</li>
+                            <li>Pla d'Estabilització (1959): obertura, devaluació peseta. «Miracle econòmic»: PIB +7%/any (1960-73).</li>
+                            <li>Motors: industrialització, remeses emigrants, turisme, IED. Plans de Desenvolupament (pols industrials).</li>
+                            <li>Crisi petroli (1973), Transició, Pactes de la Moncloa (1977), reconversió industrial anys 80. Atur 21% (1985).</li>
+                            <li>Adhesió CEE (1986): fons estructurals, obertura comercial, modernització. Hito transformador.</li>
+                            <li>Euro (1999/2002): baixos tipus → boom immobiliari (1997-2007). PIBpc = 105% UE-27 (2007).</li>
+                            <li>Gran Recessió (2008-13): PIB −9%, atur 26,9%, rescat bancari 41.300 M€, prima de risc 649 pb.</li>
+                            <li>Recuperació (2014-19): exportacions, turisme, BCE expansiu. COVID (2020): PIB −11,2%, ERTO, Next Gen EU.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. Característiques estructurals</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Terciarització: serveis 74% PIB, 77% ocupació. Indústria 16% (inferior a mitjana UE 20%).</li>
+                            <li>Dualitat laboral: temporalitat alta (reduïda post-reforma 2021 a &lt;18%). Atur estructural 10-12%.</li>
+                            <li>Desequilibris territorials: País Basc ≈ 2× Extremadura en PIBpc. «Espanya buidada».</li>
+                            <li>Dèficit I+D+i: 1,4% PIB (UE: 2,2%, objectiu: 3%). Dominància pimes (99,8%). Baixa productivitat.</li>
+                            <li>Dependència energètica: importa ~70% energia. Líder solar UE, renovables &gt;50% electricitat (2023).</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. Estructura productiva</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Primari: &lt;3% PIB, 4% ocupació. Potència agroalimentària (oli d'oliva, fruites, hortalisses). PAC: ~7.000 M€/any.</li>
+                            <li>Secundari: 16% PIB. Automoció (2n UE), agroalimentari, químic, ceràmic (Castelló), tèxtil (Inditex). Construcció: 6%.</li>
+                            <li>Terciari: 74% PIB. Turisme (12,8% PIB, 2n mundial), comerç, banca, serveis públics, transport/logística.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. Inserció exterior</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Obertura comercial &gt;70% PIB. Exportacions: 371.000 M€ (2023). Quota mondial: 1,8%.</li>
+                            <li>Correcció històrica: de dèficit c/c −10% PIB (2007) a superàvit +2,6% (2023).</li>
+                            <li>IED: receptor i emissor significatiu. Internacionalització empresarial (Santander, Telefónica, Inditex...).</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">5. Reptes actuals</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Productivitat i digitalització. Sostenibilitat pensions (taxa dependència 30%→50% en 2050). Deute ~107% PIB.</li>
+                            <li>Envelliment: fecunditat 1,16 fills/dona. Desigualtat (Gini 33,0 vs. UE 29,6). Accés habitatge.</li>
+                            <li>Next Generation EU: 163.000 M€. PRTR: transició ecològica (39%), digital (28%), cohesió, igualtat.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <FormulaBox formula="PIB Espanya (2024) ≈ 1,46 bilions € | PIBpc ≈ 30.400 €" desc="4a economia zona euro" />
+
+                <ClauBox>
+                    <p>- Estructura l'evolució en <strong>6 etapes</strong> clares amb xifres clau a cada una.</p>
+                    <p>- Destaca la <strong>terciarització</strong> i el dèficit industrial respecte a la mitjana UE.</p>
+                    <p>- Subratlla la <strong>correcció del dèficit exterior</strong> com a canvi estructural post-2008.</p>
+                    <p>- Connecta amb <strong>Next Generation EU</strong> i els reptes demogràfics i de productivitat.</p>
+                    <p>- Inclou <strong>dades actualitzades</strong> del INE, Banc d'Espanya i Eurostat.</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    const Tema39 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="🇪🇸" title="Tema 39" subtitle={t('tema39.title')} />
+                <Tabs tabs={[
+                    { id: 'complet', label: '📝 ' + t('tab.complet') },
+                    { id: 'resum', label: '📋 ' + t('tab.resum') },
+                ]} active={vista} onChange={setVista} />
+                {vista === 'complet' && <Tema39Complet />}
+                {vista === 'resum' && <Tema39Resum />}
+            </div>
+        );
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 40 — La agricultura y la pesca en España.
+    // ════════════════════════════════════════════════════════════════
+    const Tema40Complet = () => (
+        <div className="space-y-6 animate-fade">
+            {/* ── INTRODUCCIÓN ────────────────────────────────────── */}
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        El <strong>sector primario</strong> —agricultura, ganadería, silvicultura y pesca— ha sido históricamente el pilar de la economía española. Aunque su peso relativo se ha reducido drásticamente (de más del 40 % del empleo en 1960 a menos del 4 % en la actualidad), España sigue siendo una <strong>potencia agroalimentaria de primer orden</strong>: primer productor mundial de aceite de oliva, primer exportador de frutas y hortalizas de la UE, con una industria agroalimentaria que constituye el primer sector industrial manufacturero del país por volumen de facturación.
+                    </p>
+                    <p>
+                        El estudio de la agricultura y la pesca en España es relevante tanto por su importancia económica directa como por su dimensión territorial (el sector primario vertebra el medio rural y es esencial para la lucha contra la despoblación), ambiental (gestión del agua, suelos, biodiversidad) y social (seguridad alimentaria, tradiciones culturales). Desde la perspectiva curricular, este tema se enmarca en los saberes básicos del bloque «La economía española e internacional» de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022) y contribuye a las competencias CE1 (funcionamiento del sistema económico), CE4 (contexto nacional) y, de forma transversal, a la educación para la sostenibilidad (STEM, CC).
+                    </p>
+                    <p>
+                        El presente tema se estructura en cinco epígrafes: en primer lugar, se analiza el sector primario en el contexto de la economía española; en segundo lugar, se estudia la agricultura (características, producciones y estructuras agrarias); en tercer lugar, se examina el impacto de la PAC; en cuarto lugar, se aborda el sector pesquero; y en quinto lugar, se identifican los retos actuales y las nuevas tendencias.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── DESARROLLO ──────────────────────────────────────── */}
+
+            {/* Epígrafe 1 */}
+            <Card title="1. El sector primario en la economía española" icon="📘">
+                <TheoryBlock title="1.1. Peso económico y evolución" color="amber">
+                    <p>
+                        El sector primario aporta actualmente menos del <strong>3 % del PIB</strong> y emplea aproximadamente al <strong>4 % de la población activa</strong> (780.000 personas según la EPA, 2024). Sin embargo, si se incluye la industria agroalimentaria (transformación, envasado, distribución), el complejo agroalimentario en sentido amplio representa alrededor del <strong>10-11 % del PIB</strong> y emplea a más de 2,3 millones de personas.
+                    </p>
+                    <p>
+                        La <strong>evolución secular</strong> del sector primario sigue el patrón de todas las economías avanzadas: pérdida de peso relativo frente a la industria y los servicios (ley de Engel, efecto Clark-Fisher). En España, el proceso fue especialmente rápido durante el «milagro económico» de los años 60: el éxodo rural masivo trasladó a millones de personas del campo a las ciudades, alimentando la industrialización y urbanización.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.2. Condicionantes geográficos y climáticos" color="orange">
+                    <p>
+                        España posee una gran <strong>diversidad geográfica y climática</strong> que condiciona profundamente la actividad agraria:
+                    </p>
+                    <p>
+                        <strong>Clima mediterráneo</strong> (dominante): veranos cálidos y secos, precipitaciones irregulares concentradas en otoño-primavera. Adaptado al olivo, vid, cereales de secano, almendro, cítricos.<br/>
+                        <strong>Clima atlántico</strong> (cornisa cantábrica y Galicia): precipitaciones abundantes y regulares, temperaturas suaves. Ganadería bovina y forestal.<br/>
+                        <strong>Clima continental</strong> (meseta central, valle del Ebro): inviernos fríos, veranos calurosos, amplitud térmica. Cereales, girasol, remolacha.<br/>
+                        <strong>Clima subtropical</strong> (Canarias, costa de Granada-Málaga): cultivos tropicales (plátano, aguacate, mango).
+                    </p>
+                    <p>
+                        El <strong>agua</strong> es el factor limitante fundamental: España es el país más árido de Europa occidental. La superficie de <strong>regadío</strong> (3,8 millones de hectáreas, ~22 % de la superficie agraria útil) genera más del 65 % de la producción agrícola final. Los trasvases (Tajo-Segura), embalses y la modernización del riego (goteo, aspersión) son cuestiones centrales del debate agroambiental.
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="SAU España ≈ 17,1 M ha | Regadío: 3,8 M ha (22%) → 65% producción"
+                    desc="SAU = Superficie Agraria Útil. El regadío es clave para la productividad"
+                />
+            </Card>
+
+            {/* Epígrafe 2 */}
+            <Card title="2. La agricultura española: producciones y estructuras" icon="📘">
+                <TheoryBlock title="2.1. Principales producciones agrícolas" color="amber">
+                    <p>
+                        <strong>Cereales:</strong> trigo, cebada (España es el primer productor de cebada de la UE), maíz, arroz (Albufera de Valencia, delta del Ebro). Destinados a alimentación humana y, especialmente, a piensos ganaderos.<br/>
+                        <strong>Olivar:</strong> España es el <strong>primer productor mundial de aceite de oliva</strong> (50 % de la producción mundial). Andalucía (Jaén, Córdoba) concentra el 80 % de la producción. La denominación de origen, la calidad virgen extra y la exportación son claves de su valor añadido.<br/>
+                        <strong>Viñedo:</strong> España tiene la mayor superficie de viñedo del mundo (~950.000 ha), aunque es el tercer productor de vino (tras Italia y Francia) por menor rendimiento. Denominaciones: Rioja, Ribera del Duero, Cava, Priorat, etc.<br/>
+                        <strong>Frutas y hortalizas:</strong> España es el primer exportador de la UE. Cítricos (Comunidad Valenciana, Murcia: naranjas, mandarinas, limones), fresas (Huelva), hortalizas de invernadero (Almería —«el mar de plástico», mayor concentración de invernaderos del mundo—), tomate (Canarias, Murcia), melocotón, pera, manzana.
+                    </p>
+                    <p>
+                        <strong>Otros cultivos:</strong> almendro (España es el segundo productor mundial tras EE. UU., en fuerte expansión), girasol, remolacha azucarera, algodón (Andalucía), tabaco (Extremadura), cultivos tropicales en expansión (aguacate en Málaga-Granada, mango).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.2. La ganadería" color="orange">
+                    <p>
+                        España es el cuarto productor de carne de la UE y el <strong>primer exportador europeo de carne de cerdo</strong> (tercer productor mundial). La cabaña porcina (~34 millones de cabezas) supera a la población humana. La producción porcina se concentra en Cataluña, Aragón, Castilla y León y Murcia.
+                    </p>
+                    <p>
+                        <strong>Bovino:</strong> ganadería extensiva en la cornisa cantábrica (leche) y dehesas del suroeste (carne, toro bravo). <strong>Ovino:</strong> Castilla y León, Castilla-La Mancha, Extremadura (queso manchego, Denominación de Origen).<br/>
+                        <strong>Avicultura:</strong> producción intensiva de pollos y huevos, tercera de la UE.<br/>
+                        <strong>Acuicultura:</strong> en fuerte crecimiento (dorada, lubina, mejillón —Galicia es el primer productor mundial de mejillón en bateas—, trucha).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.3. Estructuras agrarias" color="amber">
+                    <p>
+                        Las <strong>estructuras agrarias</strong> españolas reflejan la herencia histórica:
+                    </p>
+                    <p>
+                        <strong>Latifundio:</strong> grandes explotaciones en Andalucía, Extremadura, Castilla-La Mancha. Históricamente asociado a la propiedad absentista y al trabajo jornalero, aunque hoy muchos latifundios son explotaciones modernas y mecanizadas.<br/>
+                        <strong>Minifundio:</strong> pequeñas parcelas en Galicia, cornisa cantábrica, áreas de montaña. Baja rentabilidad, envejecimiento de los titulares, riesgo de abandono.<br/>
+                        <strong>Tendencia hacia la concentración:</strong> el número de explotaciones se ha reducido drásticamente (de 2,5 millones en 1960 a menos de 900.000 en 2020), mientras el tamaño medio ha aumentado. Sin embargo, la explotación media española (20 ha) sigue siendo inferior a la de Francia (63 ha) o Alemania (63 ha).
+                    </p>
+                    <p>
+                        El <strong>envejecimiento</strong> de los titulares de explotaciones es un problema grave: más del 40 % tiene más de 65 años, y el relevo generacional es insuficiente a pesar de las ayudas europeas a la incorporación de jóvenes agricultores.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.4. La industria agroalimentaria" color="orange">
+                    <p>
+                        La <strong>industria agroalimentaria</strong> es el primer sector industrial manufacturero de España por volumen de ventas (más de 140.000 millones de euros en 2023) y empleo (más de 500.000 trabajadores directos). Incluye la transformación de materias primas agrarias en productos elaborados: aceite de oliva, vino, conservas, productos cárnicos, lácteos, zumos, panadería industrial, etc.
+                    </p>
+                    <p>
+                        España es el <strong>cuarto exportador agroalimentario del mundo</strong> (tras EE. UU., Países Bajos y Alemania) y el primero de la UE en frutas y hortalizas. Las exportaciones agroalimentarias superaron los 68.000 millones de euros en 2023, con un superávit comercial agroalimentario de 20.000 millones.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 3 */}
+            <Card title="3. La Política Agrícola Común (PAC) y su impacto en España" icon="📘">
+                <TheoryBlock title="3.1. La PAC: origen, objetivos y evolución" color="amber">
+                    <p>
+                        La <strong>Política Agrícola Común (PAC)</strong> es la política comunitaria más antigua (Tratado de Roma, 1957) y, históricamente, la de mayor presupuesto (aunque su peso se ha reducido del 70 % del presupuesto comunitario en los años 80 a menos del 33 % actual). Sus objetivos originales (art. 39 TFUE) son: incrementar la productividad agrícola, garantizar un nivel de vida equitativo a la población agraria, estabilizar los mercados, garantizar la seguridad del abastecimiento y asegurar precios razonables al consumidor.
+                    </p>
+                    <p>
+                        La PAC ha evolucionado profundamente desde las reformas de <strong>MacSharry (1992)</strong>, la <strong>Agenda 2000</strong>, la reforma <strong>Fischler (2003)</strong> —que introdujo el <strong>desacoplamiento</strong> (pago único por explotación desvinculado de la producción) y la <strong>condicionalidad</strong> (cumplimiento de normas ambientales y de bienestar animal)— y la reforma <strong>2023-2027</strong>, que refuerza la «<strong>arquitectura verde</strong>» (eco-esquemas, condicionalidad reforzada) y la subsidiariedad (planes estratégicos nacionales).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.2. Impacto de la PAC en España" color="orange">
+                    <p>
+                        España es el <strong>segundo mayor receptor de fondos PAC</strong> de la UE (tras Francia), con una asignación de aproximadamente <strong>48.000 millones de euros para el periodo 2023-2027</strong> (unos 7.000 millones anuales entre pagos directos y desarrollo rural).
+                    </p>
+                    <p>
+                        <strong>Efectos positivos:</strong> modernización de explotaciones, mejora de infraestructuras rurales (regadío, caminos), estabilización de rentas agrarias, financiación de la multifuncionalidad rural (turismo rural, agroturismo, conservación del paisaje), fomento de la calidad (denominaciones de origen, agricultura ecológica), apoyo a zonas desfavorecidas y de montaña.
+                    </p>
+                    <p>
+                        <strong>Efectos negativos y críticas:</strong> la distribución de los pagos directos es muy desigual (el 20 % de los perceptores recibe el 80 % de las ayudas); los grandes latifundistas y empresas agroindustriales se benefician proporcionalmente más que los pequeños agricultores. La PAC ha sido criticada por fomentar modelos intensivos, por los excedentes históricos y por la lentitud en la transición ecológica. Los <strong>eco-esquemas</strong> de la nueva PAC (2023-2027) intentan corregir este sesgo.
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="PAC España 2023-2027 ≈ 48.000 M€ ≈ 7.000 M€/año"
+                    desc="España es el 2.º receptor tras Francia. Pagos directos + desarrollo rural"
+                />
+            </Card>
+
+            {/* Epígrafe 4 */}
+            <Card title="4. El sector pesquero en España" icon="📘">
+                <TheoryBlock title="4.1. Importancia histórica y actual" color="amber">
+                    <p>
+                        España tiene una tradición pesquera milenaria, favorecida por sus <strong>7.880 km de costa</strong> y la proximidad a caladeros atlánticos y mediterráneos. Históricamente, España fue la primera potencia pesquera de Europa y una de las principales del mundo. Aunque su peso relativo se ha reducido (la pesca aporta menos del 0,2 % del PIB), España sigue siendo el <strong>primer país pesquero de la UE</strong> por volumen de capturas y el <strong>mayor consumidor de productos pesqueros per cápita de Europa</strong> (tras Portugal): unos 42 kg/persona/año frente a los 24 kg de media de la UE.
+                    </p>
+                    <p>
+                        La flota pesquera española es la mayor de la UE por tonelaje (GT), aunque el número de buques se ha reducido significativamente (de más de 20.000 en los años 80 a menos de 9.000 actualmente) como resultado de las políticas de ajuste de capacidad de la <strong>Política Pesquera Común (PPC)</strong>.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.2. Caladeros y principales especies" color="orange">
+                    <p>
+                        <strong>Caladero nacional:</strong> aguas atlánticas (Galicia: merluza, pulpo, sardina, mejillón; Golfo de Cádiz: gambas, boquerones) y mediterráneas (menor productividad, sobrepesca histórica: salmonete, gamba roja, atún rojo).<br/>
+                        <strong>Caladeros comunitarios:</strong> acceso regulado por la PPC (cuotas, TAC —Total Admisible de Capturas—).<br/>
+                        <strong>Caladeros internacionales:</strong> la flota española opera en aguas de terceros países (Mauritania, Senegal, Mozambique, Argentina) y en alta mar, mediante acuerdos bilaterales de la UE y organizaciones regionales de pesca (ICCAT para el atún, NAFO para el Atlántico Norte). Este acceso se ha restringido progresivamente.
+                    </p>
+                    <p>
+                        <strong>Principales especies:</strong> merluza, atún (España es el mayor productor de conservas de atún de Europa), sardina, anchoa/boquerón, pulpo, gamba, cigala, rape, pez espada. Galicia concentra aproximadamente el 40 % de las capturas nacionales.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.3. La Política Pesquera Común (PPC)" color="amber">
+                    <p>
+                        La <strong>PPC</strong> es la política de la UE que regula la gestión de los recursos pesqueros. Sus principios fundamentales son: fijación de cuotas de captura basadas en el <strong>Rendimiento Máximo Sostenible (RMS)</strong>, regulación del esfuerzo pesquero (días de pesca, capacidad de flota), eliminación de los descartes (obligación de desembarque), control y vigilancia, y apoyo a las comunidades costeras dependientes de la pesca.
+                    </p>
+                    <p>
+                        El <strong>Fondo Europeo Marítimo, de Pesca y de Acuicultura (FEMPA)</strong> financia la modernización de la flota, la diversificación económica de las zonas costeras y el fomento de la acuicultura sostenible.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.4. La acuicultura" color="orange">
+                    <p>
+                        La <strong>acuicultura</strong> es el subsector con mayor potencial de crecimiento. España es el primer productor de acuicultura de la UE por volumen (más de 340.000 toneladas anuales), destacando: <strong>mejillón</strong> (Galicia: bateas en las rías, primer productor mundial), <strong>dorada y lubina</strong> (jaulas marinas en el Mediterráneo: Murcia, Comunidad Valenciana, Canarias), <strong>trucha</strong> (Castilla y León, Galicia) y <strong>rodaballo</strong> (Galicia).
+                    </p>
+                    <p>
+                        Los retos de la acuicultura incluyen la sostenibilidad ambiental (impacto en ecosistemas marinos), la competencia con importaciones de países con menores costes (Grecia, Turquía, Chile), la necesidad de I+D en nuevas especies y técnicas, y la simplificación administrativa para nuevas concesiones.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 5 */}
+            <Card title="5. Retos actuales y nuevas tendencias" icon="📘">
+                <TheoryBlock title="5.1. El cambio climático y la gestión del agua" color="amber">
+                    <p>
+                        El <strong>cambio climático</strong> es la mayor amenaza para el sector primario español: aumento de temperaturas, reducción e irregularidad de las precipitaciones, mayor frecuencia de sequías e inundaciones, avance de la desertificación (más del 74 % del territorio español está en riesgo). La <strong>gestión del agua</strong> es crítica: España es el país europeo con mayor superficie de regadío y con los mayores conflictos hídricos (trasvases, sobreexplotación de acuíferos como el de la Tabla de Daimiel o el Campo de Dalías).
+                    </p>
+                    <p>
+                        Las respuestas incluyen la <strong>modernización del regadío</strong> (riego por goteo, que ya representa más del 50 % del regadío), la <strong>desalinización</strong> (España tiene la mayor capacidad desalinizadora de Europa), la <strong>reutilización de aguas regeneradas</strong> y la planificación hidrológica.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.2. La despoblación rural y el relevo generacional" color="orange">
+                    <p>
+                        La «<strong>España vaciada</strong>» es un fenómeno que afecta especialmente al medio rural: provincias como Soria, Teruel, Cuenca o Zamora tienen densidades inferiores a 10 hab/km² (por debajo del umbral de «desierto demográfico» de Laponia). El envejecimiento de los agricultores (más del 40 % mayores de 65 años) y la falta de relevo generacional amenazan la continuidad de muchas explotaciones. Las políticas de la PAC (ayudas a la primera instalación de jóvenes agricultores, programas LEADER de desarrollo rural) y las estrategias nacionales frente al reto demográfico intentan paliar esta situación.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.3. Agricultura ecológica y de calidad" color="amber">
+                    <p>
+                        España es el <strong>primer país de la UE en superficie de agricultura ecológica</strong> (~2,6 millones de hectáreas, ~11 % de la SAU), aunque gran parte de la producción se exporta (principalmente a Alemania y Francia). La <strong>agricultura ecológica</strong> prohíbe el uso de pesticidas y fertilizantes de síntesis, antibióticos preventivos y organismos genéticamente modificados, y apuesta por la biodiversidad, la rotación de cultivos y el bienestar animal.
+                    </p>
+                    <p>
+                        Los <strong>sellos de calidad</strong> (Denominaciones de Origen Protegidas, Indicaciones Geográficas Protegidas, Especialidades Tradicionales Garantizadas) son un activo diferenciador: España cuenta con más de 350 productos con sello europeo de calidad, entre los que destacan jamón ibérico (Jabugo, Guijuelo, Dehesa de Extremadura), queso manchego, aceite de oliva (Baena, Sierra Mágina, Priego de Córdoba), vinos (Rioja, Ribera del Duero), pimentón de La Vera, azafrán de La Mancha o turrón de Jijona.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.4. Digitalización y agricultura de precisión" color="orange">
+                    <p>
+                        La <strong>agricultura de precisión</strong> utiliza tecnologías (GPS, drones, sensores IoT, inteligencia artificial, big data) para optimizar el uso de agua, fertilizantes y fitosanitarios, reducir costes y minimizar el impacto ambiental. España avanza en este campo, especialmente en los grandes cultivos de regadío y en la horticultura intensiva de Almería y Murcia. El Plan de Digitalización del Sector Agroalimentario (financiado con fondos Next Generation EU) impulsa la conectividad rural, la formación digital y la adopción de estas tecnologías.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title="6. Relevancia curricular" icon="🎓">
+                <TheoryBlock color="violet">
+                    <p>
+                        Este tema se enmarca en los contenidos de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022) relativos a la estructura productiva española, conectando con CE1 (funcionamiento del sistema económico), CE4 (contexto nacional) y los ejes transversales de sostenibilidad (Agenda 2030, ODS 2 «Hambre cero», ODS 12 «Producción y consumo responsables», ODS 13 «Acción por el clima», ODS 14 «Vida submarina», ODS 15 «Vida de ecosistemas terrestres»). Contribuye a las competencias <strong>CC</strong> (ciudadanía activa, comprensión del medio rural y la seguridad alimentaria), <strong>STEM</strong> (análisis de datos del MAPA, Eurostat), <strong>CE</strong> (emprendimiento agrario) y <strong>CCL</strong> (lectura de informes sectoriales). La dimensión territorial y ambiental del sector primario lo conecta directamente con los debates sobre sostenibilidad y despoblación que afectan a la vida cotidiana del alumnado.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="amber">
+                    <p>
+                        El sector primario español, aunque representa menos del 3 % del PIB, es estratégico: España es potencia agroalimentaria mundial (primer productor de aceite de oliva, primer exportador de frutas y hortalizas de la UE, primer país pesquero de la UE). La estructura agraria combina un sector hortofrutícola de exportación altamente competitivo con explotaciones cerealísticas extensivas y un medio rural envejecido y despoblado. La PAC (48.000 M€ para 2023-2027) es determinante para las rentas agrarias y la modernización, pero su distribución es desigual. La pesca, regulada por la PPC, afronta la reducción de caladeros y la transición hacia la sostenibilidad (RMS). La acuicultura (primer productor de la UE) es el subsector con mayor potencial. Los grandes retos son el cambio climático (sequía, desertificación), la gestión del agua, la despoblación rural, el relevo generacional, la transición hacia una agricultura más ecológica, digitalizada y de mayor valor añadido.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            <BibliografiaBox items={[
+                "MAPA. Informe Anual de Indicadores: Agricultura, Alimentación y Medio Ambiente (varios años). www.mapa.gob.es",
+                "García Delgado, J. L. & Myro, R. (dir.) (2021). Lecciones de economía española, 16.ª ed. Thomson-Civitas. Cap. 5: El sector agrario.",
+                "Tamames, R. & Rueda, A. (2022). Estructura económica de España, 27.ª ed. Alianza Editorial.",
+                "Comisión Europea. La PAC en su país: España. ec.europa.eu/agriculture",
+                "INE. Encuesta sobre la estructura de las explotaciones agrícolas. www.ine.es",
+                "MAPA. Plan Estratégico de la PAC de España 2023-2027.",
+                "FAO. El estado mundial de la pesca y la acuicultura (SOFIA). www.fao.org",
+                "López Ontiveros, A. (2003). Geografía de los paisajes agrarios de España. Ariel.",
+                "Eurostat. Agriculture, forestry and fishery statistics. ec.europa.eu/eurostat",
+                "Ministerio para la Transición Ecológica. Plan Nacional de Adaptación al Cambio Climático (PNACC) 2021-2030.",
+            ]} />
+        </div>
+    );
+
+    const Tema40Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-amber-50 rounded-xl border border-amber-200 mb-5">
+                    <p className="text-center font-bold text-amber-800 text-lg">Tema 40: L'agricultura i la pesca a Espanya.</p>
+                    <p className="text-center text-sm text-amber-600 mt-1">
+                        <em>"Potència agroalimentària mundial amb reptes de sostenibilitat i despoblament"</em>
+                    </p>
+                </div>
+
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. Pes del sector primari</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Primari: &lt;3% PIB, ~4% ocupació (780.000 persones). Complex agroalimentari ampliat: ~10-11% PIB.</li>
+                            <li>Terciarització: del 40% ocupació (1960) al 4% actual. Éxode rural massiu als anys 60.</li>
+                            <li>SAU: 17,1 M ha. Regadiu: 3,8 M ha (22%) → 65% producció. Aigua = factor limitant clau.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. Principals produccions</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Oli d'oliva: 1r productor mundial (50%). Andalusia 80%. DO i exportació.</li>
+                            <li>Vinya: major superfície del món (~950.000 ha). 3r productor vi (Rioja, Ribera del Duero, Cava).</li>
+                            <li>Fruites i hortalisses: 1r exportador UE. Cítrics (C. Valenciana), maduixes (Huelva), hivernacles (Almeria).</li>
+                            <li>Cereals: 1r productor ordi UE. Ramaderia: porc (1r exportador UE, 34 M caps), boví, oví, aqüicultura.</li>
+                            <li>Indústria agroalimentària: 1r sector manufacturer. Vendes &gt;140.000 M€. Exportacions: 68.000 M€ (2023).</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. Estructures agràries</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Latifundi (Andalusia, Extremadura) vs. minifundi (Galícia, cornisa cantàbrica).</li>
+                            <li>Concentració: de 2,5 M explotacions (1960) a &lt;900.000 (2020). Mida mitjana: 20 ha (França: 63 ha).</li>
+                            <li>Envelliment: &gt;40% titulars &gt;65 anys. Relleu generacional insuficient.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. PAC i Espanya</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>2n receptor UE (després de França). PAC 2023-27: ~48.000 M€ (~7.000 M€/any).</li>
+                            <li>Reforma Fischler (2003): desacoblament, condicionalitat. Nova PAC: eco-esquemes, arquitectura verda.</li>
+                            <li>Crítica: 20% perceptors reben 80% ajudes. Distribució desigual.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">5. Pesca i aqüicultura</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>1r país pesquer UE. Major consum peix pc d'Europa (42 kg/any). 7.880 km costa.</li>
+                            <li>Flota reduïda: de 20.000 a &lt;9.000 vaixells. PPC: quotes, RMS, eliminació descarts.</li>
+                            <li>Aqüicultura: 1r productor UE (340.000 t). Musclo (Galícia), daurada, llobarro, truita.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">6. Reptes actuals</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Canvi climàtic: sequera, desertificació (74% territori en risc). Gestió aigua: reg per goteig, dessalinització.</li>
+                            <li>«Espanya buidada»: despoblament rural (Sòria, Terol &lt;10 hab/km²).</li>
+                            <li>Agricultura ecològica: 1r UE en superfície (2,6 M ha). Digitalització: agricultura de precisió (drons, IoT, IA).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <FormulaBox formula="SAU ≈ 17,1 M ha | Regadiu: 3,8 M ha → 65% producció" desc="L'aigua és el factor limitant fonamental" />
+
+                <ClauBox>
+                    <p>- Destaca Espanya com a <strong>potència agroalimentària</strong>: 1r oli d'oliva, 1r exportador fruites UE, 1r pesquer UE.</p>
+                    <p>- Diferencia <strong>pes directe</strong> (&lt;3% PIB) del <strong>complex agroalimentari ampliat</strong> (~10-11%).</p>
+                    <p>- Explica la <strong>PAC</strong> i la seua distribució desigual (20/80).</p>
+                    <p>- Connecta amb <strong>canvi climàtic, gestió de l'aigua i despoblament rural</strong>.</p>
+                    <p>- Inclou <strong>aqüicultura</strong> com a subsector amb major potencial de creixement.</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    const Tema40 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="🌾" title="Tema 40" subtitle={t('tema40.title')} />
+                <Tabs tabs={[
+                    { id: 'complet', label: '📝 ' + t('tab.complet') },
+                    { id: 'resum', label: '📋 ' + t('tab.resum') },
+                ]} active={vista} onChange={setVista} />
+                {vista === 'complet' && <Tema40Complet />}
+                {vista === 'resum' && <Tema40Resum />}
+            </div>
+        );
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // PLACEHOLDER — Temes 41-48
+    // ════════════════════════════════════════════════════════════════
+    const Placeholder = ({ num }) => (
+        <div className="space-y-6 animate-fade">
+            <SectionTitle icon="🇪🇸" title={`Tema ${num}`} subtitle={t(`tema${num}.title`)} />
+            <Card>
+                <div className="text-center py-16">
+                    <span className="text-6xl mb-4 block">🚧</span>
+                    <p className="text-lg font-semibold text-slate-600 mb-2">{t('placeholder.msg')}</p>
+                </div>
+            </Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // NAVIGATION AND RENDER
+    // ════════════════════════════════════════════════════════════════
+    const headerSections = [
+        { id: 'inicio', label: t('sec.inicio'), emoji: '🏠' },
+        { id: 'tema39', label: 'T39', emoji: '🇪🇸' },
+        { id: 'tema40', label: 'T40', emoji: '🌾' },
+        { id: 'tema41', label: 'T41', emoji: '🇪🇸' },
+        { id: 'tema42', label: 'T42', emoji: '🇪🇸' },
+        { id: 'tema43', label: 'T43', emoji: '🇪🇸' },
+        { id: 'tema44', label: 'T44', emoji: '🇪🇸' },
+        { id: 'tema45', label: 'T45', emoji: '🇪🇸' },
+        { id: 'tema46', label: 'T46', emoji: '🇪🇸' },
+        { id: 'tema47', label: 'T47', emoji: '🇪🇸' },
+        { id: 'tema48', label: 'T48', emoji: '🇪🇸' },
+    ];
+
+    return (
+        <div className="min-h-screen">
+            <PdeHeader
+                idioma={idioma}
+                setIdioma={(lang) => { setIdioma(lang); PdeLanguageStore.set(lang); }}
+                currentApp="oposicions-bloc-e"
+                sections={headerSections}
+                currentSection={section}
+                setSection={setSection}
+            />
+
+            <main className="max-w-7xl mx-auto px-4 py-8">
+                {section === 'inicio' && <Inicio />}
+                {section === 'tema39' && <Tema39 />}
+                {section === 'tema40' && <Tema40 />}
+                {section === 'tema41' && <Placeholder num={41} />}
+                {section === 'tema42' && <Placeholder num={42} />}
+                {section === 'tema43' && <Placeholder num={43} />}
+                {section === 'tema44' && <Placeholder num={44} />}
+                {section === 'tema45' && <Placeholder num={45} />}
+                {section === 'tema46' && <Placeholder num={46} />}
+                {section === 'tema47' && <Placeholder num={47} />}
+                {section === 'tema48' && <Placeholder num={48} />}
+            </main>
+
+            <PdePrevNext sections={headerSections} currentSection={section} setSection={setSection} idioma={idioma} />
+            <PdeFooter appEmoji="🇪🇸" appName={t('footer.appname')} idioma={idioma} />
+            <PdeScrollToTop />
+        </div>
+    );
+}
+
+ReactDOM.render(<BlocEApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
