@@ -167,8 +167,8 @@ function BlocFApp() {
         { num: 56, id: 'tema56', available: true },
         { num: 57, id: 'tema57', available: true },
         { num: 58, id: 'tema58', available: true },
-        { num: 59, id: 'tema59', available: false },
-        { num: 60, id: 'tema60', available: false },
+        { num: 59, id: 'tema59', available: true },
+        { num: 60, id: 'tema60', available: true },
     ];
 
     // ════════════════════════════════════════════════════════════════
@@ -1682,14 +1682,128 @@ function BlocFApp() {
     const Tema58 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="📊" title="Tema 58" subtitle={t('tema58.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema58Complet />}{vista === 'resum' && <Tema58Resum />}</div>); };
 
     // ════════════════════════════════════════════════════════════════
-    // PLACEHOLDER — Temes 59-60
+    // TEMA 59 — Patrimonio empresarial. Balance de situación.
     // ════════════════════════════════════════════════════════════════
-    const Placeholder = ({ num }) => (
+    const Tema59Complet = () => (
         <div className="space-y-6 animate-fade">
-            <SectionTitle icon="🏢" title={`Tema ${num}`} subtitle={t(`tema${num}.title`)} />
-            <Card><div className="text-center py-16"><span className="text-6xl mb-4 block">🚧</span><p className="text-lg font-semibold text-slate-600 mb-2">{t('placeholder.msg')}</p></div></Card>
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>El <strong>patrimonio empresarial</strong> es el conjunto de bienes, derechos y obligaciones que posee la empresa en un momento determinado. El <strong>balance de situación</strong> es el estado contable que representa la imagen fiel del patrimonio: muestra qué tiene la empresa (activo), qué debe (pasivo) y cuál es la diferencia (patrimonio neto). Es la fotografía económico-financiera de la empresa.</p>
+                    <p>Este tema se enmarca en CE6 de <strong>Economía de la Empresa de 2.º de Bachillerato</strong> (RD 243/2022) y es fundamental para los supuestos prácticos. Se estructura en: concepto de patrimonio, masas patrimoniales, el balance de situación, equilibrios financieros y fondo de maniobra.</p>
+                </div>
+            </Card>
+            <Card title="1. El patrimonio empresarial" icon="📘">
+                <TheoryBlock title="1.1. Elementos patrimoniales" color="rose">
+                    <p><strong>Bienes:</strong> elementos materiales e inmateriales propiedad de la empresa (terrenos, edificios, maquinaria, existencias, dinero en caja, patentes, software).<br/><strong>Derechos:</strong> cantidades que terceros deben a la empresa (clientes que deben facturas, préstamos concedidos, depósitos).<br/><strong>Obligaciones:</strong> deudas de la empresa con terceros (préstamos bancarios, proveedores, deudas tributarias, salarios pendientes).</p>
+                </TheoryBlock>
+                <TheoryBlock title="1.2. Ecuación fundamental del patrimonio" color="red">
+                    <p><strong>Patrimonio Neto = Bienes + Derechos − Obligaciones = Activo − Pasivo</strong><br/>O equivalentemente: <strong>Activo = Patrimonio Neto + Pasivo</strong> (ecuación del balance).</p>
+                </TheoryBlock>
+                <FormulaBox formula="ACTIU = PATRIMONI NET + PASSIU" desc="Ecuació fonamental del balanç. Sempre en equilibri." />
+            </Card>
+            <Card title="2. Las masas patrimoniales" icon="📘">
+                <TheoryBlock title="2.1. Activo (estructura económica)" color="rose">
+                    <p>El <strong>activo</strong> representa l'estructura econòmica: en què ha invertit l'empresa els seus recursos.<br/><strong>Activo no corriente (fijo):</strong> elements que romanen en l'empresa més d'1 any: <em>immobilitzat intangible</em> (patents, marques, software, fons de comerç), <em>immobilitzat material</em> (terrenys, edificis, maquinària, vehicles, mobiliari — menys l'amortització acumulada), <em>inversions financeres a LP</em> (accions d'altres empreses, dipòsits a LP).<br/><strong>Activo corriente (circulante):</strong> elements que es renoven en &lt;1 any: <em>existències</em> (matèries primeres, productes en curs, productes acabats, mercaderies), <em>realitzable</em> (clients, deutors, efectes a cobrar, inversions financeres a CP), <em>disponible</em> (caixa, bancs — tresoreria).</p>
+                </TheoryBlock>
+                <TheoryBlock title="2.2. Patrimonio neto y pasivo (estructura financiera)" color="red">
+                    <p><strong>Patrimonio Neto:</strong> finançament propi no exigible: <em>capital social</em> (aportacions dels socis), <em>reserves</em> (legal, voluntàries, estatutàries), <em>resultat de l'exercici</em> (benefici o pèrdua), <em>subvencions de capital</em>.<br/><strong>Pasivo no corriente (exigible a LP):</strong> deutes amb venciment &gt;1 any: préstecs bancaris a LP, empréstits (obligacions), proveïdors d'immobilitzat a LP.<br/><strong>Pasivo corriente (exigible a CP):</strong> deutes amb venciment &lt;1 any: proveïdors, creditors, efectes a pagar, préstecs a CP, deutes amb Hisenda, deutes amb la Seguretat Social, sous pendents.</p>
+                </TheoryBlock>
+            </Card>
+            <Card title="3. El fondo de maniobra" icon="📘">
+                <TheoryBlock title="3.1. Concepto y cálculo" color="rose">
+                    <p>El <strong>fons de maniobra</strong> (FM, working capital) és la part de l'actiu corrent finançada amb capitals permanents (PN + PnC). Es calcula:<br/><strong>FM = Actiu Corrent − Passiu Corrent</strong><br/>O equivalentment: <strong>FM = (PN + PnC) − Actiu no Corrent</strong></p>
+                    <p><strong>FM &gt; 0:</strong> situació d'equilibri financer normal. L'empresa pot pagar els deutes a CP amb els actius a CP.<br/><strong>FM = 0:</strong> equilibri precari. Qualsevol impagament de clients pot generar insolvència.<br/><strong>FM &lt; 0:</strong> desequilibri financer. L'empresa pot tindre problemes de liquiditat (suspensió de pagaments). Part de l'actiu fix es finança amb deutes a CP (molt perillós).</p>
+                </TheoryBlock>
+                <FormulaBox formula="FM = Actiu Corrent − Passiu Corrent" desc="FM > 0: equilibri. FM < 0: risc d'insolvència. Clau per al diagnòstic financer." />
+            </Card>
+            <Card title="4. Situaciones patrimoniales" icon="📘">
+                <TheoryBlock title="4.1. Les cinc situacions" color="rose">
+                    <p><strong>1. Estabilitat financera total:</strong> A = PN (no hi ha deutes). Situació ideal teòrica, poc habitual.<br/><strong>2. Estabilitat financera normal:</strong> FM &gt; 0. La situació desitjable.<br/><strong>3. Suspensió de pagaments (insolvència tècnica):</strong> FM &lt; 0 però A &gt; P (l'empresa té patrimoni però problemes de liquiditat a CP).<br/><strong>4. Fallida (insolvència definitiva):</strong> PN &lt; 0 (deutes superen actius). L'empresa no pot pagar tots els seus deutes ni liquidant tot l'actiu.<br/><strong>5. Estabilitat financera negativa màxima:</strong> A = P i PN = 0 (no hi ha finançament propi).</p>
+                </TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="rose"><p>El patrimoni comprén béns + drets − obligacions. El balanç reflectix A = PN + P. L'actiu es dividix en no corrent (immobilitzat intangible, material, inversions LP) i corrent (existències, realitzable, disponible). El PN inclou capital, reserves i resultats. El passiu és no corrent (LP) i corrent (CP). El fons de maniobra (FM = AC − PC) indica l'equilibri financer: FM&gt;0 → estabilitat; FM&lt;0 → risc d'insolvència. Les 5 situacions patrimonials van des de l'estabilitat total fins a la fallida.</p></TheoryBlock>
+            </Card>
+            <BibliografiaBox items={["Plan General de Contabilidad (RD 1514/2007, actualizado).","Bueno Campos, E. (2022). Curso básico de Economía de la Empresa. Pirámide.","Muñoz Merchante, A. (2021). Introducción a la Contabilidad. Ediciones Académicas.","Archel, P. et al. (2018). Estados contables, 6.ª ed. Pirámide.","ICAC. Normas de elaboración de las cuentas anuales. www.icac.gob.es","Rivero Torre, P. (2012). Análisis de balances y estados complementarios. Pirámide."]} />
         </div>
     );
+    const Tema59Resum = () => (
+        <div className="space-y-5 animate-fade"><Card>
+            <div className="p-4 bg-rose-50 rounded-xl border border-rose-200 mb-5"><p className="text-center font-bold text-rose-800 text-lg">Tema 59: Patrimoni empresarial. Balanç de situació.</p><p className="text-center text-sm text-rose-600 mt-1"><em>"ACTIU = PATRIMONI NET + PASSIU: la fotografia de l'empresa"</em></p></div>
+            <div className="space-y-4 text-sm text-slate-700">
+                <div><h4 className="font-bold text-slate-800 mb-1">1. Patrimoni</h4><ul className="list-disc pl-5 space-y-1"><li>Béns + Drets − Obligacions = PN. A = PN + P.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">2. Masses patrimonials</h4><ul className="list-disc pl-5 space-y-1"><li>Actiu no corrent: intangible, material (−amortització), inversions financeres LP.</li><li>Actiu corrent: existències, realitzable (clients, deutors), disponible (caixa, bancs).</li><li>PN: capital, reserves, resultat exercici. PnC: deutes LP. PC: proveïdors, deutes CP.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">3. Fons de maniobra</h4><ul className="list-disc pl-5 space-y-1"><li>FM = AC − PC. FM&gt;0 → equilibri. FM&lt;0 → risc insolvència.</li><li>5 situacions: estabilitat total → normal → suspensió pagaments → fallida → PN=0.</li></ul></div>
+            </div>
+            <FormulaBox formula="FM = AC − PC = (PN + PnC) − AnC" desc="Fons de maniobra: clau del diagnòstic d'equilibri financer" />
+            <ClauBox><p>- Domina l'<strong>equació A = PN + P</strong> i les masses patrimonials.</p><p>- Calcula el <strong>FM</strong> i interpreta les 5 situacions patrimonials.</p><p>- Diferencia <strong>actiu corrent vs. no corrent</strong> amb tots els elements.</p></ClauBox>
+        </Card></div>
+    );
+    const Tema59 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="📋" title="Tema 59" subtitle={t('tema59.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema59Complet />}{vista === 'resum' && <Tema59Resum />}</div>); };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 60 — Cuenta de resultados. Análisis económico-financiero.
+    // ════════════════════════════════════════════════════════════════
+    const Tema60Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>Si el balanç és la fotografia del patrimoni en un instant, el <strong>compte de resultats</strong> (o compte de pèrdues i guanys) és la pel·lícula de l'exercici: mostra els ingressos i despeses del període per determinar si l'empresa ha obtingut <strong>benefici o pèrdua</strong>. L'<strong>anàlisi economicofinancera</strong> utilitza ràtios i indicadors per diagnosticar la salut de l'empresa.</p>
+                    <p>Tema central en CE6 de <strong>Economia de l'Empresa de 2n de Batxillerat</strong> i molt freqüent en supòsits pràctics d'oposicions.</p>
+                </div>
+            </Card>
+            <Card title="1. El compte de resultats" icon="📘">
+                <TheoryBlock title="1.1. Estructura" color="rose">
+                    <p>El compte de resultats (PGC) es desglossa en:<br/><strong>1. Resultat d'explotació (BAII/EBIT):</strong><br/>Ingressos d'explotació (vendes netes, prestació de serveis, subvencions d'explotació)<br/>− Despeses d'explotació (aprovisionaments, despeses de personal, amortitzacions, serveis exteriors, tributs)<br/>= <strong>BAII (Benefici Abans d'Interessos i Impostos)</strong></p>
+                    <p><strong>2. Resultat financer:</strong><br/>Ingressos financers (interessos de dipòsits, dividends cobrats)<br/>− Despeses financeres (interessos de préstecs, comissions bancàries)<br/>= Resultat financer (normalment negatiu)</p>
+                    <p><strong>3. Resultat abans d'impostos (BAI):</strong> BAII + Resultat financer<br/><strong>4. Impost sobre Societats:</strong> BAI × tipus impositiu (25 % general)<br/><strong>5. Resultat de l'exercici (BDI — Benefici Després d'Impostos):</strong> BAI − IS</p>
+                </TheoryBlock>
+                <FormulaBox formula="Vendes − Despeses explotació = BAII ± Resultat financer = BAI − IS = BDI" desc="Estructura escalonada: identifica on es genera (o es perd) valor" />
+            </Card>
+            <Card title="2. Anàlisi financera (liquiditat i solvència)" icon="📘">
+                <TheoryBlock title="2.1. Ràtios de liquiditat" color="rose">
+                    <p><strong>Ràtio de liquiditat (o corrent):</strong> AC / PC. Ideal: 1,5 − 2. Mesura la capacitat de pagar deutes a CP.<br/><strong>Ràtio de tresoreria (acid test):</strong> (AC − Existències) / PC. Ideal: ~1. Més estricte: exclou les existències (menys líquides).<br/><strong>Ràtio de disponibilitat:</strong> Disponible / PC. Ideal: 0,2 − 0,3. Mesura la liquiditat immediata.</p>
+                </TheoryBlock>
+                <TheoryBlock title="2.2. Ràtios de solvència i endeutament" color="red">
+                    <p><strong>Ràtio de solvència (garantia):</strong> Actiu Total / Passiu Total. Ideal: &gt; 1,5. Mesura la capacitat de pagar tots els deutes liquidant l'actiu.<br/><strong>Ràtio d'endeutament:</strong> Passiu Total / (PN + Passiu). Ideal: 0,4 − 0,6. Proporció de finançament alié.<br/><strong>Ràtio d'autonomia financera:</strong> PN / Passiu Total. Ideal: &gt; 1. Independència respecte als creditors.<br/><strong>Ràtio de qualitat del deute:</strong> PC / Passiu Total. Com menor, millor (deute a LP és menys pressió).</p>
+                </TheoryBlock>
+            </Card>
+            <Card title="3. Anàlisi econòmica (rendibilitat)" icon="📘">
+                <TheoryBlock title="3.1. Rendibilitat econòmica (ROA/ROI)" color="rose">
+                    <p><strong>RE = BAII / Actiu Total × 100</strong><br/>Mesura la rendibilitat dels actius independentment de com es financen. Indica l'eficiència de l'empresa en l'ús dels seus recursos. Com major, millor.</p>
+                    <p>Es pot descompondre: <strong>RE = Marge × Rotació</strong> = (BAII/Vendes) × (Vendes/Actiu). L'empresa pot millorar la RE augmentant el marge (pujant preus o reduint costos) o augmentant la rotació (venent més amb el mateix actiu).</p>
+                </TheoryBlock>
+                <TheoryBlock title="3.2. Rendibilitat financera (ROE)" color="red">
+                    <p><strong>RF = BDI / Patrimoni Net × 100</strong><br/>Mesura la rendibilitat per als accionistes/propietaris. Com major, millor. Depén de la RE, de l'endeutament i del cost del deute (efecte palanquejament).</p>
+                    <p><strong>Efecte palanquejament (apalancament financer):</strong> si la RE &gt; cost del deute (ki), endeutar-se augmenta la RF (palanquejament positiu). Si la RE &lt; ki, endeutar-se redueix la RF (palanquejament negatiu). Fórmula simplificada: <strong>RF = RE + (RE − ki) × (D/PN) × (1−t)</strong>.</p>
+                </TheoryBlock>
+                <FormulaBox formula="RE = BAII/Actiu | RF = BDI/PN | Palanquejament: RF = RE + (RE−ki)×D/PN×(1−t)" desc="Si RE > ki → endeutar-se millora RF (palanquejament positiu)" />
+            </Card>
+            <Card title="4. Període mitjà de maduració" icon="📘">
+                <TheoryBlock color="rose">
+                    <p>El <strong>període mitjà de maduració (PMM)</strong> és el temps que tarda l'empresa a recuperar cada euro invertit en el cicle d'explotació:<br/><strong>PMM = PM d'aprovisionament + PM de fabricació + PM de venda + PM de cobrament − PM de pagament</strong><br/>On PM = 365 / Rotació de cada subperíode. El <strong>PMM financer</strong> (descomptant el PM de pagament a proveïdors) indica les necessitats reals de finançament del cicle d'explotació. Un PMM menor és millor (es recupera el diner més ràpid).</p>
+                </TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="rose"><p>El compte de resultats mostra Vendes → BAII → BAI → BDI (estructura escalonada). L'anàlisi financera utilitza ràtios de liquiditat (corrent ~1,5-2, acid test ~1, disponibilitat ~0,2-0,3), solvència (garantia &gt;1,5, endeutament 0,4-0,6). L'anàlisi econòmica calcula la RE (BAII/Actiu = Marge × Rotació) i la RF (BDI/PN), relacionades per l'efecte palanquejament: si RE&gt;ki, endeutar-se millora la RF. El PMM mesura la durada del cicle d'explotació. Tema essencial per als supòsits pràctics d'oposicions.</p></TheoryBlock>
+            </Card>
+            <BibliografiaBox items={["Plan General de Contabilidad (RD 1514/2007, actualizado).","Archel, P. et al. (2018). Estados contables, 6.ª ed. Pirámide.","Bueno Campos, E. (2022). Curso básico de Economía de la Empresa. Pirámide.","Rivero Torre, P. (2012). Análisis de balances y estados complementarios. Pirámide.","Amat, O. (2018). Análisis de estados financieros, 12.ª ed. Gestión 2000.","Muñoz Merchante, A. (2021). Introducción a la Contabilidad. Ediciones Académicas.","Garrido, P. & Íñiguez, R. (2017). Análisis de estados contables. Pirámide.","González Pascual, J. (2016). Análisis de la empresa a través de su información económico-financiera. Pirámide."]} />
+        </div>
+    );
+    const Tema60Resum = () => (
+        <div className="space-y-5 animate-fade"><Card>
+            <div className="p-4 bg-rose-50 rounded-xl border border-rose-200 mb-5"><p className="text-center font-bold text-rose-800 text-lg">Tema 60: Compte de resultats. Anàlisi economicofinancera.</p><p className="text-center text-sm text-rose-600 mt-1"><em>"RE, RF, ràtios i palanquejament: el diagnòstic complet de l'empresa"</em></p></div>
+            <div className="space-y-4 text-sm text-slate-700">
+                <div><h4 className="font-bold text-slate-800 mb-1">1. Compte de resultats</h4><ul className="list-disc pl-5 space-y-1"><li>Vendes − despeses explotació = BAII. ± Resultat financer = BAI. − IS (25%) = BDI.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">2. Ràtios financeres</h4><ul className="list-disc pl-5 space-y-1"><li>Liquiditat: AC/PC (~1,5-2). Acid test: (AC−Exist)/PC (~1). Disponibilitat: Disp/PC (~0,2-0,3).</li><li>Solvència: AT/PT (&gt;1,5). Endeutament: PT/(PN+PT) (0,4-0,6). Autonomia: PN/PT (&gt;1).</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">3. Rendibilitat</h4><ul className="list-disc pl-5 space-y-1"><li>RE (ROA) = BAII/Actiu = Marge × Rotació. Eficiència actius.</li><li>RF (ROE) = BDI/PN. Rendibilitat per als propietaris.</li><li>Palanquejament: si RE&gt;ki → endeutar-se millora RF (positiu). Si RE&lt;ki → negatiu.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">4. PMM</h4><ul className="list-disc pl-5 space-y-1"><li>PMM = PM aprovisionament + fabricació + venda + cobrament − pagament.</li><li>PMM financer = necessitats finançament cicle explotació. Menor = millor.</li></ul></div>
+            </div>
+            <FormulaBox formula="RE = BAII/Actiu | RF = BDI/PN | Si RE > ki → palanquejament positiu" desc="Diagnòstic complet: liquiditat + solvència + rendibilitat" />
+            <ClauBox><p>- Domina l'<strong>estructura escalonada</strong> del compte de resultats (BAII → BAI → BDI).</p><p>- Calcula i interpreta els <strong>ràtios</strong> amb valors ideals.</p><p>- Explica <strong>RE (marge × rotació)</strong> i l'<strong>efecte palanquejament</strong>.</p><p>- Inclou el <strong>PMM</strong> com a ferramenta complementària.</p></ClauBox>
+        </Card></div>
+    );
+    const Tema60 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="📈" title="Tema 60" subtitle={t('tema60.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema60Complet />}{vista === 'resum' && <Tema60Resum />}</div>); };
 
     // ════════════════════════════════════════════════════════════════
     // NAVIGATION AND RENDER
@@ -1706,8 +1820,8 @@ function BlocFApp() {
         { id: 'tema56', label: 'T56', emoji: '📢' },
         { id: 'tema57', label: 'T57', emoji: '💰' },
         { id: 'tema58', label: 'T58', emoji: '📊' },
-        { id: 'tema59', label: 'T59', emoji: '🏢' },
-        { id: 'tema60', label: 'T60', emoji: '🏢' },
+        { id: 'tema59', label: 'T59', emoji: '📋' },
+        { id: 'tema60', label: 'T60', emoji: '📈' },
     ];
 
     return (
@@ -1725,8 +1839,8 @@ function BlocFApp() {
                 {section === 'tema56' && <Tema56 />}
                 {section === 'tema57' && <Tema57 />}
                 {section === 'tema58' && <Tema58 />}
-                {section === 'tema59' && <Placeholder num={59} />}
-                {section === 'tema60' && <Placeholder num={60} />}
+                {section === 'tema59' && <Tema59 />}
+                {section === 'tema60' && <Tema60 />}
             </main>
             <PdePrevNext sections={headerSections} currentSection={section} setSection={setSection} idioma={idioma} />
             <PdeFooter appEmoji="🏢" appName={t('footer.appname')} idioma={idioma} />
