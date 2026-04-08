@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloc D: Economia Internacional — Oposicions | PDE</title>
+    <meta name="description" content="Temes 31-38 d'oposicions d'Economia. Comerç internacional, balança de pagaments, globalització, UE i més.">
+    <meta property="og:title" content="Bloc D: Economia Internacional — Oposicions | PDE">
+    <meta property="og:description" content="Temes 31-38 d'oposicions d'Economia. Comerç internacional, balança de pagaments, globalització, UE i més.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/oposicions-bloc-d">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://profedeeconomia.es/oposicions-bloc-d">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #059669 #ecfdf5; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #ecfdf5; }
+        ::-webkit-scrollbar-thumb { background-color: #059669; border-radius: 3px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 via-white to-emerald-50 min-h-screen">
+    <div id="root"></div>
+    <script type="text/babel">
+const { useState, useMemo, useEffect } = React;
+
+function BlocDApp() {
+    const [section, setSection] = useState('inicio');
+    const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+
+    usePdeDeepLink(section, setSection);
+
+    // ════════════════════════════════════════════════════════════════
+    // TRANSLATIONS
+    // ════════════════════════════════════════════════════════════════
+    const pageTranslations = {
+        // Nav / App name
+        'nav.oposicions-bloc-d': { val: 'Bloc D: Economia Internacional', es: 'Bloque D: Economía Internacional', en: 'Block D: International Economics' },
+        'footer.appname': { val: "Bloc D — Oposicions d'Economia", es: "Bloque D — Oposiciones de Economía", en: 'Block D — Economics Exams' },
+
+        // Inicio
+        'inicio.title': { val: 'Bloc D: Economia Internacional', es: 'Bloque D: Economía Internacional', en: 'Block D: International Economics' },
+        'inicio.subtitle': { val: "Temes 31-38 de les oposicions d'Economia a Secundària", es: 'Temas 31-38 de las oposiciones de Economía en Secundaria', en: 'Topics 31-38 of the Secondary Economics teaching exams' },
+        'inicio.disponible': { val: 'Disponible', es: 'Disponible', en: 'Available' },
+        'inicio.properament': { val: 'Properament', es: 'Próximamente', en: 'Coming soon' },
+        'inicio.backOpo': { val: '← Tornar a Oposicions', es: '← Volver a Oposiciones', en: '← Back to Exams' },
+
+        // Section labels (for header nav)
+        'sec.inicio': { val: 'Inici', es: 'Inicio', en: 'Home' },
+        'sec.tema31': { val: 'Tema 31', es: 'Tema 31', en: 'Topic 31' },
+        'sec.tema32': { val: 'Tema 32', es: 'Tema 32', en: 'Topic 32' },
+        'sec.tema33': { val: 'Tema 33', es: 'Tema 33', en: 'Topic 33' },
+        'sec.tema34': { val: 'Tema 34', es: 'Tema 34', en: 'Topic 34' },
+        'sec.tema35': { val: 'Tema 35', es: 'Tema 35', en: 'Topic 35' },
+        'sec.tema36': { val: 'Tema 36', es: 'Tema 36', en: 'Topic 36' },
+        'sec.tema37': { val: 'Tema 37', es: 'Tema 37', en: 'Topic 37' },
+        'sec.tema38': { val: 'Tema 38', es: 'Tema 38', en: 'Topic 38' },
+
+        // Tabs
+        'tab.complet': { val: 'Tema complet', es: 'Tema completo', en: 'Full topic' },
+        'tab.resum': { val: 'Resum / Esquema', es: 'Resumen / Esquema', en: 'Summary / Outline' },
+
+        // Tema titles
+        'tema31.title': { val: 'El comerç internacional. Avantatge absolut i comparatiu.', es: 'El comercio internacional. Ventaja absoluta y comparativa.', en: 'International trade. Absolute and comparative advantage.' },
+        'tema32.title': { val: 'Barreres comercials. Proteccionisme vs lliurecanvi.', es: 'Barreras comerciales. Proteccionismo vs librecambio.', en: 'Trade barriers. Protectionism vs free trade.' },
+        'tema33.title': { val: 'La balança de pagaments.', es: 'La balanza de pagos.', en: 'The balance of payments.' },
+        'tema34.title': { val: 'El mercat de divises. Tipus de canvi.', es: 'El mercado de divisas. Tipos de cambio.', en: 'The foreign exchange market. Exchange rates.' },
+        'tema35.title': { val: 'La globalització econòmica.', es: 'La globalización económica.', en: 'Economic globalization.' },
+        'tema36.title': { val: "La integració econòmica. La Unió Europea.", es: 'La integración económica. La Unión Europea.', en: 'Economic integration. The European Union.' },
+        'tema37.title': { val: "La Unió Econòmica i Monetària. L'euro.", es: 'La Unión Económica y Monetaria. El euro.', en: 'The Economic and Monetary Union. The euro.' },
+        'tema38.title': { val: "L'economia dels països en via de desenvolupament.", es: 'La economía de los países en vías de desarrollo.', en: 'The economy of developing countries.' },
+
+        // Placeholder
+        'placeholder.msg': { val: 'Aquest tema estarà disponible properament.', es: 'Este tema estará disponible próximamente.', en: 'This topic will be available soon.' },
+    };
+
+    const t = createTranslator(pageTranslations, idioma);
+    const lang = idioma;
+
+    // ════════════════════════════════════════════════════════════════
+    // REUSABLE COMPONENTS
+    // ════════════════════════════════════════════════════════════════
+    const Card = ({ children, className = "", title, icon }) => (
+        <div className={`bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 hover:shadow-md transition-shadow ${className} animate-fade`}>
+            {title && <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100"><span className="text-2xl">{icon}</span><h3 className="font-bold text-slate-800 text-lg">{title}</h3></div>}
+            {children}
+        </div>
+    );
+
+    const Tabs = ({ tabs, active, onChange }) => (
+        <div className="flex flex-wrap gap-1 p-1.5 bg-slate-100 rounded-xl">
+            {tabs.map(tab => (
+                <button key={tab.id} onClick={() => onChange(tab.id)} className={`flex-1 min-w-fit py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${active === tab.id ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-600 hover:text-slate-800 hover:bg-white/50'}`}>
+                    {tab.label}
+                </button>
+            ))}
+        </div>
+    );
+
+    const FormulaBox = ({ formula, desc }) => (
+        <div className="my-4 p-5 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-100">
+            <p className="text-center font-mono text-lg text-green-800 font-semibold">{formula}</p>
+            {desc && <p className="text-center text-sm text-green-600 mt-2">{desc}</p>}
+        </div>
+    );
+
+    const TheoryBlock = ({ title, children, color = "slate" }) => {
+        const colors = { slate: "border-slate-300 bg-slate-50", blue: "border-blue-300 bg-blue-50", green: "border-green-300 bg-green-50", amber: "border-amber-300 bg-amber-50", pink: "border-pink-300 bg-pink-50", violet: "border-violet-300 bg-violet-50", red: "border-red-300 bg-red-50", cyan: "border-cyan-300 bg-cyan-50", emerald: "border-emerald-300 bg-emerald-50", purple: "border-purple-300 bg-purple-50", rose: "border-rose-300 bg-rose-50", indigo: "border-indigo-300 bg-indigo-50", teal: "border-teal-300 bg-teal-50" };
+        return (
+            <div className={`border-l-4 ${colors[color] || colors.slate} p-5 rounded-r-xl my-4`}>
+                {title && <h4 className="font-bold text-slate-800 mb-3 text-base">{title}</h4>}
+                <div className="text-slate-700 text-sm leading-relaxed space-y-2">{children}</div>
+            </div>
+        );
+    };
+
+    const SectionTitle = ({ icon, title, subtitle }) => (
+        <div className="mb-8">
+            <div className="flex items-center gap-3 mb-2"><span className="text-3xl">{icon}</span><h1 className="text-3xl font-black text-slate-800">{title}</h1></div>
+            {subtitle && <p className="text-slate-500 ml-12">{subtitle}</p>}
+        </div>
+    );
+
+    const BibliografiaBox = ({ items }) => (
+        <div className="my-6 p-6 bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl border border-slate-200">
+            <h4 className="font-bold text-slate-800 mb-4 text-base flex items-center gap-2">
+                <span>📚</span> Bibliografía
+            </h4>
+            <ul className="space-y-2">
+                {items.map((item, i) => (
+                    <li key={i} className="text-sm text-slate-700 leading-relaxed pl-4 border-l-2 border-slate-200">
+                        {item}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+
+    const ClauBox = ({ children }) => (
+        <div className="my-4 p-5 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200">
+            <div className="flex items-start gap-3">
+                <span className="text-2xl">🔑</span>
+                <div>
+                    <h4 className="font-bold text-amber-700 mb-2">{lang === 'es' ? 'Clave para el 10' : lang === 'en' ? 'Key for top marks' : 'Clau per al 10'}</h4>
+                    <div className="text-sm text-amber-800 space-y-1">{children}</div>
+                </div>
+            </div>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // THEME DATA (for Inicio cards)
+    // ════════════════════════════════════════════════════════════════
+    const temes = [
+        { num: 31, id: 'tema31', available: true },
+        { num: 32, id: 'tema32', available: true },
+        { num: 33, id: 'tema33', available: false },
+        { num: 34, id: 'tema34', available: false },
+        { num: 35, id: 'tema35', available: false },
+        { num: 36, id: 'tema36', available: false },
+        { num: 37, id: 'tema37', available: false },
+        { num: 38, id: 'tema38', available: false },
+    ];
+
+    // ════════════════════════════════════════════════════════════════
+    // SECTION: INICIO
+    // ════════════════════════════════════════════════════════════════
+    const Inicio = () => (
+        <div className="animate-fade">
+            {/* Back link */}
+            <a href="./oposicions" className="inline-flex items-center gap-2 text-sm text-emerald-600 hover:text-emerald-800 mb-6 transition-colors">
+                {t('inicio.backOpo')}
+            </a>
+
+            {/* Hero */}
+            <div className="text-center mb-10">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mb-4">
+                    <span>🌍</span> Bloc D
+                </div>
+                <h1 className="text-4xl font-black text-slate-800 mb-3">{t('inicio.title')}</h1>
+                <p className="text-slate-500 text-lg max-w-2xl mx-auto">{t('inicio.subtitle')}</p>
+            </div>
+
+            {/* Theme cards grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {temes.map(tema => (
+                    <button
+                        key={tema.id}
+                        onClick={() => { if (tema.available) { setSection(tema.id); pdeSetHashSection(tema.id); pdeScrollToTop(); } }}
+                        className={`text-left p-5 rounded-2xl border transition-all ${
+                            tema.available
+                                ? 'bg-white border-emerald-200 hover:shadow-lg hover:border-emerald-300 cursor-pointer'
+                                : 'bg-gray-50 border-gray-200 opacity-70 cursor-not-allowed'
+                        }`}
+                    >
+                        <div className="flex items-start gap-3">
+                            <span className={`inline-flex items-center justify-center w-10 h-10 rounded-xl text-sm font-black text-white ${
+                                tema.available ? 'bg-gradient-to-br from-green-500 to-emerald-600' : 'bg-gray-400'
+                            }`}>
+                                T{tema.num}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-slate-800 text-sm leading-snug mb-2">
+                                    {t(`tema${tema.num}.title`)}
+                                </p>
+                                <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${
+                                    tema.available
+                                        ? 'bg-green-100 text-green-700'
+                                        : 'bg-amber-100 text-amber-700'
+                                }`}>
+                                    {tema.available ? '✓ ' + t('inicio.disponible') : '🔒 ' + t('inicio.properament')}
+                                </span>
+                            </div>
+                        </div>
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 31 — El comercio internacional. Ventaja absoluta y comparativa.
+    // ════════════════════════════════════════════════════════════════
+    const Tema31Complet = () => (
+        <div className="space-y-6 animate-fade">
+            {/* ── INTRODUCCIÓN ────────────────────────────────────── */}
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        La <strong>economía internacional</strong> es la rama de la ciencia económica que estudia las relaciones económicas entre países: los flujos de bienes, servicios, capitales y factores productivos a través de las fronteras nacionales. El <strong>comercio internacional</strong> —el intercambio de bienes y servicios entre residentes de distintos países— constituye uno de los fenómenos económicos más antiguos y relevantes de la historia de la humanidad. Desde las rutas comerciales fenicias y la Ruta de la Seda hasta las cadenas globales de valor del siglo XXI, el comercio ha sido motor de crecimiento, especialización y difusión tecnológica.
+                    </p>
+                    <p>
+                        La pregunta fundamental de la teoría del comercio internacional es: <strong>¿por qué comercian los países?</strong> La respuesta clásica, articulada por <strong>Adam Smith</strong> (1776) y perfeccionada por <strong>David Ricardo</strong> (1817), se basa en las diferencias de costes de producción entre países: el comercio permite que cada nación se especialice en aquello que produce con mayor eficiencia (ventaja absoluta) o con menor coste relativo (ventaja comparativa), generando ganancias mutuas del comercio.
+                    </p>
+                    <p>
+                        Desde la perspectiva curricular, este tema se enmarca en los saberes básicos del bloque «La economía internacional» de la materia de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022) y en las competencias específicas CE4 (análisis del funcionamiento del comercio internacional) y CE5 (comprensión del contexto económico internacional). La LOMLOE (Ley Orgánica 3/2020) subraya la importancia de que el alumnado comprenda la interdependencia económica global, contribuyendo a las competencias CC (ciudadanía activa en un mundo globalizado), STEM (análisis cuantitativo de flujos comerciales) y CE (comprensión de la iniciativa económica internacional).
+                    </p>
+                    <p>
+                        El presente tema se estructura en cinco epígrafes: en primer lugar, se aborda el concepto y las causas del comercio internacional; en segundo lugar, se desarrolla la teoría de la ventaja absoluta de Smith; en tercer lugar, se presenta la ventaja comparativa de Ricardo; en cuarto lugar, se expone el modelo de Heckscher-Ohlin y las nuevas teorías del comercio; y en quinto lugar, se analizan los términos de intercambio y las ganancias del comercio.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── DESARROLLO ──────────────────────────────────────── */}
+
+            {/* Epígrafe 1 */}
+            <Card title="1. El comercio internacional: concepto y causas" icon="📘">
+                <TheoryBlock title="1.1. Concepto de comercio internacional" color="green">
+                    <p>
+                        El <strong>comercio internacional</strong> es el intercambio de bienes y servicios entre residentes de distintos países a través de las fronteras nacionales. Comprende tanto las <strong>exportaciones</strong> (ventas de bienes y servicios nacionales al exterior) como las <strong>importaciones</strong> (compras de bienes y servicios extranjeros). El volumen del comercio mundial ha crecido exponencialmente: según la OMC, el comercio de mercancías se multiplicó por más de 30 entre 1950 y 2020, creciendo a un ritmo medio superior al del PIB mundial.
+                    </p>
+                    <p>
+                        A diferencia del comercio interior, el comercio internacional presenta características específicas: la existencia de <strong>fronteras políticas</strong> (regulación aduanera, aranceles, barreras no arancelarias), diferentes <strong>monedas</strong> (necesidad de tipos de cambio), distintos <strong>marcos legales y fiscales</strong>, diferencias en <strong>costes de transporte</strong> y comunicación, y barreras <strong>culturales y lingüísticas</strong>.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.2. Causas del comercio internacional" color="emerald">
+                    <p>
+                        Los países comercian entre sí por múltiples razones que la teoría económica ha ido identificando:
+                    </p>
+                    <p>
+                        <strong>1. Diferencias en los recursos naturales y dotación de factores:</strong> los países poseen distintas dotaciones de tierra, clima, materias primas, trabajo y capital. Arabia Saudí exporta petróleo; Brasil, café; Australia, minerales. El modelo de Heckscher-Ohlin formaliza esta idea.
+                    </p>
+                    <p>
+                        <strong>2. Diferencias en la productividad y tecnología:</strong> los países difieren en su capacidad para producir bienes con mayor o menor eficiencia. Esta es la base de las teorías de la ventaja absoluta (Smith) y comparativa (Ricardo).
+                    </p>
+                    <p>
+                        <strong>3. Economías de escala:</strong> la producción a gran escala reduce los costes unitarios. El comercio internacional permite a las empresas ampliar su mercado y aprovechar rendimientos crecientes a escala, como destaca la <strong>nueva teoría del comercio</strong> (Krugman, 1979).
+                    </p>
+                    <p>
+                        <strong>4. Diferenciación del producto:</strong> los consumidores valoran la variedad. El comercio intraindustrial (intercambio de productos similares entre países de desarrollo comparable) se explica por la <strong>competencia monopolística</strong> y la preferencia por la variedad.
+                    </p>
+                    <p>
+                        <strong>5. Diferencias en gustos y preferencias:</strong> incluso países con dotaciones similares pueden comerciar si sus consumidores tienen preferencias distintas.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.3. Comercio interindustrial e intraindustrial" color="teal">
+                    <p>
+                        El <strong>comercio interindustrial</strong> consiste en el intercambio de productos de distintos sectores (por ejemplo, España exporta aceite de oliva e importa petróleo). Se explica bien por las teorías clásicas basadas en ventajas comparativas y diferencias en dotación de factores.
+                    </p>
+                    <p>
+                        El <strong>comercio intraindustrial</strong> consiste en el intercambio simultáneo de productos del mismo sector entre países con nivel de desarrollo similar (por ejemplo, Alemania exporta automóviles BMW a Francia e importa automóviles Renault). Este tipo de comercio, que representa más del 60 % del comercio entre países desarrollados, se explica por las economías de escala, la diferenciación del producto y la competencia monopolística. El <strong>índice de Grubel-Lloyd</strong> mide la intensidad del comercio intraindustrial.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 2 */}
+            <Card title="2. La ventaja absoluta de Adam Smith" icon="📘">
+                <TheoryBlock title="2.1. La teoría de Adam Smith (1776)" color="green">
+                    <p>
+                        En <em>La riqueza de las naciones</em> (1776), <strong>Adam Smith</strong> planteó el principio de la <strong>ventaja absoluta</strong>: un país tiene ventaja absoluta en la producción de un bien cuando puede producirlo con <strong>menos recursos</strong> (menos horas de trabajo, menos coste) que otro país. Según Smith, cada país debería especializarse en la producción de aquellos bienes en los que posee ventaja absoluta y adquirir mediante el comercio aquellos en los que tiene desventaja.
+                    </p>
+                    <p>
+                        Smith utilizó esta idea para criticar el <strong>mercantilismo</strong>, que veía el comercio como un juego de suma cero (lo que un país gana, otro lo pierde). Smith demostró que el comercio basado en la especialización es un <strong>juego de suma positiva</strong>: ambos países se benefician al disponer de más bienes de los que podrían producir en autarquía.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.2. Ejemplo numérico" color="emerald">
+                    <p>
+                        Supongamos dos países (España e Inglaterra) y dos bienes (vino y tela), utilizando el <strong>trabajo</strong> como único factor productivo (modelo ricardiano simplificado).
+                    </p>
+                    <p>
+                        <strong>Horas de trabajo necesarias por unidad:</strong>
+                    </p>
+                    <p>
+                        España: 1 hora/vino, 4 horas/tela<br/>
+                        Inglaterra: 3 horas/vino, 2 horas/tela
+                    </p>
+                    <p>
+                        España tiene <strong>ventaja absoluta en vino</strong> (1 &lt; 3 horas) e Inglaterra tiene <strong>ventaja absoluta en tela</strong> (2 &lt; 4 horas). Si cada país se especializa en el bien en el que es más eficiente y comercia, ambos obtienen más producción total con los mismos recursos.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.3. Limitaciones de la ventaja absoluta" color="amber">
+                    <p>
+                        La teoría de Smith no explica qué sucede cuando un país es <strong>más eficiente en todos los bienes</strong>. Si Inglaterra produjera tanto el vino como la tela con menos recursos que España, ¿habría base para el comercio? Smith no ofreció respuesta. Fue <strong>David Ricardo</strong> quien resolvió este problema con la teoría de la ventaja comparativa.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 3 */}
+            <Card title="3. La ventaja comparativa de David Ricardo" icon="📘">
+                <TheoryBlock title="3.1. El principio de la ventaja comparativa (1817)" color="green">
+                    <p>
+                        En <em>Principios de economía política y tributación</em> (1817), <strong>David Ricardo</strong> demostró que el comercio es mutuamente beneficioso incluso cuando un país es <strong>más eficiente que otro en la producción de todos los bienes</strong>. Lo relevante no es la eficiencia absoluta, sino la eficiencia <strong>relativa</strong>: el <strong>coste de oportunidad</strong>.
+                    </p>
+                    <p>
+                        Un país tiene <strong>ventaja comparativa</strong> en la producción de un bien cuando puede producirlo con un <strong>menor coste de oportunidad</strong> que el otro país. El coste de oportunidad de producir un bien es la cantidad del otro bien que se deja de producir.
+                    </p>
+                    <p>
+                        La ley de la ventaja comparativa establece que cada país se beneficiará del comercio si se especializa en la producción de aquellos bienes en los que posee ventaja comparativa (menor coste de oportunidad) e importa aquellos en los que tiene desventaja comparativa.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.2. Ejemplo numérico clásico" color="emerald">
+                    <p>
+                        <strong>Horas de trabajo necesarias por unidad:</strong>
+                    </p>
+                    <p>
+                        Portugal: 80 horas/vino, 90 horas/tela<br/>
+                        Inglaterra: 120 horas/vino, 100 horas/tela
+                    </p>
+                    <p>
+                        Portugal es más eficiente en ambos bienes (ventaja absoluta en ambos). Sin embargo:
+                    </p>
+                    <p>
+                        <strong>Coste de oportunidad del vino:</strong><br/>
+                        Portugal: 80/90 = 0,89 unidades de tela<br/>
+                        Inglaterra: 120/100 = 1,2 unidades de tela
+                    </p>
+                    <p>
+                        <strong>Coste de oportunidad de la tela:</strong><br/>
+                        Portugal: 90/80 = 1,125 unidades de vino<br/>
+                        Inglaterra: 100/120 = 0,83 unidades de vino
+                    </p>
+                    <p>
+                        Portugal tiene <strong>ventaja comparativa en vino</strong> (0,89 &lt; 1,2) e Inglaterra tiene <strong>ventaja comparativa en tela</strong> (0,83 &lt; 1,125). Ambos ganan si Portugal se especializa en vino e Inglaterra en tela, intercambiando a una relación de precios comprendida entre los costes de oportunidad de ambos países.
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="Ventaja comparativa → CO(bien A)_país1 < CO(bien A)_país2"
+                    desc="CO = Coste d'oportunitat = Unitats del bé B que es deixen de produir per produir una unitat del bé A"
+                />
+
+                <TheoryBlock title="3.3. Supuestos del modelo ricardiano" color="teal">
+                    <p>
+                        El modelo de Ricardo se basa en <strong>supuestos simplificadores</strong>:
+                    </p>
+                    <p>
+                        <strong>1.</strong> Dos países, dos bienes, un factor productivo (trabajo).<br/>
+                        <strong>2.</strong> La <strong>teoría del valor-trabajo</strong>: el valor de los bienes depende exclusivamente de la cantidad de trabajo incorporado.<br/>
+                        <strong>3.</strong> Rendimientos constantes a escala (la FPP es una línea recta).<br/>
+                        <strong>4.</strong> Competencia perfecta en los mercados de bienes y factores.<br/>
+                        <strong>5.</strong> El trabajo es <strong>perfectamente móvil</strong> dentro de cada país pero <strong>completamente inmóvil</strong> entre países.<br/>
+                        <strong>6.</strong> No existen costes de transporte ni barreras comerciales.<br/>
+                        <strong>7.</strong> Pleno empleo de los factores productivos.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.4. La Frontera de Posibilidades de Producción (FPP) y las ganancias del comercio" color="green">
+                    <p>
+                        En el modelo ricardiano, la <strong>FPP de cada país es una línea recta</strong> (pendiente constante = coste de oportunidad constante). En autarquía, cada país produce y consume sobre su FPP. Con comercio, cada país se especializa según su ventaja comparativa y puede consumir combinaciones de bienes que se encuentran <strong>fuera de su FPP</strong>, es decir, más allá de lo que podría producir por sí mismo. Esta es la <strong>ganancia del comercio</strong>.
+                    </p>
+                    <p>
+                        Las <strong>ganancias se reparten entre ambos países</strong> siempre que la relación real de intercambio (RRI) se sitúe entre los costes de oportunidad internos de cada país. Si la RRI coincide con el coste de oportunidad de uno de los países, ese país no obtiene ganancia (toda la ganancia la obtiene el otro).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.5. Importancia y vigencia de la ventaja comparativa" color="amber">
+                    <p>
+                        El principio de la ventaja comparativa es considerado uno de los resultados más potentes y contraintuitivos de la ciencia económica. <strong>Paul Samuelson</strong> lo calificó como «la proposición más hermosa de la economía». Su mensaje fundamental es que <strong>el comercio beneficia incluso al país menos eficiente</strong>, ya que le permite especializarse en lo que hace «relativamente mejor» y acceder a bienes más baratos mediante el intercambio.
+                    </p>
+                    <p>
+                        No obstante, la teoría presenta <strong>limitaciones</strong>: supone pleno empleo, ignora los costes de ajuste de la especialización (desempleo sectorial durante la transición), no considera los efectos distributivos (dentro de cada país, los sectores que compiten con las importaciones se perjudican — teorema de Stolper-Samuelson) y asume rendimientos constantes a escala.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 4 */}
+            <Card title="4. Heckscher-Ohlin y nuevas teorías del comercio" icon="📘">
+                <TheoryBlock title="4.1. El modelo de Heckscher-Ohlin (H-O)" color="green">
+                    <p>
+                        El modelo de <strong>Heckscher (1919) y Ohlin (1933)</strong> —ampliado formalmente por <strong>Samuelson</strong>— supera la limitación del modelo ricardiano (un solo factor) e introduce <strong>dos factores productivos</strong>: trabajo (L) y capital (K). La fuente de la ventaja comparativa no son las diferencias tecnológicas (como en Ricardo) sino las <strong>diferencias en la dotación relativa de factores</strong>.
+                    </p>
+                    <p>
+                        <strong>Teorema H-O:</strong> cada país exportará el bien cuya producción utiliza intensivamente el factor del que está <strong>relativamente bien dotado</strong> (abundante) e importará el bien que utiliza intensivamente el factor relativamente escaso. Por ejemplo, un país abundante en trabajo (como China) exportará bienes intensivos en trabajo (textiles, manufactura ligera), mientras que un país abundante en capital (como Alemania) exportará bienes intensivos en capital (maquinaria, automóviles).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.2. Teoremas asociados al modelo H-O" color="emerald">
+                    <p>
+                        <strong>Teorema de Stolper-Samuelson (1941):</strong> el libre comercio beneficia al factor relativamente abundante y perjudica al factor relativamente escaso en cada país. Esto explica por qué en los países desarrollados (abundantes en capital) los trabajadores poco cualificados pueden verse perjudicados por la apertura comercial con países en desarrollo (abundantes en trabajo barato).
+                    </p>
+                    <p>
+                        <strong>Teorema de Rybczynski (1955):</strong> si aumenta la dotación de un factor, la producción del bien que utiliza ese factor intensivamente aumenta y la producción del otro bien disminuye (a precios constantes).
+                    </p>
+                    <p>
+                        <strong>Teorema de igualación de los precios de los factores (Samuelson):</strong> bajo los supuestos del modelo H-O, el comercio libre tiende a igualar los precios de los factores (salarios y rentabilidad del capital) entre países. En la práctica, esta igualación es incompleta debido a barreras comerciales, costes de transporte y diferencias tecnológicas.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.3. La paradoja de Leontief (1953)" color="amber">
+                    <p>
+                        <strong>Wassily Leontief</strong> (Premio Nobel 1973) contrastó empíricamente el modelo H-O utilizando datos de EE. UU. y encontró un resultado sorprendente: Estados Unidos, el país más abundante en capital del mundo, exportaba bienes relativamente <strong>intensivos en trabajo</strong> e importaba bienes intensivos en capital. Este resultado, conocido como la <strong>paradoja de Leontief</strong>, desafió el modelo H-O.
+                    </p>
+                    <p>
+                        Las explicaciones propuestas incluyen: la necesidad de distinguir entre <strong>trabajo cualificado y no cualificado</strong> (el «capital humano» estadounidense es superior), la existencia de <strong>barreras comerciales</strong> que distorsionan los patrones de comercio, y la no homogeneidad del factor trabajo (Leontief, Kenen, Keesing).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.4. Nuevas teorías del comercio internacional" color="teal">
+                    <p>
+                        Desde finales de la década de 1970, las <strong>nuevas teorías del comercio internacional</strong> han complementado los enfoques clásicos:
+                    </p>
+                    <p>
+                        <strong>Paul Krugman (1979, Premio Nobel 2008):</strong> demostró que el comercio puede surgir de las <strong>economías de escala</strong> y la <strong>competencia imperfecta</strong>, sin necesidad de diferencias en dotación de factores ni tecnología. Las empresas que operan en mercados con rendimientos crecientes pueden reducir costes ampliando su mercado mediante el comercio, generando comercio intraindustrial. Este modelo explica el intenso comercio entre países similares (EE. UU. y UE, por ejemplo).
+                    </p>
+                    <p>
+                        <strong>Michael Porter (1990) — Ventaja competitiva de las naciones:</strong> el «diamante de Porter» identifica cuatro determinantes de la competitividad internacional: condiciones de los factores, condiciones de la demanda, industrias de apoyo relacionadas, y estrategia/estructura/rivalidad empresarial. La ventaja competitiva se crea y se sostiene a través de procesos altamente localizados (clusters).
+                    </p>
+                    <p>
+                        <strong>Marc Melitz (2003) — Heterogeneidad empresarial:</strong> las empresas dentro de un mismo sector difieren en productividad. El comercio provoca una <strong>reasignación</strong>: las empresas más productivas se expanden (exportan), las menos productivas salen del mercado. El resultado es un aumento de la productividad media del sector.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 5 */}
+            <Card title="5. Términos de intercambio y ganancias del comercio" icon="📘">
+                <TheoryBlock title="5.1. La relación real de intercambio (RRI)" color="green">
+                    <p>
+                        La <strong>relación real de intercambio</strong> (RRI), o <em>terms of trade</em>, mide la relación entre los precios de exportación y los precios de importación de un país:
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="RRI = (Índice de precios de exportación / Índice de precios de importación) × 100"
+                    desc="RRI > 100 → millora (el país pot importar més amb les mateixes exportacions) | RRI < 100 → deteriorament"
+                />
+
+                <TheoryBlock color="green">
+                    <p>
+                        Una <strong>mejora</strong> de la RRI (aumento) significa que el país puede obtener más importaciones por cada unidad exportada: sus exportaciones se encarecen relativamente respecto a sus importaciones. Un <strong>deterioro</strong> (disminución) significa que necesita exportar más para obtener la misma cantidad de importaciones.
+                    </p>
+                    <p>
+                        La tesis <strong>Prebisch-Singer</strong> (1950) sostiene que los países en desarrollo, exportadores de materias primas, sufren un <strong>deterioro secular de su RRI</strong> frente a los países industrializados, exportadores de manufacturas. Esto se debe a la menor elasticidad-renta de la demanda de materias primas (ley de Engel aplicada al comercio internacional) y a la mayor capacidad de las industrias manufactureras para apropiarse de las ganancias de productividad.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.2. Ganancias estáticas y dinámicas del comercio" color="emerald">
+                    <p>
+                        <strong>Ganancias estáticas:</strong> las derivadas de la especialización según la ventaja comparativa, que permiten consumir fuera de la FPP. Incluyen la mejora de la eficiencia asignativa (los recursos se destinan a sus usos más productivos) y el acceso a mayor variedad de bienes a precios más bajos.
+                    </p>
+                    <p>
+                        <strong>Ganancias dinámicas:</strong> las derivadas de los efectos del comercio a largo plazo. Incluyen la transferencia de tecnología, la presión competitiva que estimula la innovación, las economías de escala derivadas de un mercado más amplio, la mayor acumulación de capital (al acceder a bienes de inversión más baratos) y el aprendizaje que resulta de la exposición a mejores prácticas internacionales.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.3. Límites y costes del comercio" color="amber">
+                    <p>
+                        A pesar de sus beneficios, el comercio internacional genera <strong>costes de ajuste</strong>: sectores y trabajadores que compiten con importaciones pueden sufrir pérdidas de empleo y renta durante la transición. El <strong>teorema de Stolper-Samuelson</strong> formaliza esta idea: aunque el comercio aumenta la renta total del país, su distribución no es neutral —los factores escasos se perjudican—.
+                    </p>
+                    <p>
+                        Estos efectos distributivos justifican políticas de <strong>compensación y reciclaje profesional</strong> (como el Trade Adjustment Assistance en EE. UU.) para que las ganancias del comercio se repartan de forma más equitativa.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── RELEVANCIA CURRICULAR ──────────────────────────────── */}
+            <Card title="6. Relevancia curricular" icon="🎓">
+                <TheoryBlock color="violet">
+                    <p>
+                        Este tema se vincula directamente con los saberes básicos del bloque «La economía internacional» de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022), que incluye el análisis del comercio internacional, las teorías explicativas y sus implicaciones para la riqueza de las naciones. Se relaciona con las competencias específicas <strong>CE4</strong> (análisis del funcionamiento del comercio y las relaciones económicas internacionales) y <strong>CE5</strong> (comprensión del contexto económico nacional e internacional).
+                    </p>
+                    <p>
+                        El tratamiento de la ventaja comparativa y los modelos de comercio contribuye especialmente a las competencias clave <strong>STEM</strong> (razonamiento cuantitativo con costes de oportunidad y ejemplos numéricos), <strong>CC</strong> (reflexión sobre la interdependencia global y sus efectos distributivos), <strong>CPSAA</strong> (juicio crítico sobre las posiciones proteccionistas y librecambistas) y <strong>CE</strong> (comprensión del espíritu emprendedor en contextos internacionales).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── SÍNTESIS ──────────────────────────────────────────── */}
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="green">
+                    <p>
+                        El comercio internacional permite a los países especializarse según sus ventajas y acceder a una mayor cantidad y variedad de bienes. La <strong>ventaja absoluta</strong> de Smith explica el comercio cuando cada país es más eficiente en un bien distinto, pero es la <strong>ventaja comparativa</strong> de Ricardo la que demuestra que el comercio beneficia a ambos países incluso cuando uno es más eficiente en todo, siempre que los costes de oportunidad difieran. El modelo <strong>Heckscher-Ohlin</strong> añade las diferencias en dotación de factores como fuente de ventaja comparativa, mientras que las <strong>nuevas teorías</strong> (Krugman, Porter, Melitz) incorporan economías de escala, competencia imperfecta y heterogeneidad empresarial. La <strong>relación real de intercambio</strong> determina cómo se reparten las ganancias del comercio entre países. El comercio genera ganancias netas para las naciones, pero también costes de ajuste distributivos que requieren políticas compensatorias.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── BIBLIOGRAFÍA ──────────────────────────────────────── */}
+            <BibliografiaBox items={[
+                "Smith, A. (1776). La riqueza de las naciones.",
+                "Ricardo, D. (1817). Principios de economía política y tributación.",
+                "Heckscher, E. (1919). The effect of foreign trade on the distribution of income.",
+                "Ohlin, B. (1933). Interregional and International Trade.",
+                "Leontief, W. (1953). Domestic Production and Foreign Trade.",
+                "Krugman, P. (1979). Increasing returns, monopolistic competition, and international trade. Journal of International Economics.",
+                "Krugman, P., Obstfeld, M. & Melitz, M. (2022). Economía internacional: Teoría y política, 12.ª ed. Pearson.",
+                "Porter, M. (1990). La ventaja competitiva de las naciones. Free Press.",
+                "Mankiw, N. G. (2020). Principios de economía, 8.ª ed. Cengage.",
+                "Tugores, J. (2006). Economía internacional: Globalización e integración regional, 6.ª ed. McGraw-Hill.",
+            ]} />
+        </div>
+    );
+
+    const Tema31Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-green-50 rounded-xl border border-green-200 mb-5">
+                    <p className="text-center font-bold text-green-800 text-lg">Tema 31: El comercio internacional. Ventaja absoluta y comparativa.</p>
+                    <p className="text-center text-sm text-green-600 mt-1">
+                        <em>"El comercio internacional es mutuamente beneficioso aunque un país sea más eficiente en todo"</em> — D. Ricardo
+                    </p>
+                </div>
+
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. Concepto y causas del comercio</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Definición: intercambio de bienes y servicios entre residentes de distintos países.</li>
+                            <li>Causas: diferencias en recursos, productividad, economías de escala, diferenciación, gustos.</li>
+                            <li>Comercio interindustrial (productos de distintos sectores) vs. intraindustrial (mismo sector, países similares).</li>
+                            <li>Índice de Grubel-Lloyd para medir comercio intraindustrial.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. Ventaja absoluta (Smith, 1776)</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Un país tiene VA cuando produce un bien con menos recursos que otro.</li>
+                            <li>Crítica al mercantilismo: comercio = juego de suma positiva.</li>
+                            <li>Limitación: no explica el comercio cuando un país es más eficiente en todo.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. Ventaja comparativa (Ricardo, 1817)</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>VC = menor coste de oportunidad relativo. Cada país se especializa en lo que produce con menor CO.</li>
+                            <li>Ejemplo clásico: Portugal (vino) e Inglaterra (tela), aunque Portugal es mejor en ambos.</li>
+                            <li>FPP recta → con comercio se consume fuera de la FPP → ganancia del comercio.</li>
+                            <li>Supuestos: 2 países, 2 bienes, 1 factor, rendimientos constantes, pleno empleo.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. Heckscher-Ohlin y nuevas teorías</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>H-O: exportar bienes intensivos en el factor abundante. 2 factores (L, K).</li>
+                            <li>Stolper-Samuelson: comercio beneficia al factor abundante, perjudica al escaso.</li>
+                            <li>Rybczynski: ↑factor → ↑producción bien intensivo, ↓otro bien.</li>
+                            <li>Paradoja de Leontief (1953): EE. UU. exporta bienes intensivos en L (¿capital humano?).</li>
+                            <li>Krugman (1979): economías de escala + competencia monopolística → comercio intraindustrial.</li>
+                            <li>Porter (1990): diamante competitivo, clusters.</li>
+                            <li>Melitz (2003): heterogeneidad empresarial, reasignación productividad.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">5. Términos de intercambio y ganancias</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>RRI = (Px/Pm) × 100. ↑RRI = mejora (más importaciones por unidad exportada).</li>
+                            <li>Tesis Prebisch-Singer: deterioro secular RRI de países en desarrollo.</li>
+                            <li>Ganancias estáticas: especialización, eficiencia, variedad, precios menores.</li>
+                            <li>Ganancias dinámicas: tecnología, innovación, escala, acumulación capital.</li>
+                            <li>Costes de ajuste: desempleo sectorial, efectos distributivos (Stolper-Samuelson).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">6. Relevancia curricular</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>LOMLOE: Economía 1BACH (RD 243/2022). CE4, CE5.</li>
+                            <li>Competencias: STEM, CC, CPSAA, CE.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <FormulaBox formula="Ventaja comparativa: CO(A)_país1 < CO(A)_país2" />
+                <FormulaBox formula="RRI = (Índice Px / Índice Pm) × 100" />
+
+                <ClauBox>
+                    <p>- Distingue <strong>ventaja absoluta</strong> (Smith) de <strong>ventaja comparativa</strong> (Ricardo) con ejemplo numérico.</p>
+                    <p>- Calcula <strong>costes d'oportunitat</strong> correctament per a ambdós països.</p>
+                    <p>- Explica <strong>H-O</strong> com a extensió (2 factors) i la <strong>paradoxa de Leontief</strong>.</p>
+                    <p>- Incorpora les <strong>noves teories</strong>: Krugman (escala), Porter (diamant), Melitz (heterogeneïtat).</p>
+                    <p>- Defineix <strong>RRI</strong> i distingeix guanys <strong>estàtics vs. dinàmics</strong>.</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 31 — Component wrapper
+    // ════════════════════════════════════════════════════════════════
+    const Tema31 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="🌍" title="Tema 31" subtitle={t('tema31.title')} />
+                <Tabs tabs={[
+                    { id: 'complet', label: '📝 ' + t('tab.complet') },
+                    { id: 'resum', label: '📋 ' + t('tab.resum') },
+                ]} active={vista} onChange={setVista} />
+
+                {vista === 'complet' && <Tema31Complet />}
+                {vista === 'resum' && <Tema31Resum />}
+            </div>
+        );
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 32 — Barreras comerciales. Proteccionismo vs librecambio.
+    // ════════════════════════════════════════════════════════════════
+    const Tema32Complet = () => (
+        <div className="space-y-6 animate-fade">
+            {/* ── INTRODUCCIÓN ────────────────────────────────────── */}
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>
+                        La teoría de la ventaja comparativa demuestra que el libre comercio genera ganancias netas para las naciones participantes. Sin embargo, a lo largo de la historia, los gobiernos han recurrido sistemáticamente a <strong>barreras comerciales</strong> —mecanismos que restringen o encarecen las importaciones— para proteger determinados sectores nacionales. El debate entre <strong>proteccionismo</strong> (intervención estatal para limitar el comercio) y <strong>librecambio</strong> (libre circulación de bienes sin restricciones) es uno de los más antiguos y persistentes de la economía política.
+                    </p>
+                    <p>
+                        El <strong>mercantilismo</strong> (siglos XVI-XVIII) defendía la acumulación de metales preciosos mediante la restricción de importaciones y el fomento de exportaciones. <strong>Adam Smith</strong> y <strong>David Ricardo</strong> sentaron las bases teóricas del librecambio. No obstante, economistas como <strong>Friedrich List</strong> (1841) argumentaron la necesidad de proteger a las «industrias nacientes» hasta que pudieran competir internacionalmente, mientras que más recientemente las <strong>políticas comerciales estratégicas</strong> (Brander y Spencer, 1985) han justificado la intervención estatal en sectores oligopolísticos con rendimientos crecientes.
+                    </p>
+                    <p>
+                        Desde la perspectiva curricular, este tema se enmarca en los saberes básicos del bloque «La economía internacional» de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022), vinculándose especialmente con las competencias CE4 y CE5. La LOMLOE subraya la importancia de que el alumnado analice críticamente las políticas comerciales y su impacto sobre el bienestar, contribuyendo a las competencias CC, CPSAA y CE.
+                    </p>
+                    <p>
+                        El presente tema se estructura en cinco epígrafes: en primer lugar, se clasifican los instrumentos de protección comercial; en segundo lugar, se analiza el efecto del arancel; en tercer lugar, se presentan los argumentos a favor del proteccionismo; en cuarto lugar, se exponen los argumentos a favor del librecambio; y en quinto lugar, se describe el marco institucional (GATT/OMC) y la evolución del comercio mundial.
+                    </p>
+                </div>
+            </Card>
+
+            {/* ── DESARROLLO ──────────────────────────────────────── */}
+
+            {/* Epígrafe 1 */}
+            <Card title="1. Instrumentos de protección comercial" icon="📘">
+                <TheoryBlock title="1.1. Barreras arancelarias" color="green">
+                    <p>
+                        Un <strong>arancel</strong> es un impuesto que grava las mercancías importadas en el momento de cruzar la frontera. Es el instrumento proteccionista más transparente y cuantificable. Existen varios tipos:
+                    </p>
+                    <p>
+                        <strong>Arancel ad valorem:</strong> se expresa como un porcentaje del valor del bien importado (por ejemplo, un 10 % sobre el precio CIF). Es el tipo más habitual.<br/>
+                        <strong>Arancel específico:</strong> se fija una cantidad monetaria por unidad importada (por ejemplo, 5 € por kilogramo).<br/>
+                        <strong>Arancel mixto:</strong> combina un componente ad valorem y un componente específico.<br/>
+                        <strong>Arancel compuesto:</strong> se aplica un tipo u otro en función de determinadas condiciones.
+                    </p>
+                    <p>
+                        Los aranceles generan <strong>ingresos fiscales</strong> para el Estado, <strong>encarecen las importaciones</strong> y, por tanto, <strong>protegen a los productores nacionales</strong> de la competencia extranjera. Sin embargo, como se verá en el epígrafe 2, generan una <strong>pérdida neta de bienestar</strong> para la sociedad en su conjunto.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.2. Barreras no arancelarias (BNA)" color="emerald">
+                    <p>
+                        Las barreras no arancelarias incluyen todas las restricciones al comercio distintas de los aranceles. Su uso ha crecido significativamente a medida que los aranceles se han ido reduciendo en las sucesivas rondas de negociación del GATT/OMC. Son más difíciles de detectar y cuantificar, lo que las convierte en un instrumento de <strong>proteccionismo encubierto</strong>.
+                    </p>
+                    <p>
+                        <strong>Contingentes o cuotas de importación:</strong> límites cuantitativos a la cantidad máxima de un bien que puede importarse en un período. A diferencia del arancel, no generan ingresos fiscales (salvo que las licencias de importación se subasten). Las rentas generadas por la cuota (la diferencia entre el precio interior elevado y el precio mundial) se las apropian los importadores que poseen las licencias.<br/>
+                    </p>
+                    <p>
+                        <strong>Restricciones voluntarias a la exportación (RVE):</strong> acuerdos por los que el país exportador limita «voluntariamente» sus exportaciones (en realidad, bajo presión del país importador). Ejemplo clásico: la limitación de exportaciones de automóviles japoneses a EE. UU. en los años 80.<br/>
+                    </p>
+                    <p>
+                        <strong>Barreras técnicas:</strong> normativas sanitarias, fitosanitarias, medioambientales, de calidad o de etiquetado que, si bien pueden tener justificación legítima, se utilizan a veces como instrumento proteccionista (por ejemplo, exigir estándares técnicos que solo los productos nacionales cumplen).<br/>
+                    </p>
+                    <p>
+                        <strong>Barreras administrativas:</strong> procedimientos aduaneros complejos, licencias previas de importación, trámites burocráticos que retrasan y encarecen las importaciones.<br/>
+                    </p>
+                    <p>
+                        <strong>Subvenciones a la producción nacional:</strong> ayudas directas o indirectas a los productores nacionales que les permiten competir en condiciones ventajosas frente a las importaciones. Cuando las subvenciones permiten exportar a precios inferiores al coste de producción, se habla de <strong>dumping</strong>.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="1.3. Otras medidas de política comercial" color="teal">
+                    <p>
+                        <strong>Derechos antidumping:</strong> aranceles especiales impuestos sobre importaciones que se venden a precios considerados injustamente bajos (por debajo del coste de producción o del precio en el mercado de origen). Regulados por la OMC.<br/>
+                    </p>
+                    <p>
+                        <strong>Derechos compensatorios:</strong> aranceles impuestos para contrarrestar el efecto de las subvenciones concedidas por el gobierno del país exportador.<br/>
+                    </p>
+                    <p>
+                        <strong>Compras públicas:</strong> los gobiernos pueden favorecer a los proveedores nacionales en sus licitaciones públicas, excluyendo o desfavoreciendo a los proveedores extranjeros.<br/>
+                    </p>
+                    <p>
+                        <strong>Manipulación del tipo de cambio:</strong> mantener una moneda artificialmente depreciada para abaratar las exportaciones y encarecer las importaciones.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 2 */}
+            <Card title="2. Análisis económico del arancel" icon="📘">
+                <TheoryBlock title="2.1. Efectos del arancel en equilibrio parcial" color="green">
+                    <p>
+                        El análisis del arancel en un mercado competitivo con un país «pequeño» (precio-aceptante en el mercado mundial) muestra los siguientes efectos:
+                    </p>
+                    <p>
+                        <strong>Efecto sobre el precio:</strong> el precio interior sube del precio mundial (Pm) al precio mundial más el arancel (Pm + t). Los consumidores pagan más.<br/>
+                    </p>
+                    <p>
+                        <strong>Efecto producción:</strong> la producción nacional aumenta, ya que el precio más alto permite a productores nacionales menos eficientes entrar en el mercado o ampliar su producción. Los productores nacionales se benefician.<br/>
+                    </p>
+                    <p>
+                        <strong>Efecto consumo:</strong> la cantidad demandada disminuye, ya que los consumidores reducen su consumo ante el precio más alto.<br/>
+                    </p>
+                    <p>
+                        <strong>Efecto sobre las importaciones:</strong> las importaciones se reducen (el arancel cumple su objetivo proteccionista).<br/>
+                    </p>
+                    <p>
+                        <strong>Efecto fiscal (ingreso del Estado):</strong> el gobierno recauda aranceles sobre las importaciones restantes: Recaudación = t × M (M = importaciones post-arancel).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="2.2. Análisis del bienestar: pérdida irrecuperable de eficiencia" color="emerald">
+                    <p>
+                        El arancel genera una <strong>redistribución</strong> del excedente: los productores nacionales ganan (excedente del productor aumenta), el Estado recauda (ingresos arancelarios), pero los consumidores pierden (excedente del consumidor disminuye). El balance neto es <strong>negativo</strong>: la pérdida de los consumidores supera la suma de las ganancias de productores y Estado.
+                    </p>
+                    <p>
+                        La diferencia es la <strong>pérdida irrecuperable de eficiencia</strong> (deadweight loss), que se descompone en dos triángulos de pérdida:
+                    </p>
+                    <p>
+                        <strong>Triángulo de ineficiencia productiva:</strong> recursos que se desvían hacia la producción nacional ineficiente (coste de producir nacionalmente lo que se importaría más barato).<br/>
+                        <strong>Triángulo de ineficiencia del consumo:</strong> consumo que se pierde porque el precio más alto expulsa a consumidores cuya disposición a pagar estaba entre Pm y Pm + t.
+                    </p>
+                </TheoryBlock>
+
+                <FormulaBox
+                    formula="Pérdida neta = ΔEC − (ΔEP + Ingresos arancelarios) > 0"
+                    desc="ΔEC = Pérdida excedente consumidor | ΔEP = Ganancia excedente productor"
+                />
+
+                <TheoryBlock title="2.3. El arancel en un país «grande»" color="amber">
+                    <p>
+                        Si el país importador es lo suficientemente grande como para influir en el precio mundial (país «grande»), la imposición de un arancel puede reducir la demanda mundial del bien importado, deprimiendo su precio internacional. En este caso, parte del coste del arancel recae sobre los exportadores extranjeros. El <strong>arancel óptimo</strong> es aquel que maximiza la ganancia neta del país grande a costa de los exportadores extranjeros, pero su aplicación invita a <strong>represalias comerciales</strong>, desencadenando guerras arancelarias que perjudican a todos (dilema del prisionero).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 3 */}
+            <Card title="3. Argumentos a favor del proteccionismo" icon="📘">
+                <TheoryBlock title="3.1. Argumento de la industria naciente (List, 1841)" color="green">
+                    <p>
+                        <strong>Friedrich List</strong>, en <em>El sistema nacional de economía política</em> (1841), argumentó que las industrias jóvenes de un país en desarrollo necesitan <strong>protección temporal</strong> (aranceles) hasta que alcancen la escala y la experiencia suficientes para competir con las industrias establecidas de los países avanzados. Una vez maduras, la protección debería retirarse.
+                    </p>
+                    <p>
+                        <strong>Críticas:</strong> es difícil identificar a priori qué industrias merecen protección; la protección tiende a perpetuarse (presión de los lobbies); los costes para los consumidores durante el período de protección pueden ser elevados; la falta de competencia reduce los incentivos para mejorar la eficiencia.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.2. Protección del empleo nacional" color="emerald">
+                    <p>
+                        La apertura comercial puede provocar la <strong>destrucción de empleo</strong> en los sectores que compiten con importaciones más baratas. Los defensores del proteccionismo argumentan que los aranceles protegen los puestos de trabajo nacionales.
+                    </p>
+                    <p>
+                        <strong>Críticas:</strong> la protección de empleos en un sector ineficiente se hace a costa de los consumidores (que pagan precios más altos) y de los sectores exportadores (que sufren represalias o apreciación del tipo de cambio). El empleo total no necesariamente aumenta: se desvían recursos hacia sectores menos productivos. Es más eficiente compensar a los trabajadores desplazados mediante políticas de formación y reciclaje que proteger sectores ineficientes.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="3.3. Otros argumentos proteccionistas" color="teal">
+                    <p>
+                        <strong>Seguridad nacional y autosuficiencia estratégica:</strong> ciertos sectores (defensa, energía, alimentación) deben mantenerse operativos por razones de seguridad, independientemente de las ventajas comparativas.
+                    </p>
+                    <p>
+                        <strong>Defensa frente a prácticas desleales (dumping):</strong> si un país exporta a precios inferiores al coste para eliminar la competencia, es legítimo imponer aranceles antidumping para restablecer la competencia leal.
+                    </p>
+                    <p>
+                        <strong>Política comercial estratégica (Brander y Spencer, 1985):</strong> en sectores oligopolísticos con rendimientos crecientes a escala y beneficios extraordinarios (como la industria aeronáutica), las subvenciones estratégicas pueden desplazar beneficios del extranjero hacia la industria nacional. Este argumento justificó las subvenciones a Airbus frente a Boeing, aunque también generó disputas comerciales prolongadas en la OMC.
+                    </p>
+                    <p>
+                        <strong>Recaudación fiscal:</strong> en países en desarrollo con baja capacidad administrativa para cobrar impuestos directos, los aranceles pueden ser una fuente importante de ingresos públicos.
+                    </p>
+                    <p>
+                        <strong>Defensa del medio ambiente y estándares sociales:</strong> restricciones a importaciones de países con estándares medioambientales o laborales bajos para evitar el «dumping social y ecológico» (race to the bottom).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 4 */}
+            <Card title="4. Argumentos a favor del librecambio" icon="📘">
+                <TheoryBlock title="4.1. La eficiencia del libre comercio" color="green">
+                    <p>
+                        El argumento central a favor del librecambio es la <strong>eficiencia</strong>: el libre comercio permite la asignación óptima de recursos según la ventaja comparativa, maximizando la producción mundial y el bienestar de los consumidores. Cualquier barrera comercial genera una <strong>pérdida irrecuperable de eficiencia</strong> (deadweight loss) que reduce el bienestar agregado.
+                    </p>
+                    <p>
+                        <strong>Precios más bajos para los consumidores:</strong> la competencia de las importaciones disciplina los precios interiores y amplía la variedad de productos disponibles.<br/>
+                        <strong>Estímulo a la innovación:</strong> la competencia internacional obliga a las empresas nacionales a mejorar su productividad, innovar y reducir costes.<br/>
+                        <strong>Economías de escala:</strong> el acceso a un mercado más amplio permite a las empresas alcanzar la escala eficiente de producción.<br/>
+                        <strong>Transferencia tecnológica:</strong> el comercio facilita la difusión de conocimientos, tecnologías y mejores prácticas entre países.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.2. Costes del proteccionismo" color="emerald">
+                    <p>
+                        <strong>Coste para los consumidores:</strong> los aranceles funcionan como un impuesto regresivo que encarece los bienes básicos, perjudicando especialmente a los hogares de renta baja.<br/>
+                        <strong>Ineficiencia productiva:</strong> la protección permite que empresas nacionales ineficientes sobrevivan, desviando recursos de usos más productivos.<br/>
+                        <strong>Búsqueda de rentas (rent-seeking):</strong> las empresas protegidas destinan recursos a actividades de lobby para mantener o ampliar la protección, en lugar de invertir en productividad e innovación (Krueger, 1974).<br/>
+                        <strong>Represalias y guerras comerciales:</strong> la imposición unilateral de aranceles invita a represalias del país afectado, desencadenando espirales proteccionistas que reducen el volumen de comercio y el bienestar mundial. La guerra comercial Smoot-Hawley (1930) agravó la Gran Depresión.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="4.3. El consenso económico" color="amber">
+                    <p>
+                        Existe un amplio <strong>consenso entre los economistas</strong> a favor del libre comercio como política general, aunque con matices importantes: la necesidad de <strong>políticas de compensación</strong> para los perdedores del comercio (formación, redes de protección social), la legitimidad de la <strong>regulación</strong> para corregir externalidades (medio ambiente, estándares laborales) y la aceptación de <strong>excepciones limitadas</strong> (seguridad nacional, antidumping). La cuestión no es si el libre comercio es beneficioso en general —lo es—, sino cómo gestionar los costes de ajuste y la distribución de las ganancias.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* Epígrafe 5 */}
+            <Card title="5. El marco institucional: GATT y OMC" icon="📘">
+                <TheoryBlock title="5.1. Del GATT a la OMC" color="green">
+                    <p>
+                        Tras la Segunda Guerra Mundial, la comunidad internacional creó un marco institucional para promover la liberalización comercial y evitar las guerras arancelarias que habían agravado la Gran Depresión.
+                    </p>
+                    <p>
+                        El <strong>GATT</strong> (Acuerdo General sobre Aranceles Aduaneros y Comercio, 1947) fue un acuerdo provisional que reguló el comercio internacional durante casi 50 años. Organizó ocho <strong>rondas de negociación</strong> multilateral que redujeron progresivamente los aranceles medios de más del 40 % (1947) a menos del 5 % (1994). Las rondas más importantes fueron la <strong>Ronda Kennedy</strong> (1964-67), la <strong>Ronda Tokio</strong> (1973-79) y la <strong>Ronda Uruguay</strong> (1986-94).
+                    </p>
+                    <p>
+                        La <strong>OMC</strong> (Organización Mundial del Comercio) fue creada en 1995 como resultado de la Ronda Uruguay, sustituyendo al GATT. A diferencia del GATT (simple acuerdo), la OMC es una <strong>organización internacional</strong> con personalidad jurídica, con sede en Ginebra y 164 países miembros (2024). Tiene tres funciones principales: administrar los acuerdos comerciales, servir de foro de negociación y resolver disputas comerciales.
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.2. Principios fundamentales del GATT/OMC" color="emerald">
+                    <p>
+                        <strong>1. Cláusula de nación más favorecida (NMF):</strong> toda ventaja comercial concedida a un país miembro debe extenderse automáticamente a todos los demás miembros. Excepción: los acuerdos regionales de integración (uniones aduaneras y zonas de libre comercio, art. XXIV) y el trato preferencial a países en desarrollo (cláusula de habilitación).
+                    </p>
+                    <p>
+                        <strong>2. Trato nacional:</strong> una vez que un producto extranjero ha entrado en el mercado nacional (y pagado los aranceles correspondientes), debe recibir el mismo trato que los productos nacionales (no discriminación).
+                    </p>
+                    <p>
+                        <strong>3. Reciprocidad:</strong> las concesiones arancelarias se negocian sobre una base de reciprocidad mutua.<br/>
+                    </p>
+                    <p>
+                        <strong>4. Transparencia:</strong> las políticas comerciales deben ser públicas y predecibles (consolidación arancelaria: los países se comprometen a no subir los aranceles por encima de los niveles negociados).
+                    </p>
+                </TheoryBlock>
+
+                <TheoryBlock title="5.3. La Ronda de Doha y los retos actuales" color="teal">
+                    <p>
+                        La <strong>Ronda de Doha</strong> (2001-presente), llamada «Ronda del Desarrollo», se propuso abordar las preocupaciones de los países en desarrollo (acceso a mercados agrícolas del Norte, subvenciones agrícolas, ADPIC y salud pública). Las negociaciones se estancaron por desacuerdos sobre la liberalización agrícola (EE. UU. y UE resisten la eliminación de subvenciones) y el acceso a mercados industriales.
+                    </p>
+                    <p>
+                        Los <strong>retos actuales</strong> del sistema comercial multilateral incluyen: el auge del <strong>proteccionismo y el nacionalismo económico</strong> (guerra comercial EE. UU.-China desde 2018, Brexit), la proliferación de <strong>acuerdos comerciales regionales</strong> (que debilitan el multilateralismo), la regulación del <strong>comercio digital y de servicios</strong>, las preocupaciones sobre <strong>sostenibilidad ambiental</strong> (ajuste en frontera por carbono, CBAM de la UE) y las tensiones entre libre comercio y <strong>seguridad nacional</strong> (controles de exportación de semiconductores).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── RELEVANCIA CURRICULAR ──────────────────────────────── */}
+            <Card title="6. Relevancia curricular" icon="🎓">
+                <TheoryBlock color="violet">
+                    <p>
+                        El análisis de las barreras comerciales y el debate proteccionismo vs. librecambio se enmarca en los saberes básicos del bloque «La economía internacional» de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022), conectando con las competencias específicas <strong>CE4</strong> (análisis del comercio internacional) y <strong>CE5</strong> (comprensión del contexto económico). El estudio de las instituciones comerciales internacionales (OMC) contribuye a la competencia <strong>CC</strong> (comprensión de la gobernanza global) y a la competencia <strong>CPSAA</strong> (juicio crítico sobre las políticas comerciales y sus efectos distributivos).
+                    </p>
+                    <p>
+                        El análisis gráfico del arancel (excedentes, triángulos de pérdida) conecta con la competencia <strong>STEM</strong> (representación e interpretación de modelos económicos) y permite integrar los conocimientos de microeconomía del Bloque B (excedentes del consumidor y del productor, análisis de bienestar).
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── SÍNTESIS ──────────────────────────────────────────── */}
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="green">
+                    <p>
+                        Los gobiernos disponen de múltiples instrumentos para restringir el comercio: aranceles (ad valorem, específicos, mixtos), cuotas, RVE, barreras técnicas y administrativas, subvenciones y derechos antidumping. El análisis del arancel muestra que, aunque beneficia a los productores nacionales y genera ingresos fiscales, supone una pérdida neta de bienestar (triángulos de ineficiencia productiva y de consumo). Los argumentos proteccionistas —industria naciente, empleo, seguridad, dumping, política estratégica— tienen validez en contextos específicos, pero el consenso económico favorece el libre comercio como política general, acompañada de mecanismos de compensación. El GATT/OMC ha sido el marco institucional que ha impulsado la reducción arancelaria multilateral, aunque enfrenta retos significativos en el siglo XXI: proteccionismo resurgente, comercio digital, sostenibilidad y tensiones geopolíticas.
+                    </p>
+                </TheoryBlock>
+            </Card>
+
+            {/* ── BIBLIOGRAFÍA ──────────────────────────────────────── */}
+            <BibliografiaBox items={[
+                "List, F. (1841). El sistema nacional de economía política.",
+                "Krugman, P., Obstfeld, M. & Melitz, M. (2022). Economía internacional: Teoría y política, 12.ª ed. Pearson.",
+                "Mankiw, N. G. (2020). Principios de economía, 8.ª ed. Cengage.",
+                "Tugores, J. (2006). Economía internacional: Globalización e integración regional, 6.ª ed. McGraw-Hill.",
+                "Krugman, P. (1987). Is Free Trade Passé? Journal of Economic Perspectives.",
+                "Brander, J. & Spencer, B. (1985). Export subsidies and international market share rivalry. Journal of International Economics.",
+                "Krueger, A. (1974). The Political Economy of the Rent-Seeking Society. American Economic Review.",
+                "OMC (2024). Informe sobre el Comercio Mundial. Ginebra: OMC.",
+                "Irwin, D. A. (2020). Free Trade under Fire, 5.ª ed. Princeton University Press.",
+                "Stiglitz, J. & Charlton, A. (2005). Fair Trade for All. Oxford University Press.",
+            ]} />
+        </div>
+    );
+
+    const Tema32Resum = () => (
+        <div className="space-y-5 animate-fade">
+            <Card>
+                <div className="p-4 bg-green-50 rounded-xl border border-green-200 mb-5">
+                    <p className="text-center font-bold text-green-800 text-lg">Tema 32: Barreras comerciales. Proteccionismo vs librecambio.</p>
+                    <p className="text-center text-sm text-green-600 mt-1">
+                        <em>"El proteccionismo es la destrucción de la riqueza buscando la seguridad"</em> — F. Bastiat
+                    </p>
+                </div>
+
+                <div className="space-y-4 text-sm text-slate-700">
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">1. Instrumentos de protección comercial</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Aranceles: ad valorem (% valor), específico (€/unidad), mixto. Más transparente.</li>
+                            <li>Cuotas/contingentes: límite cuantitativo a importaciones. No generan ingresos fiscales.</li>
+                            <li>RVE: restricción voluntaria del exportador (bajo presión). Ejemplo: autos japoneses a EE. UU.</li>
+                            <li>BNA: barreras técnicas, sanitarias, administrativas, etiquetado → proteccionismo encubierto.</li>
+                            <li>Subvenciones a producción nacional. Dumping: exportar bajo coste → derechos antidumping.</li>
+                            <li>Compras públicas discriminatorias. Manipulación tipo de cambio.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">2. Análisis económico del arancel</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>↑Precio interior (Pm → Pm + t). ↑Producción nacional. ↓Consumo. ↓Importaciones.</li>
+                            <li>Redistribución: ↑EP + ingresos fiscales, pero ↓EC &gt; ganancias.</li>
+                            <li>Deadweight loss: 2 triángulos (ineficiencia productiva + ineficiencia consumo).</li>
+                            <li>País grande: puede deprimir precio mundial → arancel óptimo, pero invita represalias.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">3. Argumentos proteccionistas</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Industria naciente (List, 1841): protección temporal hasta madurez. Crítica: difícil seleccionar, se perpetúa.</li>
+                            <li>Protección empleo: desvía recursos, coste para consumidores, represalias.</li>
+                            <li>Seguridad nacional: defensa, energía, alimentación.</li>
+                            <li>Antidumping: defensa competencia leal.</li>
+                            <li>Política estratégica (Brander-Spencer): subvenciones en oligopolios con rendimientos crecientes.</li>
+                            <li>Recaudación fiscal (PVD). Estándares medioambientales/laborales.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">4. Argumentos librecambistas</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Eficiencia: asignación óptima recursos según VC. Precios menores, más variedad.</li>
+                            <li>Innovación: competencia obliga a mejorar productividad.</li>
+                            <li>Economías de escala: mercado más amplio. Transferencia tecnológica.</li>
+                            <li>Costes proteccionismo: impuesto regresivo, rent-seeking (Krueger), represalias, guerras comerciales.</li>
+                            <li>Consenso: libre comercio + compensación perdedores + regulación externalidades.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">5. Marco institucional: GATT/OMC</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>GATT (1947): 8 rondas, aranceles de 40 % a &lt;5 %. Ronda Uruguay → crea OMC.</li>
+                            <li>OMC (1995, Ginebra): 164 miembros. Administra acuerdos, foro negociación, resolución disputas.</li>
+                            <li>Principis: NMF, trato nacional, reciprocitat, transparència.</li>
+                            <li>Ronda Doha (2001-): estancada. Agricultura, PVD, ADPIC.</li>
+                            <li>Retos: proteccionisme resurgent, comerç digital, sostenibilitat, geopolítica.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-slate-800 mb-1">6. Relevancia curricular</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>LOMLOE: Economía 1BACH (RD 243/2022). CE4, CE5.</li>
+                            <li>Competencias: STEM, CC, CPSAA, CE.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <FormulaBox formula="Pérdida neta arancel = ΔEC − (ΔEP + Ingresos arancelarios) > 0" />
+                <FormulaBox formula="Principios OMC: NMF + Trato nacional + Reciprocidad + Transparencia" />
+
+                <ClauBox>
+                    <p>- Classifica <strong>barreres</strong>: arancelàries (3 tipus) i no arancelàries (cuotes, RVE, tècniques, subvencions).</p>
+                    <p>- Analitza l'<strong>aranzel</strong> amb gràfic: efecte preu, producció, consum, importacions, fiscalitat, deadweight loss.</p>
+                    <p>- Presenta <strong>6 arguments proteccionistes</strong> amb autors (List, Brander-Spencer) i les seues crítiques.</p>
+                    <p>- Explica per què el <strong>consens econòmic</strong> afavoreix el lliurecanvi amb compensació.</p>
+                    <p>- Detalla <strong>GATT→OMC</strong>: principis, rondes, Doha i reptes actuals.</p>
+                </ClauBox>
+            </Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 32 — Component wrapper
+    // ════════════════════════════════════════════════════════════════
+    const Tema32 = () => {
+        const [vista, setVista] = useState('complet');
+        return (
+            <div className="space-y-6">
+                <SectionTitle icon="🌍" title="Tema 32" subtitle={t('tema32.title')} />
+                <Tabs tabs={[
+                    { id: 'complet', label: '📝 ' + t('tab.complet') },
+                    { id: 'resum', label: '📋 ' + t('tab.resum') },
+                ]} active={vista} onChange={setVista} />
+
+                {vista === 'complet' && <Tema32Complet />}
+                {vista === 'resum' && <Tema32Resum />}
+            </div>
+        );
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // PLACEHOLDER for future themes
+    // ════════════════════════════════════════════════════════════════
+    const Placeholder = ({ num }) => (
+        <div className="space-y-6">
+            <SectionTitle icon="🌍" title={`Tema ${num}`} subtitle={t(`tema${num}.title`)} />
+            <Card>
+                <div className="text-center py-12">
+                    <span className="text-5xl mb-4 block">🔒</span>
+                    <p className="text-slate-500 text-lg">{t('placeholder.msg')}</p>
+                </div>
+            </Card>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // NAVIGATION AND RENDER
+    // ════════════════════════════════════════════════════════════════
+    const headerSections = [
+        { id: 'inicio', label: t('sec.inicio'), emoji: '🏠' },
+        { id: 'tema31', label: 'T31', emoji: '🌍' },
+        { id: 'tema32', label: 'T32', emoji: '🌍' },
+        { id: 'tema33', label: 'T33', emoji: '🌍' },
+        { id: 'tema34', label: 'T34', emoji: '🌍' },
+        { id: 'tema35', label: 'T35', emoji: '🌍' },
+        { id: 'tema36', label: 'T36', emoji: '🌍' },
+        { id: 'tema37', label: 'T37', emoji: '🌍' },
+        { id: 'tema38', label: 'T38', emoji: '🌍' },
+    ];
+
+    return (
+        <div className="min-h-screen">
+            <PdeHeader
+                idioma={idioma}
+                setIdioma={(lang) => { setIdioma(lang); PdeLanguageStore.set(lang); }}
+                currentApp="oposicions-bloc-d"
+                sections={headerSections}
+                currentSection={section}
+                setSection={setSection}
+            />
+
+            <main className="max-w-7xl mx-auto px-4 py-8">
+                {section === 'inicio' && <Inicio />}
+                {section === 'tema31' && <Tema31 />}
+                {section === 'tema32' && <Tema32 />}
+                {section === 'tema33' && <Placeholder num={33} />}
+                {section === 'tema34' && <Placeholder num={34} />}
+                {section === 'tema35' && <Placeholder num={35} />}
+                {section === 'tema36' && <Placeholder num={36} />}
+                {section === 'tema37' && <Placeholder num={37} />}
+                {section === 'tema38' && <Placeholder num={38} />}
+            </main>
+
+            <PdePrevNext sections={headerSections} currentSection={section} setSection={setSection} idioma={idioma} />
+            <PdeFooter appEmoji="🌍" appName={t('footer.appname')} idioma={idioma} />
+            <PdeScrollToTop />
+        </div>
+    );
+}
+
+ReactDOM.render(<BlocDApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
