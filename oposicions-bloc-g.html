@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloc G: Sistema Financer — Oposicions | PDE</title>
+    <meta name="description" content="Temes 61-66 d'oposicions d'Economia. Actius financers, borsa, assegurances, planificació financera, sistema tributari, IRPF i IVA.">
+    <meta property="og:title" content="Bloc G: Sistema Financer — Oposicions | PDE">
+    <meta property="og:description" content="Temes 61-66 d'oposicions d'Economia. Actius financers, borsa, assegurances, planificació financera, sistema tributari, IRPF i IVA.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/oposicions-bloc-g">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://profedeeconomia.es/oposicions-bloc-g">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💹</text></svg>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #0d9488 #f0fdfa; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f0fdfa; }
+        ::-webkit-scrollbar-thumb { background-color: #0d9488; border-radius: 3px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-teal-50 via-white to-cyan-50 min-h-screen">
+    <div id="root"></div>
+    <script type="text/babel">
+const { useState, useMemo, useEffect } = React;
+
+function BlocGApp() {
+    const [section, setSection] = useState('inicio');
+    const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+
+    usePdeDeepLink(section, setSection);
+
+    const pageTranslations = {
+        'nav.oposicions-bloc-g': { val: 'Bloc G: Sistema Financer', es: 'Bloque G: Sistema Financiero', en: 'Block G: Financial System' },
+        'footer.appname': { val: "Bloc G — Oposicions d'Economia", es: "Bloque G — Oposiciones de Economía", en: 'Block G — Economics Exams' },
+        'inicio.title': { val: 'Bloc G: Sistema Financer', es: 'Bloque G: Sistema Financiero', en: 'Block G: Financial System' },
+        'inicio.subtitle': { val: "Temes 61-66 de les oposicions d'Economia a Secundària", es: 'Temas 61-66 de las oposiciones de Economía en Secundaria', en: 'Topics 61-66 of the Secondary Economics teaching exams' },
+        'inicio.disponible': { val: 'Disponible', es: 'Disponible', en: 'Available' },
+        'inicio.properament': { val: 'Properament', es: 'Próximamente', en: 'Coming soon' },
+        'inicio.backOpo': { val: '← Tornar a Oposicions', es: '← Volver a Oposiciones', en: '← Back to Exams' },
+        'sec.inicio': { val: 'Inici', es: 'Inicio', en: 'Home' },
+        'sec.tema61': { val: 'Tema 61', es: 'Tema 61', en: 'Topic 61' },
+        'sec.tema62': { val: 'Tema 62', es: 'Tema 62', en: 'Topic 62' },
+        'sec.tema63': { val: 'Tema 63', es: 'Tema 63', en: 'Topic 63' },
+        'sec.tema64': { val: 'Tema 64', es: 'Tema 64', en: 'Topic 64' },
+        'sec.tema65': { val: 'Tema 65', es: 'Tema 65', en: 'Topic 65' },
+        'sec.tema66': { val: 'Tema 66', es: 'Tema 66', en: 'Topic 66' },
+        'tab.complet': { val: 'Tema complet', es: 'Tema completo', en: 'Full topic' },
+        'tab.resum': { val: 'Resum / Esquema', es: 'Resumen / Esquema', en: 'Summary / Outline' },
+        'tema61.title': { val: 'Actius financers. Renda fixa i variable.', es: 'Activos financieros. Renta fija y variable.', en: 'Financial assets. Fixed and variable income.' },
+        'tema62.title': { val: 'La Borsa de Valors. Funcionament i índexs.', es: 'La Bolsa de Valores. Funcionamiento e índices.', en: 'The Stock Exchange. Operation and indices.' },
+        'tema63.title': { val: 'Assegurances. Principis i modalitats.', es: 'Seguros. Principios y modalidades.', en: 'Insurance. Principles and types.' },
+        'tema64.title': { val: 'Planificació financera personal. Estalvi i inversió.', es: 'Planificación financiera personal. Ahorro e inversión.', en: 'Personal financial planning. Saving and investment.' },
+        'tema65.title': { val: 'El sistema tributari espanyol.', es: 'El sistema tributario español.', en: 'The Spanish tax system.' },
+        'tema66.title': { val: 'Impostos directes i indirectes. IRPF i IVA.', es: 'Impuestos directos e indirectos. IRPF e IVA.', en: 'Direct and indirect taxes. Income tax and VAT.' },
+        'placeholder.msg': { val: 'Aquest tema estarà disponible properament.', es: 'Este tema estará disponible próximamente.', en: 'This topic will be available soon.' },
+    };
+
+    const t = createTranslator(pageTranslations, idioma);
+    const lang = idioma;
+
+    // ════════════════════════════════════════════════════════════════
+    // REUSABLE COMPONENTS
+    // ════════════════════════════════════════════════════════════════
+    const Card = ({ children, className = "", title, icon }) => (
+        <div className={`bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 hover:shadow-md transition-shadow ${className} animate-fade`}>
+            {title && <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100"><span className="text-2xl">{icon}</span><h3 className="font-bold text-slate-800 text-lg">{title}</h3></div>}
+            {children}
+        </div>
+    );
+    const Tabs = ({ tabs, active, onChange }) => (
+        <div className="flex flex-wrap gap-1 p-1.5 bg-slate-100 rounded-xl">
+            {tabs.map(tab => (<button key={tab.id} onClick={() => onChange(tab.id)} className={`flex-1 min-w-fit py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${active === tab.id ? 'bg-white shadow-sm text-teal-600' : 'text-slate-600 hover:text-slate-800 hover:bg-white/50'}`}>{tab.label}</button>))}
+        </div>
+    );
+    const FormulaBox = ({ formula, desc }) => (
+        <div className="my-4 p-5 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-xl border border-teal-100">
+            <p className="text-center font-mono text-lg text-teal-800 font-semibold">{formula}</p>
+            {desc && <p className="text-center text-sm text-teal-600 mt-2">{desc}</p>}
+        </div>
+    );
+    const TheoryBlock = ({ title, children, color = "slate" }) => {
+        const colors = { slate: "border-slate-300 bg-slate-50", blue: "border-blue-300 bg-blue-50", green: "border-green-300 bg-green-50", amber: "border-amber-300 bg-amber-50", pink: "border-pink-300 bg-pink-50", violet: "border-violet-300 bg-violet-50", red: "border-red-300 bg-red-50", cyan: "border-cyan-300 bg-cyan-50", emerald: "border-emerald-300 bg-emerald-50", purple: "border-purple-300 bg-purple-50", rose: "border-rose-300 bg-rose-50", indigo: "border-indigo-300 bg-indigo-50", teal: "border-teal-300 bg-teal-50", orange: "border-orange-300 bg-orange-50" };
+        return (<div className={`border-l-4 ${colors[color] || colors.slate} p-5 rounded-r-xl my-4`}>{title && <h4 className="font-bold text-slate-800 mb-3 text-base">{title}</h4>}<div className="text-slate-700 text-sm leading-relaxed space-y-2">{children}</div></div>);
+    };
+    const SectionTitle = ({ icon, title, subtitle }) => (<div className="mb-8"><div className="flex items-center gap-3 mb-2"><span className="text-3xl">{icon}</span><h1 className="text-3xl font-black text-slate-800">{title}</h1></div>{subtitle && <p className="text-slate-500 ml-12">{subtitle}</p>}</div>);
+    const BibliografiaBox = ({ items }) => (<div className="my-6 p-6 bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl border border-slate-200"><h4 className="font-bold text-slate-800 mb-4 text-base flex items-center gap-2"><span>📚</span> Bibliografía</h4><ul className="space-y-2">{items.map((item, i) => (<li key={i} className="text-sm text-slate-700 leading-relaxed pl-4 border-l-2 border-slate-200">{item}</li>))}</ul></div>);
+    const ClauBox = ({ children }) => (<div className="my-4 p-5 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200"><div className="flex items-start gap-3"><span className="text-2xl">🔑</span><div><h4 className="font-bold text-amber-700 mb-2">{lang === 'es' ? 'Clave para el 10' : lang === 'en' ? 'Key for top marks' : 'Clau per al 10'}</h4><div className="text-sm text-amber-800 space-y-1">{children}</div></div></div></div>);
+
+    // ════════════════════════════════════════════════════════════════
+    // THEME DATA
+    // ════════════════════════════════════════════════════════════════
+    const temes = [
+        { num: 61, id: 'tema61', available: true },
+        { num: 62, id: 'tema62', available: true },
+        { num: 63, id: 'tema63', available: true },
+        { num: 64, id: 'tema64', available: true },
+        { num: 65, id: 'tema65', available: true },
+        { num: 66, id: 'tema66', available: true },
+    ];
+
+    // ════════════════════════════════════════════════════════════════
+    // INICIO
+    // ════════════════════════════════════════════════════════════════
+    const Inicio = () => (
+        <div className="animate-fade">
+            <a href="./oposicions" className="inline-flex items-center gap-2 text-sm text-teal-600 hover:text-teal-800 mb-6 transition-colors">{t('inicio.backOpo')}</a>
+            <div className="text-center mb-10">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-teal-100 text-teal-700 rounded-full text-sm font-semibold mb-4"><span>💹</span> Bloc G</div>
+                <h1 className="text-4xl font-black text-slate-800 mb-3">{t('inicio.title')}</h1>
+                <p className="text-slate-500 text-lg max-w-2xl mx-auto">{t('inicio.subtitle')}</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {temes.map(tema => (
+                    <button key={tema.id} onClick={() => { if (tema.available) { setSection(tema.id); pdeSetHashSection(tema.id); pdeScrollToTop(); } }}
+                        className={`text-left p-5 rounded-2xl border transition-all ${tema.available ? 'bg-white border-teal-200 hover:shadow-lg hover:border-teal-300 cursor-pointer' : 'bg-gray-50 border-gray-200 opacity-70 cursor-not-allowed'}`}>
+                        <div className="flex items-start gap-3">
+                            <span className={`inline-flex items-center justify-center w-10 h-10 rounded-xl text-sm font-black text-white ${tema.available ? 'bg-gradient-to-br from-teal-500 to-cyan-600' : 'bg-gray-400'}`}>T{tema.num}</span>
+                            <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-slate-800 text-sm leading-snug mb-2">{t(`tema${tema.num}.title`)}</p>
+                                <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${tema.available ? 'bg-teal-100 text-teal-700' : 'bg-gray-100 text-gray-500'}`}>{tema.available ? '✓ ' + t('inicio.disponible') : '🔒 ' + t('inicio.properament')}</span>
+                            </div>
+                        </div>
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 61 — Activos financieros. Renta fija y variable.
+    // ════════════════════════════════════════════════════════════════
+    const Tema61Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>Los <strong>activos financieros</strong> son títulos o contratos que representan un derecho para su titular (el inversor) y una obligación para el emisor. Constituyen el mecanismo fundamental a través del cual el sistema financiero canaliza el ahorro hacia la inversión. La distinción entre <strong>renta fija</strong> (deuda) y <strong>renta variable</strong> (acciones) es esencial para comprender los mercados financieros, la gestión de carteras y la educación financiera del ciudadano.</p>
+                    <p>Este tema se enmarca en los contenidos de <strong>Economía de 1.º de Bachillerato</strong> (RD 243/2022) sobre el sistema financiero y los mercados, y en los contenidos transversales de educación financiera. Se estructura en: concepto y características, renta fija, renta variable, fondos de inversión y relación rentabilidad-riesgo.</p>
+                </div>
+            </Card>
+            <Card title="1. Concepto y características de los activos financieros" icon="📘">
+                <TheoryBlock title="1.1. Definición" color="teal"><p>Un <strong>activo financiero</strong> es un título emitido por una unidad económica deficitaria (empresa, Estado) que representa una deuda (renta fija) o una participación en la propiedad (renta variable) y que otorga a su titular el derecho a recibir flujos de caja futuros (intereses, dividendos, reembolso del principal).</p></TheoryBlock>
+                <TheoryBlock title="1.2. Tres características fundamentales" color="cyan"><p><strong>1. Rentabilidad:</strong> rendimiento que proporciona el activo (intereses, dividendos, plusvalías). Puede ser fija (conocida de antemano — bonos) o variable (incierta — acciones).<br/><strong>2. Riesgo:</strong> probabilidad de que el rendimiento real difiera del esperado. Incluye: riesgo de crédito (impago del emisor), riesgo de mercado (fluctuaciones de precio), riesgo de tipo de interés, riesgo de liquidez, riesgo de tipo de cambio.<br/><strong>3. Liquidez:</strong> facilidad para convertir el activo en dinero sin pérdida significativa de valor. El dinero es el activo más líquido; un inmueble, el menos.</p><p><strong>Relación fundamental:</strong> a mayor rentabilidad esperada, mayor riesgo. A mayor liquidez, menor rentabilidad. No existe la inversión de alta rentabilidad, bajo riesgo y alta liquidez simultáneamente (triángulo imposible).</p></TheoryBlock>
+                <FormulaBox formula="Rentabilitat ↑ ↔ Risc ↑ | Liquiditat ↑ ↔ Rentabilitat ↓" desc="El triangle impossible: no es pot tindre tot alhora" />
+            </Card>
+            <Card title="2. Renta fija" icon="📘">
+                <TheoryBlock title="2.1. Concepto" color="teal"><p>Los activos de <strong>renta fija</strong> representan un <strong>préstamo</strong> del inversor al emisor: el inversor presta dinero y recibe a cambio intereses periódicos (cupón) y la devolución del principal al vencimiento. El rendimiento es predecible (de ahí «fija»), aunque el precio de mercado puede fluctuar si se vende antes del vencimiento.</p></TheoryBlock>
+                <TheoryBlock title="2.2. Tipos de renta fija" color="cyan">
+                    <p><strong>Deuda pública:</strong><br/>— <em>Letras del Tesoro:</em> CP (3, 6, 12 meses). Emitidas al descuento (se compra por debajo del nominal y se cobra el nominal al vencimiento). Riesgo muy bajo.<br/>— <em>Bonos del Estado:</em> MP (2-5 años). Cupón anual.<br/>— <em>Obligaciones del Estado:</em> LP (10, 15, 30, 50 años). Cupón anual.</p>
+                    <p><strong>Renta fija privada (corporativa):</strong><br/>— <em>Pagarés de empresa:</em> CP. Similares a las letras.<br/>— <em>Bonos y obligaciones corporativas:</em> emitidos por empresas. Mayor riesgo (y mayor rentabilidad) que la deuda pública. Las <em>agencias de rating</em> (Moody's, S&P, Fitch) califican la solvencia del emisor: investment grade (BBB o superior) vs. high yield/bono basura (BB o inferior).</p>
+                </TheoryBlock>
+                <TheoryBlock title="2.3. Precio y tipo de interés" color="teal"><p>El precio de un bono en el mercado secundario tiene una <strong>relación inversa</strong> con el tipo de interés: cuando los tipos suben, el precio de los bonos baja (porque los bonos existentes con cupones más bajos son menos atractivos), y viceversa. Esta es la fuente principal de riesgo de mercado de la renta fija.</p></TheoryBlock>
+            </Card>
+            <Card title="3. Renta variable" icon="📘">
+                <TheoryBlock title="3.1. Las acciones" color="teal"><p>Las <strong>acciones</strong> representan una participación en la <strong>propiedad</strong> de una sociedad anónima. El accionista es copropietario y tiene derechos: <strong>económicos</strong> (dividendos, participación en el patrimonio en caso de liquidación, suscripción preferente en ampliaciones) y <strong>políticos</strong> (voto en la Junta General de Accionistas, información). La rentabilidad proviene de: <strong>dividendos</strong> (parte del beneficio distribuida) + <strong>plusvalías</strong> (ganancia por venta a precio superior al de compra).</p></TheoryBlock>
+                <TheoryBlock title="3.2. Valoración de acciones" color="cyan"><p><strong>Valor nominal:</strong> valor que figura en los estatutos (capital social / n.º acciones).<br/><strong>Valor contable (teórico):</strong> patrimonio neto / n.º acciones.<br/><strong>Valor de mercado (cotización):</strong> precio al que se compra/vende en Bolsa. Determinado por oferta y demanda, expectativas de beneficios, tipos de interés, sentimiento del mercado.<br/><strong>PER (Price Earnings Ratio):</strong> Cotización / BPA (Beneficio Por Acción). Indica cuántos años de beneficios se pagan por la acción. PER alto → acción «cara» (o expectativas altas); PER bajo → acción «barata» (o expectativas bajas).</p></TheoryBlock>
+                <FormulaBox formula="PER = Cotització / BPA | Rendibilitat acció = (Dividends + Plusvàlua) / Preu compra" desc="PER alt → cara o expectatives altes. PER baix → barata o expectatives baixes." />
+            </Card>
+            <Card title="4. Fondos de inversión y otros vehículos" icon="📘">
+                <TheoryBlock title="4.1. Fondos de inversión" color="teal"><p>Un <strong>fondo de inversión</strong> es un patrimonio colectivo formado por las aportaciones de múltiples inversores (partícipes), gestionado por una <strong>sociedad gestora</strong> profesional y custodiado por una <strong>entidad depositaria</strong>. La diversificación reduce el riesgo. Tipos: fondos de renta fija, renta variable, mixtos, garantizados, indexados (replican un índice), temáticos (tecnología, ESG), monetarios. En España, más de 350.000 M€ de patrimonio gestionado.</p></TheoryBlock>
+                <TheoryBlock title="4.2. ETFs, planes de pensiones y otros" color="cyan"><p><strong>ETF (Exchange-Traded Fund):</strong> fondo cotizado en Bolsa como una acción. Comisiones bajas, liquidez alta. Replican índices (IBEX 35, S&P 500).<br/><strong>Planes de pensiones:</strong> ahorro a largo plazo para la jubilación. Ventajas fiscales (aportaciones deducibles en IRPF, con límite de 1.500 €/año). Ilíquidos (solo rescatables en jubilación, incapacidad, paro LP o a los 10 años).<br/><strong>Criptoactivos:</strong> Bitcoin, Ethereum. Activos digitales descentralizados, alta volatilidad, regulación en desarrollo (MiCA en la UE).<br/><strong>Derivados:</strong> futuros, opciones, swaps. Instrumentos cuyo valor depende de un activo subyacente. Uso: cobertura de riesgos y especulación.</p></TheoryBlock>
+            </Card>
+            <Card title="5. La relación rentabilidad-riesgo y la diversificación" icon="📘">
+                <TheoryBlock color="teal"><p><strong>Harry Markowitz</strong> (1952, Teoría Moderna de Carteras) demostró que la <strong>diversificación</strong> —combinar activos con correlaciones bajas o negativas— reduce el riesgo de una cartera sin reducir proporcionalmente la rentabilidad esperada. El <strong>riesgo diversificable</strong> (específico de una empresa) se elimina; el <strong>riesgo sistemático</strong> (de mercado) no. El modelo <strong>CAPM</strong> (Sharpe, 1964) establece que la rentabilidad esperada de un activo depende de su beta (sensibilidad al mercado): E(Ri) = Rf + βi × (E(Rm) − Rf).</p></TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="teal"><p>Los activos financieros se caracterizan por rentabilidad, riesgo y liquidez (triángulo imposible). La renta fija (letras, bonos, obligaciones) representa un préstamo: cupón + devolución; precio inverso a tipos. La renta variable (acciones) representa propiedad: dividendos + plusvalías; valoración por PER. Los fondos de inversión diversifican (350.000 M€ en España); los ETFs cotizan como acciones. Planes de pensiones: ahorro jubilación con ventaja fiscal. Markowitz: la diversificación reduce el riesgo diversificable. CAPM: rentabilidad esperada función de beta.</p></TheoryBlock>
+            </Card>
+            <BibliografiaBox items={["Brealey, R., Myers, S. & Allen, F. (2020). Principios de Finanzas Corporativas. McGraw-Hill.","Markowitz, H. (1952). Portfolio Selection. Journal of Finance.","Sharpe, W. (1964). Capital Asset Prices. Journal of Finance.","CNMV. Guía de productos financieros para inversores. www.cnmv.es","Banco de España. Portal del Cliente Bancario. www.bde.es","Tesoro Público. Valores del Tesoro. www.tesoro.es","Inverco. Estadísticas de fondos de inversión. www.inverco.es","Malkiel, B. (2019). A Random Walk Down Wall Street, 12.ª ed. Norton.","Bodie, Z., Kane, A. & Marcus, A. (2021). Investments, 12.ª ed. McGraw-Hill.","Reglamento MiCA (UE) 2023/1114 sobre mercados de criptoactivos."]} />
+        </div>
+    );
+    const Tema61Resum = () => (
+        <div className="space-y-5 animate-fade"><Card>
+            <div className="p-4 bg-teal-50 rounded-xl border border-teal-200 mb-5"><p className="text-center font-bold text-teal-800 text-lg">Tema 61: Actius financers. Renda fixa i variable.</p><p className="text-center text-sm text-teal-600 mt-1"><em>"Rentabilitat ↔ Risc ↔ Liquiditat: el triangle impossible"</em></p></div>
+            <div className="space-y-4 text-sm text-slate-700">
+                <div><h4 className="font-bold text-slate-800 mb-1">1. Característiques</h4><ul className="list-disc pl-5 space-y-1"><li>Rentabilitat, risc, liquiditat. Triangle impossible: no es pot maximitzar tot.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">2. Renda fixa</h4><ul className="list-disc pl-5 space-y-1"><li>Préstec al emissor. Cupó + devolució principal. Preu invers a tipus interès.</li><li>Pública: lletres (CP), bons (MP), obligacions (LP). Privada: pagarés, bons corporatius. Rating: S&P, Moody's.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">3. Renda variable</h4><ul className="list-disc pl-5 space-y-1"><li>Accions = propietat. Dividends + plusvàlues. Drets econòmics i polítics.</li><li>Valor nominal, comptable, de mercat. PER = Cotització/BPA.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">4. Fons i altres</h4><ul className="list-disc pl-5 space-y-1"><li>Fons inversió: patrimoni col·lectiu, gestora, diversificació. 350.000 M€ Espanya.</li><li>ETF (fons cotitzat), plans pensions (1.500€/any deduïble), criptoactius (MiCA), derivats.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">5. Diversificació</h4><ul className="list-disc pl-5 space-y-1"><li>Markowitz: diversificar redueix risc diversificable. CAPM (Sharpe): E(Ri) = Rf + β(Rm−Rf).</li></ul></div>
+            </div>
+            <ClauBox><p>- Explica el <strong>triangle impossible</strong> (rentabilitat-risc-liquiditat).</p><p>- Diferencia <strong>renda fixa vs. variable</strong> amb instruments concrets.</p><p>- Inclou <strong>fons, ETFs, plans pensions, criptoactius</strong>.</p><p>- Connecta amb <strong>Markowitz i CAPM</strong> (diversificació, beta).</p></ClauBox>
+        </Card></div>
+    );
+    const Tema61 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="💹" title="Tema 61" subtitle={t('tema61.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema61Complet />}{vista === 'resum' && <Tema61Resum />}</div>); };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 62 — La Bolsa de Valores. Funcionamiento e índices.
+    // ════════════════════════════════════════════════════════════════
+    const Tema62Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <p>La <strong>Bolsa de Valores</strong> es el mercado organizado donde se compran y venden activos financieros, principalmente acciones y bonos. Cumple funciones esenciales: canaliza el ahorro hacia la inversión productiva, proporciona liquidez a los inversores, valora las empresas cotizadas y facilita la transparencia informativa. La Bolsa es, además, un barómetro de la confianza económica y un mecanismo de asignación eficiente de recursos.</p>
+                    <p>Este tema se enmarca en los contenidos de <strong>Economía de 1.º de Bachillerato</strong> y de educación financiera. Se estructura en: concepto y funciones, mercado primario y secundario, la Bolsa española (BME), los índices bursátiles y la regulación.</p>
+                </div>
+            </Card>
+            <Card title="1. Concepto y funciones de la Bolsa" icon="📘">
+                <TheoryBlock title="1.1. Funciones" color="teal">
+                    <p><strong>1. Canalización del ahorro:</strong> permite a las empresas obtener financiación emitiendo acciones (ampliaciones de capital) u obligaciones.<br/><strong>2. Liquidez:</strong> los inversores pueden vender sus títulos en cualquier momento al precio de mercado.<br/><strong>3. Valoración:</strong> la cotización refleja (en teoría) el valor de la empresa según las expectativas del mercado.<br/><strong>4. Información y transparencia:</strong> las empresas cotizadas deben publicar información financiera periódica (hechos relevantes, cuentas anuales, informes trimestrales).<br/><strong>5. Protección del inversor:</strong> regulación (CNMV), normas de conducta, prohibición de información privilegiada y manipulación de mercado.</p>
+                </TheoryBlock>
+            </Card>
+            <Card title="2. Mercado primario y secundario" icon="📘">
+                <TheoryBlock title="2.1. Mercado primario (de emisión)" color="teal"><p>Donde se emiten y colocan por primera vez los títulos: <strong>OPV</strong> (Oferta Pública de Venta: la empresa sale a Bolsa vendiendo acciones al público), <strong>OPS</strong> (Oferta Pública de Suscripción: ampliación de capital con nuevas acciones), emisión de bonos y obligaciones. Participan: la empresa emisora, los bancos de inversión (colocadores) y los inversores.</p></TheoryBlock>
+                <TheoryBlock title="2.2. Mercado secundario (de negociación)" color="cyan"><p>Donde se compran y venden los títulos ya emitidos entre inversores. La Bolsa propiamente dicha es un mercado secundario. <strong>No aporta financiación directa a la empresa</strong> (el dinero va de un inversor a otro), pero proporciona liquidez y valoración. Sin un mercado secundario eficiente, nadie compraría en el primario (no podría vender después).</p></TheoryBlock>
+            </Card>
+            <Card title="3. La Bolsa española: BME" icon="📘">
+                <TheoryBlock title="3.1. Estructura" color="teal"><p><strong>BME (Bolsas y Mercados Españoles)</strong>, adquirida por el grupo suizo <strong>SIX</strong> en 2020, opera: las cuatro bolsas históricas (Madrid, Barcelona, Bilbao, Valencia) integradas en el <strong>SIBE</strong> (Sistema de Interconexión Bursátil), el mercado de renta fija (AIAF), el mercado de derivados (<strong>MEFF</strong> — futuros y opciones sobre IBEX y acciones), el mercado alternativo bursátil (<strong>BME Growth</strong>, para pymes y empresas en crecimiento) y la entidad de contrapartida central (<strong>BME Clearing</strong>).</p></TheoryBlock>
+                <TheoryBlock title="3.2. Funcionamiento de la contratación" color="cyan"><p>El SIBE funciona como un mercado electrónico continuo: las órdenes de compra y venta se cruzan automáticamente por precio y prioridad temporal. <strong>Horario:</strong> subasta de apertura (8:30-9:00), mercado abierto (9:00-17:30), subasta de cierre (17:30-17:35). Tipos de órdenes: a mercado, limitada, por lo mejor, stop-loss.</p></TheoryBlock>
+            </Card>
+            <Card title="4. Los índices bursátiles" icon="📘">
+                <TheoryBlock title="4.1. Concepto" color="teal"><p>Un <strong>índice bursátil</strong> es un indicador estadístico que refleja la evolución del precio de un conjunto de acciones representativas de un mercado o sector. Se utiliza como referencia (benchmark) para medir el rendimiento de carteras de inversión.</p></TheoryBlock>
+                <TheoryBlock title="4.2. Principales índices" color="cyan">
+                    <p><strong>IBEX 35:</strong> índice de referencia de la Bolsa española. Incluye las 35 empresas con mayor liquidez y capitalización: Inditex, Santander, BBVA, Iberdrola, Telefónica, Amadeus, Ferrovial, CaixaBank, Repsol, Cellnex, etc. Ponderado por capitalización bursátil ajustada por free float. Base 3.000 (30/12/1989).<br/><strong>S&P 500 (EE. UU.):</strong> 500 mayores empresas de EE. UU. El índice de referencia mundial.<br/><strong>Dow Jones Industrial Average:</strong> 30 grandes empresas industriales de EE. UU. Histórico (1896) pero ponderado por precio (menos representativo).<br/><strong>NASDAQ Composite:</strong> empresas tecnológicas (Apple, Microsoft, Amazon, Google, Meta, Tesla).<br/><strong>Euro Stoxx 50:</strong> 50 mayores empresas de la zona euro.<br/><strong>FTSE 100 (Londres), DAX 40 (Fráncfort), CAC 40 (París), Nikkei 225 (Tokio).</strong></p>
+                </TheoryBlock>
+                <FormulaBox formula="IBEX 35: 35 empreses amb major liquiditat i capitalització de la Borsa espanyola" desc="Base 3.000 (30/12/1989). Ponderat per capitalització ajustada per free float." />
+            </Card>
+            <Card title="5. Regulación y protección del inversor" icon="📘">
+                <TheoryBlock color="teal"><p>La <strong>CNMV</strong> supervisa los mercados de valores españoles: autoriza la admisión a cotización, vigila la transparencia informativa, investiga y sanciona el uso de <strong>información privilegiada</strong> (insider trading) y la <strong>manipulación de mercado</strong>. La regulación europea (MiFID II, Reglamento de Abuso de Mercado) armoniza las normas a nivel de la UE. La <strong>protección del inversor minorista</strong> incluye: test de conveniencia/idoneidad, información previa obligatoria (KID), restricciones a productos complejos, fondo de garantía de inversiones (100.000 € por titular).</p></TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="teal"><p>La Bolsa canaliza ahorro, proporciona liquidez, valora empresas y exige transparencia. Se distingue mercado primario (emisión: OPV, OPS) y secundario (negociación entre inversores). BME/SIX opera el SIBE (contratación electrónica), MEFF (derivados), BME Growth (pymes) y AIAF (renta fija). El IBEX 35 (35 empresas, base 3.000 en 1989) es el índice de referencia español; el S&P 500 es la referencia mundial. La CNMV supervisa, con regulación europea armonizada (MiFID II). La protección del inversor incluye fondo de garantía (100.000 €) y restricciones a productos complejos.</p></TheoryBlock>
+            </Card>
+            <BibliografiaBox items={["CNMV. Guía del inversor. www.cnmv.es","BME/SIX. Estadísticas del mercado. www.bolsasymercados.es","Ley del Mercado de Valores (texto refundido, RDL 4/2015).","Directiva MiFID II (2014/65/UE).","Malkiel, B. (2019). A Random Walk Down Wall Street. Norton.","Brealey, R. et al. (2020). Principios de Finanzas Corporativas. McGraw-Hill.","Bodie, Z., Kane, A. & Marcus, A. (2021). Investments. McGraw-Hill.","Banco de España. Informe de Estabilidad Financiera.","Fama, E. (1970). Efficient Capital Markets. Journal of Finance.","Bloomberg / Reuters. Datos de mercado en tiempo real."]} />
+        </div>
+    );
+    const Tema62Resum = () => (
+        <div className="space-y-5 animate-fade"><Card>
+            <div className="p-4 bg-teal-50 rounded-xl border border-teal-200 mb-5"><p className="text-center font-bold text-teal-800 text-lg">Tema 62: La Borsa de Valors. Funcionament i índexs.</p><p className="text-center text-sm text-teal-600 mt-1"><em>"IBEX 35, S&P 500, NASDAQ: els termòmetres de l'economia"</em></p></div>
+            <div className="space-y-4 text-sm text-slate-700">
+                <div><h4 className="font-bold text-slate-800 mb-1">1. Funcions</h4><ul className="list-disc pl-5 space-y-1"><li>Canalitzar estalvi, liquiditat, valoració, transparència, protecció inversor.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">2. Mercats</h4><ul className="list-disc pl-5 space-y-1"><li>Primari: emissió (OPV, OPS). Secundari: negociació entre inversors (la Borsa pròpiament).</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">3. BME/SIX</h4><ul className="list-disc pl-5 space-y-1"><li>SIBE (contratació electrònica, 9-17:30), MEFF (derivats), BME Growth (pimes), AIAF (renda fixa).</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">4. Índexs</h4><ul className="list-disc pl-5 space-y-1"><li>IBEX 35 (Espanya), S&P 500 (EUA, referència mundial), NASDAQ (tech), Euro Stoxx 50, DAX, CAC, Nikkei.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">5. Regulació</h4><ul className="list-disc pl-5 space-y-1"><li>CNMV. MiFID II. Insider trading prohibit. Fons garantia inversions: 100.000€.</li></ul></div>
+            </div>
+            <ClauBox><p>- Diferencia <strong>mercat primari vs. secundari</strong> (funció de cadascun).</p><p>- Detalla l'<strong>estructura de BME/SIX</strong> (SIBE, MEFF, Growth, AIAF).</p><p>- Enumera els <strong>principals índexs mundials</strong> amb les seues característiques.</p><p>- Inclou <strong>regulació</strong> (CNMV, MiFID II, insider trading).</p></ClauBox>
+        </Card></div>
+    );
+    const Tema62 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="📈" title="Tema 62" subtitle={t('tema62.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema62Complet />}{vista === 'resum' && <Tema62Resum />}</div>); };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 63 — Seguros. Principios y modalidades.
+    // ════════════════════════════════════════════════════════════════
+    const Tema63Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3"><p>El <strong>seguro</strong> es un contrato por el cual el asegurador se obliga, a cambio de una <strong>prima</strong>, a indemnizar al asegurado por los daños derivados de un <strong>siniestro</strong> (evento incierto). Es el mecanismo fundamental de transferencia y mutualización del riesgo en las economías modernas. El sector asegurador español mueve más de 60.000 millones de euros anuales en primas.</p><p>Este tema conecta con los contenidos de educación financiera y sistema financiero de <strong>Economía de 1.º de Bachillerato</strong>. Se estructura en: principios del seguro, elementos del contrato, modalidades y el sector asegurador español.</p></div>
+            </Card>
+            <Card title="1. Principios del seguro" icon="📘">
+                <TheoryBlock title="1.1. Concepto y base técnica" color="teal"><p>El seguro se basa en la <strong>ley de los grandes números</strong>: aunque el siniestro individual es aleatorio, en una masa grande de asegurados las pérdidas totales son predecibles estadísticamente. El asegurador calcula la <strong>prima pura</strong> (esperanza matemática de la pérdida: probabilidad × cuantía del siniestro) y le añade recargos (gastos de gestión, beneficio, margen de seguridad) para obtener la <strong>prima comercial</strong>.</p></TheoryBlock>
+                <TheoryBlock title="1.2. Principios fundamentales" color="cyan"><p><strong>Buena fe:</strong> ambas partes deben actuar con honestidad; el asegurado debe declarar fielmente el riesgo.<br/><strong>Interés asegurable:</strong> el asegurado debe tener un interés legítimo en la cosa asegurada (no se puede asegurar lo que no es tuyo).<br/><strong>Indemnización:</strong> el seguro compensa el daño pero no enriquece al asegurado (principio indemnizatorio); la indemnización no puede superar el valor del daño real.<br/><strong>Subrogación:</strong> el asegurador, tras pagar la indemnización, se subroga en los derechos del asegurado contra el causante del daño.<br/><strong>Contribución y reparto:</strong> si hay varios seguros sobre el mismo riesgo, cada asegurador contribuye proporcionalmente.</p></TheoryBlock>
+            </Card>
+            <Card title="2. Elementos del contrato de seguro" icon="📘">
+                <TheoryBlock title="2.1. Elementos personales" color="teal"><p><strong>Asegurador:</strong> la compañía de seguros (debe ser una SA, mutua o cooperativa autorizada por la DGSFP).<br/><strong>Tomador:</strong> quien contrata y paga la prima.<br/><strong>Asegurado:</strong> titular del interés asegurado (puede coincidir con el tomador).<br/><strong>Beneficiario:</strong> quien recibe la indemnización (en seguros de vida puede ser un tercero).<br/><strong>Mediadores:</strong> agentes de seguros (vinculados a una compañía) y corredores (independientes, asesoran al cliente).</p></TheoryBlock>
+                <TheoryBlock title="2.2. Elementos formales y reales" color="cyan"><p><strong>Póliza:</strong> documento del contrato. Contiene: datos del asegurado, riesgo cubierto, capital asegurado, prima, duración, franquicia, exclusiones.<br/><strong>Prima:</strong> precio del seguro. Puede ser única o periódica (anual).<br/><strong>Siniestro:</strong> materialización del riesgo cubierto.<br/><strong>Capital asegurado:</strong> cantidad máxima que pagará el asegurador.<br/><strong>Franquicia:</strong> cantidad que el asegurado asume en cada siniestro antes de que el asegurador pague (reduce la prima y el riesgo moral).</p></TheoryBlock>
+            </Card>
+            <Card title="3. Modalidades de seguro" icon="📘">
+                <TheoryBlock title="3.1. Seguros personales" color="teal"><p><strong>Seguro de vida:</strong> en caso de fallecimiento (vida-riesgo: paga a los beneficiarios) o supervivencia (vida-ahorro: el asegurado cobra al vencimiento). Mixtos: combinan ambos. Unit-linked: ligados a fondos de inversión.<br/><strong>Seguro de accidentes:</strong> cubre lesiones corporales por accidente.<br/><strong>Seguro de salud (enfermedad):</strong> cubre gastos médicos, hospitalización, pruebas diagnósticas. Complementa la sanidad pública. Principales: Adeslas, Sanitas, DKV, Asisa.</p></TheoryBlock>
+                <TheoryBlock title="3.2. Seguros patrimoniales (de daños)" color="cyan"><p><strong>Seguro de incendio y daños materiales:</strong> cubre daños al patrimonio por incendio, explosión, catástrofes naturales.<br/><strong>Seguro del hogar:</strong> multirriesgo que cubre continente (edificio) + contenido (muebles, objetos) + responsabilidad civil.<br/><strong>Seguro de automóvil:</strong> obligatorio (seguro a terceros: cubre daños a terceros por accidente) o voluntario (todo riesgo: incluye daños propios, robo, lunas). El más contratado en España.<br/><strong>Seguro de responsabilidad civil:</strong> cubre las indemnizaciones que el asegurado deba pagar a terceros por daños causados.<br/><strong>Otros:</strong> seguro de transporte (marítimo, terrestre, aéreo), seguro de crédito (impago de clientes), seguro agrario (pérdida de cosechas — Agroseguro), seguro de caución.</p></TheoryBlock>
+                <TheoryBlock title="3.3. Seguros de prestación de servicios" color="teal"><p><strong>Asistencia en viaje:</strong> cobertura médica, repatriación, pérdida de equipaje en viajes.<br/><strong>Defensa jurídica:</strong> cobertura de gastos legales.<br/><strong>Decesos:</strong> cobertura de los gastos del sepelio. Muy extendido en España (más de 20 millones de asegurados).</p></TheoryBlock>
+            </Card>
+            <Card title="4. El sector asegurador español" icon="📘">
+                <TheoryBlock color="teal"><p>El sector asegurador español genera más de <strong>60.000 millones de euros en primas anuales</strong> y emplea a más de 50.000 personas. Las principales compañías: <strong>Mapfre</strong> (la mayor española, con presencia global), <strong>Mutua Madrileña</strong>, <strong>Línea Directa</strong>, <strong>Santalucía</strong>, <strong>Pelayo</strong>, <strong>Catalana Occidente</strong>, <strong>Zurich</strong>, <strong>Allianz</strong>, <strong>AXA</strong>, <strong>Generali</strong>. El <strong>Consorcio de Compensación de Seguros</strong> (CCS) es una entidad pública que cubre riesgos extraordinarios (terremotos, inundaciones, terrorismo) y actúa como fondo de garantía cuando el asegurador es insolvente. La supervisión corresponde a la <strong>DGSFP</strong> y a la normativa europea <strong>Solvencia II</strong>.</p></TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="teal"><p>El seguro transfiere riesgo del asegurado al asegurador a cambio de una prima, basándose en la ley de los grandes números. Los principios son: buena fe, interés asegurable, indemnización (no enriquecimiento), subrogación. El contrato (póliza) incluye: partes, prima, capital, franquicia. Las modalidades son: personales (vida, accidentes, salud), patrimoniales (hogar, auto —obligatorio—, RC, crédito, agrario) y de servicios (viaje, decesos). El sector español: 60.000 M€ en primas. Mapfre líder. CCS para riesgos extraordinarios. Supervisión: DGSFP + Solvencia II.</p></TheoryBlock>
+            </Card>
+            <BibliografiaBox items={["Ley 50/1980, de 8 de octubre, de Contrato de Seguro.","Ley 20/2015, de 14 de julio, de ordenación, supervisión y solvencia de las entidades aseguradoras.","DGSFP. Informe del sector de seguros. www.dgsfp.mineco.es","UNESPA. El seguro en cifras. www.unespa.es","Mapfre. Diccionario de seguros. www.fundacionmapfre.org","Directiva Solvencia II (2009/138/CE).","Consorcio de Compensación de Seguros. www.consorseguros.es","Bueno Campos, E. (2022). Curso básico de Economía de la Empresa. Pirámide.","Castelo, J. & Guardiola, A. (2010). Diccionario Mapfre de Seguros. Mapfre."]} />
+        </div>
+    );
+    const Tema63Resum = () => (
+        <div className="space-y-5 animate-fade"><Card>
+            <div className="p-4 bg-teal-50 rounded-xl border border-teal-200 mb-5"><p className="text-center font-bold text-teal-800 text-lg">Tema 63: Assegurances. Principis i modalitats.</p><p className="text-center text-sm text-teal-600 mt-1"><em>"Transferir el risc: de l'auto obligatori a l'assegurança de vida"</em></p></div>
+            <div className="space-y-4 text-sm text-slate-700">
+                <div><h4 className="font-bold text-slate-800 mb-1">1. Principis</h4><ul className="list-disc pl-5 space-y-1"><li>Llei grans nombres: sinistre individual aleatori → pèrdues col·lectives predibles.</li><li>Bona fe, interès assegurable, indemnització (no enriquiment), subrogació.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">2. Elements contracte</h4><ul className="list-disc pl-5 space-y-1"><li>Persones: assegurador (cia.), prenedor, assegurat, beneficiari, mediadors (agents/corredors).</li><li>Pòlissa, prima, sinistre, capital assegurat, franquícia.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">3. Modalitats</h4><ul className="list-disc pl-5 space-y-1"><li>Personals: vida (risc, estalvi, mixt), accidents, salut (Adeslas, Sanitas).</li><li>Patrimonials: llar, auto (obligatori: tercers; voluntari: tot risc), RC, crèdit, agrari.</li><li>Serveis: viatge, defensa jurídica, decessos (20+ M assegurats a Espanya).</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">4. Sector espanyol</h4><ul className="list-disc pl-5 space-y-1"><li>60.000 M€ primes/any. Mapfre líder. CCS: riscos extraordinaris. DGSFP + Solvència II.</li></ul></div>
+            </div>
+            <ClauBox><p>- Explica la <strong>base tècnica</strong> (llei grans nombres, prima pura).</p><p>- Detalla les <strong>3 categories</strong> (personals, patrimonials, serveis) amb exemples.</p><p>- Inclou l'<strong>auto obligatori</strong> i el <strong>CCS</strong> (riscos extraordinaris).</p></ClauBox>
+        </Card></div>
+    );
+    const Tema63 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="🛡️" title="Tema 63" subtitle={t('tema63.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema63Complet />}{vista === 'resum' && <Tema63Resum />}</div>); };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 64 — Planificación financiera personal. Ahorro e inversión.
+    // ════════════════════════════════════════════════════════════════
+    const Tema64Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3"><p>La <strong>planificación financiera personal</strong> es el proceso de gestionar los ingresos, gastos, ahorro, inversión, endeudamiento, seguros y fiscalidad de una persona o familia para alcanzar sus objetivos vitales (comprar una vivienda, financiar estudios, preparar la jubilación, crear un fondo de emergencia). La <strong>educación financiera</strong> —entender conceptos como interés compuesto, inflación, diversificación, endeudamiento responsable— es esencial para la autonomía y el bienestar de los ciudadanos.</p><p>Este tema es transversal en el currículo LOMLOE (educación financiera como competencia clave) y se conecta con los contenidos de Economía de 1.º de Bachillerato. Se estructura en: presupuesto personal, ahorro, inversión, endeudamiento responsable y planificación de la jubilación.</p></div>
+            </Card>
+            <Card title="1. El presupuesto personal" icon="📘">
+                <TheoryBlock title="1.1. Ingresos, gastos y ahorro" color="teal"><p><strong>Presupuesto:</strong> plan que detalla los ingresos y gastos previstos para un periodo (mensual, anual). Permite controlar las finanzas, detectar gastos innecesarios y generar ahorro.<br/><strong>Regla 50/30/20</strong> (Elizabeth Warren): 50 % del ingreso neto a necesidades (vivienda, alimentación, transporte), 30 % a deseos (ocio, viajes, ropa), 20 % a ahorro e inversión.<br/><strong>Fondo de emergencia:</strong> ahorro líquido equivalente a 3-6 meses de gastos fijos, para imprevistos (pérdida de empleo, avería, enfermedad). Es la primera prioridad de ahorro.</p></TheoryBlock>
+            </Card>
+            <Card title="2. El ahorro" icon="📘">
+                <TheoryBlock title="2.1. Productos de ahorro" color="teal"><p><strong>Cuentas de ahorro / depósitos a la vista:</strong> liquidez total, rentabilidad muy baja (pero cubiertos por el FGD hasta 100.000 €).<br/><strong>Depósitos a plazo fijo:</strong> mayor rentabilidad a cambio de menor liquidez (penalización por cancelación anticipada).<br/><strong>Letras del Tesoro:</strong> deuda pública a CP (3, 6, 12 meses). Muy seguras, rentabilidad moderada.<br/><strong>Cuentas remuneradas:</strong> cuentas corrientes con interés (ofrecidas por neobancos y fintech).</p></TheoryBlock>
+                <TheoryBlock title="2.2. El interés compuesto" color="cyan"><p>El <strong>interés compuesto</strong> es la «octava maravilla del mundo» (atribuido a Einstein): los intereses generados se reinvierten y generan a su vez nuevos intereses. La fórmula: <strong>Cf = Ci × (1 + i)ⁿ</strong>, donde Ci = capital inicial, i = tipo de interés por periodo, n = número de periodos, Cf = capital final.<br/><strong>Ejemplo:</strong> 10.000 € al 5 % anual durante 30 años = 10.000 × 1,05³⁰ = <strong>43.219 €</strong> (más del cuádruple). La clave es empezar pronto y ser constante.</p></TheoryBlock>
+                <FormulaBox formula="Cf = Ci × (1 + i)ⁿ | 10.000€ al 5% durant 30 anys = 43.219€" desc="Interès compost: el temps és el millor aliat de l'estalviador" />
+            </Card>
+            <Card title="3. La inversión" icon="📘">
+                <TheoryBlock title="3.1. Perfil inversor" color="teal"><p>Antes de invertir, el inversor debe definir su <strong>perfil</strong>: <strong>horizonte temporal</strong> (CP, MP, LP), <strong>tolerancia al riesgo</strong> (conservador, moderado, agresivo), <strong>objetivos</strong> (complemento jubilación, compra vivienda, educación hijos) y <strong>situación financiera</strong> (ingresos, gastos, deudas, patrimonio). Los test de conveniencia/idoneidad (MiFID II) ayudan a determinar el perfil.</p></TheoryBlock>
+                <TheoryBlock title="3.2. Productos de inversión" color="cyan"><p><strong>Fondos de inversión:</strong> diversificación profesional. Tipos: renta fija, variable, mixtos, indexados, garantizados. Comisiones: gestión, depósito, suscripción, reembolso. Fiscalidad: tributan al realizar la plusvalía (19-28 % sobre ganancias).<br/><strong>ETFs:</strong> fondos cotizados, comisiones bajas, réplica de índices.<br/><strong>Acciones:</strong> inversión directa en empresas cotizadas. Mayor riesgo y potencial de rentabilidad.<br/><strong>Inmuebles:</strong> inversión tradicional en España. Alquiler + revalorización. Ilíquido, concentración de riesgo.<br/><strong>Planes de pensiones:</strong> ahorro finalista para jubilación. Ventaja fiscal: aportaciones deducibles en IRPF (máx. 1.500 €/año). Ilíquidos hasta jubilación/contingencias. Tributan como rendimiento del trabajo al rescate (tipo marginal IRPF).<br/><strong>Roboadvisors:</strong> plataformas de inversión automatizada basadas en algoritmos (Indexa Capital, Finizens, MyInvestor). Carteras diversificadas de fondos indexados con comisiones bajas.</p></TheoryBlock>
+            </Card>
+            <Card title="4. Endeudamiento responsable" icon="📘">
+                <TheoryBlock title="4.1. Tipos de deuda" color="teal"><p><strong>Deuda buena:</strong> financia activos que generan valor o se revalorizan (hipoteca para vivienda habitual, préstamo para formación). Tipo de interés bajo, plazo largo.<br/><strong>Deuda mala:</strong> financia consumo que se deprecia (préstamos al consumo para vacaciones, electrónica, tarjetas de crédito revolving). Tipo de interés alto, plazo corto.<br/><strong>Regla del 35 %:</strong> la cuota total de deudas (hipoteca + otros préstamos) no debería superar el 35 % de los ingresos netos mensuales.<br/><strong>TAE (Tasa Anual Equivalente):</strong> indicador que incluye el tipo de interés nominal + comisiones + gastos, permitiendo comparar ofertas. Obligatorio informar (Banco de España).</p></TheoryBlock>
+            </Card>
+            <Card title="5. Planificación de la jubilación" icon="📘">
+                <TheoryBlock color="teal"><p>El sistema público de pensiones (reparto) puede no ser suficiente para mantener el nivel de vida. La <strong>tasa de sustitución</strong> (pensión / último salario) es ~80 % en España (la más alta de la OCDE), pero tenderá a reducirse por el envejecimiento. Es recomendable complementar con ahorro privado: planes de pensiones, fondos de inversión, inmuebles, PIAS (Planes Individuales de Ahorro Sistemático). <strong>Empezar pronto</strong> es clave: gracias al interés compuesto, ahorrar 200 €/mes desde los 25 años genera mucho más que ahorrar 400 €/mes desde los 45.</p></TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="teal"><p>La planificació financera personal comprén pressupost (regla 50/30/20), fons d'emergència (3-6 mesos), estalvi (dipòsits, lletres, comptes), inversió (fons, ETFs, accions, immobles, plans pensions, roboadvisors — segons perfil inversor: horitzó, risc, objectius) i endeutament responsable (regla 35%, TAE, deute bo vs. dolent). L'interès compost (Cf = Ci×(1+i)ⁿ) és la clau: el temps multiplica l'estalvi. Planificar la jubilació aviat és essencial davant la reducció prevista de la taxa de substitució.</p></TheoryBlock>
+            </Card>
+            <BibliografiaBox items={["Banco de España. Portal del Cliente Bancario. clientebancario.bde.es","CNMV. Guía de educación financiera. www.cnmv.es","Kiyosaki, R. (1997). Padre rico, padre pobre. Aguilar.","Warren, E. & Tyagi, A. W. (2005). All Your Worth. Free Press.","Finanzas para Mortales. Programa de educación financiera de Santander. www.finanzasparamortales.es","Plan de Educación Financiera (Banco de España + CNMV). www.finanzasparatodos.es","Bogle, J. (2007). The Little Book of Common Sense Investing. Wiley.","Inverco. Guía de fondos de inversión. www.inverco.es","Indexa Capital. Blog de inversión indexada. www.indexacapital.com","OCDE. Financial Literacy and Inclusion: Results from PISA."]} />
+        </div>
+    );
+    const Tema64Resum = () => (
+        <div className="space-y-5 animate-fade"><Card>
+            <div className="p-4 bg-teal-50 rounded-xl border border-teal-200 mb-5"><p className="text-center font-bold text-teal-800 text-lg">Tema 64: Planificació financera personal. Estalvi i inversió.</p><p className="text-center text-sm text-teal-600 mt-1"><em>"Cf = Ci × (1+i)ⁿ: l'interès compost és el millor aliat de l'estalviador"</em></p></div>
+            <div className="space-y-4 text-sm text-slate-700">
+                <div><h4 className="font-bold text-slate-800 mb-1">1. Pressupost</h4><ul className="list-disc pl-5 space-y-1"><li>Regla 50/30/20: necessitats / desitjos / estalvi. Fons emergència: 3-6 mesos despeses.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">2. Estalvi</h4><ul className="list-disc pl-5 space-y-1"><li>Comptes, dipòsits a termini, lletres Tresor. FGD: 100.000€.</li><li>Interès compost: Cf = Ci×(1+i)ⁿ. 10.000€ al 5% × 30 anys = 43.219€.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">3. Inversió</h4><ul className="list-disc pl-5 space-y-1"><li>Perfil: horitzó, tolerància risc, objectius. MiFID II: test conveniència.</li><li>Fons (diversificació), ETFs (baixos costos), accions, immobles, plans pensions (1.500€/any deduïble), roboadvisors.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">4. Endeutament</h4><ul className="list-disc pl-5 space-y-1"><li>Deute bo (hipoteca, formació) vs. dolent (consum, revolving). Regla 35%. TAE per comparar.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">5. Jubilació</h4><ul className="list-disc pl-5 space-y-1"><li>Taxa substitució ~80% (baixarà). Complementar: plans pensions, fons, PIAS. Començar aviat!</li></ul></div>
+            </div>
+            <FormulaBox formula="Cf = Ci × (1+i)ⁿ | Regla 50/30/20 | Regla 35% endeutament" desc="3 fórmules/regles clau per a la planificació financera personal" />
+            <ClauBox><p>- Centra en <strong>educació financera pràctica</strong> aplicable a l'alumnat.</p><p>- Domina l'<strong>interès compost</strong> amb exemples numèrics.</p><p>- Diferencia <strong>deute bo vs. dolent</strong> i la regla del 35%.</p><p>- Inclou <strong>productes actuals</strong>: roboadvisors, ETFs, neobancs.</p></ClauBox>
+        </Card></div>
+    );
+    const Tema64 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="🏦" title="Tema 64" subtitle={t('tema64.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema64Complet />}{vista === 'resum' && <Tema64Resum />}</div>); };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 65 — El sistema tributario español.
+    // ════════════════════════════════════════════════════════════════
+    const Tema65Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3"><p>El <strong>sistema tributario</strong> es el conjunto de tributos (impuestos, tasas y contribuciones especiales) que financian el gasto público. En España, la presión fiscal (~38 % del PIB) es inferior a la media de la UE (~41 %). El artículo 31.1 de la Constitución establece los principios del deber de contribuir: <strong>capacidad económica, igualdad, progresividad y no confiscatoriedad</strong>.</p><p>Este tema conecta con CE3 de <strong>Economía de 1.º de Bachillerato</strong> (sector público, política fiscal) y con los contenidos transversales de ciudadanía fiscal. Se estructura en: concepto de tributo, principios constitucionales, estructura del sistema, principales figuras y la AEAT.</p></div>
+            </Card>
+            <Card title="1. Concepto y clasificación de tributos" icon="📘">
+                <TheoryBlock title="1.1. Tipos de tributos" color="teal"><p><strong>Impuestos:</strong> tributos exigidos sin contraprestación directa. Son la principal fuente de ingresos públicos. Se clasifican en <em>directos</em> (gravan la renta o patrimonio del contribuyente: IRPF, IS, IP, ISD) e <em>indirectos</em> (gravan el consumo o las transacciones: IVA, IIEE, ITP-AJD).<br/><strong>Tasas:</strong> tributos por la utilización del dominio público o la prestación de un servicio público que beneficia especialmente al obligado (tasa de basuras, tasa de expedición de DNI).<br/><strong>Contribuciones especiales:</strong> tributos por la realización de obras públicas que benefician especialmente a un grupo de contribuyentes (apertura de una calle que revaloriza los inmuebles colindantes).</p></TheoryBlock>
+                <TheoryBlock title="1.2. Elementos del impuesto" color="cyan"><p><strong>Hecho imponible:</strong> circunstancia que genera la obligación tributaria (obtener renta, poseer un patrimonio, comprar un bien).<br/><strong>Sujeto pasivo (contribuyente):</strong> persona obligada al pago.<br/><strong>Base imponible:</strong> cuantificación del hecho imponible (la renta obtenida, el valor del inmueble).<br/><strong>Base liquidable:</strong> base imponible − reducciones.<br/><strong>Tipo impositivo:</strong> porcentaje o tarifa que se aplica a la base (puede ser proporcional —tipo fijo— o progresivo —tipos crecientes por tramos—).<br/><strong>Cuota íntegra:</strong> base liquidable × tipo. <strong>Cuota líquida:</strong> cuota íntegra − deducciones. <strong>Cuota diferencial:</strong> cuota líquida − retenciones y pagos a cuenta.</p></TheoryBlock>
+            </Card>
+            <Card title="2. Estructura del sistema tributario español" icon="📘">
+                <TheoryBlock title="2.1. Niveles de gobierno" color="teal"><p><strong>Estado:</strong> IRPF (compartido 50 % con CCAA), IS, IVA (compartido 50 %), IIEE (compartido 58 %), aranceles.<br/><strong>CCAA:</strong> 50 % IRPF (con capacidad normativa sobre tipos y deducciones), 50 % IVA, 58 % IIEE, Impuesto sobre el Patrimonio, ISD (Sucesiones y Donaciones, con grandes diferencias entre CCAA), ITP-AJD, tributos propios, tributos cedidos.<br/><strong>Entidades locales:</strong> IBI (Impuesto sobre Bienes Inmuebles), IAE (Impuesto sobre Actividades Económicas), IVTM (Impuesto sobre Vehículos), IIVTNU (plusvalía municipal), ICIO (Impuesto sobre Construcciones).<br/><strong>Régimen foral:</strong> País Vasco y Navarra recaudan todos los impuestos y pagan un cupo/aportación al Estado.</p></TheoryBlock>
+            </Card>
+            <Card title="3. La AEAT y la lucha contra el fraude" icon="📘">
+                <TheoryBlock color="teal"><p>La <strong>AEAT</strong> (Agencia Estatal de Administración Tributaria, 1992) gestiona, inspecciona y recauda los tributos estatales. España es líder en administración tributaria electrónica: Renta Web (borrador IRPF), SII (IVA en tiempo real), big data. La lucha contra el <strong>fraude fiscal</strong> y la economía sumergida (17-22 % del PIB) es prioritaria: listas de morosos (&gt;600.000 €), límite de pagos en efectivo (1.000 €), intercambio automático de información bancaria (CRS/OCDE), impuesto mínimo global del 15 % (Pilar 2 OCDE).</p></TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="teal"><p>El sistema tributari espanyol es fonamenta en l'art. 31.1 CE: capacitat econòmica, igualtat, progressivitat, no confiscatorietat. Els tributs es classifiquen en impostos (directes: IRPF, IS, IP, ISD; indirectes: IVA, IIEE, ITP), taxes i contribucions especials. Els elements de l'impost: fet imposable, subjecte passiu, base imposable, base liquidable, tipus, quota. El sistema es reparteix entre Estat, CCAA (50% IRPF, ISD amb grans diferències), EELL (IBI, IAE) i règim foral (País Basc, Navarra). L'AEAT gestiona amb tecnologia punta (Renta Web, SII, big data). La pressió fiscal (~38% PIB) és inferior a la mitjana UE (~41%).</p></TheoryBlock>
+            </Card>
+            <BibliografiaBox items={["Constitución Española, artículo 31.","Ley 58/2003, de 17 de diciembre, General Tributaria.","AEAT. Portal de la Agencia Tributaria. www.agenciatributaria.es","Ministerio de Hacienda. Presupuestos Generales del Estado.","AIReF. Informes sobre ingresos tributarios. www.airef.es","Eurostat. Taxation trends in the EU. ec.europa.eu/eurostat","OCDE. Revenue Statistics: Spain. www.oecd.org","Lago, S. et al. (2021). El sistema fiscal español. Thomson-Civitas.","Comisión Europea. Fiscalidad en España: informes periódicos."]} />
+        </div>
+    );
+    const Tema65Resum = () => (
+        <div className="space-y-5 animate-fade"><Card>
+            <div className="p-4 bg-teal-50 rounded-xl border border-teal-200 mb-5"><p className="text-center font-bold text-teal-800 text-lg">Tema 65: El sistema tributari espanyol.</p><p className="text-center text-sm text-teal-600 mt-1"><em>"Art. 31.1 CE: capacitat econòmica, igualtat, progressivitat"</em></p></div>
+            <div className="space-y-4 text-sm text-slate-700">
+                <div><h4 className="font-bold text-slate-800 mb-1">1. Tributs</h4><ul className="list-disc pl-5 space-y-1"><li>Impostos (directes/indirectes), taxes (contraprestació), contribucions especials (obra pública).</li><li>Elements: fet imposable, subjecte passiu, base imposable, base liquidable, tipus, quota.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">2. Nivells</h4><ul className="list-disc pl-5 space-y-1"><li>Estat: IRPF (50%), IS, IVA (50%), IIEE (58%). CCAA: 50% IRPF, ISD, ITP, Patrimoni.</li><li>EELL: IBI, IAE, IVTM, plusvàlua, ICIO. Foral: PB i Navarra recapten tot.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">3. AEAT</h4><ul className="list-disc pl-5 space-y-1"><li>Renta Web, SII, big data. Frau: efectiu ≤1.000€, morosos &gt;600.000€, CRS/OCDE, Pilar 2 (15%).</li><li>Pressió fiscal: ~38% PIB (UE: ~41%). Bretxa fiscal: ~3 pp.</li></ul></div>
+            </div>
+            <ClauBox><p>- Estructura per <strong>nivells de govern</strong> (Estat, CCAA, EELL, foral).</p><p>- Diferencia <strong>impostos directes vs. indirectes</strong> amb figures concretes.</p><p>- Inclou els <strong>elements tècnics</strong> de l'impost (base, tipus, quota).</p></ClauBox>
+        </Card></div>
+    );
+    const Tema65 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="🏛️" title="Tema 65" subtitle={t('tema65.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema65Complet />}{vista === 'resum' && <Tema65Resum />}</div>); };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 66 — Impuestos directos e indirectos. IRPF e IVA.
+    // ════════════════════════════════════════════════════════════════
+    const Tema66Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3"><p>El <strong>IRPF</strong> (Impuesto sobre la Renta de las Personas Físicas) y el <strong>IVA</strong> (Impuesto sobre el Valor Añadido) son los dos pilares del sistema tributario español: juntos representan más del 60 % de la recaudación total. El IRPF es el principal impuesto directo (progresivo, grava la renta) y el IVA es el principal impuesto indirecto (proporcional, grava el consumo). Su comprensión es esencial tanto para la formación del futuro ciudadano como para la preparación de oposiciones.</p><p>Este tema se enmarca en CE3 de <strong>Economía de 1.º de Bachillerato</strong> y en los contenidos transversales de educación financiera y ciudadanía fiscal.</p></div>
+            </Card>
+            <Card title="1. El IRPF" icon="📘">
+                <TheoryBlock title="1.1. Características" color="teal"><p>Impuesto <strong>directo, personal, subjetivo, progresivo y periódico</strong> (periodo impositivo: año natural). Grava la <strong>renta</strong> obtenida por las personas físicas residentes en España. Es el impuesto que más recauda (~90.000 M€, ~8,5 % del PIB). Es <strong>compartido</strong> (50 % Estado, 50 % CCAA, que tienen capacidad normativa sobre tipos y deducciones).</p></TheoryBlock>
+                <TheoryBlock title="1.2. Base imponible: tipos de renta" color="cyan"><p><strong>Rendimientos del trabajo:</strong> salarios, pensiones, prestaciones por desempleo. La gran mayoría de la base imponible.<br/><strong>Rendimientos del capital:</strong> inmobiliario (alquileres) y mobiliario (intereses, dividendos).<br/><strong>Rendimientos de actividades económicas:</strong> beneficios de autónomos y profesionales (estimación directa o por módulos).<br/><strong>Ganancias y pérdidas patrimoniales:</strong> plusvalías por venta de inmuebles, acciones, fondos de inversión.<br/><strong>Imputaciones de renta:</strong> inmuebles urbanos no alquilados (imputación de renta inmobiliaria).</p></TheoryBlock>
+                <TheoryBlock title="1.3. Liquidación simplificada" color="teal"><p><strong>Base imponible general</strong> (trabajo, actividades, capital inmobiliario) → reducciones (aportaciones a planes de pensiones, pensiones compensatorias, mínimos personal y familiar) → <strong>Base liquidable general</strong> → se aplica la <strong>tarifa progresiva por tramos</strong> (estatal + autonómica):</p><p>0 − 12.450 €: 19 % | 12.450 − 20.200 €: 24 % | 20.200 − 35.200 €: 30 % | 35.200 − 60.000 €: 37 % | 60.000 − 300.000 €: 45 % | &gt;300.000 €: 47 % (tipos orientativos 2024, varían según CCAA).</p><p><strong>Base imponible del ahorro</strong> (intereses, dividendos, plusvalías) → tarifa del ahorro: 19 % (hasta 6.000 €), 21 % (6.000-50.000), 23 % (50.000-200.000), 27 % (200.000-300.000), 28 % (&gt;300.000).</p><p>Cuota íntegra − deducciones (vivienda habitual anterior a 2013, donativos, maternidad, etc.) = <strong>Cuota líquida</strong> − Retenciones practicadas = <strong>Cuota diferencial</strong> (a pagar o a devolver).</p></TheoryBlock>
+                <FormulaBox formula="IRPF: Tarifa progressiva per trams (19% → 47%)" desc="Més renda → tipus marginal més alt. El més recaptador (~90.000 M€)" />
+            </Card>
+            <Card title="2. El IVA" icon="📘">
+                <TheoryBlock title="2.1. Características" color="teal"><p>Impuesto <strong>indirecto, real, objetivo, proporcional e instantáneo</strong>. Grava el <strong>consumo</strong>: se aplica en cada fase de la cadena de producción-distribución sobre el <strong>valor añadido</strong> en esa fase. El consumidor final soporta todo el IVA; las empresas intermedias son meros recaudadores (deducen el IVA soportado en sus compras del IVA repercutido en sus ventas y liquidan la diferencia a Hacienda). Armonizado a nivel de la UE (Directiva IVA 2006/112/CE). No se aplica en Canarias (IGIC), Ceuta y Melilla (IPSI).</p></TheoryBlock>
+                <TheoryBlock title="2.2. Tipos impositivos" color="cyan"><p><strong>Tipo general: 21 %</strong> — se aplica a la mayoría de bienes y servicios.<br/><strong>Tipo reducido: 10 %</strong> — alimentos (excepto los superreducidos), agua, medicamentos de uso animal, transporte de viajeros, hostelería, vivienda nueva, espectáculos culturales y deportivos.<br/><strong>Tipo superreducido: 4 %</strong> — pan, leche, huevos, frutas, verduras, cereales, quesos, libros, periódicos, medicamentos de uso humano, sillas de ruedas, vivienda de protección oficial.<br/><strong>Tipo 0 % (exento con derecho a deducción):</strong> exportaciones, entregas intracomunitarias.</p></TheoryBlock>
+                <TheoryBlock title="2.3. Mecánica de liquidación" color="teal"><p>Cada empresa en la cadena: <strong>IVA repercutido</strong> (cobrado a clientes) − <strong>IVA soportado</strong> (pagado a proveedores) = <strong>Liquidación a Hacienda</strong> (positiva: ingresa; negativa: solicita devolución o compensa).<br/><strong>Ejemplo:</strong> un fabricante vende un producto por 1.000 € + 21 % IVA = 1.210 €. Ha comprado materias primas por 600 € + 21 % IVA = 726 €. Liquidación: 210 € (repercutido) − 126 € (soportado) = <strong>84 € a ingresar</strong>.</p></TheoryBlock>
+                <FormulaBox formula="IVA a ingressar = IVA repercutit − IVA suportat" desc="21% general | 10% reduït | 4% superreduït. El consumidor final suporta tot." />
+            </Card>
+            <Card title="3. Comparación IRPF vs. IVA" icon="📘">
+                <TheoryBlock color="teal"><p><strong>IRPF:</strong> directe, personal, progressiu (qui més guanya, més paga proporcionalment). Més equitatiu (s'adapta a la capacitat econòmica del contribuent), però més complex i susceptible d'elusió/evasió.<br/><strong>IVA:</strong> indirecte, real, proporcional (el mateix tipus per a tots). Més eficient en la recaptació (difícil d'evadir — cadascú vigila que l'anterior pague), però <strong>regressiu</strong> en termes relatius (les famílies de renda baixa destinen una proporció major dels seus ingressos al consum, i per tant paguen proporcionalment més IVA). Els tipus reduïts i superreduïts intenten mitigar aquesta regressivitat en béns bàsics.</p></TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝">
+                <TheoryBlock color="teal"><p>L'IRPF és el principal impost directe: progressiu per trams (19-47%), grava la renda (treball, capital, activitats, plusvàlues), recapta ~90.000 M€. L'IVA és el principal indirecte: proporcional (21/10/4%), grava el consum en cada fase (valor afegit), el consumidor final suporta tot. L'IRPF és més equitatiu (s'adapta a la capacitat econòmica) però complex; l'IVA és més eficient però regressiu (les rendes baixes paguen proporcionalment més). Junts representen &gt;60% de la recaptació total. La comprensió d'ambdós és essencial per a la ciutadania fiscal.</p></TheoryBlock>
+            </Card>
+            <BibliografiaBox items={["Ley 35/2006 del IRPF (texto consolidado).","Ley 37/1992 del IVA (texto consolidado).","AEAT. Manual práctico del IRPF e IVA. www.agenciatributaria.es","Lago, S. et al. (2021). El sistema fiscal español. Thomson-Civitas.","AIReF. Informes sobre el sistema tributario. www.airef.es","Directiva 2006/112/CE del Consejo (sistema común del IVA).","Eurostat. Taxation trends in the EU.","Ministerio de Hacienda. Estadísticas tributarias. www.hacienda.gob.es","OCDE. Tax Policy Reviews: Spain. www.oecd.org","Albi, E., González-Páramo, J. M. & Zubiri, I. (2017). Economía Pública. Ariel."]} />
+        </div>
+    );
+    const Tema66Resum = () => (
+        <div className="space-y-5 animate-fade"><Card>
+            <div className="p-4 bg-teal-50 rounded-xl border border-teal-200 mb-5"><p className="text-center font-bold text-teal-800 text-lg">Tema 66: Impostos directes i indirectes. IRPF i IVA.</p><p className="text-center text-sm text-teal-600 mt-1"><em>"IRPF (progressiu, 19-47%) + IVA (proporcional, 21/10/4%) = >60% recaptació"</em></p></div>
+            <div className="space-y-4 text-sm text-slate-700">
+                <div><h4 className="font-bold text-slate-800 mb-1">1. IRPF</h4><ul className="list-disc pl-5 space-y-1"><li>Directe, personal, progressiu, periòdic. ~90.000 M€. Compartit 50% Estat / 50% CCAA.</li><li>Rendes: treball, capital (immobiliari + mobiliari), activitats econòmiques, guanys patrimonials.</li><li>Tarifa: 19% (fins 12.450€) → 47% (&gt;300.000€). Estalvi: 19-28%.</li><li>Liquidació: BI − reduccions = BL × tarifa = Quota − deduccions − retencions = Diferencial.</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">2. IVA</h4><ul className="list-disc pl-5 space-y-1"><li>Indirecte, real, proporcional, instantani. Grava consum (valor afegit cada fase).</li><li>Tipus: 21% general, 10% reduït, 4% superreduït, 0% exportacions.</li><li>Mecànica: IVA repercutit − IVA suportat = liquidació Hisenda.</li><li>No s'aplica a Canàries (IGIC), Ceuta i Melilla (IPSI).</li></ul></div>
+                <div><h4 className="font-bold text-slate-800 mb-1">3. Comparació</h4><ul className="list-disc pl-5 space-y-1"><li>IRPF: equitatiu (progressiu) però complex. IVA: eficient però regressiu (rendes baixes paguen més % ingressos).</li></ul></div>
+            </div>
+            <FormulaBox formula="IRPF: 19-47% progressiu | IVA: 21/10/4% proporcional" desc="Junts: >60% recaptació. IRPF = equitat; IVA = eficiència" />
+            <ClauBox><p>- Detalla la <strong>tarifa progressiva de l'IRPF</strong> per trams amb tipus.</p><p>- Explica la <strong>mecànica de liquidació de l'IVA</strong> (repercutit − suportat).</p><p>- Compara <strong>equitat (IRPF) vs. eficiència (IVA)</strong> amb la regressivitat.</p><p>- Inclou els <strong>3 tipus d'IVA</strong> amb productes concrets a cada un.</p></ClauBox>
+        </Card></div>
+    );
+    const Tema66 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="📑" title="Tema 66" subtitle={t('tema66.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema66Complet />}{vista === 'resum' && <Tema66Resum />}</div>); };
+
+    // ════════════════════════════════════════════════════════════════
+    // NAVIGATION AND RENDER
+    // ════════════════════════════════════════════════════════════════
+    const headerSections = [
+        { id: 'inicio', label: t('sec.inicio'), emoji: '🏠' },
+        { id: 'tema61', label: 'T61', emoji: '💹' },
+        { id: 'tema62', label: 'T62', emoji: '📈' },
+        { id: 'tema63', label: 'T63', emoji: '🛡️' },
+        { id: 'tema64', label: 'T64', emoji: '🏦' },
+        { id: 'tema65', label: 'T65', emoji: '🏛️' },
+        { id: 'tema66', label: 'T66', emoji: '📑' },
+    ];
+
+    return (
+        <div className="min-h-screen">
+            <PdeHeader idioma={idioma} setIdioma={(lang) => { setIdioma(lang); PdeLanguageStore.set(lang); }} currentApp="oposicions-bloc-g" sections={headerSections} currentSection={section} setSection={setSection} />
+            <main className="max-w-7xl mx-auto px-4 py-8">
+                {section === 'inicio' && <Inicio />}
+                {section === 'tema61' && <Tema61 />}
+                {section === 'tema62' && <Tema62 />}
+                {section === 'tema63' && <Tema63 />}
+                {section === 'tema64' && <Tema64 />}
+                {section === 'tema65' && <Tema65 />}
+                {section === 'tema66' && <Tema66 />}
+            </main>
+            <PdePrevNext sections={headerSections} currentSection={section} setSection={setSection} idioma={idioma} />
+            <PdeFooter appEmoji="💹" appName={t('footer.appname')} idioma={idioma} />
+            <PdeScrollToTop />
+        </div>
+    );
+}
+
+ReactDOM.render(<BlocGApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
