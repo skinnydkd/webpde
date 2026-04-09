@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloc H: Comptabilitat — Oposicions | PDE</title>
+    <meta name="description" content="Temes 67-71 d'oposicions d'Economia. Patrimoni, metodologia comptable, cicle comptable, PGC, anàlisi d'estats financers i ràtios.">
+    <meta property="og:title" content="Bloc H: Comptabilitat — Oposicions | PDE">
+    <meta property="og:description" content="Temes 67-71 d'oposicions d'Economia. Patrimoni, metodologia comptable, cicle comptable, PGC, anàlisi d'estats financers i ràtios.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/oposicions-bloc-h">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://profedeeconomia.es/oposicions-bloc-h">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📒</text></svg>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #64748b #f8fafc; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background-color: #64748b; border-radius: 3px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-white to-gray-50 min-h-screen">
+    <div id="root"></div>
+    <script type="text/babel">
+const { useState, useMemo, useEffect } = React;
+
+function BlocHApp() {
+    const [section, setSection] = useState('inicio');
+    const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+    usePdeDeepLink(section, setSection);
+
+    const pageTranslations = {
+        'nav.oposicions-bloc-h': { val: 'Bloc H: Comptabilitat', es: 'Bloque H: Contabilidad', en: 'Block H: Accounting' },
+        'footer.appname': { val: "Bloc H — Oposicions d'Economia", es: "Bloque H — Oposiciones de Economía", en: 'Block H — Economics Exams' },
+        'inicio.title': { val: 'Bloc H: Comptabilitat', es: 'Bloque H: Contabilidad', en: 'Block H: Accounting' },
+        'inicio.subtitle': { val: "Temes 67-71 de les oposicions d'Economia a Secundària", es: 'Temas 67-71 de las oposiciones de Economía en Secundaria', en: 'Topics 67-71 of the Secondary Economics teaching exams' },
+        'inicio.disponible': { val: 'Disponible', es: 'Disponible', en: 'Available' },
+        'inicio.properament': { val: 'Properament', es: 'Próximamente', en: 'Coming soon' },
+        'inicio.backOpo': { val: '← Tornar a Oposicions', es: '← Volver a Oposiciones', en: '← Back to Exams' },
+        'sec.inicio': { val: 'Inici', es: 'Inicio', en: 'Home' },
+        'sec.tema67': { val: 'Tema 67', es: 'Tema 67', en: 'Topic 67' },
+        'sec.tema68': { val: 'Tema 68', es: 'Tema 68', en: 'Topic 68' },
+        'sec.tema69': { val: 'Tema 69', es: 'Tema 69', en: 'Topic 69' },
+        'sec.tema70': { val: 'Tema 70', es: 'Tema 70', en: 'Topic 70' },
+        'sec.tema71': { val: 'Tema 71', es: 'Tema 71', en: 'Topic 71' },
+        'tab.complet': { val: 'Tema complet', es: 'Tema completo', en: 'Full topic' },
+        'tab.resum': { val: 'Resum / Esquema', es: 'Resumen / Esquema', en: 'Summary / Outline' },
+        'tema67.title': { val: 'El patrimoni. Masses patrimonials.', es: 'El patrimonio. Masas patrimoniales.', en: 'Net worth. Asset classes.' },
+        'tema68.title': { val: 'La metodologia comptable. Comptes i assentaments.', es: 'La metodología contable. Cuentas y asientos.', en: 'Accounting methodology. Accounts and entries.' },
+        'tema69.title': { val: 'El cicle comptable. Regularització i tancament.', es: 'El ciclo contable. Regularización y cierre.', en: 'The accounting cycle. Adjustment and closing.' },
+        'tema70.title': { val: 'El Pla General Comptable.', es: 'El Plan General Contable.', en: 'The General Accounting Plan.' },
+        'tema71.title': { val: "Anàlisi d'estats financers. Ràtios.", es: 'Análisis de estados financieros. Ratios.', en: 'Financial statement analysis. Ratios.' },
+        'placeholder.msg': { val: 'Aquest tema estarà disponible properament.', es: 'Este tema estará disponible próximamente.', en: 'This topic will be available soon.' },
+    };
+    const t = createTranslator(pageTranslations, idioma);
+    const lang = idioma;
+
+    // Reusable components
+    const Card = ({ children, className = "", title, icon }) => (<div className={`bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 hover:shadow-md transition-shadow ${className} animate-fade`}>{title && <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100"><span className="text-2xl">{icon}</span><h3 className="font-bold text-slate-800 text-lg">{title}</h3></div>}{children}</div>);
+    const Tabs = ({ tabs, active, onChange }) => (<div className="flex flex-wrap gap-1 p-1.5 bg-slate-100 rounded-xl">{tabs.map(tab => (<button key={tab.id} onClick={() => onChange(tab.id)} className={`flex-1 min-w-fit py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${active === tab.id ? 'bg-white shadow-sm text-slate-700' : 'text-slate-500 hover:text-slate-700 hover:bg-white/50'}`}>{tab.label}</button>))}</div>);
+    const FormulaBox = ({ formula, desc }) => (<div className="my-4 p-5 bg-gradient-to-r from-slate-50 to-gray-100 rounded-xl border border-slate-200"><p className="text-center font-mono text-lg text-slate-800 font-semibold">{formula}</p>{desc && <p className="text-center text-sm text-slate-500 mt-2">{desc}</p>}</div>);
+    const TheoryBlock = ({ title, children, color = "slate" }) => { const colors = { slate: "border-slate-300 bg-slate-50", blue: "border-blue-300 bg-blue-50", green: "border-green-300 bg-green-50", amber: "border-amber-300 bg-amber-50", pink: "border-pink-300 bg-pink-50", violet: "border-violet-300 bg-violet-50", red: "border-red-300 bg-red-50", cyan: "border-cyan-300 bg-cyan-50", emerald: "border-emerald-300 bg-emerald-50", purple: "border-purple-300 bg-purple-50", rose: "border-rose-300 bg-rose-50", indigo: "border-indigo-300 bg-indigo-50", teal: "border-teal-300 bg-teal-50", orange: "border-orange-300 bg-orange-50" }; return (<div className={`border-l-4 ${colors[color] || colors.slate} p-5 rounded-r-xl my-4`}>{title && <h4 className="font-bold text-slate-800 mb-3 text-base">{title}</h4>}<div className="text-slate-700 text-sm leading-relaxed space-y-2">{children}</div></div>); };
+    const SectionTitle = ({ icon, title, subtitle }) => (<div className="mb-8"><div className="flex items-center gap-3 mb-2"><span className="text-3xl">{icon}</span><h1 className="text-3xl font-black text-slate-800">{title}</h1></div>{subtitle && <p className="text-slate-500 ml-12">{subtitle}</p>}</div>);
+    const BibliografiaBox = ({ items }) => (<div className="my-6 p-6 bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl border border-slate-200"><h4 className="font-bold text-slate-800 mb-4 text-base flex items-center gap-2"><span>📚</span> Bibliografía</h4><ul className="space-y-2">{items.map((item, i) => (<li key={i} className="text-sm text-slate-700 leading-relaxed pl-4 border-l-2 border-slate-200">{item}</li>))}</ul></div>);
+    const ClauBox = ({ children }) => (<div className="my-4 p-5 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200"><div className="flex items-start gap-3"><span className="text-2xl">🔑</span><div><h4 className="font-bold text-amber-700 mb-2">{lang === 'es' ? 'Clave para el 10' : lang === 'en' ? 'Key for top marks' : 'Clau per al 10'}</h4><div className="text-sm text-amber-800 space-y-1">{children}</div></div></div></div>);
+
+    const temes = [
+        { num: 67, id: 'tema67', available: true },
+        { num: 68, id: 'tema68', available: true },
+        { num: 69, id: 'tema69', available: true },
+        { num: 70, id: 'tema70', available: true },
+        { num: 71, id: 'tema71', available: true },
+    ];
+
+    const Inicio = () => (
+        <div className="animate-fade">
+            <a href="./oposicions" className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-800 mb-6 transition-colors">{t('inicio.backOpo')}</a>
+            <div className="text-center mb-10">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-slate-200 text-slate-700 rounded-full text-sm font-semibold mb-4"><span>📒</span> Bloc H</div>
+                <h1 className="text-4xl font-black text-slate-800 mb-3">{t('inicio.title')}</h1>
+                <p className="text-slate-500 text-lg max-w-2xl mx-auto">{t('inicio.subtitle')}</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {temes.map(tema => (
+                    <button key={tema.id} onClick={() => { setSection(tema.id); pdeSetHashSection(tema.id); pdeScrollToTop(); }}
+                        className="text-left p-5 rounded-2xl border bg-white border-slate-200 hover:shadow-lg hover:border-slate-300 cursor-pointer transition-all">
+                        <div className="flex items-start gap-3">
+                            <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl text-sm font-black text-white bg-gradient-to-br from-slate-500 to-gray-600">T{tema.num}</span>
+                            <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-slate-800 text-sm leading-snug mb-2">{t(`tema${tema.num}.title`)}</p>
+                                <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">✓ {t('inicio.disponible')}</span>
+                            </div>
+                        </div>
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 67 — El patrimonio. Masas patrimoniales.
+    // ════════════════════════════════════════════════════════════════
+    const Tema67Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌">
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3"><p>El <strong>patrimonio empresarial</strong> es el punto de partida de la contabilidad: el conjunto de bienes, derechos y obligaciones pertenecientes a una empresa, valorados en unidades monetarias. La contabilidad registra, clasifica y resume las variaciones patrimoniales para proporcionar información útil a la toma de decisiones. La agrupación de los elementos patrimoniales en <strong>masas patrimoniales</strong> (activo, pasivo, patrimonio neto) estructura el balance y permite el análisis financiero.</p><p>Este tema abre el bloque de Comptabilitat de les oposicions i és la base per als temes 68-71. Se estructura en: concepto de patrimonio, elementos patrimoniales, masas y submasas, ecuación fundamental y equilibrio patrimonial.</p></div>
+            </Card>
+            <Card title="1. Concepto de patrimonio" icon="📘">
+                <TheoryBlock title="1.1. Definición" color="slate"><p>El <strong>patrimonio</strong> de una empresa es el conjunto de <strong>bienes</strong> (elementos materiales e inmateriales de su propiedad), <strong>derechos</strong> (cantidades que terceros deben a la empresa) y <strong>obligaciones</strong> (deudas de la empresa con terceros). El <strong>patrimonio neto</strong> es la diferencia: PN = Bienes + Derechos − Obligaciones.</p></TheoryBlock>
+                <TheoryBlock title="1.2. Ecuación fundamental" color="blue"><p>El patrimonio se expresa contablemente mediante la <strong>ecuación del balance</strong>:<br/><strong>ACTIVO = PATRIMONIO NETO + PASIVO</strong><br/>Donde: Activo (A) = bienes + derechos (aplicación de fondos); PN = financiación propia (no exigible); Pasivo (P) = financiación ajena (exigible). El activo refleja la <strong>estructura económica</strong> (en qué se invierte) y el PN+P la <strong>estructura financiera</strong> (de dónde se obtienen los fondos).</p></TheoryBlock>
+                <FormulaBox formula="ACTIU = PATRIMONI NET + PASSIU" desc="Sempre en equilibri. Estructura econòmica = Estructura financera." />
+            </Card>
+            <Card title="2. Masas patrimoniales" icon="📘">
+                <TheoryBlock title="2.1. Activo" color="slate">
+                    <p><strong>Activo no corriente (ANC, inmovilizado):</strong> elements que romanen &gt;1 any:<br/>— <em>Immobilitzat intangible:</em> patents, marques, aplicacions informàtiques, fons de comerç.<br/>— <em>Immobilitzat material:</em> terrenys, construccions, maquinària, elements de transport, mobiliari, equips informàtics. Es registra pel preu d'adquisició i es <strong>amortitza</strong> (menys terrenys).<br/>— <em>Inversions immobiliàries:</em> immobles destinats a obtenir rendes (lloguer), no a l'activitat principal.<br/>— <em>Inversions financeres a LP:</em> accions i participacions en altres empreses, dipòsits a LP.</p>
+                    <p><strong>Activo corriente (AC):</strong> elements que es renoven en &lt;1 any:<br/>— <em>Existències:</em> mercaderies, matèries primeres, productes en curs, productes acabats.<br/>— <em>Realitzable:</em> clients (factures pendents de cobrament), deutors, efectes comercials a cobrar, inversions financeres a CP, HP deutora (devolucions pendents).<br/>— <em>Disponible (tresoreria):</em> caixa (efectiu) i bancs (saldo en comptes corrents). El més líquid.</p>
+                </TheoryBlock>
+                <TheoryBlock title="2.2. Patrimonio neto" color="blue"><p><strong>Fons propis:</strong> capital social (aportacions dels socis), reserves (legal, voluntàries, estatutàries), resultat de l'exercici (benefici o pèrdua), resultat d'exercicis anteriors (romanent), dividends a compte (resta).<br/><strong>Ajustos per canvis de valor:</strong> variacions en el valor raonable d'actius financers.<br/><strong>Subvencions, donacions i llegats:</strong> subvencions de capital rebudes (s'imputen a resultats a mesura que s'amortitza l'actiu subvencionat).</p></TheoryBlock>
+                <TheoryBlock title="2.3. Pasivo" color="slate"><p><strong>Passiu no corrent (PnC, exigible a LP):</strong> deutes amb venciment &gt;1 any: deutes amb entitats de crèdit a LP, proveïdors d'immobilitzat a LP, empréstits (obligacions emeses), provisions a LP.<br/><strong>Passiu corrent (PC, exigible a CP):</strong> deutes amb venciment &lt;1 any: proveïdors (compres de mercaderies a crèdit), creditors (serveis a crèdit), deutes amb entitats de crèdit a CP, HP creditora (impostos a pagar), Organismes SS creditors, sous pendents de pagament, efectes comercials a pagar.</p></TheoryBlock>
+            </Card>
+            <Card title="3. Equilibrio patrimonial y fondo de maniobra" icon="📘">
+                <TheoryBlock title="3.1. Fondo de maniobra" color="slate"><p><strong>FM = AC − PC = (PN + PnC) − ANC</strong><br/>FM &gt; 0: equilibri normal (l'actiu corrent cobreix el passiu corrent amb marge). FM &lt; 0: tensió financera. FM negatiu persistent → risc de suspensió de pagaments.</p></TheoryBlock>
+                <TheoryBlock title="3.2. Situaciones patrimoniales" color="blue"><p><strong>1. Estabilitat total:</strong> A = PN (zero deutes). <strong>2. Estabilitat normal:</strong> FM &gt; 0. <strong>3. Suspensió de pagaments:</strong> FM &lt; 0 però A &gt; P. <strong>4. Fallida:</strong> PN &lt; 0 (A &lt; P). <strong>5. Estabilitat financera mínima:</strong> A = P, PN = 0.</p></TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝"><TheoryBlock color="slate"><p>El patrimoni (béns + drets − obligacions) es representa en el balanç: A = PN + P. L'actiu (estructura econòmica) es divideix en no corrent (immobilitzat intangible, material, inversions) i corrent (existències, realitzable, disponible). El PN (fons propis: capital, reserves, resultat) és finançament no exigible. El passiu (exigible) es divideix en no corrent (LP) i corrent (CP). El FM = AC − PC indica l'equilibri financer: FM &gt; 0 → estabilitat; FM &lt; 0 → tensió. Les 5 situacions patrimonials van de l'estabilitat total a la fallida.</p></TheoryBlock></Card>
+            <BibliografiaBox items={["Plan General de Contabilidad (RD 1514/2007).","Muñoz Merchante, A. (2021). Introducción a la Contabilidad. Ediciones Académicas.","Archel, P. et al. (2018). Estados contables, 6.ª ed. Pirámide.","Bueno Campos, E. (2022). Curso básico de Economía de la Empresa. Pirámide.","Rivero Torre, P. (2012). Análisis de balances. Pirámide.","ICAC. Normas de registro y valoración. www.icac.gob.es"]} />
+        </div>
+    );
+    const Tema67Resum = () => (<div className="space-y-5 animate-fade"><Card><div className="p-4 bg-slate-100 rounded-xl border border-slate-200 mb-5"><p className="text-center font-bold text-slate-800 text-lg">Tema 67: El patrimoni. Masses patrimonials.</p><p className="text-center text-sm text-slate-500 mt-1"><em>"A = PN + P: l'equació fonamental de la comptabilitat"</em></p></div><div className="space-y-4 text-sm text-slate-700"><div><h4 className="font-bold text-slate-800 mb-1">Masses</h4><ul className="list-disc pl-5 space-y-1"><li>ANC: intangible, material (−amortització), inversions LP. AC: existències, realitzable, disponible.</li><li>PN: capital, reserves, resultat. PnC: deutes LP. PC: proveïdors, creditors, HP, SS, sous.</li><li>FM = AC − PC. FM&gt;0 → equilibri. 5 situacions patrimonials.</li></ul></div></div><FormulaBox formula="A = PN + P | FM = AC − PC" /><ClauBox><p>- Domina les <strong>masses i submasses</strong> amb tots els elements.</p><p>- Calcula el <strong>FM</strong> i identifica les 5 situacions.</p></ClauBox></Card></div>);
+    const Tema67 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="📒" title="Tema 67" subtitle={t('tema67.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema67Complet />}{vista === 'resum' && <Tema67Resum />}</div>); };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 68 — La metodología contable. Cuentas y asientos.
+    // ════════════════════════════════════════════════════════════════
+    const Tema68Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌"><div className="text-sm text-slate-700 leading-relaxed space-y-3"><p>La <strong>metodologia comptable</strong> és el conjunt de regles i procediments per registrar els fets comptables. Utilitza el sistema de <strong>partida doble</strong> (Luca Pacioli, 1494): cada transacció afecta almenys dos comptes i l'equació A = PN + P es manté sempre en equilibri. Els <strong>assentaments</strong> al Llibre Diari i els <strong>comptes</strong> al Llibre Major són els instruments bàsics.</p></div></Card>
+            <Card title="1. El compte" icon="📘">
+                <TheoryBlock title="1.1. Concepte i estructura" color="slate"><p>Un <strong>compte</strong> és l'instrument que registra les variacions d'un element patrimonial o de gestió. Estructura en T (o «cuenta en T»): costat esquerre = <strong>DEURE (Debe/Debit)</strong>; costat dret = <strong>HAVER (Haber/Credit)</strong>. <strong>Saldo</strong> = Suma Deure − Suma Haver. Si Deure &gt; Haver → saldo deutor; si Haver &gt; Deure → saldo creditor.</p></TheoryBlock>
+                <TheoryBlock title="1.2. Funcionament dels comptes" color="blue"><p><strong>Comptes d'actiu:</strong> naixen i augmenten pel DEURE; disminueixen per l'HAVER. Saldo deutor.<br/><strong>Comptes de passiu i PN:</strong> naixen i augmenten per l'HAVER; disminueixen pel DEURE. Saldo creditor.<br/><strong>Comptes de despeses:</strong> naixen pel DEURE (augment de despesa). Saldo deutor.<br/><strong>Comptes d'ingressos:</strong> naixen per l'HAVER (augment d'ingrés). Saldo creditor.</p></TheoryBlock>
+                <FormulaBox formula="DEURE (esquerra) | HAVER (dreta) | Actiu i Despeses → Deure | Passiu, PN i Ingressos → Haver" desc="Regla d'or: el que augmenta al costat del seu naixement; el que disminueix al costat contrari" />
+            </Card>
+            <Card title="2. La partida doble i els assentaments" icon="📘">
+                <TheoryBlock title="2.1. Principi de la partida doble" color="slate"><p>Cada fet comptable es registra amb un <strong>assentament</strong> al Llibre Diari on: <strong>Suma Deure = Suma Haver</strong> (sempre). Almenys un compte es carrega (Deure) i almenys un s'abona (Haver). Exemples:<br/>— Compra mercaderies a crèdit: (D) Compres de mercaderies / (H) Proveïdors.<br/>— Cobrament de clients: (D) Bancs / (H) Clients.<br/>— Pagament de nòmines: (D) Sous i salaris + SS a càrrec empresa / (H) HP creditora (retencions IRPF) + SS creditora + Bancs.</p></TheoryBlock>
+                <TheoryBlock title="2.2. Llibres comptables" color="blue"><p><strong>Llibre Diari:</strong> registra cronològicament tots els assentaments. Obligatori (art. 25 Codi de Comerç).<br/><strong>Llibre Major:</strong> recull els moviments de cada compte individual (trasllat del Diari). No és obligatori legalment però és imprescindible en la pràctica.<br/><strong>Llibre d'Inventaris i Comptes Anuals:</strong> obligatori. Inclou el balanç inicial, els balanços trimestrals de comprovació i els comptes anuals (balanç, compte de resultats, memòria).</p></TheoryBlock>
+            </Card>
+            <Card title="3. El balanç de comprovació (sumes i saldos)" icon="📘">
+                <TheoryBlock color="slate"><p>El <strong>balanç de comprovació de sumes i saldos</strong> és un quadre que recull tots els comptes del Major amb les seues sumes de Deure i Haver i el seu saldo. Serveix per verificar que es compleix la partida doble: <strong>Σ Sumes Deure = Σ Sumes Haver</strong> i <strong>Σ Saldos deutors = Σ Saldos creditors</strong>. No garanteix que no hi haja errors (un assentament podria estar mal imputat als comptes), però detecta desequilibris aritmètics.</p></TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝"><TheoryBlock color="slate"><p>La comptabilitat utilitza el sistema de partida doble (Pacioli, 1494): cada transacció afecta ≥2 comptes i Σ Deure = Σ Haver sempre. Els comptes d'Actiu i Despeses funcionen pel Deure; els de Passiu, PN i Ingressos per l'Haver. El Llibre Diari registra els assentaments cronològicament; el Major els agrupa per compte. El balanç de comprovació verifica l'equilibri aritmètic.</p></TheoryBlock></Card>
+            <BibliografiaBox items={["Pacioli, L. (1494). Summa de Arithmetica (Tractatus de Computis et Scripturis).","Plan General de Contabilidad (RD 1514/2007).","Muñoz Merchante, A. (2021). Introducción a la Contabilidad.","Código de Comercio (arts. 25-49, libros contables).","Archel, P. et al. (2018). Estados contables. Pirámide."]} />
+        </div>
+    );
+    const Tema68Resum = () => (<div className="space-y-5 animate-fade"><Card><div className="p-4 bg-slate-100 rounded-xl border border-slate-200 mb-5"><p className="text-center font-bold text-slate-800 text-lg">Tema 68: La metodologia comptable. Comptes i assentaments.</p><p className="text-center text-sm text-slate-500 mt-1"><em>"Partida doble: Σ Deure = Σ Haver, sempre"</em></p></div><div className="space-y-4 text-sm text-slate-700"><div><ul className="list-disc pl-5 space-y-1"><li>Compte en T: Deure (esquerra) / Haver (dreta). Saldo = D − H.</li><li>Actiu i Despeses → naixen al Deure. Passiu, PN, Ingressos → naixen a l'Haver.</li><li>Assentament: sempre Σ D = Σ H. Llibre Diari (obligatori) + Major (per compte).</li><li>Balanç comprovació: verifica equilibri aritmètic.</li></ul></div></div><FormulaBox formula="Σ Deure = Σ Haver (sempre)" /><ClauBox><p>- Domina la <strong>regla de funcionament</strong> dels comptes (D/H per tipus).</p><p>- Sap fer <strong>assentaments bàsics</strong> (compres, vendes, cobraments, nòmines).</p></ClauBox></Card></div>);
+    const Tema68 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="📝" title="Tema 68" subtitle={t('tema68.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema68Complet />}{vista === 'resum' && <Tema68Resum />}</div>); };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 69 — El ciclo contable. Regularización y cierre.
+    // ════════════════════════════════════════════════════════════════
+    const Tema69Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌"><div className="text-sm text-slate-700 leading-relaxed space-y-3"><p>El <strong>cicle comptable</strong> és la seqüència d'operacions que es realitza durant un exercici econòmic (normalment un any) des de l'obertura dels comptes fins al tancament i l'elaboració dels comptes anuals. Inclou el registre diari de les operacions, la regularització al final de l'exercici i el tancament. La <strong>regularització</strong> és el procés d'ajustos per obtindre el resultat real de l'exercici.</p></div></Card>
+            <Card title="1. Fases del cicle comptable" icon="📘">
+                <TheoryBlock title="1.1. Obertura" color="slate"><p><strong>Assentament d'obertura:</strong> al començament de l'exercici, s'obren els comptes amb els saldos del balanç de tancament de l'exercici anterior. Es carreguen (D) tots els comptes d'actiu i s'abonen (H) tots els comptes de passiu i PN.</p></TheoryBlock>
+                <TheoryBlock title="1.2. Registre d'operacions" color="blue"><p>Durant l'exercici es registren al Llibre Diari tots els fets comptables: compres, vendes, cobraments, pagaments, nòmines, amortitzacions, impostos, etc. Es traspassen al Llibre Major.</p></TheoryBlock>
+                <TheoryBlock title="1.3. Regularització" color="slate"><p>Al final de l'exercici (31/12), abans de tancar, es realitzen els <strong>assentaments de regularització</strong>:<br/><strong>1. Amortització de l'immobilitzat:</strong> (D) Amortització de l'immobilitzat material/intangible / (H) Amortització acumulada de l'immobilitzat material/intangible.<br/><strong>2. Regularització d'existències:</strong> (D) Variació d'existències / (H) Existències inicials → (D) Existències finals / (H) Variació d'existències. El resultat net de la variació d'existències ajusta el cost de les vendes.<br/><strong>3. Periodificació:</strong> imputar ingressos i despeses al període al qual corresponen (independentment del cobrament/pagament): despeses anticipades, ingressos anticipats, interessos meritats no vençuts.<br/><strong>4. Deterioraments i provisions:</strong> registrar pèrdues estimades (clients de dubtós cobrament, depreciació d'existències).<br/><strong>5. Impost sobre Societats:</strong> calcular l'IS sobre el resultat comptable abans d'impostos.</p></TheoryBlock>
+                <TheoryBlock title="1.4. Determinació del resultat" color="blue"><p>S'obtingut el resultat de l'exercici traspassant tots els saldos de despeses i ingressos al compte <strong>129 — Resultat de l'exercici</strong>:<br/>(D) 129 Resultat / (H) Tots els comptes de despeses (grup 6) → traspasar saldos de despeses.<br/>(D) Tots els comptes d'ingressos (grup 7) / (H) 129 Resultat → traspasar saldos d'ingressos.<br/>Si el saldo de 129 és creditor → <strong>benefici</strong>. Si és deutor → <strong>pèrdua</strong>.</p></TheoryBlock>
+                <TheoryBlock title="1.5. Tancament" color="slate"><p>L'<strong>assentament de tancament</strong> deixa tots els comptes amb saldo zero: s'abonen (H) els comptes amb saldo deutor (actius) i es carreguen (D) els comptes amb saldo creditor (passius i PN, incloent el resultat de l'exercici). El balanç de situació reflecteix els saldos finals.</p></TheoryBlock>
+            </Card>
+            <Card title="2. Els comptes anuals" icon="📘">
+                <TheoryBlock color="slate"><p>Segons el PGC, les empreses han de formular i depositar al Registre Mercantil els <strong>comptes anuals</strong>:<br/><strong>1. Balanç de situació:</strong> patrimoni a 31/12 (A = PN + P).<br/><strong>2. Compte de pèrdues i guanys:</strong> ingressos − despeses = resultat.<br/><strong>3. Estat de canvis en el patrimoni net (ECPN):</strong> variacions del PN durant l'exercici.<br/><strong>4. Estat de fluxos d'efectiu (EFE):</strong> moviments de tresoreria classificats en explotació, inversió i finançament. Obligatori per a empreses no abreujades.<br/><strong>5. Memòria:</strong> amplia i comenta la informació dels anteriors documents.</p></TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝"><TheoryBlock color="slate"><p>El cicle comptable: obertura → registre operacions → regularització (amortitzacions, existències, periodificació, deterioraments, IS) → determinació resultat (compte 129: ingressos grup 7 − despeses grup 6) → tancament → comptes anuals (balanç, compte PiG, ECPN, EFE, memòria). La regularització és clau per obtindre el resultat real de l'exercici, ajustant per despeses no monetàries (amortització), cost de vendes (variació existències) i periodificació.</p></TheoryBlock></Card>
+            <BibliografiaBox items={["Plan General de Contabilidad (RD 1514/2007).","Muñoz Merchante, A. (2021). Introducción a la Contabilidad.","Archel, P. et al. (2018). Estados contables. Pirámide.","Código de Comercio (arts. 34-41, comptes anuals).","ICAC. Resolucions i consultes. www.icac.gob.es"]} />
+        </div>
+    );
+    const Tema69Resum = () => (<div className="space-y-5 animate-fade"><Card><div className="p-4 bg-slate-100 rounded-xl border border-slate-200 mb-5"><p className="text-center font-bold text-slate-800 text-lg">Tema 69: El cicle comptable. Regularització i tancament.</p><p className="text-center text-sm text-slate-500 mt-1"><em>"Obertura → Registre → Regularització → Resultat → Tancament → Comptes anuals"</em></p></div><div className="space-y-4 text-sm text-slate-700"><div><ul className="list-disc pl-5 space-y-1"><li>Obertura: assentament amb saldos anteriors. Registre: fets comptables al Diari/Major.</li><li>Regularització: amortitzacions, existències, periodificació, deterioraments, IS.</li><li>Resultat: compte 129 = ingressos (grup 7) − despeses (grup 6). Creditor → benefici.</li><li>Tancament: tots els comptes a zero. Comptes anuals: balanç, PiG, ECPN, EFE, memòria.</li></ul></div></div><ClauBox><p>- Domina les <strong>5 fases</strong> del cicle amb els assentaments de regularització.</p><p>- Sap determinar el <strong>resultat</strong> (compte 129) i els <strong>5 comptes anuals</strong>.</p></ClauBox></Card></div>);
+    const Tema69 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="🔄" title="Tema 69" subtitle={t('tema69.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema69Complet />}{vista === 'resum' && <Tema69Resum />}</div>); };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 70 — El Plan General Contable.
+    // ════════════════════════════════════════════════════════════════
+    const Tema70Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌"><div className="text-sm text-slate-700 leading-relaxed space-y-3"><p>El <strong>Pla General de Comptabilitat (PGC)</strong> és la norma que regula la comptabilitat de les empreses espanyoles. El vigent (RD 1514/2007) adapta les <strong>Normes Internacionals d'Informació Financera (NIIF/IFRS)</strong> de la UE al context espanyol. Existeix també un <strong>PGC de pimes</strong> (RD 1515/2007) simplificat. El PGC garanteix la <strong>comparabilitat, fiabilitat i rellevància</strong> de la informació comptable.</p></div></Card>
+            <Card title="1. Estructura del PGC" icon="📘">
+                <TheoryBlock title="1.1. Les cinc parts" color="slate">
+                    <p><strong>1a Part — Marc conceptual (obligatòria):</strong> defineix els principis comptables (empresa en funcionament, meritació, uniformitat, prudència, no compensació, importància relativa), els requisits de la informació (rellevància, fiabilitat, comparabilitat, claredat), els elements dels comptes anuals (actiu, passiu, PN, ingressos, despeses) i els criteris de valoració (cost històric, valor raonable, valor net realitzable, valor actual, valor en ús, cost amortitzat).</p>
+                    <p><strong>2a Part — Normes de registre i valoració (obligatòria):</strong> 23 normes que regulen com registrar i valorar cada tipus d'element: immobilitzat material (NRV 2: cost d'adquisició, amortització, deteriorament), existències (NRV 10: PMP o FIFO), ingressos (NRV 14), instruments financers (NRV 9), impostos (NRV 13), etc.</p>
+                    <p><strong>3a Part — Comptes anuals (obligatòria):</strong> normes d'elaboració, models de balanç, compte PiG, ECPN, EFE i memòria (normal i abreujat).</p>
+                    <p><strong>4a Part — Quadre de comptes (orientatiu):</strong> llistat codificat de comptes organitzat en 9 grups.</p>
+                    <p><strong>5a Part — Definicions i relacions comptables (orientatiu):</strong> defineix cada compte i descriu els seus moviments de deure i haver.</p>
+                </TheoryBlock>
+                <TheoryBlock title="1.2. Els 9 grups de comptes" color="blue">
+                    <p><strong>Grup 1 — Finançament bàsic:</strong> capital, reserves, deutes a LP, resultat.<br/><strong>Grup 2 — Actiu no corrent:</strong> immobilitzats, amortitzacions, inversions financeres LP.<br/><strong>Grup 3 — Existències:</strong> mercaderies, matèries primeres, productes.<br/><strong>Grup 4 — Creditors i deutors:</strong> proveïdors, clients, HP, SS, personal.<br/><strong>Grup 5 — Comptes financers:</strong> deutes CP, inversions financeres CP, tresoreria.<br/><strong>Grup 6 — Compres i despeses:</strong> compres, serveis exteriors, personal, tributs, financeres, amortitzacions, provisions.<br/><strong>Grup 7 — Vendes i ingressos:</strong> vendes, ingressos financers, subvencions a l'explotació.<br/><strong>Grup 8 i 9:</strong> despeses i ingressos imputats al PN (variacions de valor raonable, subvencions).</p>
+                </TheoryBlock>
+            </Card>
+            <Card title="2. Principis comptables" icon="📘">
+                <TheoryBlock color="slate"><p><strong>Empresa en funcionament:</strong> es pressuposa que l'empresa continua operant en el futur previsible.<br/><strong>Meritació:</strong> els ingressos i despeses s'imputen al període en què es meriten, independentment del cobrament/pagament (principi fonamental).<br/><strong>Uniformitat:</strong> mantenir els mateixos criteris comptables d'un exercici a l'altre (per facilitar la comparació).<br/><strong>Prudència:</strong> només es comptabilitzen els beneficis realitzats; els riscos i pèrdues previsibles es registren tan prompte com es coneixen.<br/><strong>No compensació:</strong> no es poden compensar partides d'actiu amb passiu ni ingressos amb despeses (cada element es mostra per separat).<br/><strong>Importància relativa:</strong> es pot simplificar el registre de fets comptables poc significatius.</p></TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝"><TheoryBlock color="slate"><p>El PGC (RD 1514/2007) s'estructura en 5 parts: marc conceptual (principis: empresa en funcionament, meritació, uniformitat, prudència, no compensació, importància relativa), NRV (23 normes de registre i valoració), comptes anuals (models obligatoris), quadre de comptes (9 grups, orientatiu) i definicions (orientatiu). Els grups 1-5 són de balanç (patrimonials); els grups 6-7 de gestió (despeses/ingressos); els 8-9 s'imputen al PN. El PGC de pimes simplifica per a empreses menors.</p></TheoryBlock></Card>
+            <BibliografiaBox items={["RD 1514/2007 Plan General de Contabilidad.","RD 1515/2007 PGC de Pymes.","ICAC. Consultas y resoluciones. www.icac.gob.es","Muñoz Merchante, A. (2021). Introducción a la Contabilidad.","Archel, P. et al. (2018). Estados contables. Pirámide.","Reglamento (CE) 1606/2002 sobre NIIF adoptadas en la UE."]} />
+        </div>
+    );
+    const Tema70Resum = () => (<div className="space-y-5 animate-fade"><Card><div className="p-4 bg-slate-100 rounded-xl border border-slate-200 mb-5"><p className="text-center font-bold text-slate-800 text-lg">Tema 70: El Pla General Comptable.</p><p className="text-center text-sm text-slate-500 mt-1"><em>"5 parts, 9 grups, 6 principis: el marc normatiu de la comptabilitat"</em></p></div><div className="space-y-4 text-sm text-slate-700"><div><ul className="list-disc pl-5 space-y-1"><li>5 parts: marc conceptual (oblig.), NRV (oblig.), comptes anuals (oblig.), quadre comptes (orient.), definicions (orient.).</li><li>6 principis: empresa en funcionament, meritació, uniformitat, prudència, no compensació, importància relativa.</li><li>9 grups: 1-5 balanç (patrimonials), 6-7 gestió (despeses/ingressos), 8-9 PN.</li><li>PGC pimes (RD 1515/2007): simplificat.</li></ul></div></div><ClauBox><p>- Coneix les <strong>5 parts</strong> i la seua obligatorietat.</p><p>- Domina els <strong>6 principis comptables</strong> (esp. meritació i prudència).</p><p>- Identifica els <strong>9 grups</strong> de comptes amb el seu contingut.</p></ClauBox></Card></div>);
+    const Tema70 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="📖" title="Tema 70" subtitle={t('tema70.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema70Complet />}{vista === 'resum' && <Tema70Resum />}</div>); };
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMA 71 — Análisis de estados financieros. Ratios.
+    // ════════════════════════════════════════════════════════════════
+    const Tema71Complet = () => (
+        <div className="space-y-6 animate-fade">
+            <Card title="Introducción" icon="📌"><div className="text-sm text-slate-700 leading-relaxed space-y-3"><p>L'<strong>anàlisi d'estats financers</strong> és el procés d'examinar el balanç, el compte de resultats i altres documents comptables per diagnosticar la situació econòmica i financera de l'empresa. Els <strong>ràtios</strong> són el principal instrument: quocients entre magnituds comptables que permeten avaluar la liquiditat, solvència, endeutament i rendibilitat. Aquest tema tanca el temari d'oposicions i és <strong>molt freqüent en supòsits pràctics</strong>.</p></div></Card>
+            <Card title="1. Anàlisi patrimonial" icon="📘">
+                <TheoryBlock title="1.1. Estructura del balanç" color="slate"><p>L'anàlisi patrimonial examina la composició i evolució de les masses patrimonials: pes relatiu de l'ANC i AC (estructura econòmica), pes del PN, PnC i PC (estructura financera), evolució temporal (variacions absolutes i relatives).<br/><strong>Anàlisi vertical (estàtica):</strong> cada partida com a % del total (per al balanç: % de l'actiu total; per al compte PiG: % de les vendes).<br/><strong>Anàlisi horitzontal (dinàmica):</strong> comparació de dos o més exercicis (variació absoluta i percentual de cada partida).</p></TheoryBlock>
+            </Card>
+            <Card title="2. Anàlisi financera: liquiditat i solvència" icon="📘">
+                <TheoryBlock title="2.1. Ràtios de liquiditat (CP)" color="slate">
+                    <p><strong>Ràtio de liquiditat (corrent):</strong> AC / PC. Ideal: 1,5 − 2. Mesura la capacitat de pagar deutes a CP. &lt;1 → FM negatiu, tensió financera.<br/><strong>Ràtio de tresoreria (acid test):</strong> (Realitzable + Disponible) / PC = (AC − Existències) / PC. Ideal: ~1. Mesura la liquiditat excloent les existències (que poden ser difícils de vendre ràpidament).<br/><strong>Ràtio de disponibilitat (cash ratio):</strong> Disponible / PC. Ideal: 0,2 − 0,3. Liquiditat immediata.</p>
+                </TheoryBlock>
+                <TheoryBlock title="2.2. Ràtios de solvència i endeutament (LP)" color="blue">
+                    <p><strong>Ràtio de solvència (garantia):</strong> Actiu Total / Passiu Total. Ideal: &gt; 1,5. Si &lt; 1 → fallida (PN negatiu).<br/><strong>Ràtio d'endeutament:</strong> Passiu Total / (PN + Passiu Total). Ideal: 0,4 − 0,6. Proporció de finançament alié sobre el total.<br/><strong>Ràtio d'autonomia financera:</strong> PN / Passiu Total. Ideal: &gt; 1. Grau d'independència financera.<br/><strong>Ràtio de qualitat del deute:</strong> PC / Passiu Total. Com menor, millor (el deute a LP és menys pressió que el de CP).</p>
+                </TheoryBlock>
+                <FormulaBox formula="Liquiditat = AC/PC (~1,5-2) | Acid test = (AC−Exist)/PC (~1) | Solvència = AT/PT (>1,5)" desc="Ràtios clau per al diagnòstic financer. Essencials per als supòsits." />
+            </Card>
+            <Card title="3. Anàlisi econòmica: rendibilitat" icon="📘">
+                <TheoryBlock title="3.1. Rendibilitat econòmica (RE / ROA)" color="slate">
+                    <p><strong>RE = BAII / Actiu Total × 100</strong><br/>Rendibilitat dels actius, independentment del finançament. Descomposició: <strong>RE = Marge (BAII/Vendes) × Rotació (Vendes/Actiu)</strong>.<br/>— Per millorar la RE: augmentar el marge (pujar preus, reduir costos) i/o augmentar la rotació (vendre més amb el mateix actiu).</p>
+                </TheoryBlock>
+                <TheoryBlock title="3.2. Rendibilitat financera (RF / ROE)" color="blue">
+                    <p><strong>RF = BDI / Patrimoni Net × 100</strong><br/>Rendibilitat per als propietaris. Depén de la RE, l'endeutament i el cost del deute.<br/><strong>Efecte palanquejament financer:</strong> si RE &gt; ki (cost del deute) → endeutar-se augmenta la RF (palanquejament positiu). Si RE &lt; ki → endeutar-se redueix la RF (negatiu).<br/><strong>RF = RE + (RE − ki) × (D/PN) × (1−t)</strong>, on t = tipus IS.</p>
+                </TheoryBlock>
+                <FormulaBox formula="RE = BAII/Actiu = Marge × Rotació | RF = BDI/PN" desc="Palanquejament: si RE > ki → endeutar-se millora RF" />
+            </Card>
+            <Card title="4. Període mitjà de maduració (PMM)" icon="📘">
+                <TheoryBlock color="slate"><p>El <strong>PMM</strong> és el temps que l'empresa tarda a recuperar cada euro invertit en el cicle d'explotació:<br/><strong>PMM = PM aprovisionament + PM fabricació + PM venda + PM cobrament</strong><br/><strong>PMM financer = PMM − PM pagament</strong> (descompta el crèdit de proveïdors).<br/>On PM = 365 / Rotació. Exemple: Rotació existències = Cost vendes / Existències mitjanes; PM existències = 365 / Rotació.<br/>Un <strong>PMM menor → millor</strong> (l'empresa recupera els diners abans). El PMM financer pot ser negatiu (cobrament abans de pagar → autofinançament del cicle, com fa Mercadona o Inditex).</p></TheoryBlock>
+            </Card>
+            <Card title="5. Anàlisi integral: l'informe" icon="📘">
+                <TheoryBlock color="slate"><p>L'anàlisi d'estats financers integra tots els ràtios en un <strong>informe de diagnòstic</strong>: situació patrimonial (equilibri, FM), liquiditat (CP), solvència (LP), endeutament, rendibilitat econòmica i financera, palanquejament, PMM. Es compara amb: exercicis anteriors (evolució), empreses del sector (benchmarking), valors ideals/estàndard. L'informe conclou amb <strong>punts forts, febleses i recomanacions</strong>.</p></TheoryBlock>
+            </Card>
+            <Card title="Síntesis" icon="📝"><TheoryBlock color="slate"><p>L'anàlisi d'estats financers utilitza ràtios per diagnosticar: liquiditat (corrent ~1,5-2, acid test ~1, disponibilitat ~0,2-0,3), solvència (garantia &gt;1,5, endeutament 0,4-0,6, autonomia &gt;1), rendibilitat econòmica (RE = BAII/Actiu = Marge × Rotació) i financera (RF = BDI/PN, afectada pel palanquejament: si RE&gt;ki → endeutar-se millora RF). El PMM mesura la durada del cicle d'explotació (PMM financer = PMM − PM pagament; negatiu = autofinançament). L'anàlisi integral compara amb exercicis anteriors i sector. Tema essencial per als supòsits pràctics.</p></TheoryBlock></Card>
+            <BibliografiaBox items={["Amat, O. (2018). Análisis de estados financieros, 12.ª ed. Gestión 2000.","Archel, P. et al. (2018). Estados contables. Pirámide.","Rivero Torre, P. (2012). Análisis de balances y estados complementarios. Pirámide.","Garrido, P. & Íñiguez, R. (2017). Análisis de estados contables. Pirámide.","González Pascual, J. (2016). Análisis de la empresa a través de su información económico-financiera. Pirámide.","PGC (RD 1514/2007). Normes de registre i valoració.","Bueno Campos, E. (2022). Curso básico de Economía de la Empresa. Pirámide."]} />
+        </div>
+    );
+    const Tema71Resum = () => (<div className="space-y-5 animate-fade"><Card><div className="p-4 bg-slate-100 rounded-xl border border-slate-200 mb-5"><p className="text-center font-bold text-slate-800 text-lg">Tema 71: Anàlisi d'estats financers. Ràtios.</p><p className="text-center text-sm text-slate-500 mt-1"><em>"Liquiditat + Solvència + Rendibilitat + PMM = diagnòstic complet"</em></p></div><div className="space-y-4 text-sm text-slate-700"><div><h4 className="font-bold text-slate-800 mb-1">Ràtios clau</h4><ul className="list-disc pl-5 space-y-1"><li>Liquiditat: AC/PC (~1,5-2). Acid test: (AC−Exist)/PC (~1). Disponibilitat: Disp/PC (~0,2-0,3).</li><li>Solvència: AT/PT (&gt;1,5). Endeutament: PT/(PN+PT) (0,4-0,6). Autonomia: PN/PT (&gt;1).</li><li>RE = BAII/Actiu = Marge × Rotació. RF = BDI/PN.</li><li>Palanquejament: RF = RE + (RE−ki)×D/PN×(1−t). RE&gt;ki → positiu.</li><li>PMM = PM aprov. + fabric. + venda + cobr. − pagament. Negatiu → autofinançament.</li></ul></div></div><FormulaBox formula="RE = BAII/Actiu | RF = BDI/PN | FM = AC−PC" desc="Les 3 fórmules clau de l'anàlisi economicofinancera" /><ClauBox><p>- Domina <strong>tots els ràtios</strong> amb valors ideals (supòsits pràctics!).</p><p>- Sap <strong>descompondre la RE</strong> (marge × rotació) i explicar el <strong>palanquejament</strong>.</p><p>- Calcula el <strong>PMM financer</strong> i interpreta un PMM negatiu.</p><p>- Elabora un <strong>informe de diagnòstic</strong> integrat.</p></ClauBox></Card></div>);
+    const Tema71 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="📊" title="Tema 71" subtitle={t('tema71.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema71Complet />}{vista === 'resum' && <Tema71Resum />}</div>); };
+
+    // ════════════════════════════════════════════════════════════════
+    // NAVIGATION AND RENDER
+    // ════════════════════════════════════════════════════════════════
+    const headerSections = [
+        { id: 'inicio', label: t('sec.inicio'), emoji: '🏠' },
+        { id: 'tema67', label: 'T67', emoji: '📒' },
+        { id: 'tema68', label: 'T68', emoji: '📝' },
+        { id: 'tema69', label: 'T69', emoji: '🔄' },
+        { id: 'tema70', label: 'T70', emoji: '📖' },
+        { id: 'tema71', label: 'T71', emoji: '📊' },
+    ];
+
+    return (
+        <div className="min-h-screen">
+            <PdeHeader idioma={idioma} setIdioma={(lang) => { setIdioma(lang); PdeLanguageStore.set(lang); }} currentApp="oposicions-bloc-h" sections={headerSections} currentSection={section} setSection={setSection} />
+            <main className="max-w-7xl mx-auto px-4 py-8">
+                {section === 'inicio' && <Inicio />}
+                {section === 'tema67' && <Tema67 />}
+                {section === 'tema68' && <Tema68 />}
+                {section === 'tema69' && <Tema69 />}
+                {section === 'tema70' && <Tema70 />}
+                {section === 'tema71' && <Tema71 />}
+            </main>
+            <PdePrevNext sections={headerSections} currentSection={section} setSection={setSection} idioma={idioma} />
+            <PdeFooter appEmoji="📒" appName={t('footer.appname')} idioma={idioma} />
+            <PdeScrollToTop />
+        </div>
+    );
+}
+
+ReactDOM.render(<BlocHApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
