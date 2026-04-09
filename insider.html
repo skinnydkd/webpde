@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Insider Trading 🕵️ - Joc de Deducció Social | PDE</title>
+    <meta name="description" content="Insider Trading — Joc de deducció social d'economia per a l'aula. Descobreix l'impostor que no coneix la paraula secreta!">
+    <meta property="og:title" content="Insider Trading 🕵️ - Joc de Deducció Social | PDE">
+    <meta property="og:description" content="Joc multijugador de deducció social amb conceptes econòmics. Qui és l'impostor?">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/insider">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <link rel="canonical" href="https://profedeeconomia.es/insider">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕵️</text></svg>">
+    <!-- React + Babel + Tailwind -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <!-- QR Code -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <!-- PDE Shared -->
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
+    <script src="./pde-game-engine.js" type="text/babel"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; scrollbar-width: thin; scrollbar-color: #f59e0b #1e293b; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background-color: #f59e0b; border-radius: 3px; }
+        @keyframes fall { 0% { transform: translateY(-100%) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(245,158,11,0.3); } 50% { box-shadow: 0 0 40px rgba(245,158,11,0.6); } }
+        @keyframes pulse-impostor { 0%, 100% { box-shadow: 0 0 20px rgba(239,68,68,0.4); transform: scale(1); } 50% { box-shadow: 0 0 50px rgba(239,68,68,0.8); transform: scale(1.02); } }
+        @keyframes slide-up { 0% { transform: translateY(40px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        @keyframes fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+        @keyframes spotlight { 0% { opacity: 0; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
+        .card-insider { background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%); border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+        .btn-insider { transition: all 0.15s; }
+        .btn-insider:active { transform: scale(0.96); }
+        .impostor-bg { animation: pulse-impostor 2s ease-in-out infinite; }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-zinc-900">
+    <div id="root"></div>
+    <script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+// ===============================================================
+// TRANSLATIONS
+// ===============================================================
+var INSIDER_TRANSLATIONS = {
+    // Config
+    'config_title':        { val: 'Configuració de la Partida', es: 'Configuración de la Partida', en: 'Game Configuration' },
+    'num_impostors':       { val: 'Nombre d\'impostors', es: 'Número de impostores', en: 'Number of impostors' },
+    'num_rounds':          { val: 'Nombre de rondes', es: 'Número de rondas', en: 'Number of rounds' },
+    'category':            { val: 'Categoria', es: 'Categoría', en: 'Category' },
+    'cat_all':             { val: 'Totes', es: 'Todas', en: 'All' },
+    'cat_macro':           { val: 'Macroeconomia', es: 'Macroeconomía', en: 'Macroeconomics' },
+    'cat_micro':           { val: 'Microeconomia', es: 'Microeconomía', en: 'Microeconomics' },
+    'cat_finances':        { val: 'Finances', es: 'Finanzas', en: 'Finance' },
+    'cat_empresa':         { val: 'Empresa', es: 'Empresa', en: 'Business' },
+    'cat_fiscal':          { val: 'Fiscal', es: 'Fiscal', en: 'Fiscal' },
+    'recommended':         { val: 'recomanat', es: 'recomendado', en: 'recommended' },
+    'start_game':          { val: 'Començar Partida!', es: '¡Empezar Partida!', en: 'Start Game!' },
+
+    // Phases
+    'memorize_word':       { val: 'Memoritza la teua paraula!', es: '¡Memoriza tu palabra!', en: 'Memorize your word!' },
+    'secret':              { val: 'SECRET', es: 'SECRETO', en: 'SECRET' },
+    'you_are_impostor':    { val: 'ETS L\'IMPOSTOR!', es: '¡ERES EL IMPOSTOR!', en: 'YOU ARE THE IMPOSTOR!' },
+    'impostor_mission':    { val: 'No coneixes la paraula! Escolta i dedueix.', es: '¡No conoces la palabra! Escucha y deduce.', en: "You don't know the word! Listen and deduce." },
+    'your_word':           { val: 'La teua paraula:', es: 'Tu palabra:', en: 'Your word:' },
+    'you_are_citizen':     { val: 'Ets un ciutadà honest.', es: 'Eres un ciudadano honesto.', en: 'You are an honest citizen.' },
+    'describe_one_phrase': { val: 'Descriu la teua paraula amb UNA frase', es: 'Describe tu palabra con UNA frase', en: 'Describe your word in ONE phrase' },
+    'discussion_phase':    { val: 'Fase de Descripció', es: 'Fase de Descripción', en: 'Description Phase' },
+    'current_speaker':     { val: 'Parlant ara:', es: 'Hablando ahora:', en: 'Speaking now:' },
+    'next_speaker':        { val: 'Seguent', es: 'Siguiente', en: 'Next' },
+    'your_turn_speak':     { val: 'EL TEU TORN!', es: '¡TU TURNO!', en: 'YOUR TURN!' },
+    'listen_wait':         { val: 'Escolta i espera el teu torn', es: 'Escucha y espera tu turno', en: 'Listen and wait for your turn' },
+    'speaking_now':        { val: 'Parlant ara', es: 'Hablando ahora', en: 'Speaking now' },
+
+    // Vote
+    'vote_phase':          { val: 'Fase de Votació', es: 'Fase de Votación', en: 'Voting Phase' },
+    'vote_impostor':       { val: 'Qui creus que és l\'impostor?', es: '¿Quién crees que es el impostor?', en: 'Who do you think is the impostor?' },
+    'voting_progress':     { val: 'Votació en curs...', es: 'Votación en curso...', en: 'Voting in progress...' },
+    'votes_cast':          { val: 'han votat', es: 'han votado', en: 'have voted' },
+    'vote_sent':           { val: 'Vot enviat!', es: '¡Voto enviado!', en: 'Vote sent!' },
+    'waiting_votes':       { val: 'Esperant els altres vots...', es: 'Esperando los demás votos...', en: 'Waiting for other votes...' },
+
+    // Reveal
+    'reveal_title':        { val: 'Resultat de la Votació', es: 'Resultado de la Votación', en: 'Voting Result' },
+    'eliminated':          { val: 'Eliminat:', es: 'Eliminado:', en: 'Eliminated:' },
+    'was_impostor':        { val: 'ERA L\'IMPOSTOR!', es: '¡ERA EL IMPOSTOR!', en: 'WAS THE IMPOSTOR!' },
+    'was_citizen':         { val: 'Era un ciutadà innocent!', es: '¡Era un ciudadano inocente!', en: 'Was an innocent citizen!' },
+    'no_elimination':      { val: 'Empat! Ningú eliminat.', es: '¡Empate! Nadie eliminado.', en: 'Tie! Nobody eliminated.' },
+    'impostor_safe':       { val: 'L\'impostor sobreviu!', es: '¡El impostor sobrevive!', en: 'The impostor survives!' },
+
+    // Guess
+    'guess_phase':         { val: 'Oportunitat de l\'Impostor', es: 'Oportunidad del Impostor', en: "Impostor's Chance" },
+    'guess_the_word':      { val: 'Endevina la paraula secreta!', es: '¡Adivina la palabra secreta!', en: 'Guess the secret word!' },
+    'type_guess':          { val: 'Escriu la teua resposta...', es: 'Escribe tu respuesta...', en: 'Type your answer...' },
+    'submit_guess':        { val: 'Enviar', es: 'Enviar', en: 'Submit' },
+    'impostor_guessing':   { val: 'L\'impostor intenta endevinar la paraula...', es: 'El impostor intenta adivinar la palabra...', en: 'The impostor is trying to guess the word...' },
+    'guess_correct':       { val: 'L\'IMPOSTOR HA ENCERTAT!', es: '¡EL IMPOSTOR HA ACERTADO!', en: 'THE IMPOSTOR GUESSED CORRECTLY!' },
+    'guess_wrong':         { val: 'L\'impostor NO ha encertat.', es: 'El impostor NO ha acertado.', en: "The impostor did NOT guess correctly." },
+    'the_word_was':        { val: 'La paraula era:', es: 'La palabra era:', en: 'The word was:' },
+
+    // Scores
+    'round_results':       { val: 'Resultats de la Ronda', es: 'Resultados de la Ronda', en: 'Round Results' },
+    'round_x_of_y':        { val: 'Ronda {x} de {y}', es: 'Ronda {x} de {y}', en: 'Round {x} of {y}' },
+    'leaderboard':         { val: 'Classificació', es: 'Clasificación', en: 'Leaderboard' },
+    'next_round':          { val: 'Seguent Ronda', es: 'Siguiente Ronda', en: 'Next Round' },
+    'points':              { val: 'punts', es: 'puntos', en: 'points' },
+
+    // Finished
+    'game_over':           { val: 'Partida Acabada!', es: '¡Partida Acabada!', en: 'Game Over!' },
+    'final_results':       { val: 'Insider Trading — Resultats Finals', es: 'Insider Trading — Resultados Finales', en: 'Insider Trading — Final Results' },
+    'final_ranking':       { val: 'Classificació Final', es: 'Clasificación Final', en: 'Final Ranking' },
+    'back':                { val: 'Tornar', es: 'Volver', en: 'Back' },
+    'back_pde':            { val: 'Tornar a PDE', es: 'Volver a PDE', en: 'Back to PDE' },
+    'look_screen':         { val: 'Mira la pantalla del professor...', es: 'Mira la pantalla del profesor...', en: "Look at the teacher's screen..." },
+    'impostor_role':       { val: 'Impostor', es: 'Impostor', en: 'Impostor' },
+    'citizen_role':        { val: 'Ciutadà', es: 'Ciudadano', en: 'Citizen' },
+    'you_eliminated':      { val: 'Has sigut eliminat!', es: '¡Has sido eliminado!', en: 'You have been eliminated!' },
+    'watch_mode':          { val: 'Pots continuar observant.', es: 'Puedes seguir observando.', en: 'You can keep watching.' },
+    'waiting_others':      { val: 'Esperant els altres jugadors...', es: 'Esperando a los demás jugadores...', en: 'Waiting for other players...' },
+    'continue':            { val: 'Continuar', es: 'Continuar', en: 'Continue' },
+    'see_scores':          { val: 'Veure Puntuacions', es: 'Ver Puntuaciones', en: 'See Scores' },
+    'citizens_win':        { val: 'Els ciutadans guanyen!', es: '¡Los ciudadanos ganan!', en: 'The citizens win!' },
+    'impostor_wins':       { val: 'L\'impostor guanya!', es: '¡El impostor gana!', en: 'The impostor wins!' },
+    'see_final':           { val: 'Veure Resultats Finals', es: 'Ver Resultados Finales', en: 'See Final Results' },
+};
+
+// ===============================================================
+// WORD LIST — 60+ economics concepts with translations
+// ===============================================================
+var INSIDER_WORDS = [
+    // Macro (15)
+    { cat: 'macro', val: 'Inflació', es: 'Inflación', en: 'Inflation' },
+    { cat: 'macro', val: 'Deflació', es: 'Deflación', en: 'Deflation' },
+    { cat: 'macro', val: 'PIB', es: 'PIB', en: 'GDP' },
+    { cat: 'macro', val: 'Atur', es: 'Desempleo', en: 'Unemployment' },
+    { cat: 'macro', val: 'Recessió', es: 'Recesión', en: 'Recession' },
+    { cat: 'macro', val: 'Estanflació', es: 'Estanflación', en: 'Stagflation' },
+    { cat: 'macro', val: 'Deute públic', es: 'Deuda pública', en: 'Public debt' },
+    { cat: 'macro', val: 'Superàvit', es: 'Superávit', en: 'Surplus' },
+    { cat: 'macro', val: 'Dèficit', es: 'Déficit', en: 'Deficit' },
+    { cat: 'macro', val: 'Política monetària', es: 'Política monetaria', en: 'Monetary policy' },
+    { cat: 'macro', val: 'Política fiscal', es: 'Política fiscal', en: 'Fiscal policy' },
+    { cat: 'macro', val: 'Tipus d\'interès', es: 'Tipo de interés', en: 'Interest rate' },
+    { cat: 'macro', val: 'Creixement econòmic', es: 'Crecimiento económico', en: 'Economic growth' },
+    { cat: 'macro', val: 'Cicle econòmic', es: 'Ciclo económico', en: 'Business cycle' },
+    { cat: 'macro', val: 'Globalització', es: 'Globalización', en: 'Globalization' },
+
+    // Micro (15)
+    { cat: 'micro', val: 'Monopoli', es: 'Monopolio', en: 'Monopoly' },
+    { cat: 'micro', val: 'Oligopoli', es: 'Oligopolio', en: 'Oligopoly' },
+    { cat: 'micro', val: 'Oferta', es: 'Oferta', en: 'Supply' },
+    { cat: 'micro', val: 'Demanda', es: 'Demanda', en: 'Demand' },
+    { cat: 'micro', val: 'Elasticitat', es: 'Elasticidad', en: 'Elasticity' },
+    { cat: 'micro', val: 'Cost d\'oportunitat', es: 'Coste de oportunidad', en: 'Opportunity cost' },
+    { cat: 'micro', val: 'Economies d\'escala', es: 'Economías de escala', en: 'Economies of scale' },
+    { cat: 'micro', val: 'Externalitat', es: 'Externalidad', en: 'Externality' },
+    { cat: 'micro', val: 'Bé públic', es: 'Bien público', en: 'Public good' },
+    { cat: 'micro', val: 'Rendiments decreixents', es: 'Rendimientos decrecientes', en: 'Diminishing returns' },
+    { cat: 'micro', val: 'Competència perfecta', es: 'Competencia perfecta', en: 'Perfect competition' },
+    { cat: 'micro', val: 'Equilibri de mercat', es: 'Equilibrio de mercado', en: 'Market equilibrium' },
+    { cat: 'micro', val: 'Cost marginal', es: 'Coste marginal', en: 'Marginal cost' },
+    { cat: 'micro', val: 'Utilitat marginal', es: 'Utilidad marginal', en: 'Marginal utility' },
+    { cat: 'micro', val: 'Avantatge comparatiu', es: 'Ventaja comparativa', en: 'Comparative advantage' },
+
+    // Finances (15)
+    { cat: 'finances', val: 'Hipoteca', es: 'Hipoteca', en: 'Mortgage' },
+    { cat: 'finances', val: 'Acció', es: 'Acción', en: 'Stock' },
+    { cat: 'finances', val: 'Bo', es: 'Bono', en: 'Bond' },
+    { cat: 'finances', val: 'Dividend', es: 'Dividendo', en: 'Dividend' },
+    { cat: 'finances', val: 'Fons d\'inversió', es: 'Fondo de inversión', en: 'Investment fund' },
+    { cat: 'finances', val: 'Bitcoin', es: 'Bitcoin', en: 'Bitcoin' },
+    { cat: 'finances', val: 'Interès compost', es: 'Interés compuesto', en: 'Compound interest' },
+    { cat: 'finances', val: 'Tipus de canvi', es: 'Tipo de cambio', en: 'Exchange rate' },
+    { cat: 'finances', val: 'Borsa', es: 'Bolsa', en: 'Stock exchange' },
+    { cat: 'finances', val: 'Targeta de crèdit', es: 'Tarjeta de crédito', en: 'Credit card' },
+    { cat: 'finances', val: 'Préstec', es: 'Préstamo', en: 'Loan' },
+    { cat: 'finances', val: 'Amortització', es: 'Amortización', en: 'Amortization' },
+    { cat: 'finances', val: 'Diversificació', es: 'Diversificación', en: 'Diversification' },
+    { cat: 'finances', val: 'Rendibilitat', es: 'Rentabilidad', en: 'Profitability' },
+    { cat: 'finances', val: 'Liquiditat', es: 'Liquidez', en: 'Liquidity' },
+
+    // Empresa (15)
+    { cat: 'empresa', val: 'Emprenedor', es: 'Emprendedor', en: 'Entrepreneur' },
+    { cat: 'empresa', val: 'Franquícia', es: 'Franquicia', en: 'Franchise' },
+    { cat: 'empresa', val: 'Patent', es: 'Patente', en: 'Patent' },
+    { cat: 'empresa', val: 'Màrqueting', es: 'Marketing', en: 'Marketing' },
+    { cat: 'empresa', val: 'Publicitat', es: 'Publicidad', en: 'Advertising' },
+    { cat: 'empresa', val: 'Compte de resultats', es: 'Cuenta de resultados', en: 'Income statement' },
+    { cat: 'empresa', val: 'Balanç', es: 'Balance', en: 'Balance sheet' },
+    { cat: 'empresa', val: 'Cash flow', es: 'Cash flow', en: 'Cash flow' },
+    { cat: 'empresa', val: 'Start-up', es: 'Start-up', en: 'Start-up' },
+    { cat: 'empresa', val: 'Productivitat', es: 'Productividad', en: 'Productivity' },
+    { cat: 'empresa', val: 'Salari mínim', es: 'Salario mínimo', en: 'Minimum wage' },
+    { cat: 'empresa', val: 'Subcontractació', es: 'Subcontratación', en: 'Outsourcing' },
+    { cat: 'empresa', val: 'Fusió', es: 'Fusión', en: 'Merger' },
+    { cat: 'empresa', val: 'Adquisició', es: 'Adquisición', en: 'Acquisition' },
+    { cat: 'empresa', val: 'Logística', es: 'Logística', en: 'Logistics' },
+
+    // Fiscal (10)
+    { cat: 'fiscal', val: 'IVA', es: 'IVA', en: 'VAT' },
+    { cat: 'fiscal', val: 'IRPF', es: 'IRPF', en: 'Income tax' },
+    { cat: 'fiscal', val: 'Impost', es: 'Impuesto', en: 'Tax' },
+    { cat: 'fiscal', val: 'Aranzel', es: 'Arancel', en: 'Tariff' },
+    { cat: 'fiscal', val: 'Subvenció', es: 'Subvención', en: 'Subsidy' },
+    { cat: 'fiscal', val: 'Pressupost', es: 'Presupuesto', en: 'Budget' },
+    { cat: 'fiscal', val: 'Evasió fiscal', es: 'Evasión fiscal', en: 'Tax evasion' },
+    { cat: 'fiscal', val: 'Contribuent', es: 'Contribuyente', en: 'Taxpayer' },
+    { cat: 'fiscal', val: 'Base imposable', es: 'Base imponible', en: 'Tax base' },
+    { cat: 'fiscal', val: 'Quota tributària', es: 'Cuota tributaria', en: 'Tax liability' },
+];
+
+// ===============================================================
+// HELPER: Normalize text for accent-insensitive comparison
+// ===============================================================
+var normalizeText = function(text) {
+    if (!text) return '';
+    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+};
+
+// ===============================================================
+// INSIDER APP
+// ===============================================================
+function InsiderApp() {
+    const [phase, setPhase] = useState('lobby');
+    const [gameInfo, setGameInfo] = useState(null);
+    const [meta, setMeta] = useState({});
+    const [players, setPlayers] = useState({});
+    const [gameState, setGameState] = useState({});
+    var [idioma, setIdioma] = useState(PdeLanguageStore.get());
+    var t = function(key) { return INSIDER_TRANSLATIONS[key]?.[idioma] || INSIDER_TRANSLATIONS[key]?.val || key; };
+
+    // Init Firebase
+    useEffect(function() { if (PdeFirebase.isConfigured()) PdeFirebase.init(); }, []);
+
+    // Subscribe to room data once game starts
+    useEffect(function() {
+        if (!gameInfo) return;
+        var unsub1 = PdeRoomManager.onPlayersChange(gameInfo.roomCode, setPlayers);
+        var unsub2 = PdeRoomManager.onGameStateChange(gameInfo.roomCode, setGameState);
+        var unsub3 = PdeRoomManager.onMetaChange(gameInfo.roomCode, setMeta);
+        return function() { unsub1(); unsub2(); unsub3(); };
+    }, [gameInfo?.roomCode]);
+
+    // Listen for game start (player side)
+    useEffect(function() {
+        if (meta.status === 'playing' && phase === 'lobby') {
+            setPhase('config');
+        }
+    }, [meta.status]);
+
+    // Listen for config -> playing transition (player side)
+    useEffect(function() {
+        if (gameState.phase && phase === 'config' && !gameInfo?.isHost) {
+            setPhase('playing');
+        }
+    }, [gameState.phase]);
+
+    // Check if Firebase is configured (after all hooks)
+    if (!PdeFirebase.isConfigured()) {
+        return React.createElement(PdeFirebaseError, null);
+    }
+
+    var handleGameStart = function(info) {
+        setGameInfo(info);
+
+        if (info.isHost) {
+            setPhase('config');
+            PdeRoomManager.updateMeta(info.roomCode, { status: 'playing' });
+        } else {
+            setPhase('config');
+        }
+    };
+
+    var handleConfigDone = function(config) {
+        // Host initializes the game with config
+        var playerIds = Object.keys(players).filter(function(id) {
+            return players[id].connected !== false;
+        });
+
+        // Shuffle player order
+        var shuffled = playerIds.slice().sort(function() { return Math.random() - 0.5; });
+
+        // Filter words by category
+        var availableWords = INSIDER_WORDS;
+        if (config.category !== 'all') {
+            availableWords = INSIDER_WORDS.filter(function(w) { return w.cat === config.category; });
+        }
+        if (availableWords.length === 0) availableWords = INSIDER_WORDS;
+
+        // Pick first word
+        var wordIdx = Math.floor(Math.random() * availableWords.length);
+        var word = availableWords[wordIdx];
+
+        // Select impostors
+        var numImpostors = Math.min(config.numImpostors, Math.floor(shuffled.length / 3));
+        if (numImpostors < 1) numImpostors = 1;
+        var impostorIds = shuffled.slice(0, numImpostors);
+
+        // Initialize scores
+        var totalScores = {};
+        playerIds.forEach(function(pid) { totalScores[pid] = 0; });
+
+        // Assign words/roles to each player via individual data
+        var promises = [];
+        playerIds.forEach(function(pid) {
+            var isImpostor = impostorIds.indexOf(pid) !== -1;
+            var playerData = {
+                word: isImpostor ? null : word[idioma] || word.val,
+                role: isImpostor ? 'impostor' : 'citizen',
+                vote: null,
+                alive: true,
+                guess: null
+            };
+            promises.push(
+                PdeFirebase.ref('rooms/' + gameInfo.roomCode + '/players/' + pid + '/data').set(playerData)
+            );
+        });
+
+        Promise.all(promises).then(function() {
+            PdeRoomManager.setGameState(gameInfo.roomCode, {
+                round: 1,
+                totalRounds: config.totalRounds,
+                numImpostors: numImpostors,
+                phase: 'show_word',
+                currentWordIndex: wordIdx,
+                currentWord: { val: word.val, es: word.es, en: word.en },
+                usedWordIndexes: [wordIdx],
+                playerOrder: shuffled,
+                impostorIds: impostorIds,
+                currentSpeaker: 0,
+                eliminatedId: null,
+                eliminatedWasImpostor: false,
+                impostorGuess: null,
+                impostorGuessCorrect: false,
+                roundScores: {},
+                totalScores: totalScores,
+                alivePlayers: playerIds,
+                category: config.category,
+                votes: {}
+            });
+        });
+
+        setPhase('playing');
+    };
+
+    // Lobby phase
+    if (phase === 'lobby') {
+        return (
+            <div>
+                <div style={{position:'fixed',top:12,right:12,zIndex:9999,display:'flex',gap:4}}>
+                    {['val','es','en'].map(function(l) {
+                        return <button key={l} onClick={function(){setIdioma(l);PdeLanguageStore.set(l);}}
+                            style={{padding:'4px 10px',borderRadius:8,fontSize:13,fontWeight:idioma===l?800:500,
+                                background:idioma===l?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.2)',
+                                color:idioma===l?'#1a1a2e':'white',border:'none',cursor:'pointer'}}>
+                            {l.toUpperCase()}
+                        </button>;
+                    })}
+                </div>
+                <PdeGameLobby
+                    gameType="insider"
+                    gameName="Insider Trading 🕵️"
+                    gameEmoji="🕵️"
+                    gameGradient="from-amber-500 to-yellow-600"
+                    minPlayers={4}
+                    maxPlayers={30}
+                    onGameStart={handleGameStart}
+                />
+            </div>
+        );
+    }
+
+    // Config phase (host only shows config; players wait)
+    if (phase === 'config' && gameInfo) {
+        if (gameInfo.isHost) {
+            return <InsiderConfig players={players} idioma={idioma} t={t} onConfigDone={handleConfigDone} />;
+        } else {
+            // Player waits for config
+            return (
+                <div className="min-h-screen flex items-center justify-center p-4">
+                    <div className="bg-white/10 backdrop-blur rounded-3xl p-8 max-w-sm w-full text-center space-y-5">
+                        <div className="text-6xl animate-bounce">🕵️</div>
+                        <h2 className="text-2xl font-black text-white">Insider Trading</h2>
+                        <div className="bg-amber-500/20 rounded-xl p-4">
+                            <p className="text-amber-300 font-bold">{t('waiting_others')}</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+    }
+
+    // Game phase
+    if (phase === 'playing' && gameInfo) {
+        if (gameInfo.isHost) {
+            return <InsiderHost roomCode={gameInfo.roomCode} playerId={gameInfo.playerId}
+                players={players} gameState={gameState} idioma={idioma} />;
+        } else {
+            return <InsiderPlayer roomCode={gameInfo.roomCode} playerId={gameInfo.playerId}
+                players={players} gameState={gameState} idioma={idioma} />;
+        }
+    }
+
+    return null;
+}
+
+
+// ===============================================================
+// CONFIG SCREEN (host only, before game starts)
+// ===============================================================
+function InsiderConfig({ players, idioma, t, onConfigDone }) {
+    const [numImpostors, setNumImpostors] = useState(1);
+    const [totalRounds, setTotalRounds] = useState(5);
+    const [category, setCategory] = useState('all');
+
+    var playerCount = Object.keys(players).filter(function(id) {
+        return players[id].connected !== false;
+    }).length;
+
+    // Recommendation for impostors based on player count
+    var recommendedImpostors = playerCount <= 6 ? 1 : playerCount <= 12 ? 2 : 3;
+
+    var categories = [
+        { id: 'all', label: t('cat_all') },
+        { id: 'macro', label: t('cat_macro') },
+        { id: 'micro', label: t('cat_micro') },
+        { id: 'finances', label: t('cat_finances') },
+        { id: 'empresa', label: t('cat_empresa') },
+        { id: 'fiscal', label: t('cat_fiscal') },
+    ];
+
+    return (
+        <div className="min-h-screen flex items-center justify-center p-4">
+            <div className="card-insider p-8 max-w-lg w-full space-y-6 border border-amber-500/20">
+                <div className="text-center">
+                    <div className="text-5xl mb-3">🕵️</div>
+                    <h2 className="text-2xl font-black text-white">{t('config_title')}</h2>
+                    <p className="text-gray-400 mt-1">{playerCount} jugadors</p>
+                </div>
+
+                {/* Number of impostors */}
+                <div className="space-y-2">
+                    <label className="text-amber-400 font-bold text-sm">{t('num_impostors')}</label>
+                    <div className="flex gap-2">
+                        {[1, 2, 3].map(function(n) {
+                            return (
+                                <button key={n} onClick={function() { setNumImpostors(n); }}
+                                    className={'flex-1 py-3 rounded-xl font-black text-lg transition-all ' +
+                                        (numImpostors === n
+                                            ? 'bg-red-500 text-white shadow-lg shadow-red-500/30'
+                                            : 'bg-white/10 text-gray-300 hover:bg-white/20')}>
+                                    {n} 🕵️
+                                    {n === recommendedImpostors && (
+                                        <span className="block text-xs font-normal mt-1 text-amber-300">({t('recommended')})</span>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Number of rounds */}
+                <div className="space-y-2">
+                    <label className="text-amber-400 font-bold text-sm">{t('num_rounds')}</label>
+                    <div className="flex gap-2">
+                        {[3, 5, 7].map(function(n) {
+                            return (
+                                <button key={n} onClick={function() { setTotalRounds(n); }}
+                                    className={'flex-1 py-3 rounded-xl font-black text-lg transition-all ' +
+                                        (totalRounds === n
+                                            ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30'
+                                            : 'bg-white/10 text-gray-300 hover:bg-white/20')}>
+                                    {n}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Category filter */}
+                <div className="space-y-2">
+                    <label className="text-amber-400 font-bold text-sm">{t('category')}</label>
+                    <div className="grid grid-cols-3 gap-2">
+                        {categories.map(function(cat) {
+                            return (
+                                <button key={cat.id} onClick={function() { setCategory(cat.id); }}
+                                    className={'py-2 px-3 rounded-xl font-bold text-sm transition-all ' +
+                                        (category === cat.id
+                                            ? 'bg-amber-500 text-white shadow-lg'
+                                            : 'bg-white/10 text-gray-300 hover:bg-white/20')}>
+                                    {cat.label}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Start button */}
+                <button onClick={function() { onConfigDone({ numImpostors: numImpostors, totalRounds: totalRounds, category: category }); }}
+                    className="w-full py-4 rounded-2xl text-white font-black text-xl shadow-lg bg-gradient-to-r from-amber-500 to-yellow-600 hover:brightness-110 btn-insider">
+                    🚀 {t('start_game')}
+                </button>
+            </div>
+        </div>
+    );
+}
+
+
+// ===============================================================
+// HOST VIEW (projected on classroom screen)
+// ===============================================================
+function InsiderHost({ roomCode, playerId, players, gameState, idioma }) {
+    var t = function(key) {
+        var str = INSIDER_TRANSLATIONS[key]?.[idioma] || INSIDER_TRANSLATIONS[key]?.val || key;
+        return str;
+    };
+    const [showConfetti, setShowConfetti] = useState(false);
+    const [timerKey, setTimerKey] = useState(0);
+
+    var gs = gameState || {};
+    var phase = gs.phase || 'show_word';
+    var round = gs.round || 1;
+    var totalRounds = gs.totalRounds || 5;
+    var playerOrder = gs.playerOrder || [];
+    var currentSpeaker = gs.currentSpeaker || 0;
+    var alivePlayers = gs.alivePlayers || [];
+    var impostorIds = gs.impostorIds || [];
+    var totalScores = gs.totalScores || {};
+    var currentWord = gs.currentWord || {};
+
+    // Get alive player order for discussion
+    var aliveOrder = playerOrder.filter(function(pid) {
+        return alivePlayers.indexOf(pid) !== -1;
+    });
+
+    // Count votes
+    var votes = gs.votes || {};
+    var voteCount = Object.keys(votes).length;
+    var expectedVotes = alivePlayers.length;
+
+    // ─── Host actions ───
+    var advanceToDiscuss = function() {
+        PdeRoomManager.updateGameState(roomCode, { phase: 'discuss', currentSpeaker: 0 });
+        setTimerKey(function(k) { return k + 1; });
+    };
+
+    var nextSpeaker = function() {
+        var next = currentSpeaker + 1;
+        if (next >= aliveOrder.length) {
+            // All speakers done, move to vote
+            PdeRoomManager.updateGameState(roomCode, { phase: 'vote', votes: {} });
+            // Clear all player votes
+            alivePlayers.forEach(function(pid) {
+                PdeFirebase.ref('rooms/' + roomCode + '/players/' + pid + '/data/vote').set(null);
+            });
+        } else {
+            PdeRoomManager.updateGameState(roomCode, { currentSpeaker: next });
+            setTimerKey(function(k) { return k + 1; });
+        }
+    };
+
+    var processVotes = function() {
+        // Tally votes
+        var tally = {};
+        Object.keys(votes).forEach(function(voterId) {
+            var votedFor = votes[voterId];
+            tally[votedFor] = (tally[votedFor] || 0) + 1;
+        });
+
+        // Find max votes
+        var maxVotes = 0;
+        Object.keys(tally).forEach(function(pid) {
+            if (tally[pid] > maxVotes) maxVotes = tally[pid];
+        });
+
+        var tied = Object.keys(tally).filter(function(pid) { return tally[pid] === maxVotes; });
+
+        if (tied.length > 1) {
+            // Tie — pick random among tied
+            var eliminatedId = tied[Math.floor(Math.random() * tied.length)];
+            var wasImpostor = impostorIds.indexOf(eliminatedId) !== -1;
+            PdeRoomManager.updateGameState(roomCode, {
+                phase: 'reveal',
+                eliminatedId: eliminatedId,
+                eliminatedWasImpostor: wasImpostor
+            });
+            PdeGameSounds.play('pop');
+        } else if (tied.length === 1) {
+            var eliminatedId = tied[0];
+            var wasImpostor = impostorIds.indexOf(eliminatedId) !== -1;
+            PdeRoomManager.updateGameState(roomCode, {
+                phase: 'reveal',
+                eliminatedId: eliminatedId,
+                eliminatedWasImpostor: wasImpostor
+            });
+            PdeGameSounds.play('pop');
+        }
+    };
+
+    // Auto-process votes when all in
+    useEffect(function() {
+        if (phase === 'vote' && voteCount >= expectedVotes && expectedVotes > 0) {
+            processVotes();
+        }
+    }, [voteCount, expectedVotes, phase]);
+
+    var advanceFromReveal = function() {
+        var eliminatedId = gs.eliminatedId;
+        var wasImpostor = gs.eliminatedWasImpostor;
+
+        // Remove eliminated from alive
+        var newAlive = alivePlayers.filter(function(pid) { return pid !== eliminatedId; });
+
+        if (wasImpostor) {
+            // Impostor caught — they get to guess
+            PdeFirebase.ref('rooms/' + roomCode + '/players/' + eliminatedId + '/data/guess').set(null);
+            PdeRoomManager.updateGameState(roomCode, {
+                phase: 'guess',
+                alivePlayers: newAlive,
+                impostorGuess: null,
+                impostorGuessCorrect: false
+            });
+        } else {
+            // Citizen eliminated — impostor survives
+            // Award impostor survival bonus
+            var newRoundScores = Object.assign({}, gs.roundScores || {});
+            impostorIds.forEach(function(impId) {
+                if (alivePlayers.indexOf(impId) !== -1) {
+                    newRoundScores[impId] = (newRoundScores[impId] || 0) + 200;
+                }
+            });
+            PdeRoomManager.updateGameState(roomCode, {
+                alivePlayers: newAlive,
+                roundScores: newRoundScores
+            });
+            // Move to scores
+            goToScores(newRoundScores, newAlive);
+        }
+    };
+
+    var goToScores = function(roundScores, currentAlive) {
+        var rs = roundScores || gs.roundScores || {};
+        // Calculate citizen correct votes
+        var votesData = gs.votes || {};
+        Object.keys(votesData).forEach(function(voterId) {
+            var votedFor = votesData[voterId];
+            if (impostorIds.indexOf(votedFor) !== -1) {
+                // Voted correctly for an impostor
+                rs[voterId] = (rs[voterId] || 0) + 100;
+            }
+        });
+
+        // If impostor was eliminated and didn't guess correctly — citizens bonus
+        if (gs.eliminatedWasImpostor && !gs.impostorGuessCorrect) {
+            var alive = currentAlive || alivePlayers;
+            alive.forEach(function(pid) {
+                if (impostorIds.indexOf(pid) === -1) {
+                    rs[pid] = (rs[pid] || 0) + 50;
+                }
+            });
+        }
+
+        // Update total scores
+        var newTotal = Object.assign({}, totalScores);
+        Object.keys(rs).forEach(function(pid) {
+            newTotal[pid] = (newTotal[pid] || 0) + (rs[pid] || 0);
+        });
+
+        PdeRoomManager.updateGameState(roomCode, {
+            phase: 'scores',
+            roundScores: rs,
+            totalScores: newTotal
+        });
+    };
+
+    var handleImpostorGuessResult = function() {
+        // Check if impostor guessed correctly
+        var eliminatedId = gs.eliminatedId;
+        if (!eliminatedId) return;
+
+        var playerData = players[eliminatedId]?.data;
+        var guess = playerData?.guess;
+        if (!guess) return;
+
+        var normalizedGuess = normalizeText(guess);
+        var word = currentWord;
+        var correct = normalizedGuess === normalizeText(word.val) ||
+                      normalizedGuess === normalizeText(word.es) ||
+                      normalizedGuess === normalizeText(word.en);
+
+        var newRoundScores = Object.assign({}, gs.roundScores || {});
+        if (correct) {
+            newRoundScores[eliminatedId] = (newRoundScores[eliminatedId] || 0) + 150;
+            setShowConfetti(true);
+            setTimeout(function() { setShowConfetti(false); }, 3000);
+        }
+
+        PdeRoomManager.updateGameState(roomCode, {
+            impostorGuess: guess,
+            impostorGuessCorrect: correct,
+            roundScores: newRoundScores
+        });
+
+        // Wait a moment then go to scores
+        setTimeout(function() {
+            goToScores(newRoundScores, alivePlayers);
+        }, 3000);
+    };
+
+    // Watch for impostor guess submission
+    useEffect(function() {
+        if (phase !== 'guess') return;
+        var eliminatedId = gs.eliminatedId;
+        if (!eliminatedId) return;
+        var guess = players[eliminatedId]?.data?.guess;
+        if (guess && gs.impostorGuess === null) {
+            handleImpostorGuessResult();
+        }
+    }, [players, phase]);
+
+    var startNextRound = function() {
+        var nextRound = round + 1;
+        if (nextRound > totalRounds) {
+            PdeRoomManager.updateGameState(roomCode, { phase: 'finished' });
+            setShowConfetti(true);
+            PdeGameSounds.play('win');
+            return;
+        }
+
+        // Pick new word
+        var availableWords = INSIDER_WORDS;
+        if (gs.category && gs.category !== 'all') {
+            availableWords = INSIDER_WORDS.filter(function(w) { return w.cat === gs.category; });
+        }
+        if (availableWords.length === 0) availableWords = INSIDER_WORDS;
+
+        var usedIndexes = gs.usedWordIndexes || [];
+        var unused = [];
+        availableWords.forEach(function(w, i) {
+            var globalIndex = INSIDER_WORDS.indexOf(w);
+            if (usedIndexes.indexOf(globalIndex) === -1) {
+                unused.push({ word: w, index: globalIndex });
+            }
+        });
+        if (unused.length === 0) {
+            // All words used, reset
+            unused = availableWords.map(function(w, i) {
+                return { word: w, index: INSIDER_WORDS.indexOf(w) };
+            });
+        }
+
+        var pick = unused[Math.floor(Math.random() * unused.length)];
+        var word = pick.word;
+        var newUsed = usedIndexes.concat([pick.index]);
+
+        // All players alive again for new round
+        var allPlayerIds = Object.keys(players).filter(function(id) {
+            return players[id].connected !== false;
+        });
+
+        // New shuffle
+        var shuffled = allPlayerIds.slice().sort(function() { return Math.random() - 0.5; });
+
+        // New impostors
+        var numImp = Math.min(gs.numImpostors || 1, Math.floor(shuffled.length / 3));
+        if (numImp < 1) numImp = 1;
+        var newImpostorIds = shuffled.slice(0, numImp);
+
+        // Assign words/roles to each player
+        var promises = [];
+        allPlayerIds.forEach(function(pid) {
+            var isImpostor = newImpostorIds.indexOf(pid) !== -1;
+            var playerData = {
+                word: isImpostor ? null : (word[idioma] || word.val),
+                role: isImpostor ? 'impostor' : 'citizen',
+                vote: null,
+                alive: true,
+                guess: null
+            };
+            promises.push(
+                PdeFirebase.ref('rooms/' + roomCode + '/players/' + pid + '/data').set(playerData)
+            );
+        });
+
+        Promise.all(promises).then(function() {
+            PdeRoomManager.updateGameState(roomCode, {
+                round: nextRound,
+                phase: 'show_word',
+                currentWordIndex: pick.index,
+                currentWord: { val: word.val, es: word.es, en: word.en },
+                usedWordIndexes: newUsed,
+                playerOrder: shuffled,
+                impostorIds: newImpostorIds,
+                currentSpeaker: 0,
+                eliminatedId: null,
+                eliminatedWasImpostor: false,
+                impostorGuess: null,
+                impostorGuessCorrect: false,
+                roundScores: {},
+                alivePlayers: allPlayerIds,
+                votes: {}
+            });
+        });
+    };
+
+    // ─── RENDER ───
+
+    // SHOW_WORD phase
+    if (phase === 'show_word') {
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <PdeConfetti show={false} />
+                <div className="max-w-2xl w-full text-center space-y-8">
+                    <div className="text-gray-400 font-bold">{t('round_x_of_y').replace('{x}', round).replace('{y}', totalRounds)}</div>
+                    <div className="text-8xl" style={{animation: 'pulse-impostor 2s ease-in-out infinite'}}>🤫</div>
+                    <h1 className="text-4xl md:text-5xl font-black text-white">{t('memorize_word')}</h1>
+                    <p className="text-xl text-amber-400">Mireu els vostres mòbils!</p>
+                    <PdeGameTimer key={'show_' + round} seconds={10} color="#f59e0b" size={120}
+                        onComplete={advanceToDiscuss} />
+                    <div className="bg-white/5 rounded-2xl p-4">
+                        <p className="text-gray-500 text-sm">{Object.keys(players).filter(function(id) { return players[id].connected !== false; }).length} jugadors | {gs.numImpostors || 1} impostor(s)</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // DISCUSS phase
+    if (phase === 'discuss') {
+        var speakerPid = aliveOrder[currentSpeaker];
+        var speakerName = players[speakerPid]?.name || '???';
+        var isImpostorSpeaking = impostorIds.indexOf(speakerPid) !== -1;
+
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <div className="max-w-3xl w-full space-y-8">
+                    <div className="text-center text-gray-400 font-bold">
+                        {t('round_x_of_y').replace('{x}', round).replace('{y}', totalRounds)} — {t('discussion_phase')}
+                    </div>
+
+                    <div className="text-center space-y-4">
+                        <p className="text-amber-400 font-bold text-lg">{t('current_speaker')}</p>
+                        <div className="bg-gradient-to-r from-amber-500/20 to-yellow-500/20 rounded-3xl p-8 border border-amber-500/30"
+                             style={{animation: 'slide-up 0.5s ease-out'}}>
+                            <div className="text-6xl mb-4">🎤</div>
+                            <h2 className="text-5xl md:text-6xl font-black text-white">{speakerName}</h2>
+                            <p className="text-amber-300 mt-3 text-lg">{t('describe_one_phrase')}</p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center justify-center gap-6">
+                        <PdeGameTimer key={'discuss_' + timerKey + '_' + currentSpeaker} seconds={30} color="#f59e0b" size={100}
+                            onComplete={nextSpeaker} />
+                        <button onClick={nextSpeaker}
+                            className="py-4 px-8 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-600 text-white font-black text-xl btn-insider shadow-lg">
+                            {t('next_speaker')} ➡️
+                        </button>
+                    </div>
+
+                    {/* Speaker order display */}
+                    <div className="bg-white/5 rounded-2xl p-4">
+                        <div className="flex flex-wrap justify-center gap-2">
+                            {aliveOrder.map(function(pid, i) {
+                                var isCurrent = i === currentSpeaker;
+                                var isDone = i < currentSpeaker;
+                                return (
+                                    <div key={pid} className={'px-3 py-2 rounded-xl text-sm font-bold transition-all ' +
+                                        (isCurrent ? 'bg-amber-500 text-white scale-110 shadow-lg' :
+                                         isDone ? 'bg-green-500/20 text-green-400 line-through' :
+                                         'bg-white/10 text-gray-400')}>
+                                        {isDone && '✓ '}{players[pid]?.name || pid}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // VOTE phase
+    if (phase === 'vote') {
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <div className="max-w-2xl w-full text-center space-y-8">
+                    <div className="text-gray-400 font-bold">{t('round_x_of_y').replace('{x}', round).replace('{y}', totalRounds)}</div>
+                    <div className="text-7xl" style={{animation: 'pulse-impostor 1.5s ease-in-out infinite'}}>🗳️</div>
+                    <h1 className="text-4xl font-black text-white">{t('voting_progress')}</h1>
+                    <div className="bg-white/10 rounded-2xl p-6">
+                        <p className="text-3xl font-black text-amber-400">{voteCount} / {expectedVotes}</p>
+                        <p className="text-gray-400 mt-2">{t('votes_cast')}</p>
+                    </div>
+                    <div className="flex flex-wrap justify-center gap-2">
+                        {alivePlayers.map(function(pid) {
+                            var hasVoted = votes[pid] !== undefined;
+                            return (
+                                <div key={pid} className={'px-4 py-2 rounded-xl font-bold text-sm ' +
+                                    (hasVoted ? 'bg-green-500/20 text-green-400' : 'bg-white/10 text-gray-500')}>
+                                    {hasVoted ? '✓' : '⏳'} {players[pid]?.name || pid}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // REVEAL phase
+    if (phase === 'reveal') {
+        var elimId = gs.eliminatedId;
+        var elimName = players[elimId]?.name || '???';
+        var wasImpostor = gs.eliminatedWasImpostor;
+
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <div className="max-w-2xl w-full text-center space-y-8">
+                    <div className="text-gray-400 font-bold">{t('round_x_of_y').replace('{x}', round).replace('{y}', totalRounds)}</div>
+                    <h1 className="text-3xl font-black text-white">{t('reveal_title')}</h1>
+
+                    <div className={'rounded-3xl p-8 border-2 ' +
+                        (wasImpostor ? 'bg-red-500/20 border-red-500/50' : 'bg-blue-500/20 border-blue-500/50')}
+                         style={{animation: 'spotlight 0.8s ease-out'}}>
+                        <p className="text-gray-300 font-bold mb-2">{t('eliminated')}</p>
+                        <h2 className="text-5xl font-black text-white mb-4">{elimName}</h2>
+                        <div className="text-6xl mb-4">{wasImpostor ? '🕵️' : '😇'}</div>
+                        <p className={'text-2xl font-black ' + (wasImpostor ? 'text-red-400' : 'text-blue-400')}>
+                            {wasImpostor ? t('was_impostor') : t('was_citizen')}
+                        </p>
+                    </div>
+
+                    <button onClick={advanceFromReveal}
+                        className="py-4 px-8 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-600 text-white font-black text-xl btn-insider shadow-lg">
+                        {t('continue')} ➡️
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    // GUESS phase
+    if (phase === 'guess') {
+        var elimId = gs.eliminatedId;
+        var elimName = players[elimId]?.name || '???';
+        var guessSubmitted = gs.impostorGuess !== null;
+        var guessCorrect = gs.impostorGuessCorrect;
+
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <PdeConfetti show={showConfetti} />
+                <div className="max-w-2xl w-full text-center space-y-8">
+                    <div className="text-gray-400 font-bold">{t('round_x_of_y').replace('{x}', round).replace('{y}', totalRounds)}</div>
+                    <h1 className="text-3xl font-black text-white">{t('guess_phase')}</h1>
+
+                    {!guessSubmitted ? (
+                        <div className="space-y-4">
+                            <div className="text-6xl" style={{animation: 'pulse-impostor 1.5s ease-in-out infinite'}}>🕵️</div>
+                            <p className="text-xl text-amber-400 font-bold">{elimName}</p>
+                            <p className="text-gray-300 text-lg">{t('impostor_guessing')}</p>
+                            <PdeGameTimer key={'guess_' + round} seconds={30} color="#ef4444" size={100}
+                                onComplete={function() {
+                                    // Time's up — impostor didn't guess
+                                    PdeRoomManager.updateGameState(roomCode, {
+                                        impostorGuess: '',
+                                        impostorGuessCorrect: false
+                                    });
+                                    setTimeout(function() { goToScores(gs.roundScores, alivePlayers); }, 2000);
+                                }} />
+                        </div>
+                    ) : (
+                        <div className={'rounded-3xl p-8 border-2 ' +
+                            (guessCorrect ? 'bg-green-500/20 border-green-500/50' : 'bg-red-500/20 border-red-500/50')}
+                             style={{animation: 'spotlight 0.8s ease-out'}}>
+                            <div className="text-6xl mb-4">{guessCorrect ? '🎯' : '❌'}</div>
+                            <p className={'text-2xl font-black ' + (guessCorrect ? 'text-green-400' : 'text-red-400')}>
+                                {guessCorrect ? t('guess_correct') : t('guess_wrong')}
+                            </p>
+                            {gs.impostorGuess && (
+                                <p className="text-gray-400 mt-2">Resposta: &quot;{gs.impostorGuess}&quot;</p>
+                            )}
+                            <p className="text-white font-bold mt-4 text-xl">{t('the_word_was')} <span className="text-amber-400">{currentWord[idioma] || currentWord.val}</span></p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // SCORES phase
+    if (phase === 'scores') {
+        var roundScores = gs.roundScores || {};
+        var sorted = Object.keys(totalScores)
+            .filter(function(pid) { return players[pid] && players[pid].connected !== false; })
+            .sort(function(a, b) { return (totalScores[b] || 0) - (totalScores[a] || 0); });
+        var medals = ['🥇', '🥈', '🥉'];
+        var isLastRound = round >= totalRounds;
+
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <div className="max-w-3xl w-full space-y-6">
+                    <div className="text-center">
+                        <h1 className="text-3xl font-black text-white">{t('round_results')}</h1>
+                        <p className="text-amber-400 font-bold mt-1">{t('round_x_of_y').replace('{x}', round).replace('{y}', totalRounds)}</p>
+                        <p className="text-gray-400 mt-2 text-lg">{t('the_word_was')} <span className="text-amber-400 font-bold">{currentWord[idioma] || currentWord.val}</span></p>
+                    </div>
+
+                    {/* Leaderboard */}
+                    <div className="bg-white/10 backdrop-blur rounded-3xl p-6 border border-amber-500/20">
+                        <h3 className="text-xl font-black text-white text-center mb-4">🏆 {t('leaderboard')}</h3>
+                        <div className="space-y-2">
+                            {sorted.map(function(pid, i) {
+                                var roundPts = roundScores[pid] || 0;
+                                var totalPts = totalScores[pid] || 0;
+                                return (
+                                    <div key={pid}
+                                        className={'flex items-center gap-3 px-4 py-3 rounded-xl transition-all ' +
+                                            (i === 0 ? 'bg-amber-500/20 border border-amber-500/30 scale-105' :
+                                             i < 3 ? 'bg-white/5' : 'bg-white/[0.02]')}
+                                        style={{animation: 'slide-up 0.5s ease-out ' + (i * 0.1) + 's both'}}>
+                                        <span className="text-2xl w-10 text-center">{medals[i] || (i + 1)}</span>
+                                        <span className="font-bold flex-1 text-white truncate">{players[pid]?.name || pid}</span>
+                                        {roundPts > 0 && (
+                                            <span className="text-green-400 font-bold text-sm">+{roundPts}</span>
+                                        )}
+                                        <span className="font-black text-lg text-amber-400 ml-2">{totalPts}</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <button onClick={isLastRound ? function() { PdeRoomManager.updateGameState(roomCode, { phase: 'finished' }); setShowConfetti(true); PdeGameSounds.play('win'); } : startNextRound}
+                        className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-600 text-white font-black text-xl btn-insider shadow-lg">
+                        {isLastRound ? '🏆 ' + t('see_final') : '➡️ ' + t('next_round')}
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    // FINISHED phase
+    if (phase === 'finished') {
+        var sorted = Object.keys(totalScores)
+            .filter(function(pid) { return players[pid] && players[pid].connected !== false; })
+            .sort(function(a, b) { return (totalScores[b] || 0) - (totalScores[a] || 0); });
+        var medals = ['🥇', '🥈', '🥉'];
+
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <PdeConfetti show={showConfetti} />
+                <div className="max-w-3xl w-full space-y-8">
+                    <div className="text-center space-y-4">
+                        <div className="text-7xl">🏆</div>
+                        <h1 className="text-4xl md:text-5xl font-black text-white">{t('final_results')}</h1>
+                    </div>
+
+                    {/* Winner spotlight */}
+                    {sorted.length > 0 && (
+                        <div className="bg-gradient-to-r from-amber-500/20 to-yellow-500/20 rounded-3xl p-8 border border-amber-500/30 text-center"
+                             style={{animation: 'spotlight 1s ease-out'}}>
+                            <div className="text-6xl mb-3">🥇</div>
+                            <h2 className="text-4xl font-black text-white">{players[sorted[0]]?.name}</h2>
+                            <p className="text-amber-400 text-2xl font-bold mt-2">{totalScores[sorted[0]] || 0} {t('points')}</p>
+                        </div>
+                    )}
+
+                    {/* Full ranking */}
+                    <div className="bg-white/10 backdrop-blur rounded-3xl p-6 border border-amber-500/20">
+                        <h3 className="text-xl font-black text-white text-center mb-4">{t('final_ranking')}</h3>
+                        <div className="space-y-2">
+                            {sorted.map(function(pid, i) {
+                                return (
+                                    <div key={pid}
+                                        className={'flex items-center gap-3 px-4 py-3 rounded-xl ' +
+                                            (i === 0 ? 'bg-amber-500/20 border border-amber-500/30' :
+                                             i < 3 ? 'bg-white/5' : 'bg-white/[0.02]')}
+                                        style={{animation: 'slide-up 0.5s ease-out ' + (i * 0.1) + 's both'}}>
+                                        <span className="text-2xl w-10 text-center">{medals[i] || (i + 1)}</span>
+                                        <span className="font-bold flex-1 text-white truncate">{players[pid]?.name || pid}</span>
+                                        <span className="font-black text-lg text-amber-400">{totalScores[pid] || 0}</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <a href="./"
+                        className="block w-full py-4 rounded-2xl bg-white/10 text-white font-black text-xl text-center btn-insider hover:bg-white/20">
+                        🏠 {t('back_pde')}
+                    </a>
+                </div>
+            </div>
+        );
+    }
+
+    return null;
+}
+
+
+// ===============================================================
+// PLAYER VIEW (on student's phone)
+// ===============================================================
+function InsiderPlayer({ roomCode, playerId, players, gameState, idioma }) {
+    var t = function(key) { return INSIDER_TRANSLATIONS[key]?.[idioma] || INSIDER_TRANSLATIONS[key]?.val || key; };
+    const [voted, setVoted] = useState(false);
+    const [guessText, setGuessText] = useState('');
+    const [guessSent, setGuessSent] = useState(false);
+
+    var gs = gameState || {};
+    var phase = gs.phase || 'show_word';
+    var round = gs.round || 1;
+    var totalRounds = gs.totalRounds || 5;
+    var playerOrder = gs.playerOrder || [];
+    var currentSpeaker = gs.currentSpeaker || 0;
+    var alivePlayers = gs.alivePlayers || [];
+    var impostorIds = gs.impostorIds || [];
+    var totalScores = gs.totalScores || {};
+
+    var myData = players[playerId]?.data || {};
+    var myRole = myData.role || 'citizen';
+    var myWord = myData.word;
+    var isAlive = alivePlayers.indexOf(playerId) !== -1;
+    var isImpostor = myRole === 'impostor';
+
+    var aliveOrder = playerOrder.filter(function(pid) {
+        return alivePlayers.indexOf(pid) !== -1;
+    });
+
+    // Reset vote state on new round or phase change
+    useEffect(function() {
+        if (phase === 'vote') {
+            setVoted(false);
+        }
+    }, [round, phase]);
+
+    // Reset guess state on new round
+    useEffect(function() {
+        setGuessSent(false);
+        setGuessText('');
+    }, [round]);
+
+    // SHOW_WORD phase
+    if (phase === 'show_word') {
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <div className="max-w-sm w-full text-center space-y-6">
+                    <div className="text-gray-500 text-sm font-bold">{t('round_x_of_y').replace('{x}', round).replace('{y}', totalRounds)}</div>
+
+                    {isImpostor ? (
+                        <div className="impostor-bg rounded-3xl p-8 border-2 border-red-500/50 bg-red-500/10"
+                             style={{animation: 'spotlight 0.8s ease-out'}}>
+                            <div className="text-7xl mb-4">🕵️</div>
+                            <h2 className="text-3xl font-black text-red-400">{t('you_are_impostor')}</h2>
+                            <p className="text-gray-300 mt-3 text-lg">{t('impostor_mission')}</p>
+                        </div>
+                    ) : (
+                        <div className="rounded-3xl p-8 border-2 border-amber-500/50 bg-amber-500/10"
+                             style={{animation: 'spotlight 0.8s ease-out'}}>
+                            <p className="text-amber-400 font-bold text-sm mb-2">{t('your_word')}</p>
+                            <h2 className="text-4xl font-black text-white mb-4">{myWord}</h2>
+                            <div className="text-5xl mb-3">🤫</div>
+                            <p className="text-gray-400 text-sm">{t('you_are_citizen')}</p>
+                        </div>
+                    )}
+
+                    <p className="text-gray-500 text-sm">{t('memorize_word')}</p>
+                </div>
+            </div>
+        );
+    }
+
+    // DISCUSS phase
+    if (phase === 'discuss') {
+        var speakerPid = aliveOrder[currentSpeaker];
+        var isMyTurn = speakerPid === playerId;
+
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <div className="max-w-sm w-full text-center space-y-6">
+                    <div className="text-gray-500 text-sm font-bold">{t('discussion_phase')}</div>
+
+                    {!isAlive ? (
+                        <div className="rounded-3xl p-8 bg-white/5 border border-gray-700">
+                            <div className="text-5xl mb-4">👻</div>
+                            <p className="text-gray-400">{t('you_eliminated')}</p>
+                            <p className="text-gray-500 text-sm mt-2">{t('watch_mode')}</p>
+                        </div>
+                    ) : isMyTurn ? (
+                        <div className="rounded-3xl p-8 border-2 border-amber-500 bg-amber-500/20"
+                             style={{animation: 'pulse-impostor 1.5s ease-in-out infinite'}}>
+                            <div className="text-6xl mb-4">🎤</div>
+                            <h2 className="text-3xl font-black text-amber-400">{t('your_turn_speak')}</h2>
+                            <p className="text-white mt-3 text-lg">{t('describe_one_phrase')}</p>
+                            {isImpostor && (
+                                <p className="text-red-400/60 text-xs mt-4">🕵️ Recorda: no coneixes la paraula!</p>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="rounded-3xl p-8 bg-white/5 border border-gray-700">
+                            <div className="text-4xl mb-3">👂</div>
+                            <p className="text-gray-300 font-bold">{t('listen_wait')}</p>
+                            <div className="mt-4 bg-white/5 rounded-xl p-3">
+                                <p className="text-amber-400 text-sm font-bold">{t('speaking_now')}:</p>
+                                <p className="text-white font-black text-lg">{players[speakerPid]?.name || '???'}</p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // VOTE phase
+    if (phase === 'vote') {
+        if (!isAlive) {
+            return (
+                <div className="min-h-screen flex items-center justify-center p-4">
+                    <div className="max-w-sm w-full text-center space-y-6">
+                        <div className="text-5xl">👻</div>
+                        <p className="text-gray-400">{t('you_eliminated')}</p>
+                        <p className="text-gray-500 text-sm">{t('watch_mode')}</p>
+                    </div>
+                </div>
+            );
+        }
+
+        if (voted) {
+            return (
+                <div className="min-h-screen flex items-center justify-center p-4">
+                    <div className="max-w-sm w-full text-center space-y-6">
+                        <div className="text-5xl">✅</div>
+                        <h2 className="text-2xl font-black text-green-400">{t('vote_sent')}</h2>
+                        <p className="text-gray-400">{t('waiting_votes')}</p>
+                    </div>
+                </div>
+            );
+        }
+
+        var handleVote = function(targetPid) {
+            setVoted(true);
+            PdeGameSounds.play('click');
+            // Store vote in gameState
+            PdeFirebase.ref('rooms/' + roomCode + '/gameState/votes/' + playerId).set(targetPid);
+        };
+
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <div className="max-w-sm w-full space-y-6">
+                    <div className="text-center">
+                        <div className="text-5xl mb-3">🗳️</div>
+                        <h2 className="text-2xl font-black text-white">{t('vote_impostor')}</h2>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                        {alivePlayers.filter(function(pid) { return pid !== playerId; }).map(function(pid) {
+                            return (
+                                <button key={pid} onClick={function() { handleVote(pid); }}
+                                    className="py-4 px-3 rounded-2xl bg-white/10 border border-white/20 text-white font-bold text-lg btn-insider hover:bg-red-500/30 hover:border-red-500/50 transition-all">
+                                    {players[pid]?.name || pid}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // REVEAL phase
+    if (phase === 'reveal') {
+        var elimId = gs.eliminatedId;
+        var elimName = players[elimId]?.name || '???';
+        var wasImpostor = gs.eliminatedWasImpostor;
+        var wasMe = elimId === playerId;
+
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <div className="max-w-sm w-full text-center space-y-6">
+                    <div className="text-6xl">{wasImpostor ? '🕵️' : '😇'}</div>
+                    <h2 className="text-2xl font-black text-white">{elimName}</h2>
+                    <p className={'text-xl font-black ' + (wasImpostor ? 'text-red-400' : 'text-blue-400')}>
+                        {wasImpostor ? t('was_impostor') : t('was_citizen')}
+                    </p>
+                    {wasMe && (
+                        <div className="bg-red-500/20 rounded-xl p-4 border border-red-500/30">
+                            <p className="text-red-300 font-bold">{t('you_eliminated')}</p>
+                        </div>
+                    )}
+                    <p className="text-gray-500 text-sm">{t('look_screen')}</p>
+                </div>
+            </div>
+        );
+    }
+
+    // GUESS phase
+    if (phase === 'guess') {
+        var elimId = gs.eliminatedId;
+        var isEliminatedImpostor = elimId === playerId && isImpostor;
+
+        if (isEliminatedImpostor && !guessSent) {
+            var submitGuess = function() {
+                if (!guessText.trim()) return;
+                setGuessSent(true);
+                PdeGameSounds.play('click');
+                PdeFirebase.ref('rooms/' + roomCode + '/players/' + playerId + '/data/guess').set(guessText.trim());
+            };
+
+            return (
+                <div className="min-h-screen flex items-center justify-center p-4">
+                    <div className="max-w-sm w-full space-y-6">
+                        <div className="text-center">
+                            <div className="text-5xl mb-3">🎯</div>
+                            <h2 className="text-2xl font-black text-white">{t('guess_the_word')}</h2>
+                            <p className="text-gray-400 mt-2">{t('guess_phase')}</p>
+                        </div>
+                        <input type="text" value={guessText}
+                            onChange={function(e) { setGuessText(e.target.value); }}
+                            onKeyDown={function(e) { if (e.key === 'Enter') submitGuess(); }}
+                            placeholder={t('type_guess')}
+                            className="w-full px-5 py-4 text-xl rounded-2xl bg-white/10 border-2 border-amber-500/50 text-white text-center font-bold focus:outline-none focus:border-amber-500"
+                            autoFocus />
+                        <button onClick={submitGuess} disabled={!guessText.trim()}
+                            className={'w-full py-4 rounded-2xl font-black text-xl btn-insider ' +
+                                (guessText.trim() ? 'bg-gradient-to-r from-amber-500 to-yellow-600 text-white shadow-lg' : 'bg-white/10 text-gray-500 cursor-not-allowed')}>
+                            {t('submit_guess')}
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        // Others wait or impostor already submitted
+        var guessResult = gs.impostorGuess !== null;
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <div className="max-w-sm w-full text-center space-y-6">
+                    {guessResult ? (
+                        <div>
+                            <div className="text-6xl mb-4">{gs.impostorGuessCorrect ? '🎯' : '❌'}</div>
+                            <p className={'text-xl font-black ' + (gs.impostorGuessCorrect ? 'text-green-400' : 'text-red-400')}>
+                                {gs.impostorGuessCorrect ? t('guess_correct') : t('guess_wrong')}
+                            </p>
+                        </div>
+                    ) : (
+                        <div>
+                            <div className="text-5xl" style={{animation: 'pulse-impostor 1.5s ease-in-out infinite'}}>🕵️</div>
+                            <p className="text-gray-300 mt-4">{t('impostor_guessing')}</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // SCORES phase
+    if (phase === 'scores') {
+        var roundScores = gs.roundScores || {};
+        var myRoundPts = roundScores[playerId] || 0;
+        var myTotalPts = totalScores[playerId] || 0;
+        var currentWord = gs.currentWord || {};
+
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <div className="max-w-sm w-full text-center space-y-6">
+                    <div className="text-5xl">📊</div>
+                    <h2 className="text-2xl font-black text-white">{t('round_results')}</h2>
+                    <p className="text-amber-400">{t('the_word_was')} <span className="font-black">{currentWord[idioma] || currentWord.val}</span></p>
+
+                    <div className="bg-white/10 rounded-2xl p-6 border border-amber-500/20">
+                        {myRoundPts > 0 ? (
+                            <div>
+                                <p className="text-green-400 text-3xl font-black">+{myRoundPts}</p>
+                                <p className="text-gray-400 text-sm">{t('points')}</p>
+                            </div>
+                        ) : (
+                            <p className="text-gray-500">0 {t('points')}</p>
+                        )}
+                        <div className="mt-4 pt-4 border-t border-white/10">
+                            <p className="text-amber-400 text-2xl font-black">{myTotalPts}</p>
+                            <p className="text-gray-500 text-sm">Total</p>
+                        </div>
+                    </div>
+
+                    <p className="text-gray-500 text-sm">{t('look_screen')}</p>
+                </div>
+            </div>
+        );
+    }
+
+    // FINISHED phase
+    if (phase === 'finished') {
+        var myTotalPts = totalScores[playerId] || 0;
+
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <div className="max-w-sm w-full text-center space-y-6">
+                    <div className="text-6xl">🏆</div>
+                    <h2 className="text-2xl font-black text-white">{t('game_over')}</h2>
+                    <div className="bg-amber-500/20 rounded-2xl p-6 border border-amber-500/30">
+                        <p className="text-amber-400 text-3xl font-black">{myTotalPts}</p>
+                        <p className="text-gray-400">{t('points')}</p>
+                    </div>
+                    <p className="text-gray-500 text-sm">{t('look_screen')}</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Default fallback
+    return (
+        <div className="min-h-screen flex items-center justify-center p-4">
+            <div className="text-center">
+                <div className="text-5xl animate-bounce">🕵️</div>
+                <p className="text-gray-400 mt-4">{t('waiting_others')}</p>
+            </div>
+        </div>
+    );
+}
+
+
+// ===============================================================
+// RENDER
+// ===============================================================
+ReactDOM.render(<InsiderApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
