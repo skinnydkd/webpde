@@ -441,18 +441,30 @@ function OposicionsApp() {
                     <p className="text-gray-500 mt-1">{t('sup.subtitle')}</p>
                 </div>
 
+                {/* Link to full practice page */}
+                <a href="./oposicions-practica" className="block mb-8 p-6 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-2xl text-white hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg hover:shadow-xl">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h3 className="text-xl font-bold">📝 {t('sup.title')}</h3>
+                            <p className="text-teal-100 mt-1">{lang === 'es' ? '25 ejercicios interactivos con solución paso a paso' : lang === 'en' ? '25 interactive exercises with step-by-step solutions' : '25 exercicis interactius amb solució pas a pas'}</p>
+                            <p className="text-teal-200 text-sm mt-1">{lang === 'es' ? 'Microeconomía · Macroeconomía · Mat. Financieras · Empresa · Contabilidad' : lang === 'en' ? 'Microeconomics · Macroeconomics · Financial Math · Business · Accounting' : 'Microeconomia · Macroeconomia · Mat. Financeres · Empresa · Comptabilitat'}</p>
+                        </div>
+                        <span className="text-3xl">→</span>
+                    </div>
+                </a>
+
                 {/* Category cards */}
                 <div className="grid md:grid-cols-2 gap-4 mb-8">
                     {supositsCategories.map(function(cat) {
                         return (
-                            <div key={cat.id} className={'rounded-2xl border p-6 ' + cat.bgLight + ' ' + cat.border + ' relative overflow-hidden'}>
+                            <a key={cat.id} href={'./oposicions-practica#' + cat.id} className={'rounded-2xl border p-6 ' + cat.bgLight + ' ' + cat.border + ' relative overflow-hidden block hover:shadow-md transition-shadow'}>
                                 <div className="flex items-start gap-4">
                                     <span className="text-4xl">{cat.icon}</span>
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2">
                                             <h3 className="text-lg font-bold text-gray-800">{t('sup.' + cat.id)}</h3>
-                                            <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 text-gray-500 font-semibold">
-                                                {t('sup.properament')}
+                                            <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-semibold">
+                                                5 {lang === 'es' ? 'ejercicios' : lang === 'en' ? 'exercises' : 'exercicis'}
                                             </span>
                                         </div>
                                         <p className="text-sm text-gray-600 mt-2">{t('sup.' + cat.id + '.desc')}</p>
@@ -460,7 +472,7 @@ function OposicionsApp() {
                                 </div>
                                 {/* Decorative gradient bar */}
                                 <div className={'absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ' + cat.gradient}></div>
-                            </div>
+                            </a>
                         );
                     })}
                 </div>

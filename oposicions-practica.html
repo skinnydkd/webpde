@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supòsits Pràctics — Oposicions | PDE</title>
+    <meta name="description" content="25 exercicis pràctics resolts per a oposicions d'Economia: microeconomia, macroeconomia, matemàtiques financeres, empresa i comptabilitat.">
+    <meta property="og:title" content="Supòsits Pràctics — Oposicions | PDE">
+    <meta property="og:description" content="25 exercicis pràctics resolts per a oposicions d'Economia: microeconomia, macroeconomia, matemàtiques financeres, empresa i comptabilitat.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/oposicions-practica">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://profedeeconomia.es/oposicions-practica">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #0d9488 #f0fdfa; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f0fdfa; }
+        ::-webkit-scrollbar-thumb { background-color: #0d9488; border-radius: 3px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-teal-50 via-white to-cyan-50 min-h-screen">
+    <div id="root"></div>
+    <script type="text/babel">
+const { useState, useMemo, useEffect } = React;
+
+function PracticaApp() {
+    const [section, setSection] = useState('inicio');
+    const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+
+    usePdeDeepLink(section, setSection);
+
+    // ════════════════════════════════════════════════════════════════
+    // TRANSLATIONS
+    // ════════════════════════════════════════════════════════════════
+    var pageTranslations = {
+        // Nav / App name
+        'nav.oposicions-practica': { val: 'Supòsits Pràctics', es: 'Supuestos Prácticos', en: 'Practice Exercises' },
+        'footer.appname': { val: "Supòsits Pràctics — Oposicions d'Economia", es: "Supuestos Prácticos — Oposiciones de Economía", en: 'Practice Exercises — Economics Exams' },
+
+        // Inicio
+        'inicio.title': { val: 'Supòsits Pràctics', es: 'Supuestos Prácticos', en: 'Practice Exercises' },
+        'inicio.subtitle': { val: "25 exercicis resolts pas a pas per a preparar la prova pràctica de les oposicions d'Economia", es: '25 ejercicios resueltos paso a paso para preparar la prueba práctica de las oposiciones de Economía', en: '25 step-by-step solved exercises for the Economics teaching exam practical test' },
+        'inicio.backOpo': { val: '← Tornar a Oposicions', es: '← Volver a Oposiciones', en: '← Back to Exams' },
+        'inicio.exercicis': { val: 'exercicis', es: 'ejercicios', en: 'exercises' },
+
+        // Section labels
+        'sec.inicio': { val: 'Inici', es: 'Inicio', en: 'Home' },
+        'sec.micro': { val: 'Microeconomia', es: 'Microeconomía', en: 'Microeconomics' },
+        'sec.macro': { val: 'Macroeconomia', es: 'Macroeconomía', en: 'Macroeconomics' },
+        'sec.finances': { val: 'Mat. Financeres', es: 'Mat. Financieras', en: 'Financial Maths' },
+        'sec.empresa': { val: 'Empresa', es: 'Empresa', en: 'Business' },
+        'sec.comptabilitat': { val: 'Comptabilitat', es: 'Contabilidad', en: 'Accounting' },
+
+        // Bloc titles
+        'bloc.micro': { val: 'Microeconomia', es: 'Microeconomía', en: 'Microeconomics' },
+        'bloc.macro': { val: 'Macroeconomia', es: 'Macroeconomía', en: 'Macroeconomics' },
+        'bloc.finances': { val: 'Matemàtiques Financeres', es: 'Matemáticas Financieras', en: 'Financial Mathematics' },
+        'bloc.empresa': { val: 'Empresa', es: 'Empresa', en: 'Business' },
+        'bloc.comptabilitat': { val: 'Comptabilitat', es: 'Contabilidad', en: 'Accounting' },
+
+        // Bloc descriptions
+        'bloc.micro.desc': { val: "Oferta i demanda, elasticitat, monopoli, utilitat del consumidor i costos de l'empresa", es: 'Oferta y demanda, elasticidad, monopolio, utilidad del consumidor y costes de la empresa', en: 'Supply and demand, elasticity, monopoly, consumer utility and firm costs' },
+        'bloc.macro.desc': { val: 'Renda d\'equilibri, multiplicadors, PIB, model IS-LM i inflació', es: 'Renta de equilibrio, multiplicadores, PIB, modelo IS-LM e inflación', en: 'Equilibrium income, multipliers, GDP, IS-LM model and inflation' },
+        'bloc.finances.desc': { val: "Préstecs, capitalització, rendes, anàlisi d'inversions i obligacions", es: 'Préstamos, capitalización, rentas, análisis de inversiones y obligaciones', en: 'Loans, compounding, annuities, investment analysis and bonds' },
+        'bloc.empresa.desc': { val: 'Punt mort, balanç, ràtios, selecció d\'inversions i productivitat', es: 'Punto muerto, balance, ratios, selección de inversiones y productividad', en: 'Break-even, balance sheet, ratios, investment selection and productivity' },
+        'bloc.comptabilitat.desc': { val: 'Assentaments comptables, balanç, compte de resultats i palanquejament', es: 'Asientos contables, balance, cuenta de resultados y apalancamiento', en: 'Accounting entries, balance sheet, income statement and leverage' },
+
+        // Exercise UI
+        'ex.mostra': { val: 'Mostra la solució', es: 'Mostrar la solución', en: 'Show solution' },
+        'ex.amaga': { val: 'Amaga la solució', es: 'Ocultar la solución', en: 'Hide solution' },
+        'ex.dificultat': { val: 'Dificultat', es: 'Dificultad', en: 'Difficulty' },
+        'ex.tema': { val: 'Tema relacionat', es: 'Tema relacionado', en: 'Related topic' },
+        'ex.pas': { val: 'Pas', es: 'Paso', en: 'Step' },
+        'ex.solucio': { val: 'Solució', es: 'Solución', en: 'Solution' },
+        'ex.enunciat': { val: 'Enunciat', es: 'Enunciado', en: 'Statement' },
+        'ex.resultat': { val: 'Resultat', es: 'Resultado', en: 'Result' },
+        'ex.interpretacio': { val: 'Interpretació', es: 'Interpretación', en: 'Interpretation' },
+        'ex.conclusio': { val: 'Conclusió', es: 'Conclusión', en: 'Conclusion' },
+
+        // ── Exercise titles ──
+        'ex1.title': { val: 'Equilibri de mercat i impostos', es: 'Equilibrio de mercado e impuestos', en: 'Market equilibrium and taxes' },
+        'ex2.title': { val: 'Elecció del consumidor i efectes Slutsky', es: 'Elección del consumidor y efectos Slutsky', en: 'Consumer choice and Slutsky effects' },
+        'ex3.title': { val: 'Monopoli vs. competència perfecta', es: 'Monopolio vs. competencia perfecta', en: 'Monopoly vs. perfect competition' },
+        'ex4.title': { val: 'Elasticitat-preu de la demanda', es: 'Elasticidad-precio de la demanda', en: 'Price elasticity of demand' },
+        'ex5.title': { val: 'Costos i oferta a curt termini', es: 'Costes y oferta a corto plazo', en: 'Costs and short-run supply' },
+        'ex6.title': { val: 'Renda d\'equilibri i multiplicador', es: 'Renta de equilibrio y multiplicador', en: 'Equilibrium income and multiplier' },
+        'ex7.title': { val: 'Model amb sector públic', es: 'Modelo con sector público', en: 'Model with public sector' },
+        'ex8.title': { val: 'Càlcul del PIB pels tres mètodes', es: 'Cálculo del PIB por los tres métodos', en: 'GDP calculation by three methods' },
+        'ex9.title': { val: 'Model IS-LM', es: 'Modelo IS-LM', en: 'IS-LM Model' },
+        'ex10.title': { val: 'IPC i inflació', es: 'IPC e inflación', en: 'CPI and inflation' },
+        'ex11.title': { val: 'Préstec sistema francés', es: 'Préstamo sistema francés', en: 'French amortisation loan' },
+        'ex12.title': { val: 'Capitalització composta i TAE', es: 'Capitalización compuesta y TAE', en: 'Compound interest and EAR' },
+        'ex13.title': { val: 'Rendes financeres', es: 'Rentas financieras', en: 'Financial annuities' },
+        'ex14.title': { val: 'Selecció d\'inversions (VAN i Payback)', es: 'Selección de inversiones (VAN y Payback)', en: 'Investment selection (NPV and Payback)' },
+        'ex15.title': { val: 'Valoració d\'obligacions', es: 'Valoración de obligaciones', en: 'Bond valuation' },
+        'ex16.title': { val: 'Punt mort', es: 'Punto muerto', en: 'Break-even point' },
+        'ex17.title': { val: 'Balanç i ràtios financeres', es: 'Balance y ratios financieros', en: 'Balance sheet and financial ratios' },
+        'ex18.title': { val: 'Selecció de maquinària (VAN)', es: 'Selección de maquinaria (VAN)', en: 'Machinery selection (NPV)' },
+        'ex19.title': { val: 'Marge de contribució', es: 'Margen de contribución', en: 'Contribution margin' },
+        'ex20.title': { val: 'Productivitat i rendibilitat', es: 'Productividad y rentabilidad', en: 'Productivity and profitability' },
+        'ex21.title': { val: 'Assentaments comptables amb IVA', es: 'Asientos contables con IVA', en: 'Accounting entries with VAT' },
+        'ex22.title': { val: 'Anàlisi d\'estats financers', es: 'Análisis de estados financieros', en: 'Financial statements analysis' },
+        'ex23.title': { val: 'Palanquejament financer', es: 'Apalancamiento financiero', en: 'Financial leverage' },
+        'ex24.title': { val: 'Elaboració del balanç', es: 'Elaboración del balance', en: 'Balance sheet preparation' },
+        'ex25.title': { val: 'Compte de resultats i marges', es: 'Cuenta de resultados y márgenes', en: 'Income statement and margins' },
+    };
+
+    const t = createTranslator(pageTranslations, idioma);
+    const lang = idioma;
+
+    // ════════════════════════════════════════════════════════════════
+    // REUSABLE COMPONENTS
+    // ════════════════════════════════════════════════════════════════
+    const Card = ({ children, className = "", title, icon }) => (
+        <div className={`bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 hover:shadow-md transition-shadow ${className} animate-fade`}>
+            {title && <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100"><span className="text-2xl">{icon}</span><h3 className="font-bold text-slate-800 text-lg">{title}</h3></div>}
+            {children}
+        </div>
+    );
+
+    const FormulaBox = ({ formula, desc }) => (
+        <div className="my-4 p-5 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-xl border border-teal-100">
+            <p className="text-center font-mono text-lg text-teal-800 font-semibold">{formula}</p>
+            {desc && <p className="text-center text-sm text-teal-600 mt-2">{desc}</p>}
+        </div>
+    );
+
+    const SectionTitle = ({ icon, title, subtitle }) => (
+        <div className="mb-8">
+            <div className="flex items-center gap-3 mb-2"><span className="text-3xl">{icon}</span><h1 className="text-3xl font-black text-slate-800">{title}</h1></div>
+            {subtitle && <p className="text-slate-500 ml-12">{subtitle}</p>}
+        </div>
+    );
+
+    // ── Difficulty Stars ──
+    const DifficultyStars = ({ level }) => {
+        const stars = [];
+        for (let i = 0; i < 3; i++) {
+            stars.push(
+                <span key={i} className={i < level ? 'text-yellow-400' : 'text-gray-300'}>★</span>
+            );
+        }
+        return <span className="text-lg">{stars}</span>;
+    };
+
+    // ── Exercise Component ──
+    const Exercise = ({ num, origin, difficulty, tema, statement, solution }) => {
+        const [showSolution, setShowSolution] = useState(false);
+
+        return (
+            <div className="mb-6 animate-fade">
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden hover:shadow-md transition-shadow">
+                    {/* Header */}
+                    <div className="bg-gradient-to-r from-teal-600 to-cyan-600 px-6 py-4">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <div className="flex items-center gap-3">
+                                <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl text-sm font-black text-teal-700 bg-white/90">
+                                    {num}
+                                </span>
+                                <div>
+                                    <h3 className="font-bold text-white text-base">{t(`ex${num}.title`)}</h3>
+                                    <p className="text-teal-100 text-sm">{origin}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-1.5 bg-white/20 rounded-lg px-3 py-1.5">
+                                    <span className="text-white/80 text-xs font-medium">{t('ex.dificultat')}:</span>
+                                    <DifficultyStars level={difficulty} />
+                                </div>
+                                <div className="bg-white/20 rounded-lg px-3 py-1.5">
+                                    <span className="text-white/80 text-xs font-medium">{t('ex.tema')}: </span>
+                                    <span className="text-white text-xs font-bold">{tema}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Statement */}
+                    <div className="px-6 py-5">
+                        <div className="flex items-center gap-2 mb-3">
+                            <span className="text-lg">📝</span>
+                            <h4 className="font-bold text-slate-700 text-sm uppercase tracking-wide">{t('ex.enunciat')}</h4>
+                        </div>
+                        <div className="text-slate-700 text-sm leading-relaxed space-y-3 pl-1">
+                            {statement}
+                        </div>
+                    </div>
+
+                    {/* Solution Toggle */}
+                    <div className="px-6 pb-5">
+                        <button
+                            onClick={() => setShowSolution(!showSolution)}
+                            className={`w-full py-3 px-5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+                                showSolution
+                                    ? 'bg-teal-100 text-teal-700 hover:bg-teal-200'
+                                    : 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white hover:from-teal-600 hover:to-cyan-600 shadow-lg shadow-teal-500/20'
+                            }`}
+                        >
+                            <span>{showSolution ? '🔽' : '▶️'}</span>
+                            {showSolution ? t('ex.amaga') : t('ex.mostra')}
+                        </button>
+                    </div>
+
+                    {/* Solution */}
+                    {showSolution && (
+                        <div className="px-6 pb-6 border-t border-slate-100 pt-5">
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-lg">✅</span>
+                                <h4 className="font-bold text-teal-700 text-sm uppercase tracking-wide">{t('ex.solucio')}</h4>
+                            </div>
+                            <div className="space-y-4">
+                                {solution}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    };
+
+    // ── Step Component (for solution steps) ──
+    const Step = ({ label, children }) => (
+        <div className="border-l-4 border-teal-300 bg-teal-50/50 p-4 rounded-r-xl">
+            <h5 className="font-bold text-teal-800 mb-2 text-sm">{label}</h5>
+            <div className="text-slate-700 text-sm leading-relaxed space-y-2">{children}</div>
+        </div>
+    );
+
+    // ── Result Box ──
+    const ResultBox = ({ children }) => (
+        <div className="my-3 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl border border-emerald-200">
+            <div className="flex items-start gap-2">
+                <span className="text-lg mt-0.5">🎯</span>
+                <div className="text-sm text-emerald-800 font-semibold space-y-1">{children}</div>
+            </div>
+        </div>
+    );
+
+    // ── Interpretation Box ──
+    const InterpretBox = ({ children }) => (
+        <div className="my-3 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200">
+            <div className="flex items-start gap-2">
+                <span className="text-lg mt-0.5">💡</span>
+                <div className="text-sm text-amber-800 space-y-1">{children}</div>
+            </div>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // BLOC DATA (for Inicio cards)
+    // ════════════════════════════════════════════════════════════════
+    var blocs = [
+        { id: 'micro', emoji: '📊', count: 5, gradient: 'from-teal-500 to-cyan-600' },
+        { id: 'macro', emoji: '🌐', count: 5, gradient: 'from-cyan-500 to-blue-600' },
+        { id: 'finances', emoji: '🏦', count: 5, gradient: 'from-teal-600 to-emerald-600' },
+        { id: 'empresa', emoji: '🏢', count: 5, gradient: 'from-cyan-600 to-teal-600' },
+        { id: 'comptabilitat', emoji: '📒', count: 5, gradient: 'from-emerald-500 to-teal-600' },
+    ];
+
+    // ════════════════════════════════════════════════════════════════
+    // SECTION: INICIO
+    // ════════════════════════════════════════════════════════════════
+    const Inicio = () => (
+        <div className="animate-fade">
+            {/* Back link */}
+            <a href="./oposicions" className="inline-flex items-center gap-2 text-sm text-teal-600 hover:text-teal-800 mb-6 transition-colors">
+                {t('inicio.backOpo')}
+            </a>
+
+            {/* Hero */}
+            <div className="text-center mb-10">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-teal-100 text-teal-700 rounded-full text-sm font-semibold mb-4">
+                    <span>🧮</span> {t('nav.oposicions-practica')}
+                </div>
+                <h1 className="text-4xl font-black text-slate-800 mb-3">{t('inicio.title')}</h1>
+                <p className="text-slate-500 text-lg max-w-2xl mx-auto">{t('inicio.subtitle')}</p>
+            </div>
+
+            {/* Bloc cards grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {blocs.map(bloc => (
+                    <button
+                        key={bloc.id}
+                        onClick={() => { setSection(bloc.id); pdeSetHashSection(bloc.id); pdeScrollToTop(); }}
+                        className="text-left p-6 rounded-2xl border bg-white border-teal-200 hover:shadow-lg hover:border-teal-300 cursor-pointer transition-all group"
+                    >
+                        <div className="flex items-start gap-4">
+                            <span className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl text-2xl text-white bg-gradient-to-br ${bloc.gradient} group-hover:scale-110 transition-transform`}>
+                                {bloc.emoji}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                                <p className="font-bold text-slate-800 text-base mb-1">
+                                    {t(`bloc.${bloc.id}`)}
+                                </p>
+                                <p className="text-slate-500 text-xs leading-relaxed mb-3">
+                                    {t(`bloc.${bloc.id}.desc`)}
+                                </p>
+                                <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-teal-100 text-teal-700">
+                                    {bloc.count} {t('inicio.exercicis')}
+                                </span>
+                            </div>
+                        </div>
+                    </button>
+                ))}
+            </div>
+
+            {/* Stats bar */}
+            <div className="mt-8 p-5 bg-gradient-to-r from-teal-600 to-cyan-600 rounded-2xl text-white">
+                <div className="flex flex-wrap items-center justify-around gap-4 text-center">
+                    <div>
+                        <p className="text-3xl font-black">25</p>
+                        <p className="text-teal-100 text-xs font-medium">{t('inicio.exercicis')}</p>
+                    </div>
+                    <div>
+                        <p className="text-3xl font-black">5</p>
+                        <p className="text-teal-100 text-xs font-medium">{lang === 'es' ? 'Bloques temáticos' : lang === 'en' ? 'Topic blocks' : 'Blocs temàtics'}</p>
+                    </div>
+                    <div>
+                        <p className="text-3xl font-black">10+</p>
+                        <p className="text-teal-100 text-xs font-medium">{lang === 'es' ? 'Comunidades' : lang === 'en' ? 'Regions' : 'Comunitats'}</p>
+                    </div>
+                    <div>
+                        <p className="text-3xl font-black">★★★</p>
+                        <p className="text-teal-100 text-xs font-medium">{lang === 'es' ? '3 niveles' : lang === 'en' ? '3 levels' : '3 nivells'}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // BLOC 1: MICROECONOMIA
+    // ════════════════════════════════════════════════════════════════
+    const BlocMicro = () => (
+        <div className="space-y-6 animate-fade">
+            <SectionTitle icon="📊" title={t('bloc.micro')} subtitle={t('bloc.micro.desc')} />
+
+            {/* Exercise 1 */}
+            <Exercise
+                num={1}
+                origin={lang === 'es' ? 'Andalucía 2023' : lang === 'en' ? 'Andalusia 2023' : 'Andalusia 2023'}
+                difficulty={2}
+                tema={lang === 'es' ? 'Tema 4-5' : 'Tema 4-5'}
+                statement={
+                    <div>
+                        <p>{lang === 'es'
+                            ? 'En un mercado competitivo, la función de demanda es Qd = 1000 − 200P y la función de oferta es Qo = 800P.'
+                            : lang === 'en'
+                            ? 'In a competitive market, the demand function is Qd = 1000 − 200P and the supply function is Qo = 800P.'
+                            : 'En un mercat competitiu, la funció de demanda és Qd = 1000 − 200P i la funció d\'oferta és Qo = 800P.'}</p>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Calcula el precio y la cantidad de equilibrio.' : lang === 'en' ? 'Calculate the equilibrium price and quantity.' : 'Calcula el preu i la quantitat d\'equilibri.'}</li>
+                            <li>{lang === 'es' ? 'Calcula el excedente del consumidor y el excedente del productor.' : lang === 'en' ? 'Calculate the consumer surplus and producer surplus.' : 'Calcula l\'excedent del consumidor i l\'excedent del productor.'}</li>
+                            <li>{lang === 'es' ? 'Si el gobierno establece un impuesto de 0,50€ por unidad, calcula el nuevo equilibrio, el precio que paga el consumidor, el precio que recibe el productor, la recaudación fiscal y la pérdida irrecuperable de eficiencia.' : lang === 'en' ? 'If the government sets a tax of €0.50 per unit, calculate the new equilibrium, the consumer price, the producer price, tax revenue and the deadweight loss.' : 'Si el govern estableix un impost de 0,50€ per unitat, calcula el nou equilibri, el preu que paga el consumidor, el preu que rep el productor, la recaptació fiscal i la pèrdua irrecuperable d\'eficiència.'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Equilibrio de mercado' : lang === 'en' ? 'Market equilibrium' : 'Equilibri de mercat'}`}>
+                            <p>{lang === 'es' ? 'Igualamos oferta y demanda:' : lang === 'en' ? 'We set supply equal to demand:' : 'Igualem oferta i demanda:'}</p>
+                            <FormulaBox formula="Qd = Qo → 1000 − 200P = 800P" />
+                            <FormulaBox formula="1000 = 1000P → P* = 1€" />
+                            <FormulaBox formula="Q* = 800 × 1 = 800 unitats" />
+                            <ResultBox><p>P* = 1€, Q* = 800 {lang === 'es' ? 'unidades' : lang === 'en' ? 'units' : 'unitats'}</p></ResultBox>
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Excedentes' : lang === 'en' ? 'Surpluses' : 'Excedents'}`}>
+                            <p>{lang === 'es' ? 'Precio máximo demanda (Qd=0): P=5€. Precio mínimo oferta (Qo=0): P=0€' : lang === 'en' ? 'Maximum demand price (Qd=0): P=5€. Minimum supply price (Qo=0): P=0€' : 'Preu màxim demanda (Qd=0): P=5€. Preu mínim oferta (Qo=0): P=0€'}</p>
+                            <FormulaBox formula="EC = (5 − 1) × 800 / 2 = 1.600€" desc={lang === 'es' ? 'Excedente del consumidor' : lang === 'en' ? 'Consumer surplus' : 'Excedent del consumidor'} />
+                            <FormulaBox formula="EP = (1 − 0) × 800 / 2 = 400€" desc={lang === 'es' ? 'Excedente del productor' : lang === 'en' ? 'Producer surplus' : 'Excedent del productor'} />
+                            <ResultBox><p>EC = 1.600€ | EP = 400€</p></ResultBox>
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Impuesto unitario de 0,50€' : lang === 'en' ? 'Unit tax of €0.50' : 'Impost unitari de 0,50€'}`}>
+                            <p>{lang === 'es' ? 'Relación: Pc = Pp + 0,50. Sustituimos:' : lang === 'en' ? 'Relation: Pc = Pp + 0.50. We substitute:' : 'Relació: Pc = Pp + 0,50. Substituïm:'}</p>
+                            <FormulaBox formula="1000 − 200(Pp + 0,50) = 800Pp" />
+                            <FormulaBox formula="1000 − 200Pp − 100 = 800Pp → 900 = 1000Pp" />
+                            <FormulaBox formula="Pp = 0,90€ | Pc = 1,40€ | Q = 720" />
+                            <FormulaBox formula={`${lang === 'es' ? 'Recaudación' : lang === 'en' ? 'Tax revenue' : 'Recaptació'} = 0,50 × 720 = 360€`} />
+                            <FormulaBox formula="DWL = (800 − 720) × 0,50 / 2 = 20€" desc={lang === 'es' ? 'Pérdida irrecuperable de eficiencia' : lang === 'en' ? 'Deadweight loss' : 'Pèrdua irrecuperable d\'eficiència'} />
+                            <ResultBox>
+                                <p>Pc = 1,40€ | Pp = 0,90€ | Q = 720</p>
+                                <p>{lang === 'es' ? 'Recaudación' : lang === 'en' ? 'Tax revenue' : 'Recaptació'} = 360€ | DWL = 20€</p>
+                            </ResultBox>
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 2 */}
+            <Exercise
+                num={2}
+                origin={lang === 'es' ? 'Madrid 2021' : lang === 'en' ? 'Madrid 2021' : 'Madrid 2021'}
+                difficulty={2}
+                tema={lang === 'es' ? 'Tema 3' : 'Tema 3'}
+                statement={
+                    <div>
+                        <p>{lang === 'es'
+                            ? 'Un consumidor tiene la función de utilidad U(x,y) = x·y. El precio del bien X es Px=2€, el del bien Y es Py=4€ y la renta del consumidor es M=100€.'
+                            : lang === 'en'
+                            ? 'A consumer has the utility function U(x,y) = x·y. The price of good X is Px=2€, good Y is Py=4€ and consumer income is M=100€.'
+                            : 'Un consumidor té la funció d\'utilitat U(x,y) = x·y. El preu del bé X és Px=2€, el del bé Y és Py=4€ i la renda del consumidor és M=100€.'}</p>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Determina las funciones de demanda de los bienes X e Y.' : lang === 'en' ? 'Determine the demand functions for goods X and Y.' : 'Determina les funcions de demanda dels béns X i Y.'}</li>
+                            <li>{lang === 'es' ? 'Calcula la cesta óptima de consumo.' : lang === 'en' ? 'Calculate the optimal consumption bundle.' : 'Calcula la cistella òptima de consum.'}</li>
+                            <li>{lang === 'es' ? 'Si el precio de X sube a Px=4€, calcula la nueva cesta y descompón el efecto en efecto sustitución y efecto renta (Slutsky).' : lang === 'en' ? 'If the price of X rises to Px=4€, calculate the new bundle and decompose the effect into substitution and income effects (Slutsky).' : 'Si el preu de X puja a Px=4€, calcula la nova cistella i descompon l\'efecte en efecte substitució i efecte renda (Slutsky).'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Funciones de demanda' : lang === 'en' ? 'Demand functions' : 'Funcions de demanda'}`}>
+                            <p>{lang === 'es' ? 'Condición de óptimo: RMS = Px/Py' : lang === 'en' ? 'Optimality condition: MRS = Px/Py' : 'Condició d\'òptim: RMS = Px/Py'}</p>
+                            <FormulaBox formula="RMS = UMgx/UMgy = y/x = Px/Py" />
+                            <p>{lang === 'es' ? 'Para Cobb-Douglas U=xy, las funciones de demanda son:' : lang === 'en' ? 'For Cobb-Douglas U=xy, the demand functions are:' : 'Per a Cobb-Douglas U=xy, les funcions de demanda són:'}</p>
+                            <FormulaBox formula="x* = M / (2·Px) | y* = M / (2·Py)" />
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Cesta óptima' : lang === 'en' ? 'Optimal bundle' : 'Cistella òptima'}`}>
+                            <FormulaBox formula="x* = 100 / (2×2) = 25 | y* = 100 / (2×4) = 12,5" />
+                            <FormulaBox formula="U* = 25 × 12,5 = 312,5" />
+                            <ResultBox><p>(x*, y*) = (25; 12,5) | U* = 312,5</p></ResultBox>
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Efecto Slutsky (Px sube a 4€)' : lang === 'en' ? 'Slutsky effect (Px rises to 4€)' : 'Efecte Slutsky (Px puja a 4€)'}`}>
+                            <p><strong>{lang === 'es' ? 'Nueva cesta:' : lang === 'en' ? 'New bundle:' : 'Nova cistella:'}</strong></p>
+                            <FormulaBox formula="x' = 100 / (2×4) = 12,5 | y' = 100 / (2×4) = 12,5" />
+                            <p><strong>{lang === 'es' ? 'Renta compensada (Slutsky):' : lang === 'en' ? 'Compensated income (Slutsky):' : 'Renda compensada (Slutsky):'}</strong></p>
+                            <FormulaBox formula="M' = Px'·x₀ + Py·y₀ = 4×25 + 4×12,5 = 150€" />
+                            <p><strong>{lang === 'es' ? 'Cesta con renta compensada:' : lang === 'en' ? 'Bundle with compensated income:' : 'Cistella amb renda compensada:'}</strong></p>
+                            <FormulaBox formula="x'' = 150 / (2×4) = 18,75 | y'' = 150 / (2×4) = 18,75" />
+                            <FormulaBox formula={`ES = 18,75 − 25 = −6,25 | ER = 12,5 − 18,75 = −6,25`} desc={lang === 'es' ? 'Efecto sustitución + Efecto renta' : lang === 'en' ? 'Substitution effect + Income effect' : 'Efecte substitució + Efecte renda'} />
+                            <ResultBox>
+                                <p>{lang === 'es' ? 'Efecto total' : lang === 'en' ? 'Total effect' : 'Efecte total'}: Δx = −12,5 = ES(−6,25) + ER(−6,25)</p>
+                            </ResultBox>
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 3 */}
+            <Exercise
+                num={3}
+                origin={lang === 'es' ? 'C. Valenciana' : lang === 'en' ? 'Valencia' : 'C. Valenciana'}
+                difficulty={3}
+                tema={lang === 'es' ? 'Tema 7-8' : 'Tema 7-8'}
+                statement={
+                    <div>
+                        <p>{lang === 'es'
+                            ? 'Una empresa monopolista se enfrenta a la función de demanda P = 100 − 2Q. La función de costes totales es CT = 200 + 20Q.'
+                            : lang === 'en'
+                            ? 'A monopolist faces the demand function P = 100 − 2Q. The total cost function is TC = 200 + 20Q.'
+                            : 'Una empresa monopolista s\'enfronta a la funció de demanda P = 100 − 2Q. La funció de costs totals és CT = 200 + 20Q.'}</p>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Calcula la producción y el precio que maximizan el beneficio del monopolista.' : lang === 'en' ? 'Calculate the output and price that maximise the monopolist\'s profit.' : 'Calcula la producció i el preu que maximitzen el benefici del monopolista.'}</li>
+                            <li>{lang === 'es' ? 'Calcula el beneficio del monopolista.' : lang === 'en' ? 'Calculate the monopolist\'s profit.' : 'Calcula el benefici del monopolista.'}</li>
+                            <li>{lang === 'es' ? 'Compara con el resultado de competencia perfecta: calcula la pérdida irrecuperable de eficiencia del monopolio.' : lang === 'en' ? 'Compare with the perfectly competitive outcome: calculate the deadweight loss of monopoly.' : 'Compara amb el resultat de competència perfecta: calcula la pèrdua irrecuperable d\'eficiència del monopoli.'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Maximización del beneficio' : lang === 'en' ? 'Profit maximisation' : 'Maximització del benefici'}`}>
+                            <FormulaBox formula="IT = P·Q = (100 − 2Q)·Q = 100Q − 2Q²" />
+                            <FormulaBox formula="IMg = dIT/dQ = 100 − 4Q" />
+                            <FormulaBox formula="CMg = dCT/dQ = 20" />
+                            <p>{lang === 'es' ? 'Condición IMg = CMg:' : lang === 'en' ? 'Condition MR = MC:' : 'Condició IMg = CMg:'}</p>
+                            <FormulaBox formula="100 − 4Q = 20 → Q* = 20" />
+                            <FormulaBox formula="P* = 100 − 2(20) = 60€" />
+                            <ResultBox><p>Q* = 20 {lang === 'es' ? 'unidades' : lang === 'en' ? 'units' : 'unitats'} | P* = 60€</p></ResultBox>
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Beneficio' : lang === 'en' ? 'Profit' : 'Benefici'}`}>
+                            <FormulaBox formula="B = IT − CT = 60×20 − (200 + 20×20)" />
+                            <FormulaBox formula="B = 1.200 − 600 = 600€" />
+                            <ResultBox><p>{lang === 'es' ? 'Beneficio del monopolista' : lang === 'en' ? 'Monopolist profit' : 'Benefici del monopolista'} = 600€</p></ResultBox>
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Comparación con competencia perfecta' : lang === 'en' ? 'Comparison with perfect competition' : 'Comparació amb competència perfecta'}`}>
+                            <p>{lang === 'es' ? 'En competencia perfecta: P = CMg' : lang === 'en' ? 'In perfect competition: P = MC' : 'En competència perfecta: P = CMg'}</p>
+                            <FormulaBox formula="100 − 2Q = 20 → Qcp = 40 | Pcp = 20€" />
+                            <FormulaBox formula="DWL = (Pm − Pcp) × (Qcp − Qm) / 2" />
+                            <FormulaBox formula="DWL = (60 − 20) × (40 − 20) / 2 = 400€" />
+                            <ResultBox><p>DWL = 400€</p></ResultBox>
+                            <InterpretBox>
+                                <p>{lang === 'es' ? 'El monopolio produce menos (20 vs 40) y cobra más (60€ vs 20€), generando una pérdida de eficiencia de 400€.' : lang === 'en' ? 'The monopoly produces less (20 vs 40) and charges more (60€ vs 20€), generating a deadweight loss of 400€.' : 'El monopoli produeix menys (20 vs 40) i cobra més (60€ vs 20€), generant una pèrdua d\'eficiència de 400€.'}</p>
+                            </InterpretBox>
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 4 */}
+            <Exercise
+                num={4}
+                origin={lang === 'es' ? 'Canarias' : lang === 'en' ? 'Canary Islands' : 'Canàries'}
+                difficulty={1}
+                tema={lang === 'es' ? 'Tema 4' : 'Tema 4'}
+                statement={
+                    <div>
+                        <p>{lang === 'es'
+                            ? 'La función de demanda de un bien es Qd = 50 − 5P.'
+                            : lang === 'en'
+                            ? 'The demand function for a good is Qd = 50 − 5P.'
+                            : 'La funció de demanda d\'un bé és Qd = 50 − 5P.'}</p>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Calcula la elasticidad-precio de la demanda cuando P=4€.' : lang === 'en' ? 'Calculate the price elasticity of demand when P=4€.' : 'Calcula l\'elasticitat-preu de la demanda quan P=4€.'}</li>
+                            <li>{lang === 'es' ? 'Clasifica el bien según la elasticidad calculada.' : lang === 'en' ? 'Classify the good according to the calculated elasticity.' : 'Classifica el bé segons l\'elasticitat calculada.'}</li>
+                            <li>{lang === 'es' ? 'Si la empresa quiere aumentar sus ingresos, ¿debe subir o bajar el precio? Justifica.' : lang === 'en' ? 'If the firm wants to increase revenue, should it raise or lower the price? Justify.' : 'Si l\'empresa vol augmentar els seus ingressos, ha de pujar o baixar el preu? Justifica.'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Elasticidad-precio' : lang === 'en' ? 'Price elasticity' : 'Elasticitat-preu'}`}>
+                            <FormulaBox formula="Q(4) = 50 − 5×4 = 30" />
+                            <FormulaBox formula="Ep = (dQ/dP) × (P/Q) = (−5) × (4/30) = −0,667" />
+                            <ResultBox><p>Ep = −0,667</p></ResultBox>
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Clasificación' : lang === 'en' ? 'Classification' : 'Classificació'}`}>
+                            <FormulaBox formula="|Ep| = 0,667 < 1" desc={lang === 'es' ? 'Demanda INELÁSTICA' : lang === 'en' ? 'INELASTIC demand' : 'Demanda INELÀSTICA'} />
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Decisión sobre el precio' : lang === 'en' ? 'Price decision' : 'Decisió sobre el preu'}`}>
+                            <InterpretBox>
+                                <p>{lang === 'es' ? 'Como la demanda es inelástica (|Ep|<1), un aumento del precio provoca una disminución de la cantidad demandada proporcionalmente menor. Por tanto, los INGRESOS TOTALES AUMENTAN al subir el precio.' : lang === 'en' ? 'Since demand is inelastic (|Ep|<1), a price increase causes a proportionally smaller decrease in quantity demanded. Therefore, TOTAL REVENUE INCREASES when the price rises.' : 'Com la demanda és inelàstica (|Ep|<1), un augment del preu provoca una disminució de la quantitat demandada proporcionalment menor. Per tant, els INGRESSOS TOTALS AUGMENTEN en pujar el preu.'}</p>
+                            </InterpretBox>
+                            <ResultBox><p>{lang === 'es' ? 'L\'empresa ha de PUJAR el preu' : lang === 'en' ? 'The firm should RAISE the price' : 'L\'empresa ha de PUJAR el preu'}</p></ResultBox>
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 5 */}
+            <Exercise
+                num={5}
+                origin={lang === 'es' ? 'Galicia' : lang === 'en' ? 'Galicia' : 'Galícia'}
+                difficulty={2}
+                tema={lang === 'es' ? 'Tema 6' : 'Tema 6'}
+                statement={
+                    <div>
+                        <p>{lang === 'es'
+                            ? 'En un mercado de competencia perfecta, la función de costes totales de una empresa es CT = q³ − 6q² + 15q + 10.'
+                            : lang === 'en'
+                            ? 'In a perfectly competitive market, a firm\'s total cost function is TC = q³ − 6q² + 15q + 10.'
+                            : 'En un mercat de competència perfecta, la funció de costs totals d\'una empresa és CT = q³ − 6q² + 15q + 10.'}</p>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Calcula las funciones de CMg, CMe y CVMe.' : lang === 'en' ? 'Calculate the MC, ATC and AVC functions.' : 'Calcula les funcions de CMg, CMe i CVMe.'}</li>
+                            <li>{lang === 'es' ? 'Determina el mínimo del CVMe (umbral de cierre).' : lang === 'en' ? 'Find the minimum AVC (shutdown point).' : 'Determina el mínim del CVMe (llindar de tancament).'}</li>
+                            <li>{lang === 'es' ? 'Obtén la función de oferta de la empresa a corto plazo.' : lang === 'en' ? 'Derive the firm\'s short-run supply function.' : 'Obté la funció d\'oferta de l\'empresa a curt termini.'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Funciones de costes' : lang === 'en' ? 'Cost functions' : 'Funcions de costos'}`}>
+                            <p>{lang === 'es' ? 'CT = q³ − 6q² + 15q + 10 → CV = q³ − 6q² + 15q, CF = 10' : lang === 'en' ? 'TC = q³ − 6q² + 15q + 10 → VC = q³ − 6q² + 15q, FC = 10' : 'CT = q³ − 6q² + 15q + 10 → CV = q³ − 6q² + 15q, CF = 10'}</p>
+                            <FormulaBox formula="CMg = dCT/dq = 3q² − 12q + 15" />
+                            <FormulaBox formula="CMe = CT/q = q² − 6q + 15 + 10/q" />
+                            <FormulaBox formula="CVMe = CV/q = q² − 6q + 15" />
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Mínimo del CVMe (umbral de cierre)' : lang === 'en' ? 'AVC minimum (shutdown point)' : 'Mínim del CVMe (llindar de tancament)'}`}>
+                            <FormulaBox formula="dCVMe/dq = 2q − 6 = 0 → q = 3" />
+                            <FormulaBox formula="CVMe(3) = 9 − 18 + 15 = 6€" />
+                            <ResultBox><p>{lang === 'es' ? 'Umbral de cierre' : lang === 'en' ? 'Shutdown point' : 'Llindar de tancament'}: P = 6€ (q = 3)</p></ResultBox>
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Función de oferta a corto plazo' : lang === 'en' ? 'Short-run supply function' : 'Funció d\'oferta a curt termini'}`}>
+                            <InterpretBox>
+                                <p>{lang === 'es' ? 'La función de oferta a corto plazo es la curva de CMg por encima del mínimo del CVMe:' : lang === 'en' ? 'The short-run supply function is the MC curve above the AVC minimum:' : 'La funció d\'oferta a curt termini és la corba de CMg per damunt del mínim del CVMe:'}</p>
+                            </InterpretBox>
+                            <FormulaBox formula="P = 3q² − 12q + 15,  per a P ≥ 6€" />
+                            <ResultBox><p>{lang === 'es' ? 'Oferta: P = CMg si P ≥ 6€; Q = 0 si P < 6€' : lang === 'en' ? 'Supply: P = MC if P ≥ 6€; Q = 0 if P < 6€' : 'Oferta: P = CMg si P ≥ 6€; Q = 0 si P < 6€'}</p></ResultBox>
+                        </Step>
+                    </div>
+                }
+            />
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // BLOC 2: MACROECONOMIA
+    // ════════════════════════════════════════════════════════════════
+    const BlocMacro = () => (
+        <div className="space-y-6 animate-fade">
+            <SectionTitle icon="🌐" title={t('bloc.macro')} subtitle={t('bloc.macro.desc')} />
+
+            {/* Exercise 6 */}
+            <Exercise
+                num={6}
+                origin={lang === 'es' ? 'Andalucía' : lang === 'en' ? 'Andalusia' : 'Andalusia'}
+                difficulty={2}
+                tema={lang === 'es' ? 'Tema 14' : 'Tema 14'}
+                statement={
+                    <div>
+                        <p>{lang === 'es'
+                            ? 'En una economía cerrada sin sector público, la función de consumo es C = 100 + 0,8Y. La inversión autónoma es I = 200.'
+                            : lang === 'en'
+                            ? 'In a closed economy without a public sector, the consumption function is C = 100 + 0.8Y. Autonomous investment is I = 200.'
+                            : 'En una economia tancada sense sector públic, la funció de consum és C = 100 + 0,8Y. La inversió autònoma és I = 200.'}</p>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Calcula la renta de equilibrio.' : lang === 'en' ? 'Calculate the equilibrium income.' : 'Calcula la renda d\'equilibri.'}</li>
+                            <li>{lang === 'es' ? 'Si la inversión aumenta en 50 unidades, calcula la nueva renta de equilibrio.' : lang === 'en' ? 'If investment increases by 50 units, calculate the new equilibrium income.' : 'Si la inversió augmenta en 50 unitats, calcula la nova renda d\'equilibri.'}</li>
+                            <li>{lang === 'es' ? 'Calcula el valor del multiplicador y verifica el resultado.' : lang === 'en' ? 'Calculate the multiplier value and verify the result.' : 'Calcula el valor del multiplicador i verifica el resultat.'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Renta de equilibrio' : lang === 'en' ? 'Equilibrium income' : 'Renda d\'equilibri'}`}>
+                            <FormulaBox formula="Y = C + I = 100 + 0,8Y + 200" />
+                            <FormulaBox formula="Y − 0,8Y = 300 → 0,2Y = 300" />
+                            <FormulaBox formula="Y* = 1.500" />
+                            <ResultBox><p>Y* = 1.500</p></ResultBox>
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Nueva renta (ΔI = 50)' : lang === 'en' ? 'New income (ΔI = 50)' : 'Nova renda (ΔI = 50)'}`}>
+                            <FormulaBox formula="Y = 100 + 0,8Y + 250 → 0,2Y = 350" />
+                            <FormulaBox formula="Y' = 1.750" />
+                            <ResultBox><p>Y' = 1.750 | ΔY = 250</p></ResultBox>
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Multiplicador' : lang === 'en' ? 'Multiplier' : 'Multiplicador'}`}>
+                            <FormulaBox formula="k = 1 / (1 − c) = 1 / (1 − 0,8) = 1 / 0,2 = 5" />
+                            <FormulaBox formula="ΔY = k × ΔI = 5 × 50 = 250 ✓" />
+                            <FormulaBox formula="1.750 − 1.500 = 250 ✓" />
+                            <InterpretBox>
+                                <p>{lang === 'es' ? 'Cada euro de inversión adicional genera 5€ de renta adicional gracias al efecto multiplicador.' : lang === 'en' ? 'Each euro of additional investment generates 5€ of additional income thanks to the multiplier effect.' : 'Cada euro d\'inversió addicional genera 5€ de renda addicional gràcies a l\'efecte multiplicador.'}</p>
+                            </InterpretBox>
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 7 */}
+            <Exercise
+                num={7}
+                origin={lang === 'es' ? 'Madrid' : lang === 'en' ? 'Madrid' : 'Madrid'}
+                difficulty={3}
+                tema={lang === 'es' ? 'Tema 15' : 'Tema 15'}
+                statement={
+                    <div>
+                        <p>{lang === 'es'
+                            ? 'Considera una economía con sector público: C = 200 + 0,75Yd, I = 300, G = 400, T = 0,2Y (impuestos proporcionales), TR = 100.'
+                            : lang === 'en'
+                            ? 'Consider an economy with a public sector: C = 200 + 0.75Yd, I = 300, G = 400, T = 0.2Y (proportional taxes), TR = 100.'
+                            : 'Considera una economia amb sector públic: C = 200 + 0,75Yd, I = 300, G = 400, T = 0,2Y (impostos proporcionals), TR = 100.'}</p>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Calcula la renta de equilibrio.' : lang === 'en' ? 'Calculate the equilibrium income.' : 'Calcula la renda d\'equilibri.'}</li>
+                            <li>{lang === 'es' ? 'Calcula el presupuesto del sector público (superávit o déficit).' : lang === 'en' ? 'Calculate the public sector budget (surplus or deficit).' : 'Calcula el pressupost del sector públic (superàvit o dèficit).'}</li>
+                            <li>{lang === 'es' ? 'Si el gobierno quiere aumentar la renta en 500 unidades, ¿cuánto debe aumentar G?' : lang === 'en' ? 'If the government wants to increase income by 500, how much should G increase?' : 'Si el govern vol augmentar la renda en 500 unitats, quant ha d\'augmentar G?'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Renta de equilibrio' : lang === 'en' ? 'Equilibrium income' : 'Renda d\'equilibri'}`}>
+                            <FormulaBox formula="Yd = Y − T + TR = Y − 0,2Y + 100 = 0,8Y + 100" />
+                            <FormulaBox formula="C = 200 + 0,75(0,8Y + 100) = 200 + 0,6Y + 75 = 275 + 0,6Y" />
+                            <FormulaBox formula="Y = C + I + G = 275 + 0,6Y + 300 + 400" />
+                            <FormulaBox formula="0,4Y = 975 → Y* = 2.437,5" />
+                            <ResultBox><p>Y* = 2.437,5</p></ResultBox>
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Presupuesto público' : lang === 'en' ? 'Public budget' : 'Pressupost públic'}`}>
+                            <FormulaBox formula="T = 0,2 × 2.437,5 = 487,5" />
+                            <FormulaBox formula="G + TR = 400 + 100 = 500" />
+                            <FormulaBox formula={`${lang === 'es' ? 'Saldo' : lang === 'en' ? 'Balance' : 'Saldo'} = T − (G + TR) = 487,5 − 500 = −12,5`} />
+                            <ResultBox><p>{lang === 'es' ? 'Déficit presupuestario' : lang === 'en' ? 'Budget deficit' : 'Dèficit pressupostari'} = 12,5</p></ResultBox>
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Aumento necesario de G' : lang === 'en' ? 'Required increase in G' : 'Augment necessari de G'}`}>
+                            <FormulaBox formula="k = 1 / (1 − 0,75×(1−0,2)) = 1 / (1 − 0,6) = 1 / 0,4 = 2,5" />
+                            <FormulaBox formula="ΔG = ΔY / k = 500 / 2,5 = 200" />
+                            <ResultBox><p>ΔG = 200</p></ResultBox>
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 8 */}
+            <Exercise
+                num={8}
+                origin={lang === 'es' ? 'La Rioja' : lang === 'en' ? 'La Rioja' : 'La Rioja'}
+                difficulty={2}
+                tema={lang === 'es' ? 'Tema 12' : 'Tema 12'}
+                statement={
+                    <div>
+                        <p>{lang === 'es'
+                            ? 'Con los siguientes datos de una economía, calcula el PIB:'
+                            : lang === 'en'
+                            ? 'With the following data from an economy, calculate GDP:'
+                            : 'Amb les següents dades d\'una economia, calcula el PIB:'}</p>
+                        <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs bg-slate-50 p-3 rounded-lg">
+                            <div><strong>{lang === 'es' ? 'Consumo privado' : lang === 'en' ? 'Private consumption' : 'Consum privat'}:</strong> 600</div>
+                            <div><strong>{lang === 'es' ? 'Inversión bruta' : lang === 'en' ? 'Gross investment' : 'Inversió bruta'}:</strong> 200</div>
+                            <div><strong>{lang === 'es' ? 'Gasto público' : lang === 'en' ? 'Government spending' : 'Despesa pública'}:</strong> 150</div>
+                            <div><strong>{lang === 'es' ? 'Exportaciones' : lang === 'en' ? 'Exports' : 'Exportacions'}:</strong> 100</div>
+                            <div><strong>{lang === 'es' ? 'Importaciones' : lang === 'en' ? 'Imports' : 'Importacions'}:</strong> 120</div>
+                            <div><strong>{lang === 'es' ? 'Salarios' : lang === 'en' ? 'Wages' : 'Salaris'}:</strong> 500</div>
+                            <div><strong>{lang === 'es' ? 'Alquileres' : lang === 'en' ? 'Rents' : 'Lloguers'}:</strong> 80</div>
+                            <div><strong>{lang === 'es' ? 'Intereses' : lang === 'en' ? 'Interest' : 'Interessos'}:</strong> 50</div>
+                            <div><strong>{lang === 'es' ? 'Beneficios' : lang === 'en' ? 'Profits' : 'Beneficis'}:</strong> 150</div>
+                            <div><strong>{lang === 'es' ? 'Amortizaciones' : lang === 'en' ? 'Depreciation' : 'Amortitzacions'}:</strong> 70</div>
+                            <div><strong>{lang === 'es' ? 'Imp. indirectos netos' : lang === 'en' ? 'Net indirect taxes' : 'Imp. indirectes nets'}:</strong> 80</div>
+                        </div>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'PIB por la vía del gasto.' : lang === 'en' ? 'GDP by the expenditure approach.' : 'PIB per la via de la despesa.'}</li>
+                            <li>{lang === 'es' ? 'PIB por la vía de las rentas.' : lang === 'en' ? 'GDP by the income approach.' : 'PIB per la via de les rendes.'}</li>
+                            <li>{lang === 'es' ? 'Calcula el PIN y la RN.' : lang === 'en' ? 'Calculate NDP and NI.' : 'Calcula el PIN i la RN.'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'PIB vía gasto' : lang === 'en' ? 'GDP expenditure approach' : 'PIB via despesa'}`}>
+                            <FormulaBox formula="PIB = C + I + G + (X − M)" />
+                            <FormulaBox formula="PIB = 600 + 200 + 150 + (100 − 120) = 930" />
+                            <ResultBox><p>PIB = 930</p></ResultBox>
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'PIB vía rentas' : lang === 'en' ? 'GDP income approach' : 'PIB via rendes'}`}>
+                            <FormulaBox formula={`PIB = ${lang === 'es' ? 'Salarios + Alquileres + Intereses + Beneficios + Amort. + IIN' : lang === 'en' ? 'Wages + Rents + Interest + Profits + Deprec. + NIT' : 'Salaris + Lloguers + Interessos + Beneficis + Amort. + IIN'}`} />
+                            <FormulaBox formula="PIB = 500 + 80 + 50 + 150 + 70 + 80 = 930 ✓" />
+                        </Step>
+
+                        <Step label={`c) PIN ${lang === 'es' ? 'y' : lang === 'en' ? 'and' : 'i'} RN`}>
+                            <FormulaBox formula={`PIN = PIB − ${lang === 'es' ? 'Amort.' : lang === 'en' ? 'Deprec.' : 'Amort.'} = 930 − 70 = 860`} />
+                            <FormulaBox formula={`RN = PIN − ${lang === 'es' ? 'Imp.Ind.Netos' : lang === 'en' ? 'NIT' : 'IIN'} = 860 − 80 = 780`} />
+                            <ResultBox><p>PIN = 860 | RN = 780</p></ResultBox>
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 9 */}
+            <Exercise
+                num={9}
+                origin={lang === 'es' ? 'Castilla y León' : lang === 'en' ? 'Castile and Leon' : 'Castella i Lleó'}
+                difficulty={2}
+                tema={lang === 'es' ? 'Tema 16' : 'Tema 16'}
+                statement={
+                    <div>
+                        <p>{lang === 'es'
+                            ? 'En el modelo IS-LM: IS: Y = 1200 − 200r; LM: Y = 400 + 200r.'
+                            : lang === 'en'
+                            ? 'In the IS-LM model: IS: Y = 1200 − 200r; LM: Y = 400 + 200r.'
+                            : 'En el model IS-LM: IS: Y = 1200 − 200r; LM: Y = 400 + 200r.'}</p>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Calcula el equilibrio simultáneo (Y*, r*).' : lang === 'en' ? 'Calculate the simultaneous equilibrium (Y*, r*).' : 'Calcula l\'equilibri simultani (Y*, r*).'}</li>
+                            <li>{lang === 'es' ? 'Si el gobierno aumenta el gasto desplazando la IS a Y = 1400 − 200r, calcula el nuevo equilibrio.' : lang === 'en' ? 'If the government increases spending, shifting IS to Y = 1400 − 200r, calculate the new equilibrium.' : 'Si el govern augmenta la despesa desplaçant la IS a Y = 1400 − 200r, calcula el nou equilibri.'}</li>
+                            <li>{lang === 'es' ? 'Explica el efecto desplazamiento (crowding out).' : lang === 'en' ? 'Explain the crowding out effect.' : 'Explica l\'efecte desplaçament (crowding out).'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Equilibrio IS-LM' : lang === 'en' ? 'IS-LM equilibrium' : 'Equilibri IS-LM'}`}>
+                            <FormulaBox formula="IS = LM → 1200 − 200r = 400 + 200r" />
+                            <FormulaBox formula="800 = 400r → r* = 2%" />
+                            <FormulaBox formula="Y* = 1200 − 200×2 = 800" />
+                            <ResultBox><p>Y* = 800 | r* = 2%</p></ResultBox>
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Nuevo equilibrio (política fiscal expansiva)' : lang === 'en' ? 'New equilibrium (expansionary fiscal policy)' : 'Nou equilibri (política fiscal expansiva)'}`}>
+                            <FormulaBox formula="1400 − 200r = 400 + 200r → 1000 = 400r" />
+                            <FormulaBox formula="r* = 2,5% | Y* = 1400 − 500 = 900" />
+                            <ResultBox><p>Y' = 900 | r' = 2,5%</p></ResultBox>
+                        </Step>
+
+                        <Step label={`c) Crowding out`}>
+                            <InterpretBox>
+                                <p>{lang === 'es' ? 'Sin crowding out, ΔY habría sido 200 (desplazamiento completo de la IS). Pero el efecto real es ΔY = 100 (900−800).' : lang === 'en' ? 'Without crowding out, ΔY would have been 200 (full IS shift). But the actual effect is ΔY = 100 (900−800).' : 'Sense crowding out, ΔY hauria sigut 200 (desplaçament complet de la IS). Però l\'efecte real és ΔY = 100 (900−800).'}</p>
+                                <p className="mt-1"><strong>Crowding out = 200 − 100 = 100</strong></p>
+                                <p className="mt-1">{lang === 'es' ? 'La subida de r (de 2% a 2,5%) reduce la inversión privada, contrarrestando parcialmente el efecto expansivo de G.' : lang === 'en' ? 'The rise in r (from 2% to 2.5%) reduces private investment, partially offsetting the expansionary effect of G.' : 'La pujada de r (de 2% a 2,5%) redueix la inversió privada, contrarrestant parcialment l\'efecte expansiu de G.'}</p>
+                            </InterpretBox>
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 10 */}
+            <Exercise
+                num={10}
+                origin={lang === 'es' ? 'País Vasco' : lang === 'en' ? 'Basque Country' : 'País Basc'}
+                difficulty={1}
+                tema={lang === 'es' ? 'Tema 17' : 'Tema 17'}
+                statement={
+                    <div>
+                        <p>{lang === 'es'
+                            ? 'El IPC de una economía ha sido: Año 0 = 100, Año 1 = 105, Año 2 = 108, Año 3 = 115.'
+                            : lang === 'en'
+                            ? 'The CPI of an economy has been: Year 0 = 100, Year 1 = 105, Year 2 = 108, Year 3 = 115.'
+                            : 'L\'IPC d\'una economia ha sigut: Any 0 = 100, Any 1 = 105, Any 2 = 108, Any 3 = 115.'}</p>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Calcula la tasa de inflación de cada año.' : lang === 'en' ? 'Calculate each year\'s inflation rate.' : 'Calcula la taxa d\'inflació de cada any.'}</li>
+                            <li>{lang === 'es' ? 'Calcula la tasa de inflación acumulada del período.' : lang === 'en' ? 'Calculate the cumulative inflation rate for the period.' : 'Calcula la taxa d\'inflació acumulada del període.'}</li>
+                            <li>{lang === 'es' ? 'Si un trabajador tenía un salario de 2.000€ el año 0, ¿qué salario necesitaría el año 3 para mantener el poder adquisitivo?' : lang === 'en' ? 'If a worker earned 2,000€ in year 0, what salary would they need in year 3 to maintain purchasing power?' : 'Si un treballador tenia un salari de 2.000€ l\'any 0, quin salari necessitaria l\'any 3 per a mantindre el poder adquisitiu?'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Tasas de inflación anuales' : lang === 'en' ? 'Annual inflation rates' : 'Taxes d\'inflació anuals'}`}>
+                            <FormulaBox formula="π₁ = (105 − 100) / 100 = 5,00%" />
+                            <FormulaBox formula="π₂ = (108 − 105) / 105 = 2,86%" />
+                            <FormulaBox formula="π₃ = (115 − 108) / 108 = 6,48%" />
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Inflación acumulada' : lang === 'en' ? 'Cumulative inflation' : 'Inflació acumulada'}`}>
+                            <FormulaBox formula="πac = (115 − 100) / 100 = 15%" />
+                            <ResultBox><p>{lang === 'es' ? 'Inflación acumulada' : lang === 'en' ? 'Cumulative inflation' : 'Inflació acumulada'} = 15%</p></ResultBox>
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Salario necesario' : lang === 'en' ? 'Required salary' : 'Salari necessari'}`}>
+                            <FormulaBox formula={`${lang === 'es' ? 'Salario' : lang === 'en' ? 'Salary' : 'Salari'} = 2.000 × (115 / 100) = 2.300€`} />
+                            <ResultBox><p>{lang === 'es' ? 'Necesita 2.300€ para mantener el poder adquisitivo' : lang === 'en' ? 'Needs 2,300€ to maintain purchasing power' : 'Necessita 2.300€ per a mantindre el poder adquisitiu'}</p></ResultBox>
+                        </Step>
+                    </div>
+                }
+            />
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // BLOC 3: MATEMÀTIQUES FINANCERES
+    // ════════════════════════════════════════════════════════════════
+    const BlocFinances = () => (
+        <div className="space-y-6 animate-fade">
+            <SectionTitle icon="🏦" title={t('bloc.finances')} subtitle={t('bloc.finances.desc')} />
+
+            {/* Exercise 11 */}
+            <Exercise
+                num={11}
+                origin={lang === 'es' ? 'C. Valenciana' : lang === 'en' ? 'Valencia' : 'C. Valenciana'}
+                difficulty={2}
+                tema={lang === 'es' ? 'Tema 29' : 'Tema 29'}
+                statement={
+                    <div>
+                        <p>{lang === 'es'
+                            ? 'Un particular solicita un préstamo de 120.000€ a pagar en 20 años a un tipo de interés anual del 3%, con el sistema de amortización francés (cuota constante).'
+                            : lang === 'en'
+                            ? 'A person takes out a loan of €120,000 to be repaid over 20 years at an annual interest rate of 3%, using the French amortisation system (constant payment).'
+                            : 'Un particular sol·licita un préstec de 120.000€ a pagar en 20 anys a un tipus d\'interés anual del 3%, amb el sistema d\'amortització francés (quota constant).'}</p>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Calcula la cuota anual constante.' : lang === 'en' ? 'Calculate the constant annual payment.' : 'Calcula la quota anual constant.'}</li>
+                            <li>{lang === 'es' ? 'Elabora las 3 primeras filas del cuadro de amortización.' : lang === 'en' ? 'Prepare the first 3 rows of the amortisation schedule.' : 'Elabora les 3 primeres files del quadre d\'amortització.'}</li>
+                            <li>{lang === 'es' ? 'Calcula el capital pendiente de amortizar transcurridos 10 años.' : lang === 'en' ? 'Calculate the outstanding capital after 10 years.' : 'Calcula el capital pendent d\'amortitzar transcorreguts 10 anys.'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Cuota anual constante' : lang === 'en' ? 'Constant annual payment' : 'Quota anual constant'}`}>
+                            <FormulaBox formula="a = C₀ × i / (1 − (1+i)⁻ⁿ)" />
+                            <FormulaBox formula="a = 120.000 × 0,03 / (1 − 1,03⁻²⁰)" />
+                            <FormulaBox formula="a = 3.600 / (1 − 0,5537) = 3.600 / 0,4463" />
+                            <FormulaBox formula="a = 8.067,11€" />
+                            <ResultBox><p>{lang === 'es' ? 'Cuota anual' : lang === 'en' ? 'Annual payment' : 'Quota anual'} = 8.067,11€</p></ResultBox>
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Cuadro de amortización (3 primeras filas)' : lang === 'en' ? 'Amortisation schedule (first 3 rows)' : 'Quadre d\'amortització (3 primeres files)'}`}>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-xs border-collapse mt-2">
+                                    <thead>
+                                        <tr className="bg-teal-100">
+                                            <th className="border border-teal-200 px-2 py-1.5 text-left">{lang === 'es' ? 'Año' : lang === 'en' ? 'Year' : 'Any'}</th>
+                                            <th className="border border-teal-200 px-2 py-1.5 text-right">{lang === 'es' ? 'Cuota (a)' : lang === 'en' ? 'Payment (a)' : 'Quota (a)'}</th>
+                                            <th className="border border-teal-200 px-2 py-1.5 text-right">{lang === 'es' ? 'Interés (I)' : lang === 'en' ? 'Interest (I)' : 'Interés (I)'}</th>
+                                            <th className="border border-teal-200 px-2 py-1.5 text-right">{lang === 'es' ? 'Amort. (A)' : lang === 'en' ? 'Princ. (A)' : 'Amort. (A)'}</th>
+                                            <th className="border border-teal-200 px-2 py-1.5 text-right">{lang === 'es' ? 'C. pend.' : lang === 'en' ? 'Outstand.' : 'C. pend.'}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td className="border border-teal-200 px-2 py-1">0</td><td className="border border-teal-200 px-2 py-1 text-right">—</td><td className="border border-teal-200 px-2 py-1 text-right">—</td><td className="border border-teal-200 px-2 py-1 text-right">—</td><td className="border border-teal-200 px-2 py-1 text-right font-semibold">120.000,00</td></tr>
+                                        <tr><td className="border border-teal-200 px-2 py-1">1</td><td className="border border-teal-200 px-2 py-1 text-right">8.067,11</td><td className="border border-teal-200 px-2 py-1 text-right">3.600,00</td><td className="border border-teal-200 px-2 py-1 text-right">4.467,11</td><td className="border border-teal-200 px-2 py-1 text-right font-semibold">115.532,89</td></tr>
+                                        <tr><td className="border border-teal-200 px-2 py-1">2</td><td className="border border-teal-200 px-2 py-1 text-right">8.067,11</td><td className="border border-teal-200 px-2 py-1 text-right">3.465,99</td><td className="border border-teal-200 px-2 py-1 text-right">4.601,12</td><td className="border border-teal-200 px-2 py-1 text-right font-semibold">110.931,77</td></tr>
+                                        <tr><td className="border border-teal-200 px-2 py-1">3</td><td className="border border-teal-200 px-2 py-1 text-right">8.067,11</td><td className="border border-teal-200 px-2 py-1 text-right">3.327,95</td><td className="border border-teal-200 px-2 py-1 text-right">4.739,16</td><td className="border border-teal-200 px-2 py-1 text-right font-semibold">106.192,61</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Capital pendiente tras 10 años' : lang === 'en' ? 'Outstanding capital after 10 years' : 'Capital pendent als 10 anys'}`}>
+                            <p>{lang === 'es' ? 'Método prospectivo:' : lang === 'en' ? 'Prospective method:' : 'Mètode prospectiu:'}</p>
+                            <FormulaBox formula="C₁₀ = a × (1 − (1+i)⁻⁽ⁿ⁻ᵏ⁾) / i" />
+                            <FormulaBox formula="C₁₀ = 8.067,11 × (1 − 1,03⁻¹⁰) / 0,03" />
+                            <FormulaBox formula="C₁₀ = 8.067,11 × 8,5302 = 68.833,49€" />
+                            <ResultBox><p>{lang === 'es' ? 'Capital pendiente' : lang === 'en' ? 'Outstanding capital' : 'Capital pendent'} ≈ 68.833€</p></ResultBox>
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 12 */}
+            <Exercise
+                num={12}
+                origin={lang === 'es' ? 'Andalucía 2021' : lang === 'en' ? 'Andalusia 2021' : 'Andalusia 2021'}
+                difficulty={3}
+                tema={lang === 'es' ? 'Tema 28' : 'Tema 28'}
+                statement={
+                    <div>
+                        <p>{lang === 'es'
+                            ? 'Un inversor deposita 5.000€ en una cuenta al 4% anual con capitalización trimestral.'
+                            : lang === 'en'
+                            ? 'An investor deposits €5,000 in an account at 4% annual interest with quarterly compounding.'
+                            : 'Un inversor deposita 5.000€ en un compte al 4% anual amb capitalització trimestral.'}</p>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Calcula el capital acumulado al cabo de 3 años.' : lang === 'en' ? 'Calculate the accumulated capital after 3 years.' : 'Calcula el capital acumulat al cap de 3 anys.'}</li>
+                            <li>{lang === 'es' ? 'Calcula el TAE (Tasa Anual Equivalente).' : lang === 'en' ? 'Calculate the EAR (Effective Annual Rate).' : 'Calcula el TAE (Taxa Anual Equivalent).'}</li>
+                            <li>{lang === 'es' ? 'Si después de 3 años reinvierte el capital en un depósito al 3% anual con capitalización mensual durante 2 años, ¿cuál será el capital final?' : lang === 'en' ? 'If after 3 years they reinvest in a deposit at 3% annual with monthly compounding for 2 years, what will be the final capital?' : 'Si després de 3 anys reinverteix el capital en un dipòsit al 3% anual amb capitalització mensual durant 2 anys, quin serà el capital final?'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Capital acumulado (3 años)' : lang === 'en' ? 'Accumulated capital (3 years)' : 'Capital acumulat (3 anys)'}`}>
+                            <FormulaBox formula="Cf = C₀ × (1 + i/m)^(m×n)" />
+                            <FormulaBox formula="Cf = 5.000 × (1 + 0,04/4)^(4×3) = 5.000 × 1,01¹²" />
+                            <FormulaBox formula="Cf = 5.000 × 1,12683 = 5.634,13€" />
+                            <ResultBox><p>Cf = 5.634,13€</p></ResultBox>
+                        </Step>
+
+                        <Step label="b) TAE">
+                            <FormulaBox formula="TAE = (1 + i/m)^m − 1" />
+                            <FormulaBox formula="TAE = (1 + 0,04/4)⁴ − 1 = 1,01⁴ − 1" />
+                            <FormulaBox formula="TAE = 1,04060 − 1 = 4,06%" />
+                            <ResultBox><p>TAE = 4,06%</p></ResultBox>
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Reinversión (2 años más)' : lang === 'en' ? 'Reinvestment (2 more years)' : 'Reinversió (2 anys més)'}`}>
+                            <FormulaBox formula="Cf₂ = 5.634,13 × (1 + 0,03/12)^(12×2)" />
+                            <FormulaBox formula="Cf₂ = 5.634,13 × (1,0025)²⁴" />
+                            <FormulaBox formula="Cf₂ = 5.634,13 × 1,06176 = 5.982,14€" />
+                            <ResultBox><p>{lang === 'es' ? 'Capital final total' : lang === 'en' ? 'Total final capital' : 'Capital final total'} = 5.982,14€</p></ResultBox>
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 13 */}
+            <Exercise
+                num={13}
+                origin={lang === 'es' ? 'Murcia' : lang === 'en' ? 'Murcia' : 'Múrcia'}
+                difficulty={1}
+                tema={lang === 'es' ? 'Tema 28' : 'Tema 28'}
+                statement={
+                    <div>
+                        <p>{lang === 'es'
+                            ? 'Calcula el valor actual y el valor final de una renta anual constante de 3.000€ durante 10 años al 5% de interés.'
+                            : lang === 'en'
+                            ? 'Calculate the present value and future value of a constant annual annuity of €3,000 for 10 years at 5% interest.'
+                            : 'Calcula el valor actual i el valor final d\'una renda anual constant de 3.000€ durant 10 anys al 5% d\'interés.'}</p>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Renta postpagable (vencida).' : lang === 'en' ? 'Ordinary annuity (in arrears).' : 'Renda postpagable (vençuda).'}</li>
+                            <li>{lang === 'es' ? 'Renta prepagable (anticipada).' : lang === 'en' ? 'Annuity due (in advance).' : 'Renda prepagable (anticipada).'}</li>
+                            <li>{lang === 'es' ? 'Si la renta fuera perpetua postpagable, ¿cuál sería el valor actual?' : lang === 'en' ? 'If the annuity were a perpetuity in arrears, what would be the present value?' : 'Si la renda fóra perpètua postpagable, quin seria el valor actual?'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Renta postpagable' : lang === 'en' ? 'Ordinary annuity' : 'Renda postpagable'}`}>
+                            <FormulaBox formula="VA = a × (1 − (1+i)⁻ⁿ) / i" />
+                            <FormulaBox formula="VA = 3.000 × (1 − 1,05⁻¹⁰) / 0,05 = 3.000 × 7,7217" />
+                            <FormulaBox formula="VA = 23.165,20€" />
+                            <FormulaBox formula="VF = a × ((1+i)ⁿ − 1) / i" />
+                            <FormulaBox formula="VF = 3.000 × (1,05¹⁰ − 1) / 0,05 = 3.000 × 12,5779" />
+                            <FormulaBox formula="VF = 37.733,68€" />
+                            <ResultBox><p>VA = 23.165,20€ | VF = 37.733,68€</p></ResultBox>
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Renta prepagable' : lang === 'en' ? 'Annuity due' : 'Renda prepagable'}`}>
+                            <FormulaBox formula="VA' = VA × (1+i) = 23.165,20 × 1,05 = 24.323,46€" />
+                            <FormulaBox formula="VF' = VF × (1+i) = 37.733,68 × 1,05 = 39.620,36€" />
+                            <ResultBox><p>VA' = 24.323,46€ | VF' = 39.620,36€</p></ResultBox>
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Renta perpetua' : lang === 'en' ? 'Perpetuity' : 'Renda perpètua'}`}>
+                            <FormulaBox formula="VA∞ = a / i = 3.000 / 0,05 = 60.000€" />
+                            <ResultBox><p>VA∞ = 60.000€</p></ResultBox>
+                            <InterpretBox>
+                                <p>{lang === 'es' ? 'La renta perpetua vale más del doble que la renta a 10 años (60.000 vs 23.165), mostrando el valor del tiempo en los flujos infinitos.' : lang === 'en' ? 'The perpetuity is worth more than double the 10-year annuity (60,000 vs 23,165), showing the value of time in infinite cash flows.' : 'La renda perpètua val més del doble que la renda a 10 anys (60.000 vs 23.165), mostrant el valor del temps en els fluxos infinits.'}</p>
+                            </InterpretBox>
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 14 */}
+            <Exercise
+                num={14}
+                origin={lang === 'es' ? 'Extremadura' : lang === 'en' ? 'Extremadura' : 'Extremadura'}
+                difficulty={2}
+                tema={lang === 'es' ? 'Tema 30' : 'Tema 30'}
+                statement={
+                    <div>
+                        <p>{lang === 'es' ? 'Compara dos inversiones:' : lang === 'en' ? 'Compare two investments:' : 'Compara dues inversions:'}</p>
+                        <div className="mt-2 overflow-x-auto">
+                            <table className="w-full text-xs border-collapse">
+                                <thead><tr className="bg-slate-100"><th className="border px-2 py-1"></th><th className="border px-2 py-1">{lang === 'es' ? 'Desemb.' : lang === 'en' ? 'Outlay' : 'Desemb.'}</th><th className="border px-2 py-1">{lang === 'es' ? 'Año 1' : lang === 'en' ? 'Year 1' : 'Any 1'}</th><th className="border px-2 py-1">{lang === 'es' ? 'Año 2' : lang === 'en' ? 'Year 2' : 'Any 2'}</th><th className="border px-2 py-1">{lang === 'es' ? 'Año 3' : lang === 'en' ? 'Year 3' : 'Any 3'}</th></tr></thead>
+                                <tbody>
+                                    <tr><td className="border px-2 py-1 font-bold">A</td><td className="border px-2 py-1">−10.000</td><td className="border px-2 py-1">4.000</td><td className="border px-2 py-1">5.000</td><td className="border px-2 py-1">6.000</td></tr>
+                                    <tr><td className="border px-2 py-1 font-bold">B</td><td className="border px-2 py-1">−12.000</td><td className="border px-2 py-1">3.000</td><td className="border px-2 py-1">5.000</td><td className="border px-2 py-1">8.000</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p className="mt-2">{lang === 'es' ? 'Tasa de descuento: 8%' : lang === 'en' ? 'Discount rate: 8%' : 'Taxa de descompte: 8%'}</p>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Calcula el VAN de cada inversión.' : lang === 'en' ? 'Calculate the NPV of each investment.' : 'Calcula el VAN de cada inversió.'}</li>
+                            <li>{lang === 'es' ? 'Calcula el Payback de cada inversión.' : lang === 'en' ? 'Calculate the Payback of each investment.' : 'Calcula el Payback de cada inversió.'}</li>
+                            <li>{lang === 'es' ? '¿Qué proyecto recomendarías? Justifica.' : lang === 'en' ? 'Which project would you recommend? Justify.' : 'Quin projecte recomanaries? Justifica.'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label="a) VAN">
+                            <p><strong>{lang === 'es' ? 'Inversión A:' : lang === 'en' ? 'Investment A:' : 'Inversió A:'}</strong></p>
+                            <FormulaBox formula="VAN_A = −10.000 + 4.000/1,08 + 5.000/1,08² + 6.000/1,08³" />
+                            <FormulaBox formula="VAN_A = −10.000 + 3.703,70 + 4.286,69 + 4.762,99 = 2.753,39€" />
+                            <p><strong>{lang === 'es' ? 'Inversión B:' : lang === 'en' ? 'Investment B:' : 'Inversió B:'}</strong></p>
+                            <FormulaBox formula="VAN_B = −12.000 + 3.000/1,08 + 5.000/1,08² + 8.000/1,08³" />
+                            <FormulaBox formula="VAN_B = −12.000 + 2.777,78 + 4.286,69 + 6.350,66 = 1.415,12€" />
+                            <ResultBox><p>VAN_A = 2.753,39€ &gt; VAN_B = 1.415,12€</p></ResultBox>
+                        </Step>
+
+                        <Step label="b) Payback">
+                            <p><strong>{lang === 'es' ? 'Inversión A:' : lang === 'en' ? 'Investment A:' : 'Inversió A:'}</strong> {lang === 'es' ? 'Acumulado:' : lang === 'en' ? 'Cumulative:' : 'Acumulat:'} 4.000 → 9.000 → 15.000</p>
+                            <FormulaBox formula="Payback_A = 2 + (10.000 − 9.000) / 6.000 = 2,17 {lang === 'es' ? 'años' : lang === 'en' ? 'years' : 'anys'}" />
+                            <p><strong>{lang === 'es' ? 'Inversión B:' : lang === 'en' ? 'Investment B:' : 'Inversió B:'}</strong> {lang === 'es' ? 'Acumulado:' : lang === 'en' ? 'Cumulative:' : 'Acumulat:'} 3.000 → 8.000 → 16.000</p>
+                            <FormulaBox formula="Payback_B = 2 + (12.000 − 8.000) / 8.000 = 2,50 {lang === 'es' ? 'años' : lang === 'en' ? 'years' : 'anys'}" />
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Recomendación' : lang === 'en' ? 'Recommendation' : 'Recomanació'}`}>
+                            <InterpretBox>
+                                <p>{lang === 'es' ? 'La inversión A es preferible por dos criterios: mayor VAN (2.753€ vs 1.415€) y menor Payback (2,17 vs 2,50 años). Ambos criterios coinciden.' : lang === 'en' ? 'Investment A is preferable by both criteria: higher NPV (2,753€ vs 1,415€) and shorter Payback (2.17 vs 2.50 years). Both criteria agree.' : 'La inversió A és preferible per dos criteris: major VAN (2.753€ vs 1.415€) i menor Payback (2,17 vs 2,50 anys). Ambdós criteris coincideixen.'}</p>
+                            </InterpretBox>
+                            <ResultBox><p>{lang === 'es' ? 'Recomendar inversión A' : lang === 'en' ? 'Recommend investment A' : 'Recomanar inversió A'}</p></ResultBox>
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 15 */}
+            <Exercise
+                num={15}
+                origin={lang === 'es' ? 'Cataluña' : lang === 'en' ? 'Catalonia' : 'Catalunya'}
+                difficulty={2}
+                tema={lang === 'es' ? 'Tema 31' : 'Tema 31'}
+                statement={
+                    <div>
+                        <p>{lang === 'es'
+                            ? 'Una empresa emite obligaciones con un nominal de 1.000€, un cupón anual del 5% y un vencimiento de 5 años.'
+                            : lang === 'en'
+                            ? 'A company issues bonds with a face value of €1,000, an annual coupon of 5% and a maturity of 5 years.'
+                            : 'Una empresa emet obligacions amb un nominal de 1.000€, un cupó anual del 5% i un venciment de 5 anys.'}</p>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Si el tipo de interés de mercado es del 4%, calcula el precio de la obligación.' : lang === 'en' ? 'If the market interest rate is 4%, calculate the bond price.' : 'Si el tipus d\'interés de mercat és del 4%, calcula el preu de l\'obligació.'}</li>
+                            <li>{lang === 'es' ? 'Si el tipo de interés de mercado sube al 6%, ¿cuál sería el nuevo precio?' : lang === 'en' ? 'If the market interest rate rises to 6%, what would be the new price?' : 'Si el tipus d\'interés de mercat puja al 6%, quin seria el nou preu?'}</li>
+                            <li>{lang === 'es' ? 'Explica la relación inversa entre tipo de interés y precio de las obligaciones.' : lang === 'en' ? 'Explain the inverse relationship between interest rates and bond prices.' : 'Explica la relació inversa entre tipus d\'interés i preu de les obligacions.'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Precio con i = 4%' : lang === 'en' ? 'Price with i = 4%' : 'Preu amb i = 4%'}`}>
+                            <FormulaBox formula="P = Σ(Cupó / (1+i)ᵗ) + Nominal / (1+i)ⁿ" />
+                            <FormulaBox formula="P = 50/1,04 + 50/1,04² + 50/1,04³ + 50/1,04⁴ + 1050/1,04⁵" />
+                            <FormulaBox formula="P = 48,08 + 46,23 + 44,45 + 42,74 + 863,01 = 1.044,52€" />
+                            <ResultBox><p>P(4%) = 1.044,52€ ({lang === 'es' ? 'sobre la par' : lang === 'en' ? 'above par' : 'sobre la par'})</p></ResultBox>
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Precio con i = 6%' : lang === 'en' ? 'Price with i = 6%' : 'Preu amb i = 6%'}`}>
+                            <FormulaBox formula="P = 50/1,06 + 50/1,06² + 50/1,06³ + 50/1,06⁴ + 1050/1,06⁵" />
+                            <FormulaBox formula="P = 47,17 + 44,50 + 41,98 + 39,60 + 784,62 = 957,88€" />
+                            <ResultBox><p>P(6%) = 957,88€ ({lang === 'es' ? 'bajo la par' : lang === 'en' ? 'below par' : 'sota la par'})</p></ResultBox>
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Relación inversa' : lang === 'en' ? 'Inverse relationship' : 'Relació inversa'}`}>
+                            <InterpretBox>
+                                <p>{lang === 'es' ? 'Cuando el tipo de interés de mercado sube, el valor actual de los flujos futuros (cupones + nominal) disminuye, por lo que el precio del bono baja. Y viceversa: si el tipo baja, el precio sube.' : lang === 'en' ? 'When the market interest rate rises, the present value of future cash flows (coupons + face value) decreases, so the bond price falls. And vice versa: if the rate drops, the price rises.' : 'Quan el tipus d\'interés de mercat puja, el valor actual dels fluxos futurs (cupons + nominal) disminueix, per la qual cosa el preu del bo baixa. I viceversa: si el tipus baixa, el preu puja.'}</p>
+                                <p className="mt-1"><strong>i = 4% → P = 1.044,52€ (sobre la par)</strong></p>
+                                <p><strong>i = 6% → P = 957,88€ (sota la par)</strong></p>
+                            </InterpretBox>
+                        </Step>
+                    </div>
+                }
+            />
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // BLOC 4: EMPRESA
+    // ════════════════════════════════════════════════════════════════
+    const BlocEmpresa = () => (
+        <div className="space-y-6 animate-fade">
+            <SectionTitle icon="🏢" title={t('bloc.empresa')} subtitle={t('bloc.empresa.desc')} />
+
+            {/* Exercise 16 */}
+            <Exercise
+                num={16}
+                origin={lang === 'es' ? 'Andalucía' : lang === 'en' ? 'Andalusia' : 'Andalusia'}
+                difficulty={1}
+                tema={lang === 'es' ? 'Tema 24' : 'Tema 24'}
+                statement={
+                    <div>
+                        <p>{lang === 'es'
+                            ? 'Una empresa fabrica un producto con los siguientes datos: Precio de venta = 25€/u, Coste variable unitario = 15€/u, Costes fijos totales = 50.000€.'
+                            : lang === 'en'
+                            ? 'A firm manufactures a product with the following data: Selling price = €25/u, Variable cost per unit = €15/u, Total fixed costs = €50,000.'
+                            : 'Una empresa fabrica un producte amb les següents dades: Preu de venda = 25€/u, Cost variable unitari = 15€/u, Costs fixos totals = 50.000€.'}</p>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Calcula el punto muerto.' : lang === 'en' ? 'Calculate the break-even point.' : 'Calcula el punt mort.'}</li>
+                            <li>{lang === 'es' ? 'Si la empresa vende 6.000 unidades, calcula el beneficio.' : lang === 'en' ? 'If the firm sells 6,000 units, calculate the profit.' : 'Si l\'empresa ven 6.000 unitats, calcula el benefici.'}</li>
+                            <li>{lang === 'es' ? 'Describe gráficamente las funciones de IT, CT y el punto muerto.' : lang === 'en' ? 'Graphically describe the IT, TC functions and the break-even point.' : 'Descriu gràficament les funcions d\'IT, CT i el punt mort.'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Punto muerto' : lang === 'en' ? 'Break-even point' : 'Punt mort'}`}>
+                            <FormulaBox formula="Q* = CF / (Pv − CVu)" />
+                            <FormulaBox formula="Q* = 50.000 / (25 − 15) = 50.000 / 10 = 5.000 u." />
+                            <ResultBox><p>{lang === 'es' ? 'Punto muerto' : lang === 'en' ? 'Break-even' : 'Punt mort'} = 5.000 {lang === 'es' ? 'unidades' : lang === 'en' ? 'units' : 'unitats'}</p></ResultBox>
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Beneficio con 6.000 unidades' : lang === 'en' ? 'Profit with 6,000 units' : 'Benefici amb 6.000 unitats'}`}>
+                            <FormulaBox formula="B = (Pv − CVu) × Q − CF" />
+                            <FormulaBox formula="B = 10 × 6.000 − 50.000 = 60.000 − 50.000 = 10.000€" />
+                            <ResultBox><p>{lang === 'es' ? 'Beneficio' : lang === 'en' ? 'Profit' : 'Benefici'} = 10.000€</p></ResultBox>
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Representación gráfica' : lang === 'en' ? 'Graphical representation' : 'Representació gràfica'}`}>
+                            <InterpretBox>
+                                <p><strong>IT = 25Q</strong> → {lang === 'es' ? 'Recta desde el origen con pendiente 25' : lang === 'en' ? 'Line from origin with slope 25' : 'Recta des de l\'origen amb pendent 25'}</p>
+                                <p><strong>CT = 50.000 + 15Q</strong> → {lang === 'es' ? 'Recta desde 50.000 con pendiente 15' : lang === 'en' ? 'Line from 50,000 with slope 15' : 'Recta des de 50.000 amb pendent 15'}</p>
+                                <p>{lang === 'es' ? 'Se cruzan en Q = 5.000 (punto muerto). Para Q < 5.000: pérdidas. Para Q > 5.000: beneficios.' : lang === 'en' ? 'They intersect at Q = 5,000 (break-even). For Q < 5,000: losses. For Q > 5,000: profits.' : 'Es creuen en Q = 5.000 (punt mort). Per a Q < 5.000: pèrdues. Per a Q > 5.000: beneficis.'}</p>
+                            </InterpretBox>
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 17 */}
+            <Exercise
+                num={17}
+                origin={lang === 'es' ? 'C. Valenciana' : lang === 'en' ? 'Valencia' : 'C. Valenciana'}
+                difficulty={2}
+                tema={lang === 'es' ? 'Tema 25' : 'Tema 25'}
+                statement={
+                    <div>
+                        <p>{lang === 'es'
+                            ? 'Una empresa presenta el siguiente balance (en miles €):'
+                            : lang === 'en'
+                            ? 'A company presents the following balance sheet (in thousands €):'
+                            : 'Una empresa presenta el següent balanç (en milers €):'}</p>
+                        <div className="mt-2 grid grid-cols-2 gap-3 text-xs">
+                            <div className="bg-blue-50 p-3 rounded-lg">
+                                <p className="font-bold text-blue-800 mb-1">{lang === 'es' ? 'ACTIVO' : lang === 'en' ? 'ASSETS' : 'ACTIU'}</p>
+                                <p>{lang === 'es' ? 'Inmov. material' : lang === 'en' ? 'Tangible assets' : 'Immob. material'}: 300</p>
+                                <p>{lang === 'es' ? 'Existencias' : lang === 'en' ? 'Inventory' : 'Existències'}: 50</p>
+                                <p>{lang === 'es' ? 'Clientes' : lang === 'en' ? 'Debtors' : 'Clients'}: 30</p>
+                                <p>{lang === 'es' ? 'Bancos' : lang === 'en' ? 'Cash' : 'Bancs'}: 20</p>
+                            </div>
+                            <div className="bg-red-50 p-3 rounded-lg">
+                                <p className="font-bold text-red-800 mb-1">{lang === 'es' ? 'PASIVO + PN' : lang === 'en' ? 'EQUITY + LIAB.' : 'PASSIU + PN'}</p>
+                                <p>{lang === 'es' ? 'Capital social' : lang === 'en' ? 'Share capital' : 'Capital social'}: 200</p>
+                                <p>{lang === 'es' ? 'Reservas' : lang === 'en' ? 'Reserves' : 'Reserves'}: 50</p>
+                                <p>{lang === 'es' ? 'Préstamo L/P' : lang === 'en' ? 'LT Loan' : 'Préstec LL/T'}: 100</p>
+                                <p>{lang === 'es' ? 'Proveedores' : lang === 'en' ? 'Creditors' : 'Proveïdors'}: 50</p>
+                            </div>
+                        </div>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Clasifica las masas patrimoniales.' : lang === 'en' ? 'Classify the balance sheet items.' : 'Classifica les masses patrimonials.'}</li>
+                            <li>{lang === 'es' ? 'Calcula el Fondo de Maniobra.' : lang === 'en' ? 'Calculate the Working Capital.' : 'Calcula el Fons de Maniobra.'}</li>
+                            <li>{lang === 'es' ? 'Calcula las ratios de liquidez, endeudamiento y autonomía financiera.' : lang === 'en' ? 'Calculate the liquidity, debt and financial autonomy ratios.' : 'Calcula les ràtios de liquiditat, endeutament i autonomia financera.'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Masas patrimoniales' : lang === 'en' ? 'Balance sheet items' : 'Masses patrimonials'}`}>
+                            <div className="grid grid-cols-2 gap-3 text-xs">
+                                <div className="bg-blue-50 p-3 rounded-lg">
+                                    <p className="font-bold">ANC = 300</p>
+                                    <p className="font-bold">AC = 50 + 30 + 20 = 100</p>
+                                    <p className="font-bold mt-1">{lang === 'es' ? 'Total Activo' : lang === 'en' ? 'Total Assets' : 'Total Actiu'} = 400</p>
+                                </div>
+                                <div className="bg-red-50 p-3 rounded-lg">
+                                    <p className="font-bold">PN = 200 + 50 = 250</p>
+                                    <p className="font-bold">PNC = 100</p>
+                                    <p className="font-bold">PC = 50</p>
+                                    <p className="font-bold mt-1">{lang === 'es' ? 'Total' : lang === 'en' ? 'Total' : 'Total'} = 400</p>
+                                </div>
+                            </div>
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Fondo de Maniobra' : lang === 'en' ? 'Working Capital' : 'Fons de Maniobra'}`}>
+                            <FormulaBox formula="FM = AC − PC = 100 − 50 = 50" />
+                            <ResultBox><p>FM = 50 ({lang === 'es' ? 'positivo → equilibrio financiero' : lang === 'en' ? 'positive → financial balance' : 'positiu → equilibri financer'})</p></ResultBox>
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Ratios' : lang === 'en' ? 'Ratios' : 'Ràtios'}`}>
+                            <FormulaBox formula={`${lang === 'es' ? 'Liquidez' : lang === 'en' ? 'Liquidity' : 'Liquiditat'} = AC/PC = 100/50 = 2,00`} desc={lang === 'es' ? 'Óptimo: 1,5-2. Correcto.' : lang === 'en' ? 'Optimal: 1.5-2. Good.' : 'Òptim: 1,5-2. Correcte.'} />
+                            <FormulaBox formula={`${lang === 'es' ? 'Endeudamiento' : lang === 'en' ? 'Debt ratio' : 'Endeutament'} = (PNC+PC) / Total = 150/400 = 0,375`} desc={lang === 'es' ? 'Óptimo: 0,4-0,6. Bajo endeudamiento.' : lang === 'en' ? 'Optimal: 0.4-0.6. Low debt.' : 'Òptim: 0,4-0,6. Baix endeutament.'} />
+                            <FormulaBox formula={`${lang === 'es' ? 'Autonomía' : lang === 'en' ? 'Autonomy' : 'Autonomia'} = PN / Total = 250/400 = 0,625`} desc={lang === 'es' ? 'Óptimo: 0,4-0,6. Alta autonomía.' : lang === 'en' ? 'Optimal: 0.4-0.6. High autonomy.' : 'Òptim: 0,4-0,6. Alta autonomia.'} />
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 18 */}
+            <Exercise
+                num={18}
+                origin={lang === 'es' ? 'Castilla-La Mancha' : lang === 'en' ? 'Castile-La Mancha' : 'Castella-la Manxa'}
+                difficulty={2}
+                tema={lang === 'es' ? 'Tema 30' : 'Tema 30'}
+                statement={
+                    <div>
+                        <p>{lang === 'es' ? 'Una empresa debe elegir entre dos máquinas:' : lang === 'en' ? 'A firm must choose between two machines:' : 'Una empresa ha de triar entre dues màquines:'}</p>
+                        <div className="mt-2 text-xs space-y-1 bg-slate-50 p-3 rounded-lg">
+                            <p><strong>{lang === 'es' ? 'Máquina A:' : lang === 'en' ? 'Machine A:' : 'Màquina A:'}</strong> {lang === 'es' ? 'Coste' : lang === 'en' ? 'Cost' : 'Cost'} 20.000€, {lang === 'es' ? 'ingresos netos anuales' : lang === 'en' ? 'annual net revenue' : 'ingressos nets anuals'} 7.000€ × 4 {lang === 'es' ? 'años' : lang === 'en' ? 'years' : 'anys'}, VR = 2.000€</p>
+                            <p><strong>{lang === 'es' ? 'Máquina B:' : lang === 'en' ? 'Machine B:' : 'Màquina B:'}</strong> {lang === 'es' ? 'Coste' : lang === 'en' ? 'Cost' : 'Cost'} 30.000€, {lang === 'es' ? 'ingresos netos anuales' : lang === 'en' ? 'annual net revenue' : 'ingressos nets anuals'} 10.000€ × 4 {lang === 'es' ? 'años' : lang === 'en' ? 'years' : 'anys'}, VR = 5.000€</p>
+                            <p>{lang === 'es' ? 'Tasa de descuento: 10%' : lang === 'en' ? 'Discount rate: 10%' : 'Taxa de descompte: 10%'}</p>
+                        </div>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Selecciona la mejor inversión por VAN.' : lang === 'en' ? 'Select the best investment by NPV.' : 'Selecciona la millor inversió per VAN.'}</li>
+                            <li>{lang === 'es' ? 'Calcula el Payback descontado de cada inversión.' : lang === 'en' ? 'Calculate the discounted Payback of each investment.' : 'Calcula el Payback descomptat de cada inversió.'}</li>
+                            <li>{lang === 'es' ? 'Si las máquinas tuvieran diferente vida útil, ¿cómo resolverías el problema?' : lang === 'en' ? 'If the machines had different useful lives, how would you solve the problem?' : 'Si les màquines tingueren diferent vida útil, com resoldries el problema?'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label="a) VAN">
+                            <p><strong>{lang === 'es' ? 'Máquina A' : lang === 'en' ? 'Machine A' : 'Màquina A'}:</strong> ({lang === 'es' ? 'año 4: 7.000+2.000=9.000' : lang === 'en' ? 'year 4: 7,000+2,000=9,000' : 'any 4: 7.000+2.000=9.000'})</p>
+                            <FormulaBox formula="VAN_A = −20.000 + 7.000/1,1 + 7.000/1,1² + 7.000/1,1³ + 9.000/1,1⁴" />
+                            <FormulaBox formula="VAN_A = −20.000 + 6.363,64 + 5.785,12 + 5.259,20 + 6.147,12" />
+                            <FormulaBox formula="VAN_A = 3.555,09€" />
+                            <p><strong>{lang === 'es' ? 'Máquina B' : lang === 'en' ? 'Machine B' : 'Màquina B'}:</strong> ({lang === 'es' ? 'año 4: 10.000+5.000=15.000' : lang === 'en' ? 'year 4: 10,000+5,000=15,000' : 'any 4: 10.000+5.000=15.000'})</p>
+                            <FormulaBox formula="VAN_B = −30.000 + 10.000/1,1 + 10.000/1,1² + 10.000/1,1³ + 15.000/1,1⁴" />
+                            <FormulaBox formula="VAN_B = −30.000 + 9.090,91 + 8.264,46 + 7.513,15 + 10.245,20" />
+                            <FormulaBox formula="VAN_B = 5.113,72€" />
+                            <ResultBox><p>VAN_B (5.113,72€) &gt; VAN_A (3.555,09€) → {lang === 'es' ? 'Máquina B' : lang === 'en' ? 'Machine B' : 'Màquina B'}</p></ResultBox>
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Payback descontado' : lang === 'en' ? 'Discounted Payback' : 'Payback descomptat'}`}>
+                            <p><strong>{lang === 'es' ? 'Máquina A:' : lang === 'en' ? 'Machine A:' : 'Màquina A:'}</strong></p>
+                            <p className="text-xs">{lang === 'es' ? 'Acumulado descontado:' : lang === 'en' ? 'Discounted cumulative:' : 'Acumulat descomptat:'} 6.363,64 → 12.148,76 → 17.407,96 → 23.555,09</p>
+                            <FormulaBox formula="Payback_A ≈ 3 + (20.000 − 17.407,96) / 6.147,12 ≈ 3,42 {lang === 'es' ? 'años' : lang === 'en' ? 'years' : 'anys'}" />
+                            <p><strong>{lang === 'es' ? 'Máquina B:' : lang === 'en' ? 'Machine B:' : 'Màquina B:'}</strong></p>
+                            <p className="text-xs">{lang === 'es' ? 'Acumulado descontado:' : lang === 'en' ? 'Discounted cumulative:' : 'Acumulat descomptat:'} 9.090,91 → 17.355,37 → 24.868,52 → 35.113,72</p>
+                            <FormulaBox formula="Payback_B ≈ 3 + (30.000 − 24.868,52) / 10.245,20 ≈ 3,50 {lang === 'es' ? 'años' : lang === 'en' ? 'years' : 'anys'}" />
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Vida útil diferent' : lang === 'en' ? 'Different useful lives' : 'Vida útil diferent'}`}>
+                            <InterpretBox>
+                                <p>{lang === 'es' ? 'Cuando las inversiones tienen diferente vida útil, el VAN no es directamente comparable. Se utilitza el VAN anualitzat (Equivalent Annual Annuity):' : lang === 'en' ? 'When investments have different useful lives, NPV is not directly comparable. Use the Equivalent Annual Annuity (EAA):' : 'Quan les inversions tenen diferent vida útil, el VAN no és directament comparable. S\'utilitza el VAN anualitzat (Equivalent Annual Annuity):'}</p>
+                                <p className="mt-1 font-mono text-xs">EAA = VAN × i / (1 − (1+i)⁻ⁿ)</p>
+                            </InterpretBox>
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 19 */}
+            <Exercise
+                num={19}
+                origin={lang === 'es' ? 'Aragón' : lang === 'en' ? 'Aragon' : 'Aragó'}
+                difficulty={2}
+                tema={lang === 'es' ? 'Tema 24' : 'Tema 24'}
+                statement={
+                    <div>
+                        <p>{lang === 'es' ? 'Una empresa produce dos líneas de productos:' : lang === 'en' ? 'A firm produces two product lines:' : 'Una empresa produeix dues línies de productes:'}</p>
+                        <div className="mt-2 text-xs space-y-1 bg-slate-50 p-3 rounded-lg">
+                            <p><strong>{lang === 'es' ? 'Producto A:' : lang === 'en' ? 'Product A:' : 'Producte A:'}</strong> 500u, {lang === 'es' ? 'precio' : lang === 'en' ? 'price' : 'preu'} 40€, CVu 25€</p>
+                            <p><strong>{lang === 'es' ? 'Producto B:' : lang === 'en' ? 'Product B:' : 'Producte B:'}</strong> 300u, {lang === 'es' ? 'precio' : lang === 'en' ? 'price' : 'preu'} 60€, CVu 35€</p>
+                            <p><strong>{lang === 'es' ? 'Costes fijos totales:' : lang === 'en' ? 'Total fixed costs:' : 'Costs fixos totals:'}</strong> 15.000€</p>
+                        </div>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Calcula el margen de contribución unitario y total de cada producto.' : lang === 'en' ? 'Calculate the unit and total contribution margin for each product.' : 'Calcula el marge de contribució unitari i total de cada producte.'}</li>
+                            <li>{lang === 'es' ? 'Calcula el beneficio total.' : lang === 'en' ? 'Calculate total profit.' : 'Calcula el benefici total.'}</li>
+                            <li>{lang === 'es' ? 'Si la empresa debe eliminar un producto para reducir costes fijos en 5.000€, ¿cuál debería eliminar?' : lang === 'en' ? 'If the firm must eliminate one product to reduce fixed costs by €5,000, which should it eliminate?' : 'Si l\'empresa ha de decidir eliminar un producte per reduir costs fixos en 5.000€, quin hauria d\'eliminar?'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Margen de contribución' : lang === 'en' ? 'Contribution margin' : 'Marge de contribució'}`}>
+                            <FormulaBox formula="MCu_A = 40 − 25 = 15€ | MCt_A = 15 × 500 = 7.500€" />
+                            <FormulaBox formula="MCu_B = 60 − 35 = 25€ | MCt_B = 25 × 300 = 7.500€" />
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Beneficio total' : lang === 'en' ? 'Total profit' : 'Benefici total'}`}>
+                            <FormulaBox formula="B = MCt_A + MCt_B − CF = 7.500 + 7.500 − 15.000 = 0€" />
+                            <ResultBox><p>{lang === 'es' ? 'L\'empresa és al punt mort (B = 0)' : lang === 'en' ? 'The firm is at break-even (B = 0)' : 'L\'empresa és al punt mort (B = 0)'}</p></ResultBox>
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Decisión de eliminar producto' : lang === 'en' ? 'Product elimination decision' : 'Decisió d\'eliminar producte'}`}>
+                            <p>{lang === 'es' ? 'Si elimina A:' : lang === 'en' ? 'If A is eliminated:' : 'Si elimina A:'} B = 7.500 − 10.000 = −2.500€</p>
+                            <p>{lang === 'es' ? 'Si elimina B:' : lang === 'en' ? 'If B is eliminated:' : 'Si elimina B:'} B = 7.500 − 10.000 = −2.500€</p>
+                            <InterpretBox>
+                                <p>{lang === 'es' ? 'Ambos productos aportan el mismo margen total (7.500€), pero el MCu de B (25€) es mayor que el de A (15€). Si l\'empresa pot augmentar vendes, convé més mantindre B, ja que cada unitat addicional contribueix més.' : lang === 'en' ? 'Both products contribute the same total margin (€7,500), but B\'s MCu (€25) exceeds A\'s (€15). If the firm can increase sales, it\'s better to keep B, since each additional unit contributes more.' : 'Ambdós productes aporten el mateix marge total (7.500€), però el MCu de B (25€) és major que el d\'A (15€). Si l\'empresa pot augmentar vendes, convé més mantindre B, ja que cada unitat addicional contribueix més.'}</p>
+                            </InterpretBox>
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 20 */}
+            <Exercise
+                num={20}
+                origin={lang === 'es' ? 'Navarra' : lang === 'en' ? 'Navarre' : 'Navarra'}
+                difficulty={2}
+                tema={lang === 'es' ? 'Tema 23' : 'Tema 23'}
+                statement={
+                    <div>
+                        <p>{lang === 'es' ? 'Calcula la productividad de una empresa:' : lang === 'en' ? 'Calculate the productivity of a firm:' : 'Calcula la productivitat d\'una empresa:'}</p>
+                        <div className="mt-2 text-xs space-y-1 bg-slate-50 p-3 rounded-lg">
+                            <p><strong>{lang === 'es' ? 'Producción' : lang === 'en' ? 'Output' : 'Producció'}:</strong> 10.000 u.</p>
+                            <p><strong>{lang === 'es' ? 'Trabajadores' : lang === 'en' ? 'Workers' : 'Treballadors'}:</strong> 20</p>
+                            <p><strong>{lang === 'es' ? 'Horas trabajadas' : lang === 'en' ? 'Hours worked' : 'Hores treballades'}:</strong> 40.000</p>
+                            <p><strong>{lang === 'es' ? 'Coste total factores' : lang === 'en' ? 'Total factor cost' : 'Cost total factors'}:</strong> 500.000€</p>
+                            <p><strong>{lang === 'es' ? 'Ingresos totales' : lang === 'en' ? 'Total revenue' : 'Ingressos totals'}:</strong> 800.000€</p>
+                            <p><strong>{lang === 'es' ? 'Activo total' : lang === 'en' ? 'Total assets' : 'Actiu total'}:</strong> 2.000.000€</p>
+                        </div>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Productividad del trabajo (por trabajador y por hora).' : lang === 'en' ? 'Labour productivity (per worker and per hour).' : 'Productivitat del treball (per treballador i per hora).'}</li>
+                            <li>{lang === 'es' ? 'Productividad global (en términos monetarios).' : lang === 'en' ? 'Global productivity (in monetary terms).' : 'Productivitat global (en termes monetaris).'}</li>
+                            <li>{lang === 'es' ? 'Rentabilidad económica (ROA) si el activo total es 2.000.000€.' : lang === 'en' ? 'Return on assets (ROA) if total assets are €2,000,000.' : 'Rendibilitat econòmica (ROA) si l\'actiu total és 2.000.000€.'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Productividad del trabajo' : lang === 'en' ? 'Labour productivity' : 'Productivitat del treball'}`}>
+                            <FormulaBox formula={`Pt (${lang === 'es' ? 'trab.' : lang === 'en' ? 'worker' : 'treb.'}) = 10.000 / 20 = 500 u/${lang === 'es' ? 'trabajador' : lang === 'en' ? 'worker' : 'treballador'}`} />
+                            <FormulaBox formula={`Pt (${lang === 'es' ? 'hora' : lang === 'en' ? 'hour' : 'hora'}) = 10.000 / 40.000 = 0,25 u/${lang === 'es' ? 'hora' : lang === 'en' ? 'hour' : 'hora'}`} />
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Productividad global' : lang === 'en' ? 'Global productivity' : 'Productivitat global'}`}>
+                            <FormulaBox formula="Pg = IT / CT = 800.000 / 500.000 = 1,60" />
+                            <ResultBox><p>{lang === 'es' ? 'Por cada 1€ invertido, genera 1,60€' : lang === 'en' ? 'For every €1 invested, generates €1.60' : 'Per cada 1€ invertit, genera 1,60€'}</p></ResultBox>
+                        </Step>
+
+                        <Step label="c) ROA">
+                            <FormulaBox formula={`${lang === 'es' ? 'Beneficio' : lang === 'en' ? 'Profit' : 'Benefici'} = 800.000 − 500.000 = 300.000€`} />
+                            <FormulaBox formula={`ROA = ${lang === 'es' ? 'Beneficio' : lang === 'en' ? 'Profit' : 'Benefici'} / ${lang === 'es' ? 'Activo' : lang === 'en' ? 'Assets' : 'Actiu'} = 300.000 / 2.000.000 = 0,15 = 15%`} />
+                            <ResultBox><p>ROA = 15%</p></ResultBox>
+                        </Step>
+                    </div>
+                }
+            />
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // BLOC 5: COMPTABILITAT
+    // ════════════════════════════════════════════════════════════════
+    const BlocComptabilitat = () => (
+        <div className="space-y-6 animate-fade">
+            <SectionTitle icon="📒" title={t('bloc.comptabilitat')} subtitle={t('bloc.comptabilitat.desc')} />
+
+            {/* Exercise 21 */}
+            <Exercise
+                num={21}
+                origin={lang === 'es' ? 'C. Valenciana' : lang === 'en' ? 'Valencia' : 'C. Valenciana'}
+                difficulty={3}
+                tema={lang === 'es' ? 'Tema 33-34' : 'Tema 33-34'}
+                statement={
+                    <div>
+                        <p>{lang === 'es'
+                            ? 'Realiza los asientos contables siguientes e indica el grupo del PGC:'
+                            : lang === 'en'
+                            ? 'Make the following accounting entries and indicate the PGC group:'
+                            : 'Realitza els assentaments comptables següents i indica el grup del PGC:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-2 space-y-2 text-sm">
+                            <li>{lang === 'es' ? 'Compra de mercaderías por 10.000€ + IVA (21%). Paga el 50% al contado y el resto a 60 días.' : lang === 'en' ? 'Purchase of goods for €10,000 + VAT (21%). Pays 50% cash and the rest at 60 days.' : 'Compra de mercaderies per 10.000€ + IVA (21%). Paga el 50% al comptat i la resta a 60 dies.'}</li>
+                            <li>{lang === 'es' ? 'Vende mercaderías por 15.000€ + IVA (21%). Cobra todo con un efecto comercial.' : lang === 'en' ? 'Sells goods for €15,000 + VAT (21%). Collects everything with a bill of exchange.' : 'Ven mercaderies per 15.000€ + IVA (21%). Cobra tot amb un efecte comercial.'}</li>
+                            <li>{lang === 'es' ? 'A final de año, las existencias finales son de 3.000€ (existencias iniciales: 2.000€).' : lang === 'en' ? 'At year end, closing inventory is €3,000 (opening inventory: €2,000).' : 'A final d\'any, les existències finals són de 3.000€ (existències inicials: 2.000€).'}</li>
+                            <li>{lang === 'es' ? 'Liquida el IVA del período.' : lang === 'en' ? 'Settle the VAT for the period.' : 'Liquida l\'IVA del període.'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Compra de mercaderías' : lang === 'en' ? 'Purchase of goods' : 'Compra de mercaderies'}`}>
+                            <div className="bg-slate-50 rounded-lg p-3 text-xs font-mono space-y-1">
+                                <p className="text-slate-500">——— {lang === 'es' ? 'Debe' : lang === 'en' ? 'Debit' : 'Deure'} ———————— {lang === 'es' ? 'Haber' : lang === 'en' ? 'Credit' : 'Haver'} ———</p>
+                                <p>10.000 (600) {lang === 'es' ? 'Compras merc.' : lang === 'en' ? 'Purchases' : 'Compres merc.'}</p>
+                                <p>&nbsp;2.100 (472) HP IVA {lang === 'es' ? 'soportado' : lang === 'en' ? 'input' : 'suportat'}</p>
+                                <p className="text-right">&nbsp;&nbsp;&nbsp;&nbsp;a (570) {lang === 'es' ? 'Caja' : lang === 'en' ? 'Cash' : 'Caixa'} 6.050</p>
+                                <p className="text-right">&nbsp;&nbsp;&nbsp;&nbsp;a (400) {lang === 'es' ? 'Proveedores' : lang === 'en' ? 'Creditors' : 'Proveïdors'} 6.050</p>
+                            </div>
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Venta de mercaderías' : lang === 'en' ? 'Sale of goods' : 'Venda de mercaderies'}`}>
+                            <div className="bg-slate-50 rounded-lg p-3 text-xs font-mono space-y-1">
+                                <p>18.150 (431) {lang === 'es' ? 'Ef. com. a cobrar' : lang === 'en' ? 'Bills receivable' : 'Ef. com. a cobrar'}</p>
+                                <p className="text-right">&nbsp;&nbsp;&nbsp;&nbsp;a (700) {lang === 'es' ? 'Venta merc.' : lang === 'en' ? 'Sales' : 'Venda merc.'} 15.000</p>
+                                <p className="text-right">&nbsp;&nbsp;&nbsp;&nbsp;a (477) HP IVA {lang === 'es' ? 'repercutido' : lang === 'en' ? 'output' : 'repercutit'} 3.150</p>
+                            </div>
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Variación de existencias' : lang === 'en' ? 'Change in inventory' : 'Variació d\'existències'}`}>
+                            <div className="bg-slate-50 rounded-lg p-3 text-xs font-mono space-y-1">
+                                <p className="font-bold">{lang === 'es' ? '— Dar de baja exist. iniciales —' : lang === 'en' ? '— Write off opening inventory —' : '— Donar de baixa exist. inicials —'}</p>
+                                <p>2.000 (610) Var. exist.</p>
+                                <p className="text-right">&nbsp;&nbsp;&nbsp;&nbsp;a (300) {lang === 'es' ? 'Mercaderías' : lang === 'en' ? 'Goods' : 'Mercaderies'} 2.000</p>
+                                <p className="font-bold mt-2">{lang === 'es' ? '— Dar de alta exist. finales —' : lang === 'en' ? '— Recognise closing inventory —' : '— Donar d\'alta exist. finals —'}</p>
+                                <p>3.000 (300) {lang === 'es' ? 'Mercaderías' : lang === 'en' ? 'Goods' : 'Mercaderies'}</p>
+                                <p className="text-right">&nbsp;&nbsp;&nbsp;&nbsp;a (610) Var. exist. 3.000</p>
+                            </div>
+                            <InterpretBox>
+                                <p>{lang === 'es' ? 'Efecto neto en (610): −2.000 + 3.000 = +1.000€ (ingreso, existencias han aumentado)' : lang === 'en' ? 'Net effect on (610): −2,000 + 3,000 = +1,000€ (income, inventory increased)' : 'Efecte net en (610): −2.000 + 3.000 = +1.000€ (ingrés, existències han augmentat)'}</p>
+                            </InterpretBox>
+                        </Step>
+
+                        <Step label={`d) ${lang === 'es' ? 'Liquidación del IVA' : lang === 'en' ? 'VAT settlement' : 'Liquidació de l\'IVA'}`}>
+                            <FormulaBox formula={`IVA ${lang === 'es' ? 'a pagar' : lang === 'en' ? 'payable' : 'a pagar'} = 3.150 − 2.100 = 1.050€`} />
+                            <div className="bg-slate-50 rounded-lg p-3 text-xs font-mono space-y-1">
+                                <p>3.150 (477) HP IVA {lang === 'es' ? 'repercutido' : lang === 'en' ? 'output' : 'repercutit'}</p>
+                                <p className="text-right">&nbsp;&nbsp;&nbsp;&nbsp;a (472) HP IVA {lang === 'es' ? 'soportado' : lang === 'en' ? 'input' : 'suportat'} 2.100</p>
+                                <p className="text-right">&nbsp;&nbsp;&nbsp;&nbsp;a (4750) HP {lang === 'es' ? 'acreedora' : lang === 'en' ? 'creditor' : 'creditora'} IVA 1.050</p>
+                            </div>
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 22 */}
+            <Exercise
+                num={22}
+                origin={lang === 'es' ? 'Andalucía' : lang === 'en' ? 'Andalusia' : 'Andalusia'}
+                difficulty={2}
+                tema={lang === 'es' ? 'Tema 35' : 'Tema 35'}
+                statement={
+                    <div>
+                        <p>{lang === 'es' ? 'Datos del balance (miles €):' : lang === 'en' ? 'Balance sheet data (thousands €):' : 'Dades del balanç (milers €):'}</p>
+                        <div className="mt-2 text-xs space-y-1 bg-slate-50 p-3 rounded-lg">
+                            <p>ANC: 500 | AC: {lang === 'es' ? 'Exist.' : lang === 'en' ? 'Inv.' : 'Exist.'} 80, {lang === 'es' ? 'Clientes' : lang === 'en' ? 'Debtors' : 'Clients'} 60, {lang === 'es' ? 'Tesorería' : lang === 'en' ? 'Cash' : 'Tresoreria'} 40</p>
+                            <p>PN: 350 | PNC: 200 | PC: 130</p>
+                            <p className="mt-1 font-semibold">{lang === 'es' ? 'Cuenta de resultados:' : lang === 'en' ? 'Income statement:' : 'Compte de resultats:'}</p>
+                            <p>{lang === 'es' ? 'Ventas' : lang === 'en' ? 'Sales' : 'Vendes'}: 600 | {lang === 'es' ? 'Coste ventas' : lang === 'en' ? 'COGS' : 'Cost vendes'}: 350 | {lang === 'es' ? 'Personal' : lang === 'en' ? 'Personnel' : 'Personal'}: 100 | {lang === 'es' ? 'Amort.' : lang === 'en' ? 'Deprec.' : 'Amort.'}: 30 | {lang === 'es' ? 'Gastos fin.' : lang === 'en' ? 'Fin. costs' : 'Desp. fin.'}: 15 | IS: 25%</p>
+                        </div>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Calcula el resultado del ejercicio.' : lang === 'en' ? 'Calculate the net income.' : 'Calcula el resultat de l\'exercici.'}</li>
+                            <li>{lang === 'es' ? 'Calcula las ratios: liquidez general, acid test, tesorería.' : lang === 'en' ? 'Calculate the ratios: current ratio, acid test, cash ratio.' : 'Calcula les ràtios: liquiditat general, acid test, tresoreria.'}</li>
+                            <li>{lang === 'es' ? 'Calcula ROA y ROE.' : lang === 'en' ? 'Calculate ROA and ROE.' : 'Calcula ROA i ROE.'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Resultado del ejercicio' : lang === 'en' ? 'Net income' : 'Resultat de l\'exercici'}`}>
+                            <FormulaBox formula="BAII = 600 − 350 − 100 − 30 = 120" />
+                            <FormulaBox formula="BAI = 120 − 15 = 105" />
+                            <FormulaBox formula="IS = 105 × 0,25 = 26,25" />
+                            <FormulaBox formula="BN = 105 − 26,25 = 78,75" />
+                            <ResultBox><p>BN = 78,75 {lang === 'es' ? 'miles €' : lang === 'en' ? 'thousand €' : 'milers €'}</p></ResultBox>
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Ratios de liquidez' : lang === 'en' ? 'Liquidity ratios' : 'Ràtios de liquiditat'}`}>
+                            <FormulaBox formula={`${lang === 'es' ? 'Liquidez' : lang === 'en' ? 'Current ratio' : 'Liquiditat'} = AC/PC = 180/130 = 1,38`} desc={lang === 'es' ? 'Algo justo (ideal 1,5-2)' : lang === 'en' ? 'Slightly tight (ideal 1.5-2)' : 'Un poc just (ideal 1,5-2)'} />
+                            <FormulaBox formula={`Acid test = (AC − ${lang === 'es' ? 'Exist.' : lang === 'en' ? 'Inv.' : 'Exist.'})/PC = 100/130 = 0,77`} desc={lang === 'es' ? 'Aceptable (ideal ≈ 1)' : lang === 'en' ? 'Acceptable (ideal ≈ 1)' : 'Acceptable (ideal ≈ 1)'} />
+                            <FormulaBox formula={`${lang === 'es' ? 'Tesorería' : lang === 'en' ? 'Cash ratio' : 'Tresoreria'} = ${lang === 'es' ? 'Efectivo' : lang === 'en' ? 'Cash' : 'Efectiu'}/PC = 40/130 = 0,31`} desc={lang === 'es' ? 'Algo bajo (ideal 0,3-0,5)' : lang === 'en' ? 'Slightly low (ideal 0.3-0.5)' : 'Un poc baix (ideal 0,3-0,5)'} />
+                        </Step>
+
+                        <Step label="c) ROA i ROE">
+                            <FormulaBox formula={`ROA = BAII / ${lang === 'es' ? 'Activo' : lang === 'en' ? 'Assets' : 'Actiu'} = 120 / 680 = 17,65%`} />
+                            <FormulaBox formula="ROE = BN / PN = 78,75 / 350 = 22,50%" />
+                            <ResultBox><p>ROA = 17,65% | ROE = 22,50%</p></ResultBox>
+                            <InterpretBox>
+                                <p>{lang === 'es' ? 'ROE > ROA → el apalancamiento financiero es positivo (la deuda está generando valor para los accionistas).' : lang === 'en' ? 'ROE > ROA → financial leverage is positive (debt is creating value for shareholders).' : 'ROE > ROA → el palanquejament financer és positiu (el deute genera valor per als accionistes).'}</p>
+                            </InterpretBox>
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 23 */}
+            <Exercise
+                num={23}
+                origin={lang === 'es' ? 'Madrid' : lang === 'en' ? 'Madrid' : 'Madrid'}
+                difficulty={2}
+                tema={lang === 'es' ? 'Tema 35' : 'Tema 35'}
+                statement={
+                    <div>
+                        <p>{lang === 'es' ? 'Analiza el apalancamiento financiero:' : lang === 'en' ? 'Analyse financial leverage:' : 'Analitza el palanquejament financer:'}</p>
+                        <div className="mt-2 text-xs space-y-1 bg-slate-50 p-3 rounded-lg">
+                            <p><strong>{lang === 'es' ? 'Activo total' : lang === 'en' ? 'Total assets' : 'Actiu total'}:</strong> 1.000.000€</p>
+                            <p><strong>{lang === 'es' ? 'Patrimonio Neto' : lang === 'en' ? 'Equity' : 'Patrimoni Net'}:</strong> 400.000€</p>
+                            <p><strong>{lang === 'es' ? 'Pasivo total' : lang === 'en' ? 'Total liabilities' : 'Passiu total'}:</strong> 600.000€</p>
+                            <p><strong>BAII:</strong> 150.000€</p>
+                            <p><strong>{lang === 'es' ? 'Coste de la deuda (intereses)' : lang === 'en' ? 'Cost of debt (interest)' : 'Cost del deute (interessos)'}:</strong> 8%</p>
+                            <p><strong>{lang === 'es' ? 'Impuesto de Sociedades' : lang === 'en' ? 'Corporate tax' : 'Impost de Societats'}:</strong> 25%</p>
+                        </div>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Calcula la rentabilidad económica (ROA).' : lang === 'en' ? 'Calculate ROA.' : 'Calcula la rendibilitat econòmica (ROA).'}</li>
+                            <li>{lang === 'es' ? 'Calcula la rentabilidad financiera (ROE).' : lang === 'en' ? 'Calculate ROE.' : 'Calcula la rendibilitat financera (ROE).'}</li>
+                            <li>{lang === 'es' ? '¿El apalancamiento financiero es positivo, negativo o neutro? Justifica.' : lang === 'en' ? 'Is financial leverage positive, negative or neutral? Justify.' : 'El palanquejament financer és positiu, negatiu o neutre? Justifica.'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label="a) ROA">
+                            <FormulaBox formula={`ROA = BAII / ${lang === 'es' ? 'Activo' : lang === 'en' ? 'Assets' : 'Actiu'} = 150.000 / 1.000.000 = 15%`} />
+                            <ResultBox><p>ROA = 15%</p></ResultBox>
+                        </Step>
+
+                        <Step label="b) ROE">
+                            <FormulaBox formula={`${lang === 'es' ? 'Intereses' : lang === 'en' ? 'Interest' : 'Interessos'} = 600.000 × 0,08 = 48.000€`} />
+                            <FormulaBox formula="BAI = 150.000 − 48.000 = 102.000€" />
+                            <FormulaBox formula="BN = 102.000 × (1 − 0,25) = 76.500€" />
+                            <FormulaBox formula="ROE = 76.500 / 400.000 = 19,125%" />
+                            <ResultBox><p>ROE = 19,125%</p></ResultBox>
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Tipo de apalancamiento' : lang === 'en' ? 'Type of leverage' : 'Tipus de palanquejament'}`}>
+                            <InterpretBox>
+                                <p><strong>ROA (15%) &gt; {lang === 'es' ? 'Coste deuda' : lang === 'en' ? 'Cost of debt' : 'Cost deute'} (8%)</strong></p>
+                                <p className="mt-1">{lang === 'es' ? 'El apalancamiento es POSITIVO: la rentabilidad que la empresa obtiene de sus activos (15%) es superior al coste de la deuda (8%). La diferencia beneficia a los accionistas, elevando el ROE (19,125%) por encima del ROA.' : lang === 'en' ? 'Leverage is POSITIVE: the return the firm earns on its assets (15%) exceeds the cost of debt (8%). The difference benefits shareholders, pushing ROE (19.125%) above ROA.' : 'El palanquejament és POSITIU: la rendibilitat que l\'empresa obté dels seus actius (15%) és superior al cost del deute (8%). La diferència beneficia els accionistes, elevant el ROE (19,125%) per damunt del ROA.'}</p>
+                            </InterpretBox>
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 24 */}
+            <Exercise
+                num={24}
+                origin={lang === 'es' ? 'Galicia' : lang === 'en' ? 'Galicia' : 'Galícia'}
+                difficulty={1}
+                tema={lang === 'es' ? 'Tema 33' : 'Tema 33'}
+                statement={
+                    <div>
+                        <p>{lang === 'es' ? 'Clasifica los siguientes elementos patrimoniales y elabora el balance:' : lang === 'en' ? 'Classify the following assets and liabilities and prepare the balance sheet:' : 'Classifica els següents elements patrimonials i elabora el balanç:'}</p>
+                        <div className="mt-2 grid grid-cols-2 gap-2 text-xs bg-slate-50 p-3 rounded-lg">
+                            <div>{lang === 'es' ? 'Construcciones' : lang === 'en' ? 'Buildings' : 'Construccions'}: 200.000</div>
+                            <div>{lang === 'es' ? 'Maquinaria' : lang === 'en' ? 'Machinery' : 'Maquinària'}: 80.000</div>
+                            <div>{lang === 'es' ? 'Existencias' : lang === 'en' ? 'Inventory' : 'Existències'}: 25.000</div>
+                            <div>{lang === 'es' ? 'Clientes' : lang === 'en' ? 'Debtors' : 'Clients'}: 15.000</div>
+                            <div>{lang === 'es' ? 'Bancos' : lang === 'en' ? 'Cash at bank' : 'Bancs'}: 10.000</div>
+                            <div>{lang === 'es' ? 'Capital social' : lang === 'en' ? 'Share capital' : 'Capital social'}: 180.000</div>
+                            <div>{lang === 'es' ? 'Reservas' : lang === 'en' ? 'Reserves' : 'Reserves'}: 50.000</div>
+                            <div>{lang === 'es' ? 'Préstamos L/P' : lang === 'en' ? 'LT Loans' : 'Préstecs LL/T'}: 60.000</div>
+                            <div>{lang === 'es' ? 'Proveedores' : lang === 'en' ? 'Creditors' : 'Proveïdors'}: 20.000</div>
+                            <div>{lang === 'es' ? 'Deudas C/P' : lang === 'en' ? 'ST Debts' : 'Deutes C/T'}: 20.000</div>
+                        </div>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Elabora el balance de situación.' : lang === 'en' ? 'Prepare the balance sheet.' : 'Elabora el balanç de situació.'}</li>
+                            <li>{lang === 'es' ? 'Comprueba que ACTIVO = PN + PASIVO.' : lang === 'en' ? 'Verify that ASSETS = EQUITY + LIABILITIES.' : 'Comprova que ACTIU = PN + PASSIU.'}</li>
+                            <li>{lang === 'es' ? 'Calcula el fondo de maniobra e interprétalo.' : lang === 'en' ? 'Calculate working capital and interpret it.' : 'Calcula el fons de maniobra i interpreta\'l.'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Balance de situación' : lang === 'en' ? 'Balance sheet' : 'Balanç de situació'}`}>
+                            <div className="grid grid-cols-2 gap-3 text-xs">
+                                <div className="bg-blue-50 p-3 rounded-lg">
+                                    <p className="font-bold text-blue-800 mb-2">{lang === 'es' ? 'ACTIVO' : lang === 'en' ? 'ASSETS' : 'ACTIU'}</p>
+                                    <p className="font-semibold">ANC: 280.000</p>
+                                    <p className="pl-2 text-slate-600">{lang === 'es' ? 'Construcciones' : lang === 'en' ? 'Buildings' : 'Construccions'} 200.000</p>
+                                    <p className="pl-2 text-slate-600">{lang === 'es' ? 'Maquinaria' : lang === 'en' ? 'Machinery' : 'Maquinària'} 80.000</p>
+                                    <p className="font-semibold mt-1">AC: 50.000</p>
+                                    <p className="pl-2 text-slate-600">{lang === 'es' ? 'Existencias' : lang === 'en' ? 'Inventory' : 'Existències'} 25.000</p>
+                                    <p className="pl-2 text-slate-600">{lang === 'es' ? 'Clientes' : lang === 'en' ? 'Debtors' : 'Clients'} 15.000</p>
+                                    <p className="pl-2 text-slate-600">{lang === 'es' ? 'Bancos' : lang === 'en' ? 'Cash' : 'Bancs'} 10.000</p>
+                                    <p className="font-bold mt-2 border-t pt-1">Total: 330.000</p>
+                                </div>
+                                <div className="bg-red-50 p-3 rounded-lg">
+                                    <p className="font-bold text-red-800 mb-2">PN + {lang === 'es' ? 'PASIVO' : lang === 'en' ? 'LIAB.' : 'PASSIU'}</p>
+                                    <p className="font-semibold">PN: 230.000</p>
+                                    <p className="pl-2 text-slate-600">{lang === 'es' ? 'Capital' : lang === 'en' ? 'Capital' : 'Capital'} 180.000</p>
+                                    <p className="pl-2 text-slate-600">{lang === 'es' ? 'Reservas' : lang === 'en' ? 'Reserves' : 'Reserves'} 50.000</p>
+                                    <p className="font-semibold mt-1">PNC: 60.000</p>
+                                    <p className="pl-2 text-slate-600">{lang === 'es' ? 'Préstamos' : lang === 'en' ? 'Loans' : 'Préstecs'} 60.000</p>
+                                    <p className="font-semibold mt-1">PC: 40.000</p>
+                                    <p className="pl-2 text-slate-600">{lang === 'es' ? 'Proveedores' : lang === 'en' ? 'Creditors' : 'Proveïdors'} 20.000</p>
+                                    <p className="pl-2 text-slate-600">{lang === 'es' ? 'Deudas C/P' : lang === 'en' ? 'ST Debts' : 'Deutes C/T'} 20.000</p>
+                                    <p className="font-bold mt-2 border-t pt-1">Total: 330.000</p>
+                                </div>
+                            </div>
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Verificación' : lang === 'en' ? 'Verification' : 'Verificació'}`}>
+                            <FormulaBox formula={`${lang === 'es' ? 'Activo' : lang === 'en' ? 'Assets' : 'Actiu'} = PN + ${lang === 'es' ? 'Pasivo' : lang === 'en' ? 'Liabilities' : 'Passiu'} → 330.000 = 330.000 ✓`} />
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Fondo de maniobra' : lang === 'en' ? 'Working capital' : 'Fons de maniobra'}`}>
+                            <FormulaBox formula="FM = AC − PC = 50.000 − 40.000 = 10.000€" />
+                            <ResultBox><p>FM = 10.000€ ({lang === 'es' ? 'positivo' : lang === 'en' ? 'positive' : 'positiu'})</p></ResultBox>
+                            <InterpretBox>
+                                <p>{lang === 'es' ? 'El FM positivo indica que la empresa puede hacer frente a los pagos a corto plazo. L\'empresa presenta equilibri financer, encara que el FM podria ser un poc major per a tindre un marge de seguretat superior.' : lang === 'en' ? 'A positive WC indicates the firm can meet short-term obligations. The company shows financial balance, though WC could be slightly higher for a greater safety margin.' : 'El FM positiu indica que l\'empresa pot fer front als pagaments a curt termini. L\'empresa presenta equilibri financer, encara que el FM podria ser un poc major per a tindre un marge de seguretat superior.'}</p>
+                            </InterpretBox>
+                        </Step>
+                    </div>
+                }
+            />
+
+            {/* Exercise 25 */}
+            <Exercise
+                num={25}
+                origin={lang === 'es' ? 'Murcia' : lang === 'en' ? 'Murcia' : 'Múrcia'}
+                difficulty={2}
+                tema={lang === 'es' ? 'Tema 35' : 'Tema 35'}
+                statement={
+                    <div>
+                        <p>{lang === 'es' ? 'Con el siguiente cuenta de resultados (en miles €):' : lang === 'en' ? 'With the following income statement (in thousands €):' : 'Amb el següent compte de resultats (en milers €):'}</p>
+                        <div className="mt-2 text-xs space-y-1 bg-slate-50 p-3 rounded-lg">
+                            <p>{lang === 'es' ? 'Ingresos de explotación' : lang === 'en' ? 'Operating revenue' : 'Ingressos d\'explotació'}: 500</p>
+                            <p>{lang === 'es' ? 'Aprovisionamientos' : lang === 'en' ? 'Supplies' : 'Aprovisionaments'}: −200</p>
+                            <p>{lang === 'es' ? 'Gastos de personal' : lang === 'en' ? 'Personnel costs' : 'Despeses de personal'}: −120</p>
+                            <p>{lang === 'es' ? 'Amortizaciones' : lang === 'en' ? 'Depreciation' : 'Amortitzacions'}: −30</p>
+                            <p>{lang === 'es' ? 'Otros gastos de explotación' : lang === 'en' ? 'Other operating costs' : 'Altres despeses d\'explotació'}: −50</p>
+                            <p>{lang === 'es' ? 'Ingresos financieros' : lang === 'en' ? 'Financial income' : 'Ingressos financers'}: 5</p>
+                            <p>{lang === 'es' ? 'Gastos financieros' : lang === 'en' ? 'Financial costs' : 'Despeses financeres'}: −25</p>
+                        </div>
+                        <p className="mt-2 font-semibold">{lang === 'es' ? 'Se pide:' : lang === 'en' ? 'Find:' : 'Es demana:'}</p>
+                        <ol className="list-[lower-alpha] list-inside mt-1 space-y-1">
+                            <li>{lang === 'es' ? 'Calcula EBITDA, BAII, BAI y Beneficio Neto (IS=25%).' : lang === 'en' ? 'Calculate EBITDA, EBIT, EBT and Net Income (tax=25%).' : 'Calcula EBITDA, BAII, BAI i Benefici Net (IS=25%).'}</li>
+                            <li>{lang === 'es' ? 'Calcula los márgenes: margen bruto, margen operativo, margen neto.' : lang === 'en' ? 'Calculate the margins: gross, operating and net margin.' : 'Calcula els marges: marge brut, marge operatiu, marge net.'}</li>
+                            <li>{lang === 'es' ? 'Interpreta los resultados.' : lang === 'en' ? 'Interpret the results.' : 'Interpreta els resultats.'}</li>
+                        </ol>
+                    </div>
+                }
+                solution={
+                    <div>
+                        <Step label={`a) ${lang === 'es' ? 'Resultados escalonados' : lang === 'en' ? 'Stepped results' : 'Resultats escalonats'}`}>
+                            <FormulaBox formula="EBITDA = 500 − 200 − 120 − 50 = 130" desc={lang === 'es' ? 'Resultado de explotación antes de amortizaciones' : lang === 'en' ? 'Earnings before interest, taxes, depreciation and amortisation' : 'Resultat d\'explotació abans d\'amortitzacions'} />
+                            <FormulaBox formula="BAII = EBITDA − 30 = 100" desc={lang === 'es' ? 'Resultado de explotación (EBIT)' : lang === 'en' ? 'Operating profit (EBIT)' : 'Resultat d\'explotació (EBIT)'} />
+                            <FormulaBox formula="BAI = 100 + 5 − 25 = 80" desc={lang === 'es' ? 'Resultado antes de impuestos (EBT)' : lang === 'en' ? 'Earnings before tax (EBT)' : 'Resultat abans d\'impostos (EBT)'} />
+                            <FormulaBox formula="BN = 80 × (1 − 0,25) = 60" desc={lang === 'es' ? 'Beneficio neto (Net Income)' : lang === 'en' ? 'Net income' : 'Benefici net (Net Income)'} />
+                            <ResultBox><p>EBITDA = 130 | BAII = 100 | BAI = 80 | BN = 60</p></ResultBox>
+                        </Step>
+
+                        <Step label={`b) ${lang === 'es' ? 'Márgenes' : lang === 'en' ? 'Margins' : 'Marges'}`}>
+                            <FormulaBox formula={`${lang === 'es' ? 'Margen bruto' : lang === 'en' ? 'Gross margin' : 'Marge brut'} = (500 − 200) / 500 = 60%`} />
+                            <FormulaBox formula={`${lang === 'es' ? 'Margen operativo' : lang === 'en' ? 'Operating margin' : 'Marge operatiu'} = BAII / ${lang === 'es' ? 'Ventas' : lang === 'en' ? 'Sales' : 'Vendes'} = 100 / 500 = 20%`} />
+                            <FormulaBox formula={`${lang === 'es' ? 'Margen neto' : lang === 'en' ? 'Net margin' : 'Marge net'} = BN / ${lang === 'es' ? 'Ventas' : lang === 'en' ? 'Sales' : 'Vendes'} = 60 / 500 = 12%`} />
+                        </Step>
+
+                        <Step label={`c) ${lang === 'es' ? 'Interpretación' : lang === 'en' ? 'Interpretation' : 'Interpretació'}`}>
+                            <InterpretBox>
+                                <p>{lang === 'es' ? 'La empresa genera un buen margen bruto (60%), lo que indica que controla bien el coste de sus aprovisionamientos. El margen operativo (20%) es sólido, mostrando eficiencia en la gestión operativa.' : lang === 'en' ? 'The firm generates a good gross margin (60%), indicating good control over supply costs. The operating margin (20%) is solid, showing operational efficiency.' : 'L\'empresa genera un bon marge brut (60%), la qual cosa indica que controla bé el cost dels seus aprovisionaments. El marge operatiu (20%) és sòlid, mostrant eficiència en la gestió operativa.'}</p>
+                                <p className="mt-1">{lang === 'es' ? 'El margen neto (12%) se ve reducido significativamente por los gastos financieros (25 mil €), lo que sugiere un nivel de endeudamiento relevante. La diferencia entre EBITDA (130) y BN (60) señala el impacto del endeudamiento y la fiscalidad.' : lang === 'en' ? 'The net margin (12%) is significantly reduced by financial costs (€25k), suggesting a relevant level of debt. The gap between EBITDA (130) and Net Income (60) highlights the impact of debt and taxation.' : 'El marge net (12%) es veu reduït significativament per les despeses financeres (25 mil €), la qual cosa suggereix un nivell d\'endeutament rellevant. La diferència entre EBITDA (130) i BN (60) assenyala l\'impacte de l\'endeutament i la fiscalitat.'}</p>
+                            </InterpretBox>
+                        </Step>
+                    </div>
+                }
+            />
+        </div>
+    );
+
+    // ════════════════════════════════════════════════════════════════
+    // NAVIGATION AND RENDER
+    // ════════════════════════════════════════════════════════════════
+    var headerSections = [
+        { id: 'inicio', label: t('sec.inicio'), emoji: '🏠' },
+        { id: 'micro', label: t('sec.micro'), emoji: '📊' },
+        { id: 'macro', label: t('sec.macro'), emoji: '🌐' },
+        { id: 'finances', label: t('sec.finances'), emoji: '🏦' },
+        { id: 'empresa', label: t('sec.empresa'), emoji: '🏢' },
+        { id: 'comptabilitat', label: t('sec.comptabilitat'), emoji: '📒' },
+    ];
+
+    return (
+        <div className="min-h-screen">
+            <PdeHeader
+                idioma={idioma}
+                setIdioma={(lang) => { setIdioma(lang); PdeLanguageStore.set(lang); }}
+                currentApp="oposicions-practica"
+                sections={headerSections}
+                currentSection={section}
+                setSection={setSection}
+            />
+
+            <main className="max-w-7xl mx-auto px-4 py-8">
+                {section === 'inicio' && <Inicio />}
+                {section === 'micro' && <BlocMicro />}
+                {section === 'macro' && <BlocMacro />}
+                {section === 'finances' && <BlocFinances />}
+                {section === 'empresa' && <BlocEmpresa />}
+                {section === 'comptabilitat' && <BlocComptabilitat />}
+            </main>
+
+            <PdePrevNext sections={headerSections} currentSection={section} setSection={setSection} idioma={idioma} />
+            <PdeFooter appEmoji="🧮" appName={t('footer.appname')} idioma={idioma} />
+            <PdeScrollToTop />
+        </div>
+    );
+}
+
+ReactDOM.render(<PracticaApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
