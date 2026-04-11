@@ -136,6 +136,7 @@ function OposicionsApp() {
         'prog.lang.gallec': { val: 'Gallec', es: 'Gallego', en: 'Galician' },
         'prog.lang.euskara': { val: 'Euskara', es: 'Euskera', en: 'Basque' },
         'prog.lang.valencia': { val: 'Valencià', es: 'Valenciano', en: 'Valencian' },
+        'prog.convocatoria': { val: 'Consulta sempre la convocatòria oficial vigent de cada comunitat per a detalls exactes de format, terminis i requisits.', es: 'Consulta siempre la convocatoria oficial vigente de cada comunidad para detalles exactos de formato, plazos y requisitos.', en: 'Always check the current official call of each community for exact format, deadline and requirement details.' },
     };
 
     const t = createTranslator(pageTranslations, idioma);
@@ -272,6 +273,181 @@ function OposicionsApp() {
         { id: 'ceu', name: { val: 'Ceuta', es: 'Ceuta', en: 'Ceuta' }, dot: 'bg-blue-500' },
         { id: 'mel', name: { val: 'Melilla', es: 'Melilla', en: 'Melilla' }, dot: 'bg-blue-500' },
     ];
+
+    // ─── CCAA details data ──────────────────────────────────────────
+    var ccaaDetails = {
+        cv: {
+            decrees: ['Decret 107/2022 (ESO)', 'Decret 108/2022 (Batxillerat)'],
+            subjects: ['FOPP 4t ESO', 'Economia i Emprenedoria 4t ESO', 'Economia 1r BATX', 'EDMN 2n BATX'],
+            info: {
+                val: "Requisit C1 de valencià per a places en línia en valencià. Programació basada en Situacions d'Aprenentatge (SA), mínim 12. Defensa oral: 30 min exposició + 30 min debat. Pes: 30% programació, 70% SA.",
+                es: "Requisito C1 de valenciano para plazas en línea en valenciano. Programación basada en Situaciones de Aprendizaje (SA), mínimo 12. Defensa oral: 30 min exposición + 30 min debate. Peso: 30% programación, 70% SA.",
+                en: "C1 Valencian required for Valencian-track positions. Programming based on Learning Situations (SA), minimum 12. Oral defense: 30 min presentation + 30 min debate. Weight: 30% programming, 70% SA."
+            }
+        },
+        and: {
+            decrees: ['Decreto 102/2023 (ESO)', 'Decreto 103/2023 (Bachillerato)'],
+            subjects: ['Economía y Emprendimiento 4ESO', 'Economía 1BACH', 'EDMN 2BACH'],
+            info: {
+                val: "Major nombre de places habitualment. Màx. 60 pàg. DIN A4, Times New Roman 12, interlineat senzill. Mínim 12 UD. Document de 5 pàg. per UD en defensa. Defensa: 1h.",
+                es: "Mayor número de plazas habitualmente. Máx. 60 págs. DIN A4, Times New Roman 12, interlineado sencillo. Mínimo 12 UD. Documento de 5 págs. por UD en defensa. Defensa: 1h.",
+                en: "Usually highest number of positions. Max 60 A4 pages, Times New Roman 12, single spacing. Minimum 12 UD. 5-page UD document in defense. Defense: 1h."
+            }
+        },
+        ara: {
+            decrees: ['Orden ECD/1172/2022 (ESO)', 'Orden ECD/1173/2022 (Bachillerato)'],
+            subjects: ['Economía y Emprendimiento 4ESO', 'Economía 1BACH', 'EDMN 2BACH'],
+            info: {
+                val: "Normativa per ordres (no decrets). Currículum aragonès específic amb competències clau pròpies. Consultar BOA per a convocatòria.",
+                es: "Normativa por órdenes (no decretos). Currículo aragonés específico con competencias clave propias. Consultar BOA para convocatoria.",
+                en: "Regulations via orders (not decrees). Specific Aragonese curriculum with own key competencies. Check BOA for call."
+            }
+        },
+        ast: {
+            decrees: ['Decreto 59/2022 (ESO)', 'Decreto 60/2022 (Bachillerato)'],
+            subjects: ['Economía y Emprendimiento 4ESO', 'Economía 1BACH', 'EDMN 2BACH'],
+            info: {
+                val: "Optativa pròpia: Projecte d'Emprenedoria Social o Empresarial a 3r ESO (2h). Poques places habitualment. Consultar BOPA.",
+                es: "Optativa propia: Proyecto de Emprendimiento Social o Empresarial en 3º ESO (2h). Pocas plazas habitualmente. Consultar BOPA.",
+                en: "Own elective: Social/Business Entrepreneurship Project in Year 9 (2h). Usually few positions. Check BOPA."
+            }
+        },
+        bal: {
+            decrees: ['Decret 32/2022 (ESO)', 'Decret 33/2022 (Batxillerat)'],
+            subjects: ['Economia i Emprenedoria 4t ESO', 'Economia 1r BATX', 'EDMN 2n BATX'],
+            info: {
+                val: "Requisit de competència en català per a l'exercici docent. Programació en català o castellà. SA obligatòries amb currículum balear.",
+                es: "Requisito de competencia en catalán para el ejercicio docente. Programación en catalán o castellano. SA obligatorias con currículo balear.",
+                en: "Catalan competence required for teaching. Programming in Catalan or Spanish. Mandatory SA with Balearic curriculum."
+            }
+        },
+        can: {
+            decrees: ['Decreto 30/2023 (ESO i Bachillerato)'],
+            subjects: ['Economía y Emprendimiento 4ESO', 'Economía 1BACH', 'EDMN 2BACH'],
+            info: {
+                val: "Decret únic per a ESO i Batxillerat. Sense requisit lingüístic addicional. Nombre moderat de places. Consultar BOC.",
+                es: "Decreto único para ESO y Bachillerato. Sin requisito lingüístico adicional. Número moderado de plazas. Consultar BOC.",
+                en: "Single decree for ESO and Bachillerato. No additional language requirement. Moderate positions. Check BOC."
+            }
+        },
+        cnt: {
+            decrees: ['Decreto 73/2022 (ESO i Bachillerato)'],
+            subjects: ['Economía y Emprendimiento 4ESO', 'Economía 1BACH', 'EDMN 2BACH'],
+            info: {
+                val: "Decret únic per a ESO i Batxillerat. Comunitat xicoteta amb poques places. Consultar BOCant.",
+                es: "Decreto único para ESO y Bachillerato. Comunidad pequeña con pocas plazas. Consultar BOCant.",
+                en: "Single decree for ESO and Bachillerato. Small community with few positions. Check BOCant."
+            }
+        },
+        cyl: {
+            decrees: ['Decreto 39/2022 (ESO)', 'Decreto 40/2022 (Bachillerato)'],
+            subjects: ['Economía y Emprendimiento 4ESO', 'Economía 1BACH', 'EDMN 2BACH'],
+            info: {
+                val: "Nombre moderat de places. Mínim 12 UD. Consultar ORDEN EDU/424/2024 (avaluació ESO) i BOCyL per a convocatòria.",
+                es: "Número moderado de plazas. Mínimo 12 UD. Consultar ORDEN EDU/424/2024 (evaluación ESO) y BOCyL para convocatoria.",
+                en: "Moderate positions. Minimum 12 UD. Check ORDEN EDU/424/2024 (ESO evaluation) and BOCyL for call."
+            }
+        },
+        clm: {
+            decrees: ['Decreto 82/2022 (ESO)', 'Decreto 83/2022 (Bachillerato)'],
+            subjects: ['Economía y Emprendimiento 4ESO', 'Economía 1BACH', 'EDMN 2BACH'],
+            info: {
+                val: "Nombre variable de places. Currículum castellanomanxec. Consultar DOCM per a convocatòria específica.",
+                es: "Número variable de plazas. Currículo castellanomanchego. Consultar DOCM para convocatoria específica.",
+                en: "Variable positions. Castilla-La Mancha curriculum. Check DOCM for specific call."
+            }
+        },
+        cat: {
+            decrees: ['Decret 175/2022 (ESO)', 'Decret 171/2022 (Batxillerat)'],
+            subjects: ['Economia i Emprenedoria 4t ESO', 'Economia 1r BATX', 'EDMN 2n BATX'],
+            info: {
+                val: "Requisit de competència en català (C2 / nivell de suficiència). Programació en català. SA obligatòries. Bon nombre de places habitualment.",
+                es: "Requisito de competencia en catalán (C2 / nivel de suficiencia). Programación en catalán. SA obligatorias. Buen número de plazas habitualmente.",
+                en: "Catalan competence required (C2 / sufficiency level). Programming in Catalan. SA mandatory. Usually good number of positions."
+            }
+        },
+        ext: {
+            decrees: ['Decreto 110/2022 (ESO)', 'Decreto 109/2022 (Bachillerato)'],
+            subjects: ['Economía y Emprendimiento 4ESO', 'Economía 1BACH', 'EDMN 2BACH'],
+            info: {
+                val: "Sense requisit lingüístic addicional. Poques places habitualment. Consultar DOE per a convocatòria.",
+                es: "Sin requisito lingüístico adicional. Pocas plazas habitualmente. Consultar DOE para convocatoria.",
+                en: "No additional language requirement. Usually few positions. Check DOE for call."
+            }
+        },
+        gal: {
+            decrees: ['Decreto 156/2022 (ESO)', 'Decreto 157/2022 (Bachillerato)'],
+            subjects: ['Economía y Emprendimiento 4ESO', 'Economía 1BACH', 'EDMN 2BACH'],
+            info: {
+                val: "Requisit de competència en gallec (Celga 4). Programació en gallec o castellà. Nombre moderat de places. Consultar DOG.",
+                es: "Requisito de competencia en gallego (Celga 4). Programación en gallego o castellano. Número moderado de plazas. Consultar DOG.",
+                en: "Galician competence required (Celga 4). Programming in Galician or Spanish. Moderate positions. Check DOG."
+            }
+        },
+        rio: {
+            decrees: ['Decreto 42/2022 (ESO)', 'Decreto 43/2022 (Bachillerato)'],
+            subjects: ['Economía y Emprendimiento 4ESO', 'Economía 1BACH', 'EDMN 2BACH'],
+            info: {
+                val: "Comunitat xicoteta amb molt poques places. Sense requisit lingüístic addicional. Consultar BOR.",
+                es: "Comunidad pequeña con muy pocas plazas. Sin requisito lingüístico adicional. Consultar BOR.",
+                en: "Small community with very few positions. No additional language requirement. Check BOR."
+            }
+        },
+        mad: {
+            decrees: ['Decreto 65/2022 (ESO)', 'Decreto 64/2022 (Bachillerato)'],
+            subjects: ['Economía y Emprendimiento 4ESO', 'Economía 1BACH', 'EDMN 2BACH'],
+            info: {
+                val: "Gran nombre de places. Mínim 12 UD. Pes: 30% programació, 70% UD/SA. Es permet ús de tecnologia en defensa (ordinador, projector). Consultar BOCM.",
+                es: "Gran número de plazas. Mínimo 12 UD. Peso: 30% programación, 70% UD/SA. Se permite uso de tecnología en defensa (ordenador, proyector). Consultar BOCM.",
+                en: "Many positions. Minimum 12 UD. Weight: 30% programming, 70% UD/SA. Technology allowed in defense (computer, projector). Check BOCM."
+            }
+        },
+        mur: {
+            decrees: ['Decreto 235/2022 (ESO)', 'Decreto 251/2022 (Bachillerato)'],
+            subjects: ['Economía y Emprendimiento 4ESO', 'Economía 1BACH', 'EDMN 2BACH'],
+            info: {
+                val: "Sense requisit lingüístic addicional. Nombre moderat de places. Consultar BORM per a convocatòria.",
+                es: "Sin requisito lingüístico adicional. Número moderado de plazas. Consultar BORM para convocatoria.",
+                en: "No additional language requirement. Moderate positions. Check BORM for call."
+            }
+        },
+        nav: {
+            decrees: ['Decreto Foral 71/2022 (ESO)', 'Decreto Foral 72/2022 (Bachillerato)'],
+            subjects: ['Economía y Emprendimiento 4ESO', 'Economía 1BACH', 'EDMN 2BACH'],
+            info: {
+                val: "Zona vascòfona: requisit d'euskara. Zona mixta: valoració d'euskara. Zona castellana: sense requisit. Decrets forals (normativa navarresa).",
+                es: "Zona vascófona: requisito de euskera. Zona mixta: valoración de euskera. Zona castellana: sin requisito. Decretos forales (normativa navarra).",
+                en: "Basque zone: Basque required. Mixed zone: Basque valued. Spanish zone: no requirement. Foral decrees (Navarrese regulations)."
+            }
+        },
+        pv: {
+            decrees: ['Decreto 77/2023 (ESO)', 'Decreto 76/2023 (Bachillerato)'],
+            subjects: ['Economía y Emprendimiento 4ESO', 'Economía 1BACH', 'EDMN 2BACH'],
+            info: {
+                val: "Requisit d'euskara (perfil lingüístic EGA o equivalent). Programació en euskara o castellà segons perfil. Nombre variable de places. Consultar EHAA.",
+                es: "Requisito de euskera (perfil lingüístico EGA o equivalente). Programación en euskera o castellano según perfil. Número variable de plazas. Consultar EHAA.",
+                en: "Basque required (EGA linguistic profile or equivalent). Programming in Basque or Spanish by profile. Variable positions. Check EHAA."
+            }
+        },
+        ceu: {
+            decrees: ['Orden EFP/754/2022 (ESO)', 'Orden EFP/755/2022 (Bachillerato)'],
+            subjects: ['Economía y Emprendimiento 4ESO', 'Economía 1BACH', 'EDMN 2BACH'],
+            info: {
+                val: "Gestió del Ministeri d'Educació (MEFP). Normativa estatal directa. Molt poques places. Consultar BOE.",
+                es: "Gestión del Ministerio de Educación (MEFP). Normativa estatal directa. Muy pocas plazas. Consultar BOE.",
+                en: "Ministry of Education (MEFP) managed. Direct state regulations. Very few positions. Check BOE."
+            }
+        },
+        mel: {
+            decrees: ['Orden EFP/754/2022 (ESO)', 'Orden EFP/755/2022 (Bachillerato)'],
+            subjects: ['Economía y Emprendimiento 4ESO', 'Economía 1BACH', 'EDMN 2BACH'],
+            info: {
+                val: "Gestió del Ministeri d'Educació (MEFP). Normativa estatal directa. Molt poques places. Consultar BOE.",
+                es: "Gestión del Ministerio de Educación (MEFP). Normativa estatal directa. Muy pocas plazas. Consultar BOE.",
+                en: "Ministry of Education (MEFP) managed. Direct state regulations. Very few positions. Check BOE."
+            }
+        }
+    };
 
     // ─── Temes component ───────────────────────────────────────────
     function Temes() {
@@ -576,8 +752,52 @@ function OposicionsApp() {
 
     // ─── Programacions component ───────────────────────────────────
     function Programacions() {
+        const [expanded, setExpanded] = useState(null);
+
+        var toggleExpand = function(id) {
+            setExpanded(expanded === id ? null : id);
+        };
+
         var featured = ccaaList.find(function(c) { return c.featured; });
         var others = ccaaList.filter(function(c) { return !c.featured; });
+
+        var renderDetail = function(detail) {
+            if (!detail) return null;
+            return (
+                <div className="mt-4 pt-4 border-t border-gray-200/60 space-y-4 animate-fade">
+                    <div className="grid sm:grid-cols-2 gap-4">
+                        <div>
+                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">{t('prog.normativa')}</p>
+                            <ul className="space-y-1.5">
+                                {detail.decrees.map(function(d, i) {
+                                    return (
+                                        <li key={i} className="text-sm text-gray-700 flex items-center gap-2">
+                                            <span className="text-purple-400">{'\u{1F4CB}'}</span> {d}
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </div>
+                        <div>
+                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">{t('prog.assignatures')}</p>
+                            <div className="flex flex-wrap gap-1.5">
+                                {detail.subjects.map(function(s, i) {
+                                    return (
+                                        <span key={i} className="text-xs px-2 py-1 rounded-lg bg-purple-50 text-purple-700 font-medium">{s}</span>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">{t('prog.particularitat')}</p>
+                        <p className="text-sm text-gray-600 leading-relaxed">{detail.info[idioma] || detail.info.val}</p>
+                    </div>
+                </div>
+            );
+        };
+
+        var cvDetail = ccaaDetails[featured.id];
 
         return (
             <div className="animate-fade">
@@ -588,54 +808,48 @@ function OposicionsApp() {
 
                 {/* Featured: Comunitat Valenciana */}
                 <div className="bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50 rounded-2xl border-2 border-yellow-300 p-6 mb-6 shadow-lg shadow-yellow-100/50">
-                    <div className="flex items-center gap-3 mb-4">
+                    <div className="flex items-center gap-3 mb-1">
                         <span className={'w-4 h-4 rounded-full ' + featured.dot}></span>
                         <h3 className="text-xl font-bold text-gray-800">{featured.name[idioma] || featured.name.val}</h3>
                         <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-200 text-yellow-700 font-semibold">
                             {t('prog.lang.valencia')}
                         </span>
                     </div>
+                    {renderDetail(cvDetail)}
+                </div>
 
-                    <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <h4 className="text-sm font-bold text-gray-600 mb-2">{t('prog.normativa')}</h4>
-                            <ul className="space-y-1.5">
-                                <li className="text-sm text-gray-700 flex items-center gap-2">
-                                    <span className="text-yellow-500">{'\u{1F4CB}'}</span> {t('prog.valencia.eso')}
-                                </li>
-                                <li className="text-sm text-gray-700 flex items-center gap-2">
-                                    <span className="text-yellow-500">{'\u{1F4CB}'}</span> {t('prog.valencia.bach')}
-                                </li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="text-sm font-bold text-gray-600 mb-2">{t('prog.particularitat')}</h4>
-                            <p className="text-sm text-gray-700 mb-3">{t('prog.valencia.prog')}</p>
-                            <h4 className="text-sm font-bold text-gray-600 mb-2">{t('prog.assignatures')}</h4>
-                            <p className="text-sm text-gray-700">{t('prog.valencia.subj')}</p>
-                        </div>
-                    </div>
+                {/* Info banner */}
+                <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 mb-6 flex items-start gap-3">
+                    <span className="text-lg">{'\u{2139}\u{FE0F}'}</span>
+                    <p className="text-sm text-purple-700">{t('prog.convocatoria')}</p>
                 </div>
 
                 {/* Other CCAA grid */}
-                <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {others.map(function(ccaa) {
+                        var isExpanded = expanded === ccaa.id;
+                        var detail = ccaaDetails[ccaa.id];
                         return (
-                            <div key={ccaa.id} className="bg-white rounded-xl border border-gray-100 p-4 hover:shadow-md transition-all">
+                            <div
+                                key={ccaa.id}
+                                className={'bg-white rounded-xl border p-4 transition-all cursor-pointer ' +
+                                    (isExpanded
+                                        ? 'border-purple-300 shadow-lg shadow-purple-100/50 ring-1 ring-purple-200'
+                                        : 'border-gray-100 hover:shadow-md hover:border-purple-200'
+                                    )}
+                                onClick={function() { toggleExpand(ccaa.id); }}
+                            >
                                 <div className="flex items-center gap-3">
                                     <span className={'w-3 h-3 rounded-full flex-shrink-0 ' + ccaa.dot}></span>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-gray-800 truncate">{ccaa.name[idioma] || ccaa.name.val}</p>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            {ccaa.lang && (
-                                                <span className="text-xs text-purple-500 font-medium">{t('prog.lang.' + ccaa.lang)}</span>
-                                            )}
-                                            <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-400 font-semibold">
-                                                {t('prog.properament')}
-                                            </span>
-                                        </div>
+                                        <p className="text-sm font-semibold text-gray-800">{ccaa.name[idioma] || ccaa.name.val}</p>
+                                        {ccaa.lang && (
+                                            <span className="text-xs text-purple-500 font-medium">{t('prog.lang.' + ccaa.lang)}</span>
+                                        )}
                                     </div>
+                                    <span className={'text-xs text-gray-400 transition-transform duration-200 inline-block ' + (isExpanded ? 'rotate-180' : '')}>{'\u25BC'}</span>
                                 </div>
+                                {isExpanded && renderDetail(detail)}
                             </div>
                         );
                     })}
