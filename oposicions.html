@@ -38,6 +38,7 @@ const { useState, useMemo, useEffect } = React;
 function OposicionsApp() {
     const [section, setSection] = useState('temes');
     const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+    usePdeDeepLink(section, setSection);
 
     const pageTranslations = {
         // Hero
@@ -414,7 +415,7 @@ function OposicionsApp() {
                     {filteredTemes.map(function(tema) {
                         var blocData = getBlocData(tema.bloc);
                         return (
-                            <div key={tema.num} className="bg-white rounded-xl border border-gray-100 p-4 hover:shadow-md transition-all">
+                            <a key={tema.num} href={'./oposicions-bloc-' + tema.bloc + '#tema' + tema.num} className="bg-white rounded-xl border border-gray-100 p-4 hover:shadow-md hover:border-purple-200 transition-all block">
                                 <div className="flex items-start gap-3">
                                     <span className={'text-xs font-black text-white px-2 py-1 rounded-lg bg-gradient-to-r flex-shrink-0 ' + blocData.color}>
                                         {tema.num}
@@ -424,7 +425,7 @@ function OposicionsApp() {
                                         <span className="text-xs text-gray-400">{t('filter.bloc')} {blocData.label}: {blocData.name}</span>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         );
                     })}
                 </div>
@@ -446,8 +447,8 @@ function OposicionsApp() {
                     <div className="flex items-center justify-between">
                         <div>
                             <h3 className="text-xl font-bold">📝 {t('sup.title')}</h3>
-                            <p className="text-teal-100 mt-1">{lang === 'es' ? '25 ejercicios interactivos con solución paso a paso' : lang === 'en' ? '25 interactive exercises with step-by-step solutions' : '25 exercicis interactius amb solució pas a pas'}</p>
-                            <p className="text-teal-200 text-sm mt-1">{lang === 'es' ? 'Microeconomía · Macroeconomía · Mat. Financieras · Empresa · Contabilidad' : lang === 'en' ? 'Microeconomics · Macroeconomics · Financial Math · Business · Accounting' : 'Microeconomia · Macroeconomia · Mat. Financeres · Empresa · Comptabilitat'}</p>
+                            <p className="text-teal-100 mt-1">{idioma === 'es' ? '25 ejercicios interactivos con solución paso a paso' : idioma === 'en' ? '25 interactive exercises with step-by-step solutions' : '25 exercicis interactius amb solució pas a pas'}</p>
+                            <p className="text-teal-200 text-sm mt-1">{idioma === 'es' ? 'Microeconomía · Macroeconomía · Mat. Financieras · Empresa · Contabilidad' : idioma === 'en' ? 'Microeconomics · Macroeconomics · Financial Math · Business · Accounting' : 'Microeconomia · Macroeconomia · Mat. Financeres · Empresa · Comptabilitat'}</p>
                         </div>
                         <span className="text-3xl">→</span>
                     </div>
@@ -464,7 +465,7 @@ function OposicionsApp() {
                                         <div className="flex items-center gap-2">
                                             <h3 className="text-lg font-bold text-gray-800">{t('sup.' + cat.id)}</h3>
                                             <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-semibold">
-                                                5 {lang === 'es' ? 'ejercicios' : lang === 'en' ? 'exercises' : 'exercicis'}
+                                                5 {idioma === 'es' ? 'ejercicios' : idioma === 'en' ? 'exercises' : 'exercicis'}
                                             </span>
                                         </div>
                                         <p className="text-sm text-gray-600 mt-2">{t('sup.' + cat.id + '.desc')}</p>
