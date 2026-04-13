@@ -205,6 +205,14 @@
             profSubtitle: { val: 'Materials docents, situacions d\'aprenentatge i recursos d\'aula per assignatura', es: 'Materiales docentes, situaciones de aprendizaje y recursos de aula por asignatura', en: 'Teaching materials, learning situations and classroom resources by subject' },
             profSATitle: { val: 'Situacions d\'Aprenentatge (LOMLOE)', es: 'Situaciones de Aprendizaje (LOMLOE)', en: 'Learning Situations (LOMLOE)' },
             profSASubtitle: { val: 'SAs completes amb criteris d\'avaluació, competències i rúbriques', es: 'SAs completas con criterios de evaluación, competencias y rúbricas', en: 'Complete LSs with assessment criteria, competencies and rubrics' },
+            profSAGenerator: { val: 'Generador de Situacions d\'Aprenentatge', es: 'Generador de Situaciones de Aprendizaje', en: 'Learning Situation Generator' },
+            profSAGeneratorDesc: { val: 'Crea SAs completes alineades amb LOMLOE: selecciona competències, sabers bàsics, activitats i avaluació. Imprimeix o exporta.', es: 'Crea SAs completas alineadas con LOMLOE: selecciona competencias, saberes básicos, actividades y evaluación.', en: 'Create complete LSs aligned with LOMLOE: select competences, basic knowledge, activities and assessment.' },
+            profTestGenerator: { val: 'Generador de Proves', es: 'Generador de Pruebas', en: 'Test Generator' },
+            profTestGeneratorDesc: { val: 'Crea exàmens personalitzats per assignatura: test, V/F, problemes, casos pràctics. Amb plantilla imprimible.', es: 'Crea exámenes personalizados por asignatura: test, V/F, problemas, casos prácticos.', en: 'Create custom exams by subject: multiple choice, T/F, problems, case studies.' },
+            profSubjects: { val: 'assignatures', es: 'asignaturas', en: 'subjects' },
+            profTestTypes: { val: '5 tipus de preguntes', es: '5 tipos de preguntas', en: '5 question types' },
+            profPrintReady: { val: 'Llest per imprimir', es: 'Listo para imprimir', en: 'Print-ready' },
+            profOpenTool: { val: 'Obrir ferramenta', es: 'Abrir herramienta', en: 'Open tool' },
             opoTitle: { val: 'Oposicions d\'Economia', es: 'Oposiciones de Economía', en: 'Economics Teaching Exams' },
             opoSubtitle: { val: 'Tot el que necessites per preparar les oposicions d\'Economia al cos de Secundària', es: 'Todo lo que necesitas para preparar las oposiciones de Economía en Secundaria', en: 'Everything you need to prepare for Economics teaching exams' },
 
@@ -827,52 +835,63 @@
                                 <p className="text-gray-500 max-w-xl mx-auto">{t('profSubtitle')}</p>
                             </div>
 
+                            {/* SA & Test Generator Tools */}
                             <div className="grid md:grid-cols-2 gap-6 mb-16">
-                                {courses.map(course => (
-                                    <div key={course.id} className="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:shadow-xl hover:border-green-200 transition-all duration-300 flex flex-col relative">
-                                        <div className="absolute top-3 right-3 z-10">
-                                            <span className="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">{t('comingSoon')}</span>
+                                <a href="./professorat#sa" className="group bg-white rounded-2xl overflow-hidden border border-green-200 hover:shadow-xl hover:border-green-400 transition-all duration-300 flex flex-col cursor-pointer">
+                                    <div className="h-3 bg-gradient-to-r from-green-500 to-emerald-600"></div>
+                                    <div className="p-6 flex-1">
+                                        <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white text-2xl mb-4">
+                                            📋
                                         </div>
-                                        <div className={`h-3 bg-gradient-to-r ${course.gradient}`}></div>
-                                        <div className="p-6 flex-1">
-                                            <div className={`inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-r ${course.gradient} text-white text-2xl mb-4`}>
-                                                {course.emoji}
-                                            </div>
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <h3 className="text-xl font-bold text-gray-800">{course.nom}</h3>
-                                                <span className="px-2 py-0.5 bg-gray-100 text-gray-500 rounded text-xs font-medium">{course.nivell}</span>
-                                            </div>
-                                            <p className="text-sm text-gray-400 mb-3">{course.fullName}</p>
-                                            <p className="text-gray-500 text-sm mb-4">{course.desc}</p>
-
-                                            <div className="flex flex-wrap gap-2">
-                                                <span className="px-3 py-1.5 bg-green-50 text-green-600 rounded-lg text-sm font-medium">{t('profProgramacions')}</span>
-                                                <span className="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-lg text-sm font-medium">{t('profActivitats')}</span>
-                                                <span className="px-3 py-1.5 bg-teal-50 text-teal-600 rounded-lg text-sm font-medium">{t('profAvaluacio')}</span>
-                                            </div>
-                                        </div>
-                                        <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50">
-                                            <span className="font-medium text-sm flex items-center gap-1 text-green-500 opacity-50">
-                                                {t('profRecursos')} <ChevronRight size={16} />
-                                            </span>
+                                        <h3 className="text-xl font-bold text-gray-800 mb-2">{t('profSAGenerator')}</h3>
+                                        <p className="text-gray-500 text-sm mb-4">{t('profSAGeneratorDesc')}</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            <span className="px-3 py-1.5 bg-green-50 text-green-600 rounded-lg text-sm font-medium">LOMLOE</span>
+                                            <span className="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-lg text-sm font-medium">4 {t('profSubjects')}</span>
+                                            <span className="px-3 py-1.5 bg-teal-50 text-teal-600 rounded-lg text-sm font-medium">DUA</span>
                                         </div>
                                     </div>
-                                ))}
+                                    <div className="px-6 py-4 border-t border-gray-100 bg-green-50/50">
+                                        <span className="font-medium text-sm flex items-center gap-1 group-hover:gap-2 transition-all text-green-600">
+                                            {t('profOpenTool')} <ChevronRight size={16} />
+                                        </span>
+                                    </div>
+                                </a>
+
+                                <a href="./professorat#test" className="group bg-white rounded-2xl overflow-hidden border border-green-200 hover:shadow-xl hover:border-green-400 transition-all duration-300 flex flex-col cursor-pointer">
+                                    <div className="h-3 bg-gradient-to-r from-teal-500 to-cyan-600"></div>
+                                    <div className="p-6 flex-1">
+                                        <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 text-white text-2xl mb-4">
+                                            📝
+                                        </div>
+                                        <h3 className="text-xl font-bold text-gray-800 mb-2">{t('profTestGenerator')}</h3>
+                                        <p className="text-gray-500 text-sm mb-4">{t('profTestGeneratorDesc')}</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            <span className="px-3 py-1.5 bg-green-50 text-green-600 rounded-lg text-sm font-medium">{t('profTestTypes')}</span>
+                                            <span className="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-lg text-sm font-medium">{t('profPrintReady')}</span>
+                                        </div>
+                                    </div>
+                                    <div className="px-6 py-4 border-t border-gray-100 bg-teal-50/50">
+                                        <span className="font-medium text-sm flex items-center gap-1 group-hover:gap-2 transition-all text-teal-600">
+                                            {t('profOpenTool')} <ChevronRight size={16} />
+                                        </span>
+                                    </div>
+                                </a>
                             </div>
 
-                            {/* SAs LOMLOE */}
+                            {/* Course cards (unchanged but linking to professorat tools) */}
                             <div className="text-center mb-10">
                                 <h2 className="text-2xl md:text-3xl font-black text-gray-800 mb-3">{t('profSATitle')}</h2>
                                 <p className="text-gray-500 max-w-xl mx-auto">{t('profSASubtitle')}</p>
                             </div>
                             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                                 {courses.map(course => (
-                                    <div key={course.id + '-sa'} className="bg-white rounded-xl border border-gray-100 p-5 text-center hover:shadow-lg hover:border-green-200 transition-all">
+                                    <a key={course.id + '-sa'} href="./professorat#sa" className="bg-white rounded-xl border border-gray-100 p-5 text-center hover:shadow-lg hover:border-green-200 transition-all block">
                                         <div className="text-3xl mb-3">{course.emoji}</div>
                                         <h4 className="font-bold text-gray-800 mb-1">{course.nom}</h4>
                                         <p className="text-xs text-gray-400 mb-3">SAs LOMLOE</p>
-                                        <span className="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">{t('comingSoon')}</span>
-                                    </div>
+                                        <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">{t('profOpenTool')}</span>
+                                    </a>
                                 ))}
                             </div>
                         </div>

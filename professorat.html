@@ -1,0 +1,2062 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👩‍🏫 Professorat - Generador de SA i Proves | PDE</title>
+    <meta name="description" content="Ferramentes per a professors d'economia: generador de Situacions d'Aprenentatge LOMLOE, creador de proves i exàmens.">
+    <meta property="og:title" content="Professorat - Generador SA i Proves | PDE">
+    <meta property="og:description" content="Crea Situacions d'Aprenentatge i proves d'economia alineades amb LOMLOE.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/professorat">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://profedeeconomia.es/professorat">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👩‍🏫</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #10b981 #ecfdf5; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #ecfdf5; }
+        ::-webkit-scrollbar-thumb { background-color: #10b981; border-radius: 3px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; }
+            .print-only { display: block !important; }
+            .sa-preview { box-shadow: none !important; border: 1px solid #ccc !important; }
+        }
+        .print-only { display: none; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 via-white to-emerald-50 min-h-screen">
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useCallback, useRef, Fragment } = React;
+
+        // ============================================================
+        // TRANSLATIONS
+        // ============================================================
+        const translations = {
+            // Page
+            pageTitle:    { val: 'Professorat',                     es: 'Profesorado',                      en: 'Teachers' },
+            pageSubtitle: { val: 'Ferramentes per a docents d\'economia', es: 'Herramientas para docentes de economía', en: 'Tools for economics teachers' },
+
+            // Tabs
+            tabSA:    { val: 'Generador de SA',      es: 'Generador de SA',      en: 'SA Generator' },
+            tabTest:  { val: 'Generador de Proves',  es: 'Generador de Pruebas', en: 'Test Generator' },
+
+            // SA Generator steps
+            step1:     { val: 'Assignatura',              es: 'Asignatura',                en: 'Subject' },
+            step2:     { val: 'Dades bàsiques',           es: 'Datos básicos',             en: 'Basic data' },
+            step3:     { val: 'Elements curriculars',     es: 'Elementos curriculares',    en: 'Curriculum elements' },
+            step4:     { val: 'Seqüència d\'activitats',  es: 'Secuencia de actividades',  en: 'Activity sequence' },
+            step5:     { val: 'Avaluació i DUA',          es: 'Evaluación y DUA',          en: 'Assessment & UDL' },
+            step6:     { val: 'Vista prèvia',             es: 'Vista previa',              en: 'Preview' },
+
+            // Step 1
+            selectSubject:    { val: 'Selecciona l\'assignatura',    es: 'Selecciona la asignatura',     en: 'Select the subject' },
+            orTemplate:       { val: 'O comença des d\'una plantilla', es: 'O empieza desde una plantilla', en: 'Or start from a template' },
+
+            // Step 2
+            saTitle:          { val: 'Títol de la SA',               es: 'Título de la SA',              en: 'SA Title' },
+            saTitlePh:        { val: 'Ex: L\'economia circular al nostre entorn', es: 'Ej: La economía circular en nuestro entorno', en: 'E.g.: Circular economy in our environment' },
+            saJustification:  { val: 'Justificació / Contextualització', es: 'Justificación / Contextualización', en: 'Justification / Context' },
+            saJustPh:         { val: 'Explica per què és rellevant aquesta SA, connexió amb la realitat de l\'alumnat...', es: 'Explica por qué es relevante esta SA, conexión con la realidad del alumnado...', en: 'Explain why this SA is relevant, connection to students\' reality...' },
+            saSessions:       { val: 'Nombre de sessions',           es: 'Número de sesiones',           en: 'Number of sessions' },
+            saTrimester:      { val: 'Trimestre',                    es: 'Trimestre',                    en: 'Term' },
+            saProduct:        { val: 'Producte final',               es: 'Producto final',               en: 'Final product' },
+            saProductPh:      { val: 'Ex: Informe + presentació oral sobre un cas real', es: 'Ej: Informe + presentación oral sobre un caso real', en: 'E.g.: Report + oral presentation on a real case' },
+
+            // Step 3
+            ceTitle:          { val: 'Competències Específiques (CE)', es: 'Competencias Específicas (CE)', en: 'Specific Competences (SC)' },
+            caTitle:          { val: 'Criteris d\'Avaluació (CA)',    es: 'Criterios de Evaluación (CE)',  en: 'Assessment Criteria (AC)' },
+            saberesTitle:     { val: 'Sabers Bàsics',                es: 'Saberes Básicos',              en: 'Basic Knowledge' },
+            ccTitle:          { val: 'Competències Clau',             es: 'Competencias Clave',           en: 'Key Competences' },
+            selectCE:         { val: 'Selecciona les CE que treballaràs', es: 'Selecciona las CE que trabajarás', en: 'Select the SC you will work on' },
+            selectCA:         { val: 'Selecciona els CA associats',  es: 'Selecciona los CE asociados',  en: 'Select associated AC' },
+            selectSaberes:    { val: 'Selecciona els sabers bàsics', es: 'Selecciona los saberes básicos', en: 'Select basic knowledge' },
+            selectCC:         { val: 'Competències clau vinculades', es: 'Competencias clave vinculadas', en: 'Linked key competences' },
+
+            // Step 4
+            addActivity:      { val: 'Afegir activitat',             es: 'Añadir actividad',             en: 'Add activity' },
+            actName:          { val: 'Nom de l\'activitat',          es: 'Nombre de la actividad',       en: 'Activity name' },
+            actDesc:          { val: 'Descripció',                   es: 'Descripción',                  en: 'Description' },
+            actType:          { val: 'Tipus',                        es: 'Tipo',                         en: 'Type' },
+            actGrouping:      { val: 'Agrupament',                   es: 'Agrupamiento',                 en: 'Grouping' },
+            actSessions:      { val: 'Sessions',                     es: 'Sesiones',                     en: 'Sessions' },
+            actResources:     { val: 'Recursos',                     es: 'Recursos',                     en: 'Resources' },
+            removeAct:        { val: 'Eliminar',                     es: 'Eliminar',                     en: 'Remove' },
+            suggestActs:      { val: 'Suggerir activitats',          es: 'Sugerir actividades',          en: 'Suggest activities' },
+            actInitial:       { val: 'Activitat inicial (motivació)', es: 'Actividad inicial (motivación)', en: 'Initial activity (motivation)' },
+            actDevelopment:   { val: 'Activitat de desenvolupament', es: 'Actividad de desarrollo',      en: 'Development activity' },
+            actFinal:         { val: 'Activitat final (producte)',   es: 'Actividad final (producto)',    en: 'Final activity (product)' },
+
+            // Step 5
+            methodology:      { val: 'Metodologia',                  es: 'Metodología',                  en: 'Methodology' },
+            assessment:       { val: 'Avaluació',                    es: 'Evaluación',                   en: 'Assessment' },
+            instruments:      { val: 'Instruments d\'avaluació',     es: 'Instrumentos de evaluación',   en: 'Assessment instruments' },
+            assessTypes:      { val: 'Tipus d\'avaluació',           es: 'Tipos de evaluación',          en: 'Assessment types' },
+            duaTitle:         { val: 'DUA — Disseny Universal per a l\'Aprenentatge', es: 'DUA — Diseño Universal para el Aprendizaje', en: 'UDL — Universal Design for Learning' },
+            duaRepresentation: { val: 'Representació (el QUÈ)',      es: 'Representación (el QUÉ)',      en: 'Representation (the WHAT)' },
+            duaEngagement:    { val: 'Implicació (el PER QUÈ)',      es: 'Implicación (el POR QUÉ)',     en: 'Engagement (the WHY)' },
+            duaExpression:    { val: 'Expressió (el COM)',            es: 'Expresión (el CÓMO)',          en: 'Expression (the HOW)' },
+
+            // Step 6
+            preview:          { val: 'Vista prèvia de la SA',        es: 'Vista previa de la SA',        en: 'SA Preview' },
+            print:            { val: 'Imprimir / PDF',               es: 'Imprimir / PDF',               en: 'Print / PDF' },
+            exportJSON:       { val: 'Guardar esborrany',            es: 'Guardar borrador',             en: 'Save draft' },
+            loadDraft:        { val: 'Carregar esborrany',           es: 'Cargar borrador',              en: 'Load draft' },
+            newSA:            { val: 'Nova SA',                      es: 'Nueva SA',                     en: 'New SA' },
+
+            // Navigation
+            next:             { val: 'Següent',                      es: 'Siguiente',                    en: 'Next' },
+            prev:             { val: 'Anterior',                     es: 'Anterior',                     en: 'Previous' },
+            generate:         { val: 'Generar SA',                   es: 'Generar SA',                   en: 'Generate SA' },
+
+            // Test Generator
+            testTitle:        { val: 'Generador de Proves',          es: 'Generador de Pruebas',         en: 'Test Generator' },
+            testSubtitle:     { val: 'Crea exàmens personalitzats amb clau de correcció', es: 'Crea exámenes personalizados con clave de corrección', en: 'Create custom exams with answer key' },
+            testSubject:      { val: 'Assignatura',                  es: 'Asignatura',                   en: 'Subject' },
+            testTopics:       { val: 'Temes / Sabers bàsics',       es: 'Temas / Saberes básicos',      en: 'Topics / Basic knowledge' },
+            testQTypes:       { val: 'Tipus de preguntes',           es: 'Tipos de preguntas',           en: 'Question types' },
+            testDifficulty:   { val: 'Dificultat',                   es: 'Dificultad',                   en: 'Difficulty' },
+            testNumQ:         { val: 'Nombre de preguntes',          es: 'Número de preguntas',          en: 'Number of questions' },
+            testGenerate:     { val: 'Generar prova',                es: 'Generar prueba',               en: 'Generate test' },
+            testMultiple:     { val: 'Test (opcions múltiples)',     es: 'Test (opciones múltiples)',    en: 'Multiple choice' },
+            testTF:           { val: 'Vertader / Fals',              es: 'Verdadero / Falso',            en: 'True / False' },
+            testOpen:         { val: 'Preguntes obertes',            es: 'Preguntas abiertas',           en: 'Open questions' },
+            testProblem:      { val: 'Problemes / Càlcul',          es: 'Problemas / Cálculo',          en: 'Problems / Calculation' },
+            testCase:         { val: 'Cas pràctic',                  es: 'Caso práctico',                en: 'Case study' },
+            testEasy:         { val: 'Bàsic',                        es: 'Básico',                       en: 'Basic' },
+            testMedium:       { val: 'Intermedi',                    es: 'Intermedio',                   en: 'Intermediate' },
+            testHard:         { val: 'Avançat',                      es: 'Avanzado',                     en: 'Advanced' },
+            testDuration:     { val: 'Duració (min)',                es: 'Duración (min)',               en: 'Duration (min)' },
+            testInstructions: { val: 'Instruccions per a l\'alumnat', es: 'Instrucciones para el alumnado', en: 'Instructions for students' },
+            testAnswerKey:    { val: 'Clau de correcció',            es: 'Clave de corrección',          en: 'Answer key' },
+            testWeight:       { val: 'Pes (%)',                      es: 'Peso (%)',                     en: 'Weight (%)' },
+
+            // Common
+            comingSoon:       { val: 'Properament',                  es: 'Próximamente',                 en: 'Coming soon' },
+            session:          { val: 'sessió',                       es: 'sesión',                       en: 'session' },
+            sessions:         { val: 'sessions',                     es: 'sesiones',                     en: 'sessions' },
+            trim1:            { val: '1r Trimestre',                 es: '1er Trimestre',                en: '1st Term' },
+            trim2:            { val: '2n Trimestre',                 es: '2º Trimestre',                 en: '2nd Term' },
+            trim3:            { val: '3r Trimestre',                 es: '3er Trimestre',                en: '3rd Term' },
+        };
+
+        // ============================================================
+        // COMPETÈNCIES CLAU (Key Competences) — LOMLOE
+        // ============================================================
+        const COMPETENCIES_CLAU = [
+            { id: 'CCL',   name: { val: 'Comunicació Lingüística',    es: 'Comunicación Lingüística',    en: 'Linguistic Communication' },    emoji: '💬', color: 'bg-blue-100 text-blue-700' },
+            { id: 'CP',    name: { val: 'Plurilingüe',                es: 'Plurilingüe',                 en: 'Plurilingual' },                emoji: '🌍', color: 'bg-cyan-100 text-cyan-700' },
+            { id: 'STEM',  name: { val: 'STEM',                       es: 'STEM',                        en: 'STEM' },                        emoji: '🔬', color: 'bg-purple-100 text-purple-700' },
+            { id: 'CD',    name: { val: 'Digital',                     es: 'Digital',                     en: 'Digital' },                     emoji: '💻', color: 'bg-indigo-100 text-indigo-700' },
+            { id: 'CPSAA', name: { val: 'Personal, Social i d\'Aprendre a Aprendre', es: 'Personal, Social y de Aprender a Aprender', en: 'Personal, Social & Learning to Learn' }, emoji: '🧠', color: 'bg-pink-100 text-pink-700' },
+            { id: 'CC',    name: { val: 'Ciutadana',                   es: 'Ciudadana',                   en: 'Civic' },                       emoji: '🏛️', color: 'bg-amber-100 text-amber-700' },
+            { id: 'CE',    name: { val: 'Emprenedora',                 es: 'Emprendedora',                 en: 'Entrepreneurial' },             emoji: '💡', color: 'bg-green-100 text-green-700' },
+            { id: 'CCEC',  name: { val: 'Consciència i Expressions Culturals', es: 'Conciencia y Expresiones Culturales', en: 'Cultural Awareness' }, emoji: '🎨', color: 'bg-rose-100 text-rose-700' },
+        ];
+
+        // ============================================================
+        // CURRICULUM DATA — LOMLOE
+        // RD 217/2022 (ESO) · RD 243/2022 (Batxillerat)
+        // Adapted for Comunitat Valenciana (Decrets 107/2022, 108/2022)
+        // ============================================================
+        const CURRICULUM = {
+            // ─────────────────────────────────────────────
+            // ECONOMIA — 1r Batxillerat
+            // ─────────────────────────────────────────────
+            'economia-1bach': {
+                name: { val: 'Economia', es: 'Economía', en: 'Economics' },
+                nivel: { val: '1r Batxillerat', es: '1º Bachillerato', en: 'Year 12' },
+                emoji: '📈',
+                gradient: 'from-blue-500 to-indigo-600',
+                normativa: 'RD 243/2022 · Decret 108/2022 (CV)',
+                ce: [
+                    {
+                        id: 'CE1',
+                        short: { val: 'Problema econòmic bàsic', es: 'Problema económico básico', en: 'Basic economic problem' },
+                        desc: {
+                            val: 'Valorar el problema de l\'escassetat i la necessitat d\'elegir, analitzant els principis bàsics de l\'economia, els factors productius i els diferents sistemes econòmics.',
+                            es: 'Valorar el problema de la escasez y la necesidad de elegir, analizando los principios básicos de la economía, los factores productivos y los diferentes sistemas económicos.',
+                            en: 'Assess the problem of scarcity and the need to choose, analyzing basic economic principles, factors of production and economic systems.'
+                        },
+                        ca: [
+                            { id: '1.1', desc: { val: 'Comprendre el problema econòmic bàsic de l\'escassetat i la necessitat d\'elecció, així com el cost d\'oportunitat.', es: 'Comprender el problema económico básico de la escasez y la necesidad de elección, así como el coste de oportunidad.', en: 'Understand the basic economic problem of scarcity and choice, and opportunity cost.' }},
+                            { id: '1.2', desc: { val: 'Identificar els agents econòmics (llars, empreses, sector públic) i les seues funcions en el flux circular de la renda.', es: 'Identificar los agentes económicos (hogares, empresas, sector público) y sus funciones en el flujo circular de la renta.', en: 'Identify economic agents and their functions in the circular flow of income.' }},
+                            { id: '1.3', desc: { val: 'Comparar els diferents sistemes econòmics i els seus mecanismes d\'assignació de recursos.', es: 'Comparar los diferentes sistemas económicos y sus mecanismos de asignación de recursos.', en: 'Compare different economic systems and their resource allocation mechanisms.' }},
+                        ],
+                        ccClau: ['STEM', 'CC', 'CE'],
+                    },
+                    {
+                        id: 'CE2',
+                        short: { val: 'Funcionament del mercat', es: 'Funcionamiento del mercado', en: 'How markets work' },
+                        desc: {
+                            val: 'Reconèixer i comprendre el funcionament del mercat, analitzant els seus errors, per formular judicis crítics sobre el paper de l\'Estat i les polítiques econòmiques.',
+                            es: 'Reconocer y comprender el funcionamiento del mercado, analizando sus fallos, para formular juicios críticos sobre el papel del Estado y las políticas económicas.',
+                            en: 'Recognize and understand how markets work, analyzing market failures, to critically assess the role of the State.'
+                        },
+                        ca: [
+                            { id: '2.1', desc: { val: 'Analitzar el funcionament del mercat mitjançant el model d\'oferta i demanda, comprenent la determinació del preu d\'equilibri.', es: 'Analizar el funcionamiento del mercado mediante el modelo de oferta y demanda, comprendiendo la determinación del precio de equilibrio.', en: 'Analyze market functioning through the supply and demand model.' }},
+                            { id: '2.2', desc: { val: 'Identificar els errors del mercat (externalitats, béns públics, informació asimètrica) i valorar la intervenció de l\'Estat.', es: 'Identificar los fallos del mercado (externalidades, bienes públicos, información asimétrica) y valorar la intervención del Estado.', en: 'Identify market failures and assess State intervention.' }},
+                            { id: '2.3', desc: { val: 'Analitzar les diferents estructures de mercat (competència perfecta, monopoli, oligopoli) i els seus efectes en l\'eficiència.', es: 'Analizar las diferentes estructuras de mercado (competencia perfecta, monopolio, oligopolio) y sus efectos en la eficiencia.', en: 'Analyze different market structures and their effects on efficiency.' }},
+                        ],
+                        ccClau: ['STEM', 'CC', 'CPSAA'],
+                    },
+                    {
+                        id: 'CE3',
+                        short: { val: 'Magnituds macroeconòmiques', es: 'Magnitudes macroeconómicas', en: 'Macroeconomic indicators' },
+                        desc: {
+                            val: 'Distingir les magnituds macroeconòmiques i comprendre les relacions entre elles, valorant els problemes del creixement, la redistribució de la renda i la sostenibilitat.',
+                            es: 'Distinguir las magnitudes macroeconómicas y comprender las relaciones entre ellas, valorando los problemas del crecimiento, la redistribución de la renta y la sostenibilidad.',
+                            en: 'Distinguish macroeconomic indicators and understand their relationships, assessing growth, income redistribution and sustainability.'
+                        },
+                        ca: [
+                            { id: '3.1', desc: { val: 'Calcular i interpretar les principals magnituds macroeconòmiques: PIB, taxa d\'atur, IPC, taxa d\'inflació.', es: 'Calcular e interpretar las principales magnitudes macroeconómicas: PIB, tasa de desempleo, IPC, tasa de inflación.', en: 'Calculate and interpret main macroeconomic indicators: GDP, unemployment, CPI, inflation.' }},
+                            { id: '3.2', desc: { val: 'Analitzar les causes i conseqüències de la inflació, la deflació i l\'atur, i les polítiques per combatre\'ls.', es: 'Analizar las causas y consecuencias de la inflación, la deflación y el desempleo, y las políticas para combatirlos.', en: 'Analyze causes and consequences of inflation, deflation and unemployment.' }},
+                            { id: '3.3', desc: { val: 'Valorar la distribució de la renda i la riquesa, i avaluar el paper de les polítiques redistributives.', es: 'Valorar la distribución de la renta y la riqueza, y evaluar el papel de las políticas redistributivas.', en: 'Assess income and wealth distribution and the role of redistributive policies.' }},
+                        ],
+                        ccClau: ['STEM', 'CC', 'CE'],
+                    },
+                    {
+                        id: 'CE4',
+                        short: { val: 'Sistema financer', es: 'Sistema financiero', en: 'Financial system' },
+                        desc: {
+                            val: 'Conèixer i comprendre el funcionament del sistema financer i de la política monetària, valorant el seu paper i impacte en l\'economia real.',
+                            es: 'Conocer y comprender el funcionamiento del sistema financiero y de la política monetaria, valorando su papel e impacto en la economía real.',
+                            en: 'Know and understand the financial system and monetary policy, assessing their role and impact on the real economy.'
+                        },
+                        ca: [
+                            { id: '4.1', desc: { val: 'Comprendre el funcionament del sistema financer: intermediaris, productes financers i la relació risc-rendibilitat-liquiditat.', es: 'Comprender el funcionamiento del sistema financiero: intermediarios, productos financieros y la relación riesgo-rentabilidad-liquidez.', en: 'Understand the financial system: intermediaries, products and the risk-return-liquidity relationship.' }},
+                            { id: '4.2', desc: { val: 'Analitzar el paper del Banc Central Europeu i els instruments de la política monetària.', es: 'Analizar el papel del Banco Central Europeo y los instrumentos de la política monetaria.', en: 'Analyze the role of the ECB and monetary policy instruments.' }},
+                        ],
+                        ccClau: ['STEM', 'CE', 'CD'],
+                    },
+                    {
+                        id: 'CE5',
+                        short: { val: 'Economia internacional i globalització', es: 'Economía internacional y globalización', en: 'International economics & globalization' },
+                        desc: {
+                            val: 'Identificar i valorar els reptes de l\'economia actual, analitzant l\'impacte de la globalització, la nova economia i la revolució digital.',
+                            es: 'Identificar y valorar los retos de la economía actual, analizando el impacto de la globalización, la nueva economía y la revolución digital.',
+                            en: 'Identify and assess challenges of the current economy, analyzing the impact of globalization and digital revolution.'
+                        },
+                        ca: [
+                            { id: '5.1', desc: { val: 'Comprendre el comerç internacional i els avantatges de l\'especialització i l\'intercanvi.', es: 'Comprender el comercio internacional y las ventajas de la especialización y el intercambio.', en: 'Understand international trade and the advantages of specialization and exchange.' }},
+                            { id: '5.2', desc: { val: 'Analitzar les causes i conseqüències de la globalització i els seus efectes en les economies locals.', es: 'Analizar las causas y consecuencias de la globalización y sus efectos en las economías locales.', en: 'Analyze causes and consequences of globalization and its effects on local economies.' }},
+                        ],
+                        ccClau: ['CC', 'CD', 'CPSAA'],
+                    },
+                    {
+                        id: 'CE6',
+                        short: { val: 'Investigació i anàlisi econòmica', es: 'Investigación y análisis económico', en: 'Research & economic analysis' },
+                        desc: {
+                            val: 'Analitzar els problemes econòmics actuals mitjançant la investigació i l\'experimentació, utilitzant ferramentes de l\'anàlisi econòmica.',
+                            es: 'Analizar los problemas económicos actuales mediante la investigación y la experimentación, utilizando herramientas del análisis económico.',
+                            en: 'Analyze current economic problems through research and experimentation, using economic analysis tools.'
+                        },
+                        ca: [
+                            { id: '6.1', desc: { val: 'Plantejar i resoldre problemes econòmics utilitzant dades estadístiques i gràfics, interpretant-los adequadament.', es: 'Plantear y resolver problemas económicos utilizando datos estadísticos y gráficos, interpretándolos adecuadamente.', en: 'Pose and solve economic problems using statistical data and graphs.' }},
+                            { id: '6.2', desc: { val: 'Investigar problemes econòmics actuals de forma autònoma, usant fonts fiables i presentant conclusions amb rigor.', es: 'Investigar problemas económicos actuales de forma autónoma, usando fuentes fiables y presentando conclusiones con rigor.', en: 'Research current economic problems autonomously, using reliable sources.' }},
+                        ],
+                        ccClau: ['STEM', 'CD', 'CCL'],
+                    },
+                ],
+                saberes: [
+                    { bloque: 'A', name: { val: 'Les decisions econòmiques', es: 'Las decisiones económicas', en: 'Economic decisions' }, items: [
+                        { id: 'A1', desc: { val: 'L\'escassetat, l\'elecció i l\'assignació de recursos. El cost d\'oportunitat.', es: 'La escasez, la elección y la asignación de recursos. El coste de oportunidad.', en: 'Scarcity, choice and resource allocation. Opportunity cost.' }},
+                        { id: 'A2', desc: { val: 'Els agents econòmics: famílies, empreses i sector públic. El flux circular de la renda.', es: 'Los agentes económicos: familias, empresas y sector público. El flujo circular de la renta.', en: 'Economic agents. The circular flow of income.' }},
+                        { id: 'A3', desc: { val: 'Sistemes econòmics: economia de mercat, planificada i mixta.', es: 'Sistemas económicos: economía de mercado, planificada y mixta.', en: 'Economic systems: market, planned and mixed economy.' }},
+                        { id: 'A4', desc: { val: 'Frontera de Possibilitats de Producció (FPP). Creixement econòmic i desenvolupament sostenible.', es: 'Frontera de Posibilidades de Producción (FPP). Crecimiento económico y desarrollo sostenible.', en: 'Production Possibilities Frontier. Economic growth and sustainable development.' }},
+                    ]},
+                    { bloque: 'B', name: { val: 'El mercat i l\'empresa', es: 'El mercado y la empresa', en: 'The market and the firm' }, items: [
+                        { id: 'B1', desc: { val: 'Model d\'oferta i demanda. Equilibri de mercat i canvis.', es: 'Modelo de oferta y demanda. Equilibrio de mercado y cambios.', en: 'Supply and demand model. Market equilibrium.' }},
+                        { id: 'B2', desc: { val: 'Elasticitat preu de la demanda i de l\'oferta.', es: 'Elasticidad precio de la demanda y de la oferta.', en: 'Price elasticity of demand and supply.' }},
+                        { id: 'B3', desc: { val: 'Estructures de mercat: competència perfecta, monopoli, oligopoli, competència monopolística.', es: 'Estructuras de mercado: competencia perfecta, monopolio, oligopolio, competencia monopolística.', en: 'Market structures: perfect competition, monopoly, oligopoly, monopolistic competition.' }},
+                        { id: 'B4', desc: { val: 'Errors del mercat: externalitats, béns públics, informació asimètrica. Intervenció de l\'Estat.', es: 'Fallos del mercado: externalidades, bienes públicos, información asimétrica. Intervención del Estado.', en: 'Market failures: externalities, public goods, asymmetric information. State intervention.' }},
+                        { id: 'B5', desc: { val: 'L\'empresa: producció, costos i beneficis. Productivitat.', es: 'La empresa: producción, costes y beneficios. Productividad.', en: 'The firm: production, costs, profits. Productivity.' }},
+                    ]},
+                    { bloque: 'C', name: { val: 'Macroeconomia', es: 'Macroeconomía', en: 'Macroeconomics' }, items: [
+                        { id: 'C1', desc: { val: 'PIB i altres indicadors macroeconòmics. PIB nominal vs real. Limitacions del PIB.', es: 'PIB y otros indicadores macroeconómicos. PIB nominal vs real. Limitaciones del PIB.', en: 'GDP and macroeconomic indicators. Nominal vs real GDP. GDP limitations.' }},
+                        { id: 'C2', desc: { val: 'El mercat de treball: oferta, demanda i tipus d\'atur. Polítiques d\'ocupació.', es: 'El mercado de trabajo: oferta, demanda y tipos de desempleo. Políticas de empleo.', en: 'The labour market: supply, demand, types of unemployment. Employment policies.' }},
+                        { id: 'C3', desc: { val: 'La inflació: causes, tipus, mesurament (IPC) i conseqüències. Deflació.', es: 'La inflación: causas, tipos, medición (IPC) y consecuencias. Deflación.', en: 'Inflation: causes, types, measurement (CPI) and consequences. Deflation.' }},
+                        { id: 'C4', desc: { val: 'Distribució de la renda. Indicadors de desigualtat: corba de Lorenz i índex de Gini.', es: 'Distribución de la renta. Indicadores de desigualdad: curva de Lorenz e índice de Gini.', en: 'Income distribution. Inequality indicators: Lorenz curve and Gini index.' }},
+                    ]},
+                    { bloque: 'D', name: { val: 'Polítiques econòmiques', es: 'Políticas económicas', en: 'Economic policies' }, items: [
+                        { id: 'D1', desc: { val: 'Política fiscal: pressupostos públics, ingressos i despeses. Deute públic i dèficit.', es: 'Política fiscal: presupuestos públicos, ingresos y gastos. Deuda pública y déficit.', en: 'Fiscal policy: public budgets, revenue and spending. Public debt and deficit.' }},
+                        { id: 'D2', desc: { val: 'El sistema financer: intermediaris, productes financers, la borsa de valors.', es: 'El sistema financiero: intermediarios, productos financieros, la bolsa de valores.', en: 'The financial system: intermediaries, financial products, the stock market.' }},
+                        { id: 'D3', desc: { val: 'Política monetària: el BCE, instruments monetaris, tipus d\'interès.', es: 'Política monetaria: el BCE, instrumentos monetarios, tipos de interés.', en: 'Monetary policy: the ECB, monetary instruments, interest rates.' }},
+                        { id: 'D4', desc: { val: 'L\'Estat del Benestar: sanitat, educació, pensions, prestacions.', es: 'El Estado del Bienestar: sanidad, educación, pensiones, prestaciones.', en: 'The Welfare State: healthcare, education, pensions, benefits.' }},
+                    ]},
+                    { bloque: 'E', name: { val: 'Economia internacional i reptes globals', es: 'Economía internacional y retos globales', en: 'International economics & global challenges' }, items: [
+                        { id: 'E1', desc: { val: 'Comerç internacional: avantatges comparatius, lliurecanvisme vs proteccionisme.', es: 'Comercio internacional: ventajas comparativas, librecambismo vs proteccionismo.', en: 'International trade: comparative advantage, free trade vs protectionism.' }},
+                        { id: 'E2', desc: { val: 'Globalització econòmica: causes, conseqüències, desigualtats globals.', es: 'Globalización económica: causas, consecuencias, desigualdades globales.', en: 'Economic globalization: causes, consequences, global inequalities.' }},
+                        { id: 'E3', desc: { val: 'Integració econòmica: la UE, l\'euro, organismes internacionals (FMI, BM, OMC).', es: 'Integración económica: la UE, el euro, organismos internacionales (FMI, BM, OMC).', en: 'Economic integration: the EU, the euro, international organizations.' }},
+                        { id: 'E4', desc: { val: 'Reptes de l\'economia actual: sostenibilitat, ODS, economia circular, digitalització.', es: 'Retos de la economía actual: sostenibilidad, ODS, economía circular, digitalización.', en: 'Current economic challenges: sustainability, SDGs, circular economy, digitalization.' }},
+                    ]},
+                ],
+            },
+
+            // ─────────────────────────────────────────────
+            // EDMN — 2n Batxillerat
+            // ─────────────────────────────────────────────
+            'edmn-2bach': {
+                name: { val: 'Empresa i Disseny de Models de Negoci', es: 'Empresa y Diseño de Modelos de Negocio', en: 'Business & Business Model Design' },
+                nivel: { val: '2n Batxillerat', es: '2º Bachillerato', en: 'Year 13' },
+                emoji: '🏢',
+                gradient: 'from-amber-500 to-orange-600',
+                normativa: 'RD 243/2022 · Decret 108/2022 (CV)',
+                ce: [
+                    {
+                        id: 'CE1', short: { val: 'Entorn empresarial', es: 'Entorno empresarial', en: 'Business environment' },
+                        desc: { val: 'Analitzar l\'entorn genèric i específic de les organitzacions, avaluant les interrelacions entre els diferents elements.', es: 'Analizar el entorno genérico y específico de las organizaciones, evaluando las interrelaciones entre los diferentes elementos.', en: 'Analyze the generic and specific environment of organizations.' },
+                        ca: [
+                            { id: '1.1', desc: { val: 'Analitzar l\'entorn general (PEST) i específic (Porter) d\'una empresa real.', es: 'Analizar el entorno general (PEST) y específico (Porter) de una empresa real.', en: 'Analyze a real company\'s general (PEST) and specific (Porter) environment.' }},
+                            { id: '1.2', desc: { val: 'Identificar les funcions de l\'empresa i les àrees funcionals: producció, màrqueting, finances i RRHH.', es: 'Identificar las funciones de la empresa y las áreas funcionales: producción, marketing, finanzas y RRHH.', en: 'Identify company functions and functional areas.' }},
+                        ],
+                        ccClau: ['CE', 'CC', 'STEM'],
+                    },
+                    {
+                        id: 'CE2', short: { val: 'Model de negoci', es: 'Modelo de negocio', en: 'Business model' },
+                        desc: { val: 'Establir els criteris per a la selecció d\'una idea de negoci, analitzant models organitzatius i fonts de finançament.', es: 'Establecer los criterios para la selección de una idea de negocio, analizando modelos organizativos y fuentes de financiación.', en: 'Establish criteria for selecting a business idea, analyzing organizational models and funding sources.' },
+                        ca: [
+                            { id: '2.1', desc: { val: 'Dissenyar un model de negoci utilitzant el Business Model Canvas.', es: 'Diseñar un modelo de negocio utilizando el Business Model Canvas.', en: 'Design a business model using the Business Model Canvas.' }},
+                            { id: '2.2', desc: { val: 'Classificar les empreses segons forma jurídica, grandària i sector, i seleccionar la més adequada.', es: 'Clasificar las empresas según forma jurídica, tamaño y sector, y seleccionar la más adecuada.', en: 'Classify companies by legal form, size, sector, and select the most suitable.' }},
+                        ],
+                        ccClau: ['CE', 'CPSAA', 'CD'],
+                    },
+                    {
+                        id: 'CE3', short: { val: 'Pla d\'empresa', es: 'Plan de empresa', en: 'Business plan' },
+                        desc: { val: 'Elaborar el pla d\'empresa, avaluant la viabilitat del projecte empresarial.', es: 'Elaborar el plan de empresa, evaluando la viabilidad del proyecto empresarial.', en: 'Develop the business plan, assessing the viability of the business project.' },
+                        ca: [
+                            { id: '3.1', desc: { val: 'Redactar un pla d\'empresa complet amb anàlisi de viabilitat economicofinancera.', es: 'Redactar un plan de empresa completo con análisis de viabilidad económico-financiera.', en: 'Write a complete business plan with economic-financial viability analysis.' }},
+                            { id: '3.2', desc: { val: 'Analitzar les fonts de finançament disponibles: pròpies, alienes, subvencions.', es: 'Analizar las fuentes de financiación disponibles: propias, ajenas, subvenciones.', en: 'Analyze available funding sources: own, external, subsidies.' }},
+                        ],
+                        ccClau: ['CE', 'STEM', 'CCL'],
+                    },
+                    {
+                        id: 'CE4', short: { val: 'Funció productiva', es: 'Función productiva', en: 'Production function' },
+                        desc: { val: 'Analitzar la funció productiva i els sistemes organitzatius de l\'empresa, valorant l\'eficiència i la innovació.', es: 'Analizar la función productiva y los sistemas organizativos de la empresa, valorando la eficiencia y la innovación.', en: 'Analyze the productive function and organizational systems, assessing efficiency and innovation.' },
+                        ca: [
+                            { id: '4.1', desc: { val: 'Calcular i interpretar la productivitat, els costos i el llindar de rendibilitat (punt mort).', es: 'Calcular e interpretar la productividad, los costes y el umbral de rentabilidad (punto muerto).', en: 'Calculate and interpret productivity, costs and break-even point.' }},
+                            { id: '4.2', desc: { val: 'Avaluar les formes d\'organització del treball i els estils de lideratge.', es: 'Evaluar las formas de organización del trabajo y los estilos de liderazgo.', en: 'Assess work organization forms and leadership styles.' }},
+                        ],
+                        ccClau: ['STEM', 'CE', 'CPSAA'],
+                    },
+                    {
+                        id: 'CE5', short: { val: 'Màrqueting i comercialització', es: 'Marketing y comercialización', en: 'Marketing & sales' },
+                        desc: { val: 'Proposar estratègies de màrqueting i comunicació adequades al segment de mercat, valorant l\'ètica empresarial.', es: 'Proponer estrategias de marketing y comunicación adecuadas al segmento de mercado, valorando la ética empresarial.', en: 'Propose marketing and communication strategies for the target market segment.' },
+                        ca: [
+                            { id: '5.1', desc: { val: 'Dissenyar un pla de màrqueting (4P/7P) per a un producte o servei, incloent-hi estratègies digitals.', es: 'Diseñar un plan de marketing (4P/7P) para un producto o servicio, incluyendo estrategias digitales.', en: 'Design a marketing plan (4P/7P) for a product/service, including digital strategies.' }},
+                            { id: '5.2', desc: { val: 'Analitzar la investigació de mercats: segmentació, posicionament i comportament del consumidor.', es: 'Analizar la investigación de mercados: segmentación, posicionamiento y comportamiento del consumidor.', en: 'Analyze market research: segmentation, positioning and consumer behavior.' }},
+                        ],
+                        ccClau: ['CE', 'CD', 'CCL'],
+                    },
+                    {
+                        id: 'CE6', short: { val: 'Funció financera i comptable', es: 'Función financiera y contable', en: 'Finance & accounting' },
+                        desc: { val: 'Avaluar la situació financera de l\'empresa a través de l\'anàlisi i interpretació de la informació comptable i financera.', es: 'Evaluar la situación financiera de la empresa a través del análisis e interpretación de la información contable y financiera.', en: 'Assess the company\'s financial situation through analysis and interpretation of accounting and financial information.' },
+                        ca: [
+                            { id: '6.1', desc: { val: 'Elaborar i interpretar el balanç de situació i el compte de pèrdues i guanys.', es: 'Elaborar e interpretar el balance de situación y la cuenta de pérdidas y ganancias.', en: 'Prepare and interpret the balance sheet and income statement.' }},
+                            { id: '6.2', desc: { val: 'Calcular i interpretar les ràtios financeres bàsiques: liquiditat, solvència, endeutament i rendibilitat.', es: 'Calcular e interpretar los ratios financieros básicos: liquidez, solvencia, endeudamiento y rentabilidad.', en: 'Calculate and interpret basic financial ratios.' }},
+                        ],
+                        ccClau: ['STEM', 'CE', 'CD'],
+                    },
+                ],
+                saberes: [
+                    { bloque: 'A', name: { val: 'L\'empresa i el seu entorn', es: 'La empresa y su entorno', en: 'The company and its environment' }, items: [
+                        { id: 'A1', desc: { val: 'L\'empresa com a unitat econòmica: funcions, objectius i responsabilitat social.', es: 'La empresa como unidad económica: funciones, objetivos y responsabilidad social.', en: 'The firm as an economic unit: functions, objectives and social responsibility.' }},
+                        { id: 'A2', desc: { val: 'Anàlisi de l\'entorn: PEST, Porter, DAFO. L\'estratègia empresarial.', es: 'Análisis del entorno: PEST, Porter, DAFO. La estrategia empresarial.', en: 'Environment analysis: PEST, Porter, SWOT. Business strategy.' }},
+                        { id: 'A3', desc: { val: 'Formes jurídiques: empresari individual, SL, SA, cooperatives.', es: 'Formas jurídicas: empresario individual, SL, SA, cooperativas.', en: 'Legal forms: sole trader, LLC, corporation, cooperatives.' }},
+                        { id: 'A4', desc: { val: 'Localització i dimensió empresarial. Creixement intern i extern.', es: 'Localización y dimensión empresarial. Crecimiento interno y externo.', en: 'Location and firm size. Internal and external growth.' }},
+                    ]},
+                    { bloque: 'B', name: { val: 'Producció i recursos humans', es: 'Producción y recursos humanos', en: 'Production & HR' }, items: [
+                        { id: 'B1', desc: { val: 'Funció de producció. Productivitat. Costos fixos, variables, totals i mitjans.', es: 'Función de producción. Productividad. Costes fijos, variables, totales y medios.', en: 'Production function. Productivity. Fixed, variable, total and average costs.' }},
+                        { id: 'B2', desc: { val: 'Llindar de rendibilitat o punt mort. Apalancament operatiu.', es: 'Umbral de rentabilidad o punto muerto. Apalancamiento operativo.', en: 'Break-even point. Operating leverage.' }},
+                        { id: 'B3', desc: { val: 'Organització de l\'empresa: organigrames, departamentalització. Estils de direcció.', es: 'Organización de la empresa: organigramas, departamentalización. Estilos de dirección.', en: 'Company organization: org charts, departmentalization. Management styles.' }},
+                        { id: 'B4', desc: { val: 'Gestió de recursos humans: selecció, formació, motivació, lideratge.', es: 'Gestión de recursos humanos: selección, formación, motivación, liderazgo.', en: 'HR management: selection, training, motivation, leadership.' }},
+                    ]},
+                    { bloque: 'C', name: { val: 'Màrqueting i funció comercial', es: 'Marketing y función comercial', en: 'Marketing & commercial function' }, items: [
+                        { id: 'C1', desc: { val: 'Investigació de mercats: fonts d\'informació, segmentació, posicionament.', es: 'Investigación de mercados: fuentes de información, segmentación, posicionamiento.', en: 'Market research: information sources, segmentation, positioning.' }},
+                        { id: 'C2', desc: { val: 'El màrqueting mix: producte, preu, distribució i comunicació (4P).', es: 'El marketing mix: producto, precio, distribución y comunicación (4P).', en: 'Marketing mix: product, price, place, promotion (4P).' }},
+                        { id: 'C3', desc: { val: 'Màrqueting digital: xarxes socials, SEO/SEM, comerç electrònic.', es: 'Marketing digital: redes sociales, SEO/SEM, comercio electrónico.', en: 'Digital marketing: social media, SEO/SEM, e-commerce.' }},
+                    ]},
+                    { bloque: 'D', name: { val: 'Finances i comptabilitat', es: 'Finanzas y contabilidad', en: 'Finance & accounting' }, items: [
+                        { id: 'D1', desc: { val: 'Fonts de finançament: pròpies (capital, reserves, autofinançament) i alienes (préstecs, leasing, etc.).', es: 'Fuentes de financiación: propias (capital, reservas, autofinanciación) y ajenas (préstamos, leasing, etc.).', en: 'Funding sources: own (equity, reserves) and external (loans, leasing, etc.).' }},
+                        { id: 'D2', desc: { val: 'Patrimoni empresarial. Balanç de situació: actiu, passiu i patrimoni net.', es: 'Patrimonio empresarial. Balance de situación: activo, pasivo y patrimonio neto.', en: 'Business assets. Balance sheet: assets, liabilities, equity.' }},
+                        { id: 'D3', desc: { val: 'Compte de pèrdues i guanys. Anàlisi de rendibilitat econòmica i financera.', es: 'Cuenta de pérdidas y ganancias. Análisis de rentabilidad económica y financiera.', en: 'Income statement. Economic and financial profitability analysis.' }},
+                        { id: 'D4', desc: { val: 'Ràtios financeres: liquiditat, tresoreria, solvència, endeutament, rendibilitat.', es: 'Ratios financieros: liquidez, tesorería, solvencia, endeudamiento, rentabilidad.', en: 'Financial ratios: liquidity, cash, solvency, leverage, profitability.' }},
+                        { id: 'D5', desc: { val: 'Inversió: VAN, TIR, payback. Selecció de projectes d\'inversió.', es: 'Inversión: VAN, TIR, payback. Selección de proyectos de inversión.', en: 'Investment: NPV, IRR, payback. Investment project selection.' }},
+                    ]},
+                ],
+            },
+
+            // ─────────────────────────────────────────────
+            // ECONOMIA I EMPRENEDORIA — 4t ESO
+            // ─────────────────────────────────────────────
+            'economia-4eso': {
+                name: { val: 'Economia i Emprenedoria', es: 'Economía y Emprendimiento', en: 'Economics & Entrepreneurship' },
+                nivel: { val: '4t ESO', es: '4º ESO', en: 'Year 10' },
+                emoji: '💡',
+                gradient: 'from-emerald-500 to-teal-600',
+                normativa: 'RD 217/2022 · Decret 107/2022 (CV)',
+                ce: [
+                    {
+                        id: 'CE1', short: { val: 'Realitat econòmica', es: 'Realidad económica', en: 'Economic reality' },
+                        desc: { val: 'Comprendre la realitat socioeconòmica, reflexionant sobre les necessitats, l\'escassetat i la presa de decisions dels agents econòmics.', es: 'Comprender la realidad socioeconómica, reflexionando sobre las necesidades, la escasez y la toma de decisiones de los agentes económicos.', en: 'Understand socioeconomic reality, reflecting on needs, scarcity and decision-making by economic agents.' },
+                        ca: [
+                            { id: '1.1', desc: { val: 'Comprendre el problema econòmic bàsic identificant necessitats, recursos escassos i cost d\'oportunitat.', es: 'Comprender el problema económico básico identificando necesidades, recursos escasos y coste de oportunidad.', en: 'Understand the basic economic problem.' }},
+                            { id: '1.2', desc: { val: 'Analitzar el funcionament del mercat i la interacció entre oferta i demanda en exemples quotidians.', es: 'Analizar el funcionamiento del mercado y la interacción entre oferta y demanda en ejemplos cotidianos.', en: 'Analyze market functioning through everyday examples.' }},
+                        ],
+                        ccClau: ['STEM', 'CC', 'CE'],
+                    },
+                    {
+                        id: 'CE2', short: { val: 'Emprenedoria', es: 'Emprendimiento', en: 'Entrepreneurship' },
+                        desc: { val: 'Desenvolupar una actitud emprenedora, reforçant qualitats personals com la creativitat, la iniciativa i el treball en equip.', es: 'Desarrollar una actitud emprendedora, reforzando cualidades personales como la creatividad, la iniciativa y el trabajo en equipo.', en: 'Develop an entrepreneurial attitude, reinforcing personal qualities.' },
+                        ca: [
+                            { id: '2.1', desc: { val: 'Identificar les qualitats d\'una persona emprenedora i valorar la importància de la creativitat i la innovació.', es: 'Identificar las cualidades de una persona emprendedora y valorar la importancia de la creatividad y la innovación.', en: 'Identify entrepreneurial qualities and value creativity.' }},
+                            { id: '2.2', desc: { val: 'Analitzar casos reals d\'emprenedoria social i empresarial, identificant claus de l\'èxit.', es: 'Analizar casos reales de emprendimiento social y empresarial, identificando claves del éxito.', en: 'Analyze real entrepreneurship cases, identifying keys to success.' }},
+                        ],
+                        ccClau: ['CE', 'CPSAA', 'CCL'],
+                    },
+                    {
+                        id: 'CE3', short: { val: 'Projecte emprenedor', es: 'Proyecto emprendedor', en: 'Entrepreneurship project' },
+                        desc: { val: 'Elaborar, de forma cooperativa, un projecte d\'emprenedoria social, creatiu i amb sentit ètic, prenent decisions de forma raonada.', es: 'Elaborar, de forma cooperativa, un proyecto de emprendimiento social, creativo y con sentido ético.', en: 'Develop, cooperatively, a creative social entrepreneurship project with ethical sense.' },
+                        ca: [
+                            { id: '3.1', desc: { val: 'Crear un projecte d\'emprenedoria (idea de negoci, pla bàsic, prototipatge) amb sentit social i ètic.', es: 'Crear un proyecto de emprendimiento (idea de negocio, plan básico, prototipado) con sentido social y ético.', en: 'Create an entrepreneurship project with social and ethical sense.' }},
+                            { id: '3.2', desc: { val: 'Utilitzar ferramentes digitals per al disseny i presentació del projecte emprenedor.', es: 'Utilizar herramientas digitales para el diseño y presentación del proyecto emprendedor.', en: 'Use digital tools for designing and presenting the entrepreneurship project.' }},
+                        ],
+                        ccClau: ['CE', 'CD', 'CPSAA'],
+                    },
+                    {
+                        id: 'CE4', short: { val: 'Finances personals', es: 'Finanzas personales', en: 'Personal finance' },
+                        desc: { val: 'Prendre decisions financeres responsables, comprenent els conceptes bàsics del sistema financer i la planificació econòmica personal.', es: 'Tomar decisiones financieras responsables, comprendiendo los conceptos básicos del sistema financiero.', en: 'Make responsible financial decisions, understanding basic financial system concepts.' },
+                        ca: [
+                            { id: '4.1', desc: { val: 'Elaborar un pressupost personal i familiar, identificant ingressos i despeses.', es: 'Elaborar un presupuesto personal y familiar, identificando ingresos y gastos.', en: 'Prepare a personal and family budget.' }},
+                            { id: '4.2', desc: { val: 'Comprendre productes financers bàsics (comptes, préstecs, assegurances) i els riscos associats.', es: 'Comprender productos financieros básicos (cuentas, préstamos, seguros) y los riesgos asociados.', en: 'Understand basic financial products and associated risks.' }},
+                        ],
+                        ccClau: ['CE', 'STEM', 'CPSAA'],
+                    },
+                    {
+                        id: 'CE5', short: { val: 'Reptes socials i ètica', es: 'Retos sociales y ética', en: 'Social challenges & ethics' },
+                        desc: { val: 'Proposar solucions a problemes socials i econòmics de l\'entorn, fomentant la responsabilitat social i el consum responsable.', es: 'Proponer soluciones a problemas sociales y económicos del entorno, fomentando la responsabilidad social y el consumo responsable.', en: 'Propose solutions to social and economic problems, promoting social responsibility and responsible consumption.' },
+                        ca: [
+                            { id: '5.1', desc: { val: 'Analitzar reptes econòmics actuals (sostenibilitat, desigualtat, canvi climàtic) i proposar solucions creatives.', es: 'Analizar retos económicos actuales (sostenibilidad, desigualdad, cambio climático) y proponer soluciones creativas.', en: 'Analyze current economic challenges and propose creative solutions.' }},
+                            { id: '5.2', desc: { val: 'Valorar el consum responsable, el comerç just i l\'economia circular com a alternatives sostenibles.', es: 'Valorar el consumo responsable, el comercio justo y la economía circular como alternativas sostenibles.', en: 'Value responsible consumption, fair trade and circular economy.' }},
+                        ],
+                        ccClau: ['CC', 'CE', 'CCEC'],
+                    },
+                ],
+                saberes: [
+                    { bloque: 'A', name: { val: 'El perfil emprenedor', es: 'El perfil emprendedor', en: 'The entrepreneurial profile' }, items: [
+                        { id: 'A1', desc: { val: 'Qualitats personals de l\'emprenedor: creativitat, iniciativa, lideratge, resiliència.', es: 'Cualidades personales del emprendedor: creatividad, iniciativa, liderazgo, resiliencia.', en: 'Entrepreneurial personal qualities.' }},
+                        { id: 'A2', desc: { val: 'Emprenedoria social vs empresarial. Exemples reals d\'emprenedors.', es: 'Emprendimiento social vs empresarial. Ejemplos reales de emprendedores.', en: 'Social vs business entrepreneurship. Real examples.' }},
+                        { id: 'A3', desc: { val: 'Tècniques de generació d\'idees: brainstorming, Design Thinking, Lean Startup.', es: 'Técnicas de generación de ideas: brainstorming, Design Thinking, Lean Startup.', en: 'Idea generation techniques: brainstorming, Design Thinking, Lean Startup.' }},
+                    ]},
+                    { bloque: 'B', name: { val: 'L\'entorn econòmic', es: 'El entorno económico', en: 'The economic environment' }, items: [
+                        { id: 'B1', desc: { val: 'Necessitats, béns i serveis. L\'escassetat i el cost d\'oportunitat.', es: 'Necesidades, bienes y servicios. La escasez y el coste de oportunidad.', en: 'Needs, goods and services. Scarcity and opportunity cost.' }},
+                        { id: 'B2', desc: { val: 'El mercat: oferta, demanda i preu. Tipus de mercats.', es: 'El mercado: oferta, demanda y precio. Tipos de mercados.', en: 'The market: supply, demand and price. Market types.' }},
+                        { id: 'B3', desc: { val: 'Reptes econòmics actuals: sostenibilitat, economia circular, ODS.', es: 'Retos económicos actuales: sostenibilidad, economía circular, ODS.', en: 'Current economic challenges: sustainability, circular economy, SDGs.' }},
+                    ]},
+                    { bloque: 'C', name: { val: 'Finances personals', es: 'Finanzas personales', en: 'Personal finance' }, items: [
+                        { id: 'C1', desc: { val: 'El pressupost personal i familiar. Ingressos, despeses i estalvi.', es: 'El presupuesto personal y familiar. Ingresos, gastos y ahorro.', en: 'Personal and family budget. Income, expenses and savings.' }},
+                        { id: 'C2', desc: { val: 'Productes financers bàsics: comptes, targetes, préstecs, assegurances.', es: 'Productos financieros básicos: cuentas, tarjetas, préstamos, seguros.', en: 'Basic financial products: accounts, cards, loans, insurance.' }},
+                        { id: 'C3', desc: { val: 'Consum responsable. Drets dels consumidors. Publicitat i manipulació.', es: 'Consumo responsable. Derechos de los consumidores. Publicidad y manipulación.', en: 'Responsible consumption. Consumer rights. Advertising and manipulation.' }},
+                    ]},
+                    { bloque: 'D', name: { val: 'El projecte emprenedor', es: 'El proyecto emprendedor', en: 'The entrepreneurship project' }, items: [
+                        { id: 'D1', desc: { val: 'De la idea al pla: detecció de necessitats, proposta de valor, model Canvas.', es: 'De la idea al plan: detección de necesidades, propuesta de valor, modelo Canvas.', en: 'From idea to plan: needs detection, value proposition, Canvas model.' }},
+                        { id: 'D2', desc: { val: 'Pla d\'empresa simplificat: producció, màrqueting, finances, RRHH.', es: 'Plan de empresa simplificado: producción, marketing, finanzas, RRHH.', en: 'Simplified business plan: production, marketing, finance, HR.' }},
+                        { id: 'D3', desc: { val: 'Presentació del projecte: elevator pitch, prototipatge, ferramentes digitals.', es: 'Presentación del proyecto: elevator pitch, prototipado, herramientas digitales.', en: 'Project presentation: elevator pitch, prototyping, digital tools.' }},
+                    ]},
+                ],
+            },
+
+            // ─────────────────────────────────────────────
+            // FOPP — 4t ESO
+            // ─────────────────────────────────────────────
+            'fopp-4eso': {
+                name: { val: 'Formació i Orientació Personal i Professional', es: 'Formación y Orientación Personal y Profesional', en: 'Personal & Professional Orientation' },
+                nivel: { val: '4t ESO', es: '4º ESO', en: 'Year 10' },
+                emoji: '🧭',
+                gradient: 'from-violet-500 to-purple-600',
+                normativa: 'RD 217/2022 · Decret 107/2022 (CV)',
+                ce: [
+                    {
+                        id: 'CE1', short: { val: 'Autoconeixement', es: 'Autoconocimiento', en: 'Self-knowledge' },
+                        desc: { val: 'Comprendre les principals característiques del desenvolupament humà, valorant l\'autoconeixement i la gestió emocional per al creixement personal.', es: 'Comprender las principales características del desarrollo humano, valorando el autoconocimiento y la gestión emocional.', en: 'Understand human development characteristics, valuing self-knowledge and emotional management.' },
+                        ca: [
+                            { id: '1.1', desc: { val: 'Identificar les pròpies fortaleses, debilitats, interessos i valors per al desenvolupament personal.', es: 'Identificar las propias fortalezas, debilidades, intereses y valores para el desarrollo personal.', en: 'Identify own strengths, weaknesses, interests and values.' }},
+                            { id: '1.2', desc: { val: 'Aplicar tècniques de gestió emocional i resolució de conflictes en situacions quotidianes.', es: 'Aplicar técnicas de gestión emocional y resolución de conflictos en situaciones cotidianas.', en: 'Apply emotional management and conflict resolution techniques.' }},
+                        ],
+                        ccClau: ['CPSAA', 'CC'],
+                    },
+                    {
+                        id: 'CE2', short: { val: 'Exploració professional', es: 'Exploración profesional', en: 'Professional exploration' },
+                        desc: { val: 'Explorar el món laboral i professional, identificant les oportunitats acadèmiques i professionals de l\'entorn.', es: 'Explorar el mundo laboral y profesional, identificando las oportunidades académicas y profesionales del entorno.', en: 'Explore the world of work, identifying academic and professional opportunities.' },
+                        ca: [
+                            { id: '2.1', desc: { val: 'Identificar els sectors productius i les professions associades, analitzant les tendències del mercat laboral.', es: 'Identificar los sectores productivos y las profesiones asociadas, analizando las tendencias del mercado laboral.', en: 'Identify productive sectors and professions, analyzing labor market trends.' }},
+                            { id: '2.2', desc: { val: 'Analitzar les vies acadèmiques (Batxillerat, FP, universitat) i els seus requisits.', es: 'Analizar las vías académicas (Bachillerato, FP, universidad) y sus requisitos.', en: 'Analyze academic paths and their requirements.' }},
+                        ],
+                        ccClau: ['CPSAA', 'CD', 'CE'],
+                    },
+                    {
+                        id: 'CE3', short: { val: 'Projecte personal', es: 'Proyecto personal', en: 'Personal project' },
+                        desc: { val: 'Dissenyar un projecte de vida personal i professional, valorant les pròpies capacitats i prenent decisions informades.', es: 'Diseñar un proyecto de vida personal y profesional, valorando las propias capacidades.', en: 'Design a personal and professional life project.' },
+                        ca: [
+                            { id: '3.1', desc: { val: 'Elaborar un projecte personal i professional amb objectius a curt, mitjà i llarg termini.', es: 'Elaborar un proyecto personal y profesional con objetivos a corto, medio y largo plazo.', en: 'Develop a personal and professional project with short, medium and long-term goals.' }},
+                            { id: '3.2', desc: { val: 'Prendre decisions sobre l\'itinerari formatiu i professional de manera raonada i informada.', es: 'Tomar decisiones sobre el itinerario formativo y profesional de manera razonada e informada.', en: 'Make informed decisions about one\'s educational and professional path.' }},
+                        ],
+                        ccClau: ['CPSAA', 'CE', 'CD'],
+                    },
+                    {
+                        id: 'CE4', short: { val: 'Drets laborals', es: 'Derechos laborales', en: 'Labor rights' },
+                        desc: { val: 'Conèixer els drets i deures laborals, valorant la importància de la legislació laboral i el sistema de protecció social.', es: 'Conocer los derechos y deberes laborales, valorando la importancia de la legislación laboral y el sistema de protección social.', en: 'Know labor rights and duties, valuing labor legislation and social protection.' },
+                        ca: [
+                            { id: '4.1', desc: { val: 'Identificar els drets i obligacions dels treballadors i les seues garanties en el marc legal vigent.', es: 'Identificar los derechos y obligaciones de los trabajadores y sus garantías en el marco legal vigente.', en: 'Identify workers\' rights and obligations within current legal framework.' }},
+                            { id: '4.2', desc: { val: 'Comprendre els elements del contracte de treball i les principals modalitats contractuals.', es: 'Comprender los elementos del contrato de trabajo y las principales modalidades contractuales.', en: 'Understand employment contract elements and main contract types.' }},
+                        ],
+                        ccClau: ['CC', 'CPSAA', 'CCL'],
+                    },
+                    {
+                        id: 'CE5', short: { val: 'Competència digital professional', es: 'Competencia digital profesional', en: 'Professional digital competence' },
+                        desc: { val: 'Utilitzar les ferramentes digitals per a la cerca d\'ocupació, la formació contínua i el treball col·laboratiu.', es: 'Utilizar las herramientas digitales para la búsqueda de empleo, la formación continua y el trabajo colaborativo.', en: 'Use digital tools for job searching, continuous learning and collaborative work.' },
+                        ca: [
+                            { id: '5.1', desc: { val: 'Crear un currículum, carta de presentació i perfil professional digital adequats al mercat laboral actual.', es: 'Crear un currículum, carta de presentación y perfil profesional digital adecuados al mercado laboral actual.', en: 'Create a CV, cover letter and digital professional profile.' }},
+                            { id: '5.2', desc: { val: 'Utilitzar plataformes digitals per a la cerca d\'ocupació i l\'emprenedoria.', es: 'Utilizar plataformas digitales para la búsqueda de empleo y el emprendimiento.', en: 'Use digital platforms for job search and entrepreneurship.' }},
+                        ],
+                        ccClau: ['CD', 'CE', 'CCL'],
+                    },
+                ],
+                saberes: [
+                    { bloque: 'A', name: { val: 'Autoconeixement i desenvolupament personal', es: 'Autoconocimiento y desarrollo personal', en: 'Self-knowledge & personal development' }, items: [
+                        { id: 'A1', desc: { val: 'Autoconeixement: interessos, aptituds, valors, personalitat. Eines d\'autoavaluació.', es: 'Autoconocimiento: intereses, aptitudes, valores, personalidad. Herramientas de autoevaluación.', en: 'Self-knowledge: interests, aptitudes, values, personality.' }},
+                        { id: 'A2', desc: { val: 'Intel·ligència emocional: gestió de les emocions, empatia, assertivitat.', es: 'Inteligencia emocional: gestión de las emociones, empatía, asertividad.', en: 'Emotional intelligence: emotion management, empathy, assertiveness.' }},
+                        { id: 'A3', desc: { val: 'Habilitats socials i comunicatives. Resolució de conflictes. Treball en equip.', es: 'Habilidades sociales y comunicativas. Resolución de conflictos. Trabajo en equipo.', en: 'Social and communication skills. Conflict resolution. Teamwork.' }},
+                    ]},
+                    { bloque: 'B', name: { val: 'Exploració del món laboral', es: 'Exploración del mundo laboral', en: 'Exploring the world of work' }, items: [
+                        { id: 'B1', desc: { val: 'Sectors econòmics i professions. Noves professions i tendències del mercat laboral.', es: 'Sectores económicos y profesiones. Nuevas profesiones y tendencias del mercado laboral.', en: 'Economic sectors and professions. New professions and labor market trends.' }},
+                        { id: 'B2', desc: { val: 'Itineraris formatius: ESO, Batxillerat, FP, universitat. Requisits i sortides.', es: 'Itinerarios formativos: ESO, Bachillerato, FP, universidad. Requisitos y salidas.', en: 'Educational pathways: ESO, Baccalaureate, VET, university.' }},
+                        { id: 'B3', desc: { val: 'La cerca d\'ocupació: curriculum, entrevista, marca personal digital.', es: 'La búsqueda de empleo: currículum, entrevista, marca personal digital.', en: 'Job search: CV, interview, digital personal branding.' }},
+                    ]},
+                    { bloque: 'C', name: { val: 'Drets i deures laborals', es: 'Derechos y deberes laborales', en: 'Labor rights & duties' }, items: [
+                        { id: 'C1', desc: { val: 'El contracte de treball: elements, modalitats, nòmina, Seguretat Social.', es: 'El contrato de trabajo: elementos, modalidades, nómina, Seguridad Social.', en: 'Employment contract: elements, types, payslip, Social Security.' }},
+                        { id: 'C2', desc: { val: 'Drets laborals bàsics: jornada, vacances, permisos, conciliació. Sindicats.', es: 'Derechos laborales básicos: jornada, vacaciones, permisos, conciliación. Sindicatos.', en: 'Basic labor rights: working hours, holidays, leave, work-life balance. Unions.' }},
+                        { id: 'C3', desc: { val: 'Prevenció de riscos laborals. Salut i seguretat al treball.', es: 'Prevención de riesgos laborales. Salud y seguridad en el trabajo.', en: 'Occupational risk prevention. Health and safety at work.' }},
+                    ]},
+                    { bloque: 'D', name: { val: 'Planificació del futur', es: 'Planificación del futuro', en: 'Planning the future' }, items: [
+                        { id: 'D1', desc: { val: 'El projecte personal i professional: objectius, pla d\'acció, avaluació.', es: 'El proyecto personal y profesional: objetivos, plan de acción, evaluación.', en: 'Personal and professional project: goals, action plan, assessment.' }},
+                        { id: 'D2', desc: { val: 'Presa de decisions: matriu de decisió, anàlisi DAFO personal, valors vs realitat.', es: 'Toma de decisiones: matriz de decisión, análisis DAFO personal, valores vs realidad.', en: 'Decision-making: decision matrix, personal SWOT, values vs reality.' }},
+                        { id: 'D3', desc: { val: 'Emprenedoria i creativitat. Mentalitat de creixement. Aprenentatge al llarg de la vida.', es: 'Emprendimiento y creatividad. Mentalidad de crecimiento. Aprendizaje a lo largo de la vida.', en: 'Entrepreneurship and creativity. Growth mindset. Lifelong learning.' }},
+                    ]},
+                ],
+            },
+        };
+
+        // ============================================================
+        // METHODOLOGIES, ACTIVITIES, ASSESSMENT DATA
+        // ============================================================
+        const METHODOLOGIES = [
+            { id: 'abp',      name: { val: 'Aprenentatge Basat en Projectes (ABP)',   es: 'Aprendizaje Basado en Proyectos (ABP)',   en: 'Project-Based Learning (PBL)' },     emoji: '📋' },
+            { id: 'abr',      name: { val: 'Aprenentatge Basat en Reptes (ABR)',       es: 'Aprendizaje Basado en Retos (ABR)',       en: 'Challenge-Based Learning (CBL)' },   emoji: '🎯' },
+            { id: 'flipped',  name: { val: 'Aula Invertida (Flipped Classroom)',       es: 'Aula Invertida (Flipped Classroom)',      en: 'Flipped Classroom' },                emoji: '🔄' },
+            { id: 'gamif',    name: { val: 'Gamificació',                              es: 'Gamificación',                            en: 'Gamification' },                     emoji: '🎮' },
+            { id: 'coop',     name: { val: 'Aprenentatge Cooperatiu',                  es: 'Aprendizaje Cooperativo',                 en: 'Cooperative Learning' },              emoji: '🤝' },
+            { id: 'aps',      name: { val: 'Aprenentatge-Servei (ApS)',                es: 'Aprendizaje-Servicio (ApS)',              en: 'Service-Learning' },                  emoji: '🫶' },
+            { id: 'dt',       name: { val: 'Design Thinking',                          es: 'Design Thinking',                         en: 'Design Thinking' },                  emoji: '💭' },
+            { id: 'visual',   name: { val: 'Visual Thinking',                          es: 'Visual Thinking',                         en: 'Visual Thinking' },                  emoji: '🎨' },
+            { id: 'expositiu', name: { val: 'Classe Expositiva Participativa',         es: 'Clase Expositiva Participativa',          en: 'Participatory Lecture' },             emoji: '🗣️' },
+            { id: 'estudi-cas', name: { val: 'Estudi de Casos',                        es: 'Estudio de Casos',                        en: 'Case Study' },                       emoji: '🔍' },
+        ];
+
+        const ACTIVITY_TYPES = [
+            { id: 'motivacio',   name: { val: 'Activitat de motivació / avaluació inicial',  es: 'Actividad de motivación / evaluación inicial', en: 'Motivation / initial assessment' }, emoji: '🚀', phase: 'initial' },
+            { id: 'explicacio',  name: { val: 'Explicació / presentació de continguts',       es: 'Explicación / presentación de contenidos',     en: 'Content presentation' },          emoji: '📖', phase: 'development' },
+            { id: 'investigacio', name: { val: 'Investigació / cerca d\'informació',           es: 'Investigación / búsqueda de información',      en: 'Research / information search' },  emoji: '🔎', phase: 'development' },
+            { id: 'practica',    name: { val: 'Activitat pràctica / exercicis',               es: 'Actividad práctica / ejercicios',               en: 'Practice / exercises' },           emoji: '✏️', phase: 'development' },
+            { id: 'debat',       name: { val: 'Debat / discussió guiada',                     es: 'Debate / discusión guiada',                     en: 'Debate / guided discussion' },    emoji: '💬', phase: 'development' },
+            { id: 'simulacio',   name: { val: 'Simulació / role-playing',                     es: 'Simulación / role-playing',                     en: 'Simulation / role-playing' },     emoji: '🎭', phase: 'development' },
+            { id: 'cooperatiu',  name: { val: 'Treball cooperatiu',                           es: 'Trabajo cooperativo',                           en: 'Cooperative work' },              emoji: '🤝', phase: 'development' },
+            { id: 'digital',     name: { val: 'Activitat digital / TIC',                      es: 'Actividad digital / TIC',                       en: 'Digital / ICT activity' },        emoji: '💻', phase: 'development' },
+            { id: 'producte',    name: { val: 'Elaboració del producte final',                 es: 'Elaboración del producto final',                en: 'Final product creation' },        emoji: '🏗️', phase: 'final' },
+            { id: 'exposicio',   name: { val: 'Exposició oral / presentació',                  es: 'Exposición oral / presentación',                en: 'Oral presentation' },             emoji: '🎤', phase: 'final' },
+            { id: 'reflexio',    name: { val: 'Reflexió / autoavaluació',                      es: 'Reflexión / autoevaluación',                    en: 'Reflection / self-assessment' },  emoji: '🪞', phase: 'final' },
+        ];
+
+        const GROUPINGS = [
+            { id: 'individual', name: { val: 'Individual',         es: 'Individual',         en: 'Individual' },       emoji: '👤' },
+            { id: 'parella',    name: { val: 'Parella',            es: 'Pareja',             en: 'Pairs' },            emoji: '👥' },
+            { id: 'petit-grup', name: { val: 'Petit grup (3-5)',   es: 'Pequeño grupo (3-5)', en: 'Small group (3-5)' }, emoji: '👨‍👩‍👧‍👦' },
+            { id: 'gran-grup',  name: { val: 'Gran grup / classe', es: 'Gran grupo / clase',  en: 'Whole class' },      emoji: '🏫' },
+        ];
+
+        const ASSESSMENT_INSTRUMENTS = [
+            { id: 'rubrica',     name: { val: 'Rúbrica',                    es: 'Rúbrica',                   en: 'Rubric' },                emoji: '📊' },
+            { id: 'escala',      name: { val: 'Escala de valoració',        es: 'Escala de valoración',      en: 'Rating scale' },          emoji: '📏' },
+            { id: 'portfolio',   name: { val: 'Portafoli',                  es: 'Portfolio',                 en: 'Portfolio' },             emoji: '📁' },
+            { id: 'diana',       name: { val: 'Diana d\'avaluació',         es: 'Diana de evaluación',       en: 'Assessment target' },    emoji: '🎯' },
+            { id: 'prova',       name: { val: 'Prova escrita',              es: 'Prueba escrita',            en: 'Written test' },          emoji: '📝' },
+            { id: 'observacio',  name: { val: 'Registre d\'observació',     es: 'Registro de observación',   en: 'Observation record' },    emoji: '👁️' },
+            { id: 'presentacio', name: { val: 'Presentació oral',           es: 'Presentación oral',         en: 'Oral presentation' },     emoji: '🎤' },
+            { id: 'informe',     name: { val: 'Informe / treball escrit',   es: 'Informe / trabajo escrito', en: 'Report / written work' }, emoji: '📄' },
+            { id: 'qüestionari', name: { val: 'Qüestionari / formulari',    es: 'Cuestionario / formulario', en: 'Questionnaire / form' },  emoji: '📋' },
+        ];
+
+        const ASSESSMENT_TYPES = [
+            { id: 'hetero', name: { val: 'Heteroavaluació (professor)',  es: 'Heteroevaluación (profesor)',  en: 'Teacher assessment' },  emoji: '👩‍🏫' },
+            { id: 'co',     name: { val: 'Coavaluació (entre iguals)',   es: 'Coevaluación (entre iguales)', en: 'Peer assessment' },     emoji: '🤝' },
+            { id: 'auto',   name: { val: 'Autoavaluació (alumne)',       es: 'Autoevaluación (alumno)',      en: 'Self-assessment' },     emoji: '🪞' },
+        ];
+
+        const DUA_MEASURES = {
+            representation: [
+                { id: 'r1', desc: { val: 'Presentar la informació en múltiples formats (text, àudio, vídeo, imatges).', es: 'Presentar la información en múltiples formatos (texto, audio, vídeo, imágenes).', en: 'Present information in multiple formats.' }},
+                { id: 'r2', desc: { val: 'Oferir vocabulari clau amb definicions accessibles i exemples visuals.', es: 'Ofrecer vocabulario clave con definiciones accesibles y ejemplos visuales.', en: 'Offer key vocabulary with accessible definitions.' }},
+                { id: 'r3', desc: { val: 'Proporcionar organitzadors gràfics i esquemes conceptuals.', es: 'Proporcionar organizadores gráficos y esquemas conceptuales.', en: 'Provide graphic organizers and concept maps.' }},
+                { id: 'r4', desc: { val: 'Utilitzar subtítols en vídeos i transcripcions d\'àudios.', es: 'Utilizar subtítulos en vídeos y transcripciones de audios.', en: 'Use video subtitles and audio transcriptions.' }},
+            ],
+            engagement: [
+                { id: 'e1', desc: { val: 'Connectar amb interessos i experiències prèvies de l\'alumnat.', es: 'Conectar con intereses y experiencias previas del alumnado.', en: 'Connect with students\' interests and prior experiences.' }},
+                { id: 'e2', desc: { val: 'Oferir opcions d\'elecció en activitats i productes finals.', es: 'Ofrecer opciones de elección en actividades y productos finales.', en: 'Offer choices in activities and final products.' }},
+                { id: 'e3', desc: { val: 'Establir objectius clars i proporcionar retroalimentació contínua.', es: 'Establecer objetivos claros y proporcionar retroalimentación continua.', en: 'Set clear goals and provide continuous feedback.' }},
+                { id: 'e4', desc: { val: 'Fomentar l\'autoregulació amb eines de planificació i seguiment.', es: 'Fomentar la autorregulación con herramientas de planificación y seguimiento.', en: 'Foster self-regulation with planning and tracking tools.' }},
+            ],
+            expression: [
+                { id: 'x1', desc: { val: 'Permetre múltiples formes d\'expressió del producte final (escrit, oral, digital, visual).', es: 'Permitir múltiples formas de expresión del producto final.', en: 'Allow multiple forms of expression for the final product.' }},
+                { id: 'x2', desc: { val: 'Proporcionar bastides d\'aprenentatge (scaffolding): plantilles, guies, exemples.', es: 'Proporcionar andamiajes de aprendizaje (scaffolding): plantillas, guías, ejemplos.', en: 'Provide learning scaffolding: templates, guides, examples.' }},
+                { id: 'x3', desc: { val: 'Oferir ferramentes digitals alternatives per a la producció de continguts.', es: 'Ofrecer herramientas digitales alternativas para la producción de contenidos.', en: 'Offer alternative digital tools for content production.' }},
+                { id: 'x4', desc: { val: 'Graduar la complexitat de les tasques amb nivells de suport progressiu.', es: 'Graduar la complejidad de las tareas con niveles de apoyo progresivo.', en: 'Grade task complexity with progressive support levels.' }},
+            ],
+        };
+
+        // ============================================================
+        // SA TEMPLATES — Pre-built starting points
+        // ============================================================
+        const SA_TEMPLATES = [
+            {
+                id: 'economia-circular',
+                name: { val: 'L\'economia circular al nostre entorn', es: 'La economía circular en nuestro entorno', en: 'Circular economy in our environment' },
+                subject: 'economia-1bach',
+                sessions: 8,
+                trimester: '2',
+                product: { val: 'Informe + presentació oral sobre una empresa circular local', es: 'Informe + presentación oral sobre una empresa circular local', en: 'Report + oral presentation on a local circular business' },
+                justification: { val: 'Els alumnes investiguen l\'impacte de l\'economia circular al seu entorn més proper, connectant els continguts teòrics amb la realitat empresarial local.', es: 'Los alumnos investigan el impacto de la economía circular en su entorno más cercano.', en: 'Students investigate the impact of circular economy in their local environment.' },
+                selectedCE: ['CE2', 'CE5', 'CE6'],
+                selectedSaberes: ['B4', 'E2', 'E4'],
+                methodology: ['abp', 'coop', 'estudi-cas'],
+                emoji: '♻️',
+            },
+            {
+                id: 'simulacio-mercat',
+                name: { val: 'Simulació: som el mercat!', es: 'Simulación: ¡somos el mercado!', en: 'Simulation: we are the market!' },
+                subject: 'economia-1bach',
+                sessions: 6,
+                trimester: '1',
+                product: { val: 'Informe d\'anàlisi amb gràfics de resultats de la simulació', es: 'Informe de análisis con gráficos de resultados de la simulación', en: 'Analysis report with simulation results charts' },
+                justification: { val: 'Mitjançant una simulació de mercat a l\'aula, els alumnes comprenen de manera vivencial com es determinen els preus i l\'equilibri.', es: 'Mediante una simulación de mercado en el aula, los alumnos comprenden de manera vivencial cómo se determinan los precios.', en: 'Through a market simulation, students experientially understand price determination.' },
+                selectedCE: ['CE2', 'CE6'],
+                selectedSaberes: ['B1', 'B2', 'B3'],
+                methodology: ['gamif', 'coop'],
+                emoji: '📊',
+            },
+            {
+                id: 'startup-social',
+                name: { val: 'La meua startup social', es: 'Mi startup social', en: 'My social startup' },
+                subject: 'economia-4eso',
+                sessions: 10,
+                trimester: '2',
+                product: { val: 'Elevator pitch + Business Model Canvas + prototip digital', es: 'Elevator pitch + Business Model Canvas + prototipo digital', en: 'Elevator pitch + Business Model Canvas + digital prototype' },
+                justification: { val: 'L\'alumnat dissenya una startup social que resolga un problema real del seu barri o ciutat, combinant emprenedoria amb consciència social.', es: 'El alumnado diseña una startup social que resuelva un problema real de su barrio o ciudad.', en: 'Students design a social startup solving a real problem in their neighborhood.' },
+                selectedCE: ['CE2', 'CE3', 'CE5'],
+                selectedSaberes: ['A1', 'A3', 'D1', 'D2', 'D3'],
+                methodology: ['dt', 'abp', 'coop'],
+                emoji: '🚀',
+            },
+            {
+                id: 'pla-empresa',
+                name: { val: 'Pla d\'empresa complet', es: 'Plan de empresa completo', en: 'Complete business plan' },
+                subject: 'edmn-2bach',
+                sessions: 12,
+                trimester: '2',
+                product: { val: 'Pla d\'empresa escrit + presentació davant un tribunal (simulació jurat inversor)', es: 'Plan de empresa escrito + presentación ante un tribunal (simulación jurado inversor)', en: 'Written business plan + presentation before a panel (investor jury simulation)' },
+                justification: { val: 'Els alumnes elaboren un pla d\'empresa complet, des de la idea fins a la viabilitat financera, simulant la defensa davant inversors.', es: 'Los alumnos elaboran un plan de empresa completo, desde la idea hasta la viabilidad financiera.', en: 'Students develop a complete business plan, from idea to financial viability.' },
+                selectedCE: ['CE2', 'CE3', 'CE5', 'CE6'],
+                selectedSaberes: ['A2', 'A3', 'C1', 'C2', 'D1', 'D2', 'D3'],
+                methodology: ['abp', 'coop', 'dt'],
+                emoji: '📋',
+            },
+            {
+                id: 'orientacio-futur',
+                name: { val: 'El meu futur professional', es: 'Mi futuro profesional', en: 'My professional future' },
+                subject: 'fopp-4eso',
+                sessions: 8,
+                trimester: '1',
+                product: { val: 'Portfolio digital personal + entrevista simulada gravada en vídeo', es: 'Portfolio digital personal + entrevista simulada grabada en vídeo', en: 'Personal digital portfolio + simulated video interview' },
+                justification: { val: 'L\'alumnat explora les seues fortaleses, interessos i opcions formatives per dissenyar un projecte de futur realista i motivador.', es: 'El alumnado explora sus fortalezas, intereses y opciones formativas para diseñar un proyecto de futuro.', en: 'Students explore their strengths, interests and training options to design a future project.' },
+                selectedCE: ['CE1', 'CE2', 'CE3'],
+                selectedSaberes: ['A1', 'A2', 'B1', 'B2', 'D1'],
+                methodology: ['abp', 'coop', 'visual'],
+                emoji: '🧭',
+            },
+        ];
+
+        // ============================================================
+        // HELPER: Empty SA state
+        // ============================================================
+        function createEmptySA() {
+            return {
+                subject: '',
+                title: '',
+                justification: '',
+                sessions: 8,
+                trimester: '1',
+                product: '',
+                selectedCE: [],
+                selectedCA: [],
+                selectedSaberes: [],
+                selectedCC: [],
+                methodology: [],
+                activities: [],
+                instruments: [],
+                assessTypes: ['hetero'],
+                dua: { representation: [], engagement: [], expression: [] },
+            };
+        }
+
+        function createDefaultActivity(idx) {
+            return {
+                id: Date.now() + '_' + idx,
+                name: '',
+                description: '',
+                type: 'practica',
+                grouping: 'individual',
+                sessions: 1,
+                resources: '',
+            };
+        }
+
+        // ============================================================
+        // COMPONENT: Step Indicator
+        // ============================================================
+        function StepIndicator({ steps, currentStep, setStep, t }) {
+            return (
+                <div className="flex items-center justify-center gap-1 mb-8 flex-wrap">
+                    {steps.map(function(step, idx) {
+                        var isActive = idx === currentStep;
+                        var isDone = idx < currentStep;
+                        return (
+                            <button
+                                key={idx}
+                                onClick={function() { if (isDone) setStep(idx); }}
+                                className={'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ' +
+                                    (isActive ? 'bg-green-600 text-white shadow-lg' :
+                                     isDone ? 'bg-green-100 text-green-700 cursor-pointer hover:bg-green-200' :
+                                     'bg-gray-100 text-gray-400 cursor-default')}
+                            >
+                                <span className={'w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ' +
+                                    (isActive ? 'bg-white text-green-600' :
+                                     isDone ? 'bg-green-500 text-white' :
+                                     'bg-gray-300 text-white')}>
+                                    {isDone ? '✓' : idx + 1}
+                                </span>
+                                <span className="hidden md:inline">{step}</span>
+                            </button>
+                        );
+                    })}
+                </div>
+            );
+        }
+
+        // ============================================================
+        // STEP 1: Subject Selection
+        // ============================================================
+        function Step1Subject({ sa, setSA, t, idioma }) {
+            var subjects = Object.keys(CURRICULUM);
+
+            function selectSubject(subjectId) {
+                setSA(function(prev) { return Object.assign({}, prev, { subject: subjectId, selectedCE: [], selectedCA: [], selectedSaberes: [], selectedCC: [] }); });
+            }
+
+            function loadTemplate(template) {
+                var newSA = createEmptySA();
+                newSA.subject = template.subject;
+                newSA.title = template.name[idioma] || template.name.val;
+                newSA.justification = template.justification[idioma] || template.justification.val;
+                newSA.sessions = template.sessions;
+                newSA.trimester = template.trimester;
+                newSA.product = template.product[idioma] || template.product.val;
+                newSA.selectedCE = template.selectedCE;
+                newSA.methodology = template.methodology;
+                // Auto-select CA from selected CE
+                var curriculum = CURRICULUM[template.subject];
+                var autoCA = [];
+                curriculum.ce.forEach(function(ce) {
+                    if (template.selectedCE.includes(ce.id)) {
+                        ce.ca.forEach(function(ca) { autoCA.push(ce.id + '.' + ca.id); });
+                    }
+                });
+                newSA.selectedCA = autoCA;
+                newSA.selectedSaberes = template.selectedSaberes;
+                // Auto-select CC from CE
+                var autoCC = [];
+                curriculum.ce.forEach(function(ce) {
+                    if (template.selectedCE.includes(ce.id) && ce.ccClau) {
+                        ce.ccClau.forEach(function(cc) { if (!autoCC.includes(cc)) autoCC.push(cc); });
+                    }
+                });
+                newSA.selectedCC = autoCC;
+                setSA(newSA);
+            }
+
+            return (
+                <div className="fade-in">
+                    <h3 className="text-xl font-bold text-gray-800 mb-6">{t('selectSubject')}</h3>
+                    <div className="grid md:grid-cols-2 gap-4 mb-10">
+                        {subjects.map(function(key) {
+                            var subj = CURRICULUM[key];
+                            var isSelected = sa.subject === key;
+                            return (
+                                <button key={key} onClick={function() { selectSubject(key); }}
+                                    className={'p-6 rounded-2xl border-2 text-left transition-all duration-200 ' +
+                                        (isSelected ? 'border-green-500 bg-green-50 shadow-lg scale-[1.02]' : 'border-gray-200 bg-white hover:border-green-300 hover:shadow-md')}>
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <span className={'text-3xl w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-r ' + subj.gradient + ' text-white'}>{subj.emoji}</span>
+                                        <div>
+                                            <h4 className="font-bold text-gray-800">{subj.name[idioma] || subj.name.val}</h4>
+                                            <p className="text-sm text-gray-500">{subj.nivel[idioma] || subj.nivel.val}</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-gray-400 mt-2">{subj.normativa}</p>
+                                    {isSelected && <div className="mt-3 text-green-600 text-sm font-semibold flex items-center gap-1">✓ Seleccionada</div>}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* Templates */}
+                    <h3 className="text-xl font-bold text-gray-800 mb-4">{t('orTemplate')}</h3>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {SA_TEMPLATES.map(function(tmpl) {
+                            var subj = CURRICULUM[tmpl.subject];
+                            return (
+                                <button key={tmpl.id} onClick={function() { loadTemplate(tmpl); }}
+                                    className="p-4 rounded-xl border border-gray-200 bg-white hover:border-green-300 hover:shadow-md text-left transition-all">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className="text-2xl">{tmpl.emoji}</span>
+                                        <h4 className="font-semibold text-gray-800 text-sm leading-tight">{tmpl.name[idioma] || tmpl.name.val}</h4>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-xs text-gray-400">
+                                        <span>{subj.emoji} {subj.name[idioma] || subj.name.val}</span>
+                                        <span>·</span>
+                                        <span>{tmpl.sessions} {t('sessions')}</span>
+                                    </div>
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================
+        // STEP 2: Basic Info
+        // ============================================================
+        function Step2BasicInfo({ sa, setSA, t, idioma }) {
+            function update(field, value) {
+                setSA(function(prev) { var n = Object.assign({}, prev); n[field] = value; return n; });
+            }
+
+            return (
+                <div className="fade-in max-w-2xl mx-auto">
+                    <h3 className="text-xl font-bold text-gray-800 mb-6">{t('step2')}</h3>
+
+                    <div className="space-y-5">
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">{t('saTitle')} *</label>
+                            <input type="text" value={sa.title} onChange={function(e) { update('title', e.target.value); }}
+                                placeholder={t('saTitlePh')} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all" />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">{t('saJustification')}</label>
+                            <textarea value={sa.justification} onChange={function(e) { update('justification', e.target.value); }}
+                                placeholder={t('saJustPh')} rows={4} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all resize-y" />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">{t('saSessions')}</label>
+                                <input type="number" min={1} max={30} value={sa.sessions} onChange={function(e) { update('sessions', parseInt(e.target.value) || 1); }}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">{t('saTrimester')}</label>
+                                <select value={sa.trimester} onChange={function(e) { update('trimester', e.target.value); }}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none bg-white">
+                                    <option value="1">{t('trim1')}</option>
+                                    <option value="2">{t('trim2')}</option>
+                                    <option value="3">{t('trim3')}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">{t('saProduct')}</label>
+                            <input type="text" value={sa.product} onChange={function(e) { update('product', e.target.value); }}
+                                placeholder={t('saProductPh')} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all" />
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================
+        // STEP 3: Curriculum Elements
+        // ============================================================
+        function Step3Curriculum({ sa, setSA, t, idioma }) {
+            var curriculum = CURRICULUM[sa.subject];
+            if (!curriculum) return <div className="text-center text-gray-400 py-10">Selecciona primer una assignatura</div>;
+
+            function toggleArray(field, value) {
+                setSA(function(prev) {
+                    var arr = prev[field].slice();
+                    var idx = arr.indexOf(value);
+                    if (idx >= 0) arr.splice(idx, 1);
+                    else arr.push(value);
+                    var n = Object.assign({}, prev);
+                    n[field] = arr;
+                    return n;
+                });
+            }
+
+            // Auto-select CC from selected CE
+            useEffect(function() {
+                var autoCC = [];
+                curriculum.ce.forEach(function(ce) {
+                    if (sa.selectedCE.includes(ce.id) && ce.ccClau) {
+                        ce.ccClau.forEach(function(cc) { if (!autoCC.includes(cc)) autoCC.push(cc); });
+                    }
+                });
+                setSA(function(prev) { return Object.assign({}, prev, { selectedCC: autoCC }); });
+            }, [sa.selectedCE.join(',')]);
+
+            return (
+                <div className="fade-in">
+                    <h3 className="text-xl font-bold text-gray-800 mb-6">{t('step3')}</h3>
+
+                    {/* CE Selection */}
+                    <div className="mb-8">
+                        <h4 className="text-md font-bold text-gray-700 mb-3">{t('ceTitle')}</h4>
+                        <p className="text-sm text-gray-400 mb-3">{t('selectCE')}</p>
+                        <div className="space-y-3">
+                            {curriculum.ce.map(function(ce) {
+                                var isSelected = sa.selectedCE.includes(ce.id);
+                                return (
+                                    <button key={ce.id} onClick={function() { toggleArray('selectedCE', ce.id); }}
+                                        className={'w-full text-left p-4 rounded-xl border-2 transition-all ' +
+                                            (isSelected ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-white hover:border-green-300')}>
+                                        <div className="flex items-start gap-3">
+                                            <span className={'w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5 ' +
+                                                (isSelected ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500')}>{isSelected ? '✓' : ce.id.replace('CE', '')}</span>
+                                            <div>
+                                                <span className="font-bold text-gray-800">{ce.id}: </span>
+                                                <span className="text-sm text-gray-600">{ce.short[idioma] || ce.short.val}</span>
+                                                {isSelected && <p className="text-xs text-gray-500 mt-1">{ce.desc[idioma] || ce.desc.val}</p>}
+                                            </div>
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* CA Selection (only for selected CE) */}
+                    {sa.selectedCE.length > 0 && (
+                        <div className="mb-8">
+                            <h4 className="text-md font-bold text-gray-700 mb-3">{t('caTitle')}</h4>
+                            <p className="text-sm text-gray-400 mb-3">{t('selectCA')}</p>
+                            {curriculum.ce.filter(function(ce) { return sa.selectedCE.includes(ce.id); }).map(function(ce) {
+                                return (
+                                    <div key={ce.id} className="mb-4">
+                                        <h5 className="text-sm font-bold text-green-700 mb-2">{ce.id}: {ce.short[idioma] || ce.short.val}</h5>
+                                        <div className="space-y-2 pl-4">
+                                            {ce.ca.map(function(ca) {
+                                                var caKey = ce.id + '.' + ca.id;
+                                                var isSelected = sa.selectedCA.includes(caKey);
+                                                return (
+                                                    <button key={caKey} onClick={function() { toggleArray('selectedCA', caKey); }}
+                                                        className={'w-full text-left p-3 rounded-lg border transition-all text-sm ' +
+                                                            (isSelected ? 'border-green-400 bg-green-50' : 'border-gray-200 bg-white hover:border-green-300')}>
+                                                        <div className="flex items-start gap-2">
+                                                            <span className={'w-5 h-5 rounded flex items-center justify-center text-xs flex-shrink-0 ' +
+                                                                (isSelected ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500')}>{isSelected ? '✓' : ''}</span>
+                                                            <span><strong>{ca.id}:</strong> {ca.desc[idioma] || ca.desc.val}</span>
+                                                        </div>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {/* Saberes Básicos Selection */}
+                    <div className="mb-8">
+                        <h4 className="text-md font-bold text-gray-700 mb-3">{t('saberesTitle')}</h4>
+                        <p className="text-sm text-gray-400 mb-3">{t('selectSaberes')}</p>
+                        {curriculum.saberes.map(function(bloque) {
+                            return (
+                                <div key={bloque.bloque} className="mb-4">
+                                    <h5 className="text-sm font-bold text-emerald-700 mb-2">
+                                        {idioma === 'en' ? 'Block' : 'Bloc'} {bloque.bloque}: {bloque.name[idioma] || bloque.name.val}
+                                    </h5>
+                                    <div className="space-y-2 pl-4">
+                                        {bloque.items.map(function(item) {
+                                            var isSelected = sa.selectedSaberes.includes(item.id);
+                                            return (
+                                                <button key={item.id} onClick={function() { toggleArray('selectedSaberes', item.id); }}
+                                                    className={'w-full text-left p-3 rounded-lg border transition-all text-sm ' +
+                                                        (isSelected ? 'border-emerald-400 bg-emerald-50' : 'border-gray-200 bg-white hover:border-emerald-300')}>
+                                                    <div className="flex items-start gap-2">
+                                                        <span className={'w-5 h-5 rounded flex items-center justify-center text-xs flex-shrink-0 ' +
+                                                            (isSelected ? 'bg-emerald-500 text-white' : 'bg-gray-200 text-gray-500')}>{isSelected ? '✓' : ''}</span>
+                                                        <span><strong>{item.id}:</strong> {item.desc[idioma] || item.desc.val}</span>
+                                                    </div>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* Key Competences (auto-selected from CE but editable) */}
+                    <div className="mb-4">
+                        <h4 className="text-md font-bold text-gray-700 mb-3">{t('ccTitle')}</h4>
+                        <p className="text-sm text-gray-400 mb-3">{t('selectCC')}</p>
+                        <div className="flex flex-wrap gap-2">
+                            {COMPETENCIES_CLAU.map(function(cc) {
+                                var isSelected = sa.selectedCC.includes(cc.id);
+                                return (
+                                    <button key={cc.id} onClick={function() { toggleArray('selectedCC', cc.id); }}
+                                        className={'px-3 py-2 rounded-lg text-sm font-medium transition-all ' +
+                                            (isSelected ? cc.color + ' ring-2 ring-offset-1 ring-green-400' : 'bg-gray-100 text-gray-400 hover:bg-gray-200')}>
+                                        {cc.emoji} {cc.id}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================
+        // STEP 4: Activity Sequence Builder
+        // ============================================================
+        function Step4Activities({ sa, setSA, t, idioma }) {
+            function addActivity() {
+                setSA(function(prev) {
+                    return Object.assign({}, prev, {
+                        activities: prev.activities.concat([createDefaultActivity(prev.activities.length)])
+                    });
+                });
+            }
+
+            function updateActivity(idx, field, value) {
+                setSA(function(prev) {
+                    var acts = prev.activities.slice();
+                    acts[idx] = Object.assign({}, acts[idx]);
+                    acts[idx][field] = value;
+                    return Object.assign({}, prev, { activities: acts });
+                });
+            }
+
+            function removeActivity(idx) {
+                setSA(function(prev) {
+                    var acts = prev.activities.slice();
+                    acts.splice(idx, 1);
+                    return Object.assign({}, prev, { activities: acts });
+                });
+            }
+
+            function suggestActivities() {
+                var suggestions = [
+                    { name: idioma === 'es' ? 'Activación de conocimientos previos' : idioma === 'en' ? 'Prior knowledge activation' : 'Activació de coneixements previs', type: 'motivacio', grouping: 'gran-grup', sessions: 1, description: '', resources: '' },
+                    { name: idioma === 'es' ? 'Investigación por grupos' : idioma === 'en' ? 'Group research' : 'Investigació per grups', type: 'investigacio', grouping: 'petit-grup', sessions: 2, description: '', resources: '' },
+                    { name: idioma === 'es' ? 'Puesta en común y debate' : idioma === 'en' ? 'Sharing and debate' : 'Posada en comú i debat', type: 'debat', grouping: 'gran-grup', sessions: 1, description: '', resources: '' },
+                    { name: idioma === 'es' ? 'Elaboración del producto final' : idioma === 'en' ? 'Final product creation' : 'Elaboració del producte final', type: 'producte', grouping: 'petit-grup', sessions: Math.max(2, sa.sessions - 5), description: '', resources: '' },
+                    { name: idioma === 'es' ? 'Presentación y evaluación' : idioma === 'en' ? 'Presentation and assessment' : 'Presentació i avaluació', type: 'exposicio', grouping: 'petit-grup', sessions: 1, description: '', resources: '' },
+                    { name: idioma === 'es' ? 'Reflexión final' : idioma === 'en' ? 'Final reflection' : 'Reflexió final', type: 'reflexio', grouping: 'individual', sessions: 1, description: '', resources: '' },
+                ];
+                var newActs = suggestions.map(function(s, i) {
+                    return Object.assign({ id: Date.now() + '_' + i }, s);
+                });
+                setSA(function(prev) { return Object.assign({}, prev, { activities: newActs }); });
+            }
+
+            var totalSessions = sa.activities.reduce(function(sum, a) { return sum + (a.sessions || 0); }, 0);
+
+            return (
+                <div className="fade-in">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-xl font-bold text-gray-800">{t('step4')}</h3>
+                        <div className="flex items-center gap-3">
+                            <span className={'text-sm font-medium px-3 py-1 rounded-full ' + (totalSessions === sa.sessions ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700')}>
+                                {totalSessions} / {sa.sessions} {t('sessions')}
+                            </span>
+                            <button onClick={suggestActivities} className="text-sm px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-all font-medium">
+                                {t('suggestActs')}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        {sa.activities.map(function(act, idx) {
+                            var actType = ACTIVITY_TYPES.find(function(at) { return at.id === act.type; });
+                            var phaseColor = actType && actType.phase === 'initial' ? 'border-l-blue-500' : actType && actType.phase === 'final' ? 'border-l-amber-500' : 'border-l-green-500';
+                            return (
+                                <div key={act.id} className={'bg-white rounded-xl border border-gray-200 p-4 border-l-4 ' + phaseColor}>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <span className="text-sm font-bold text-gray-400">#{idx + 1}</span>
+                                        <button onClick={function() { removeActivity(idx); }} className="text-xs text-red-400 hover:text-red-600 transition-colors">
+                                            {t('removeAct')} ✕
+                                        </button>
+                                    </div>
+                                    <div className="grid md:grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="block text-xs font-semibold text-gray-500 mb-1">{t('actName')}</label>
+                                            <input type="text" value={act.name} onChange={function(e) { updateActivity(idx, 'name', e.target.value); }}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none" />
+                                        </div>
+                                        <div className="grid grid-cols-3 gap-2">
+                                            <div>
+                                                <label className="block text-xs font-semibold text-gray-500 mb-1">{t('actType')}</label>
+                                                <select value={act.type} onChange={function(e) { updateActivity(idx, 'type', e.target.value); }}
+                                                    className="w-full px-2 py-2 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-green-500 outline-none bg-white">
+                                                    {ACTIVITY_TYPES.map(function(at) {
+                                                        return <option key={at.id} value={at.id}>{at.emoji} {at.name[idioma] || at.name.val}</option>;
+                                                    })}
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-semibold text-gray-500 mb-1">{t('actGrouping')}</label>
+                                                <select value={act.grouping} onChange={function(e) { updateActivity(idx, 'grouping', e.target.value); }}
+                                                    className="w-full px-2 py-2 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-green-500 outline-none bg-white">
+                                                    {GROUPINGS.map(function(g) {
+                                                        return <option key={g.id} value={g.id}>{g.emoji} {g.name[idioma] || g.name.val}</option>;
+                                                    })}
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-semibold text-gray-500 mb-1">{t('actSessions')}</label>
+                                                <input type="number" min={1} max={sa.sessions} value={act.sessions}
+                                                    onChange={function(e) { updateActivity(idx, 'sessions', parseInt(e.target.value) || 1); }}
+                                                    className="w-full px-2 py-2 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-green-500 outline-none" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-3">
+                                        <label className="block text-xs font-semibold text-gray-500 mb-1">{t('actDesc')}</label>
+                                        <textarea value={act.description} onChange={function(e) { updateActivity(idx, 'description', e.target.value); }}
+                                            rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 outline-none resize-y" />
+                                    </div>
+                                    <div className="mt-2">
+                                        <label className="block text-xs font-semibold text-gray-500 mb-1">{t('actResources')}</label>
+                                        <input type="text" value={act.resources} onChange={function(e) { updateActivity(idx, 'resources', e.target.value); }}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 outline-none" />
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    <button onClick={addActivity}
+                        className="mt-4 w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-green-400 hover:text-green-600 transition-all font-medium">
+                        + {t('addActivity')}
+                    </button>
+                </div>
+            );
+        }
+
+        // ============================================================
+        // STEP 5: Assessment & DUA
+        // ============================================================
+        function Step5Assessment({ sa, setSA, t, idioma }) {
+            function toggleArray(field, value) {
+                setSA(function(prev) {
+                    var arr = prev[field].slice();
+                    var idx = arr.indexOf(value);
+                    if (idx >= 0) arr.splice(idx, 1);
+                    else arr.push(value);
+                    var n = Object.assign({}, prev);
+                    n[field] = arr;
+                    return n;
+                });
+            }
+
+            function toggleDUA(category, value) {
+                setSA(function(prev) {
+                    var dua = Object.assign({}, prev.dua);
+                    var arr = dua[category].slice();
+                    var idx = arr.indexOf(value);
+                    if (idx >= 0) arr.splice(idx, 1);
+                    else arr.push(value);
+                    dua[category] = arr;
+                    return Object.assign({}, prev, { dua: dua });
+                });
+            }
+
+            return (
+                <div className="fade-in">
+                    <h3 className="text-xl font-bold text-gray-800 mb-6">{t('step5')}</h3>
+
+                    {/* Methodology */}
+                    <div className="mb-8">
+                        <h4 className="text-md font-bold text-gray-700 mb-3">{t('methodology')}</h4>
+                        <div className="flex flex-wrap gap-2">
+                            {METHODOLOGIES.map(function(m) {
+                                var isSelected = sa.methodology.includes(m.id);
+                                return (
+                                    <button key={m.id} onClick={function() { toggleArray('methodology', m.id); }}
+                                        className={'px-3 py-2 rounded-lg text-sm font-medium transition-all ' +
+                                            (isSelected ? 'bg-green-100 text-green-700 ring-2 ring-green-400' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>
+                                        {m.emoji} {m.name[idioma] || m.name.val}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Assessment Instruments */}
+                    <div className="mb-8">
+                        <h4 className="text-md font-bold text-gray-700 mb-3">{t('instruments')}</h4>
+                        <div className="flex flex-wrap gap-2">
+                            {ASSESSMENT_INSTRUMENTS.map(function(inst) {
+                                var isSelected = sa.instruments.includes(inst.id);
+                                return (
+                                    <button key={inst.id} onClick={function() { toggleArray('instruments', inst.id); }}
+                                        className={'px-3 py-2 rounded-lg text-sm font-medium transition-all ' +
+                                            (isSelected ? 'bg-blue-100 text-blue-700 ring-2 ring-blue-400' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>
+                                        {inst.emoji} {inst.name[idioma] || inst.name.val}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Assessment Types */}
+                    <div className="mb-8">
+                        <h4 className="text-md font-bold text-gray-700 mb-3">{t('assessTypes')}</h4>
+                        <div className="flex flex-wrap gap-2">
+                            {ASSESSMENT_TYPES.map(function(at) {
+                                var isSelected = sa.assessTypes.includes(at.id);
+                                return (
+                                    <button key={at.id} onClick={function() { toggleArray('assessTypes', at.id); }}
+                                        className={'px-3 py-2 rounded-lg text-sm font-medium transition-all ' +
+                                            (isSelected ? 'bg-purple-100 text-purple-700 ring-2 ring-purple-400' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>
+                                        {at.emoji} {at.name[idioma] || at.name.val}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* DUA */}
+                    <div>
+                        <h4 className="text-md font-bold text-gray-700 mb-4">{t('duaTitle')}</h4>
+
+                        {[
+                            { key: 'representation', label: t('duaRepresentation'), items: DUA_MEASURES.representation, color: 'indigo' },
+                            { key: 'engagement',     label: t('duaEngagement'),     items: DUA_MEASURES.engagement,     color: 'pink' },
+                            { key: 'expression',     label: t('duaExpression'),      items: DUA_MEASURES.expression,     color: 'teal' },
+                        ].map(function(section) {
+                            return (
+                                <div key={section.key} className="mb-4">
+                                    <h5 className="text-sm font-bold text-gray-600 mb-2">{section.label}</h5>
+                                    <div className="space-y-2">
+                                        {section.items.map(function(item) {
+                                            var isSelected = sa.dua[section.key].includes(item.id);
+                                            return (
+                                                <button key={item.id} onClick={function() { toggleDUA(section.key, item.id); }}
+                                                    className={'w-full text-left p-3 rounded-lg border transition-all text-sm ' +
+                                                        (isSelected ? 'border-' + section.color + '-400 bg-' + section.color + '-50' : 'border-gray-200 bg-white hover:border-gray-300')}>
+                                                    <div className="flex items-start gap-2">
+                                                        <span className={'w-5 h-5 rounded flex items-center justify-center text-xs flex-shrink-0 ' +
+                                                            (isSelected ? 'bg-' + section.color + '-500 text-white' : 'bg-gray-200 text-gray-400')}>{isSelected ? '✓' : ''}</span>
+                                                        <span>{item.desc[idioma] || item.desc.val}</span>
+                                                    </div>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================
+        // STEP 6: Preview & Export
+        // ============================================================
+        function Step6Preview({ sa, t, idioma }) {
+            var curriculum = CURRICULUM[sa.subject];
+            if (!curriculum) return null;
+
+            function handlePrint() { window.print(); }
+
+            function handleSaveDraft() {
+                try {
+                    localStorage.setItem('pde_sa_draft', JSON.stringify(sa));
+                    alert(idioma === 'es' ? 'Borrador guardado correctamente' : idioma === 'en' ? 'Draft saved successfully' : 'Esborrany guardat correctament');
+                } catch (e) {
+                    alert('Error');
+                }
+            }
+
+            // Resolve names
+            var selectedCEData = curriculum.ce.filter(function(ce) { return sa.selectedCE.includes(ce.id); });
+            var selectedSaberesData = [];
+            curriculum.saberes.forEach(function(bloque) {
+                bloque.items.forEach(function(item) {
+                    if (sa.selectedSaberes.includes(item.id)) {
+                        selectedSaberesData.push({ bloque: bloque.bloque, bloqueName: bloque.name[idioma] || bloque.name.val, item: item });
+                    }
+                });
+            });
+            var selectedMethodData = METHODOLOGIES.filter(function(m) { return sa.methodology.includes(m.id); });
+            var selectedInstrData = ASSESSMENT_INSTRUMENTS.filter(function(i) { return sa.instruments.includes(i.id); });
+            var selectedAssessTypeData = ASSESSMENT_TYPES.filter(function(at) { return sa.assessTypes.includes(at.id); });
+            var selectedCCData = COMPETENCIES_CLAU.filter(function(cc) { return sa.selectedCC.includes(cc.id); });
+
+            // DUA resolved
+            var duaResolved = { representation: [], engagement: [], expression: [] };
+            ['representation', 'engagement', 'expression'].forEach(function(cat) {
+                DUA_MEASURES[cat].forEach(function(item) {
+                    if (sa.dua[cat].includes(item.id)) duaResolved[cat].push(item.desc[idioma] || item.desc.val);
+                });
+            });
+
+            return (
+                <div className="fade-in">
+                    <div className="flex items-center justify-between mb-6 no-print">
+                        <h3 className="text-xl font-bold text-gray-800">{t('preview')}</h3>
+                        <div className="flex gap-2">
+                            <button onClick={handleSaveDraft} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium transition-all">
+                                💾 {t('exportJSON')}
+                            </button>
+                            <button onClick={handlePrint} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium transition-all shadow-lg">
+                                🖨️ {t('print')}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* SA Document */}
+                    <div className="sa-preview bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+                        {/* Header */}
+                        <div className={'p-6 bg-gradient-to-r ' + curriculum.gradient + ' text-white'}>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm opacity-80">{idioma === 'es' ? 'Situación de Aprendizaje' : idioma === 'en' ? 'Learning Situation' : 'Situació d\'Aprenentatge'} · {curriculum.name[idioma] || curriculum.name.val}</p>
+                                    <h2 className="text-2xl font-black mt-1">{sa.title || '(Sense títol)'}</h2>
+                                </div>
+                                <div className="text-right text-sm opacity-80">
+                                    <p>{curriculum.nivel[idioma] || curriculum.nivel.val}</p>
+                                    <p>{sa.sessions} {t('sessions')} · {sa.trimester === '1' ? t('trim1') : sa.trimester === '2' ? t('trim2') : t('trim3')}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-6 space-y-6">
+                            {/* Justification */}
+                            {sa.justification && (
+                                <div>
+                                    <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">{t('saJustification')}</h4>
+                                    <p className="text-gray-600 text-sm leading-relaxed">{sa.justification}</p>
+                                </div>
+                            )}
+
+                            {/* Final product */}
+                            {sa.product && (
+                                <div>
+                                    <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">{t('saProduct')}</h4>
+                                    <p className="text-gray-600 text-sm">{sa.product}</p>
+                                </div>
+                            )}
+
+                            {/* Curriculum alignment table */}
+                            <div>
+                                <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">{t('step3')}</h4>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-sm border-collapse">
+                                        <thead>
+                                            <tr className="bg-gray-50">
+                                                <th className="border border-gray-200 px-3 py-2 text-left font-semibold">{t('ceTitle')}</th>
+                                                <th className="border border-gray-200 px-3 py-2 text-left font-semibold">{t('caTitle')}</th>
+                                                <th className="border border-gray-200 px-3 py-2 text-left font-semibold">{t('ccTitle')}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {selectedCEData.map(function(ce) {
+                                                var ceCA = ce.ca.filter(function(ca) { return sa.selectedCA.includes(ce.id + '.' + ca.id); });
+                                                return (
+                                                    <tr key={ce.id}>
+                                                        <td className="border border-gray-200 px-3 py-2 align-top">
+                                                            <strong>{ce.id}</strong>: {ce.short[idioma] || ce.short.val}
+                                                        </td>
+                                                        <td className="border border-gray-200 px-3 py-2 align-top">
+                                                            {ceCA.map(function(ca) {
+                                                                return <div key={ca.id} className="mb-1"><strong>{ca.id}</strong>: {ca.desc[idioma] || ca.desc.val}</div>;
+                                                            })}
+                                                        </td>
+                                                        <td className="border border-gray-200 px-3 py-2 align-top">
+                                                            {(ce.ccClau || []).map(function(cc) {
+                                                                return <span key={cc} className="inline-block px-2 py-0.5 bg-gray-100 rounded text-xs mr-1 mb-1">{cc}</span>;
+                                                            })}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            {/* Saberes Básicos */}
+                            {selectedSaberesData.length > 0 && (
+                                <div>
+                                    <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">{t('saberesTitle')}</h4>
+                                    <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
+                                        {selectedSaberesData.map(function(s) {
+                                            return <li key={s.item.id}><strong>{s.bloque}.{s.item.id}:</strong> {s.item.desc[idioma] || s.item.desc.val}</li>;
+                                        })}
+                                    </ul>
+                                </div>
+                            )}
+
+                            {/* Activity Sequence */}
+                            {sa.activities.length > 0 && (
+                                <div>
+                                    <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">{t('step4')}</h4>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm border-collapse">
+                                            <thead>
+                                                <tr className="bg-gray-50">
+                                                    <th className="border border-gray-200 px-3 py-2 text-left font-semibold w-8">#</th>
+                                                    <th className="border border-gray-200 px-3 py-2 text-left font-semibold">{t('actName')}</th>
+                                                    <th className="border border-gray-200 px-3 py-2 text-left font-semibold">{t('actType')}</th>
+                                                    <th className="border border-gray-200 px-3 py-2 text-left font-semibold">{t('actGrouping')}</th>
+                                                    <th className="border border-gray-200 px-3 py-2 text-center font-semibold">{t('actSessions')}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {sa.activities.map(function(act, idx) {
+                                                    var actType = ACTIVITY_TYPES.find(function(at) { return at.id === act.type; });
+                                                    var grouping = GROUPINGS.find(function(g) { return g.id === act.grouping; });
+                                                    return (
+                                                        <tr key={act.id}>
+                                                            <td className="border border-gray-200 px-3 py-2 text-center font-bold text-gray-400">{idx + 1}</td>
+                                                            <td className="border border-gray-200 px-3 py-2">
+                                                                <strong>{act.name}</strong>
+                                                                {act.description && <p className="text-xs text-gray-400 mt-1">{act.description}</p>}
+                                                            </td>
+                                                            <td className="border border-gray-200 px-3 py-2">{actType ? actType.emoji + ' ' + (actType.name[idioma] || actType.name.val) : act.type}</td>
+                                                            <td className="border border-gray-200 px-3 py-2">{grouping ? grouping.emoji + ' ' + (grouping.name[idioma] || grouping.name.val) : act.grouping}</td>
+                                                            <td className="border border-gray-200 px-3 py-2 text-center">{act.sessions}</td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Methodology */}
+                            {selectedMethodData.length > 0 && (
+                                <div>
+                                    <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">{t('methodology')}</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {selectedMethodData.map(function(m) {
+                                            return <span key={m.id} className="px-3 py-1.5 bg-green-50 text-green-700 rounded-lg text-sm">{m.emoji} {m.name[idioma] || m.name.val}</span>;
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Assessment */}
+                            <div>
+                                <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">{t('assessment')}</h4>
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    {selectedInstrData.length > 0 && (
+                                        <div>
+                                            <p className="text-xs font-semibold text-gray-500 mb-1">{t('instruments')}</p>
+                                            <div className="flex flex-wrap gap-1">
+                                                {selectedInstrData.map(function(inst) {
+                                                    return <span key={inst.id} className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs">{inst.emoji} {inst.name[idioma] || inst.name.val}</span>;
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {selectedAssessTypeData.length > 0 && (
+                                        <div>
+                                            <p className="text-xs font-semibold text-gray-500 mb-1">{t('assessTypes')}</p>
+                                            <div className="flex flex-wrap gap-1">
+                                                {selectedAssessTypeData.map(function(at) {
+                                                    return <span key={at.id} className="px-2 py-1 bg-purple-50 text-purple-700 rounded text-xs">{at.emoji} {at.name[idioma] || at.name.val}</span>;
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* DUA */}
+                            {(duaResolved.representation.length > 0 || duaResolved.engagement.length > 0 || duaResolved.expression.length > 0) && (
+                                <div>
+                                    <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">{t('duaTitle')}</h4>
+                                    <div className="grid md:grid-cols-3 gap-3">
+                                        {duaResolved.representation.length > 0 && (
+                                            <div className="bg-indigo-50 rounded-lg p-3">
+                                                <h5 className="text-xs font-bold text-indigo-700 mb-2">{t('duaRepresentation')}</h5>
+                                                <ul className="text-xs text-indigo-600 space-y-1">
+                                                    {duaResolved.representation.map(function(d, i) { return <li key={i}>• {d}</li>; })}
+                                                </ul>
+                                            </div>
+                                        )}
+                                        {duaResolved.engagement.length > 0 && (
+                                            <div className="bg-pink-50 rounded-lg p-3">
+                                                <h5 className="text-xs font-bold text-pink-700 mb-2">{t('duaEngagement')}</h5>
+                                                <ul className="text-xs text-pink-600 space-y-1">
+                                                    {duaResolved.engagement.map(function(d, i) { return <li key={i}>• {d}</li>; })}
+                                                </ul>
+                                            </div>
+                                        )}
+                                        {duaResolved.expression.length > 0 && (
+                                            <div className="bg-teal-50 rounded-lg p-3">
+                                                <h5 className="text-xs font-bold text-teal-700 mb-2">{t('duaExpression')}</h5>
+                                                <ul className="text-xs text-teal-600 space-y-1">
+                                                    {duaResolved.expression.map(function(d, i) { return <li key={i}>• {d}</li>; })}
+                                                </ul>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Key Competences */}
+                            {selectedCCData.length > 0 && (
+                                <div>
+                                    <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">{t('ccTitle')}</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {selectedCCData.map(function(cc) {
+                                            return <span key={cc.id} className={'px-3 py-1.5 rounded-lg text-sm font-medium ' + cc.color}>{cc.emoji} {cc.id} — {cc.name[idioma] || cc.name.val}</span>;
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Normativa reference */}
+                            <div className="pt-4 border-t border-gray-100 text-xs text-gray-400">
+                                <p>{curriculum.normativa} · {idioma === 'es' ? 'Generado con PDE' : idioma === 'en' ? 'Generated with PDE' : 'Generat amb PDE'} · {new Date().toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================
+        // SA GENERATOR — Main Wizard
+        // ============================================================
+        function SAGenerator({ idioma }) {
+            const t = useMemo(function() { return createTranslator(translations, idioma); }, [idioma]);
+            const [step, setStep] = useState(0);
+            const [sa, setSA] = useState(function() {
+                // Try to load draft
+                try {
+                    var draft = localStorage.getItem('pde_sa_draft');
+                    if (draft) return JSON.parse(draft);
+                } catch (e) {}
+                return createEmptySA();
+            });
+
+            var steps = [t('step1'), t('step2'), t('step3'), t('step4'), t('step5'), t('step6')];
+
+            function canProceed() {
+                switch (step) {
+                    case 0: return sa.subject !== '';
+                    case 1: return sa.title.trim() !== '';
+                    case 2: return sa.selectedCE.length > 0;
+                    case 3: return true;
+                    case 4: return true;
+                    default: return true;
+                }
+            }
+
+            function handleNewSA() {
+                setSA(createEmptySA());
+                setStep(0);
+                try { localStorage.removeItem('pde_sa_draft'); } catch (e) {}
+            }
+
+            function handleLoadDraft() {
+                try {
+                    var draft = localStorage.getItem('pde_sa_draft');
+                    if (draft) {
+                        setSA(JSON.parse(draft));
+                        alert(idioma === 'es' ? 'Borrador cargado' : idioma === 'en' ? 'Draft loaded' : 'Esborrany carregat');
+                    }
+                } catch (e) {}
+            }
+
+            return (
+                <div>
+                    <div className="flex items-center justify-between mb-6">
+                        <div></div>
+                        <div className="flex gap-2 no-print">
+                            <button onClick={handleLoadDraft} className="text-xs px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-all">
+                                📂 {t('loadDraft')}
+                            </button>
+                            <button onClick={handleNewSA} className="text-xs px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-all">
+                                ✨ {t('newSA')}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="no-print">
+                        <StepIndicator steps={steps} currentStep={step} setStep={setStep} t={t} />
+                    </div>
+
+                    {/* Step content */}
+                    <div className="mb-8">
+                        {step === 0 && <Step1Subject sa={sa} setSA={setSA} t={t} idioma={idioma} />}
+                        {step === 1 && <Step2BasicInfo sa={sa} setSA={setSA} t={t} idioma={idioma} />}
+                        {step === 2 && <Step3Curriculum sa={sa} setSA={setSA} t={t} idioma={idioma} />}
+                        {step === 3 && <Step4Activities sa={sa} setSA={setSA} t={t} idioma={idioma} />}
+                        {step === 4 && <Step5Assessment sa={sa} setSA={setSA} t={t} idioma={idioma} />}
+                        {step === 5 && <Step6Preview sa={sa} t={t} idioma={idioma} />}
+                    </div>
+
+                    {/* Navigation buttons */}
+                    <div className="flex justify-between no-print">
+                        <button onClick={function() { setStep(Math.max(0, step - 1)); }}
+                            className={'px-6 py-3 rounded-xl font-medium transition-all ' + (step > 0 ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' : 'invisible')}>
+                            ← {t('prev')}
+                        </button>
+
+                        {step < steps.length - 1 ? (
+                            <button onClick={function() { if (canProceed()) setStep(step + 1); }}
+                                disabled={!canProceed()}
+                                className={'px-6 py-3 rounded-xl font-medium transition-all ' +
+                                    (canProceed() ? 'bg-green-600 text-white hover:bg-green-700 shadow-lg' : 'bg-gray-200 text-gray-400 cursor-not-allowed')}>
+                                {t('next')} →
+                            </button>
+                        ) : (
+                            <button onClick={function() { window.print(); }}
+                                className="px-6 py-3 rounded-xl font-medium bg-green-600 text-white hover:bg-green-700 shadow-lg transition-all">
+                                🖨️ {t('print')}
+                            </button>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================
+        // TEST GENERATOR
+        // ============================================================
+        function TestGenerator({ idioma }) {
+            const t = useMemo(function() { return createTranslator(translations, idioma); }, [idioma]);
+            const [config, setConfig] = useState({
+                subject: '',
+                selectedSaberes: [],
+                questionTypes: ['testMultiple', 'testTF', 'testOpen'],
+                difficulty: 'testMedium',
+                numQuestions: 10,
+                duration: 60,
+                instructions: '',
+                weights: { testMultiple: 30, testTF: 20, testOpen: 50 },
+            });
+            const [generated, setGenerated] = useState(false);
+
+            function updateConfig(field, value) {
+                setConfig(function(prev) { var n = Object.assign({}, prev); n[field] = value; return n; });
+            }
+
+            function toggleQType(qtype) {
+                setConfig(function(prev) {
+                    var arr = prev.questionTypes.slice();
+                    var idx = arr.indexOf(qtype);
+                    if (idx >= 0) arr.splice(idx, 1);
+                    else arr.push(qtype);
+                    return Object.assign({}, prev, { questionTypes: arr });
+                });
+            }
+
+            function toggleSaber(saberId) {
+                setConfig(function(prev) {
+                    var arr = prev.selectedSaberes.slice();
+                    var idx = arr.indexOf(saberId);
+                    if (idx >= 0) arr.splice(idx, 1);
+                    else arr.push(saberId);
+                    return Object.assign({}, prev, { selectedSaberes: arr });
+                });
+            }
+
+            var curriculum = config.subject ? CURRICULUM[config.subject] : null;
+
+            var QTYPES = [
+                { id: 'testMultiple', label: t('testMultiple'), emoji: '🔘' },
+                { id: 'testTF',      label: t('testTF'),       emoji: '✅' },
+                { id: 'testOpen',    label: t('testOpen'),     emoji: '📝' },
+                { id: 'testProblem', label: t('testProblem'),  emoji: '🧮' },
+                { id: 'testCase',    label: t('testCase'),     emoji: '📋' },
+            ];
+
+            var DIFFICULTIES = [
+                { id: 'testEasy',   label: t('testEasy'),   color: 'bg-green-100 text-green-700' },
+                { id: 'testMedium', label: t('testMedium'), color: 'bg-amber-100 text-amber-700' },
+                { id: 'testHard',   label: t('testHard'),   color: 'bg-red-100 text-red-700' },
+            ];
+
+            function generateTest() { setGenerated(true); }
+
+            function renderTestPreview() {
+                if (!curriculum) return null;
+                var qPerType = {};
+                var totalWeight = 0;
+                config.questionTypes.forEach(function(qt) { totalWeight += (config.weights[qt] || 0); });
+                config.questionTypes.forEach(function(qt) {
+                    var w = config.weights[qt] || 0;
+                    qPerType[qt] = Math.max(1, Math.round(config.numQuestions * w / (totalWeight || 1)));
+                });
+
+                // Gather selected topics
+                var topics = [];
+                if (curriculum) {
+                    curriculum.saberes.forEach(function(bloque) {
+                        bloque.items.forEach(function(item) {
+                            if (config.selectedSaberes.length === 0 || config.selectedSaberes.includes(item.id)) {
+                                topics.push(item.desc[idioma] || item.desc.val);
+                            }
+                        });
+                    });
+                }
+
+                return (
+                    <div className="sa-preview bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden mt-6">
+                        <div className={'p-6 bg-gradient-to-r ' + curriculum.gradient + ' text-white'}>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-xl font-black">{curriculum.name[idioma] || curriculum.name.val} — {idioma === 'es' ? 'Prueba' : idioma === 'en' ? 'Test' : 'Prova'}</h2>
+                                    <p className="text-sm opacity-80">{curriculum.nivel[idioma] || curriculum.nivel.val}</p>
+                                </div>
+                                <div className="text-right text-sm">
+                                    <p>{idioma === 'es' ? 'Nombre' : idioma === 'en' ? 'Name' : 'Nom'}: ___________________</p>
+                                    <p>{idioma === 'es' ? 'Fecha' : idioma === 'en' ? 'Date' : 'Data'}: ___________</p>
+                                    <p>{t('testDuration')}: {config.duration} min</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="p-6">
+                            {config.instructions && (
+                                <div className="mb-4 p-3 bg-gray-50 rounded-lg text-sm text-gray-600 italic">{config.instructions}</div>
+                            )}
+
+                            {/* Generate question placeholders by type */}
+                            {config.questionTypes.map(function(qt) {
+                                var qtype = QTYPES.find(function(q) { return q.id === qt; });
+                                var count = qPerType[qt] || 1;
+                                var weight = config.weights[qt] || 0;
+                                return (
+                                    <div key={qt} className="mb-6">
+                                        <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                            {qtype ? qtype.emoji : ''} {qtype ? qtype.label : qt}
+                                            <span className="text-xs font-normal text-gray-400">({weight}% — {count} {count === 1 ? idioma === 'es' ? 'pregunta' : idioma === 'en' ? 'question' : 'pregunta' : idioma === 'es' ? 'preguntas' : idioma === 'en' ? 'questions' : 'preguntes'})</span>
+                                        </h3>
+
+                                        {Array.from({ length: count }, function(_, i) {
+                                            if (qt === 'testMultiple') {
+                                                return (
+                                                    <div key={i} className="mb-4 pl-4 border-l-2 border-gray-200">
+                                                        <p className="font-medium text-gray-700 mb-2">{i + 1}. ______________________________________</p>
+                                                        <div className="grid grid-cols-2 gap-1 pl-4 text-sm text-gray-500">
+                                                            <p>a) _______________</p>
+                                                            <p>b) _______________</p>
+                                                            <p>c) _______________</p>
+                                                            <p>d) _______________</p>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            } else if (qt === 'testTF') {
+                                                return (
+                                                    <div key={i} className="mb-3 pl-4 border-l-2 border-gray-200 flex items-center gap-3">
+                                                        <span className="text-gray-700">{i + 1}.</span>
+                                                        <span className="flex-1 text-gray-500">______________________________________</span>
+                                                        <span className="text-xs text-gray-400">V / F</span>
+                                                    </div>
+                                                );
+                                            } else if (qt === 'testProblem') {
+                                                return (
+                                                    <div key={i} className="mb-4 pl-4 border-l-2 border-gray-200">
+                                                        <p className="font-medium text-gray-700 mb-1">{i + 1}. ______________________________________</p>
+                                                        <div className="h-24 border border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-300 text-sm">{idioma === 'es' ? 'Espacio para cálculos' : idioma === 'en' ? 'Space for calculations' : 'Espai per a càlculs'}</div>
+                                                    </div>
+                                                );
+                                            } else {
+                                                return (
+                                                    <div key={i} className="mb-4 pl-4 border-l-2 border-gray-200">
+                                                        <p className="font-medium text-gray-700 mb-1">{i + 1}. ______________________________________</p>
+                                                        <div className="h-16 border border-dashed border-gray-300 rounded-lg"></div>
+                                                    </div>
+                                                );
+                                            }
+                                        })}
+                                    </div>
+                                );
+                            })}
+
+                            <div className="pt-4 border-t border-gray-100 text-xs text-gray-400">
+                                <p>{curriculum.normativa} · {idioma === 'es' ? 'Generado con PDE' : idioma === 'en' ? 'Generated with PDE' : 'Generat amb PDE'} · {new Date().toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div>
+                    {!generated ? (
+                        <div className="fade-in max-w-3xl mx-auto">
+                            {/* Subject */}
+                            <div className="mb-6">
+                                <label className="block text-sm font-bold text-gray-700 mb-2">{t('testSubject')}</label>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                    {Object.keys(CURRICULUM).map(function(key) {
+                                        var subj = CURRICULUM[key];
+                                        var isSelected = config.subject === key;
+                                        return (
+                                            <button key={key} onClick={function() { updateConfig('subject', key); }}
+                                                className={'p-3 rounded-xl border-2 text-center transition-all ' +
+                                                    (isSelected ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-white hover:border-green-300')}>
+                                                <span className="text-2xl block mb-1">{subj.emoji}</span>
+                                                <span className="text-xs font-semibold text-gray-700">{subj.name[idioma] || subj.name.val}</span>
+                                                <span className="text-xs text-gray-400 block">{subj.nivel[idioma] || subj.nivel.val}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Topics (saberes) */}
+                            {curriculum && (
+                                <div className="mb-6">
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">{t('testTopics')}</label>
+                                    <p className="text-xs text-gray-400 mb-2">{idioma === 'es' ? 'Selecciona los temas a evaluar (dejar vacío = todos)' : idioma === 'en' ? 'Select topics to assess (empty = all)' : 'Selecciona els temes a avaluar (buit = tots)'}</p>
+                                    {curriculum.saberes.map(function(bloque) {
+                                        return (
+                                            <div key={bloque.bloque} className="mb-3">
+                                                <h5 className="text-xs font-bold text-gray-500 mb-1">{idioma === 'en' ? 'Block' : 'Bloc'} {bloque.bloque}: {bloque.name[idioma] || bloque.name.val}</h5>
+                                                <div className="flex flex-wrap gap-1">
+                                                    {bloque.items.map(function(item) {
+                                                        var isSelected = config.selectedSaberes.includes(item.id);
+                                                        return (
+                                                            <button key={item.id} onClick={function() { toggleSaber(item.id); }}
+                                                                className={'px-2 py-1 rounded text-xs transition-all ' +
+                                                                    (isSelected ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}
+                                                                title={item.desc[idioma] || item.desc.val}>
+                                                                {item.id}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+
+                            {/* Question types */}
+                            <div className="mb-6">
+                                <label className="block text-sm font-bold text-gray-700 mb-2">{t('testQTypes')}</label>
+                                <div className="flex flex-wrap gap-2">
+                                    {QTYPES.map(function(qt) {
+                                        var isSelected = config.questionTypes.includes(qt.id);
+                                        return (
+                                            <button key={qt.id} onClick={function() { toggleQType(qt.id); }}
+                                                className={'px-3 py-2 rounded-lg text-sm font-medium transition-all ' +
+                                                    (isSelected ? 'bg-green-100 text-green-700 ring-2 ring-green-400' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>
+                                                {qt.emoji} {qt.label}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Weights per type */}
+                                {config.questionTypes.length > 0 && (
+                                    <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                                        <p className="text-xs font-semibold text-gray-500 mb-2">{t('testWeight')}</p>
+                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                            {config.questionTypes.map(function(qt) {
+                                                var qtype = QTYPES.find(function(q) { return q.id === qt; });
+                                                return (
+                                                    <div key={qt} className="flex items-center gap-2">
+                                                        <span className="text-xs text-gray-600 flex-1">{qtype ? qtype.emoji + ' ' + qtype.label : qt}</span>
+                                                        <input type="number" min={0} max={100} value={config.weights[qt] || 0}
+                                                            onChange={function(e) {
+                                                                var w = Object.assign({}, config.weights);
+                                                                w[qt] = parseInt(e.target.value) || 0;
+                                                                updateConfig('weights', w);
+                                                            }}
+                                                            className="w-16 px-2 py-1 border border-gray-300 rounded text-xs text-center" />
+                                                        <span className="text-xs text-gray-400">%</span>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Difficulty + Num questions + Duration */}
+                            <div className="grid grid-cols-3 gap-4 mb-6">
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">{t('testDifficulty')}</label>
+                                    <div className="flex flex-col gap-1">
+                                        {DIFFICULTIES.map(function(d) {
+                                            return (
+                                                <button key={d.id} onClick={function() { updateConfig('difficulty', d.id); }}
+                                                    className={'px-3 py-2 rounded-lg text-sm font-medium transition-all ' +
+                                                        (config.difficulty === d.id ? d.color + ' ring-2 ring-green-400' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>
+                                                    {d.label}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">{t('testNumQ')}</label>
+                                    <input type="number" min={1} max={50} value={config.numQuestions}
+                                        onChange={function(e) { updateConfig('numQuestions', parseInt(e.target.value) || 1); }}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">{t('testDuration')}</label>
+                                    <input type="number" min={10} max={180} step={5} value={config.duration}
+                                        onChange={function(e) { updateConfig('duration', parseInt(e.target.value) || 60); }}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" />
+                                </div>
+                            </div>
+
+                            {/* Instructions */}
+                            <div className="mb-6">
+                                <label className="block text-sm font-bold text-gray-700 mb-2">{t('testInstructions')}</label>
+                                <textarea value={config.instructions} onChange={function(e) { updateConfig('instructions', e.target.value); }}
+                                    rows={2} placeholder={idioma === 'es' ? 'Ej: Lee atentamente cada pregunta. No se permiten calculadoras.' : idioma === 'en' ? 'E.g.: Read each question carefully. No calculators allowed.' : 'Ex: Llig atentament cada pregunta. No es permeten calculadores.'}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none resize-y text-sm" />
+                            </div>
+
+                            <button onClick={generateTest} disabled={!config.subject}
+                                className={'w-full py-4 rounded-xl font-bold text-lg transition-all ' +
+                                    (config.subject ? 'bg-green-600 text-white hover:bg-green-700 shadow-lg' : 'bg-gray-200 text-gray-400 cursor-not-allowed')}>
+                                {t('testGenerate')}
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="fade-in">
+                            <div className="flex items-center justify-between mb-4 no-print">
+                                <button onClick={function() { setGenerated(false); }}
+                                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium">
+                                    ← {t('prev')}
+                                </button>
+                                <button onClick={function() { window.print(); }}
+                                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium shadow-lg">
+                                    🖨️ {t('print')}
+                                </button>
+                            </div>
+                            {renderTestPreview()}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // ============================================================
+        // MAIN APP
+        // ============================================================
+        function ProfessoratApp() {
+            const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+            const [activeTab, setActiveTab] = useState('sa');
+
+            const t = useMemo(function() { return createTranslator(translations, idioma); }, [idioma]);
+
+            const sections = useMemo(function() { return [
+                { id: 'sa',   label: t('tabSA'),   emoji: '📋' },
+                { id: 'test', label: t('tabTest'),  emoji: '📝' },
+            ]; }, [idioma]);
+
+            // Deep link support
+            usePdeDeepLink(activeTab, setActiveTab);
+
+            return (
+                <div className="min-h-screen">
+                    <PdeHeader
+                        idioma={idioma}
+                        setIdioma={setIdioma}
+                        currentApp="professorat"
+                        sections={sections}
+                        currentSection={activeTab}
+                        setSection={setActiveTab}
+                    />
+
+                    {/* Hero */}
+                    <div className="no-print bg-gradient-to-r from-green-600 to-emerald-700 text-white py-10 px-4">
+                        <div className="max-w-4xl mx-auto text-center">
+                            <h1 className="text-3xl md:text-4xl font-black mb-2">👩‍🏫 {t('pageTitle')}</h1>
+                            <p className="text-green-100 text-lg">{t('pageSubtitle')}</p>
+                        </div>
+                    </div>
+
+                    {/* Tab buttons (mobile) */}
+                    <div className="no-print flex justify-center gap-2 py-4 bg-white border-b border-gray-100 xl:hidden">
+                        {sections.map(function(sec) {
+                            return (
+                                <button key={sec.id}
+                                    onClick={function() { setActiveTab(sec.id); pdeSetHashSection(sec.id); }}
+                                    className={'px-5 py-2.5 rounded-xl text-sm font-bold transition-all ' +
+                                        (activeTab === sec.id ? 'bg-green-600 text-white shadow-lg' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
+                                    {sec.emoji} {sec.label}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* Content */}
+                    <main className="max-w-5xl mx-auto px-4 py-8">
+                        {activeTab === 'sa' && <SAGenerator idioma={idioma} />}
+                        {activeTab === 'test' && <TestGenerator idioma={idioma} />}
+                    </main>
+
+                    <PdeFooter appEmoji="👩‍🏫" appName={t('pageTitle')} idioma={idioma} />
+                    <PdeScrollToTop />
+                </div>
+            );
+        }
+
+        ReactDOM.render(<ProfessoratApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>

@@ -26,6 +26,7 @@ var PDE_NAV = [
     { id: 'recerca',      href: './recerca',       emoji: '📚', gradient: 'from-indigo-500 to-blue-500' },
     { id: 'playground',   href: './playground',    emoji: '🎮', gradient: 'from-yellow-400 via-pink-500 to-purple-500', immersive: true },
     { id: 'concurs',      href: './concurs',       emoji: '🏆', gradient: 'from-yellow-400 to-amber-500', immersive: true },
+    { id: 'professorat', href: './professorat',   emoji: '👩‍🏫', gradient: 'from-green-500 to-emerald-600' },
 ];
 
 // ─── Shared Translations (header, footer, nav, common UI) ───────
@@ -40,6 +41,7 @@ var PDE_SHARED_TRANSLATIONS = {
     'nav.recerca':      { val: 'Recerca',                 es: 'Investigación',         en: 'Research' },
     'nav.playground':   { val: 'Playground',              es: 'Playground',            en: 'Playground' },
     'nav.concurs':      { val: 'Concurs',                 es: 'Concurso',              en: 'Contest' },
+    'nav.professorat':  { val: 'Professorat',             es: 'Profesorado',           en: 'Teachers' },
 
     // Header
     'header.moreApps':  { val: 'Més apps',                es: 'Más apps',              en: 'More apps' },
