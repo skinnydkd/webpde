@@ -2444,6 +2444,8 @@ function StrategyTip({ myProperties, myMoney, cycle, properties, playerId, round
 // RULES SCREEN — Game tutorial before lobby
 // ═══════════════════════════════════════════════════════════════
 function RulesScreen({ onContinue }) {
+    const [idioma] = usePdeIdioma();
+    var t = function(key) { return ECONOPOLY_TRANSLATIONS[key]?.[idioma] || ECONOPOLY_TRANSLATIONS[key]?.val || key; };
     const [currentPage, setCurrentPage] = useState(0);
 
     var pages = [
@@ -2544,18 +2546,18 @@ function RulesScreen({ onContinue }) {
                     {currentPage > 0 && (
                         <button onClick={function() { setCurrentPage(currentPage - 1); }}
                             className="flex-1 py-3 rounded-2xl bg-white/10 text-white font-bold btn-eco hover:bg-white/20">
-                            ← {ECONOPOLY_TRANSLATIONS['prev']?.[PdeLanguageStore.get()] || 'Anterior'}
+                            ← {t('prev') || 'Anterior'}
                         </button>
                     )}
                     {currentPage < pages.length - 1 ? (
                         <button onClick={function() { setCurrentPage(currentPage + 1); }}
                             className="flex-1 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold btn-eco hover:brightness-110">
-                            {ECONOPOLY_TRANSLATIONS['next']?.[PdeLanguageStore.get()] || 'Seguent'} →
+                            {t('next') || 'Seguent'} →
                         </button>
                     ) : (
                         <button onClick={onContinue}
                             className="flex-1 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black text-xl btn-eco hover:brightness-110 shadow-lg">
-                            🎮 {ECONOPOLY_TRANSLATIONS['play']?.[PdeLanguageStore.get()] || 'Jugar!'}
+                            🎮 {t('play') || 'Jugar!'}
                         </button>
                     )}
                 </div>
@@ -2564,12 +2566,12 @@ function RulesScreen({ onContinue }) {
                 {currentPage < pages.length - 1 && (
                     <button onClick={onContinue}
                         className="w-full text-center text-white/30 hover:text-white/60 text-sm">
-                        {ECONOPOLY_TRANSLATIONS['skip_tutorial']?.[PdeLanguageStore.get()] || 'Saltar tutorial'} →
+                        {t('skip_tutorial') || 'Saltar tutorial'} →
                     </button>
                 )}
 
                 <div className="text-center">
-                    <a href="./" className="text-white/20 hover:text-white/40 text-xs">🏠 {ECONOPOLY_TRANSLATIONS['back_pde']?.[PdeLanguageStore.get()] || 'Tornar a PDE'}</a>
+                    <a href="./" className="text-white/20 hover:text-white/40 text-xs">🏠 {t('back_pde') || 'Tornar a PDE'}</a>
                 </div>
             </div>
         </div>

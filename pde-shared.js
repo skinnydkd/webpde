@@ -64,9 +64,12 @@ var PDE_SHARED_TRANSLATIONS = {
     'nav.next':   { val: 'Següent →',  es: 'Siguiente →', en: 'Next →' },
 };
 
-// ─── Language Store (localStorage persistence) ──────────────────
+// ─── Language Store (localStorage persistence + reactive pub/sub) ──
+// Emits 'pde:languagechange' window event whenever set() is called.
+// Also listens to cross-tab 'storage' events and re-emits as 'pde:languagechange'.
 var PdeLanguageStore = {
     KEY: 'pde_idioma',
+    EVENT: 'pde:languagechange',
 
     get: function() {
         try {
@@ -78,13 +81,39 @@ var PdeLanguageStore = {
     },
 
     set: function(lang) {
+        if (!PDE_CONFIG.supportedLangs.includes(lang)) return;
         try {
-            if (PDE_CONFIG.supportedLangs.includes(lang)) {
-                localStorage.setItem(this.KEY, lang);
-            }
+            localStorage.setItem(this.KEY, lang);
         } catch (e) {
             // localStorage not available (private browsing, etc.)
         }
+        // Always broadcast, even if localStorage failed — UI should still react.
+        try {
+            window.dispatchEvent(new CustomEvent(this.EVENT, { detail: { lang: lang } }));
+        } catch (e) {
+            // CustomEvent not supported (very old browsers)
+        }
+    },
+
+    /**
+     * Subscribe to language changes (same-tab AND cross-tab).
+     * @param {(lang: string) => void} callback
+     * @returns {() => void} Unsubscribe function.
+     */
+    subscribe: function(callback) {
+        var self = this;
+        function onCustom(e) {
+            callback((e && e.detail && e.detail.lang) || self.get());
+        }
+        function onStorage(e) {
+            if (e && e.key === self.KEY) callback(self.get());
+        }
+        window.addEventListener(this.EVENT, onCustom);
+        window.addEventListener('storage', onStorage);
+        return function unsubscribe() {
+            window.removeEventListener(self.EVENT, onCustom);
+            window.removeEventListener('storage', onStorage);
+        };
     },
 };
 

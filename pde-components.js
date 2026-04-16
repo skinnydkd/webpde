@@ -6,15 +6,54 @@
 
 const { useState: _useState, useEffect: _useEffect, useCallback: _useCallback } = React;
 
+// ─── usePdeIdioma Hook ──────────────────────────────────────────
+/**
+ * Unified language hook. Reads from PdeLanguageStore and auto-updates
+ * whenever the language changes (same-tab or cross-tab).
+ *
+ * Returns [idioma, setIdioma]. setIdioma persists to localStorage AND
+ * broadcasts to all other subscribers in this tab/session.
+ *
+ * Usage:
+ *   const [idioma, setIdioma] = usePdeIdioma();
+ *   <PdeHeader idioma={idioma} setIdioma={setIdioma} .../>
+ */
+function usePdeIdioma() {
+    const [idioma, setIdiomaState] = _useState(function() { return PdeLanguageStore.get(); });
+
+    _useEffect(function() {
+        // Sync with any language change from any source (other selectors, other tabs).
+        const unsubscribe = PdeLanguageStore.subscribe(function(lang) {
+            setIdiomaState(function(prev) { return prev === lang ? prev : lang; });
+        });
+        return unsubscribe;
+    }, []);
+
+    const setIdioma = _useCallback(function(lang) {
+        // Single call: .set() persists AND broadcasts. All subscribers update.
+        PdeLanguageStore.set(lang);
+    }, []);
+
+    return [idioma, setIdioma];
+}
+
 // ─── Language Selector ──────────────────────────────────────────
 /**
  * Unified language selector (VAL / ES / EN).
  * @param {{ idioma: string, setIdioma: Function }} props
+ *
+ * The setIdioma callback receives the new language. Callers may either:
+ *  - Use usePdeIdioma() (recommended) — setIdioma auto-broadcasts via the store.
+ *  - Pass a raw useState setter — this component still writes to the store,
+ *    so other subscribers stay in sync.
  */
 function PdeLanguageSelector({ idioma, setIdioma }) {
     const handleChange = _useCallback(function(lang) {
-        setIdioma(lang);
+        if (!PDE_CONFIG.supportedLangs.includes(lang)) return;
+        // Persist + broadcast. Must run BEFORE setIdioma so that if the caller's
+        // setIdioma triggers a re-render + unmount, the store update still fires.
         PdeLanguageStore.set(lang);
+        if (typeof setIdioma === 'function') setIdioma(lang);
     }, [setIdioma]);
 
     return (
@@ -346,6 +385,7 @@ window.PdeScrollToTop = PdeScrollToTop;
 window.PdePrevNext = PdePrevNext;
 window.PdeHomeButton = PdeHomeButton;
 window.usePdeDeepLink = usePdeDeepLink;
+window.usePdeIdioma = usePdeIdioma;
 
 window.PDE = {
     Header: PdeHeader,
@@ -356,4 +396,5 @@ window.PDE = {
     PrevNext: PdePrevNext,
     HomeButton: PdeHomeButton,
     useDeepLink: usePdeDeepLink,
+    useIdioma: usePdeIdioma,
 };

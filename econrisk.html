@@ -1458,6 +1458,8 @@ function HostGameView({ roomCode, playerId, players, initialGameState }) {
 // PLAYER GAME VIEW (Phone)
 // =====================================================================
 function PlayerGameView({ roomCode, playerId, factionIdx }) {
+    const [idioma] = usePdeIdioma();
+    var t = function(key) { return ECONRISK_TRANSLATIONS[key]?.[idioma] || ECONRISK_TRANSLATIONS[key]?.val || key; };
     const [gameState, setGameState] = useState({});
     const [selectedSource, setSelectedSource] = useState(null);
     const [selectedTarget, setSelectedTarget] = useState(null);
@@ -1478,7 +1480,7 @@ function PlayerGameView({ roomCode, playerId, factionIdx }) {
                 <div className="text-center text-white space-y-4">
                     <div className="text-6xl animate-bounce">&#x2694;&#xFE0F;</div>
                     <h2 className="text-2xl font-black">Systemic Risk</h2>
-                    <p className="text-gray-400 animate-pulse">{ECONRISK_TRANSLATIONS['waiting_start']?.[PdeLanguageStore.get()] || 'Esperant que comence la partida...'}</p>
+                    <p className="text-gray-400 animate-pulse">{t('waiting_start') || 'Esperant que comence la partida...'}</p>
                 </div>
             </div>
         );
@@ -1593,7 +1595,7 @@ function PlayerGameView({ roomCode, playerId, factionIdx }) {
                 {/* EVENT PHASE */}
                 {gs.phase === 'event' && (
                     <div className="bg-amber-900/30 rounded-xl p-4 text-center">
-                        <p className="text-amber-200">{ECONRISK_TRANSLATIONS['waiting_host']?.[PdeLanguageStore.get()] || "Esperant que l'amfitrio aplique l'esdeveniment..."}</p>
+                        <p className="text-amber-200">{t('waiting_host') || "Esperant que l'amfitrio aplique l'esdeveniment..."}</p>
                     </div>
                 )}
 
@@ -2029,6 +2031,8 @@ function SystemicRiskApp() {
 // LOCAL GAME VIEW (Single player vs AI)
 // =====================================================================
 function LocalGameView({ initialState, onExit }) {
+    const [idioma] = usePdeIdioma();
+    var t = function(key) { return ECONRISK_TRANSLATIONS[key]?.[idioma] || ECONRISK_TRANSLATIONS[key]?.val || key; };
     const [gs, setGs] = useState(initialState);
     const [showEvent, setShowEvent] = useState(null);
     const [combatResult, setCombatResult] = useState(null);
@@ -2198,7 +2202,7 @@ function LocalGameView({ initialState, onExit }) {
                         </button>
                         <button onClick={onExit}
                             className="px-8 py-4 rounded-2xl bg-gray-700 text-white font-bold text-xl hover:bg-gray-600 btn-risk">
-                            {ECONRISK_TRANSLATIONS['back']?.[PdeLanguageStore.get()] || 'Tornar'}
+                            {t('back') || 'Tornar'}
                         </button>
                     </div>
                 </div>
@@ -2235,12 +2239,12 @@ function LocalGameView({ initialState, onExit }) {
                 {/* Header */}
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                        <button onClick={onExit} className="text-gray-500 hover:text-white text-sm">&#x2190; {ECONRISK_TRANSLATIONS['back']?.[PdeLanguageStore.get()] || 'Tornar'}</button>
+                        <button onClick={onExit} className="text-gray-500 hover:text-white text-sm">&#x2190; {t('back') || 'Tornar'}</button>
                         <span className="text-gray-700">|</span>
                         <h1 className="text-xl md:text-2xl font-black text-white">&#x2694;&#xFE0F; Systemic Risk</h1>
                     </div>
                     <div className="text-sm text-gray-400">
-                        {ECONRISK_TRANSLATIONS['round_x_of_y']?.[PdeLanguageStore.get()]?.replace('{x}', gs.round).replace('{y}', gs.maxRounds) || ('Ronda ' + gs.round + '/' + gs.maxRounds)}
+                        {(t('round_x_of_y') || '').replace('{x}', gs.round).replace('{y}', gs.maxRounds) || ('Ronda ' + gs.round + '/' + gs.maxRounds)}
                     </div>
                 </div>
 
