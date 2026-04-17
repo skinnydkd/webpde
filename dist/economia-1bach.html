@@ -1,0 +1,3228 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Economia 1BACH - Economia de 1r de Batxillerat | PDE</title>
+    <meta name="description" content="Curs d'Economia per a 1r de Batxillerat. Oferta i demanda, PIB, politica fiscal, comerc internacional i molt mes.">
+    <meta property="og:title" content="Economia 1BACH - Economia de 1r de Batxillerat | PDE">
+    <meta property="og:description" content="Materials interactius d'economia per a 1r BACH: oferta i demanda, PIB, politica fiscal, comerc internacional.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/economia-1bach">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didactica Economica">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://profedeeconomia.es/economia-1bach">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <link rel="stylesheet" href="./pde.css">
+<script src="./pde-shared.js"></script>
+    <script src="./pde-components.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #f59e0b #fffbeb; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #fffbeb; }
+        ::-webkit-scrollbar-thumb { background-color: #f59e0b; border-radius: 3px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+        .dropdown-content { display: none; }
+        .dropdown:hover .dropdown-content { display: block; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-white to-orange-50 min-h-screen">
+    <div id="root"></div>
+    <script>const {
+  useState,
+  useMemo,
+  useEffect
+} = React;
+function Eco1bachApp() {
+  const [section, setSection] = useState('inicio');
+  const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+  const pageTranslations = {
+    // whyimportant
+    'whyimportant.title': {
+      val: "Per que t'importa aixo?",
+      es: '¿Por que te importa esto?',
+      en: 'Why does this matter to you?'
+    },
+    // inicio
+    'inicio.title': {
+      val: "Economia de 1r de Batxillerat",
+      es: "Economia de 1o de Bachillerato",
+      en: "Economics Year 12"
+    },
+    'inicio.subtitle': {
+      val: "Materials interactius per entendre com funciona l'economia",
+      es: "Materiales interactivos para entender como funciona la economia",
+      en: "Interactive materials to understand how the economy works"
+    },
+    'inicio.whyimportant': {
+      val: "L'economia afecta absolutament tot: el preu del teu esmorzar, el sou dels teus pares, el cost de l'habitatge, les decisions del govern. No es una assignatura abstracta: es la ciencia que explica per que el mon funciona com funciona. Entendre-la et converteix en un ciutada mes informat i lliure.",
+      es: "La economia afecta absolutamente todo: el precio de tu desayuno, el sueldo de tus padres, el coste de la vivienda, las decisiones del gobierno. No es una asignatura abstracta: es la ciencia que explica por que el mundo funciona como funciona.",
+      en: "Economics affects absolutely everything: the price of your breakfast, your parents' salary, housing costs, government decisions. It's not an abstract subject: it's the science that explains why the world works the way it does."
+    },
+    // section names for inicio grid
+    'sec.escassetat': {
+      val: "Escassetat i sistemes economics",
+      es: "Escasez y sistemas economicos",
+      en: "Scarcity & economic systems"
+    },
+    'sec.escassetat.desc': {
+      val: "Necessitats, cost d'oportunitat, FPP",
+      es: "Necesidades, coste de oportunidad, FPP",
+      en: "Needs, opportunity cost, PPF"
+    },
+    'sec.agents': {
+      val: "Agents i flux circular",
+      es: "Agentes y flujo circular",
+      en: "Agents & circular flow"
+    },
+    'sec.agents.desc': {
+      val: "Families, empreses, Estat, exterior",
+      es: "Familias, empresas, Estado, exterior",
+      en: "Households, firms, State, foreign sector"
+    },
+    'sec.oferta-demanda': {
+      val: "Oferta i demanda",
+      es: "Oferta y demanda",
+      en: "Supply & demand"
+    },
+    'sec.oferta-demanda.desc': {
+      val: "Simulador interactiu amb grafic SVG",
+      es: "Simulador interactivo con grafico SVG",
+      en: "Interactive simulator with SVG graph"
+    },
+    'sec.mercats': {
+      val: "Mercats i competencia",
+      es: "Mercados y competencia",
+      en: "Markets & competition"
+    },
+    'sec.mercats.desc': {
+      val: "Perfecta, monopoli, oligopoli",
+      es: "Perfecta, monopolio, oligopolio",
+      en: "Perfect, monopoly, oligopoly"
+    },
+    'sec.empresa': {
+      val: "L'empresa i la produccio",
+      es: "La empresa y la produccion",
+      en: "The firm & production"
+    },
+    'sec.empresa.desc': {
+      val: "Costos, productivitat, economies d'escala",
+      es: "Costes, productividad, economias de escala",
+      en: "Costs, productivity, economies of scale"
+    },
+    'sec.magnituds': {
+      val: "Magnituds macroeconomiques",
+      es: "Magnitudes macroeconomicas",
+      en: "Macroeconomic indicators"
+    },
+    'sec.magnituds.desc': {
+      val: "PIB, IPC, atur — calculadora interactiva",
+      es: "PIB, IPC, desempleo — calculadora interactiva",
+      en: "GDP, CPI, unemployment — interactive calculator"
+    },
+    'sec.treball': {
+      val: "El mercat de treball",
+      es: "El mercado de trabajo",
+      en: "The labour market"
+    },
+    'sec.treball.desc': {
+      val: "Tipus d'atur, politiques d'ocupacio",
+      es: "Tipos de desempleo, politicas de empleo",
+      en: "Types of unemployment, employment policies"
+    },
+    'sec.diners': {
+      val: "Diners i sistema financer",
+      es: "Dinero y sistema financiero",
+      en: "Money & financial system"
+    },
+    'sec.diners.desc': {
+      val: "Funcions, multiplicador bancari, BCE",
+      es: "Funciones, multiplicador bancario, BCE",
+      en: "Functions, money multiplier, ECB"
+    },
+    'sec.politica': {
+      val: "Politica fiscal i monetaria",
+      es: "Politica fiscal y monetaria",
+      en: "Fiscal & monetary policy"
+    },
+    'sec.politica.desc': {
+      val: "Simulador de pressupostos i tipus d'interes",
+      es: "Simulador de presupuestos y tipos de interes",
+      en: "Budget & interest rate simulator"
+    },
+    'sec.comerc': {
+      val: "Comerc internacional i UE",
+      es: "Comercio internacional y UE",
+      en: "International trade & EU"
+    },
+    'sec.comerc.desc': {
+      val: "Avantatge comparatiu, balanca, globalitzacio",
+      es: "Ventaja comparativa, balanza, globalizacion",
+      en: "Comparative advantage, balance, globalisation"
+    },
+    // ========================================================================
+    // Unit 1: Escassetat i sistemes economics
+    // ========================================================================
+    'escassetat.title': {
+      val: "Escassetat i sistemes economics",
+      es: "Escasez y sistemas economicos",
+      en: "Scarcity & economic systems"
+    },
+    'escassetat.subtitle': {
+      val: "El problema fonamental de l'economia",
+      es: "El problema fundamental de la economia",
+      en: "The fundamental problem of economics"
+    },
+    'escassetat.why': {
+      val: "Per que no pots tindre tot el que vols? Per que existeixen els preus? Per que alguns paisos son rics i altres pobres? Tot comenca aci: les necessitats humanes son il·limitades, pero els recursos per satisfer-les son escassos. Aquesta tensio es l'essencia de l'economia.",
+      es: "¿Por que no puedes tener todo lo que quieres? ¿Por que existen los precios? ¿Por que algunos paises son ricos y otros pobres? Todo empieza aqui: las necesidades humanas son ilimitadas, pero los recursos para satisfacerlas son escasos.",
+      en: "Why can't you have everything you want? Why do prices exist? Why are some countries rich and others poor? It all starts here: human needs are unlimited, but resources to satisfy them are scarce."
+    },
+    'escassetat.problema': {
+      val: "El problema economic",
+      es: "El problema economico",
+      en: "The economic problem"
+    },
+    'escassetat.problema.text': {
+      val: "L'economia estudia com les societats administren els recursos escassos per satisfer les necessitats il·limitades de les persones. Hem de triar: no podem tindre tot. Cada eleccio implica renunciar a una alternativa.",
+      es: "La economia estudia como las sociedades administran los recursos escasos para satisfacer las necesidades ilimitadas de las personas. Debemos elegir: no podemos tener todo. Cada eleccion implica renunciar a una alternativa.",
+      en: "Economics studies how societies manage scarce resources to satisfy unlimited human needs. We must choose: we can't have everything. Every choice means giving up an alternative."
+    },
+    'escassetat.necessitats': {
+      val: "Tipus de necessitats",
+      es: "Tipos de necesidades",
+      en: "Types of needs"
+    },
+    'escassetat.nec.primaries': {
+      val: "Primaries: alimentacio, vestit, habitatge, salut",
+      es: "Primarias: alimentacion, vestido, vivienda, salud",
+      en: "Primary: food, clothing, housing, health"
+    },
+    'escassetat.nec.secundaries': {
+      val: "Secundaries: educacio, transport, oci, comunicacio",
+      es: "Secundarias: educacion, transporte, ocio, comunicacion",
+      en: "Secondary: education, transport, leisure, communication"
+    },
+    'escassetat.nec.terciaries': {
+      val: "Terciaries (luxe): viatges exclusius, joies, tecnologia d'alta gamma",
+      es: "Terciarias (lujo): viajes exclusivos, joyas, tecnologia de alta gama",
+      en: "Tertiary (luxury): exclusive travel, jewellery, high-end tech"
+    },
+    'escassetat.cost': {
+      val: "Cost d'oportunitat",
+      es: "Coste de oportunidad",
+      en: "Opportunity cost"
+    },
+    'escassetat.cost.text': {
+      val: "El cost d'oportunitat es el valor de la millor alternativa a la qual renuncies quan prens una decisio. Si dediques el dissabte a estudiar, el cost d'oportunitat es el que podries haver fet en eixe temps (treballar, sortir amb amics...). No es nomes diners: es temps, plaer, experiencies.",
+      es: "El coste de oportunidad es el valor de la mejor alternativa a la que renuncias cuando tomas una decision. Si dedicas el sabado a estudiar, el coste de oportunidad es lo que podrias haber hecho en ese tiempo (trabajar, salir con amigos...). No es solo dinero: es tiempo, placer, experiencias.",
+      en: "Opportunity cost is the value of the best alternative you give up when making a decision. If you spend Saturday studying, the opportunity cost is what you could have done instead (work, go out with friends...). It's not just money: it's time, pleasure, experiences."
+    },
+    'escassetat.fpp': {
+      val: "Frontera de Possibilitats de Produccio (FPP)",
+      es: "Frontera de Posibilidades de Produccion (FPP)",
+      en: "Production Possibilities Frontier (PPF)"
+    },
+    'escassetat.fpp.text': {
+      val: "Grafic que mostra les combinacions maximes de dos bens que una economia pot produir amb els seus recursos. Punts sobre la corba: eficients. Punts dins: ineficients (recursos desaprofitats). Punts fora: impossibles (amb els recursos actuals). La FPP es desplaca cap a fora amb creixement economic (mes recursos, millor tecnologia).",
+      es: "Grafico que muestra las combinaciones maximas de dos bienes que una economia puede producir con sus recursos. Puntos sobre la curva: eficientes. Puntos dentro: ineficientes (recursos desaprovechados). Puntos fuera: imposibles (con los recursos actuales). La FPP se desplaza hacia fuera con crecimiento economico.",
+      en: "Graph showing the maximum combinations of two goods an economy can produce with its resources. Points on the curve: efficient. Points inside: inefficient (wasted resources). Points outside: impossible (with current resources). The PPF shifts outward with economic growth."
+    },
+    'escassetat.sistemes': {
+      val: "Sistemes economics",
+      es: "Sistemas economicos",
+      en: "Economic systems"
+    },
+    'escassetat.mercat': {
+      val: "Economia de mercat (capitalisme)",
+      es: "Economia de mercado (capitalismo)",
+      en: "Market economy (capitalism)"
+    },
+    'escassetat.mercat.desc': {
+      val: "Les decisions les pren el mercat (oferta i demanda). Propietat privada, llibertat d'empresa, benefici com a motor. Avantatges: eficiencia, innovacio. Inconvenients: desigualtat, fallades de mercat.",
+      es: "Las decisiones las toma el mercado (oferta y demanda). Propiedad privada, libertad de empresa, beneficio como motor. Ventajas: eficiencia, innovacion. Inconvenientes: desigualdad, fallos de mercado.",
+      en: "Decisions are made by the market (supply and demand). Private property, freedom of enterprise, profit as driver. Advantages: efficiency, innovation. Disadvantages: inequality, market failures."
+    },
+    'escassetat.planificada': {
+      val: "Economia planificada (socialisme)",
+      es: "Economia planificada (socialismo)",
+      en: "Planned economy (socialism)"
+    },
+    'escassetat.planificada.desc': {
+      val: "L'Estat pren totes les decisions: que produir, com i per a qui. Propietat publica dels mitjans de produccio. Avantatges: igualtat. Inconvenients: ineficiencia, falta d'incentius, burocratisme.",
+      es: "El Estado toma todas las decisiones: que producir, como y para quien. Propiedad publica de los medios de produccion. Ventajas: igualdad. Inconvenientes: ineficiencia, falta de incentivos, burocracia.",
+      en: "The State makes all decisions: what to produce, how and for whom. Public ownership of means of production. Advantages: equality. Disadvantages: inefficiency, lack of incentives, bureaucracy."
+    },
+    'escassetat.mixta': {
+      val: "Economia mixta (la majoria de paisos actuals)",
+      es: "Economia mixta (la mayoria de paises actuales)",
+      en: "Mixed economy (most current countries)"
+    },
+    'escassetat.mixta.desc': {
+      val: "Combina mercat i intervencio de l'Estat. El mercat assigna la majoria de recursos, pero l'Estat intervé per corregir fallades (educacio publica, sanitat, regulacio, impostos redistributius). Es el sistema de la UE, Espanya, etc.",
+      es: "Combina mercado e intervencion del Estado. El mercado asigna la mayoria de recursos, pero el Estado interviene para corregir fallos (educacion publica, sanidad, regulacion, impuestos redistributivos). Es el sistema de la UE, Espana, etc.",
+      en: "Combines market and State intervention. The market allocates most resources, but the State intervenes to correct failures (public education, healthcare, regulation, redistributive taxes). It's the EU system, Spain, etc."
+    },
+    'escassetat.taula.criteri': {
+      val: "Criteri",
+      es: "Criterio",
+      en: "Criterion"
+    },
+    'escassetat.taula.propietat': {
+      val: "Propietat",
+      es: "Propiedad",
+      en: "Ownership"
+    },
+    'escassetat.taula.decisions': {
+      val: "Decisions",
+      es: "Decisiones",
+      en: "Decisions"
+    },
+    'escassetat.taula.incentiu': {
+      val: "Incentiu",
+      es: "Incentivo",
+      en: "Incentive"
+    },
+    'escassetat.taula.problema': {
+      val: "Problema",
+      es: "Problema",
+      en: "Problem"
+    },
+    'escassetat.taula.mercat.propietat': {
+      val: "Privada",
+      es: "Privada",
+      en: "Private"
+    },
+    'escassetat.taula.mercat.decisions': {
+      val: "Mercat",
+      es: "Mercado",
+      en: "Market"
+    },
+    'escassetat.taula.mercat.incentiu': {
+      val: "Benefici",
+      es: "Beneficio",
+      en: "Profit"
+    },
+    'escassetat.taula.mercat.problema': {
+      val: "Desigualtat",
+      es: "Desigualdad",
+      en: "Inequality"
+    },
+    'escassetat.taula.planificada.propietat': {
+      val: "Publica",
+      es: "Publica",
+      en: "Public"
+    },
+    'escassetat.taula.planificada.decisions': {
+      val: "Estat",
+      es: "Estado",
+      en: "State"
+    },
+    'escassetat.taula.planificada.incentiu': {
+      val: "Igualtat",
+      es: "Igualdad",
+      en: "Equality"
+    },
+    'escassetat.taula.planificada.problema': {
+      val: "Ineficiencia",
+      es: "Ineficiencia",
+      en: "Inefficiency"
+    },
+    'escassetat.taula.mixta.propietat': {
+      val: "Mixta",
+      es: "Mixta",
+      en: "Mixed"
+    },
+    'escassetat.taula.mixta.decisions': {
+      val: "Mercat + Estat",
+      es: "Mercado + Estado",
+      en: "Market + State"
+    },
+    'escassetat.taula.mixta.incentiu': {
+      val: "Equilibri",
+      es: "Equilibrio",
+      en: "Balance"
+    },
+    'escassetat.taula.mixta.problema': {
+      val: "Complexitat",
+      es: "Complejidad",
+      en: "Complexity"
+    },
+    // ========================================================================
+    // Unit 2: Agents i flux circular
+    // ========================================================================
+    'agents.title': {
+      val: "Agents i flux circular",
+      es: "Agentes y flujo circular",
+      en: "Agents & circular flow"
+    },
+    'agents.subtitle': {
+      val: "Qui participa en l'economia i com es relacionen",
+      es: "Quien participa en la economia y como se relacionan",
+      en: "Who participates in the economy and how they relate"
+    },
+    'agents.why': {
+      val: "L'economia no es un ens abstracte: son persones i institucions interactuant. Entendre els 4 agents economics i com circulen els diners i els bens entre ells es com tindre el mapa de l'economia. Sense mapa, no saps on ets.",
+      es: "La economia no es un ente abstracto: son personas e instituciones interactuando. Entender los 4 agentes economicos y como circulan el dinero y los bienes entre ellos es como tener el mapa de la economia.",
+      en: "The economy is not abstract: it's people and institutions interacting. Understanding the 4 economic agents and how money and goods flow between them is like having a map of the economy."
+    },
+    'agents.families': {
+      val: "Families (Economias Domestiques)",
+      es: "Familias (Economias Domesticas)",
+      en: "Households"
+    },
+    'agents.families.desc': {
+      val: "Ofereixen factors productius (treball, terra, capital) a les empreses. A canvi, reben rendes (salaris, lloguers, interessos, beneficis). Amb eixes rendes, consumeixen bens i serveis.",
+      es: "Ofrecen factores productivos (trabajo, tierra, capital) a las empresas. A cambio, reciben rentas (salarios, alquileres, intereses, beneficios). Con esas rentas, consumen bienes y servicios.",
+      en: "Supply productive factors (labour, land, capital) to firms. In return, they receive income (wages, rent, interest, profits). With that income, they consume goods and services."
+    },
+    'agents.empreses': {
+      val: "Empreses",
+      es: "Empresas",
+      en: "Firms"
+    },
+    'agents.empreses.desc': {
+      val: "Combinen factors productius per produir bens i serveis. Paguen rendes a les families. Venen la seua produccio al mercat de bens i serveis. Busquen maximitzar el benefici.",
+      es: "Combinan factores productivos para producir bienes y servicios. Pagan rentas a las familias. Venden su produccion al mercado de bienes y servicios. Buscan maximizar el beneficio.",
+      en: "Combine productive factors to produce goods and services. Pay income to households. Sell their output in the goods and services market. Aim to maximise profit."
+    },
+    'agents.sector_public': {
+      val: "Sector Public (Estat)",
+      es: "Sector Publico (Estado)",
+      en: "Public Sector (State)"
+    },
+    'agents.sector_public.desc': {
+      val: "Recapta impostos de families i empreses. Proveeix bens i serveis publics (educacio, sanitat, defensa). Redistribueix la renda (pensions, subsidis). Regula l'activitat economica.",
+      es: "Recauda impuestos de familias y empresas. Provee bienes y servicios publicos (educacion, sanidad, defensa). Redistribuye la renta (pensiones, subsidios). Regula la actividad economica.",
+      en: "Collects taxes from households and firms. Provides public goods and services (education, health, defence). Redistributes income (pensions, subsidies). Regulates economic activity."
+    },
+    'agents.sector_exterior': {
+      val: "Sector Exterior",
+      es: "Sector Exterior",
+      en: "Foreign Sector"
+    },
+    'agents.sector_exterior.desc': {
+      val: "Relacions economiques amb altres paisos: exportacions (venem fora), importacions (comprem fora). El saldo (exportacions - importacions) afecta el PIB. En un mon globalitzat, cap economia es tancada.",
+      es: "Relaciones economicas con otros paises: exportaciones (vendemos fuera), importaciones (compramos fuera). El saldo (exportaciones - importaciones) afecta al PIB. En un mundo globalizado, ninguna economia es cerrada.",
+      en: "Economic relations with other countries: exports (we sell abroad), imports (we buy from abroad). The balance (exports - imports) affects GDP. In a globalised world, no economy is closed."
+    },
+    'agents.flux': {
+      val: "Flux circular de la renda",
+      es: "Flujo circular de la renta",
+      en: "Circular flow of income"
+    },
+    'agents.flux.desc': {
+      val: "L'economia funciona com un circuit tancat on els diners circulen entre agents. Hi ha dos tipus de fluxos:",
+      es: "La economia funciona como un circuito cerrado donde el dinero circula entre agentes. Hay dos tipos de flujos:",
+      en: "The economy works as a closed circuit where money flows between agents. There are two types of flows:"
+    },
+    'agents.flux.real': {
+      val: "Flux real: moviment de bens, serveis i factors productius (treball, terra, capital)",
+      es: "Flujo real: movimiento de bienes, servicios y factores productivos (trabajo, tierra, capital)",
+      en: "Real flow: movement of goods, services and productive factors (labour, land, capital)"
+    },
+    'agents.flux.monetari': {
+      val: "Flux monetari: moviment de diners (salaris, despesa en consum, impostos, subvencions)",
+      es: "Flujo monetario: movimiento de dinero (salarios, gasto en consumo, impuestos, subvenciones)",
+      en: "Monetary flow: movement of money (wages, consumer spending, taxes, subsidies)"
+    },
+    'agents.diagrama': {
+      val: "Diagrama simplificat",
+      es: "Diagrama simplificado",
+      en: "Simplified diagram"
+    },
+    // ========================================================================
+    // Unit 3: Oferta i demanda (INTERACTIVE SIMULATOR)
+    // ========================================================================
+    'od.title': {
+      val: "Oferta i demanda",
+      es: "Oferta y demanda",
+      en: "Supply & demand"
+    },
+    'od.subtitle': {
+      val: "El cor de l'economia de mercat",
+      es: "El corazon de la economia de mercado",
+      en: "The heart of the market economy"
+    },
+    'od.why': {
+      val: "Per que puja el preu dels pisos? Per que baixen els preus dels movils antics? Per que el preu de la fruita canvia amb les estacions? Tot s'explica amb oferta i demanda. Es el model mes important de l'economia i s'aplica a absolutament tot.",
+      es: "¿Por que sube el precio de los pisos? ¿Por que bajan los precios de los moviles antiguos? ¿Por que el precio de la fruta cambia con las estaciones? Todo se explica con oferta y demanda. Es el modelo mas importante de la economia.",
+      en: "Why do house prices rise? Why do old phone prices fall? Why do fruit prices change with seasons? Everything is explained by supply and demand. It's the most important model in economics."
+    },
+    'od.tab.teoria': {
+      val: "Teoria",
+      es: "Teoria",
+      en: "Theory"
+    },
+    'od.tab.simulador': {
+      val: "Simulador",
+      es: "Simulador",
+      en: "Simulator"
+    },
+    'od.demanda': {
+      val: "Llei de la demanda",
+      es: "Ley de la demanda",
+      en: "Law of demand"
+    },
+    'od.demanda.text': {
+      val: "Quan el preu d'un be puja, la quantitat demandada baixa (i viceversa), ceteris paribus. Relacio INVERSA entre preu i quantitat. La corba de demanda te pendent negatiu.",
+      es: "Cuando el precio de un bien sube, la cantidad demandada baja (y viceversa), ceteris paribus. Relacion INVERSA entre precio y cantidad. La curva de demanda tiene pendiente negativa.",
+      en: "When a good's price rises, quantity demanded falls (and vice versa), ceteris paribus. INVERSE relationship between price and quantity. The demand curve has a negative slope."
+    },
+    'od.demanda.factors': {
+      val: "Factors que desplacen la demanda",
+      es: "Factores que desplazan la demanda",
+      en: "Factors that shift demand"
+    },
+    'od.demanda.f1': {
+      val: "Renda dels consumidors (mes renda = mes demanda de bens normals)",
+      es: "Renta de los consumidores (mas renta = mas demanda de bienes normales)",
+      en: "Consumer income (more income = more demand for normal goods)"
+    },
+    'od.demanda.f2': {
+      val: "Preu de bens relacionats (substitutius i complementaris)",
+      es: "Precio de bienes relacionados (sustitutivos y complementarios)",
+      en: "Price of related goods (substitutes and complements)"
+    },
+    'od.demanda.f3': {
+      val: "Gustos i preferencies dels consumidors",
+      es: "Gustos y preferencias de los consumidores",
+      en: "Consumer tastes and preferences"
+    },
+    'od.demanda.f4': {
+      val: "Expectatives sobre preus futurs",
+      es: "Expectativas sobre precios futuros",
+      en: "Expectations about future prices"
+    },
+    'od.demanda.f5': {
+      val: "Nombre de consumidors al mercat",
+      es: "Numero de consumidores en el mercado",
+      en: "Number of consumers in the market"
+    },
+    'od.oferta': {
+      val: "Llei de l'oferta",
+      es: "Ley de la oferta",
+      en: "Law of supply"
+    },
+    'od.oferta.text': {
+      val: "Quan el preu d'un be puja, la quantitat ofertada puja (i viceversa), ceteris paribus. Relacio DIRECTA entre preu i quantitat. La corba d'oferta te pendent positiu.",
+      es: "Cuando el precio de un bien sube, la cantidad ofertada sube (y viceversa), ceteris paribus. Relacion DIRECTA entre precio y cantidad. La curva de oferta tiene pendiente positiva.",
+      en: "When a good's price rises, quantity supplied rises (and vice versa), ceteris paribus. DIRECT relationship between price and quantity. The supply curve has a positive slope."
+    },
+    'od.oferta.factors': {
+      val: "Factors que desplacen l'oferta",
+      es: "Factores que desplazan la oferta",
+      en: "Factors that shift supply"
+    },
+    'od.oferta.f1': {
+      val: "Costos de produccio (materies primeres, salaris, energia)",
+      es: "Costes de produccion (materias primas, salarios, energia)",
+      en: "Production costs (raw materials, wages, energy)"
+    },
+    'od.oferta.f2': {
+      val: "Tecnologia (millor tecnologia = mes produccio a menor cost)",
+      es: "Tecnologia (mejor tecnologia = mas produccion a menor coste)",
+      en: "Technology (better tech = more production at lower cost)"
+    },
+    'od.oferta.f3': {
+      val: "Nombre d'empreses al mercat",
+      es: "Numero de empresas en el mercado",
+      en: "Number of firms in the market"
+    },
+    'od.oferta.f4': {
+      val: "Expectatives empresarials",
+      es: "Expectativas empresariales",
+      en: "Business expectations"
+    },
+    'od.equilibri': {
+      val: "Equilibri de mercat",
+      es: "Equilibrio de mercado",
+      en: "Market equilibrium"
+    },
+    'od.equilibri.text': {
+      val: "L'equilibri es dona quan la quantitat demandada iguala la quantitat ofertada. En eixe punt, el preu es estable i no hi ha exces d'oferta ni de demanda. Si el preu esta per damunt de l'equilibri, hi ha exces d'oferta; si esta per davall, exces de demanda.",
+      es: "El equilibrio se da cuando la cantidad demandada iguala la cantidad ofertada. En ese punto, el precio es estable y no hay exceso de oferta ni de demanda.",
+      en: "Equilibrium occurs when quantity demanded equals quantity supplied. At that point, the price is stable with no excess supply or demand."
+    },
+    'od.sim.demandaBase': {
+      val: "Demanda base",
+      es: "Demanda base",
+      en: "Base demand"
+    },
+    'od.sim.ofertaBase': {
+      val: "Oferta base",
+      es: "Oferta base",
+      en: "Base supply"
+    },
+    'od.sim.preu': {
+      val: "Preu actual",
+      es: "Precio actual",
+      en: "Current price"
+    },
+    'od.sim.despD': {
+      val: "Desplacament demanda",
+      es: "Desplazamiento demanda",
+      en: "Demand shift"
+    },
+    'od.sim.despO': {
+      val: "Desplacament oferta",
+      es: "Desplazamiento oferta",
+      en: "Supply shift"
+    },
+    'od.sim.qd': {
+      val: "Quantitat demandada (Qd)",
+      es: "Cantidad demandada (Qd)",
+      en: "Quantity demanded (Qd)"
+    },
+    'od.sim.qo': {
+      val: "Quantitat ofertada (Qo)",
+      es: "Cantidad ofertada (Qo)",
+      en: "Quantity supplied (Qs)"
+    },
+    'od.sim.pe': {
+      val: "Preu d'equilibri (Pe)",
+      es: "Precio de equilibrio (Pe)",
+      en: "Equilibrium price (Pe)"
+    },
+    'od.sim.qe': {
+      val: "Quantitat d'equilibri (Qe)",
+      es: "Cantidad de equilibrio (Qe)",
+      en: "Equilibrium quantity (Qe)"
+    },
+    'od.sim.exces': {
+      val: "Exces",
+      es: "Exceso",
+      en: "Excess"
+    },
+    'od.sim.excesOferta': {
+      val: "Exces d'oferta",
+      es: "Exceso de oferta",
+      en: "Excess supply"
+    },
+    'od.sim.excesDemanda': {
+      val: "Exces de demanda",
+      es: "Exceso de demanda",
+      en: "Excess demand"
+    },
+    'od.sim.equilibri': {
+      val: "Equilibri!",
+      es: "¡Equilibrio!",
+      en: "Equilibrium!"
+    },
+    'od.sim.grafic': {
+      val: "Grafic Oferta-Demanda",
+      es: "Grafico Oferta-Demanda",
+      en: "Supply-Demand Graph"
+    },
+    // ========================================================================
+    // Unit 4: Mercats i competencia
+    // ========================================================================
+    'mercats.title': {
+      val: "Mercats i competencia",
+      es: "Mercados y competencia",
+      en: "Markets & competition"
+    },
+    'mercats.subtitle': {
+      val: "No tots els mercats funcionen igual",
+      es: "No todos los mercados funcionan igual",
+      en: "Not all markets work the same"
+    },
+    'mercats.why': {
+      val: "Per que un bitllet d'avio pot costar 20EUR o 500EUR per la mateixa ruta? Per que nomes hi ha una empresa d'aigua al teu poble? Per que Coca-Cola i Pepsi gasten milions en publicitat? L'estructura del mercat ho explica tot.",
+      es: "¿Por que un billete de avion puede costar 20EUR o 500EUR por la misma ruta? ¿Por que solo hay una empresa de agua en tu pueblo? ¿Por que Coca-Cola y Pepsi gastan millones en publicidad? La estructura del mercado lo explica todo.",
+      en: "Why can a plane ticket cost EUR20 or EUR500 for the same route? Why is there only one water company in your town? Why do Coca-Cola and Pepsi spend millions on advertising? Market structure explains everything."
+    },
+    'mercats.tab.perfecta': {
+      val: "C. Perfecta",
+      es: "C. Perfecta",
+      en: "Perfect C."
+    },
+    'mercats.tab.monopoli': {
+      val: "Monopoli",
+      es: "Monopolio",
+      en: "Monopoly"
+    },
+    'mercats.tab.oligopoli': {
+      val: "Oligopoli",
+      es: "Oligopolio",
+      en: "Oligopoly"
+    },
+    'mercats.tab.monopolistica': {
+      val: "C. Monopolistica",
+      es: "C. Monopolistica",
+      en: "Monopolistic C."
+    },
+    'mercats.perfecta': {
+      val: "Competencia perfecta",
+      es: "Competencia perfecta",
+      en: "Perfect competition"
+    },
+    'mercats.perfecta.desc': {
+      val: "Moltes empreses petites venen un producte identic (homogeni). Cap empresa te poder per fixar el preu (son preu-acceptants). No hi ha barreres d'entrada ni de sortida. Informacio perfecta. Exemple teoric: mercat de blat, mercats financers.",
+      es: "Muchas empresas pequenas venden un producto identico (homogeneo). Ninguna empresa tiene poder para fijar el precio (son precio-aceptantes). No hay barreras de entrada ni de salida. Informacion perfecta. Ejemplo teorico: mercado de trigo, mercados financieros.",
+      en: "Many small firms sell an identical (homogeneous) product. No firm has power to set the price (they are price-takers). No barriers to entry or exit. Perfect information. Theoretical example: wheat market, financial markets."
+    },
+    'mercats.monopoli': {
+      val: "Monopoli",
+      es: "Monopolio",
+      en: "Monopoly"
+    },
+    'mercats.monopoli.desc': {
+      val: "Una unica empresa controla tot el mercat. No hi ha substitutius propers. Altes barreres d'entrada (patents, inversio enorme, concessions legals). L'empresa fixa el preu (preu-decisora). Exemples: distribucio d'aigua (monopoli natural), patents farmaceutiques.",
+      es: "Una unica empresa controla todo el mercado. No hay sustitutivos cercanos. Altas barreras de entrada (patentes, inversion enorme, concesiones legales). La empresa fija el precio (precio-decisora). Ejemplos: distribucion de agua, patentes farmaceuticas.",
+      en: "A single firm controls the entire market. No close substitutes. High barriers to entry (patents, huge investment, legal concessions). The firm sets the price (price-maker). Examples: water distribution (natural monopoly), pharmaceutical patents."
+    },
+    'mercats.oligopoli': {
+      val: "Oligopoli",
+      es: "Oligopolio",
+      en: "Oligopoly"
+    },
+    'mercats.oligopoli.desc': {
+      val: "Poques empreses grans dominen el mercat. Producte pot ser homogeni o diferenciat. Interdependencia estrategica: les decisions d'una empresa afecten les altres. Tendencia a acords (cartels, il·legals) o a competencia en publicitat/innovacio. Exemples: telefonia mobil, petroli (OPEP), aerolinies.",
+      es: "Pocas empresas grandes dominan el mercado. Producto puede ser homogeneo o diferenciado. Interdependencia estrategica. Tendencia a acuerdos (carteles, ilegales) o competencia en publicidad/innovacion. Ejemplos: telefonia movil, petroleo (OPEP), aerolineas.",
+      en: "Few large firms dominate the market. Product can be homogeneous or differentiated. Strategic interdependence. Tendency towards agreements (cartels, illegal) or competition in advertising/innovation. Examples: mobile telecom, oil (OPEC), airlines."
+    },
+    'mercats.monopolistica': {
+      val: "Competencia monopolistica",
+      es: "Competencia monopolistica",
+      en: "Monopolistic competition"
+    },
+    'mercats.monopolistica.desc': {
+      val: "Moltes empreses venen productes diferenciats (similars pero no identics). Cada empresa te un xicotet poder de mercat gracies a la diferenciacio (marca, qualitat, disseny). Barreres d'entrada baixes. Exemples: restaurants, roba, perruqueries, apps.",
+      es: "Muchas empresas venden productos diferenciados (similares pero no identicos). Cada empresa tiene un pequeno poder de mercado gracias a la diferenciacion (marca, calidad, diseno). Barreras de entrada bajas. Ejemplos: restaurantes, ropa, peluquerias, apps.",
+      en: "Many firms sell differentiated products (similar but not identical). Each firm has small market power thanks to differentiation (brand, quality, design). Low barriers to entry. Examples: restaurants, clothing, hairdressers, apps."
+    },
+    'mercats.comparacio': {
+      val: "Taula comparativa",
+      es: "Tabla comparativa",
+      en: "Comparison table"
+    },
+    'mercats.taula.empreses': {
+      val: "Nombre d'empreses",
+      es: "Numero de empresas",
+      en: "Number of firms"
+    },
+    'mercats.taula.producte': {
+      val: "Producte",
+      es: "Producto",
+      en: "Product"
+    },
+    'mercats.taula.barreres': {
+      val: "Barreres d'entrada",
+      es: "Barreras de entrada",
+      en: "Barriers to entry"
+    },
+    'mercats.taula.preu': {
+      val: "Poder sobre preu",
+      es: "Poder sobre precio",
+      en: "Price power"
+    },
+    'mercats.taula.exemple': {
+      val: "Exemples",
+      es: "Ejemplos",
+      en: "Examples"
+    },
+    'mercats.taula.p.empreses': {
+      val: "Moltes",
+      es: "Muchas",
+      en: "Many"
+    },
+    'mercats.taula.p.producte': {
+      val: "Homogeni",
+      es: "Homogeneo",
+      en: "Homogeneous"
+    },
+    'mercats.taula.p.barreres': {
+      val: "Cap",
+      es: "Ninguna",
+      en: "None"
+    },
+    'mercats.taula.p.preu': {
+      val: "Cap (preu-acceptant)",
+      es: "Ninguno (precio-aceptante)",
+      en: "None (price-taker)"
+    },
+    'mercats.taula.p.exemple': {
+      val: "Blat, mercats borsaris",
+      es: "Trigo, mercados bursatiles",
+      en: "Wheat, stock markets"
+    },
+    'mercats.taula.m.empreses': {
+      val: "Una",
+      es: "Una",
+      en: "One"
+    },
+    'mercats.taula.m.producte': {
+      val: "Unic",
+      es: "Unico",
+      en: "Unique"
+    },
+    'mercats.taula.m.barreres': {
+      val: "Molt altes",
+      es: "Muy altas",
+      en: "Very high"
+    },
+    'mercats.taula.m.preu': {
+      val: "Total (preu-decisor)",
+      es: "Total (precio-decisor)",
+      en: "Total (price-maker)"
+    },
+    'mercats.taula.m.exemple': {
+      val: "Aigua local, patents",
+      es: "Agua local, patentes",
+      en: "Local water, patents"
+    },
+    'mercats.taula.o.empreses': {
+      val: "Poques",
+      es: "Pocas",
+      en: "Few"
+    },
+    'mercats.taula.o.producte': {
+      val: "Homogeni o diferenciat",
+      es: "Homogeneo o diferenciado",
+      en: "Homogeneous or differentiated"
+    },
+    'mercats.taula.o.barreres': {
+      val: "Altes",
+      es: "Altas",
+      en: "High"
+    },
+    'mercats.taula.o.preu': {
+      val: "Alt (interdependencia)",
+      es: "Alto (interdependencia)",
+      en: "High (interdependence)"
+    },
+    'mercats.taula.o.exemple': {
+      val: "Telecos, petroli, aerolinies",
+      es: "Telecos, petroleo, aerolineas",
+      en: "Telecom, oil, airlines"
+    },
+    'mercats.taula.mc.empreses': {
+      val: "Moltes",
+      es: "Muchas",
+      en: "Many"
+    },
+    'mercats.taula.mc.producte': {
+      val: "Diferenciat",
+      es: "Diferenciado",
+      en: "Differentiated"
+    },
+    'mercats.taula.mc.barreres': {
+      val: "Baixes",
+      es: "Bajas",
+      en: "Low"
+    },
+    'mercats.taula.mc.preu': {
+      val: "Limitat (diferenciacio)",
+      es: "Limitado (diferenciacion)",
+      en: "Limited (differentiation)"
+    },
+    'mercats.taula.mc.exemple': {
+      val: "Restaurants, roba, apps",
+      es: "Restaurantes, ropa, apps",
+      en: "Restaurants, clothing, apps"
+    },
+    // ========================================================================
+    // Unit 5: L'empresa i la produccio
+    // ========================================================================
+    'empresa.title': {
+      val: "L'empresa i la produccio",
+      es: "La empresa y la produccion",
+      en: "The firm & production"
+    },
+    'empresa.subtitle': {
+      val: "Com es produeix i quant costa",
+      es: "Como se produce y cuanto cuesta",
+      en: "How it's produced and how much it costs"
+    },
+    'empresa.why': {
+      val: "Si mai emprens, treballas en una fabrica o simplement vols entendre per que els preus son com son, necessites coneixer com funciona la produccio. Per que un cafe costa 1.50EUR i no 0.10EUR? Per que Amazon pot vendre mes barat que la botiga del barri? La resposta esta en els costos i les economies d'escala.",
+      es: "Si alguna vez emprendes, trabajas en una fabrica o simplemente quieres entender por que los precios son como son, necesitas conocer como funciona la produccion. ¿Por que un cafe cuesta 1.50EUR y no 0.10EUR? ¿Por que Amazon puede vender mas barato? La respuesta esta en los costes y las economias de escala.",
+      en: "If you ever start a business, work in a factory, or simply want to understand why prices are what they are, you need to know how production works. Why does a coffee cost EUR1.50 and not EUR0.10? Why can Amazon sell cheaper? The answer is in costs and economies of scale."
+    },
+    'empresa.funcio': {
+      val: "Funcio de produccio",
+      es: "Funcion de produccion",
+      en: "Production function"
+    },
+    'empresa.funcio.text': {
+      val: "Relacio entre la quantitat de factors productius utilitzats (treball, capital) i la quantitat de producte obtingut. A curt termini, almenys un factor es fix (capital). A llarg termini, tots els factors son variables.",
+      es: "Relacion entre la cantidad de factores productivos utilizados (trabajo, capital) y la cantidad de producto obtenido. A corto plazo, al menos un factor es fijo (capital). A largo plazo, todos los factores son variables.",
+      en: "Relationship between the quantity of productive factors used (labour, capital) and the quantity of output obtained. In the short run, at least one factor is fixed (capital). In the long run, all factors are variable."
+    },
+    'empresa.productivitat': {
+      val: "Productivitat",
+      es: "Productividad",
+      en: "Productivity"
+    },
+    'empresa.productivitat.text': {
+      val: "Productivitat = Produccio / Factor productiu. Mesura l'eficiencia. Productivitat del treball: unitats produïdes per treballador. Es la clau del creixement economic.",
+      es: "Productividad = Produccion / Factor productivo. Mide la eficiencia. Productividad del trabajo: unidades producidas por trabajador. Es la clave del crecimiento economico.",
+      en: "Productivity = Output / Productive factor. Measures efficiency. Labour productivity: units produced per worker. It's the key to economic growth."
+    },
+    'empresa.rendiments': {
+      val: "Llei de rendiments decreixents",
+      es: "Ley de rendimientos decrecientes",
+      en: "Law of diminishing returns"
+    },
+    'empresa.rendiments.text': {
+      val: "A curt termini, si anem afegint unitats d'un factor variable (treball) mantenint fixos els altres (capital), arriba un punt en que cada unitat addicional aporta menys produccio que l'anterior. Exemple: afegir cambrers a un bar petit — al principi serveixen mes taules, pero si n'hi ha massa, es destorben entre ells.",
+      es: "A corto plazo, si vamos anadiendo unidades de un factor variable (trabajo) manteniendo fijos los otros (capital), llega un punto en que cada unidad adicional aporta menos produccion que la anterior. Ejemplo: anadir camareros a un bar pequeno.",
+      en: "In the short run, if we keep adding units of a variable factor (labour) while keeping others fixed (capital), a point comes where each additional unit adds less output than the previous one. Example: adding waiters to a small bar."
+    },
+    'empresa.costos': {
+      val: "Costos de produccio",
+      es: "Costes de produccion",
+      en: "Production costs"
+    },
+    'empresa.costos.fixos': {
+      val: "Costos Fixos (CF): no varien amb la produccio (lloguer, assegurances, amortitzacio)",
+      es: "Costes Fijos (CF): no varian con la produccion (alquiler, seguros, amortizacion)",
+      en: "Fixed Costs (FC): don't vary with output (rent, insurance, depreciation)"
+    },
+    'empresa.costos.variables': {
+      val: "Costos Variables (CV): varien amb la produccio (materies primeres, energia, ma d'obra directa)",
+      es: "Costes Variables (CV): varian con la produccion (materias primas, energia, mano de obra directa)",
+      en: "Variable Costs (VC): vary with output (raw materials, energy, direct labour)"
+    },
+    'empresa.costos.total': {
+      val: "Cost Total (CT) = CF + CV",
+      es: "Coste Total (CT) = CF + CV",
+      en: "Total Cost (TC) = FC + VC"
+    },
+    'empresa.costos.mitja': {
+      val: "Cost Mitja (CMe) = CT / Q — cost per unitat produida",
+      es: "Coste Medio (CMe) = CT / Q — coste por unidad producida",
+      en: "Average Cost (AC) = TC / Q — cost per unit produced"
+    },
+    'empresa.costos.marginal': {
+      val: "Cost Marginal (CMg) = ΔCT / ΔQ — cost addicional d'una unitat mes",
+      es: "Coste Marginal (CMg) = ΔCT / ΔQ — coste adicional de una unidad mas",
+      en: "Marginal Cost (MC) = ΔTC / ΔQ — additional cost of one more unit"
+    },
+    'empresa.economies': {
+      val: "Economies i deseconomies d'escala",
+      es: "Economias y deseconomias de escala",
+      en: "Economies & diseconomies of scale"
+    },
+    'empresa.economies.desc': {
+      val: "Economies d'escala: quan augmenta la produccio, el cost mitja baixa. Raons: especialitzacio, compres a gran escala, millor us de la tecnologia. Exemples: fabriques d'automobils, Amazon.",
+      es: "Economias de escala: cuando aumenta la produccion, el coste medio baja. Razones: especializacion, compras a gran escala, mejor uso de la tecnologia. Ejemplos: fabricas de automoviles, Amazon.",
+      en: "Economies of scale: when output increases, average cost falls. Reasons: specialisation, bulk purchasing, better use of technology. Examples: car factories, Amazon."
+    },
+    'empresa.deseconomies.desc': {
+      val: "Deseconomies d'escala: si l'empresa creix massa, el cost mitja puja. Raons: burocratisme, problemes de coordinacio, desmotivacio dels treballadors.",
+      es: "Deseconomias de escala: si la empresa crece demasiado, el coste medio sube. Razones: burocracia, problemas de coordinacion, desmotivacion de los trabajadores.",
+      en: "Diseconomies of scale: if the firm grows too much, average cost rises. Reasons: bureaucracy, coordination problems, worker demotivation."
+    },
+    // ========================================================================
+    // Unit 6: Magnituds macroeconomiques (INTERACTIVE CALCULATOR)
+    // ========================================================================
+    'magnituds.title': {
+      val: "Magnituds macroeconomiques",
+      es: "Magnitudes macroeconomicas",
+      en: "Macroeconomic indicators"
+    },
+    'magnituds.subtitle': {
+      val: "Mesurant la salut de l'economia",
+      es: "Midiendo la salud de la economia",
+      en: "Measuring the economy's health"
+    },
+    'magnituds.why': {
+      val: "Quan sents al telenoticieries que 'el PIB creix un 2%' o que 'l'atur baixa al 11%', saps realment que signifiquen eixes xifres? Entendre les magnituds macroeconomiques et permet interpretar les noticies, avaluar les politiques del govern i prendre millors decisions financeres personals.",
+      es: "Cuando oyes en las noticias que 'el PIB crece un 2%' o que 'el paro baja al 11%', ¿sabes realmente que significan esas cifras? Entender las magnitudes macroeconomicas te permite interpretar las noticias y tomar mejores decisiones.",
+      en: "When you hear on the news that 'GDP grows 2%' or 'unemployment drops to 11%', do you really know what those figures mean? Understanding macro indicators lets you interpret news and make better decisions."
+    },
+    'magnituds.tab.teoria': {
+      val: "Teoria",
+      es: "Teoria",
+      en: "Theory"
+    },
+    'magnituds.tab.calculadora': {
+      val: "Calculadora",
+      es: "Calculadora",
+      en: "Calculator"
+    },
+    'magnituds.pib': {
+      val: "PIB (Producte Interior Brut)",
+      es: "PIB (Producto Interior Bruto)",
+      en: "GDP (Gross Domestic Product)"
+    },
+    'magnituds.pib.desc': {
+      val: "Valor de mercat de tots els bens i serveis finals produïts dins d'un pais durant un any. Es l'indicador principal de la riquesa d'un pais. No mesura benestar, nomes produccio.",
+      es: "Valor de mercado de todos los bienes y servicios finales producidos dentro de un pais durante un ano. Es el indicador principal de la riqueza de un pais. No mide bienestar, solo produccion.",
+      en: "Market value of all final goods and services produced within a country during a year. It's the main indicator of a country's wealth. It doesn't measure well-being, only production."
+    },
+    'magnituds.pnb': {
+      val: "PNB (Producte Nacional Brut)",
+      es: "PNB (Producto Nacional Bruto)",
+      en: "GNP (Gross National Product)"
+    },
+    'magnituds.pnb.desc': {
+      val: "PIB + rendes dels residents a l'exterior - rendes dels estrangers al pais. Mesura la produccio dels nacionals, independentment d'on es produisca.",
+      es: "PIB + rentas de los residentes en el exterior - rentas de los extranjeros en el pais. Mide la produccion de los nacionales, independientemente de donde se produzca.",
+      en: "GDP + residents' income from abroad - foreigners' income in the country. Measures national production, regardless of where it occurs."
+    },
+    'magnituds.nominal.real': {
+      val: "PIB nominal vs PIB real",
+      es: "PIB nominal vs PIB real",
+      en: "Nominal GDP vs Real GDP"
+    },
+    'magnituds.nominal.real.desc': {
+      val: "PIB nominal: mesurat a preus corrents (de l'any actual). PIB real: mesurat a preus constants (d'un any base). El PIB real elimina l'efecte de la inflacio i permet comparar entre anys. PIB real = PIB nominal / (Deflactor / 100).",
+      es: "PIB nominal: medido a precios corrientes (del ano actual). PIB real: medido a precios constantes (de un ano base). El PIB real elimina el efecto de la inflacion. PIB real = PIB nominal / (Deflactor / 100).",
+      en: "Nominal GDP: measured at current prices. Real GDP: measured at constant prices (base year). Real GDP removes inflation effects. Real GDP = Nominal GDP / (Deflator / 100)."
+    },
+    'magnituds.ipc': {
+      val: "IPC i Inflacio",
+      es: "IPC e Inflacion",
+      en: "CPI & Inflation"
+    },
+    'magnituds.ipc.desc': {
+      val: "L'IPC (Index de Preus al Consum) mesura l'evolucio dels preus d'una cistella de bens i serveis representativa. La inflacio es l'augment generalitzat i sostingut dels preus. Taxa d'inflacio = ((IPC actual - IPC anterior) / IPC anterior) x 100.",
+      es: "El IPC (Indice de Precios al Consumo) mide la evolucion de los precios de una cesta de bienes y servicios representativa. La inflacion es el aumento generalizado y sostenido de los precios.",
+      en: "The CPI (Consumer Price Index) measures the evolution of prices of a representative basket of goods and services. Inflation is the generalised and sustained increase in prices."
+    },
+    'magnituds.atur': {
+      val: "Taxa d'atur",
+      es: "Tasa de desempleo",
+      en: "Unemployment rate"
+    },
+    'magnituds.atur.desc': {
+      val: "Percentatge de la poblacio activa que esta desocupada i busca feina. Taxa d'atur = (Aturats / Poblacio activa) x 100. La poblacio activa inclou ocupats + aturats (no inactius com jubilats o estudiants).",
+      es: "Porcentaje de la poblacion activa que esta desempleada y busca empleo. Tasa de paro = (Parados / Poblacion activa) x 100. La poblacion activa incluye ocupados + parados.",
+      en: "Percentage of the active population that is unemployed and seeking work. Unemployment rate = (Unemployed / Active population) x 100."
+    },
+    'magnituds.calc.pibn.actual': {
+      val: "PIB nominal any actual",
+      es: "PIB nominal ano actual",
+      en: "Current year nominal GDP"
+    },
+    'magnituds.calc.pibn.anterior': {
+      val: "PIB nominal any anterior",
+      es: "PIB nominal ano anterior",
+      en: "Previous year nominal GDP"
+    },
+    'magnituds.calc.deflactor': {
+      val: "Deflactor PIB (base 100)",
+      es: "Deflactor PIB (base 100)",
+      en: "GDP deflator (base 100)"
+    },
+    'magnituds.calc.poblacio': {
+      val: "Poblacio total",
+      es: "Poblacion total",
+      en: "Total population"
+    },
+    'magnituds.calc.activa': {
+      val: "Poblacio activa",
+      es: "Poblacion activa",
+      en: "Active population"
+    },
+    'magnituds.calc.aturats': {
+      val: "Aturats",
+      es: "Parados",
+      en: "Unemployed"
+    },
+    'magnituds.calc.pibreal': {
+      val: "PIB real",
+      es: "PIB real",
+      en: "Real GDP"
+    },
+    'magnituds.calc.creixement': {
+      val: "Creixement PIB nominal",
+      es: "Crecimiento PIB nominal",
+      en: "Nominal GDP growth"
+    },
+    'magnituds.calc.percapita': {
+      val: "PIB per capita",
+      es: "PIB per capita",
+      en: "GDP per capita"
+    },
+    'magnituds.calc.taxaatur': {
+      val: "Taxa d'atur",
+      es: "Tasa de paro",
+      en: "Unemployment rate"
+    },
+    'magnituds.calc.taxaactivitat': {
+      val: "Taxa d'activitat",
+      es: "Tasa de actividad",
+      en: "Activity rate"
+    },
+    // ========================================================================
+    // Unit 7: El mercat de treball
+    // ========================================================================
+    'treball.title': {
+      val: "El mercat de treball",
+      es: "El mercado de trabajo",
+      en: "The labour market"
+    },
+    'treball.subtitle': {
+      val: "On es troben treballadors i empreses",
+      es: "Donde se encuentran trabajadores y empresas",
+      en: "Where workers and firms meet"
+    },
+    'treball.why': {
+      val: "Trobat treball es probablement la teua major preocupacio futura. Entendre com funciona el mercat laboral — per que hi ha atur, quins tipus existeixen i que fa el govern per combatre'l — et dona eines per planificar la teua carrera professional.",
+      es: "Encontrar trabajo es probablemente tu mayor preocupacion futura. Entender como funciona el mercado laboral — por que hay desempleo, que tipos existen y que hace el gobierno — te da herramientas para planificar tu carrera.",
+      en: "Finding a job is probably your biggest future concern. Understanding how the labour market works — why unemployment exists, what types there are and what the government does — gives you tools to plan your career."
+    },
+    'treball.ofertaDemanda': {
+      val: "Oferta i demanda de treball",
+      es: "Oferta y demanda de trabajo",
+      en: "Labour supply and demand"
+    },
+    'treball.ofertaDemanda.desc': {
+      val: "Oferta de treball: la fan els treballadors (families). A major salari, mes persones volen treballar. Demanda de treball: la fan les empreses. A major salari, menys treballadors contracten. L'equilibri determina el salari i el nivell d'ocupacio.",
+      es: "Oferta de trabajo: la hacen los trabajadores (familias). A mayor salario, mas personas quieren trabajar. Demanda de trabajo: la hacen las empresas. A mayor salario, menos trabajadores contratan.",
+      en: "Labour supply comes from workers (households). Higher wages mean more people want to work. Labour demand comes from firms. Higher wages mean fewer workers hired."
+    },
+    'treball.tipus': {
+      val: "Tipus d'atur",
+      es: "Tipos de desempleo",
+      en: "Types of unemployment"
+    },
+    'treball.friccional': {
+      val: "Friccional",
+      es: "Friccional",
+      en: "Frictional"
+    },
+    'treball.friccional.desc': {
+      val: "Transitori: temps entre deixar una feina i trobar-ne una altra. Es normal i inevitable en una economia dinamica. Exemples: acabats de graduar buscant el primer treball, canvi voluntari d'empresa.",
+      es: "Transitorio: tiempo entre dejar un empleo y encontrar otro. Es normal e inevitable en una economia dinamica. Ejemplos: recien graduados buscando primer empleo, cambio voluntario.",
+      en: "Transitional: time between leaving one job and finding another. Normal and inevitable in a dynamic economy. Examples: recent graduates seeking first job, voluntary job change."
+    },
+    'treball.estructural': {
+      val: "Estructural",
+      es: "Estructural",
+      en: "Structural"
+    },
+    'treball.estructural.desc': {
+      val: "Desajust entre les habilitats dels treballadors i les que demanden les empreses. Es mes greu i persistent. Causes: canvi tecnologic (robots substituint treballadors), canvi sectorial (tancament de mines), manca de formacio. Solucio: formacio i reciclatge professional.",
+      es: "Desajuste entre las habilidades de los trabajadores y las que demandan las empresas. Es mas grave y persistente. Causas: cambio tecnologico, cambio sectorial, falta de formacion.",
+      en: "Mismatch between workers' skills and those demanded by firms. More serious and persistent. Causes: technological change, sectoral change, lack of training."
+    },
+    'treball.ciclic': {
+      val: "Ciclic (conjuntural)",
+      es: "Ciclico (coyuntural)",
+      en: "Cyclical"
+    },
+    'treball.ciclic.desc': {
+      val: "Causat per les recessions economiques. Quan el PIB cau, les empreses produeixen menys i acomiadament treballadors. Es temporal si l'economia es recupera. Exemple: crisi 2008, pandemia 2020.",
+      es: "Causado por las recesiones economicas. Cuando el PIB cae, las empresas producen menos y despiden trabajadores. Es temporal si la economia se recupera. Ejemplo: crisis 2008, pandemia 2020.",
+      en: "Caused by economic recessions. When GDP falls, firms produce less and lay off workers. Temporary if the economy recovers. Examples: 2008 crisis, 2020 pandemic."
+    },
+    'treball.estacional': {
+      val: "Estacional",
+      es: "Estacional",
+      en: "Seasonal"
+    },
+    'treball.estacional.desc': {
+      val: "Varia segons l'epoca de l'any. Sectors com el turisme, l'agricultura o el comerç nadalenc contracten mes en certes temporades. Exemple: cambrers a l'estiu a la costa, recol·lectors a la tardor.",
+      es: "Varia segun la epoca del ano. Sectores como el turismo, la agricultura o el comercio navideno contratan mas en ciertas temporadas. Ejemplo: camareros en verano en la costa.",
+      en: "Varies by time of year. Sectors like tourism, agriculture, or Christmas retail hire more in certain seasons. Example: waiters in summer at the coast."
+    },
+    'treball.politiques': {
+      val: "Politiques d'ocupacio",
+      es: "Politicas de empleo",
+      en: "Employment policies"
+    },
+    'treball.actives': {
+      val: "Politiques actives",
+      es: "Politicas activas",
+      en: "Active policies"
+    },
+    'treball.actives.desc': {
+      val: "Busquen crear ocupacio i millorar l'ocupabilitat: formacio professional, subvencions a la contractacio, foment de l'emprenedoria, serveis publics d'ocupacio (SERVEF/SEPE).",
+      es: "Buscan crear empleo y mejorar la empleabilidad: formacion profesional, subvenciones a la contratacion, fomento del emprendimiento, servicios publicos de empleo (SERVEF/SEPE).",
+      en: "Aim to create jobs and improve employability: vocational training, hiring subsidies, entrepreneurship support, public employment services."
+    },
+    'treball.passives': {
+      val: "Politiques passives",
+      es: "Politicas pasivas",
+      en: "Passive policies"
+    },
+    'treball.passives.desc': {
+      val: "Protegeixen els aturats: prestacio per desocupacio (atur), subsidis, renda minima vital. No creen ocupacio directament, pero eviten la pobresa.",
+      es: "Protegen a los desempleados: prestacion por desempleo, subsidios, renta minima vital. No crean empleo directamente, pero evitan la pobreza.",
+      en: "Protect the unemployed: unemployment benefits, subsidies, minimum vital income. Don't directly create jobs, but prevent poverty."
+    },
+    'treball.salari': {
+      val: "Salari minim interprofessional (SMI)",
+      es: "Salario minimo interprofesional (SMI)",
+      en: "Minimum interprofessional wage"
+    },
+    'treball.salari.desc': {
+      val: "Salari minim legal que cap treballador pot cobrar menys. A Espanya (2024): 1.134EUR/mes en 14 pagues. Debat: protegeix treballadors vulnerables, pero pot augmentar l'atur si es massa alt (les empreses no poden pagar-lo).",
+      es: "Salario minimo legal que ningun trabajador puede cobrar menos. En Espana (2024): 1.134EUR/mes en 14 pagas. Debate: protege trabajadores vulnerables, pero puede aumentar el paro si es demasiado alto.",
+      en: "Minimum legal salary that no worker can earn less than. In Spain (2024): EUR1,134/month in 14 payments. Debate: protects vulnerable workers, but may increase unemployment if too high."
+    },
+    // ========================================================================
+    // Unit 8: Diners i sistema financer
+    // ========================================================================
+    'diners.title': {
+      val: "Diners i sistema financer",
+      es: "Dinero y sistema financiero",
+      en: "Money & financial system"
+    },
+    'diners.subtitle': {
+      val: "D'on ve el diner i qui el controla",
+      es: "De donde viene el dinero y quien lo controla",
+      en: "Where money comes from and who controls it"
+    },
+    'diners.why': {
+      val: "Utilitzes diners cada dia, pero t'has preguntat mai d'on venen? Qui decideix quants n'hi ha? Per que un paper de 50EUR te valor? Entendre el sistema monetari et permet comprendre la inflacio, les decisions del Banc Central Europeu i per que les crisis financeres passen.",
+      es: "Usas dinero cada dia, pero ¿te has preguntado alguna vez de donde viene? ¿Quien decide cuanto hay? ¿Por que un papel de 50EUR tiene valor? Entender el sistema monetario te permite comprender la inflacion y las crisis financieras.",
+      en: "You use money every day, but have you ever wondered where it comes from? Who decides how much there is? Why does a EUR50 note have value? Understanding the monetary system helps you understand inflation and financial crises."
+    },
+    'diners.funcions': {
+      val: "Funcions dels diners",
+      es: "Funciones del dinero",
+      en: "Functions of money"
+    },
+    'diners.func.compte': {
+      val: "Unitat de compte: permet mesurar el valor de les coses (un cafe = 1.50EUR, un cotxe = 25.000EUR). Sense diners, hauriems de comparar totes les mercaderies entre si (barter).",
+      es: "Unidad de cuenta: permite medir el valor de las cosas (un cafe = 1.50EUR, un coche = 25.000EUR). Sin dinero, tendriamos que comparar todas las mercancias entre si (trueque).",
+      en: "Unit of account: allows measuring the value of things (a coffee = EUR1.50, a car = EUR25,000). Without money, we'd have to compare all goods with each other (barter)."
+    },
+    'diners.func.pagament': {
+      val: "Mitja de pagament (canvi): acceptat per tothom per realitzar transaccions. Es molt mes eficient que el troc (bescanvi).",
+      es: "Medio de pago (cambio): aceptado por todos para realizar transacciones. Es mucho mas eficiente que el trueque.",
+      en: "Medium of exchange: accepted by everyone to carry out transactions. Much more efficient than barter."
+    },
+    'diners.func.valor': {
+      val: "Diposit de valor: permet estalviar poder adquisitiu per al futur. Si guardes 100EUR avui, pots gastar-los dema (encara que la inflacio els erosiona).",
+      es: "Deposito de valor: permite ahorrar poder adquisitivo para el futuro. Si guardas 100EUR hoy, puedes gastarlos manana (aunque la inflacion los erosiona).",
+      en: "Store of value: allows saving purchasing power for the future. If you save EUR100 today, you can spend it tomorrow (though inflation erodes it)."
+    },
+    'diners.creacio': {
+      val: "Creacio de diners: el multiplicador bancari",
+      es: "Creacion de dinero: el multiplicador bancario",
+      en: "Money creation: the money multiplier"
+    },
+    'diners.creacio.text': {
+      val: "Els bancs no guarden tots els diposits a la caixa forta. Nomes en reserven un percentatge (coeficient de reserva o encaix) i la resta la presten. Eixos prestecs es convertixen en nous diposits en altres bancs, que al seu torn presten una part. Aixi, els bancs 'creen' diners a partir dels diposits originals.",
+      es: "Los bancos no guardan todos los depositos en la caja fuerte. Solo reservan un porcentaje (coeficiente de reserva) y el resto lo prestan. Esos prestamos se convierten en nuevos depositos en otros bancos. Asi, los bancos 'crean' dinero.",
+      en: "Banks don't keep all deposits in the vault. They only reserve a percentage (reserve ratio) and lend the rest. Those loans become new deposits in other banks. This is how banks 'create' money."
+    },
+    'diners.multiplicador': {
+      val: "Formula del multiplicador bancari",
+      es: "Formula del multiplicador bancario",
+      en: "Money multiplier formula"
+    },
+    'diners.multiplicador.desc': {
+      val: "Si el coeficient de reserva es del 10% (0.10), el multiplicador = 1/0.10 = 10. Cada 1.000EUR dipositats poden generar fins a 10.000EUR en l'economia.",
+      es: "Si el coeficiente de reserva es del 10% (0.10), el multiplicador = 1/0.10 = 10. Cada 1.000EUR depositados pueden generar hasta 10.000EUR en la economia.",
+      en: "If the reserve ratio is 10% (0.10), the multiplier = 1/0.10 = 10. Every EUR1,000 deposited can generate up to EUR10,000 in the economy."
+    },
+    'diners.sistema': {
+      val: "El sistema financer",
+      es: "El sistema financiero",
+      en: "The financial system"
+    },
+    'diners.sistema.desc': {
+      val: "Conjunt d'institucions, mercats i instruments que canalitzen l'estalvi cap a la inversio. Intermediaris financers: bancs, caixes, cooperatives de credit. Mercats financers: borsa (accions), mercat de deute (bons), mercat monetari (a curt termini).",
+      es: "Conjunto de instituciones, mercados e instrumentos que canalizan el ahorro hacia la inversion. Intermediarios financieros: bancos, cajas, cooperativas de credito. Mercados financieros: bolsa (acciones), mercado de deuda (bonos).",
+      en: "Set of institutions, markets and instruments that channel savings towards investment. Financial intermediaries: banks, savings banks, credit unions. Financial markets: stock exchange (shares), debt market (bonds)."
+    },
+    'diners.bce': {
+      val: "El Banc Central Europeu (BCE)",
+      es: "El Banco Central Europeo (BCE)",
+      en: "The European Central Bank (ECB)"
+    },
+    'diners.bce.desc': {
+      val: "Institucio independent que gestiona la politica monetaria de la zona euro. Objectiu principal: estabilitat de preus (inflacio propera pero inferior al 2%). Funcions: emetre euros, fixar el tipus d'interes, supervisar bancs, operacions de mercat obert.",
+      es: "Institucion independiente que gestiona la politica monetaria de la zona euro. Objetivo principal: estabilidad de precios (inflacion cercana pero inferior al 2%). Funciones: emitir euros, fijar el tipo de interes, supervisar bancos.",
+      en: "Independent institution managing the eurozone's monetary policy. Main objective: price stability (inflation close to but below 2%). Functions: issue euros, set interest rates, supervise banks, open market operations."
+    },
+    // ========================================================================
+    // Unit 9: Politica fiscal i monetaria (INTERACTIVE SIMULATOR)
+    // ========================================================================
+    'politica.title': {
+      val: "Politica fiscal i monetaria",
+      es: "Politica fiscal y monetaria",
+      en: "Fiscal & monetary policy"
+    },
+    'politica.subtitle': {
+      val: "Com el govern i el BCE influeixen en l'economia",
+      es: "Como el gobierno y el BCE influyen en la economia",
+      en: "How the government and ECB influence the economy"
+    },
+    'politica.why': {
+      val: "Quan hi ha crisi, el govern baixa impostos o augmenta la despesa? Quan la inflacio es dispara, el BCE puja els tipus d'interes? Estes son les dues grans ferramentes de politica economica. Entendre-les et permet avaluar les decisions del govern i com t'afecten directament al butxacó.",
+      es: "Cuando hay crisis, ¿el gobierno baja impuestos o aumenta el gasto? Cuando la inflacion se dispara, ¿el BCE sube los tipos de interes? Estas son las dos grandes herramientas de politica economica. Entenderlas te permite evaluar las decisiones del gobierno.",
+      en: "During a crisis, does the government cut taxes or increase spending? When inflation soars, does the ECB raise interest rates? These are the two main economic policy tools. Understanding them lets you evaluate government decisions."
+    },
+    'politica.tab.teoria': {
+      val: "Teoria",
+      es: "Teoria",
+      en: "Theory"
+    },
+    'politica.tab.simulador': {
+      val: "Simulador",
+      es: "Simulador",
+      en: "Simulator"
+    },
+    'politica.fiscal': {
+      val: "Politica fiscal",
+      es: "Politica fiscal",
+      en: "Fiscal policy"
+    },
+    'politica.fiscal.desc': {
+      val: "Decisions del govern sobre impostos i despesa publica. Instruments:",
+      es: "Decisiones del gobierno sobre impuestos y gasto publico. Instrumentos:",
+      en: "Government decisions on taxes and public spending. Instruments:"
+    },
+    'politica.ingressos': {
+      val: "Ingressos publics (impostos)",
+      es: "Ingresos publicos (impuestos)",
+      en: "Public revenue (taxes)"
+    },
+    'politica.ingressos.directes': {
+      val: "Impostos directes: graven la renda o el patrimoni (IRPF, Impost de Societats)",
+      es: "Impuestos directos: gravan la renta o el patrimonio (IRPF, Impuesto de Sociedades)",
+      en: "Direct taxes: tax income or wealth (Income Tax, Corporate Tax)"
+    },
+    'politica.ingressos.indirectes': {
+      val: "Impostos indirectes: graven el consum (IVA, impostos especials sobre tabac, alcohol, combustibles)",
+      es: "Impuestos indirectos: gravan el consumo (IVA, impuestos especiales sobre tabaco, alcohol, combustibles)",
+      en: "Indirect taxes: tax consumption (VAT, excise duties on tobacco, alcohol, fuel)"
+    },
+    'politica.despeses': {
+      val: "Despeses publiques",
+      es: "Gastos publicos",
+      en: "Public spending"
+    },
+    'politica.despeses.corrents': {
+      val: "Despeses corrents: sous de funcionaris, sanitat, educacio, pensions, subsidis",
+      es: "Gastos corrientes: sueldos de funcionarios, sanidad, educacion, pensiones, subsidios",
+      en: "Current spending: civil servant salaries, health, education, pensions, subsidies"
+    },
+    'politica.despeses.capital': {
+      val: "Despeses de capital: infraestructures (carreteres, hospitals, escoles), inversio publica",
+      es: "Gastos de capital: infraestructuras (carreteras, hospitales, escuelas), inversion publica",
+      en: "Capital spending: infrastructure (roads, hospitals, schools), public investment"
+    },
+    'politica.expansiva': {
+      val: "Politica fiscal expansiva (estimular l'economia)",
+      es: "Politica fiscal expansiva (estimular la economia)",
+      en: "Expansionary fiscal policy (stimulate the economy)"
+    },
+    'politica.expansiva.desc': {
+      val: "Augmentar despesa publica i/o baixar impostos. Objectiu: augmentar la demanda agregada, el PIB i l'ocupacio. Risc: deficit public i inflacio.",
+      es: "Aumentar gasto publico y/o bajar impuestos. Objetivo: aumentar la demanda agregada, el PIB y el empleo. Riesgo: deficit publico e inflacion.",
+      en: "Increase public spending and/or cut taxes. Goal: boost aggregate demand, GDP and employment. Risk: public deficit and inflation."
+    },
+    'politica.restrictiva': {
+      val: "Politica fiscal restrictiva (frenar la inflacio)",
+      es: "Politica fiscal restrictiva (frenar la inflacion)",
+      en: "Contractionary fiscal policy (curb inflation)"
+    },
+    'politica.restrictiva.desc': {
+      val: "Reduir despesa publica i/o pujar impostos. Objectiu: reduir la inflacio i el deficit. Risc: pot provocar recessio i atur.",
+      es: "Reducir gasto publico y/o subir impuestos. Objetivo: reducir la inflacion y el deficit. Riesgo: puede provocar recesion y desempleo.",
+      en: "Reduce public spending and/or raise taxes. Goal: reduce inflation and deficit. Risk: may cause recession and unemployment."
+    },
+    'politica.monetaria': {
+      val: "Politica monetaria (BCE)",
+      es: "Politica monetaria (BCE)",
+      en: "Monetary policy (ECB)"
+    },
+    'politica.monetaria.desc': {
+      val: "El BCE controla la quantitat de diners en circulacio i el cost dels diners (tipus d'interes). El tipus d'interes es el preu del diner: si el BCE el puja, es mes car demanar prestecs (menys consum i inversio); si el baixa, es mes barat (mes consum i inversio).",
+      es: "El BCE controla la cantidad de dinero en circulacion y el coste del dinero (tipos de interes). El tipo de interes es el precio del dinero: si sube, es mas caro pedir prestamos; si baja, es mas barato.",
+      en: "The ECB controls the money supply and the cost of money (interest rates). The interest rate is the price of money: if raised, borrowing is more expensive; if lowered, it's cheaper."
+    },
+    'politica.monetaria.expansiva': {
+      val: "Politica monetaria expansiva: baixar tipus d'interes → mes prestecs, mes consum, mes inversio, mes PIB (pero mes inflacio)",
+      es: "Politica monetaria expansiva: bajar tipos de interes → mas prestamos, mas consumo, mas inversion, mas PIB (pero mas inflacion)",
+      en: "Expansionary monetary policy: lower interest rates → more loans, more consumption, more investment, more GDP (but more inflation)"
+    },
+    'politica.monetaria.restrictiva': {
+      val: "Politica monetaria restrictiva: pujar tipus d'interes → menys prestecs, menys consum, menys inversio, menys inflacio (pero menys creixement)",
+      es: "Politica monetaria restrictiva: subir tipos de interes → menos prestamos, menos consumo, menos inversion, menos inflacion (pero menos crecimiento)",
+      en: "Contractionary monetary policy: raise interest rates → fewer loans, less consumption, less investment, less inflation (but less growth)"
+    },
+    'politica.sim.pib': {
+      val: "PIB inicial",
+      es: "PIB inicial",
+      en: "Initial GDP"
+    },
+    'politica.sim.impostos': {
+      val: "Impostos",
+      es: "Impuestos",
+      en: "Taxes"
+    },
+    'politica.sim.despesa': {
+      val: "Despesa publica",
+      es: "Gasto publico",
+      en: "Public spending"
+    },
+    'politica.sim.interes': {
+      val: "Tipus d'interes BCE",
+      es: "Tipo de interes BCE",
+      en: "ECB interest rate"
+    },
+    'politica.sim.saldo': {
+      val: "Saldo pressupostari",
+      es: "Saldo presupuestario",
+      en: "Budget balance"
+    },
+    'politica.sim.superavit': {
+      val: "Superavit",
+      es: "Superavit",
+      en: "Surplus"
+    },
+    'politica.sim.deficit': {
+      val: "Deficit",
+      es: "Deficit",
+      en: "Deficit"
+    },
+    'politica.sim.equilibrat': {
+      val: "Equilibrat",
+      es: "Equilibrado",
+      en: "Balanced"
+    },
+    'politica.sim.pibresultant': {
+      val: "PIB resultant",
+      es: "PIB resultante",
+      en: "Resulting GDP"
+    },
+    'politica.sim.variacio': {
+      val: "Variacio PIB",
+      es: "Variacion PIB",
+      en: "GDP change"
+    },
+    'politica.sim.diagnostic': {
+      val: "Diagnostic",
+      es: "Diagnostico",
+      en: "Diagnosis"
+    },
+    'politica.sim.expansiva': {
+      val: "Politica EXPANSIVA",
+      es: "Politica EXPANSIVA",
+      en: "EXPANSIONARY policy"
+    },
+    'politica.sim.restrictiva': {
+      val: "Politica RESTRICTIVA",
+      es: "Politica RESTRICTIVA",
+      en: "CONTRACTIONARY policy"
+    },
+    'politica.sim.neutra': {
+      val: "Politica NEUTRA",
+      es: "Politica NEUTRA",
+      en: "NEUTRAL policy"
+    },
+    // ========================================================================
+    // Unit 10: Comerc internacional i UE
+    // ========================================================================
+    'comerc.title': {
+      val: "Comerc internacional i UE",
+      es: "Comercio internacional y UE",
+      en: "International trade & EU"
+    },
+    'comerc.subtitle': {
+      val: "Per que els paisos comercien i com funciona la globalitzacio",
+      es: "Por que los paises comercian y como funciona la globalizacion",
+      en: "Why countries trade and how globalisation works"
+    },
+    'comerc.why': {
+      val: "El teu mobil te components de 30 paisos. La roba que portes pot estar cosida a Bangladesh. El cafe que beus ve de Colombia. El comerc internacional es la raó per la qual tens accés a productes i serveis de tot el mon. Entendre'l es essencial per al ciutada del segle XXI.",
+      es: "Tu movil tiene componentes de 30 paises. La ropa que llevas puede estar cosida en Bangladesh. El cafe que bebes viene de Colombia. El comercio internacional es la razon por la que tienes acceso a productos de todo el mundo.",
+      en: "Your phone has components from 30 countries. Your clothes may be sewn in Bangladesh. Your coffee comes from Colombia. International trade is why you have access to products from around the world."
+    },
+    'comerc.absolut': {
+      val: "Avantatge absolut (Adam Smith)",
+      es: "Ventaja absoluta (Adam Smith)",
+      en: "Absolute advantage (Adam Smith)"
+    },
+    'comerc.absolut.desc': {
+      val: "Un pais te avantatge absolut en un be si pot produir-lo amb menys recursos que un altre pais. Segons Smith, cada pais hauria d'especialitzar-se en el que produeix millor i comerciar la resta.",
+      es: "Un pais tiene ventaja absoluta en un bien si puede producirlo con menos recursos que otro pais. Segun Smith, cada pais deberia especializarse en lo que produce mejor y comerciar el resto.",
+      en: "A country has absolute advantage in a good if it can produce it with fewer resources than another country. According to Smith, each country should specialise in what it produces best and trade the rest."
+    },
+    'comerc.comparatiu': {
+      val: "Avantatge comparatiu (David Ricardo)",
+      es: "Ventaja comparativa (David Ricardo)",
+      en: "Comparative advantage (David Ricardo)"
+    },
+    'comerc.comparatiu.desc': {
+      val: "Encara que un pais siga millor en tot, li convé especialitzar-se en el que te menor cost d'oportunitat. Exemple: si Espanya pot fer vi a menor cost d'oportunitat que Anglaterra, i Anglaterra pot fer teixits a menor cost d'oportunitat que Espanya, ambdos guanyen si s'especialitzen i comercien.",
+      es: "Aunque un pais sea mejor en todo, le conviene especializarse en lo que tiene menor coste de oportunidad. Ejemplo: si Espana puede hacer vino a menor coste de oportunidad y Anglaterra puede hacer tejidos a menor coste de oportunidad, ambos ganan comerciando.",
+      en: "Even if a country is better at everything, it benefits from specialising in what has the lowest opportunity cost. Example: if Spain makes wine at lower opportunity cost and England makes cloth at lower opportunity cost, both gain by trading."
+    },
+    'comerc.exemple': {
+      val: "Exemple numeric",
+      es: "Ejemplo numerico",
+      en: "Numerical example"
+    },
+    'comerc.exemple.pais': {
+      val: "Pais",
+      es: "Pais",
+      en: "Country"
+    },
+    'comerc.exemple.vi': {
+      val: "Vi (hores/unitat)",
+      es: "Vino (horas/unidad)",
+      en: "Wine (hours/unit)"
+    },
+    'comerc.exemple.teixit': {
+      val: "Teixit (hores/unitat)",
+      es: "Tejido (horas/unidad)",
+      en: "Cloth (hours/unit)"
+    },
+    'comerc.exemple.espanya': {
+      val: "Espanya",
+      es: "Espana",
+      en: "Spain"
+    },
+    'comerc.exemple.anglaterra': {
+      val: "Anglaterra",
+      es: "Inglaterra",
+      en: "England"
+    },
+    'comerc.exemple.conclusio': {
+      val: "Espanya te menor cost d'oportunitat en vi (2/4=0.5 vs 6/3=2), Anglaterra en teixit (3/6=0.5 vs 4/2=2). Ambdos guanyen especialitzant-se i comerciant!",
+      es: "Espana tiene menor coste de oportunidad en vino (2/4=0.5 vs 6/3=2), Inglaterra en tejido (3/6=0.5 vs 4/2=2). ¡Ambos ganan especializandose y comerciando!",
+      en: "Spain has lower opportunity cost in wine (2/4=0.5 vs 6/3=2), England in cloth (3/6=0.5 vs 4/2=2). Both gain by specialising and trading!"
+    },
+    'comerc.barreres': {
+      val: "Barreres comercials",
+      es: "Barreras comerciales",
+      en: "Trade barriers"
+    },
+    'comerc.aranzels': {
+      val: "Aranzels: impostos sobre les importacions. Encareixen els productes estrangers per protegir la industria nacional.",
+      es: "Aranceles: impuestos sobre las importaciones. Encarecen los productos extranjeros para proteger la industria nacional.",
+      en: "Tariffs: taxes on imports. Make foreign products more expensive to protect domestic industry."
+    },
+    'comerc.contingents': {
+      val: "Contingents (quotes): limits quantitatius a les importacions. Ex: 'nomes poden entrar 1.000 tones de carn argentina'.",
+      es: "Contingentes (cuotas): limites cuantitativos a las importaciones. Ej: 'solo pueden entrar 1.000 toneladas de carne argentina'.",
+      en: "Quotas: quantitative limits on imports. E.g.: 'only 1,000 tonnes of Argentine beef can enter'."
+    },
+    'comerc.subvencions': {
+      val: "Subvencions a l'exportacio: ajudes publiques a empreses nacionals per competir millor a l'exterior.",
+      es: "Subvenciones a la exportacion: ayudas publicas a empresas nacionales para competir mejor en el exterior.",
+      en: "Export subsidies: public aid to domestic firms to compete better abroad."
+    },
+    'comerc.balanca': {
+      val: "Balanca de pagaments",
+      es: "Balanza de pagos",
+      en: "Balance of payments"
+    },
+    'comerc.balanca.desc': {
+      val: "Document que registra totes les transaccions economiques d'un pais amb la resta del mon durant un any.",
+      es: "Documento que registra todas las transacciones economicas de un pais con el resto del mundo durante un ano.",
+      en: "Document that records all economic transactions of a country with the rest of the world during a year."
+    },
+    'comerc.balanca.corrent': {
+      val: "Compte corrent: exportacions i importacions de bens i serveis, rendes i transferencies",
+      es: "Cuenta corriente: exportaciones e importaciones de bienes y servicios, rentas y transferencias",
+      en: "Current account: exports and imports of goods and services, income and transfers"
+    },
+    'comerc.balanca.capital': {
+      val: "Compte de capital: transferencies de capital (fons UE), compra/venda d'actius no financers",
+      es: "Cuenta de capital: transferencias de capital (fondos UE), compra/venta de activos no financieros",
+      en: "Capital account: capital transfers (EU funds), purchase/sale of non-financial assets"
+    },
+    'comerc.balanca.financer': {
+      val: "Compte financer: inversions directes, en cartera i altres inversions (entrada/sortida de capital)",
+      es: "Cuenta financiera: inversiones directas, en cartera y otras inversiones (entrada/salida de capital)",
+      en: "Financial account: direct investments, portfolio investments and other investments (capital inflows/outflows)"
+    },
+    'comerc.globalitzacio': {
+      val: "Globalitzacio",
+      es: "Globalizacion",
+      en: "Globalisation"
+    },
+    'comerc.global.causes': {
+      val: "Causes: millora del transport i comunicacions, liberalitzacio comercial (reduccio d'aranzels), revolució tecnologica (internet), multinacionals",
+      es: "Causas: mejora del transporte y comunicaciones, liberalizacion comercial, revolucion tecnologica (internet), multinacionales",
+      en: "Causes: improved transport and communications, trade liberalisation, technological revolution (internet), multinationals"
+    },
+    'comerc.global.avantatges': {
+      val: "Avantatges: major varietat de productes, preus mes baixos, difusio de la tecnologia, creixement economic global",
+      es: "Ventajas: mayor variedad de productos, precios mas bajos, difusion de la tecnologia, crecimiento economico global",
+      en: "Advantages: greater product variety, lower prices, technology diffusion, global economic growth"
+    },
+    'comerc.global.desavantatges': {
+      val: "Desavantatges: augment de la desigualtat entre paisos, deslocalitzacio (perdua de llocs de treball), degradacio mediambiental, dependencia externa",
+      es: "Desventajas: aumento de la desigualdad entre paises, deslocalizacion (perdida de puestos de trabajo), degradacion medioambiental, dependencia externa",
+      en: "Disadvantages: increased inequality between countries, offshoring (job losses), environmental degradation, external dependence"
+    },
+    'comerc.ue': {
+      val: "Unio Europea",
+      es: "Union Europea",
+      en: "European Union"
+    },
+    'comerc.ue.desc': {
+      val: "Unio politica i economica de 27 paisos europeus. Espanya n'es membre des de 1986.",
+      es: "Union politica y economica de 27 paises europeos. Espana es miembro desde 1986.",
+      en: "Political and economic union of 27 European countries. Spain has been a member since 1986."
+    },
+    'comerc.ue.mercat': {
+      val: "Mercat unic: lliure circulacio de mercaderies, serveis, capitals i persones (les 4 llibertats)",
+      es: "Mercado unico: libre circulacion de mercancias, servicios, capitales y personas (las 4 libertades)",
+      en: "Single market: free movement of goods, services, capital and people (the 4 freedoms)"
+    },
+    'comerc.ue.euro': {
+      val: "Euro: moneda unica adoptada per 20 paisos (zona euro). Elimina costos de canvi, facilita el comerc",
+      es: "Euro: moneda unica adoptada por 20 paises (zona euro). Elimina costes de cambio, facilita el comercio",
+      en: "Euro: single currency adopted by 20 countries (eurozone). Eliminates exchange costs, facilitates trade"
+    },
+    'comerc.ue.institucions': {
+      val: "Institucions principals: Parlament Europeu, Consell de la UE, Comissio Europea, Banc Central Europeu, Tribunal de Justicia",
+      es: "Instituciones principales: Parlamento Europeo, Consejo de la UE, Comision Europea, Banco Central Europeo, Tribunal de Justicia",
+      en: "Main institutions: European Parliament, Council of the EU, European Commission, European Central Bank, Court of Justice"
+    },
+    'comerc.ue.politiques': {
+      val: "Politiques comunes: PAC (Politica Agricola Comuna), politica de cohesio (fons FEDER), Erasmus+, politica comercial comuna",
+      es: "Politicas comunes: PAC (Politica Agricola Comun), politica de cohesion (fondos FEDER), Erasmus+, politica comercial comun",
+      en: "Common policies: CAP (Common Agricultural Policy), cohesion policy (ERDF funds), Erasmus+, common trade policy"
+    },
+    // footer
+    'footer.appname': {
+      val: "Economia 1r Batxillerat",
+      es: "Economia 1o Bachillerato",
+      en: "Economics Year 12"
+    }
+  };
+  const t = createTranslator(pageTranslations, idioma);
+
+  // Reusable components (identical pattern from edmn-2bach.html)
+  const Card = ({
+    children,
+    className = "",
+    title,
+    icon
+  }) => /*#__PURE__*/React.createElement("div", {
+    className: `bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 hover:shadow-md transition-shadow ${className} animate-fade`
+  }, title && /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-3 mb-5 pb-4 border-b border-slate-100"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-2xl"
+  }, icon), /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-slate-800 text-lg"
+  }, title)), children);
+  const Slider = ({
+    label,
+    value,
+    onChange,
+    min,
+    max,
+    step = 1,
+    suffix = ""
+  }) => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between text-sm"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-slate-600 font-medium"
+  }, label), /*#__PURE__*/React.createElement("span", {
+    className: "font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded"
+  }, typeof value === 'number' ? value.toLocaleString() : value, suffix)), /*#__PURE__*/React.createElement("input", {
+    type: "range",
+    min: min,
+    max: max,
+    step: step,
+    value: value,
+    onChange: e => onChange(Number(e.target.value)),
+    className: "w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
+  }));
+  const Tabs = ({
+    tabs,
+    active,
+    onChange
+  }) => /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-wrap gap-1 p-1.5 bg-slate-100 rounded-xl"
+  }, tabs.map(tab => /*#__PURE__*/React.createElement("button", {
+    key: tab.id,
+    onClick: () => onChange(tab.id),
+    className: `flex-1 min-w-fit py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${active === tab.id ? 'bg-white shadow-sm text-blue-600' : 'text-slate-600 hover:text-slate-800 hover:bg-white/50'}`
+  }, tab.label)));
+  const FormulaBox = ({
+    formula,
+    desc
+  }) => /*#__PURE__*/React.createElement("div", {
+    className: "my-4 p-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-center font-mono text-lg text-blue-800 font-semibold"
+  }, formula), desc && /*#__PURE__*/React.createElement("p", {
+    className: "text-center text-sm text-blue-600 mt-2"
+  }, desc));
+  const TheoryBlock = ({
+    title,
+    children,
+    color = "slate"
+  }) => {
+    const colors = {
+      slate: "border-slate-300 bg-slate-50",
+      blue: "border-blue-300 bg-blue-50",
+      green: "border-green-300 bg-green-50",
+      amber: "border-amber-300 bg-amber-50",
+      pink: "border-pink-300 bg-pink-50",
+      violet: "border-violet-300 bg-violet-50",
+      red: "border-red-300 bg-red-50",
+      cyan: "border-cyan-300 bg-cyan-50",
+      emerald: "border-emerald-300 bg-emerald-50",
+      orange: "border-orange-300 bg-orange-50"
+    };
+    return /*#__PURE__*/React.createElement("div", {
+      className: `border-l-4 ${colors[color]} p-5 rounded-r-xl my-4`
+    }, title && /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-slate-800 mb-3 text-base"
+    }, title), /*#__PURE__*/React.createElement("div", {
+      className: "text-slate-700 text-sm leading-relaxed space-y-2"
+    }, children));
+  };
+  const WhyImportant = ({
+    children
+  }) => /*#__PURE__*/React.createElement("div", {
+    className: "my-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-start gap-3"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-2xl"
+  }, "\uD83C\uDFAF"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h4", {
+    className: "font-bold text-amber-700 mb-1"
+  }, t('whyimportant.title')), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-amber-800"
+  }, children))));
+  const ResultCard = ({
+    title,
+    value,
+    color = "gray",
+    subtitle
+  }) => {
+    const colorClasses = {
+      green: 'bg-green-50 border-green-200 text-green-700',
+      red: 'bg-red-50 border-red-200 text-red-700',
+      blue: 'bg-blue-50 border-blue-200 text-blue-700',
+      amber: 'bg-amber-50 border-amber-200 text-amber-700',
+      violet: 'bg-violet-50 border-violet-200 text-violet-700',
+      gray: 'bg-slate-50 border-slate-200 text-slate-700'
+    };
+    return /*#__PURE__*/React.createElement("div", {
+      className: `p-4 rounded-xl text-center border ${colorClasses[color]}`
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-xs text-slate-500 mb-1 font-medium"
+    }, title), /*#__PURE__*/React.createElement("p", {
+      className: "text-xl font-black"
+    }, value), subtitle && /*#__PURE__*/React.createElement("p", {
+      className: "text-xs mt-1 opacity-75"
+    }, subtitle));
+  };
+  const SectionTitle = ({
+    icon,
+    title,
+    subtitle
+  }) => /*#__PURE__*/React.createElement("div", {
+    className: "mb-8"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-3 mb-2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-3xl"
+  }, icon), /*#__PURE__*/React.createElement("h1", {
+    className: "text-3xl font-black text-slate-800"
+  }, title)), subtitle && /*#__PURE__*/React.createElement("p", {
+    className: "text-slate-500 ml-12"
+  }, subtitle));
+
+  // ========================================================================
+  // SECTION: INICIO (Landing grid)
+  // ========================================================================
+  const Inicio = () => {
+    const sections = [{
+      id: 'escassetat',
+      name: t('sec.escassetat'),
+      icon: '⚖️',
+      color: 'from-blue-500 to-indigo-500',
+      desc: t('sec.escassetat.desc')
+    }, {
+      id: 'agents',
+      name: t('sec.agents'),
+      icon: '🔄',
+      color: 'from-green-500 to-emerald-500',
+      desc: t('sec.agents.desc')
+    }, {
+      id: 'oferta-demanda',
+      name: t('sec.oferta-demanda'),
+      icon: '📊',
+      color: 'from-pink-500 to-rose-500',
+      desc: t('sec.oferta-demanda.desc')
+    }, {
+      id: 'mercats',
+      name: t('sec.mercats'),
+      icon: '🏪',
+      color: 'from-violet-500 to-purple-500',
+      desc: t('sec.mercats.desc')
+    }, {
+      id: 'empresa',
+      name: t('sec.empresa'),
+      icon: '🏭',
+      color: 'from-amber-500 to-orange-500',
+      desc: t('sec.empresa.desc')
+    }, {
+      id: 'magnituds',
+      name: t('sec.magnituds'),
+      icon: '📈',
+      color: 'from-emerald-500 to-green-600',
+      desc: t('sec.magnituds.desc')
+    }, {
+      id: 'treball',
+      name: t('sec.treball'),
+      icon: '👷',
+      color: 'from-sky-500 to-blue-500',
+      desc: t('sec.treball.desc')
+    }, {
+      id: 'diners',
+      name: t('sec.diners'),
+      icon: '💰',
+      color: 'from-yellow-500 to-amber-500',
+      desc: t('sec.diners.desc')
+    }, {
+      id: 'politica',
+      name: t('sec.politica'),
+      icon: '🏛️',
+      color: 'from-red-500 to-rose-600',
+      desc: t('sec.politica.desc')
+    }, {
+      id: 'comerc',
+      name: t('sec.comerc'),
+      icon: '🌍',
+      color: 'from-teal-500 to-cyan-500',
+      desc: t('sec.comerc.desc')
+    }];
+    return /*#__PURE__*/React.createElement("div", {
+      className: "space-y-8"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-center py-8 animate-fade"
+    }, /*#__PURE__*/React.createElement("h1", {
+      className: "text-4xl md:text-5xl font-black text-slate-800 mb-4"
+    }, "\uD83D\uDCC8 ", t('inicio.title')), /*#__PURE__*/React.createElement("p", {
+      className: "text-lg text-slate-500 max-w-2xl mx-auto"
+    }, t('inicio.subtitle'))), /*#__PURE__*/React.createElement(WhyImportant, null, t('inicio.whyimportant')), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+    }, sections.map(sec => /*#__PURE__*/React.createElement("button", {
+      key: sec.id,
+      onClick: () => setSection(sec.id),
+      className: `p-5 rounded-xl bg-gradient-to-br ${sec.color} text-white text-left hover:scale-105 transition-transform shadow-lg`
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-3xl"
+    }, sec.icon), /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold mt-2"
+    }, sec.name), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm opacity-90 mt-1"
+    }, sec.desc)))));
+  };
+
+  // ========================================================================
+  // UNIT 1: Escassetat i sistemes economics
+  // ========================================================================
+  const Escassetat = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6"
+  }, /*#__PURE__*/React.createElement(SectionTitle, {
+    icon: "\u2696\uFE0F",
+    title: t('escassetat.title'),
+    subtitle: t('escassetat.subtitle')
+  }), /*#__PURE__*/React.createElement(WhyImportant, null, t('escassetat.why')), /*#__PURE__*/React.createElement(Card, {
+    title: t('escassetat.problema'),
+    icon: "\uD83D\uDCD6"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "blue"
+  }, /*#__PURE__*/React.createElement("p", null, t('escassetat.problema.text')))), /*#__PURE__*/React.createElement(Card, {
+    title: t('escassetat.necessitats'),
+    icon: "\uD83C\uDFAF"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, [{
+    key: 'primaries',
+    emoji: '🍞',
+    color: 'bg-red-50 border-red-200'
+  }, {
+    key: 'secundaries',
+    emoji: '📚',
+    color: 'bg-blue-50 border-blue-200'
+  }, {
+    key: 'terciaries',
+    emoji: '💎',
+    color: 'bg-violet-50 border-violet-200'
+  }].map(item => /*#__PURE__*/React.createElement("div", {
+    key: item.key,
+    className: `flex items-start gap-3 p-4 rounded-xl border ${item.color}`
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-xl"
+  }, item.emoji), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-slate-700"
+  }, t('escassetat.nec.' + item.key)))))), /*#__PURE__*/React.createElement(Card, {
+    title: t('escassetat.cost'),
+    icon: "\uD83D\uDD00"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "amber"
+  }, /*#__PURE__*/React.createElement("p", null, t('escassetat.cost.text')))), /*#__PURE__*/React.createElement(Card, {
+    title: t('escassetat.fpp'),
+    icon: "\uD83D\uDCC9"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "green"
+  }, /*#__PURE__*/React.createElement("p", null, t('escassetat.fpp.text'))), /*#__PURE__*/React.createElement("div", {
+    className: "mt-4 flex justify-center"
+  }, /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 300 250",
+    className: "w-full max-w-sm"
+  }, /*#__PURE__*/React.createElement("line", {
+    x1: "40",
+    y1: "20",
+    x2: "40",
+    y2: "210",
+    stroke: "#94a3b8",
+    strokeWidth: "2"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "40",
+    y1: "210",
+    x2: "280",
+    y2: "210",
+    stroke: "#94a3b8",
+    strokeWidth: "2"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "15",
+    y: "120",
+    textAnchor: "middle",
+    transform: "rotate(-90, 15, 120)",
+    className: "text-xs fill-slate-500",
+    style: {
+      fontSize: '12px'
+    }
+  }, "Be A"), /*#__PURE__*/React.createElement("text", {
+    x: "160",
+    y: "235",
+    textAnchor: "middle",
+    className: "text-xs fill-slate-500",
+    style: {
+      fontSize: '12px'
+    }
+  }, "Be B"), /*#__PURE__*/React.createElement("path", {
+    d: "M 50 35 Q 120 40, 180 100 Q 230 155, 265 205",
+    stroke: "#3b82f6",
+    strokeWidth: "3",
+    fill: "none"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "130",
+    cy: "80",
+    r: "5",
+    fill: "#22c55e"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "140",
+    y: "75",
+    className: "fill-green-600",
+    style: {
+      fontSize: '10px'
+    }
+  }, "Eficient"), /*#__PURE__*/React.createElement("circle", {
+    cx: "100",
+    cy: "150",
+    r: "5",
+    fill: "#f59e0b"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "110",
+    y: "145",
+    className: "fill-amber-600",
+    style: {
+      fontSize: '10px'
+    }
+  }, "Ineficient"), /*#__PURE__*/React.createElement("circle", {
+    cx: "220",
+    cy: "60",
+    r: "5",
+    fill: "#ef4444"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "200",
+    y: "50",
+    className: "fill-red-600",
+    style: {
+      fontSize: '10px'
+    }
+  }, "Impossible"), /*#__PURE__*/React.createElement("text", {
+    x: "230",
+    y: "195",
+    className: "fill-blue-600 font-bold",
+    style: {
+      fontSize: '11px'
+    }
+  }, "FPP")))), /*#__PURE__*/React.createElement(Card, {
+    title: t('escassetat.sistemes'),
+    icon: "\uD83C\uDFD7\uFE0F"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "space-y-4"
+  }, [{
+    key: 'mercat',
+    emoji: '🏪',
+    color: 'blue'
+  }, {
+    key: 'planificada',
+    emoji: '🏛️',
+    color: 'red'
+  }, {
+    key: 'mixta',
+    emoji: '🤝',
+    color: 'green'
+  }].map(item => /*#__PURE__*/React.createElement(TheoryBlock, {
+    key: item.key,
+    title: item.emoji + ' ' + t('escassetat.' + item.key),
+    color: item.color
+  }, /*#__PURE__*/React.createElement("p", null, t('escassetat.' + item.key + '.desc'))))), /*#__PURE__*/React.createElement("div", {
+    className: "mt-6 overflow-x-auto"
+  }, /*#__PURE__*/React.createElement("table", {
+    className: "w-full text-sm border-collapse"
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", {
+    className: "bg-slate-100"
+  }, /*#__PURE__*/React.createElement("th", {
+    className: "p-3 text-left border border-slate-200 font-bold"
+  }, t('escassetat.taula.criteri')), /*#__PURE__*/React.createElement("th", {
+    className: "p-3 text-left border border-slate-200 font-bold"
+  }, "\uD83C\uDFEA ", t('escassetat.mercat')), /*#__PURE__*/React.createElement("th", {
+    className: "p-3 text-left border border-slate-200 font-bold"
+  }, "\uD83C\uDFDB\uFE0F ", t('escassetat.planificada')), /*#__PURE__*/React.createElement("th", {
+    className: "p-3 text-left border border-slate-200 font-bold"
+  }, "\uD83E\uDD1D ", t('escassetat.mixta')))), /*#__PURE__*/React.createElement("tbody", null, ['propietat', 'decisions', 'incentiu', 'problema'].map(row => /*#__PURE__*/React.createElement("tr", {
+    key: row,
+    className: "hover:bg-slate-50"
+  }, /*#__PURE__*/React.createElement("td", {
+    className: "p-3 border border-slate-200 font-medium"
+  }, t('escassetat.taula.' + row)), /*#__PURE__*/React.createElement("td", {
+    className: "p-3 border border-slate-200"
+  }, t('escassetat.taula.mercat.' + row)), /*#__PURE__*/React.createElement("td", {
+    className: "p-3 border border-slate-200"
+  }, t('escassetat.taula.planificada.' + row)), /*#__PURE__*/React.createElement("td", {
+    className: "p-3 border border-slate-200"
+  }, t('escassetat.taula.mixta.' + row)))))))));
+
+  // ========================================================================
+  // UNIT 2: Agents i flux circular
+  // ========================================================================
+  const Agents = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6"
+  }, /*#__PURE__*/React.createElement(SectionTitle, {
+    icon: "\uD83D\uDD04",
+    title: t('agents.title'),
+    subtitle: t('agents.subtitle')
+  }), /*#__PURE__*/React.createElement(WhyImportant, null, t('agents.why')), /*#__PURE__*/React.createElement("div", {
+    className: "grid md:grid-cols-2 gap-4"
+  }, [{
+    key: 'families',
+    emoji: '👨‍👩‍👧‍👦',
+    color: 'blue'
+  }, {
+    key: 'empreses',
+    emoji: '🏢',
+    color: 'green'
+  }, {
+    key: 'sector_public',
+    emoji: '🏛️',
+    color: 'red'
+  }, {
+    key: 'sector_exterior',
+    emoji: '🌍',
+    color: 'violet'
+  }].map(item => /*#__PURE__*/React.createElement(Card, {
+    key: item.key,
+    title: item.emoji + ' ' + t('agents.' + item.key),
+    icon: ""
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: item.color
+  }, /*#__PURE__*/React.createElement("p", null, t('agents.' + item.key + '.desc')))))), /*#__PURE__*/React.createElement(Card, {
+    title: t('agents.flux'),
+    icon: "\uD83D\uDCB1"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "blue"
+  }, /*#__PURE__*/React.createElement("p", null, t('agents.flux.desc'))), /*#__PURE__*/React.createElement("div", {
+    className: "grid md:grid-cols-2 gap-4 mt-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "p-4 bg-emerald-50 rounded-xl border border-emerald-200"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "font-bold text-emerald-700 mb-2"
+  }, "\uD83D\uDCE6 ", t('agents.flux.real'))), /*#__PURE__*/React.createElement("div", {
+    className: "p-4 bg-amber-50 rounded-xl border border-amber-200"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "font-bold text-amber-700 mb-2"
+  }, "\uD83D\uDCB0 ", t('agents.flux.monetari'))))), /*#__PURE__*/React.createElement(Card, {
+    title: t('agents.diagrama'),
+    icon: "\uD83D\uDD04"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-center my-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "relative w-full max-w-lg"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-3 gap-4"
+  }, /*#__PURE__*/React.createElement("div", null), /*#__PURE__*/React.createElement("div", {
+    className: "p-4 bg-blue-100 rounded-xl border-2 border-blue-300 text-center"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-2xl"
+  }, "\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67\u200D\uD83D\uDC66"), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm font-bold text-blue-700 mt-1"
+  }, "Families")), /*#__PURE__*/React.createElement("div", null), /*#__PURE__*/React.createElement("div", {
+    className: "p-4 bg-red-100 rounded-xl border-2 border-red-300 text-center flex flex-col justify-center"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-2xl"
+  }, "\uD83C\uDFDB\uFE0F"), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm font-bold text-red-700 mt-1"
+  }, "Estat")), /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-col items-center justify-center gap-2 text-xs text-slate-500"
+  }, /*#__PURE__*/React.createElement("span", null, "\uD83D\uDCE6 Bens/Serveis \u2192"), /*#__PURE__*/React.createElement("span", null, "\u2190 \uD83D\uDCB0 Salaris"), /*#__PURE__*/React.createElement("span", null, "\u2190 \uD83D\uDCB6 Impostos \u2192")), /*#__PURE__*/React.createElement("div", {
+    className: "p-4 bg-violet-100 rounded-xl border-2 border-violet-300 text-center flex flex-col justify-center"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-2xl"
+  }, "\uD83C\uDF0D"), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm font-bold text-violet-700 mt-1"
+  }, "Exterior")), /*#__PURE__*/React.createElement("div", null), /*#__PURE__*/React.createElement("div", {
+    className: "p-4 bg-green-100 rounded-xl border-2 border-green-300 text-center"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-2xl"
+  }, "\uD83C\uDFE2"), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm font-bold text-green-700 mt-1"
+  }, "Empreses")), /*#__PURE__*/React.createElement("div", null)), /*#__PURE__*/React.createElement("div", {
+    className: "absolute top-1/4 left-1/2 transform -translate-x-1/2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-slate-400 text-xl"
+  }, "\u2195")), /*#__PURE__*/React.createElement("div", {
+    className: "absolute bottom-1/4 left-1/2 transform -translate-x-1/2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-slate-400 text-xl"
+  }, "\u2195"))))));
+
+  // ========================================================================
+  // UNIT 3: Oferta i demanda (INTERACTIVE SIMULATOR)
+  // ========================================================================
+  const OfertaDemanda = () => {
+    const [tab, setTab] = useState('teoria');
+    const [demandaBase, setDemandaBase] = useState(120);
+    const [ofertaBase, setOfertaBase] = useState(80);
+    const [preu, setPreu] = useState(15);
+    const [despD, setDespD] = useState(0);
+    const [despO, setDespO] = useState(0);
+    const calc = useMemo(() => {
+      const qd = Math.max(0, demandaBase + despD - 2 * preu);
+      const qo = Math.max(0, ofertaBase + despO + 2 * preu);
+      const pe = (demandaBase + despD - ofertaBase - despO) / 4;
+      const qe = Math.max(0, demandaBase + despD - 2 * pe);
+      const exces = qo - qd;
+      return {
+        qd,
+        qo,
+        pe: pe.toFixed(2),
+        qe: qe.toFixed(1),
+        exces
+      };
+    }, [demandaBase, ofertaBase, preu, despD, despO]);
+
+    // SVG supply/demand graph
+    const SDGraph = () => {
+      const w = 400,
+        h = 300,
+        pad = 50;
+      const maxQ = 250,
+        maxP = 50;
+      const sX = q => pad + q / maxQ * (w - pad * 2);
+      const sY = p => h - pad - p / maxP * (h - pad * 2);
+
+      // Demand line: Qd = demandaBase + despD - 2*P => P = (demandaBase + despD - Qd) / 2
+      // At P=0: Qd = demandaBase + despD; At Qd=0: P = (demandaBase + despD) / 2
+      const dP0_Q = Math.min(demandaBase + despD, maxQ);
+      const dQ0_P = Math.min((demandaBase + despD) / 2, maxP);
+      // Supply line: Qo = ofertaBase + despO + 2*P => P = (Qo - ofertaBase - despO) / 2
+      // At P=0: Qo = ofertaBase + despO; At Qo_max: P = (maxQ - ofertaBase - despO) / 2
+      const sP0_Q = Math.max(ofertaBase + despO, 0);
+      const sQmax_P = Math.min((maxQ - ofertaBase - despO) / 2, maxP);
+      const pe = parseFloat(calc.pe);
+      const qe = parseFloat(calc.qe);
+      return /*#__PURE__*/React.createElement("svg", {
+        viewBox: `0 0 ${w} ${h}`,
+        className: "w-full max-w-lg mx-auto"
+      }, /*#__PURE__*/React.createElement("line", {
+        x1: pad,
+        y1: h - pad,
+        x2: w - pad,
+        y2: h - pad,
+        stroke: "#94a3b8",
+        strokeWidth: "2"
+      }), /*#__PURE__*/React.createElement("line", {
+        x1: pad,
+        y1: pad,
+        x2: pad,
+        y2: h - pad,
+        stroke: "#94a3b8",
+        strokeWidth: "2"
+      }), /*#__PURE__*/React.createElement("text", {
+        x: w / 2,
+        y: h - 10,
+        textAnchor: "middle",
+        className: "text-xs fill-slate-500"
+      }, "Q"), /*#__PURE__*/React.createElement("text", {
+        x: 15,
+        y: h / 2,
+        textAnchor: "middle",
+        transform: `rotate(-90, 15, ${h / 2})`,
+        className: "text-xs fill-slate-500"
+      }, "P"), /*#__PURE__*/React.createElement("line", {
+        x1: sX(0),
+        y1: sY(dQ0_P),
+        x2: sX(dP0_Q),
+        y2: sY(0),
+        stroke: "#ef4444",
+        strokeWidth: "3"
+      }), /*#__PURE__*/React.createElement("text", {
+        x: sX(dP0_Q) + 5,
+        y: sY(0) + 5,
+        className: "text-xs font-bold fill-red-500",
+        style: {
+          fontSize: '11px'
+        }
+      }, "D"), (() => {
+        const supStartQ = Math.max(sP0_Q, 0);
+        const supEndP = sQmax_P > 0 ? sQmax_P : maxP;
+        const supEndQ = ofertaBase + despO + 2 * supEndP;
+        return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("line", {
+          x1: sX(supStartQ),
+          y1: sY(0),
+          x2: sX(Math.min(supEndQ, maxQ)),
+          y2: sY(supEndP),
+          stroke: "#22c55e",
+          strokeWidth: "3"
+        }), /*#__PURE__*/React.createElement("text", {
+          x: sX(Math.min(supEndQ, maxQ)) + 5,
+          y: sY(supEndP) - 5,
+          className: "text-xs font-bold fill-green-500",
+          style: {
+            fontSize: '11px'
+          }
+        }, "O"));
+      })(), pe > 0 && pe < maxP && qe > 0 && qe < maxQ && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+        cx: sX(qe),
+        cy: sY(pe),
+        r: "7",
+        fill: "#3b82f6"
+      }), /*#__PURE__*/React.createElement("line", {
+        x1: sX(qe),
+        y1: sY(pe),
+        x2: sX(qe),
+        y2: h - pad,
+        stroke: "#3b82f6",
+        strokeWidth: "1",
+        strokeDasharray: "4,4"
+      }), /*#__PURE__*/React.createElement("line", {
+        x1: pad,
+        y1: sY(pe),
+        x2: sX(qe),
+        y2: sY(pe),
+        stroke: "#3b82f6",
+        strokeWidth: "1",
+        strokeDasharray: "4,4"
+      }), /*#__PURE__*/React.createElement("text", {
+        x: sX(qe),
+        y: h - pad + 15,
+        textAnchor: "middle",
+        className: "text-xs font-bold fill-blue-600",
+        style: {
+          fontSize: '10px'
+        }
+      }, "Qe=", qe), /*#__PURE__*/React.createElement("text", {
+        x: pad - 5,
+        y: sY(pe) + 4,
+        textAnchor: "end",
+        className: "text-xs font-bold fill-blue-600",
+        style: {
+          fontSize: '10px'
+        }
+      }, "Pe=", parseFloat(calc.pe).toFixed(1))), /*#__PURE__*/React.createElement("line", {
+        x1: pad,
+        y1: sY(preu),
+        x2: w - pad,
+        y2: sY(preu),
+        stroke: "#f59e0b",
+        strokeWidth: "1.5",
+        strokeDasharray: "6,4"
+      }), /*#__PURE__*/React.createElement("text", {
+        x: w - pad + 5,
+        y: sY(preu) + 4,
+        className: "text-xs fill-amber-600",
+        style: {
+          fontSize: '10px'
+        }
+      }, "P=", preu), /*#__PURE__*/React.createElement("rect", {
+        x: pad,
+        y: 10,
+        width: "15",
+        height: "3",
+        fill: "#ef4444"
+      }), /*#__PURE__*/React.createElement("text", {
+        x: pad + 20,
+        y: 15,
+        className: "text-xs fill-slate-600",
+        style: {
+          fontSize: '10px'
+        }
+      }, "Demanda"), /*#__PURE__*/React.createElement("rect", {
+        x: pad + 90,
+        y: 10,
+        width: "15",
+        height: "3",
+        fill: "#22c55e"
+      }), /*#__PURE__*/React.createElement("text", {
+        x: pad + 110,
+        y: 15,
+        className: "text-xs fill-slate-600",
+        style: {
+          fontSize: '10px'
+        }
+      }, "Oferta"), /*#__PURE__*/React.createElement("rect", {
+        x: pad + 175,
+        y: 10,
+        width: "15",
+        height: "3",
+        fill: "#f59e0b"
+      }), /*#__PURE__*/React.createElement("text", {
+        x: pad + 195,
+        y: 15,
+        className: "text-xs fill-slate-600",
+        style: {
+          fontSize: '10px'
+        }
+      }, "Preu actual"));
+    };
+    return /*#__PURE__*/React.createElement("div", {
+      className: "space-y-6"
+    }, /*#__PURE__*/React.createElement(SectionTitle, {
+      icon: "\uD83D\uDCCA",
+      title: t('od.title'),
+      subtitle: t('od.subtitle')
+    }), /*#__PURE__*/React.createElement(WhyImportant, null, t('od.why')), /*#__PURE__*/React.createElement(Tabs, {
+      tabs: [{
+        id: 'teoria',
+        label: t('od.tab.teoria')
+      }, {
+        id: 'simulador',
+        label: t('od.tab.simulador')
+      }],
+      active: tab,
+      onChange: setTab
+    }), tab === 'teoria' && /*#__PURE__*/React.createElement("div", {
+      className: "space-y-6"
+    }, /*#__PURE__*/React.createElement(Card, {
+      title: t('od.demanda'),
+      icon: "\uD83D\uDCC9"
+    }, /*#__PURE__*/React.createElement(TheoryBlock, {
+      color: "red"
+    }, /*#__PURE__*/React.createElement("p", null, t('od.demanda.text'))), /*#__PURE__*/React.createElement("div", {
+      className: "mt-4"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-slate-700 mb-3"
+    }, t('od.demanda.factors')), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-2"
+    }, [1, 2, 3, 4, 5].map(n => /*#__PURE__*/React.createElement("div", {
+      key: n,
+      className: "flex items-start gap-3 p-3 bg-red-50 rounded-lg border border-red-100"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-lg"
+    }, ['💰', '🔄', '❤️', '🔮', '👥'][n - 1]), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-slate-700"
+    }, t('od.demanda.f' + n))))))), /*#__PURE__*/React.createElement(Card, {
+      title: t('od.oferta'),
+      icon: "\uD83D\uDCC8"
+    }, /*#__PURE__*/React.createElement(TheoryBlock, {
+      color: "green"
+    }, /*#__PURE__*/React.createElement("p", null, t('od.oferta.text'))), /*#__PURE__*/React.createElement("div", {
+      className: "mt-4"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-slate-700 mb-3"
+    }, t('od.oferta.factors')), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-2"
+    }, [1, 2, 3, 4].map(n => /*#__PURE__*/React.createElement("div", {
+      key: n,
+      className: "flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-100"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-lg"
+    }, ['💸', '💻', '🏭', '🔮'][n - 1]), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-slate-700"
+    }, t('od.oferta.f' + n))))))), /*#__PURE__*/React.createElement(Card, {
+      title: t('od.equilibri'),
+      icon: "\u2696\uFE0F"
+    }, /*#__PURE__*/React.createElement(TheoryBlock, {
+      color: "blue"
+    }, /*#__PURE__*/React.createElement("p", null, t('od.equilibri.text'))), /*#__PURE__*/React.createElement(FormulaBox, {
+      formula: "Qd = Qo \u2192 Preu d'equilibri (Pe)",
+      desc: "Qd = demandaBase - 2P | Qo = ofertaBase + 2P"
+    }))), tab === 'simulador' && /*#__PURE__*/React.createElement("div", {
+      className: "space-y-6"
+    }, /*#__PURE__*/React.createElement(Card, {
+      title: t('od.tab.simulador')
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "grid lg:grid-cols-2 gap-8"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "space-y-4"
+    }, /*#__PURE__*/React.createElement(Slider, {
+      label: t('od.sim.demandaBase'),
+      value: demandaBase,
+      onChange: setDemandaBase,
+      min: 50,
+      max: 200,
+      step: 5
+    }), /*#__PURE__*/React.createElement(Slider, {
+      label: t('od.sim.ofertaBase'),
+      value: ofertaBase,
+      onChange: setOfertaBase,
+      min: 50,
+      max: 200,
+      step: 5
+    }), /*#__PURE__*/React.createElement(Slider, {
+      label: t('od.sim.preu'),
+      value: preu,
+      onChange: setPreu,
+      min: 1,
+      max: 50,
+      step: 1,
+      suffix: "EUR"
+    }), /*#__PURE__*/React.createElement(Slider, {
+      label: t('od.sim.despD'),
+      value: despD,
+      onChange: setDespD,
+      min: -50,
+      max: 50,
+      step: 5
+    }), /*#__PURE__*/React.createElement(Slider, {
+      label: t('od.sim.despO'),
+      value: despO,
+      onChange: setDespO,
+      min: -50,
+      max: 50,
+      step: 5
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "grid grid-cols-2 gap-3"
+    }, /*#__PURE__*/React.createElement(ResultCard, {
+      title: t('od.sim.qd'),
+      value: calc.qd,
+      color: "blue",
+      subtitle: "Qd = base + despD - 2P"
+    }), /*#__PURE__*/React.createElement(ResultCard, {
+      title: t('od.sim.qo'),
+      value: calc.qo,
+      color: "blue",
+      subtitle: "Qo = base + despO + 2P"
+    }), /*#__PURE__*/React.createElement(ResultCard, {
+      title: t('od.sim.pe'),
+      value: calc.pe + "EUR",
+      color: "amber",
+      subtitle: "Pe = (Db+dD-Ob-dO)/4"
+    }), /*#__PURE__*/React.createElement(ResultCard, {
+      title: t('od.sim.qe'),
+      value: calc.qe,
+      color: "green",
+      subtitle: "Qe = Db+dD - 2Pe"
+    }), /*#__PURE__*/React.createElement(ResultCard, {
+      title: t('od.sim.exces'),
+      value: Math.abs(calc.exces).toFixed(0),
+      color: calc.exces === 0 ? "green" : calc.exces > 0 ? "amber" : "red",
+      subtitle: calc.exces > 5 ? t('od.sim.excesOferta') : calc.exces < -5 ? t('od.sim.excesDemanda') : t('od.sim.equilibri')
+    })))), /*#__PURE__*/React.createElement(Card, {
+      title: t('od.sim.grafic'),
+      icon: "\uD83D\uDCCA"
+    }, /*#__PURE__*/React.createElement(SDGraph, null))));
+  };
+
+  // ========================================================================
+  // UNIT 4: Mercats i competencia
+  // ========================================================================
+  const Mercats = () => {
+    const [tab, setTab] = useState('perfecta');
+    return /*#__PURE__*/React.createElement("div", {
+      className: "space-y-6"
+    }, /*#__PURE__*/React.createElement(SectionTitle, {
+      icon: "\uD83C\uDFEA",
+      title: t('mercats.title'),
+      subtitle: t('mercats.subtitle')
+    }), /*#__PURE__*/React.createElement(WhyImportant, null, t('mercats.why')), /*#__PURE__*/React.createElement(Tabs, {
+      tabs: [{
+        id: 'perfecta',
+        label: t('mercats.tab.perfecta')
+      }, {
+        id: 'monopoli',
+        label: t('mercats.tab.monopoli')
+      }, {
+        id: 'oligopoli',
+        label: t('mercats.tab.oligopoli')
+      }, {
+        id: 'monopolistica',
+        label: t('mercats.tab.monopolistica')
+      }],
+      active: tab,
+      onChange: setTab
+    }), tab === 'perfecta' && /*#__PURE__*/React.createElement(Card, {
+      title: t('mercats.perfecta'),
+      icon: "\u2696\uFE0F"
+    }, /*#__PURE__*/React.createElement(TheoryBlock, {
+      color: "blue"
+    }, /*#__PURE__*/React.createElement("p", null, t('mercats.perfecta.desc')))), tab === 'monopoli' && /*#__PURE__*/React.createElement(Card, {
+      title: t('mercats.monopoli'),
+      icon: "\uD83D\uDC51"
+    }, /*#__PURE__*/React.createElement(TheoryBlock, {
+      color: "red"
+    }, /*#__PURE__*/React.createElement("p", null, t('mercats.monopoli.desc')))), tab === 'oligopoli' && /*#__PURE__*/React.createElement(Card, {
+      title: t('mercats.oligopoli'),
+      icon: "\uD83E\uDD1D"
+    }, /*#__PURE__*/React.createElement(TheoryBlock, {
+      color: "violet"
+    }, /*#__PURE__*/React.createElement("p", null, t('mercats.oligopoli.desc')))), tab === 'monopolistica' && /*#__PURE__*/React.createElement(Card, {
+      title: t('mercats.monopolistica'),
+      icon: "\uD83C\uDFA8"
+    }, /*#__PURE__*/React.createElement(TheoryBlock, {
+      color: "pink"
+    }, /*#__PURE__*/React.createElement("p", null, t('mercats.monopolistica.desc')))), /*#__PURE__*/React.createElement(Card, {
+      title: t('mercats.comparacio'),
+      icon: "\uD83D\uDCCB"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "overflow-x-auto"
+    }, /*#__PURE__*/React.createElement("table", {
+      className: "w-full text-sm border-collapse"
+    }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", {
+      className: "bg-slate-100"
+    }, /*#__PURE__*/React.createElement("th", {
+      className: "p-3 text-left border border-slate-200 font-bold"
+    }), /*#__PURE__*/React.createElement("th", {
+      className: "p-3 text-left border border-slate-200 font-bold text-blue-700"
+    }, "C. Perfecta"), /*#__PURE__*/React.createElement("th", {
+      className: "p-3 text-left border border-slate-200 font-bold text-red-700"
+    }, "Monopoli"), /*#__PURE__*/React.createElement("th", {
+      className: "p-3 text-left border border-slate-200 font-bold text-violet-700"
+    }, "Oligopoli"), /*#__PURE__*/React.createElement("th", {
+      className: "p-3 text-left border border-slate-200 font-bold text-pink-700"
+    }, "C. Monopol."))), /*#__PURE__*/React.createElement("tbody", null, ['empreses', 'producte', 'barreres', 'preu', 'exemple'].map(row => /*#__PURE__*/React.createElement("tr", {
+      key: row,
+      className: "hover:bg-slate-50"
+    }, /*#__PURE__*/React.createElement("td", {
+      className: "p-3 border border-slate-200 font-medium"
+    }, t('mercats.taula.' + row)), /*#__PURE__*/React.createElement("td", {
+      className: "p-3 border border-slate-200"
+    }, t('mercats.taula.p.' + row)), /*#__PURE__*/React.createElement("td", {
+      className: "p-3 border border-slate-200"
+    }, t('mercats.taula.m.' + row)), /*#__PURE__*/React.createElement("td", {
+      className: "p-3 border border-slate-200"
+    }, t('mercats.taula.o.' + row)), /*#__PURE__*/React.createElement("td", {
+      className: "p-3 border border-slate-200"
+    }, t('mercats.taula.mc.' + row)))))))));
+  };
+
+  // ========================================================================
+  // UNIT 5: L'empresa i la produccio
+  // ========================================================================
+  const Empresa = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6"
+  }, /*#__PURE__*/React.createElement(SectionTitle, {
+    icon: "\uD83C\uDFED",
+    title: t('empresa.title'),
+    subtitle: t('empresa.subtitle')
+  }), /*#__PURE__*/React.createElement(WhyImportant, null, t('empresa.why')), /*#__PURE__*/React.createElement(Card, {
+    title: t('empresa.funcio'),
+    icon: "\u2699\uFE0F"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "blue"
+  }, /*#__PURE__*/React.createElement("p", null, t('empresa.funcio.text')))), /*#__PURE__*/React.createElement(Card, {
+    title: t('empresa.productivitat'),
+    icon: "\uD83D\uDCC8"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "green"
+  }, /*#__PURE__*/React.createElement("p", null, t('empresa.productivitat.text'))), /*#__PURE__*/React.createElement(FormulaBox, {
+    formula: "Productivitat = Produccio / Factor productiu"
+  })), /*#__PURE__*/React.createElement(Card, {
+    title: t('empresa.rendiments'),
+    icon: "\uD83D\uDCC9"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "amber"
+  }, /*#__PURE__*/React.createElement("p", null, t('empresa.rendiments.text')))), /*#__PURE__*/React.createElement(Card, {
+    title: t('empresa.costos'),
+    icon: "\uD83D\uDCB0"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, [{
+    key: 'fixos',
+    emoji: '🔒',
+    color: 'bg-amber-50 border-amber-200'
+  }, {
+    key: 'variables',
+    emoji: '📊',
+    color: 'bg-blue-50 border-blue-200'
+  }, {
+    key: 'total',
+    emoji: '📋',
+    color: 'bg-slate-50 border-slate-200'
+  }, {
+    key: 'mitja',
+    emoji: '📐',
+    color: 'bg-green-50 border-green-200'
+  }, {
+    key: 'marginal',
+    emoji: '➕',
+    color: 'bg-pink-50 border-pink-200'
+  }].map(item => /*#__PURE__*/React.createElement("div", {
+    key: item.key,
+    className: `flex items-start gap-3 p-4 rounded-xl border ${item.color}`
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-xl"
+  }, item.emoji), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-slate-700"
+  }, t('empresa.costos.' + item.key))))), /*#__PURE__*/React.createElement(FormulaBox, {
+    formula: "CT = CF + CV | CMe = CT / Q | CMg = \u0394CT / \u0394Q"
+  })), /*#__PURE__*/React.createElement(Card, {
+    title: t('empresa.economies'),
+    icon: "\uD83D\uDCCF"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "grid md:grid-cols-2 gap-4"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "green",
+    title: "\uD83D\uDCC8 Economies d'escala"
+  }, /*#__PURE__*/React.createElement("p", null, t('empresa.economies.desc'))), /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "red",
+    title: "\uD83D\uDCC9 Deseconomies d'escala"
+  }, /*#__PURE__*/React.createElement("p", null, t('empresa.deseconomies.desc'))))));
+
+  // ========================================================================
+  // UNIT 6: Magnituds macroeconomiques (INTERACTIVE CALCULATOR)
+  // ========================================================================
+  const Magnituds = () => {
+    const [tab, setTab] = useState('teoria');
+    const [pibNActual, setPibNActual] = useState(1200000);
+    const [pibNAnterior, setPibNAnterior] = useState(1100000);
+    const [deflactor, setDeflactor] = useState(110);
+    const [poblacio, setPoblacio] = useState(47);
+    const [activa, setActiva] = useState(24);
+    const [aturats, setAturats] = useState(3);
+    const calc = useMemo(() => {
+      const pibReal = pibNActual / (deflactor / 100);
+      const creixement = (pibNActual - pibNAnterior) / pibNAnterior * 100;
+      const perCapita = pibReal / poblacio;
+      const taxaAtur = aturats / activa * 100;
+      const taxaActivitat = activa / poblacio * 100;
+      return {
+        pibReal: Math.round(pibReal),
+        creixement: creixement.toFixed(2),
+        perCapita: Math.round(perCapita),
+        taxaAtur: taxaAtur.toFixed(2),
+        taxaActivitat: taxaActivitat.toFixed(2)
+      };
+    }, [pibNActual, pibNAnterior, deflactor, poblacio, activa, aturats]);
+    return /*#__PURE__*/React.createElement("div", {
+      className: "space-y-6"
+    }, /*#__PURE__*/React.createElement(SectionTitle, {
+      icon: "\uD83D\uDCC8",
+      title: t('magnituds.title'),
+      subtitle: t('magnituds.subtitle')
+    }), /*#__PURE__*/React.createElement(WhyImportant, null, t('magnituds.why')), /*#__PURE__*/React.createElement(Tabs, {
+      tabs: [{
+        id: 'teoria',
+        label: t('magnituds.tab.teoria')
+      }, {
+        id: 'calculadora',
+        label: t('magnituds.tab.calculadora')
+      }],
+      active: tab,
+      onChange: setTab
+    }), tab === 'teoria' && /*#__PURE__*/React.createElement("div", {
+      className: "space-y-6"
+    }, /*#__PURE__*/React.createElement(Card, {
+      title: t('magnituds.pib'),
+      icon: "\uD83C\uDFE6"
+    }, /*#__PURE__*/React.createElement(TheoryBlock, {
+      color: "blue"
+    }, /*#__PURE__*/React.createElement("p", null, t('magnituds.pib.desc')))), /*#__PURE__*/React.createElement(Card, {
+      title: t('magnituds.pnb'),
+      icon: "\uD83C\uDF0D"
+    }, /*#__PURE__*/React.createElement(TheoryBlock, {
+      color: "green"
+    }, /*#__PURE__*/React.createElement("p", null, t('magnituds.pnb.desc'))), /*#__PURE__*/React.createElement(FormulaBox, {
+      formula: "PNB = PIB + Rendes nacionals exterior - Rendes estrangeres interior"
+    })), /*#__PURE__*/React.createElement(Card, {
+      title: t('magnituds.nominal.real'),
+      icon: "\uD83D\uDCCA"
+    }, /*#__PURE__*/React.createElement(TheoryBlock, {
+      color: "amber"
+    }, /*#__PURE__*/React.createElement("p", null, t('magnituds.nominal.real.desc'))), /*#__PURE__*/React.createElement(FormulaBox, {
+      formula: "PIB real = PIB nominal / (Deflactor / 100)"
+    })), /*#__PURE__*/React.createElement(Card, {
+      title: t('magnituds.ipc'),
+      icon: "\uD83D\uDED2"
+    }, /*#__PURE__*/React.createElement(TheoryBlock, {
+      color: "pink"
+    }, /*#__PURE__*/React.createElement("p", null, t('magnituds.ipc.desc'))), /*#__PURE__*/React.createElement(FormulaBox, {
+      formula: "Taxa inflacio = ((IPC actual - IPC anterior) / IPC anterior) x 100"
+    })), /*#__PURE__*/React.createElement(Card, {
+      title: t('magnituds.atur'),
+      icon: "\uD83D\uDC77"
+    }, /*#__PURE__*/React.createElement(TheoryBlock, {
+      color: "red"
+    }, /*#__PURE__*/React.createElement("p", null, t('magnituds.atur.desc'))), /*#__PURE__*/React.createElement(FormulaBox, {
+      formula: "Taxa d'atur = (Aturats / Poblacio activa) x 100"
+    }))), tab === 'calculadora' && /*#__PURE__*/React.createElement(Card, {
+      title: t('magnituds.tab.calculadora')
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "grid lg:grid-cols-2 gap-8"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "space-y-4"
+    }, /*#__PURE__*/React.createElement(Slider, {
+      label: t('magnituds.calc.pibn.actual'),
+      value: pibNActual,
+      onChange: setPibNActual,
+      min: 500000,
+      max: 2000000,
+      step: 10000,
+      suffix: " M EUR"
+    }), /*#__PURE__*/React.createElement(Slider, {
+      label: t('magnituds.calc.pibn.anterior'),
+      value: pibNAnterior,
+      onChange: setPibNAnterior,
+      min: 500000,
+      max: 2000000,
+      step: 10000,
+      suffix: " M EUR"
+    }), /*#__PURE__*/React.createElement(Slider, {
+      label: t('magnituds.calc.deflactor'),
+      value: deflactor,
+      onChange: setDeflactor,
+      min: 80,
+      max: 150,
+      step: 1
+    }), /*#__PURE__*/React.createElement(Slider, {
+      label: t('magnituds.calc.poblacio'),
+      value: poblacio,
+      onChange: setPoblacio,
+      min: 30,
+      max: 60,
+      step: 0.5,
+      suffix: " M"
+    }), /*#__PURE__*/React.createElement(Slider, {
+      label: t('magnituds.calc.activa'),
+      value: activa,
+      onChange: setActiva,
+      min: 15,
+      max: 30,
+      step: 0.5,
+      suffix: " M"
+    }), /*#__PURE__*/React.createElement(Slider, {
+      label: t('magnituds.calc.aturats'),
+      value: aturats,
+      onChange: setAturats,
+      min: 1,
+      max: 8,
+      step: 0.1,
+      suffix: " M"
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/React.createElement(ResultCard, {
+      title: t('magnituds.calc.pibreal'),
+      value: calc.pibReal.toLocaleString() + " M EUR",
+      color: "blue",
+      subtitle: "PIBn / (Deflactor/100)"
+    }), /*#__PURE__*/React.createElement(ResultCard, {
+      title: t('magnituds.calc.creixement'),
+      value: calc.creixement + "%",
+      color: parseFloat(calc.creixement) >= 0 ? "green" : "red",
+      subtitle: "((PIBn act - PIBn ant) / PIBn ant) x 100"
+    }), /*#__PURE__*/React.createElement(ResultCard, {
+      title: t('magnituds.calc.percapita'),
+      value: calc.perCapita.toLocaleString() + " EUR/hab",
+      color: "amber",
+      subtitle: "PIB real / Poblacio"
+    }), /*#__PURE__*/React.createElement(ResultCard, {
+      title: t('magnituds.calc.taxaatur'),
+      value: calc.taxaAtur + "%",
+      color: parseFloat(calc.taxaAtur) <= 10 ? "green" : "red",
+      subtitle: "(Aturats / Pob. activa) x 100"
+    }), /*#__PURE__*/React.createElement(ResultCard, {
+      title: t('magnituds.calc.taxaactivitat'),
+      value: calc.taxaActivitat + "%",
+      color: "violet",
+      subtitle: "(Pob. activa / Pob. total) x 100"
+    })))));
+  };
+
+  // ========================================================================
+  // UNIT 7: El mercat de treball
+  // ========================================================================
+  const Treball = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6"
+  }, /*#__PURE__*/React.createElement(SectionTitle, {
+    icon: "\uD83D\uDC77",
+    title: t('treball.title'),
+    subtitle: t('treball.subtitle')
+  }), /*#__PURE__*/React.createElement(WhyImportant, null, t('treball.why')), /*#__PURE__*/React.createElement(Card, {
+    title: t('treball.ofertaDemanda'),
+    icon: "\uD83D\uDCCA"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "blue"
+  }, /*#__PURE__*/React.createElement("p", null, t('treball.ofertaDemanda.desc')))), /*#__PURE__*/React.createElement(Card, {
+    title: t('treball.tipus'),
+    icon: "\uD83D\uDCCB"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "grid md:grid-cols-2 gap-4"
+  }, [{
+    key: 'friccional',
+    emoji: '🔄',
+    color: 'green'
+  }, {
+    key: 'estructural',
+    emoji: '🔧',
+    color: 'red'
+  }, {
+    key: 'ciclic',
+    emoji: '📉',
+    color: 'amber'
+  }, {
+    key: 'estacional',
+    emoji: '🌞',
+    color: 'blue'
+  }].map(item => /*#__PURE__*/React.createElement(TheoryBlock, {
+    key: item.key,
+    title: item.emoji + ' ' + t('treball.' + item.key),
+    color: item.color
+  }, /*#__PURE__*/React.createElement("p", null, t('treball.' + item.key + '.desc')))))), /*#__PURE__*/React.createElement(Card, {
+    title: t('treball.politiques'),
+    icon: "\uD83C\uDFDB\uFE0F"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "grid md:grid-cols-2 gap-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "p-5 bg-green-50 rounded-xl border border-green-200"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "font-bold text-green-700 mb-2"
+  }, "\u2705 ", t('treball.actives')), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-slate-700"
+  }, t('treball.actives.desc'))), /*#__PURE__*/React.createElement("div", {
+    className: "p-5 bg-amber-50 rounded-xl border border-amber-200"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "font-bold text-amber-700 mb-2"
+  }, "\uD83D\uDEE1\uFE0F ", t('treball.passives')), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-slate-700"
+  }, t('treball.passives.desc'))))), /*#__PURE__*/React.createElement(Card, {
+    title: t('treball.salari'),
+    icon: "\uD83D\uDCB0"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "violet"
+  }, /*#__PURE__*/React.createElement("p", null, t('treball.salari.desc')))));
+
+  // ========================================================================
+  // UNIT 8: Diners i sistema financer
+  // ========================================================================
+  const Diners = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6"
+  }, /*#__PURE__*/React.createElement(SectionTitle, {
+    icon: "\uD83D\uDCB0",
+    title: t('diners.title'),
+    subtitle: t('diners.subtitle')
+  }), /*#__PURE__*/React.createElement(WhyImportant, null, t('diners.why')), /*#__PURE__*/React.createElement(Card, {
+    title: t('diners.funcions'),
+    icon: "\uD83D\uDCB6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, [{
+    key: 'compte',
+    emoji: '📏',
+    color: 'bg-blue-50 border-blue-200'
+  }, {
+    key: 'pagament',
+    emoji: '💳',
+    color: 'bg-green-50 border-green-200'
+  }, {
+    key: 'valor',
+    emoji: '🏦',
+    color: 'bg-amber-50 border-amber-200'
+  }].map(item => /*#__PURE__*/React.createElement("div", {
+    key: item.key,
+    className: `p-4 rounded-xl border ${item.color}`
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-start gap-3"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-xl"
+  }, item.emoji), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-slate-700"
+  }, t('diners.func.' + item.key))))))), /*#__PURE__*/React.createElement(Card, {
+    title: t('diners.creacio'),
+    icon: "\uD83C\uDFE7"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "blue"
+  }, /*#__PURE__*/React.createElement("p", null, t('diners.creacio.text'))), /*#__PURE__*/React.createElement(FormulaBox, {
+    formula: "Multiplicador bancari = 1 / coeficient de reserva",
+    desc: t('diners.multiplicador.desc')
+  })), /*#__PURE__*/React.createElement(Card, {
+    title: t('diners.sistema'),
+    icon: "\uD83C\uDFDB\uFE0F"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "green"
+  }, /*#__PURE__*/React.createElement("p", null, t('diners.sistema.desc')))), /*#__PURE__*/React.createElement(Card, {
+    title: t('diners.bce'),
+    icon: "\uD83C\uDDEA\uD83C\uDDFA"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "violet"
+  }, /*#__PURE__*/React.createElement("p", null, t('diners.bce.desc')))));
+
+  // ========================================================================
+  // UNIT 9: Politica fiscal i monetaria (INTERACTIVE SIMULATOR)
+  // ========================================================================
+  const Politica = () => {
+    const [tab, setTab] = useState('teoria');
+    const [pibInicial, setPibInicial] = useState(1400);
+    const [impostos, setImpostos] = useState(400);
+    const [despesa, setDespesa] = useState(420);
+    const [interes, setInteres] = useState(4);
+    const calc = useMemo(() => {
+      const multiplicador = 2;
+      const saldo = impostos - despesa;
+      const efecteFiscal = (despesa - impostos) * multiplicador;
+      const efecteMonetari = interes * 50;
+      const pibResultant = pibInicial + efecteFiscal - efecteMonetari;
+      const variacio = (pibResultant - pibInicial) / pibInicial * 100;
+      let diagnostic;
+      if (efecteFiscal > efecteMonetari + 10) diagnostic = 'expansiva';else if (efecteFiscal < efecteMonetari - 10) diagnostic = 'restrictiva';else diagnostic = 'neutra';
+      return {
+        saldo,
+        pibResultant: Math.round(pibResultant),
+        variacio: variacio.toFixed(2),
+        diagnostic
+      };
+    }, [pibInicial, impostos, despesa, interes]);
+    return /*#__PURE__*/React.createElement("div", {
+      className: "space-y-6"
+    }, /*#__PURE__*/React.createElement(SectionTitle, {
+      icon: "\uD83C\uDFDB\uFE0F",
+      title: t('politica.title'),
+      subtitle: t('politica.subtitle')
+    }), /*#__PURE__*/React.createElement(WhyImportant, null, t('politica.why')), /*#__PURE__*/React.createElement(Tabs, {
+      tabs: [{
+        id: 'teoria',
+        label: t('politica.tab.teoria')
+      }, {
+        id: 'simulador',
+        label: t('politica.tab.simulador')
+      }],
+      active: tab,
+      onChange: setTab
+    }), tab === 'teoria' && /*#__PURE__*/React.createElement("div", {
+      className: "space-y-6"
+    }, /*#__PURE__*/React.createElement(Card, {
+      title: t('politica.fiscal'),
+      icon: "\uD83D\uDCCB"
+    }, /*#__PURE__*/React.createElement(TheoryBlock, {
+      color: "blue"
+    }, /*#__PURE__*/React.createElement("p", null, t('politica.fiscal.desc'))), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-2 gap-4 mt-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-green-50 rounded-xl border border-green-200"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-green-700 mb-2"
+    }, "\uD83D\uDCB0 ", t('politica.ingressos')), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-2 text-sm text-slate-700"
+    }, /*#__PURE__*/React.createElement("p", null, t('politica.ingressos.directes')), /*#__PURE__*/React.createElement("p", null, t('politica.ingressos.indirectes')))), /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-red-50 rounded-xl border border-red-200"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-red-700 mb-2"
+    }, "\uD83D\uDCB8 ", t('politica.despeses')), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-2 text-sm text-slate-700"
+    }, /*#__PURE__*/React.createElement("p", null, t('politica.despeses.corrents')), /*#__PURE__*/React.createElement("p", null, t('politica.despeses.capital')))))), /*#__PURE__*/React.createElement(Card, {
+      title: "Politica fiscal: expansiva vs restrictiva",
+      icon: "\u2696\uFE0F"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-2 gap-4"
+    }, /*#__PURE__*/React.createElement(TheoryBlock, {
+      color: "green",
+      title: "📈 " + t('politica.expansiva')
+    }, /*#__PURE__*/React.createElement("p", null, t('politica.expansiva.desc'))), /*#__PURE__*/React.createElement(TheoryBlock, {
+      color: "red",
+      title: "📉 " + t('politica.restrictiva')
+    }, /*#__PURE__*/React.createElement("p", null, t('politica.restrictiva.desc'))))), /*#__PURE__*/React.createElement(Card, {
+      title: t('politica.monetaria'),
+      icon: "\uD83C\uDFE6"
+    }, /*#__PURE__*/React.createElement(TheoryBlock, {
+      color: "violet"
+    }, /*#__PURE__*/React.createElement("p", null, t('politica.monetaria.desc'))), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-2 gap-4 mt-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-green-50 rounded-xl border border-green-200"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-slate-700"
+    }, "\uD83D\uDCC8 ", t('politica.monetaria.expansiva'))), /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-red-50 rounded-xl border border-red-200"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-slate-700"
+    }, "\uD83D\uDCC9 ", t('politica.monetaria.restrictiva')))))), tab === 'simulador' && /*#__PURE__*/React.createElement(Card, {
+      title: t('politica.tab.simulador')
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "grid lg:grid-cols-2 gap-8"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "space-y-4"
+    }, /*#__PURE__*/React.createElement(Slider, {
+      label: t('politica.sim.pib'),
+      value: pibInicial,
+      onChange: setPibInicial,
+      min: 1000,
+      max: 2000,
+      step: 10,
+      suffix: " milers MEUR"
+    }), /*#__PURE__*/React.createElement(Slider, {
+      label: t('politica.sim.impostos'),
+      value: impostos,
+      onChange: setImpostos,
+      min: 200,
+      max: 600,
+      step: 10,
+      suffix: " milers MEUR"
+    }), /*#__PURE__*/React.createElement(Slider, {
+      label: t('politica.sim.despesa'),
+      value: despesa,
+      onChange: setDespesa,
+      min: 200,
+      max: 600,
+      step: 10,
+      suffix: " milers MEUR"
+    }), /*#__PURE__*/React.createElement(Slider, {
+      label: t('politica.sim.interes'),
+      value: interes,
+      onChange: setInteres,
+      min: 0,
+      max: 10,
+      step: 0.25,
+      suffix: "%"
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/React.createElement(ResultCard, {
+      title: t('politica.sim.saldo'),
+      value: calc.saldo.toLocaleString() + " milers MEUR",
+      color: calc.saldo > 0 ? "green" : calc.saldo < 0 ? "red" : "gray",
+      subtitle: calc.saldo > 0 ? t('politica.sim.superavit') : calc.saldo < 0 ? t('politica.sim.deficit') : t('politica.sim.equilibrat')
+    }), /*#__PURE__*/React.createElement(ResultCard, {
+      title: t('politica.sim.pibresultant'),
+      value: calc.pibResultant.toLocaleString() + " milers MEUR",
+      color: "blue"
+    }), /*#__PURE__*/React.createElement(ResultCard, {
+      title: t('politica.sim.variacio'),
+      value: calc.variacio + "%",
+      color: parseFloat(calc.variacio) >= 0 ? "green" : "red"
+    }), /*#__PURE__*/React.createElement(ResultCard, {
+      title: t('politica.sim.diagnostic'),
+      value: t('politica.sim.' + calc.diagnostic),
+      color: calc.diagnostic === 'expansiva' ? "green" : calc.diagnostic === 'restrictiva' ? "red" : "amber"
+    })))));
+  };
+
+  // ========================================================================
+  // UNIT 10: Comerc internacional i UE
+  // ========================================================================
+  const Comerc = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6"
+  }, /*#__PURE__*/React.createElement(SectionTitle, {
+    icon: "\uD83C\uDF0D",
+    title: t('comerc.title'),
+    subtitle: t('comerc.subtitle')
+  }), /*#__PURE__*/React.createElement(WhyImportant, null, t('comerc.why')), /*#__PURE__*/React.createElement(Card, {
+    title: t('comerc.absolut'),
+    icon: "\uD83D\uDCD0"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "blue"
+  }, /*#__PURE__*/React.createElement("p", null, t('comerc.absolut.desc')))), /*#__PURE__*/React.createElement(Card, {
+    title: t('comerc.comparatiu'),
+    icon: "\uD83D\uDCCA"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "green"
+  }, /*#__PURE__*/React.createElement("p", null, t('comerc.comparatiu.desc')))), /*#__PURE__*/React.createElement(Card, {
+    title: t('comerc.exemple'),
+    icon: "\uD83D\uDD22"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "overflow-x-auto"
+  }, /*#__PURE__*/React.createElement("table", {
+    className: "w-full text-sm border-collapse mb-4"
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", {
+    className: "bg-slate-100"
+  }, /*#__PURE__*/React.createElement("th", {
+    className: "p-3 text-left border border-slate-200 font-bold"
+  }, t('comerc.exemple.pais')), /*#__PURE__*/React.createElement("th", {
+    className: "p-3 text-center border border-slate-200 font-bold"
+  }, "\uD83C\uDF77 ", t('comerc.exemple.vi')), /*#__PURE__*/React.createElement("th", {
+    className: "p-3 text-center border border-slate-200 font-bold"
+  }, "\uD83E\uDDF5 ", t('comerc.exemple.teixit')))), /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
+    className: "p-3 border border-slate-200 font-medium"
+  }, "\uD83C\uDDEA\uD83C\uDDF8 ", t('comerc.exemple.espanya')), /*#__PURE__*/React.createElement("td", {
+    className: "p-3 border border-slate-200 text-center font-bold text-green-600"
+  }, "2"), /*#__PURE__*/React.createElement("td", {
+    className: "p-3 border border-slate-200 text-center"
+  }, "4")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
+    className: "p-3 border border-slate-200 font-medium"
+  }, "\uD83C\uDDEC\uD83C\uDDE7 ", t('comerc.exemple.anglaterra')), /*#__PURE__*/React.createElement("td", {
+    className: "p-3 border border-slate-200 text-center"
+  }, "6"), /*#__PURE__*/React.createElement("td", {
+    className: "p-3 border border-slate-200 text-center font-bold text-green-600"
+  }, "3"))))), /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "emerald"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-semibold"
+  }, t('comerc.exemple.conclusio')))), /*#__PURE__*/React.createElement(Card, {
+    title: t('comerc.barreres'),
+    icon: "\uD83D\uDEA7"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, [{
+    key: 'aranzels',
+    emoji: '💰',
+    color: 'bg-red-50 border-red-200'
+  }, {
+    key: 'contingents',
+    emoji: '📦',
+    color: 'bg-amber-50 border-amber-200'
+  }, {
+    key: 'subvencions',
+    emoji: '🏛️',
+    color: 'bg-blue-50 border-blue-200'
+  }].map(item => /*#__PURE__*/React.createElement("div", {
+    key: item.key,
+    className: `flex items-start gap-3 p-4 rounded-xl border ${item.color}`
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-xl"
+  }, item.emoji), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-slate-700"
+  }, t('comerc.' + item.key)))))), /*#__PURE__*/React.createElement(Card, {
+    title: t('comerc.balanca'),
+    icon: "\u2696\uFE0F"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "blue"
+  }, /*#__PURE__*/React.createElement("p", null, t('comerc.balanca.desc'))), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3 mt-4"
+  }, [{
+    key: 'corrent',
+    emoji: '🛒',
+    color: 'bg-green-50 border-green-200'
+  }, {
+    key: 'capital',
+    emoji: '🏗️',
+    color: 'bg-amber-50 border-amber-200'
+  }, {
+    key: 'financer',
+    emoji: '💹',
+    color: 'bg-violet-50 border-violet-200'
+  }].map(item => /*#__PURE__*/React.createElement("div", {
+    key: item.key,
+    className: `flex items-start gap-3 p-4 rounded-xl border ${item.color}`
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-xl"
+  }, item.emoji), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-slate-700"
+  }, t('comerc.balanca.' + item.key)))))), /*#__PURE__*/React.createElement(Card, {
+    title: t('comerc.globalitzacio'),
+    icon: "\uD83C\uDF10"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "blue",
+    title: "\uD83D\uDCCB Causes"
+  }, /*#__PURE__*/React.createElement("p", null, t('comerc.global.causes'))), /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "green",
+    title: "\u2705 Avantatges"
+  }, /*#__PURE__*/React.createElement("p", null, t('comerc.global.avantatges'))), /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "red",
+    title: "\u26A0\uFE0F Desavantatges"
+  }, /*#__PURE__*/React.createElement("p", null, t('comerc.global.desavantatges'))))), /*#__PURE__*/React.createElement(Card, {
+    title: t('comerc.ue'),
+    icon: "\uD83C\uDDEA\uD83C\uDDFA"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "blue"
+  }, /*#__PURE__*/React.createElement("p", null, t('comerc.ue.desc'))), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3 mt-4"
+  }, [{
+    key: 'mercat',
+    emoji: '🏪'
+  }, {
+    key: 'euro',
+    emoji: '💶'
+  }, {
+    key: 'institucions',
+    emoji: '🏛️'
+  }, {
+    key: 'politiques',
+    emoji: '📜'
+  }].map(item => /*#__PURE__*/React.createElement("div", {
+    key: item.key,
+    className: "flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-lg"
+  }, item.emoji), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-slate-700"
+  }, t('comerc.ue.' + item.key)))))));
+
+  // ========================================================================
+  // NAVIGATION AND RENDER
+  // ========================================================================
+  const headerSections = [{
+    id: 'escassetat',
+    label: t('sec.escassetat'),
+    emoji: '⚖️'
+  }, {
+    id: 'agents',
+    label: t('sec.agents'),
+    emoji: '🔄'
+  }, {
+    id: 'oferta-demanda',
+    label: t('sec.oferta-demanda'),
+    emoji: '📊'
+  }, {
+    id: 'mercats',
+    label: t('sec.mercats'),
+    emoji: '🏪'
+  }, {
+    id: 'empresa',
+    label: t('sec.empresa'),
+    emoji: '🏭'
+  }, {
+    id: 'magnituds',
+    label: t('sec.magnituds'),
+    emoji: '📈'
+  }, {
+    id: 'treball',
+    label: t('sec.treball'),
+    emoji: '👷'
+  }, {
+    id: 'diners',
+    label: t('sec.diners'),
+    emoji: '💰'
+  }, {
+    id: 'politica',
+    label: t('sec.politica'),
+    emoji: '🏛️'
+  }, {
+    id: 'comerc',
+    label: t('sec.comerc'),
+    emoji: '🌍'
+  }];
+  return /*#__PURE__*/React.createElement("div", {
+    className: "min-h-screen"
+  }, /*#__PURE__*/React.createElement(PdeHeader, {
+    idioma: idioma,
+    setIdioma: setIdioma,
+    currentApp: "economia-1bach",
+    sections: headerSections,
+    currentSection: section,
+    setSection: setSection
+  }), /*#__PURE__*/React.createElement("main", {
+    className: "max-w-7xl mx-auto px-4 py-8"
+  }, section === 'inicio' && /*#__PURE__*/React.createElement(Inicio, null), section === 'escassetat' && /*#__PURE__*/React.createElement(Escassetat, null), section === 'agents' && /*#__PURE__*/React.createElement(Agents, null), section === 'oferta-demanda' && /*#__PURE__*/React.createElement(OfertaDemanda, null), section === 'mercats' && /*#__PURE__*/React.createElement(Mercats, null), section === 'empresa' && /*#__PURE__*/React.createElement(Empresa, null), section === 'magnituds' && /*#__PURE__*/React.createElement(Magnituds, null), section === 'treball' && /*#__PURE__*/React.createElement(Treball, null), section === 'diners' && /*#__PURE__*/React.createElement(Diners, null), section === 'politica' && /*#__PURE__*/React.createElement(Politica, null), section === 'comerc' && /*#__PURE__*/React.createElement(Comerc, null)), /*#__PURE__*/React.createElement(PdePrevNext, {
+    sections: headerSections,
+    currentSection: section,
+    setSection: setSection,
+    idioma: idioma
+  }), /*#__PURE__*/React.createElement(PdeFooter, {
+    appEmoji: "\uD83D\uDCC8",
+    appName: t('footer.appname'),
+    idioma: idioma
+  }), /*#__PURE__*/React.createElement(PdeScrollToTop, null));
+}
+ReactDOM.render(/*#__PURE__*/React.createElement(Eco1bachApp, null), document.getElementById('root'));</script>
+</body>
+</html>

@@ -1,0 +1,4716 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communist Party - Joc d'Economia per Equips | PDE</title>
+    <meta name="description" content="Joc de taula per equips estil Party & Co sobre economia. Mímica, dibuix, preguntes, paraula prohibida i ràpid!">
+    <meta property="og:title" content="Communist Party - Joc d'Economia per Equips | PDE">
+    <meta property="og:description" content="Joc de taula multijugador sobre economia amb 5 categories de reptes!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/communist">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Communist Party - Joc d'Economia per Equips | PDE">
+    <meta name="twitter:description" content="Joc de taula per equips estil Party & Co sobre economia.">
+    <link rel="canonical" href="https://profedeeconomia.es/communist">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☭</text></svg>">
+    <!-- React + Babel + Tailwind -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <link rel="stylesheet" href="./pde.css">
+<!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <!-- QR Code -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <!-- PDE Shared -->
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js"></script>
+    <script src="./pde-game-engine.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; scrollbar-width: thin; scrollbar-color: #ef4444 #fef2f2; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #fef2f2; }
+        ::-webkit-scrollbar-thumb { background-color: #ef4444; border-radius: 3px; }
+        @keyframes fall { 0% { transform: translateY(-100%) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(239,68,68,0.3); } 50% { box-shadow: 0 0 40px rgba(239,68,68,0.6); } }
+        @keyframes spin-dice { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.2); } 100% { transform: rotate(360deg) scale(1); } }
+        @keyframes slide-in { 0% { transform: translateY(30px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        .card-communist { background: linear-gradient(145deg, #ffffff 0%, #fef2f2 100%); border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .btn-communist { transition: all 0.15s; }
+        .btn-communist:active { transform: scale(0.96); }
+        .board-space { transition: all 0.3s ease; }
+        .board-space:hover { transform: scale(1.1); }
+        .team-token { transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-red-900 via-gray-900 to-red-950">
+    <div id="root"></div>
+    <script>const {
+  useState,
+  useEffect,
+  useRef
+} = React;
+
+// ═══════════════════════════════════════════════════════════════
+// TRANSLATIONS
+// ═══════════════════════════════════════════════════════════════
+var COMMUNIST_TRANSLATIONS = {
+  'choose_mode': {
+    val: 'Tria el mode de joc',
+    es: 'Elige el modo de juego',
+    en: 'Choose game mode'
+  },
+  'mode_rapid': {
+    val: 'Mode Ràpid',
+    es: 'Modo Rápido',
+    en: 'Quick Mode'
+  },
+  'mode_rapid_desc': {
+    val: '~10 minuts — Taulell de 12 caselles, partida curta',
+    es: '~10 minutos — Tablero de 12 casillas, partida corta',
+    en: '~10 minutes — 12-space board, short game'
+  },
+  'mode_full': {
+    val: 'Mode Complet',
+    es: 'Modo Completo',
+    en: 'Full Mode'
+  },
+  'mode_full_desc': {
+    val: '~25 minuts — Taulell de 24 caselles, partida completa',
+    es: '~25 minutos — Tablero de 24 casillas, partida completa',
+    en: '~25 minutes — 24-space board, full game'
+  },
+  'back': {
+    val: 'Tornar',
+    es: 'Volver',
+    en: 'Back'
+  },
+  'back_pde': {
+    val: 'Tornar a PDE',
+    es: 'Volver a PDE',
+    en: 'Back to PDE'
+  },
+  'final_results': {
+    val: 'Communist Party — Resultats Finals',
+    es: 'Communist Party — Resultados Finales',
+    en: 'Communist Party — Final Results'
+  },
+  'points': {
+    val: 'punts',
+    es: 'puntos',
+    en: 'points'
+  },
+  'square': {
+    val: 'Casella',
+    es: 'Casilla',
+    en: 'Square'
+  },
+  'cat_stats': {
+    val: 'Estadístiques per Categoria',
+    es: 'Estadísticas por Categoría',
+    en: 'Statistics by Category'
+  },
+  'team_label': {
+    val: 'Equip',
+    es: 'Equipo',
+    en: 'Team'
+  },
+  'team_turn': {
+    val: "Torn de l'equip",
+    es: 'Turno del equipo',
+    en: "Team's turn"
+  },
+  'roll_dice': {
+    val: 'Tirar el dau!',
+    es: '¡Tirar el dado!',
+    en: 'Roll the dice!'
+  },
+  'end_game': {
+    val: 'Finalitzar Partida',
+    es: 'Finalizar Partida',
+    en: 'End Game'
+  },
+  'start_timer': {
+    val: 'Començar Timer',
+    es: 'Empezar Timer',
+    en: 'Start Timer'
+  },
+  'correct': {
+    val: 'Correcte!',
+    es: '¡Correcto!',
+    en: 'Correct!'
+  },
+  'incorrect': {
+    val: 'Incorrecte!',
+    es: '¡Incorrecto!',
+    en: 'Incorrect!'
+  },
+  'correct_btn': {
+    val: 'Correcte!',
+    es: '¡Correcto!',
+    en: 'Correct!'
+  },
+  'incorrect_btn': {
+    val: 'Incorrecte',
+    es: 'Incorrecto',
+    en: 'Incorrect'
+  },
+  'evaluate': {
+    val: 'Avaluar Respostes',
+    es: 'Evaluar Respuestas',
+    en: 'Evaluate Answers'
+  },
+  'evaluate_rapid': {
+    val: 'Avaluar Ràpid',
+    es: 'Evaluar Rápido',
+    en: 'Evaluate Quick'
+  },
+  'result_label': {
+    val: 'Resultat',
+    es: 'Resultado',
+    en: 'Result'
+  },
+  'correct_answer': {
+    val: 'Resposta correcta:',
+    es: 'Respuesta correcta:',
+    en: 'Correct answer:'
+  },
+  'next_turn': {
+    val: 'Següent Torn',
+    es: 'Siguiente Turno',
+    en: 'Next Turn'
+  },
+  'total_points': {
+    val: 'punts totals',
+    es: 'puntos totales',
+    en: 'total points'
+  },
+  'waiting': {
+    val: 'Esperant...',
+    es: 'Esperando...',
+    en: 'Waiting...'
+  },
+  'turn_of': {
+    val: 'Torn de',
+    es: 'Turno de',
+    en: "Turn of"
+  },
+  'game_over': {
+    val: 'Partida Acabada!',
+    es: '¡Partida Acabada!',
+    en: 'Game Over!'
+  },
+  'your_turn': {
+    val: 'El vostre torn!',
+    es: '¡Vuestro turno!',
+    en: 'Your turn!'
+  },
+  'teacher_dice': {
+    val: 'El professor tirarà el dau...',
+    es: 'El profesor tirará el dado...',
+    en: 'The teacher will roll the dice...'
+  },
+  'waiting_dice': {
+    val: 'Esperant dau...',
+    es: 'Esperando dado...',
+    en: 'Waiting for dice...'
+  },
+  'waiting_next': {
+    val: 'Esperant el següent torn...',
+    es: 'Esperando el siguiente turno...',
+    en: 'Waiting for next turn...'
+  },
+  'you_actor': {
+    val: "ETS L'ACTOR!",
+    es: '¡ERES EL ACTOR!',
+    en: "YOU'RE THE ACTOR!"
+  },
+  'act_mime': {
+    val: 'Representa amb mímica:',
+    es: 'Representa con mímica:',
+    en: 'Act out with mime:'
+  },
+  'no_talking': {
+    val: 'NO parles! Només gestos!',
+    es: '¡NO hables! ¡Solo gestos!',
+    en: "DON'T talk! Gestures only!"
+  },
+  'you_artist': {
+    val: 'ETS EL DIBUIXANT!',
+    es: '¡ERES EL DIBUJANTE!',
+    en: "YOU'RE THE ARTIST!"
+  },
+  'draw_concept': {
+    val: 'Dibuixa en paper:',
+    es: 'Dibuja en papel:',
+    en: 'Draw on paper:'
+  },
+  'no_letters': {
+    val: 'NO escrigues lletres ni números!',
+    es: '¡NO escribas letras ni números!',
+    en: "DON'T write letters or numbers!"
+  },
+  'you_describer': {
+    val: 'ETS EL DESCRIPTOR!',
+    es: '¡ERES EL DESCRIPTOR!',
+    en: "YOU'RE THE DESCRIBER!"
+  },
+  'describe_word': {
+    val: 'Descriu la paraula:',
+    es: 'Describe la palabra:',
+    en: 'Describe the word:'
+  },
+  'forbidden_words': {
+    val: 'Paraules prohibides:',
+    es: 'Palabras prohibidas:',
+    en: 'Forbidden words:'
+  },
+  'watch_guess': {
+    val: 'Mira i endevina!',
+    es: '¡Mira y adivina!',
+    en: 'Watch and guess!'
+  },
+  'waiting_eval': {
+    val: 'Esperant avaluació del professor...',
+    es: 'Esperando evaluación del profesor...',
+    en: "Waiting for teacher's evaluation..."
+  },
+  'waiting_eval_short': {
+    val: 'Esperant avaluació...',
+    es: 'Esperando evaluación...',
+    en: 'Waiting for evaluation...'
+  },
+  'answer_sent': {
+    val: 'Resposta enviada!',
+    es: '¡Respuesta enviada!',
+    en: 'Answer sent!'
+  },
+  'rapid_round': {
+    val: 'Ronda ràpida',
+    es: 'Ronda rápida',
+    en: 'Quick round'
+  },
+  'all_answer_phone': {
+    val: 'Tots els membres de l\'equip responen al mòbil',
+    es: 'Todos los miembros del equipo responden en el móvil',
+    en: 'All team members answer on their phones'
+  },
+  'all_answer_15s': {
+    val: 'Tots responen al mòbil — 15 segons!',
+    es: '¡Todos responden en el móvil — 15 segundos!',
+    en: 'Everyone answers on phone — 15 seconds!'
+  },
+  'mime_host_desc': {
+    val: "Un membre de l'equip ha de representar el concepte amb mímica. La resta ha d'endevinar!",
+    es: 'Un miembro del equipo debe representar el concepto con mímica. ¡El resto debe adivinar!',
+    en: 'One team member must act out the concept with mime. The rest must guess!'
+  },
+  'mime_shown_phone': {
+    val: "El concepte es mostra al mòbil del jugador assignat",
+    es: 'El concepto se muestra en el móvil del jugador asignado',
+    en: "The concept is shown on the assigned player's phone"
+  },
+  'actor': {
+    val: 'Actor',
+    es: 'Actor',
+    en: 'Actor'
+  },
+  'draw_host_desc': {
+    val: "Un membre dibuixa en paper (no al mòbil!). La resta ha d'endevinar al mòbil!",
+    es: 'Un miembro dibuja en papel (¡no en el móvil!). ¡El resto debe adivinar en el móvil!',
+    en: "One member draws on paper (not on phone!). The rest must guess on phone!"
+  },
+  'draw_shown_phone': {
+    val: "El concepte es mostra al mòbil del dibuixant",
+    es: 'El concepto se muestra en el móvil del dibujante',
+    en: "The concept is shown on the artist's phone"
+  },
+  'drawer': {
+    val: 'Dibuixant',
+    es: 'Dibujante',
+    en: 'Artist'
+  },
+  'forbid_host_desc': {
+    val: "Un membre descriu la paraula sense usar les paraules prohibides. La resta endevina!",
+    es: 'Un miembro describe la palabra sin usar las palabras prohibidas. ¡El resto adivina!',
+    en: 'One member describes the word without using forbidden words. The rest guess!'
+  },
+  'forbid_shown_phone': {
+    val: "La paraula i les prohibides es mostren al mòbil del descriptor",
+    es: 'La palabra y las prohibidas se muestran en el móvil del descriptor',
+    en: "The word and forbidden words are shown on the describer's phone"
+  },
+  'describer': {
+    val: 'Descriptor',
+    es: 'Descriptor',
+    en: 'Describer'
+  },
+  // Category names
+  'cat_mimica': {
+    val: 'Mímica',
+    es: 'Mímica',
+    en: 'Mime'
+  },
+  'cat_dibuixa': {
+    val: 'Dibuixa',
+    es: 'Dibuja',
+    en: 'Draw'
+  },
+  'cat_preguntes': {
+    val: 'Preguntes',
+    es: 'Preguntas',
+    en: 'Questions'
+  },
+  'cat_prohibida': {
+    val: 'Paraula Prohibida',
+    es: 'Palabra Prohibida',
+    en: 'Forbidden Word'
+  },
+  'cat_rapid': {
+    val: 'Ràpid',
+    es: 'Rápido',
+    en: 'Quick'
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════
+// TEAMS CONFIGURATION
+// ═══════════════════════════════════════════════════════════════
+var TEAMS = [{
+  name: 'Keynesians',
+  emoji: '🔵',
+  color: 'blue',
+  bg: 'bg-blue-500',
+  bgLight: 'bg-blue-100',
+  text: 'text-blue-700',
+  border: 'border-blue-500',
+  hex: '#3b82f6'
+}, {
+  name: 'Marxistes',
+  emoji: '🔴',
+  color: 'red',
+  bg: 'bg-red-500',
+  bgLight: 'bg-red-100',
+  text: 'text-red-700',
+  border: 'border-red-500',
+  hex: '#ef4444'
+}, {
+  name: 'Neoclàssics',
+  emoji: '🟢',
+  color: 'green',
+  bg: 'bg-green-500',
+  bgLight: 'bg-green-100',
+  text: 'text-green-700',
+  border: 'border-green-500',
+  hex: '#22c55e'
+}, {
+  name: 'Austríacs',
+  emoji: '🟡',
+  color: 'yellow',
+  bg: 'bg-yellow-500',
+  bgLight: 'bg-yellow-100',
+  text: 'text-yellow-700',
+  border: 'border-yellow-500',
+  hex: '#eab308'
+}, {
+  name: 'Institucionalistes',
+  emoji: '🟣',
+  color: 'purple',
+  bg: 'bg-purple-500',
+  bgLight: 'bg-purple-100',
+  text: 'text-purple-700',
+  border: 'border-purple-500',
+  hex: '#a855f7'
+}, {
+  name: 'Monetaristes',
+  emoji: '🩷',
+  color: 'pink',
+  bg: 'bg-pink-500',
+  bgLight: 'bg-pink-100',
+  text: 'text-pink-700',
+  border: 'border-pink-500',
+  hex: '#ec4899'
+}];
+
+// ═══════════════════════════════════════════════════════════════
+// BOARD CONFIGURATION — 24 spaces in circular path
+// Each space has a category type
+// ═══════════════════════════════════════════════════════════════
+var CATEGORIES = {
+  mimica: {
+    name: 'Mímica',
+    emoji: '🎭',
+    color: 'bg-orange-500',
+    textColor: 'text-orange-600',
+    timer: 60
+  },
+  dibuixa: {
+    name: 'Dibuixa',
+    emoji: '✏️',
+    color: 'bg-teal-500',
+    textColor: 'text-teal-600',
+    timer: 60
+  },
+  preguntes: {
+    name: 'Preguntes',
+    emoji: '🧠',
+    color: 'bg-blue-500',
+    textColor: 'text-blue-600',
+    timer: 20
+  },
+  prohibida: {
+    name: 'Paraula Prohibida',
+    emoji: '🗣️',
+    color: 'bg-purple-500',
+    textColor: 'text-purple-600',
+    timer: 60
+  },
+  rapid: {
+    name: 'Ràpid',
+    emoji: '⚡',
+    color: 'bg-yellow-500',
+    textColor: 'text-yellow-600',
+    timer: 15
+  }
+};
+var BOARD_SPACES = ['mimica', 'preguntes', 'dibuixa', 'rapid', 'prohibida', 'preguntes', 'mimica', 'prohibida', 'rapid', 'dibuixa', 'preguntes', 'mimica', 'rapid', 'prohibida', 'dibuixa', 'preguntes', 'rapid', 'mimica', 'prohibida', 'preguntes', 'dibuixa', 'rapid', 'mimica', 'prohibida'];
+var BOARD_SIZE = BOARD_SPACES.length;
+
+// ═══════════════════════════════════════════════════════════════
+// CARD DATA — All game content
+// ═══════════════════════════════════════════════════════════════
+
+// ── MÍMICA CARDS (20) — Act out economic concepts ──
+var MIMICA_CARDS = [{
+  val: 'Inflació',
+  es: 'Inflación',
+  en: 'Inflation'
+}, {
+  val: 'Monopoli',
+  es: 'Monopolio',
+  en: 'Monopoly'
+}, {
+  val: 'Comerç internacional',
+  es: 'Comercio internacional',
+  en: 'International trade'
+}, {
+  val: 'Bombolla especulativa',
+  es: 'Burbuja especulativa',
+  en: 'Speculative bubble'
+}, {
+  val: 'Desocupació',
+  es: 'Desempleo',
+  en: 'Unemployment'
+}, {
+  val: 'Oferta i demanda',
+  es: 'Oferta y demanda',
+  en: 'Supply and demand'
+}, {
+  val: 'Sindicat',
+  es: 'Sindicato',
+  en: 'Labour union'
+}, {
+  val: 'Privatització',
+  es: 'Privatización',
+  en: 'Privatization'
+}, {
+  val: 'Devaluació',
+  es: 'Devaluación',
+  en: 'Devaluation'
+}, {
+  val: 'Mercat negre',
+  es: 'Mercado negro',
+  en: 'Black market'
+}, {
+  val: 'Hiperinflació',
+  es: 'Hiperinflación',
+  en: 'Hyperinflation'
+}, {
+  val: 'Borsa de valors',
+  es: 'Bolsa de valores',
+  en: 'Stock exchange'
+}, {
+  val: 'Crac borsari',
+  es: 'Crac bursátil',
+  en: 'Stock market crash'
+}, {
+  val: 'Empresari',
+  es: 'Empresario',
+  en: 'Entrepreneur'
+}, {
+  val: 'Vaga general',
+  es: 'Huelga general',
+  en: 'General strike'
+}, {
+  val: 'Subhasta',
+  es: 'Subasta',
+  en: 'Auction'
+}, {
+  val: 'Banquer',
+  es: 'Banquero',
+  en: 'Banker'
+}, {
+  val: 'Contrabandista',
+  es: 'Contrabandista',
+  en: 'Smuggler'
+}, {
+  val: 'Competència',
+  es: 'Competencia',
+  en: 'Competition'
+}, {
+  val: 'Recessió econòmica',
+  es: 'Recesión económica',
+  en: 'Economic recession'
+},
+// ── NEW: Economic Systems & Famous Economists (10) ──
+{
+  val: 'Economia planificada',
+  es: 'Economía planificada',
+  en: 'Planned economy'
+}, {
+  val: 'Estat del benestar',
+  es: 'Estado del bienestar',
+  en: 'Welfare state'
+}, {
+  val: 'Renda bàsica universal',
+  es: 'Renta básica universal',
+  en: 'Universal basic income'
+}, {
+  val: 'Cooperativa',
+  es: 'Cooperativa',
+  en: 'Cooperative'
+}, {
+  val: 'Socialisme',
+  es: 'Socialismo',
+  en: 'Socialism'
+}, {
+  val: 'Lliure mercat',
+  es: 'Libre mercado',
+  en: 'Free market'
+}, {
+  val: 'Redistribució de la riquesa',
+  es: 'Redistribución de la riqueza',
+  en: 'Wealth redistribution'
+}, {
+  val: 'Col·lectivització',
+  es: 'Colectivización',
+  en: 'Collectivization'
+}, {
+  val: 'Economia col·laborativa',
+  es: 'Economía colaborativa',
+  en: 'Sharing economy'
+}, {
+  val: 'Nacionalització',
+  es: 'Nacionalización',
+  en: 'Nationalization'
+}];
+
+// ── DIBUIXA CARDS (20) — Draw economic concepts ──
+var DIBUIXA_CARDS = [{
+  val: 'PIB',
+  es: 'PIB',
+  en: 'GDP'
+}, {
+  val: 'Banca central',
+  es: 'Banca central',
+  en: 'Central bank'
+}, {
+  val: 'Piràmide financera',
+  es: 'Pirámide financiera',
+  en: 'Financial pyramid'
+}, {
+  val: 'Mà invisible',
+  es: 'Mano invisible',
+  en: 'Invisible hand'
+}, {
+  val: 'Repartiment de riquesa',
+  es: 'Reparto de riqueza',
+  en: 'Wealth distribution'
+}, {
+  val: 'Balança comercial',
+  es: 'Balanza comercial',
+  en: 'Trade balance'
+}, {
+  val: 'Cadena de producció',
+  es: 'Cadena de producción',
+  en: 'Production chain'
+}, {
+  val: 'Deute públic',
+  es: 'Deuda pública',
+  en: 'Public debt'
+}, {
+  val: 'Oligopoli',
+  es: 'Oligopolio',
+  en: 'Oligopoly'
+}, {
+  val: 'Impostos',
+  es: 'Impuestos',
+  en: 'Taxes'
+}, {
+  val: 'Globalització',
+  es: 'Globalización',
+  en: 'Globalization'
+}, {
+  val: 'Crisi bancària',
+  es: 'Crisis bancaria',
+  en: 'Banking crisis'
+}, {
+  val: 'Tipus d\'interès',
+  es: 'Tipo de interés',
+  en: 'Interest rate'
+}, {
+  val: 'Fàbrica',
+  es: 'Fábrica',
+  en: 'Factory'
+}, {
+  val: 'Cotització en borsa',
+  es: 'Cotización en bolsa',
+  en: 'Stock quote'
+}, {
+  val: 'Pressupost de l\'Estat',
+  es: 'Presupuesto del Estado',
+  en: 'State budget'
+}, {
+  val: 'Inflació de preus',
+  es: 'Inflación de precios',
+  en: 'Price inflation'
+}, {
+  val: 'Comerç exterior',
+  es: 'Comercio exterior',
+  en: 'Foreign trade'
+}, {
+  val: 'Bitllet de banc',
+  es: 'Billete de banco',
+  en: 'Banknote'
+}, {
+  val: 'Fracàs empresarial',
+  es: 'Fracaso empresarial',
+  en: 'Business failure'
+},
+// ── NEW: Economic Systems & Current Topics (10) ──
+{
+  val: 'Economia mixta',
+  es: 'Economía mixta',
+  en: 'Mixed economy'
+}, {
+  val: 'Desigualtat social',
+  es: 'Desigualdad social',
+  en: 'Social inequality'
+}, {
+  val: 'Economia verda',
+  es: 'Economía verde',
+  en: 'Green economy'
+}, {
+  val: 'Moneda digital',
+  es: 'Moneda digital',
+  en: 'Digital currency'
+}, {
+  val: 'Destrucció creativa',
+  es: 'Destrucción creativa',
+  en: 'Creative destruction'
+}, {
+  val: 'Corba de Laffer',
+  es: 'Curva de Laffer',
+  en: 'Laffer curve'
+}, {
+  val: 'Trampa de liquiditat',
+  es: 'Trampa de liquidez',
+  en: 'Liquidity trap'
+}, {
+  val: 'Societat de consum',
+  es: 'Sociedad de consumo',
+  en: 'Consumer society'
+}, {
+  val: 'Bombolla immobiliària',
+  es: 'Burbuja inmobiliaria',
+  en: 'Housing bubble'
+}, {
+  val: 'Intel·ligència artificial i treball',
+  es: 'Inteligencia artificial y trabajo',
+  en: 'AI and employment'
+}];
+
+// ── PREGUNTES CARDS (40) — 4-option trivia ──
+var PREGUNTES_CARDS = [{
+  q: {
+    val: 'Qui va escriure "La Riquesa de les Nacions"?',
+    es: '¿Quién escribió "La Riqueza de las Naciones"?',
+    en: 'Who wrote "The Wealth of Nations"?'
+  },
+  options: [{
+    val: 'Karl Marx',
+    es: 'Karl Marx',
+    en: 'Karl Marx'
+  }, {
+    val: 'Adam Smith',
+    es: 'Adam Smith',
+    en: 'Adam Smith'
+  }, {
+    val: 'John M. Keynes',
+    es: 'John M. Keynes',
+    en: 'John M. Keynes'
+  }, {
+    val: 'David Ricardo',
+    es: 'David Ricardo',
+    en: 'David Ricardo'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Adam Smith va publicar "La Riquesa de les Nacions" el 1776.',
+    es: 'Adam Smith publicó "La Riqueza de las Naciones" en 1776.',
+    en: 'Adam Smith published "The Wealth of Nations" in 1776.'
+  }
+}, {
+  q: {
+    val: 'Què mesura el PIB?',
+    es: '¿Qué mide el PIB?',
+    en: 'What does GDP measure?'
+  },
+  options: [{
+    val: 'La felicitat d\'un país',
+    es: 'La felicidad de un país',
+    en: 'A country\'s happiness'
+  }, {
+    val: 'El valor de la producció d\'un país',
+    es: 'El valor de la producción de un país',
+    en: 'The value of a country\'s output'
+  }, {
+    val: 'El nombre d\'empreses',
+    es: 'El número de empresas',
+    en: 'The number of businesses'
+  }, {
+    val: 'La quantitat de diners en circulació',
+    es: 'La cantidad de dinero en circulación',
+    en: 'The amount of money in circulation'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'El PIB mesura el valor total de béns i serveis produïts en un país durant un període.',
+    es: 'El PIB mide el valor total de bienes y servicios producidos en un país durante un período.',
+    en: 'GDP measures the total value of goods and services produced in a country over a period.'
+  }
+}, {
+  q: {
+    val: 'Què és la inflació?',
+    es: '¿Qué es la inflación?',
+    en: 'What is inflation?'
+  },
+  options: [{
+    val: 'Una pujada general dels preus',
+    es: 'Una subida general de los precios',
+    en: 'A general rise in prices'
+  }, {
+    val: 'Una baixada dels salaris',
+    es: 'Una bajada de los salarios',
+    en: 'A decrease in wages'
+  }, {
+    val: 'Un augment de la producció',
+    es: 'Un aumento de la producción',
+    en: 'An increase in production'
+  }, {
+    val: 'La desaparició de diners',
+    es: 'La desaparición de dinero',
+    en: 'The disappearance of money'
+  }],
+  correct: 0,
+  explanation: {
+    val: 'La inflació és l\'augment generalitzat i sostingut dels preus.',
+    es: 'La inflación es el aumento generalizado y sostenido de los precios.',
+    en: 'Inflation is a sustained general increase in prices.'
+  }
+}, {
+  q: {
+    val: 'Quin organisme controla la política monetària a la zona euro?',
+    es: '¿Qué organismo controla la política monetaria en la zona euro?',
+    en: 'Which institution controls monetary policy in the eurozone?'
+  },
+  options: [{
+    val: 'Fons Monetari Internacional',
+    es: 'Fondo Monetario Internacional',
+    en: 'International Monetary Fund'
+  }, {
+    val: 'Banc Central Europeu',
+    es: 'Banco Central Europeo',
+    en: 'European Central Bank'
+  }, {
+    val: 'Comissió Europea',
+    es: 'Comisión Europea',
+    en: 'European Commission'
+  }, {
+    val: 'Banc Mundial',
+    es: 'Banco Mundial',
+    en: 'World Bank'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'El BCE (Banc Central Europeu) gestiona la política monetària de l\'eurozona.',
+    es: 'El BCE (Banco Central Europeo) gestiona la política monetaria de la eurozona.',
+    en: 'The ECB (European Central Bank) manages the eurozone\'s monetary policy.'
+  }
+}, {
+  q: {
+    val: 'Què és un monopoli?',
+    es: '¿Qué es un monopolio?',
+    en: 'What is a monopoly?'
+  },
+  options: [{
+    val: 'Moltes empreses competint',
+    es: 'Muchas empresas compitiendo',
+    en: 'Many companies competing'
+  }, {
+    val: 'Una sola empresa domina el mercat',
+    es: 'Una sola empresa domina el mercado',
+    en: 'A single company dominates the market'
+  }, {
+    val: 'Dues empreses compartint mercat',
+    es: 'Dos empresas compartiendo mercado',
+    en: 'Two companies sharing the market'
+  }, {
+    val: 'Un mercat sense regulació',
+    es: 'Un mercado sin regulación',
+    en: 'An unregulated market'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Un monopoli existeix quan una sola empresa controla tot el mercat d\'un producte o servei.',
+    es: 'Un monopolio existe cuando una sola empresa controla todo el mercado de un producto o servicio.',
+    en: 'A monopoly exists when a single company controls the entire market for a product or service.'
+  }
+}, {
+  q: {
+    val: 'Qui va proposar la teoria de la "mà invisible"?',
+    es: '¿Quién propuso la teoría de la "mano invisible"?',
+    en: 'Who proposed the theory of the "invisible hand"?'
+  },
+  options: [{
+    val: 'Adam Smith',
+    es: 'Adam Smith',
+    en: 'Adam Smith'
+  }, {
+    val: 'Karl Marx',
+    es: 'Karl Marx',
+    en: 'Karl Marx'
+  }, {
+    val: 'Milton Friedman',
+    es: 'Milton Friedman',
+    en: 'Milton Friedman'
+  }, {
+    val: 'Friedrich Hayek',
+    es: 'Friedrich Hayek',
+    en: 'Friedrich Hayek'
+  }],
+  correct: 0,
+  explanation: {
+    val: 'Adam Smith va introduir el concepte de la mà invisible per explicar l\'autoregulació del mercat.',
+    es: 'Adam Smith introdujo el concepto de la mano invisible para explicar la autorregulación del mercado.',
+    en: 'Adam Smith introduced the concept of the invisible hand to explain market self-regulation.'
+  }
+}, {
+  q: {
+    val: 'Què és el dèficit públic?',
+    es: '¿Qué es el déficit público?',
+    en: 'What is a public deficit?'
+  },
+  options: [{
+    val: 'Quan l\'Estat ingressa més del que gasta',
+    es: 'Cuando el Estado ingresa más de lo que gasta',
+    en: 'When the state earns more than it spends'
+  }, {
+    val: 'Quan l\'Estat gasta més del que ingressa',
+    es: 'Cuando el Estado gasta más de lo que ingresa',
+    en: 'When the state spends more than it earns'
+  }, {
+    val: 'Quan no hi ha impostos',
+    es: 'Cuando no hay impuestos',
+    en: 'When there are no taxes'
+  }, {
+    val: 'Quan l\'Estat no té deute',
+    es: 'Cuando el Estado no tiene deuda',
+    en: 'When the state has no debt'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'El dèficit públic es produeix quan les despeses de l\'Estat superen els seus ingressos.',
+    es: 'El déficit público se produce cuando los gastos del Estado superan sus ingresos.',
+    en: 'A public deficit occurs when state spending exceeds its income.'
+  }
+}, {
+  q: {
+    val: 'Quina divisa utilitza el Japó?',
+    es: '¿Qué divisa utiliza Japón?',
+    en: 'What currency does Japan use?'
+  },
+  options: [{
+    val: 'Yuan',
+    es: 'Yuan',
+    en: 'Yuan'
+  }, {
+    val: 'Won',
+    es: 'Won',
+    en: 'Won'
+  }, {
+    val: 'Ien',
+    es: 'Yen',
+    en: 'Yen'
+  }, {
+    val: 'Rupia',
+    es: 'Rupia',
+    en: 'Rupee'
+  }],
+  correct: 2,
+  explanation: {
+    val: 'El Japó utilitza el ien (¥) com a moneda oficial.',
+    es: 'Japón utiliza el yen (¥) como moneda oficial.',
+    en: 'Japan uses the yen (¥) as its official currency.'
+  }
+}, {
+  q: {
+    val: 'Què és la llei de l\'oferta i la demanda?',
+    es: '¿Qué es la ley de oferta y demanda?',
+    en: 'What is the law of supply and demand?'
+  },
+  options: [{
+    val: 'L\'Estat fixa els preus',
+    es: 'El Estado fija los precios',
+    en: 'The state sets prices'
+  }, {
+    val: 'Els preus es determinen per la interacció entre compradors i venedors',
+    es: 'Los precios se determinan por la interacción entre compradores y vendedores',
+    en: 'Prices are determined by interaction between buyers and sellers'
+  }, {
+    val: 'Només les empreses grans determinen preus',
+    es: 'Solo las grandes empresas determinan precios',
+    en: 'Only large companies set prices'
+  }, {
+    val: 'Els preus sempre pugen',
+    es: 'Los precios siempre suben',
+    en: 'Prices always rise'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'La llei de l\'oferta i la demanda explica com el preu d\'equilibri es forma al mercat.',
+    es: 'La ley de oferta y demanda explica cómo se forma el precio de equilibrio en el mercado.',
+    en: 'The law of supply and demand explains how equilibrium price forms in the market.'
+  }
+}, {
+  q: {
+    val: 'Què va causar la Gran Depressió de 1929?',
+    es: '¿Qué causó la Gran Depresión de 1929?',
+    en: 'What caused the Great Depression of 1929?'
+  },
+  options: [{
+    val: 'Una guerra mundial',
+    es: 'Una guerra mundial',
+    en: 'A world war'
+  }, {
+    val: 'El crac de la borsa de Nova York',
+    es: 'El crac de la bolsa de Nueva York',
+    en: 'The New York stock market crash'
+  }, {
+    val: 'Una pandèmia',
+    es: 'Una pandemia',
+    en: 'A pandemic'
+  }, {
+    val: 'La descoberta de petroli',
+    es: 'El descubrimiento de petróleo',
+    en: 'The discovery of oil'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'El crac borsari del 29 d\'octubre de 1929 va desencadenar la Gran Depressió.',
+    es: 'El crac bursátil del 29 de octubre de 1929 desencadenó la Gran Depresión.',
+    en: 'The stock market crash of October 29, 1929 triggered the Great Depression.'
+  }
+}, {
+  q: {
+    val: 'Què és un oligopoli?',
+    es: '¿Qué es un oligopolio?',
+    en: 'What is an oligopoly?'
+  },
+  options: [{
+    val: 'Un mercat amb un sol venedor',
+    es: 'Un mercado con un solo vendedor',
+    en: 'A market with a single seller'
+  }, {
+    val: 'Un mercat amb pocs venedors dominants',
+    es: 'Un mercado con pocos vendedores dominantes',
+    en: 'A market with few dominant sellers'
+  }, {
+    val: 'Un mercat amb molts venedors',
+    es: 'Un mercado con muchos vendedores',
+    en: 'A market with many sellers'
+  }, {
+    val: 'Un mercat sense venedors',
+    es: 'Un mercado sin vendedores',
+    en: 'A market without sellers'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Un oligopoli és una estructura de mercat on poques empreses controlen la major part del mercat.',
+    es: 'Un oligopolio es una estructura de mercado donde pocas empresas controlan la mayor parte del mercado.',
+    en: 'An oligopoly is a market structure where few firms control most of the market.'
+  }
+}, {
+  q: {
+    val: 'Què és el capitalisme?',
+    es: '¿Qué es el capitalismo?',
+    en: 'What is capitalism?'
+  },
+  options: [{
+    val: 'Sistema on l\'Estat controla tot',
+    es: 'Sistema donde el Estado controla todo',
+    en: 'System where the state controls everything'
+  }, {
+    val: 'Sistema basat en la propietat privada i el lliure mercat',
+    es: 'Sistema basado en la propiedad privada y el libre mercado',
+    en: 'System based on private property and free market'
+  }, {
+    val: 'Sistema sense diners',
+    es: 'Sistema sin dinero',
+    en: 'System without money'
+  }, {
+    val: 'Sistema de troc',
+    es: 'Sistema de trueque',
+    en: 'Barter system'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'El capitalisme es basa en la propietat privada dels mitjans de producció i el lliure mercat.',
+    es: 'El capitalismo se basa en la propiedad privada de los medios de producción y el libre mercado.',
+    en: 'Capitalism is based on private ownership of means of production and the free market.'
+  }
+}, {
+  q: {
+    val: 'Què és l\'IPC?',
+    es: '¿Qué es el IPC?',
+    en: 'What is the CPI?'
+  },
+  options: [{
+    val: 'Índex de Preus al Consum',
+    es: 'Índice de Precios al Consumo',
+    en: 'Consumer Price Index'
+  }, {
+    val: 'Indicador de Producció Comercial',
+    es: 'Indicador de Producción Comercial',
+    en: 'Commercial Production Indicator'
+  }, {
+    val: 'Impost sobre Productes Culturals',
+    es: 'Impuesto sobre Productos Culturales',
+    en: 'Tax on Cultural Products'
+  }, {
+    val: 'Interès Percentual Compost',
+    es: 'Interés Porcentual Compuesto',
+    en: 'Compound Percentage Interest'
+  }],
+  correct: 0,
+  explanation: {
+    val: 'L\'IPC mesura la variació de preus d\'una cistella representativa de béns i serveis.',
+    es: 'El IPC mide la variación de precios de una cesta representativa de bienes y servicios.',
+    en: 'The CPI measures the price change of a representative basket of goods and services.'
+  }
+}, {
+  q: {
+    val: 'Qui va ser Karl Marx?',
+    es: '¿Quién fue Karl Marx?',
+    en: 'Who was Karl Marx?'
+  },
+  options: [{
+    val: 'Un banquer alemany',
+    es: 'Un banquero alemán',
+    en: 'A German banker'
+  }, {
+    val: 'Un filòsof i economista que va teoritzar el comunisme',
+    es: 'Un filósofo y economista que teorizó el comunismo',
+    en: 'A philosopher and economist who theorized communism'
+  }, {
+    val: 'El fundador del Banc Central Europeu',
+    es: 'El fundador del Banco Central Europeo',
+    en: 'The founder of the European Central Bank'
+  }, {
+    val: 'El president dels EUA durant la Gran Depressió',
+    es: 'El presidente de EE.UU. durante la Gran Depresión',
+    en: 'The US president during the Great Depression'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Karl Marx va ser un filòsof, economista i sociòleg alemany, autor de "El Capital".',
+    es: 'Karl Marx fue un filósofo, economista y sociólogo alemán, autor de "El Capital".',
+    en: 'Karl Marx was a German philosopher, economist and sociologist, author of "Das Kapital".'
+  }
+}, {
+  q: {
+    val: 'Què és la taxa d\'atur?',
+    es: '¿Qué es la tasa de desempleo?',
+    en: 'What is the unemployment rate?'
+  },
+  options: [{
+    val: 'El percentatge de persones que no volen treballar',
+    es: 'El porcentaje de personas que no quieren trabajar',
+    en: 'The percentage of people who don\'t want to work'
+  }, {
+    val: 'El percentatge de la població activa que no troba feina',
+    es: 'El porcentaje de la población activa que no encuentra trabajo',
+    en: 'The percentage of the labour force that cannot find work'
+  }, {
+    val: 'El nombre total de treballadors',
+    es: 'El número total de trabajadores',
+    en: 'The total number of workers'
+  }, {
+    val: 'La quantitat d\'empreses tancades',
+    es: 'La cantidad de empresas cerradas',
+    en: 'The number of closed businesses'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'La taxa d\'atur és el percentatge de la població activa que està desocupada i busca feina activament.',
+    es: 'La tasa de desempleo es el porcentaje de la población activa que está desempleada y busca trabajo activamente.',
+    en: 'The unemployment rate is the percentage of the active population that is unemployed and actively seeking work.'
+  }
+}, {
+  q: {
+    val: 'Què és una cooperativa?',
+    es: '¿Qué es una cooperativa?',
+    en: 'What is a cooperative?'
+  },
+  options: [{
+    val: 'Una empresa pública',
+    es: 'Una empresa pública',
+    en: 'A public company'
+  }, {
+    val: 'Una empresa propietat dels seus treballadors o socis',
+    es: 'Una empresa propiedad de sus trabajadores o socios',
+    en: 'A company owned by its workers or members'
+  }, {
+    val: 'Una multinacional',
+    es: 'Una multinacional',
+    en: 'A multinational'
+  }, {
+    val: 'Un banc sense ànim de lucre',
+    es: 'Un banco sin ánimo de lucro',
+    en: 'A non-profit bank'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Una cooperativa és una empresa gestionada democràticament pels seus membres, que en són propietaris.',
+    es: 'Una cooperativa es una empresa gestionada democráticamente por sus miembros, que son sus propietarios.',
+    en: 'A cooperative is a company democratically managed by its members, who are its owners.'
+  }
+}, {
+  q: {
+    val: 'Què va proposar Keynes per combatre les crisis?',
+    es: '¿Qué propuso Keynes para combatir las crisis?',
+    en: 'What did Keynes propose to fight crises?'
+  },
+  options: [{
+    val: 'Reduir la despesa pública',
+    es: 'Reducir el gasto público',
+    en: 'Reduce public spending'
+  }, {
+    val: 'Augmentar la despesa pública per estimular l\'economia',
+    es: 'Aumentar el gasto público para estimular la economía',
+    en: 'Increase public spending to stimulate the economy'
+  }, {
+    val: 'Eliminar els impostos',
+    es: 'Eliminar los impuestos',
+    en: 'Eliminate taxes'
+  }, {
+    val: 'Tornar al patró or',
+    es: 'Volver al patrón oro',
+    en: 'Return to the gold standard'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Keynes va defensar la intervenció estatal mitjançant despesa pública per eixir de les recessions.',
+    es: 'Keynes defendió la intervención estatal mediante gasto público para salir de las recesiones.',
+    en: 'Keynes advocated state intervention through public spending to exit recessions.'
+  }
+}, {
+  q: {
+    val: 'Què és l\'Estat del Benestar?',
+    es: '¿Qué es el Estado de Bienestar?',
+    en: 'What is the Welfare State?'
+  },
+  options: [{
+    val: 'Un estat sense impostos',
+    es: 'Un estado sin impuestos',
+    en: 'A state without taxes'
+  }, {
+    val: 'Un sistema on l\'Estat garanteix serveis socials bàsics',
+    es: 'Un sistema donde el Estado garantiza servicios sociales básicos',
+    en: 'A system where the state guarantees basic social services'
+  }, {
+    val: 'Un país molt ric',
+    es: 'Un país muy rico',
+    en: 'A very rich country'
+  }, {
+    val: 'Un sistema comunista',
+    es: 'Un sistema comunista',
+    en: 'A communist system'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'L\'Estat del Benestar és un model on l\'Estat proveeix sanitat, educació, pensions i protecció social.',
+    es: 'El Estado de Bienestar es un modelo donde el Estado provee sanidad, educación, pensiones y protección social.',
+    en: 'The Welfare State provides healthcare, education, pensions and social protection.'
+  }
+}, {
+  q: {
+    val: 'Quin és l\'objectiu principal del FMI?',
+    es: '¿Cuál es el objetivo principal del FMI?',
+    en: 'What is the main objective of the IMF?'
+  },
+  options: [{
+    val: 'Finançar guerres',
+    es: 'Financiar guerras',
+    en: 'Finance wars'
+  }, {
+    val: 'Promoure la cooperació monetària i l\'estabilitat financera',
+    es: 'Promover la cooperación monetaria y la estabilidad financiera',
+    en: 'Promote monetary cooperation and financial stability'
+  }, {
+    val: 'Controlar els bancs centrals',
+    es: 'Controlar los bancos centrales',
+    en: 'Control central banks'
+  }, {
+    val: 'Regular el comerç d\'armes',
+    es: 'Regular el comercio de armas',
+    en: 'Regulate arms trade'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'El FMI promou la cooperació monetària internacional i dona assistència financera als països en dificultat.',
+    es: 'El FMI promueve la cooperación monetaria internacional y da asistencia financiera a países en dificultad.',
+    en: 'The IMF promotes international monetary cooperation and provides financial assistance to countries in difficulty.'
+  }
+}, {
+  q: {
+    val: 'Què és una acció (borsa)?',
+    es: '¿Qué es una acción (bolsa)?',
+    en: 'What is a stock (share)?'
+  },
+  options: [{
+    val: 'Un préstec al govern',
+    es: 'Un préstamo al gobierno',
+    en: 'A loan to the government'
+  }, {
+    val: 'Una part proporcional de la propietat d\'una empresa',
+    es: 'Una parte proporcional de la propiedad de una empresa',
+    en: 'A proportional part of a company\'s ownership'
+  }, {
+    val: 'Un tipus d\'impost',
+    es: 'Un tipo de impuesto',
+    en: 'A type of tax'
+  }, {
+    val: 'Un contracte de treball',
+    es: 'Un contrato de trabajo',
+    en: 'An employment contract'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Una acció representa una part alíquota del capital social d\'una empresa.',
+    es: 'Una acción representa una parte alícuota del capital social de una empresa.',
+    en: 'A stock represents an aliquot part of a company\'s share capital.'
+  }
+}, {
+  q: {
+    val: 'Què és la deflació?',
+    es: '¿Qué es la deflación?',
+    en: 'What is deflation?'
+  },
+  options: [{
+    val: 'Un augment de preus molt ràpid',
+    es: 'Un aumento de precios muy rápido',
+    en: 'A very rapid increase in prices'
+  }, {
+    val: 'Una baixada generalitzada i sostinguda dels preus',
+    es: 'Una bajada generalizada y sostenida de los precios',
+    en: 'A generalized and sustained decrease in prices'
+  }, {
+    val: 'L\'estabilitat de preus',
+    es: 'La estabilidad de precios',
+    en: 'Price stability'
+  }, {
+    val: 'Una pujada dels salaris',
+    es: 'Una subida de los salarios',
+    en: 'A rise in wages'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'La deflació és una caiguda generalitzada i continuada dels preus, i pot ser perillosa per a l\'economia.',
+    es: 'La deflación es una caída generalizada y continuada de los precios, y puede ser peligrosa para la economía.',
+    en: 'Deflation is a generalized and continuous fall in prices, and can be dangerous for the economy.'
+  }
+}, {
+  q: {
+    val: 'Què és un impost progressiu?',
+    es: '¿Qué es un impuesto progresivo?',
+    en: 'What is a progressive tax?'
+  },
+  options: [{
+    val: 'Tothom paga el mateix',
+    es: 'Todos pagan lo mismo',
+    en: 'Everyone pays the same'
+  }, {
+    val: 'Qui més guanya, paga un percentatge més alt',
+    es: 'Quien más gana, paga un porcentaje más alto',
+    en: 'Higher earners pay a higher percentage'
+  }, {
+    val: 'Només paguen les empreses',
+    es: 'Solo pagan las empresas',
+    en: 'Only companies pay'
+  }, {
+    val: 'Cada any augmenta per a tothom',
+    es: 'Cada año aumenta para todos',
+    en: 'It increases every year for everyone'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Un impost progressiu aplica tipus impositius més alts com més gran és la base imposable.',
+    es: 'Un impuesto progresivo aplica tipos impositivos más altos cuanto mayor es la base imponible.',
+    en: 'A progressive tax applies higher tax rates as the tax base increases.'
+  }
+}, {
+  q: {
+    val: 'Què és el lliure comerç?',
+    es: '¿Qué es el libre comercio?',
+    en: 'What is free trade?'
+  },
+  options: [{
+    val: 'Comerç sense pagar',
+    es: 'Comercio sin pagar',
+    en: 'Trade without paying'
+  }, {
+    val: 'Comerç internacional sense aranzels ni barreres',
+    es: 'Comercio internacional sin aranceles ni barreras',
+    en: 'International trade without tariffs or barriers'
+  }, {
+    val: 'Només comerç entre països veïns',
+    es: 'Solo comercio entre países vecinos',
+    en: 'Only trade between neighbouring countries'
+  }, {
+    val: 'Comerç controlat per l\'ONU',
+    es: 'Comercio controlado por la ONU',
+    en: 'Trade controlled by the UN'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'El lliure comerç permet l\'intercanvi de béns i serveis entre països sense restriccions.',
+    es: 'El libre comercio permite el intercambio de bienes y servicios entre países sin restricciones.',
+    en: 'Free trade allows the exchange of goods and services between countries without restrictions.'
+  }
+}, {
+  q: {
+    val: 'Què és una recessió econòmica?',
+    es: '¿Qué es una recesión económica?',
+    en: 'What is an economic recession?'
+  },
+  options: [{
+    val: 'Un creixement econòmic molt ràpid',
+    es: 'Un crecimiento económico muy rápido',
+    en: 'Very rapid economic growth'
+  }, {
+    val: 'Dos trimestres consecutius de caiguda del PIB',
+    es: 'Dos trimestres consecutivos de caída del PIB',
+    en: 'Two consecutive quarters of GDP decline'
+  }, {
+    val: 'Un canvi de govern',
+    es: 'Un cambio de gobierno',
+    en: 'A change of government'
+  }, {
+    val: 'Una pujada de la borsa',
+    es: 'Una subida de la bolsa',
+    en: 'A stock market rise'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Tècnicament, una recessió es defineix com dos trimestres consecutius de descens del PIB.',
+    es: 'Técnicamente, una recesión se define como dos trimestres consecutivos de descenso del PIB.',
+    en: 'Technically, a recession is defined as two consecutive quarters of GDP decline.'
+  }
+}, {
+  q: {
+    val: 'Què és el Bitcoin?',
+    es: '¿Qué es el Bitcoin?',
+    en: 'What is Bitcoin?'
+  },
+  options: [{
+    val: 'Una moneda emesa pel BCE',
+    es: 'Una moneda emitida por el BCE',
+    en: 'A currency issued by the ECB'
+  }, {
+    val: 'Una criptomoneda descentralitzada',
+    es: 'Una criptomoneda descentralizada',
+    en: 'A decentralized cryptocurrency'
+  }, {
+    val: 'Un tipus d\'acció',
+    es: 'Un tipo de acción',
+    en: 'A type of stock'
+  }, {
+    val: 'Un sistema bancari tradicional',
+    es: 'Un sistema bancario tradicional',
+    en: 'A traditional banking system'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Bitcoin és una criptomoneda descentralitzada creada el 2009 per Satoshi Nakamoto.',
+    es: 'Bitcoin es una criptomoneda descentralizada creada en 2009 por Satoshi Nakamoto.',
+    en: 'Bitcoin is a decentralized cryptocurrency created in 2009 by Satoshi Nakamoto.'
+  }
+}, {
+  q: {
+    val: 'Què és el proteccionisme?',
+    es: '¿Qué es el proteccionismo?',
+    en: 'What is protectionism?'
+  },
+  options: [{
+    val: 'Protegir el medi ambient',
+    es: 'Proteger el medio ambiente',
+    en: 'Protecting the environment'
+  }, {
+    val: 'Polítiques per protegir la indústria nacional amb aranzels',
+    es: 'Políticas para proteger la industria nacional con aranceles',
+    en: 'Policies to protect domestic industry with tariffs'
+  }, {
+    val: 'Protegir els consumidors',
+    es: 'Proteger a los consumidores',
+    en: 'Protecting consumers'
+  }, {
+    val: 'Assegurar els dipòsits bancaris',
+    es: 'Asegurar los depósitos bancarios',
+    en: 'Insuring bank deposits'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'El proteccionisme busca protegir la producció nacional davant la competència estrangera amb aranzels i quotes.',
+    es: 'El proteccionismo busca proteger la producción nacional frente a la competencia extranjera con aranceles y cuotas.',
+    en: 'Protectionism seeks to protect domestic production from foreign competition with tariffs and quotas.'
+  }
+}, {
+  q: {
+    val: 'Qui va fundar Amazon?',
+    es: '¿Quién fundó Amazon?',
+    en: 'Who founded Amazon?'
+  },
+  options: [{
+    val: 'Elon Musk',
+    es: 'Elon Musk',
+    en: 'Elon Musk'
+  }, {
+    val: 'Jeff Bezos',
+    es: 'Jeff Bezos',
+    en: 'Jeff Bezos'
+  }, {
+    val: 'Bill Gates',
+    es: 'Bill Gates',
+    en: 'Bill Gates'
+  }, {
+    val: 'Mark Zuckerberg',
+    es: 'Mark Zuckerberg',
+    en: 'Mark Zuckerberg'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Jeff Bezos va fundar Amazon el 1994 com una llibreria en línia.',
+    es: 'Jeff Bezos fundó Amazon en 1994 como una librería en línea.',
+    en: 'Jeff Bezos founded Amazon in 1994 as an online bookstore.'
+  }
+}, {
+  q: {
+    val: 'Què és l\'oferta monetària?',
+    es: '¿Qué es la oferta monetaria?',
+    en: 'What is the money supply?'
+  },
+  options: [{
+    val: 'Els diners que ofereix un banc als seus clients',
+    es: 'El dinero que ofrece un banco a sus clientes',
+    en: 'The money a bank offers its clients'
+  }, {
+    val: 'La quantitat total de diners en circulació en una economia',
+    es: 'La cantidad total de dinero en circulación en una economía',
+    en: 'The total amount of money circulating in an economy'
+  }, {
+    val: 'L\'oferta de productes al mercat',
+    es: 'La oferta de productos en el mercado',
+    en: 'The supply of products in the market'
+  }, {
+    val: 'El sou dels treballadors',
+    es: 'El sueldo de los trabajadores',
+    en: 'Workers\' wages'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'L\'oferta monetària és la quantitat total de diners disponibles en una economia en un moment donat.',
+    es: 'La oferta monetaria es la cantidad total de dinero disponible en una economía en un momento dado.',
+    en: 'The money supply is the total amount of money available in an economy at a given time.'
+  }
+}, {
+  q: {
+    val: 'Què és un aranzel?',
+    es: '¿Qué es un arancel?',
+    en: 'What is a tariff?'
+  },
+  options: [{
+    val: 'Un tipus de moneda',
+    es: 'Un tipo de moneda',
+    en: 'A type of currency'
+  }, {
+    val: 'Un impost sobre les importacions',
+    es: 'Un impuesto sobre las importaciones',
+    en: 'A tax on imports'
+  }, {
+    val: 'Una subvenció a les exportacions',
+    es: 'Una subvención a las exportaciones',
+    en: 'An export subsidy'
+  }, {
+    val: 'Un premi comercial',
+    es: 'Un premio comercial',
+    en: 'A trade award'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Un aranzel és un impost que es cobra sobre els productes importats d\'altres països.',
+    es: 'Un arancel es un impuesto que se cobra sobre los productos importados de otros países.',
+    en: 'A tariff is a tax charged on products imported from other countries.'
+  }
+}, {
+  q: {
+    val: 'Què és la prima de risc d\'un país?',
+    es: '¿Qué es la prima de riesgo de un país?',
+    en: 'What is a country\'s risk premium?'
+  },
+  options: [{
+    val: 'L\'assegurança que paga l\'Estat',
+    es: 'El seguro que paga el Estado',
+    en: 'The insurance the state pays'
+  }, {
+    val: 'La diferència de rendiment entre bons d\'un país i els alemanys',
+    es: 'La diferencia de rendimiento entre bonos de un país y los alemanes',
+    en: 'The yield difference between a country\'s bonds and German bonds'
+  }, {
+    val: 'El cost de viure en un país',
+    es: 'El coste de vivir en un país',
+    en: 'The cost of living in a country'
+  }, {
+    val: 'El salari mínim',
+    es: 'El salario mínimo',
+    en: 'The minimum wage'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'La prima de risc mesura el sobrecost que paga un país per finançar-se respecte a Alemanya (referència).',
+    es: 'La prima de riesgo mide el sobrecoste que paga un país para financiarse respecto a Alemania (referencia).',
+    en: 'The risk premium measures the extra cost a country pays to finance itself compared to Germany (reference).'
+  }
+}, {
+  q: {
+    val: 'Què és l\'economia circular?',
+    es: '¿Qué es la economía circular?',
+    en: 'What is the circular economy?'
+  },
+  options: [{
+    val: 'Una economia que es mou en cercles',
+    es: 'Una economía que se mueve en círculos',
+    en: 'An economy that moves in circles'
+  }, {
+    val: 'Un model que busca reduir residus reutilitzant i reciclant',
+    es: 'Un modelo que busca reducir residuos reutilizando y reciclando',
+    en: 'A model that seeks to reduce waste by reusing and recycling'
+  }, {
+    val: 'Una economia sense creixement',
+    es: 'Una economía sin crecimiento',
+    en: 'An economy without growth'
+  }, {
+    val: 'Un sistema econòmic africà',
+    es: 'Un sistema económico africano',
+    en: 'An African economic system'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'L\'economia circular proposa un sistema de producció i consum que minimitza els residus.',
+    es: 'La economía circular propone un sistema de producción y consumo que minimiza los residuos.',
+    en: 'The circular economy proposes a production and consumption system that minimizes waste.'
+  }
+}, {
+  q: {
+    val: 'Quin any es va crear l\'euro?',
+    es: '¿En qué año se creó el euro?',
+    en: 'In what year was the euro created?'
+  },
+  options: [{
+    val: '1990',
+    es: '1990',
+    en: '1990'
+  }, {
+    val: '1999',
+    es: '1999',
+    en: '1999'
+  }, {
+    val: '2002',
+    es: '2002',
+    en: '2002'
+  }, {
+    val: '2005',
+    es: '2005',
+    en: '2005'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'L\'euro es va introduir com a moneda comptable el 1999 i com a moneda física el 2002.',
+    es: 'El euro se introdujo como moneda contable en 1999 y como moneda física en 2002.',
+    en: 'The euro was introduced as an accounting currency in 1999 and as physical currency in 2002.'
+  }
+}, {
+  q: {
+    val: 'Què és la productivitat?',
+    es: '¿Qué es la productividad?',
+    en: 'What is productivity?'
+  },
+  options: [{
+    val: 'La quantitat de treballadors d\'una empresa',
+    es: 'La cantidad de trabajadores de una empresa',
+    en: 'The number of workers in a company'
+  }, {
+    val: 'La relació entre producció obtinguda i recursos utilitzats',
+    es: 'La relación entre producción obtenida y recursos utilizados',
+    en: 'The relationship between output obtained and resources used'
+  }, {
+    val: 'El preu dels productes',
+    es: 'El precio de los productos',
+    en: 'The price of products'
+  }, {
+    val: 'Les hores de treball setmanals',
+    es: 'Las horas de trabajo semanales',
+    en: 'Weekly working hours'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'La productivitat mesura l\'eficiència en l\'ús dels recursos per produir béns i serveis.',
+    es: 'La productividad mide la eficiencia en el uso de recursos para producir bienes y servicios.',
+    en: 'Productivity measures the efficiency in the use of resources to produce goods and services.'
+  }
+}, {
+  q: {
+    val: 'Què és el salari mínim interprofessional (SMI)?',
+    es: '¿Qué es el salario mínimo interprofesional (SMI)?',
+    en: 'What is the minimum interprofessional wage?'
+  },
+  options: [{
+    val: 'El sou dels polítics',
+    es: 'El sueldo de los políticos',
+    en: 'Politicians\' salary'
+  }, {
+    val: 'La retribució mínima legal que ha de rebre un treballador',
+    es: 'La retribución mínima legal que debe recibir un trabajador',
+    en: 'The minimum legal pay a worker must receive'
+  }, {
+    val: 'El salari mitjà del país',
+    es: 'El salario medio del país',
+    en: 'The average salary of the country'
+  }, {
+    val: 'El sou recomanat per les empreses',
+    es: 'El sueldo recomendado por las empresas',
+    en: 'The salary recommended by companies'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'El SMI és la quantitat mínima que un treballador ha de cobrar, fixada pel govern anualment.',
+    es: 'El SMI es la cantidad mínima que un trabajador debe cobrar, fijada por el gobierno anualmente.',
+    en: 'The minimum wage is the minimum amount a worker must be paid, set annually by the government.'
+  }
+}, {
+  q: {
+    val: 'Què significa PIB per càpita?',
+    es: '¿Qué significa PIB per cápita?',
+    en: 'What does GDP per capita mean?'
+  },
+  options: [{
+    val: 'El PIB de la capital del país',
+    es: 'El PIB de la capital del país',
+    en: 'The GDP of the country\'s capital'
+  }, {
+    val: 'El PIB dividit entre el nombre d\'habitants',
+    es: 'El PIB dividido entre el número de habitantes',
+    en: 'GDP divided by the number of inhabitants'
+  }, {
+    val: 'El PIB de les grans empreses',
+    es: 'El PIB de las grandes empresas',
+    en: 'The GDP of large companies'
+  }, {
+    val: 'El creixement del PIB respecte l\'any anterior',
+    es: 'El crecimiento del PIB respecto al año anterior',
+    en: 'GDP growth compared to the previous year'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'El PIB per càpita divideix el PIB total entre la població, indicant la riquesa mitjana per persona.',
+    es: 'El PIB per cápita divide el PIB total entre la población, indicando la riqueza media por persona.',
+    en: 'GDP per capita divides total GDP by population, indicating average wealth per person.'
+  }
+}, {
+  q: {
+    val: 'Què és un bo de l\'Estat?',
+    es: '¿Qué es un bono del Estado?',
+    en: 'What is a government bond?'
+  },
+  options: [{
+    val: 'Un regal del govern als ciutadans',
+    es: 'Un regalo del gobierno a los ciudadanos',
+    en: 'A gift from the government to citizens'
+  }, {
+    val: 'Un títol de deute emès pel govern per finançar-se',
+    es: 'Un título de deuda emitido por el gobierno para financiarse',
+    en: 'A debt security issued by the government to finance itself'
+  }, {
+    val: 'Una multa per no pagar impostos',
+    es: 'Una multa por no pagar impuestos',
+    en: 'A fine for not paying taxes'
+  }, {
+    val: 'Una acció d\'una empresa pública',
+    es: 'Una acción de una empresa pública',
+    en: 'A share of a public company'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Un bo de l\'Estat és un instrument de deute que el govern emet per obtindre finançament.',
+    es: 'Un bono del Estado es un instrumento de deuda que el gobierno emite para obtener financiación.',
+    en: 'A government bond is a debt instrument issued by the government to obtain financing.'
+  }
+}, {
+  q: {
+    val: 'Què és el comerç just?',
+    es: '¿Qué es el comercio justo?',
+    en: 'What is fair trade?'
+  },
+  options: [{
+    val: 'Comerç entre jutges',
+    es: 'Comercio entre jueces',
+    en: 'Trade between judges'
+  }, {
+    val: 'Un moviment que busca preus justos per als productors dels països en desenvolupament',
+    es: 'Un movimiento que busca precios justos para los productores de países en desarrollo',
+    en: 'A movement seeking fair prices for producers in developing countries'
+  }, {
+    val: 'Comerç sense impostos',
+    es: 'Comercio sin impuestos',
+    en: 'Tax-free trade'
+  }, {
+    val: 'Comerç regulat per tribunals',
+    es: 'Comercio regulado por tribunales',
+    en: 'Court-regulated trade'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'El comerç just garanteix condicions laborals dignes i preus justos per als productors del sud global.',
+    es: 'El comercio justo garantiza condiciones laborales dignas y precios justos para los productores del sur global.',
+    en: 'Fair trade guarantees decent working conditions and fair prices for producers in the global south.'
+  }
+}, {
+  q: {
+    val: 'Què és una startup?',
+    es: '¿Qué es una startup?',
+    en: 'What is a startup?'
+  },
+  options: [{
+    val: 'Una empresa molt gran',
+    es: 'Una empresa muy grande',
+    en: 'A very large company'
+  }, {
+    val: 'Una empresa emergent amb alt potencial de creixement',
+    es: 'Una empresa emergente con alto potencial de crecimiento',
+    en: 'An emerging company with high growth potential'
+  }, {
+    val: 'Un ministerio del govern',
+    es: 'Un ministerio del gobierno',
+    en: 'A government ministry'
+  }, {
+    val: 'Una empresa familiar tradicional',
+    es: 'Una empresa familiar tradicional',
+    en: 'A traditional family business'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Una startup és una empresa nova que busca un model de negoci escalable, sovint basada en tecnologia.',
+    es: 'Una startup es una empresa nueva que busca un modelo de negocio escalable, a menudo basada en tecnología.',
+    en: 'A startup is a new company seeking a scalable business model, often technology-based.'
+  }
+},
+// ── NEW: Economic Systems, Famous Economists & Current Topics (15) ──
+{
+  q: {
+    val: 'Qui va escriure "Camí de servitud" (1944), una crítica al col·lectivisme?',
+    es: '¿Quién escribió "Camino de servidumbre" (1944), una crítica al colectivismo?',
+    en: 'Who wrote "The Road to Serfdom" (1944), a critique of collectivism?'
+  },
+  options: [{
+    val: 'Milton Friedman',
+    es: 'Milton Friedman',
+    en: 'Milton Friedman'
+  }, {
+    val: 'Friedrich Hayek',
+    es: 'Friedrich Hayek',
+    en: 'Friedrich Hayek'
+  }, {
+    val: 'Ludwig von Mises',
+    es: 'Ludwig von Mises',
+    en: 'Ludwig von Mises'
+  }, {
+    val: 'John M. Keynes',
+    es: 'John M. Keynes',
+    en: 'John M. Keynes'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Hayek va publicar "Camí de servitud" el 1944, advertint dels perills de la planificació central.',
+    es: 'Hayek publicó "Camino de servidumbre" en 1944, advirtiendo de los peligros de la planificación central.',
+    en: 'Hayek published "The Road to Serfdom" in 1944, warning of the dangers of central planning.'
+  }
+}, {
+  q: {
+    val: 'Milton Friedman és considerat el pare de quina escola econòmica?',
+    es: '¿Milton Friedman es considerado el padre de qué escuela económica?',
+    en: 'Milton Friedman is considered the father of which economic school?'
+  },
+  options: [{
+    val: 'Keynesianisme',
+    es: 'Keynesianismo',
+    en: 'Keynesianism'
+  }, {
+    val: 'Monetarisme',
+    es: 'Monetarismo',
+    en: 'Monetarism'
+  }, {
+    val: 'Escola Austríaca',
+    es: 'Escuela Austríaca',
+    en: 'Austrian School'
+  }, {
+    val: 'Marxisme',
+    es: 'Marxismo',
+    en: 'Marxism'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Friedman va liderar l\'escola monetarista, que defensa el control de l\'oferta monetària com a eina clau.',
+    es: 'Friedman lideró la escuela monetarista, que defiende el control de la oferta monetaria como herramienta clave.',
+    en: 'Friedman led the monetarist school, which advocates controlling the money supply as a key tool.'
+  }
+}, {
+  q: {
+    val: 'Quin concepte va introduir Joseph Schumpeter per explicar la innovació?',
+    es: '¿Qué concepto introdujo Joseph Schumpeter para explicar la innovación?',
+    en: 'What concept did Joseph Schumpeter introduce to explain innovation?'
+  },
+  options: [{
+    val: 'Mà invisible',
+    es: 'Mano invisible',
+    en: 'Invisible hand'
+  }, {
+    val: 'Destrucció creativa',
+    es: 'Destrucción creativa',
+    en: 'Creative destruction'
+  }, {
+    val: 'Avantatge comparatiu',
+    es: 'Ventaja comparativa',
+    en: 'Comparative advantage'
+  }, {
+    val: 'Equilibri de Nash',
+    es: 'Equilibrio de Nash',
+    en: 'Nash equilibrium'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Schumpeter va encunyar "destrucció creativa": la innovació destrueix velles indústries per crear-ne de noves.',
+    es: 'Schumpeter acuñó "destrucción creativa": la innovación destruye viejas industrias para crear nuevas.',
+    en: 'Schumpeter coined "creative destruction": innovation destroys old industries to create new ones.'
+  }
+}, {
+  q: {
+    val: 'Elinor Ostrom va guanyar el Nobel d\'Economia per estudiar...',
+    es: 'Elinor Ostrom ganó el Nobel de Economía por estudiar...',
+    en: 'Elinor Ostrom won the Nobel in Economics for studying...'
+  },
+  options: [{
+    val: 'Els mercats financers',
+    es: 'Los mercados financieros',
+    en: 'Financial markets'
+  }, {
+    val: 'La gestió col·lectiva de recursos comuns',
+    es: 'La gestión colectiva de recursos comunes',
+    en: 'Collective management of common resources'
+  }, {
+    val: 'La teoria de jocs',
+    es: 'La teoría de juegos',
+    en: 'Game theory'
+  }, {
+    val: 'El comerç internacional',
+    es: 'El comercio internacional',
+    en: 'International trade'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Ostrom va demostrar que les comunitats poden gestionar recursos comuns sense privatització ni estat, guanyant el Nobel el 2009.',
+    es: 'Ostrom demostró que las comunidades pueden gestionar recursos comunes sin privatización ni estado, ganando el Nobel en 2009.',
+    en: 'Ostrom showed communities can manage common resources without privatization or the state, winning the Nobel in 2009.'
+  }
+}, {
+  q: {
+    val: 'Quin economista va proposar que la despesa pública pot estimular l\'economia en recessió?',
+    es: '¿Qué economista propuso que el gasto público puede estimular la economía en recesión?',
+    en: 'Which economist proposed that public spending can stimulate the economy in recession?'
+  },
+  options: [{
+    val: 'Adam Smith',
+    es: 'Adam Smith',
+    en: 'Adam Smith'
+  }, {
+    val: 'Friedrich Hayek',
+    es: 'Friedrich Hayek',
+    en: 'Friedrich Hayek'
+  }, {
+    val: 'John Maynard Keynes',
+    es: 'John Maynard Keynes',
+    en: 'John Maynard Keynes'
+  }, {
+    val: 'David Ricardo',
+    es: 'David Ricardo',
+    en: 'David Ricardo'
+  }],
+  correct: 2,
+  explanation: {
+    val: 'Keynes va argumentar que en recessió, l\'Estat ha d\'augmentar la despesa per compensar la caiguda de la demanda privada.',
+    es: 'Keynes argumentó que en recesión, el Estado debe aumentar el gasto para compensar la caída de la demanda privada.',
+    en: 'Keynes argued that in recession, the state should increase spending to offset falling private demand.'
+  }
+}, {
+  q: {
+    val: 'Què és una economia mixta?',
+    es: '¿Qué es una economía mixta?',
+    en: 'What is a mixed economy?'
+  },
+  options: [{
+    val: 'Una economia sense cap regulació',
+    es: 'Una economía sin ninguna regulación',
+    en: 'An economy without any regulation'
+  }, {
+    val: 'Una economia on coexisteixen el sector públic i el privat',
+    es: 'Una economía donde coexisten el sector público y el privado',
+    en: 'An economy where public and private sectors coexist'
+  }, {
+    val: 'Una economia basada només en l\'agricultura',
+    es: 'Una economía basada solo en la agricultura',
+    en: 'An economy based only on agriculture'
+  }, {
+    val: 'Una economia controlada totalment per l\'Estat',
+    es: 'Una economía controlada totalmente por el Estado',
+    en: 'An economy fully controlled by the state'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'L\'economia mixta combina elements del lliure mercat amb intervenció estatal. La majoria de països actuals tenen economies mixtes.',
+    es: 'La economía mixta combina elementos del libre mercado con intervención estatal. La mayoría de países actuales tienen economías mixtas.',
+    en: 'A mixed economy combines free market elements with state intervention. Most countries today have mixed economies.'
+  }
+}, {
+  q: {
+    val: 'Thomas Piketty és famós pel seu llibre sobre...',
+    es: 'Thomas Piketty es famoso por su libro sobre...',
+    en: 'Thomas Piketty is famous for his book about...'
+  },
+  options: [{
+    val: 'La teoria monetària',
+    es: 'La teoría monetaria',
+    en: 'Monetary theory'
+  }, {
+    val: 'La desigualtat i el capital al segle XXI',
+    es: 'La desigualdad y el capital en el siglo XXI',
+    en: 'Inequality and capital in the 21st century'
+  }, {
+    val: 'Les criptomonedes',
+    es: 'Las criptomonedas',
+    en: 'Cryptocurrencies'
+  }, {
+    val: 'El comerç internacional',
+    es: 'El comercio internacional',
+    en: 'International trade'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Piketty va publicar "El capital al segle XXI" (2013), on demostra que la rendibilitat del capital supera el creixement econòmic, augmentant la desigualtat.',
+    es: 'Piketty publicó "El capital en el siglo XXI" (2013), donde demuestra que la rentabilidad del capital supera el crecimiento económico, aumentando la desigualdad.',
+    en: 'Piketty published "Capital in the Twenty-First Century" (2013), showing that return on capital exceeds economic growth, increasing inequality.'
+  }
+}, {
+  q: {
+    val: 'Què va proposar David Ricardo amb la teoria de l\'avantatge comparatiu?',
+    es: '¿Qué propuso David Ricardo con la teoría de la ventaja comparativa?',
+    en: 'What did David Ricardo propose with comparative advantage theory?'
+  },
+  options: [{
+    val: 'Que cada país ha de ser autosuficient',
+    es: 'Que cada país debe ser autosuficiente',
+    en: 'That each country should be self-sufficient'
+  }, {
+    val: 'Que els països s\'han d\'especialitzar en el que produeixen relativament millor',
+    es: 'Que los países deben especializarse en lo que producen relativamente mejor',
+    en: 'That countries should specialize in what they produce relatively better'
+  }, {
+    val: 'Que el comerç internacional sempre perjudica',
+    es: 'Que el comercio internacional siempre perjudica',
+    en: 'That international trade always harms'
+  }, {
+    val: 'Que només els països rics han de comerciar',
+    es: 'Que solo los países ricos deben comerciar',
+    en: 'That only rich countries should trade'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Ricardo va demostrar que el comerç beneficia tots els països si cadascun s\'especialitza en el que té menor cost d\'oportunitat.',
+    es: 'Ricardo demostró que el comercio beneficia a todos los países si cada uno se especializa en lo que tiene menor coste de oportunidad.',
+    en: 'Ricardo showed that trade benefits all countries if each specializes in what has the lowest opportunity cost.'
+  }
+}, {
+  q: {
+    val: 'Què és la "gig economy" (economia de feines temporals)?',
+    es: '¿Qué es la "gig economy" (economía de trabajos temporales)?',
+    en: 'What is the "gig economy"?'
+  },
+  options: [{
+    val: 'L\'economia de les grans corporacions',
+    es: 'La economía de las grandes corporaciones',
+    en: 'The economy of large corporations'
+  }, {
+    val: 'Un model basat en treballs curts, freelance i plataformes digitals',
+    es: 'Un modelo basado en trabajos cortos, freelance y plataformas digitales',
+    en: 'A model based on short-term, freelance work and digital platforms'
+  }, {
+    val: 'Una economia sense diners',
+    es: 'Una economía sin dinero',
+    en: 'An economy without money'
+  }, {
+    val: 'L\'economia dels concerts musicals',
+    es: 'La economía de los conciertos musicales',
+    en: 'The economy of music concerts'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'La gig economy es basa en treballs temporals i freelance, sovint a través de plataformes com Uber, Glovo o Fiverr.',
+    es: 'La gig economy se basa en trabajos temporales y freelance, a menudo a través de plataformas como Uber, Glovo o Fiverr.',
+    en: 'The gig economy is based on temporary and freelance work, often through platforms like Uber, Glovo, or Fiverr.'
+  }
+}, {
+  q: {
+    val: 'Amartya Sen va guanyar el Nobel per les seues contribucions a...',
+    es: 'Amartya Sen ganó el Nobel por sus contribuciones a...',
+    en: 'Amartya Sen won the Nobel for his contributions to...'
+  },
+  options: [{
+    val: 'La teoria del caos',
+    es: 'La teoría del caos',
+    en: 'Chaos theory'
+  }, {
+    val: 'L\'economia del benestar i la teoria de la fam',
+    es: 'La economía del bienestar y la teoría de la hambruna',
+    en: 'Welfare economics and famine theory'
+  }, {
+    val: 'La política monetària',
+    es: 'La política monetaria',
+    en: 'Monetary policy'
+  }, {
+    val: 'Les finances corporatives',
+    es: 'Las finanzas corporativas',
+    en: 'Corporate finance'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Amartya Sen va rebre el Nobel el 1998 pels seus treballs sobre el benestar, la pobresa i les fams, demostrant que les fams no són només per falta d\'aliments.',
+    es: 'Amartya Sen recibió el Nobel en 1998 por sus trabajos sobre bienestar, pobreza y hambrunas, demostrando que las hambrunas no son solo por falta de alimentos.',
+    en: 'Amartya Sen received the Nobel in 1998 for his work on welfare, poverty, and famines, showing that famines are not just about food shortage.'
+  }
+}, {
+  q: {
+    val: 'Què és una CBDC (Moneda Digital de Banc Central)?',
+    es: '¿Qué es una CBDC (Moneda Digital de Banco Central)?',
+    en: 'What is a CBDC (Central Bank Digital Currency)?'
+  },
+  options: [{
+    val: 'Una criptomoneda privada com Bitcoin',
+    es: 'Una criptomoneda privada como Bitcoin',
+    en: 'A private cryptocurrency like Bitcoin'
+  }, {
+    val: 'Una versió digital de la moneda oficial emesa pel banc central',
+    es: 'Una versión digital de la moneda oficial emitida por el banco central',
+    en: 'A digital version of the official currency issued by the central bank'
+  }, {
+    val: 'Un sistema de pagament per targeta',
+    es: 'Un sistema de pago por tarjeta',
+    en: 'A card payment system'
+  }, {
+    val: 'Una moneda per a videojocs',
+    es: 'Una moneda para videojuegos',
+    en: 'A currency for video games'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Les CBDC són versions digitals de monedes oficials (com l\'euro digital) emeses i controlades pels bancs centrals.',
+    es: 'Las CBDC son versiones digitales de monedas oficiales (como el euro digital) emitidas y controladas por los bancos centrales.',
+    en: 'CBDCs are digital versions of official currencies (like the digital euro) issued and controlled by central banks.'
+  }
+}, {
+  q: {
+    val: 'Quin economista va formular la "llei de la població" sobre creixement demogràfic i recursos?',
+    es: '¿Qué economista formuló la "ley de la población" sobre crecimiento demográfico y recursos?',
+    en: 'Which economist formulated the "law of population" about demographic growth and resources?'
+  },
+  options: [{
+    val: 'Adam Smith',
+    es: 'Adam Smith',
+    en: 'Adam Smith'
+  }, {
+    val: 'Thomas Malthus',
+    es: 'Thomas Malthus',
+    en: 'Thomas Malthus'
+  }, {
+    val: 'John Stuart Mill',
+    es: 'John Stuart Mill',
+    en: 'John Stuart Mill'
+  }, {
+    val: 'Paul Samuelson',
+    es: 'Paul Samuelson',
+    en: 'Paul Samuelson'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Malthus va argumentar que la població creix exponencialment mentre els recursos ho fan aritmèticament, generant escassetat.',
+    es: 'Malthus argumentó que la población crece exponencialmente mientras los recursos lo hacen aritméticamente, generando escasez.',
+    en: 'Malthus argued that population grows exponentially while resources grow arithmetically, generating scarcity.'
+  }
+}, {
+  q: {
+    val: 'Què és l\'anarcocapitalisme?',
+    es: '¿Qué es el anarcocapitalismo?',
+    en: 'What is anarcho-capitalism?'
+  },
+  options: [{
+    val: 'Un sistema amb un estat molt fort',
+    es: 'Un sistema con un estado muy fuerte',
+    en: 'A system with a very strong state'
+  }, {
+    val: 'Un sistema sense estat on tot es regula pel lliure mercat',
+    es: 'Un sistema sin estado donde todo se regula por el libre mercado',
+    en: 'A stateless system where everything is regulated by the free market'
+  }, {
+    val: 'Una forma de comunisme',
+    es: 'Una forma de comunismo',
+    en: 'A form of communism'
+  }, {
+    val: 'Un model d\'economia mixta',
+    es: 'Un modelo de economía mixta',
+    en: 'A mixed economy model'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'L\'anarcocapitalisme proposa eliminar l\'Estat i que totes les funcions socials (incloent seguretat i justícia) siguen proveïdes pel mercat lliure.',
+    es: 'El anarcocapitalismo propone eliminar el Estado y que todas las funciones sociales (incluyendo seguridad y justicia) sean provistas por el libre mercado.',
+    en: 'Anarcho-capitalism proposes eliminating the state so that all social functions (including security and justice) are provided by the free market.'
+  }
+}, {
+  q: {
+    val: 'John Nash va ser pioner en quina branca de l\'economia?',
+    es: '¿John Nash fue pionero en qué rama de la economía?',
+    en: 'John Nash was a pioneer in which branch of economics?'
+  },
+  options: [{
+    val: 'Economia laboral',
+    es: 'Economía laboral',
+    en: 'Labour economics'
+  }, {
+    val: 'Teoria de jocs',
+    es: 'Teoría de juegos',
+    en: 'Game theory'
+  }, {
+    val: 'Economia agrària',
+    es: 'Economía agraria',
+    en: 'Agricultural economics'
+  }, {
+    val: 'Comerç internacional',
+    es: 'Comercio internacional',
+    en: 'International trade'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'Nash va desenvolupar el concepte d\'equilibri de Nash, fonamental en la teoria de jocs, pel qual va rebre el Nobel el 1994.',
+    es: 'Nash desarrolló el concepto de equilibrio de Nash, fundamental en la teoría de juegos, por el que recibió el Nobel en 1994.',
+    en: 'Nash developed the Nash equilibrium concept, fundamental in game theory, for which he received the Nobel in 1994.'
+  }
+}, {
+  q: {
+    val: 'Quina va ser la causa principal de la inflació global de 2021-2023?',
+    es: '¿Cuál fue la causa principal de la inflación global de 2021-2023?',
+    en: 'What was the main cause of global inflation in 2021-2023?'
+  },
+  options: [{
+    val: 'La descoberta d\'or',
+    es: 'El descubrimiento de oro',
+    en: 'The discovery of gold'
+  }, {
+    val: 'La crisi energètica, els problemes de subministrament post-COVID i la guerra d\'Ucraïna',
+    es: 'La crisis energética, los problemas de suministro post-COVID y la guerra de Ucrania',
+    en: 'The energy crisis, post-COVID supply chain issues, and the Ukraine war'
+  }, {
+    val: 'La baixada dels tipus d\'interès',
+    es: 'La bajada de los tipos de interés',
+    en: 'The lowering of interest rates'
+  }, {
+    val: 'L\'augment de la producció industrial',
+    es: 'El aumento de la producción industrial',
+    en: 'The increase in industrial production'
+  }],
+  correct: 1,
+  explanation: {
+    val: 'La inflació de 2021-23 va ser multicausal: estímuls monetaris post-COVID, crisi de subministraments i l\'encariment energètic per la guerra d\'Ucraïna.',
+    es: 'La inflación de 2021-23 fue multicausal: estímulos monetarios post-COVID, crisis de suministros y el encarecimiento energético por la guerra de Ucrania.',
+    en: 'The 2021-23 inflation was multi-causal: post-COVID monetary stimulus, supply chain crisis, and energy price rises from the Ukraine war.'
+  }
+}];
+
+// ── PARAULA PROHIBIDA CARDS (25) ──
+var PROHIBIDA_CARDS = [{
+  word: {
+    val: 'INFLACIÓ',
+    es: 'INFLACIÓN',
+    en: 'INFLATION'
+  },
+  forbidden: {
+    val: ['preus', 'pujar', 'diners', 'cost', 'IPC'],
+    es: ['precios', 'subir', 'dinero', 'coste', 'IPC'],
+    en: ['prices', 'rise', 'money', 'cost', 'CPI']
+  }
+}, {
+  word: {
+    val: 'BANC',
+    es: 'BANCO',
+    en: 'BANK'
+  },
+  forbidden: {
+    val: ['diners', 'compte', 'estalvi', 'préstec', 'sucursal'],
+    es: ['dinero', 'cuenta', 'ahorro', 'préstamo', 'sucursal'],
+    en: ['money', 'account', 'savings', 'loan', 'branch']
+  }
+}, {
+  word: {
+    val: 'IMPOST',
+    es: 'IMPUESTO',
+    en: 'TAX'
+  },
+  forbidden: {
+    val: ['pagar', 'govern', 'Hisenda', 'IRPF', 'IVA'],
+    es: ['pagar', 'gobierno', 'Hacienda', 'IRPF', 'IVA'],
+    en: ['pay', 'government', 'revenue', 'income', 'VAT']
+  }
+}, {
+  word: {
+    val: 'BORSA',
+    es: 'BOLSA',
+    en: 'STOCK MARKET'
+  },
+  forbidden: {
+    val: ['accions', 'invertir', 'Wall Street', 'IBEX', 'cotitzar'],
+    es: ['acciones', 'invertir', 'Wall Street', 'IBEX', 'cotizar'],
+    en: ['stocks', 'invest', 'Wall Street', 'shares', 'trade']
+  }
+}, {
+  word: {
+    val: 'HIPOTECA',
+    es: 'HIPOTECA',
+    en: 'MORTGAGE'
+  },
+  forbidden: {
+    val: ['casa', 'banc', 'préstec', 'pagar', 'interès'],
+    es: ['casa', 'banco', 'préstamo', 'pagar', 'interés'],
+    en: ['house', 'bank', 'loan', 'pay', 'interest']
+  }
+}, {
+  word: {
+    val: 'DESOCUPACIÓ',
+    es: 'DESEMPLEO',
+    en: 'UNEMPLOYMENT'
+  },
+  forbidden: {
+    val: ['treball', 'atur', 'feina', 'INEM', 'contracte'],
+    es: ['trabajo', 'paro', 'empleo', 'INEM', 'contrato'],
+    en: ['work', 'job', 'employ', 'hire', 'contract']
+  }
+}, {
+  word: {
+    val: 'EURO',
+    es: 'EURO',
+    en: 'EURO'
+  },
+  forbidden: {
+    val: ['moneda', 'Europa', 'diners', 'pesseta', 'divisa'],
+    es: ['moneda', 'Europa', 'dinero', 'peseta', 'divisa'],
+    en: ['currency', 'Europe', 'money', 'coin', 'exchange']
+  }
+}, {
+  word: {
+    val: 'SALARI',
+    es: 'SALARIO',
+    en: 'SALARY'
+  },
+  forbidden: {
+    val: ['sou', 'treballar', 'cobrar', 'nòmina', 'paga'],
+    es: ['sueldo', 'trabajar', 'cobrar', 'nómina', 'paga'],
+    en: ['wage', 'work', 'pay', 'income', 'earn']
+  }
+}, {
+  word: {
+    val: 'EMPRESA',
+    es: 'EMPRESA',
+    en: 'COMPANY'
+  },
+  forbidden: {
+    val: ['negoci', 'treballadors', 'producte', 'benefici', 'societat'],
+    es: ['negocio', 'trabajadores', 'producto', 'beneficio', 'sociedad'],
+    en: ['business', 'workers', 'product', 'profit', 'firm']
+  }
+}, {
+  word: {
+    val: 'MONOPOLI',
+    es: 'MONOPOLIO',
+    en: 'MONOPOLY'
+  },
+  forbidden: {
+    val: ['únic', 'competència', 'mercat', 'dominar', 'empresa'],
+    es: ['único', 'competencia', 'mercado', 'dominar', 'empresa'],
+    en: ['only', 'competition', 'market', 'dominate', 'company']
+  }
+}, {
+  word: {
+    val: 'INVERSIÓ',
+    es: 'INVERSIÓN',
+    en: 'INVESTMENT'
+  },
+  forbidden: {
+    val: ['diners', 'guanyar', 'borsa', 'risc', 'rendiment'],
+    es: ['dinero', 'ganar', 'bolsa', 'riesgo', 'rendimiento'],
+    en: ['money', 'earn', 'stock', 'risk', 'return']
+  }
+}, {
+  word: {
+    val: 'PRESSUPOST',
+    es: 'PRESUPUESTO',
+    en: 'BUDGET'
+  },
+  forbidden: {
+    val: ['gastar', 'ingressos', 'despeses', 'planificar', 'diners'],
+    es: ['gastar', 'ingresos', 'gastos', 'planificar', 'dinero'],
+    en: ['spend', 'income', 'expenses', 'plan', 'money']
+  }
+}, {
+  word: {
+    val: 'SUBVENCIÓ',
+    es: 'SUBVENCIÓN',
+    en: 'SUBSIDY'
+  },
+  forbidden: {
+    val: ['ajuda', 'govern', 'diners', 'finançar', 'donar'],
+    es: ['ayuda', 'gobierno', 'dinero', 'financiar', 'dar'],
+    en: ['help', 'government', 'money', 'fund', 'give']
+  }
+}, {
+  word: {
+    val: 'CAPITALISME',
+    es: 'CAPITALISMO',
+    en: 'CAPITALISM'
+  },
+  forbidden: {
+    val: ['mercat', 'privat', 'lliure', 'Marx', 'benefici'],
+    es: ['mercado', 'privado', 'libre', 'Marx', 'beneficio'],
+    en: ['market', 'private', 'free', 'Marx', 'profit']
+  }
+}, {
+  word: {
+    val: 'GLOBALITZACIÓ',
+    es: 'GLOBALIZACIÓN',
+    en: 'GLOBALIZATION'
+  },
+  forbidden: {
+    val: ['mundial', 'internacional', 'comerç', 'fronteres', 'planeta'],
+    es: ['mundial', 'internacional', 'comercio', 'fronteras', 'planeta'],
+    en: ['world', 'international', 'trade', 'borders', 'planet']
+  }
+}, {
+  word: {
+    val: 'DEUTE',
+    es: 'DEUDA',
+    en: 'DEBT'
+  },
+  forbidden: {
+    val: ['deure', 'préstec', 'tornar', 'diners', 'creditor'],
+    es: ['deber', 'préstamo', 'devolver', 'dinero', 'acreedor'],
+    en: ['owe', 'loan', 'repay', 'money', 'creditor']
+  }
+}, {
+  word: {
+    val: 'EXPORTACIÓ',
+    es: 'EXPORTACIÓN',
+    en: 'EXPORT'
+  },
+  forbidden: {
+    val: ['vendre', 'estranger', 'país', 'comerç', 'enviar'],
+    es: ['vender', 'extranjero', 'país', 'comercio', 'enviar'],
+    en: ['sell', 'foreign', 'country', 'trade', 'send']
+  }
+}, {
+  word: {
+    val: 'SINDICAT',
+    es: 'SINDICATO',
+    en: 'TRADE UNION'
+  },
+  forbidden: {
+    val: ['treballadors', 'vaga', 'drets', 'negociar', 'laboral'],
+    es: ['trabajadores', 'huelga', 'derechos', 'negociar', 'laboral'],
+    en: ['workers', 'strike', 'rights', 'negotiate', 'labour']
+  }
+}, {
+  word: {
+    val: 'DIVIDEND',
+    es: 'DIVIDENDO',
+    en: 'DIVIDEND'
+  },
+  forbidden: {
+    val: ['acció', 'benefici', 'repartir', 'accionista', 'borsa'],
+    es: ['acción', 'beneficio', 'repartir', 'accionista', 'bolsa'],
+    en: ['share', 'profit', 'distribute', 'shareholder', 'stock']
+  }
+}, {
+  word: {
+    val: 'CRIPTOMONEDA',
+    es: 'CRIPTOMONEDA',
+    en: 'CRYPTOCURRENCY'
+  },
+  forbidden: {
+    val: ['Bitcoin', 'digital', 'blockchain', 'minar', 'virtual'],
+    es: ['Bitcoin', 'digital', 'blockchain', 'minar', 'virtual'],
+    en: ['Bitcoin', 'digital', 'blockchain', 'mine', 'virtual']
+  }
+}, {
+  word: {
+    val: 'ASSEGURANÇA',
+    es: 'SEGURO',
+    en: 'INSURANCE'
+  },
+  forbidden: {
+    val: ['protegir', 'pòlissa', 'risc', 'pagar', 'accident'],
+    es: ['proteger', 'póliza', 'riesgo', 'pagar', 'accidente'],
+    en: ['protect', 'policy', 'risk', 'pay', 'accident']
+  }
+}, {
+  word: {
+    val: 'PRIVATITZACIÓ',
+    es: 'PRIVATIZACIÓN',
+    en: 'PRIVATIZATION'
+  },
+  forbidden: {
+    val: ['vendre', 'públic', 'empresa', 'govern', 'estat'],
+    es: ['vender', 'público', 'empresa', 'gobierno', 'estado'],
+    en: ['sell', 'public', 'company', 'government', 'state']
+  }
+}, {
+  word: {
+    val: 'AUTÒNOM',
+    es: 'AUTÓNOMO',
+    en: 'FREELANCER'
+  },
+  forbidden: {
+    val: ['treballar', 'propi', 'quota', 'factura', 'independent'],
+    es: ['trabajar', 'propio', 'cuota', 'factura', 'independiente'],
+    en: ['work', 'own', 'fee', 'invoice', 'independent']
+  }
+}, {
+  word: {
+    val: 'FRANCHÍCIA',
+    es: 'FRANQUICIA',
+    en: 'FRANCHISE'
+  },
+  forbidden: {
+    val: ['marca', 'McDonald\'s', 'llicència', 'negoci', 'cadena'],
+    es: ['marca', 'McDonald\'s', 'licencia', 'negocio', 'cadena'],
+    en: ['brand', 'McDonald\'s', 'license', 'business', 'chain']
+  }
+}, {
+  word: {
+    val: 'PENSIÓ',
+    es: 'PENSIÓN',
+    en: 'PENSION'
+  },
+  forbidden: {
+    val: ['jubilació', 'vell', 'retirar', 'cotitzar', 'Seguretat Social'],
+    es: ['jubilación', 'viejo', 'retirar', 'cotizar', 'Seguridad Social'],
+    en: ['retirement', 'old', 'retire', 'contribute', 'Social Security']
+  }
+},
+// ── NEW: Economic Systems (10) ──
+{
+  word: {
+    val: 'SOCIALISME',
+    es: 'SOCIALISMO',
+    en: 'SOCIALISM'
+  },
+  forbidden: {
+    val: ['Marx', 'col·lectiu', 'igualtat', 'estat', 'treballadors'],
+    es: ['Marx', 'colectivo', 'igualdad', 'estado', 'trabajadores'],
+    en: ['Marx', 'collective', 'equality', 'state', 'workers']
+  }
+}, {
+  word: {
+    val: 'ECONOMIA PLANIFICADA',
+    es: 'ECONOMÍA PLANIFICADA',
+    en: 'PLANNED ECONOMY'
+  },
+  forbidden: {
+    val: ['estat', 'govern', 'central', 'URSS', 'control'],
+    es: ['estado', 'gobierno', 'central', 'URSS', 'control'],
+    en: ['state', 'government', 'central', 'USSR', 'control']
+  }
+}, {
+  word: {
+    val: 'SOCIALDEMOCRACIA',
+    es: 'SOCIALDEMOCRACIA',
+    en: 'SOCIAL DEMOCRACY'
+  },
+  forbidden: {
+    val: ['benestar', 'impostos', 'Escandinàvia', 'igualtat', 'mercat'],
+    es: ['bienestar', 'impuestos', 'Escandinavia', 'igualdad', 'mercado'],
+    en: ['welfare', 'taxes', 'Scandinavia', 'equality', 'market']
+  }
+}, {
+  word: {
+    val: 'LIBERALISME ECONÒMIC',
+    es: 'LIBERALISMO ECONÓMICO',
+    en: 'ECONOMIC LIBERALISM'
+  },
+  forbidden: {
+    val: ['lliure', 'mercat', 'Smith', 'intervenció', 'privat'],
+    es: ['libre', 'mercado', 'Smith', 'intervención', 'privado'],
+    en: ['free', 'market', 'Smith', 'intervention', 'private']
+  }
+}, {
+  word: {
+    val: 'RENDA BÀSICA',
+    es: 'RENTA BÁSICA',
+    en: 'BASIC INCOME'
+  },
+  forbidden: {
+    val: ['universal', 'diners', 'tots', 'incondicional', 'estat'],
+    es: ['universal', 'dinero', 'todos', 'incondicional', 'estado'],
+    en: ['universal', 'money', 'everyone', 'unconditional', 'state']
+  }
+}, {
+  word: {
+    val: 'DESGLOBALITZACIÓ',
+    es: 'DESGLOBALIZACIÓN',
+    en: 'DEGLOBALIZATION'
+  },
+  forbidden: {
+    val: ['comerç', 'fronteres', 'proteccionisme', 'local', 'mundial'],
+    es: ['comercio', 'fronteras', 'proteccionismo', 'local', 'mundial'],
+    en: ['trade', 'borders', 'protectionism', 'local', 'global']
+  }
+}, {
+  word: {
+    val: 'ECONOMIA VERDA',
+    es: 'ECONOMÍA VERDE',
+    en: 'GREEN ECONOMY'
+  },
+  forbidden: {
+    val: ['sostenible', 'medi ambient', 'renovable', 'carboni', 'clima'],
+    es: ['sostenible', 'medio ambiente', 'renovable', 'carbono', 'clima'],
+    en: ['sustainable', 'environment', 'renewable', 'carbon', 'climate']
+  }
+}, {
+  word: {
+    val: 'KEYNESIANISME',
+    es: 'KEYNESIANISMO',
+    en: 'KEYNESIANISM'
+  },
+  forbidden: {
+    val: ['Keynes', 'despesa', 'públic', 'recessió', 'demanda'],
+    es: ['Keynes', 'gasto', 'público', 'recesión', 'demanda'],
+    en: ['Keynes', 'spending', 'public', 'recession', 'demand']
+  }
+}, {
+  word: {
+    val: 'ESCOLA AUSTRÍACA',
+    es: 'ESCUELA AUSTRÍACA',
+    en: 'AUSTRIAN SCHOOL'
+  },
+  forbidden: {
+    val: ['Hayek', 'Mises', 'lliure', 'intervenció', 'cicle'],
+    es: ['Hayek', 'Mises', 'libre', 'intervención', 'ciclo'],
+    en: ['Hayek', 'Mises', 'free', 'intervention', 'cycle']
+  }
+}, {
+  word: {
+    val: 'COOPERATIVISME',
+    es: 'COOPERATIVISMO',
+    en: 'COOPERATIVISM'
+  },
+  forbidden: {
+    val: ['socis', 'democràtic', 'compartir', 'col·lectiu', 'Mondragón'],
+    es: ['socios', 'democrático', 'compartir', 'colectivo', 'Mondragón'],
+    en: ['members', 'democratic', 'share', 'collective', 'Mondragón']
+  }
+}];
+
+// ── RÀPID CARDS (25) ──
+var RAPID_CARDS = [{
+  q: {
+    val: 'Divisa del Japó?',
+    es: '¿Divisa de Japón?',
+    en: 'Currency of Japan?'
+  },
+  answer: {
+    val: 'Ien',
+    es: 'Yen',
+    en: 'Yen'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Contrari de superàvit?',
+    es: '¿Contrario de superávit?',
+    en: 'Opposite of surplus?'
+  },
+  answer: {
+    val: 'Dèficit',
+    es: 'Déficit',
+    en: 'Deficit'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Sigles del Banc Central Europeu?',
+    es: '¿Siglas del Banco Central Europeo?',
+    en: 'Abbreviation for European Central Bank?'
+  },
+  answer: {
+    val: 'BCE',
+    es: 'BCE',
+    en: 'ECB'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Impost sobre el consum a Espanya?',
+    es: '¿Impuesto sobre el consumo en España?',
+    en: 'Consumption tax in Spain?'
+  },
+  answer: {
+    val: 'IVA',
+    es: 'IVA',
+    en: 'VAT'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Nom de la borsa espanyola?',
+    es: '¿Nombre de la bolsa española?',
+    en: 'Name of the Spanish stock exchange?'
+  },
+  answer: {
+    val: 'IBEX 35',
+    es: 'IBEX 35',
+    en: 'IBEX 35'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Quants països formen la zona euro (aprox.)?',
+    es: '¿Cuántos países forman la zona euro (aprox.)?',
+    en: 'How many countries in the eurozone (approx.)?'
+  },
+  options: [{
+    val: '10',
+    es: '10',
+    en: '10'
+  }, {
+    val: '15',
+    es: '15',
+    en: '15'
+  }, {
+    val: '20',
+    es: '20',
+    en: '20'
+  }, {
+    val: '27',
+    es: '27',
+    en: '27'
+  }],
+  correct: 2,
+  type: 'choice'
+}, {
+  q: {
+    val: 'Què significa PIB?',
+    es: '¿Qué significa PIB?',
+    en: 'What does GDP stand for?'
+  },
+  answer: {
+    val: 'Producte Interior Brut',
+    es: 'Producto Interior Bruto',
+    en: 'Gross Domestic Product'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'El petroli es cotitza en...?',
+    es: 'El petróleo se cotiza en...?',
+    en: 'Oil is priced in...?'
+  },
+  options: [{
+    val: 'Euros',
+    es: 'Euros',
+    en: 'Euros'
+  }, {
+    val: 'Dòlars',
+    es: 'Dólares',
+    en: 'Dollars'
+  }, {
+    val: 'Lliures',
+    es: 'Libras',
+    en: 'Pounds'
+  }, {
+    val: 'Iens',
+    es: 'Yenes',
+    en: 'Yen'
+  }],
+  correct: 1,
+  type: 'choice'
+}, {
+  q: {
+    val: 'Autor de "El Capital"?',
+    es: '¿Autor de "El Capital"?',
+    en: 'Author of "Das Kapital"?'
+  },
+  answer: {
+    val: 'Karl Marx',
+    es: 'Karl Marx',
+    en: 'Karl Marx'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'IVA general a Espanya?',
+    es: '¿IVA general en España?',
+    en: 'Standard VAT rate in Spain?'
+  },
+  options: [{
+    val: '15%',
+    es: '15%',
+    en: '15%'
+  }, {
+    val: '18%',
+    es: '18%',
+    en: '18%'
+  }, {
+    val: '21%',
+    es: '21%',
+    en: '21%'
+  }, {
+    val: '25%',
+    es: '25%',
+    en: '25%'
+  }],
+  correct: 2,
+  type: 'choice'
+}, {
+  q: {
+    val: 'Símbol de l\'euro?',
+    es: '¿Símbolo del euro?',
+    en: 'Symbol of the euro?'
+  },
+  answer: {
+    val: '€',
+    es: '€',
+    en: '€'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Contrari d\'importació?',
+    es: '¿Contrario de importación?',
+    en: 'Opposite of import?'
+  },
+  answer: {
+    val: 'Exportació',
+    es: 'Exportación',
+    en: 'Export'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Quina organització fixa el tipus d\'interès a Europa?',
+    es: '¿Qué organización fija el tipo de interés en Europa?',
+    en: 'Which organization sets interest rates in Europe?'
+  },
+  options: [{
+    val: 'ONU',
+    es: 'ONU',
+    en: 'UN'
+  }, {
+    val: 'BCE',
+    es: 'BCE',
+    en: 'ECB'
+  }, {
+    val: 'FMI',
+    es: 'FMI',
+    en: 'IMF'
+  }, {
+    val: 'OTAN',
+    es: 'OTAN',
+    en: 'NATO'
+  }],
+  correct: 1,
+  type: 'choice'
+}, {
+  q: {
+    val: 'Divisa del Regne Unit?',
+    es: '¿Divisa del Reino Unido?',
+    en: 'Currency of the United Kingdom?'
+  },
+  answer: {
+    val: 'Lliura esterlina',
+    es: 'Libra esterlina',
+    en: 'Pound sterling'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Com es diu quan una empresa ven sota cost?',
+    es: '¿Cómo se llama cuando una empresa vende bajo coste?',
+    en: 'What is it called when a company sells below cost?'
+  },
+  answer: {
+    val: 'Dumping',
+    es: 'Dumping',
+    en: 'Dumping'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Quin sector econòmic inclou l\'agricultura?',
+    es: '¿Qué sector económico incluye la agricultura?',
+    en: 'Which economic sector includes agriculture?'
+  },
+  options: [{
+    val: 'Primari',
+    es: 'Primario',
+    en: 'Primary'
+  }, {
+    val: 'Secundari',
+    es: 'Secundario',
+    en: 'Secondary'
+  }, {
+    val: 'Terciari',
+    es: 'Terciario',
+    en: 'Tertiary'
+  }, {
+    val: 'Quaternari',
+    es: 'Cuaternario',
+    en: 'Quaternary'
+  }],
+  correct: 0,
+  type: 'choice'
+}, {
+  q: {
+    val: 'Nom del creador de Bitcoin?',
+    es: '¿Nombre del creador de Bitcoin?',
+    en: 'Name of Bitcoin\'s creator?'
+  },
+  answer: {
+    val: 'Satoshi Nakamoto',
+    es: 'Satoshi Nakamoto',
+    en: 'Satoshi Nakamoto'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Què és el NASDAQ?',
+    es: '¿Qué es el NASDAQ?',
+    en: 'What is NASDAQ?'
+  },
+  options: [{
+    val: 'Un banc',
+    es: 'Un banco',
+    en: 'A bank'
+  }, {
+    val: 'Una borsa tecnològica',
+    es: 'Una bolsa tecnológica',
+    en: 'A tech stock exchange'
+  }, {
+    val: 'Un impost',
+    es: 'Un impuesto',
+    en: 'A tax'
+  }, {
+    val: 'Una criptomoneda',
+    es: 'Una criptomoneda',
+    en: 'A cryptocurrency'
+  }],
+  correct: 1,
+  type: 'choice'
+}, {
+  q: {
+    val: 'Quantes cèntims té un euro?',
+    es: '¿Cuántos céntimos tiene un euro?',
+    en: 'How many cents in a euro?'
+  },
+  answer: {
+    val: '100',
+    es: '100',
+    en: '100'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Com es diu l\'impost sobre la renda a Espanya?',
+    es: '¿Cómo se llama el impuesto sobre la renta en España?',
+    en: 'What is Spain\'s income tax called?'
+  },
+  answer: {
+    val: 'IRPF',
+    es: 'IRPF',
+    en: 'IRPF'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Quina moneda utilitza la Xina?',
+    es: '¿Qué moneda utiliza China?',
+    en: 'What currency does China use?'
+  },
+  options: [{
+    val: 'Ien',
+    es: 'Yen',
+    en: 'Yen'
+  }, {
+    val: 'Yuan / Renminbi',
+    es: 'Yuan / Renminbi',
+    en: 'Yuan / Renminbi'
+  }, {
+    val: 'Won',
+    es: 'Won',
+    en: 'Won'
+  }, {
+    val: 'Rupia',
+    es: 'Rupia',
+    en: 'Rupee'
+  }],
+  correct: 1,
+  type: 'choice'
+}, {
+  q: {
+    val: 'Fundador de Tesla i SpaceX?',
+    es: '¿Fundador de Tesla y SpaceX?',
+    en: 'Founder of Tesla and SpaceX?'
+  },
+  answer: {
+    val: 'Elon Musk',
+    es: 'Elon Musk',
+    en: 'Elon Musk'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Quin organisme regula la competència a Espanya?',
+    es: '¿Qué organismo regula la competencia en España?',
+    en: 'Which body regulates competition in Spain?'
+  },
+  options: [{
+    val: 'CNMC',
+    es: 'CNMC',
+    en: 'CNMC'
+  }, {
+    val: 'CNMV',
+    es: 'CNMV',
+    en: 'CNMV'
+  }, {
+    val: 'BCE',
+    es: 'BCE',
+    en: 'ECB'
+  }, {
+    val: 'FMI',
+    es: 'FMI',
+    en: 'IMF'
+  }],
+  correct: 0,
+  type: 'choice'
+}, {
+  q: {
+    val: 'Com es diu comprar i vendre entre països?',
+    es: '¿Cómo se llama comprar y vender entre países?',
+    en: 'What is buying and selling between countries called?'
+  },
+  answer: {
+    val: 'Comerç internacional',
+    es: 'Comercio internacional',
+    en: 'International trade'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Què empresa va crear l\'iPhone?',
+    es: '¿Qué empresa creó el iPhone?',
+    en: 'Which company created the iPhone?'
+  },
+  options: [{
+    val: 'Samsung',
+    es: 'Samsung',
+    en: 'Samsung'
+  }, {
+    val: 'Apple',
+    es: 'Apple',
+    en: 'Apple'
+  }, {
+    val: 'Google',
+    es: 'Google',
+    en: 'Google'
+  }, {
+    val: 'Microsoft',
+    es: 'Microsoft',
+    en: 'Microsoft'
+  }],
+  correct: 1,
+  type: 'choice'
+},
+// ── NEW: Current Economic Topics & Famous Economists (10) ──
+{
+  q: {
+    val: 'Autor de "Teoria general de l\'ocupació, l\'interès i el diner"?',
+    es: '¿Autor de "Teoría general de la ocupación, el interés y el dinero"?',
+    en: 'Author of "The General Theory of Employment, Interest and Money"?'
+  },
+  answer: {
+    val: 'John Maynard Keynes',
+    es: 'John Maynard Keynes',
+    en: 'John Maynard Keynes'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Com es diu el model econòmic nòrdic (Suècia, Dinamarca...)?',
+    es: '¿Cómo se llama el modelo económico nórdico (Suecia, Dinamarca...)?',
+    en: 'What is the Nordic economic model (Sweden, Denmark...) called?'
+  },
+  answer: {
+    val: 'Socialdemocràcia / Estat del benestar',
+    es: 'Socialdemocracia / Estado del bienestar',
+    en: 'Social democracy / Welfare state'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Qui va dir "laissez faire, laissez passer"?',
+    es: '¿Quién dijo "laissez faire, laissez passer"?',
+    en: 'Who said "laissez faire, laissez passer"?'
+  },
+  options: [{
+    val: 'Adam Smith',
+    es: 'Adam Smith',
+    en: 'Adam Smith'
+  }, {
+    val: 'Els fisiòcrates francesos',
+    es: 'Los fisiócratas franceses',
+    en: 'The French physiocrats'
+  }, {
+    val: 'Karl Marx',
+    es: 'Karl Marx',
+    en: 'Karl Marx'
+  }, {
+    val: 'Milton Friedman',
+    es: 'Milton Friedman',
+    en: 'Milton Friedman'
+  }],
+  correct: 1,
+  type: 'choice'
+}, {
+  q: {
+    val: 'Què significa DeFi en criptomonedes?',
+    es: '¿Qué significa DeFi en criptomonedas?',
+    en: 'What does DeFi mean in crypto?'
+  },
+  answer: {
+    val: 'Finances Descentralitzades',
+    es: 'Finanzas Descentralizadas',
+    en: 'Decentralized Finance'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Quin economista va escriure "La societat opulenta" (1958)?',
+    es: '¿Qué economista escribió "La sociedad opulenta" (1958)?',
+    en: 'Which economist wrote "The Affluent Society" (1958)?'
+  },
+  options: [{
+    val: 'Thorstein Veblen',
+    es: 'Thorstein Veblen',
+    en: 'Thorstein Veblen'
+  }, {
+    val: 'John K. Galbraith',
+    es: 'John K. Galbraith',
+    en: 'John K. Galbraith'
+  }, {
+    val: 'Joseph Stiglitz',
+    es: 'Joseph Stiglitz',
+    en: 'Joseph Stiglitz'
+  }, {
+    val: 'Paul Samuelson',
+    es: 'Paul Samuelson',
+    en: 'Paul Samuelson'
+  }],
+  correct: 1,
+  type: 'choice'
+}, {
+  q: {
+    val: 'Nom del premi Nobel d\'economia que va criticar la informació asimètrica als mercats?',
+    es: '¿Nombre del Nobel de economía que criticó la información asimétrica en los mercados?',
+    en: 'Name of the Economics Nobel laureate who criticized asymmetric information in markets?'
+  },
+  answer: {
+    val: 'Joseph Stiglitz',
+    es: 'Joseph Stiglitz',
+    en: 'Joseph Stiglitz'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Què és el "consum ostentós" segons Thorstein Veblen?',
+    es: '¿Qué es el "consumo ostentoso" según Thorstein Veblen?',
+    en: 'What is "conspicuous consumption" according to Thorstein Veblen?'
+  },
+  answer: {
+    val: 'Comprar per mostrar estatus social',
+    es: 'Comprar para mostrar estatus social',
+    en: 'Buying to display social status'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Quina tecnologia sustenta les criptomonedes?',
+    es: '¿Qué tecnología sustenta las criptomonedas?',
+    en: 'What technology underpins cryptocurrencies?'
+  },
+  options: [{
+    val: 'Intel·ligència artificial',
+    es: 'Inteligencia artificial',
+    en: 'Artificial intelligence'
+  }, {
+    val: 'Blockchain',
+    es: 'Blockchain',
+    en: 'Blockchain'
+  }, {
+    val: 'Computació quàntica',
+    es: 'Computación cuántica',
+    en: 'Quantum computing'
+  }, {
+    val: 'Realitat virtual',
+    es: 'Realidad virtual',
+    en: 'Virtual reality'
+  }],
+  correct: 1,
+  type: 'choice'
+}, {
+  q: {
+    val: 'Qui va escriure "L\'acció humana" (1949), obra clau de l\'Escola Austríaca?',
+    es: '¿Quién escribió "La acción humana" (1949), obra clave de la Escuela Austríaca?',
+    en: 'Who wrote "Human Action" (1949), a key work of the Austrian School?'
+  },
+  answer: {
+    val: 'Ludwig von Mises',
+    es: 'Ludwig von Mises',
+    en: 'Ludwig von Mises'
+  },
+  type: 'open'
+}, {
+  q: {
+    val: 'Quin és el principal risc de la IA per al mercat laboral?',
+    es: '¿Cuál es el principal riesgo de la IA para el mercado laboral?',
+    en: 'What is the main risk of AI for the labour market?'
+  },
+  options: [{
+    val: 'Més vacances per a tots',
+    es: 'Más vacaciones para todos',
+    en: 'More holidays for everyone'
+  }, {
+    val: 'Automatització i substitució de llocs de treball',
+    es: 'Automatización y sustitución de puestos de trabajo',
+    en: 'Automation and job displacement'
+  }, {
+    val: 'Augment dels salaris',
+    es: 'Aumento de los salarios',
+    en: 'Wage increases'
+  }, {
+    val: 'Menys globalització',
+    es: 'Menos globalización',
+    en: 'Less globalization'
+  }],
+  correct: 1,
+  type: 'choice'
+}];
+
+// ═══════════════════════════════════════════════════════════════
+// HELPER — pick a random unused card index from a deck
+// ═══════════════════════════════════════════════════════════════
+function pickCard(deckLength, usedArray) {
+  var available = [];
+  for (var i = 0; i < deckLength; i++) {
+    if (!usedArray || usedArray.indexOf(i) === -1) available.push(i);
+  }
+  if (available.length === 0) return Math.floor(Math.random() * deckLength); // recycle if all used
+  return available[Math.floor(Math.random() * available.length)];
+}
+function getDeck(type) {
+  if (type === 'mimica') return MIMICA_CARDS;
+  if (type === 'dibuixa') return DIBUIXA_CARDS;
+  if (type === 'preguntes') return PREGUNTES_CARDS;
+  if (type === 'prohibida') return PROHIBIDA_CARDS;
+  if (type === 'rapid') return RAPID_CARDS;
+  return [];
+}
+
+// ═══════════════════════════════════════════════════════════════
+// COMMUNIST PARTY APP
+// ═══════════════════════════════════════════════════════════════
+function CommunistApp() {
+  const [phase, setPhase] = useState('lobby');
+  const [gameMode, setGameMode] = useState(null); // 'rapid' or 'complet'
+  const [gameInfo, setGameInfo] = useState(null);
+  const [meta, setMeta] = useState({});
+  const [players, setPlayers] = useState({});
+  const [gameState, setGameState] = useState({});
+  var [idioma, setIdioma] = useState(PdeLanguageStore.get());
+  var t = createTranslator(COMMUNIST_TRANSLATIONS, idioma);
+  useEffect(function () {
+    if (PdeFirebase.isConfigured()) PdeFirebase.init();
+  }, []);
+
+  // Subscribe to room data
+  useEffect(function () {
+    if (!gameInfo) return;
+    var unsub1 = PdeRoomManager.onPlayersChange(gameInfo.roomCode, setPlayers);
+    var unsub2 = PdeRoomManager.onGameStateChange(gameInfo.roomCode, setGameState);
+    var unsub3 = PdeRoomManager.onMetaChange(gameInfo.roomCode, setMeta);
+    return function () {
+      unsub1();
+      unsub2();
+      unsub3();
+    };
+  }, [gameInfo?.roomCode]);
+
+  // Listen for game start (player side)
+  useEffect(function () {
+    if (meta.status === 'playing' && phase === 'lobby') {
+      setPhase('playing');
+    }
+  }, [meta.status]);
+  if (!PdeFirebase.isConfigured()) {
+    return /*#__PURE__*/React.createElement(PdeFirebaseError, null);
+  }
+  var handleGameStart = function (info) {
+    setGameInfo(info);
+    setPhase('playing');
+    if (info.isHost) {
+      // Determine how many teams based on player count
+      var connectedPlayers = Object.keys(info.players).filter(function (id) {
+        return info.players[id].connected !== false;
+      });
+      var numTeams = Math.min(6, Math.max(2, Math.ceil(connectedPlayers.length / 4)));
+
+      // Rapid mode uses shorter board (12 spaces)
+      var boardSize = gameMode === 'rapid' ? 12 : BOARD_SIZE;
+
+      // Initialize board positions for each team
+      var positions = {};
+      for (var t = 0; t < numTeams; t++) {
+        positions[t] = 0;
+      }
+
+      // Initialize category stats per team: { teamIdx: { mimica: {wins:0, attempts:0}, ... } }
+      var categoryStats = {};
+      for (var t = 0; t < numTeams; t++) {
+        categoryStats[t] = {};
+        Object.keys(CATEGORIES).forEach(function (cat) {
+          categoryStats[t][cat] = {
+            wins: 0,
+            attempts: 0
+          };
+        });
+      }
+
+      // Initialize player scores
+      var playerUpdates = {};
+      Object.keys(info.players).forEach(function (pid) {
+        playerUpdates[pid] = {
+          ...info.players[pid],
+          score: 0,
+          data: {
+            answer: null,
+            answeredAt: null
+          }
+        };
+      });
+      PdeFirebase.ref('rooms/' + info.roomCode + '/players').set(playerUpdates);
+      PdeRoomManager.setGameState(info.roomCode, {
+        round: 0,
+        phase: 'roll',
+        currentTeam: 0,
+        numTeams: numTeams,
+        gameMode: gameMode,
+        boardSize: boardSize,
+        board: {
+          positions: positions
+        },
+        challenge: null,
+        usedCards: {
+          mimica: [],
+          dibuixa: [],
+          preguntes: [],
+          prohibida: [],
+          rapid: []
+        },
+        teamScores: {},
+        categoryStats: categoryStats,
+        rapidSubRound: 0,
+        rapidTotal: gameMode === 'rapid' ? 3 : 5,
+        finished: false
+      });
+    }
+  };
+
+  // ── Mode Selection ──
+  if (phase === 'lobby' && !gameMode) {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-red-900 via-gray-900 to-red-950"
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: 'fixed',
+        top: 12,
+        right: 12,
+        zIndex: 9999,
+        display: 'flex',
+        gap: 4
+      }
+    }, ['val', 'es', 'en'].map(function (l) {
+      return /*#__PURE__*/React.createElement("button", {
+        key: l,
+        onClick: function () {
+          setIdioma(l);
+          PdeLanguageStore.set(l);
+        },
+        style: {
+          padding: '4px 10px',
+          borderRadius: 8,
+          fontSize: 13,
+          fontWeight: idioma === l ? 800 : 500,
+          background: idioma === l ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.2)',
+          color: idioma === l ? '#1a1a2e' : 'white',
+          border: 'none',
+          cursor: 'pointer'
+        }
+      }, l.toUpperCase());
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "max-w-lg w-full space-y-6 text-center"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-8xl"
+    }, "\u262D"), /*#__PURE__*/React.createElement("h1", {
+      className: "text-5xl font-black text-white"
+    }, "Communist Party"), /*#__PURE__*/React.createElement("p", {
+      className: "text-white/60 text-lg"
+    }, t('choose_mode')), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-4"
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: function () {
+        setGameMode('rapid');
+      },
+      className: "w-full py-6 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg btn-communist hover:brightness-110"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-3xl mb-1"
+    }, "\u26A1"), /*#__PURE__*/React.createElement("div", {
+      className: "text-2xl font-black"
+    }, t('mode_rapid')), /*#__PURE__*/React.createElement("div", {
+      className: "text-white/80 text-sm mt-1"
+    }, t('mode_rapid_desc'))), /*#__PURE__*/React.createElement("button", {
+      onClick: function () {
+        setGameMode('complet');
+      },
+      className: "w-full py-6 rounded-2xl bg-gradient-to-r from-red-600 to-red-800 text-white shadow-lg btn-communist hover:brightness-110"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-3xl mb-1"
+    }, "\uD83C\uDFDB\uFE0F"), /*#__PURE__*/React.createElement("div", {
+      className: "text-2xl font-black"
+    }, t('mode_full')), /*#__PURE__*/React.createElement("div", {
+      className: "text-white/80 text-sm mt-1"
+    }, t('mode_full_desc')))), /*#__PURE__*/React.createElement("a", {
+      href: "./",
+      className: "inline-block text-gray-500 hover:text-white transition-colors"
+    }, "\uD83C\uDFE0 ", t('back'))));
+  }
+
+  // ── Lobby ──
+  if (phase === 'lobby') {
+    return /*#__PURE__*/React.createElement(PdeGameLobby, {
+      gameType: "communist",
+      gameName: 'Communist Party — ' + (gameMode === 'rapid' ? '⚡ ' + t('mode_rapid') : '🏛️ ' + t('mode_full')),
+      gameEmoji: "\u262D",
+      gameGradient: "from-red-600 to-red-800",
+      minPlayers: 4,
+      maxPlayers: 30,
+      onGameStart: handleGameStart,
+      teamMode: true,
+      teamsCount: 6
+    });
+  }
+
+  // ── Game ──
+  if (phase === 'playing' && gameInfo) {
+    if (gameInfo.isHost) {
+      return /*#__PURE__*/React.createElement(CommunistHost, {
+        roomCode: gameInfo.roomCode,
+        playerId: gameInfo.playerId,
+        players: players,
+        gameState: gameState,
+        idioma: idioma
+      });
+    } else {
+      return /*#__PURE__*/React.createElement(CommunistPlayer, {
+        roomCode: gameInfo.roomCode,
+        playerId: gameInfo.playerId,
+        players: players,
+        gameState: gameState,
+        idioma: idioma
+      });
+    }
+  }
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BOARD COMPONENT — Circular board displayed on host screen
+// ═══════════════════════════════════════════════════════════════
+function GameBoard({
+  positions,
+  numTeams,
+  currentTeam,
+  boardSize
+}) {
+  var activeBoardSize = boardSize || BOARD_SIZE;
+  // Arrange spaces in a circle
+  var centerX = 200;
+  var centerY = 200;
+  var radius = 160;
+  var spaceSize = 30;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "relative mx-auto",
+    style: {
+      width: 400,
+      height: 400
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "400",
+    height: "400",
+    viewBox: "0 0 400 400"
+  }, BOARD_SPACES.slice(0, activeBoardSize).map(function (cat, i) {
+    var angle = i / activeBoardSize * 2 * Math.PI - Math.PI / 2;
+    var x = centerX + radius * Math.cos(angle);
+    var y = centerY + radius * Math.sin(angle);
+    var nextAngle = (i + 1) / activeBoardSize * 2 * Math.PI - Math.PI / 2;
+    var nx = centerX + radius * Math.cos(nextAngle);
+    var ny = centerY + radius * Math.sin(nextAngle);
+    return /*#__PURE__*/React.createElement("line", {
+      key: 'line-' + i,
+      x1: x,
+      y1: y,
+      x2: nx,
+      y2: ny,
+      stroke: "rgba(255,255,255,0.2)",
+      strokeWidth: "2"
+    });
+  }), BOARD_SPACES.slice(0, activeBoardSize).map(function (cat, i) {
+    var angle = i / activeBoardSize * 2 * Math.PI - Math.PI / 2;
+    var x = centerX + radius * Math.cos(angle);
+    var y = centerY + radius * Math.sin(angle);
+    var catInfo = CATEGORIES[cat];
+    var colorMap = {
+      mimica: '#f97316',
+      dibuixa: '#14b8a6',
+      preguntes: '#3b82f6',
+      prohibida: '#a855f7',
+      rapid: '#eab308'
+    };
+    return /*#__PURE__*/React.createElement("g", {
+      key: 'space-' + i
+    }, /*#__PURE__*/React.createElement("circle", {
+      cx: x,
+      cy: y,
+      r: spaceSize / 2 + 2,
+      fill: colorMap[cat],
+      stroke: "white",
+      strokeWidth: "2",
+      opacity: 0.9
+    }), /*#__PURE__*/React.createElement("text", {
+      x: x,
+      y: y + 1,
+      textAnchor: "middle",
+      dominantBaseline: "middle",
+      fontSize: "14",
+      fill: "white",
+      fontWeight: "bold"
+    }, catInfo.emoji), i === 0 && /*#__PURE__*/React.createElement("text", {
+      x: x,
+      y: y - spaceSize / 2 - 8,
+      textAnchor: "middle",
+      fontSize: "10",
+      fill: "white",
+      fontWeight: "bold"
+    }, "START"));
+  }), Object.entries(positions || {}).map(function (entry, ti) {
+    var teamIdx = parseInt(entry[0]);
+    var pos = entry[1] % activeBoardSize;
+    if (teamIdx >= numTeams) return null;
+    var angle = pos / activeBoardSize * 2 * Math.PI - Math.PI / 2;
+    var tokenRadius = radius - 28 - ti * 10;
+    var x = centerX + tokenRadius * Math.cos(angle);
+    var y = centerY + tokenRadius * Math.sin(angle);
+    var team = TEAMS[teamIdx];
+    var isActive = teamIdx === currentTeam;
+    return /*#__PURE__*/React.createElement("g", {
+      key: 'token-' + teamIdx,
+      className: "team-token"
+    }, /*#__PURE__*/React.createElement("circle", {
+      cx: x,
+      cy: y,
+      r: isActive ? 14 : 11,
+      fill: team.hex,
+      stroke: "white",
+      strokeWidth: isActive ? 3 : 2,
+      opacity: isActive ? 1 : 0.8
+    }), /*#__PURE__*/React.createElement("text", {
+      x: x,
+      y: y + 1,
+      textAnchor: "middle",
+      dominantBaseline: "middle",
+      fontSize: isActive ? 12 : 10
+    }, team.emoji));
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "absolute inset-0 flex items-center justify-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-3xl font-black text-white"
+  }, "\u262D"), /*#__PURE__*/React.createElement("div", {
+    className: "text-xs text-white/60 font-bold mt-1"
+  }, "COMMUNIST", /*#__PURE__*/React.createElement("br", null), "PARTY"))));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TEAM SCOREBOARD — Shows all team positions and scores
+// ═══════════════════════════════════════════════════════════════
+function TeamScoreboard({
+  positions,
+  teamScores,
+  numTeams,
+  currentTeam,
+  boardSize
+}) {
+  var activeBoardSize = boardSize || BOARD_SIZE;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/10 backdrop-blur rounded-2xl p-4"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "text-white font-black text-center mb-3"
+  }, "\uD83C\uDFC6 Equips"), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 md:grid-cols-3 gap-2"
+  }, Array.from({
+    length: numTeams
+  }).map(function (_, ti) {
+    var team = TEAMS[ti];
+    var pos = (positions || {})[ti] || 0;
+    var score = (teamScores || {})[ti] || 0;
+    var isActive = ti === currentTeam;
+    return /*#__PURE__*/React.createElement("div", {
+      key: ti,
+      className: 'rounded-xl px-3 py-2 text-center transition-all ' + (isActive ? 'bg-white/30 ring-2 ring-white scale-105' : 'bg-white/10')
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-xl"
+    }, team.emoji), /*#__PURE__*/React.createElement("div", {
+      className: "text-white font-bold text-sm truncate"
+    }, team.name), /*#__PURE__*/React.createElement("div", {
+      className: "text-white/70 text-xs"
+    }, "Casella ", pos, "/", activeBoardSize), /*#__PURE__*/React.createElement("div", {
+      className: "text-yellow-300 font-black text-sm"
+    }, score, " pts"));
+  })));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HOST VIEW
+// ═══════════════════════════════════════════════════════════════
+function CommunistHost({
+  roomCode,
+  playerId,
+  players,
+  gameState,
+  idioma
+}) {
+  var t = createTranslator(COMMUNIST_TRANSLATIONS, idioma);
+  var tCard = function (card) {
+    return card?.[idioma] || card?.val || '???';
+  };
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [diceValue, setDiceValue] = useState(null);
+  const [diceRolling, setDiceRolling] = useState(false);
+  const [timerRunning, setTimerRunning] = useState(false);
+  const [showResult, setShowResult] = useState(false);
+  var gs = gameState || {};
+  var phase = gs.phase || 'roll';
+  var currentTeam = gs.currentTeam || 0;
+  var numTeams = gs.numTeams || 2;
+  var activeBoardSize = gs.boardSize || BOARD_SIZE;
+  var positions = gs.board?.positions || {};
+  var challenge = gs.challenge || null;
+  var teamScores = gs.teamScores || {};
+  var usedCards = gs.usedCards || {};
+  var categoryStats = gs.categoryStats || {};
+  var team = TEAMS[currentTeam] || TEAMS[0];
+
+  // Get team members
+  var getTeamMembers = function (teamIdx) {
+    return Object.entries(players || {}).filter(function (e) {
+      return e[1].team === teamIdx && e[1].connected !== false;
+    });
+  };
+  var teamMembers = getTeamMembers(currentTeam);
+
+  // ── ROLL DICE ──
+  var rollDice = function () {
+    var value = Math.floor(Math.random() * 6) + 1;
+    setDiceValue(value);
+    setDiceRolling(true);
+    setTimeout(function () {
+      setDiceRolling(false);
+      var currentPos = positions[currentTeam] || 0;
+      var newPos = currentPos + value;
+
+      // Check if completed the circuit
+      var completed = newPos >= activeBoardSize;
+      if (completed) newPos = newPos % activeBoardSize;
+
+      // Get category for the space landed on
+      var spaceCategory = BOARD_SPACES[newPos % BOARD_SPACES.length];
+      var deck = getDeck(spaceCategory);
+      var used = usedCards[spaceCategory] || [];
+      var cardIndex = pickCard(deck.length, used);
+
+      // Select assigned player for mimica/dibuixa/prohibida
+      var assignedPlayer = null;
+      if (['mimica', 'dibuixa', 'prohibida'].indexOf(spaceCategory) !== -1 && teamMembers.length > 0) {
+        var randomMember = teamMembers[Math.floor(Math.random() * teamMembers.length)];
+        assignedPlayer = randomMember[0];
+      }
+
+      // Update board position and set challenge
+      var updates = {};
+      updates['gameState/board/positions/' + currentTeam] = newPos;
+      updates['gameState/phase'] = 'challenge';
+      updates['gameState/challenge'] = {
+        type: spaceCategory,
+        cardIndex: cardIndex,
+        assignedPlayer: assignedPlayer,
+        timer: {
+          duration: CATEGORIES[spaceCategory].timer,
+          startedAt: Date.now()
+        }
+      };
+      // Add card to used
+      var newUsed = used.concat([cardIndex]);
+      updates['gameState/usedCards/' + spaceCategory] = newUsed;
+
+      // Clear all player answers
+      Object.keys(players || {}).forEach(function (pid) {
+        updates['players/' + pid + '/data'] = {
+          answer: null,
+          answeredAt: null
+        };
+      });
+      PdeFirebase.ref('rooms/' + roomCode).update(updates);
+      setTimerRunning(false);
+      setShowResult(false);
+    }, 1500);
+  };
+
+  // ── START TIMER ──
+  var startTimer = function () {
+    setTimerRunning(true);
+    PdeRoomManager.updateGameState(roomCode, {
+      'challenge/timer/startedAt': Date.now()
+    });
+  };
+
+  // ── TIMER COMPLETE ──
+  var onTimerComplete = function () {
+    setTimerRunning(false);
+    PdeGameSounds.play('buzz');
+  };
+
+  // ── MARK CORRECT / INCORRECT (for mimica, dibuixa, prohibida) ──
+  var markResult = function (correct) {
+    var updates = {};
+    if (correct) {
+      var newScore = (teamScores[currentTeam] || 0) + 10;
+      updates['gameState/teamScores/' + currentTeam] = newScore;
+      PdeGameSounds.play('win');
+    } else {
+      PdeGameSounds.play('lose');
+    }
+    // Track category stats
+    if (challenge) {
+      var cat = challenge.type;
+      var prev = (categoryStats[currentTeam] || {})[cat] || {
+        wins: 0,
+        attempts: 0
+      };
+      updates['gameState/categoryStats/' + currentTeam + '/' + cat] = {
+        wins: prev.wins + (correct ? 1 : 0),
+        attempts: prev.attempts + 1
+      };
+    }
+    updates['gameState/phase'] = 'result';
+    updates['gameState/lastResult'] = correct;
+    PdeFirebase.ref('rooms/' + roomCode).update(updates);
+    setShowResult(true);
+  };
+
+  // ── EVALUATE PREGUNTES ──
+  var evaluatePreguntes = function () {
+    if (!challenge) return;
+    var card = PREGUNTES_CARDS[challenge.cardIndex];
+    if (!card) return;
+    var correctCount = 0;
+    var totalAnswered = 0;
+    var updates = {};
+    teamMembers.forEach(function (entry) {
+      var pid = entry[0];
+      var pData = entry[1].data;
+      if (pData && pData.answer !== null && pData.answer !== undefined) {
+        totalAnswered++;
+        if (parseInt(pData.answer) === card.correct) {
+          correctCount++;
+          updates['players/' + pid + '/score'] = (entry[1].score || 0) + 5;
+        }
+      }
+    });
+    var teamCorrect = correctCount >= Math.ceil(teamMembers.length / 2);
+    if (teamCorrect) {
+      var newScore = (teamScores[currentTeam] || 0) + 10;
+      updates['gameState/teamScores/' + currentTeam] = newScore;
+      PdeGameSounds.play('win');
+    } else {
+      PdeGameSounds.play('lose');
+    }
+    // Track category stats
+    var prevP = (categoryStats[currentTeam] || {}).preguntes || {
+      wins: 0,
+      attempts: 0
+    };
+    updates['gameState/categoryStats/' + currentTeam + '/preguntes'] = {
+      wins: prevP.wins + (teamCorrect ? 1 : 0),
+      attempts: prevP.attempts + 1
+    };
+    updates['gameState/phase'] = 'result';
+    updates['gameState/lastResult'] = teamCorrect;
+    updates['gameState/lastResultDetail'] = correctCount + '/' + totalAnswered;
+    PdeFirebase.ref('rooms/' + roomCode).update(updates);
+    setShowResult(true);
+  };
+
+  // ── EVALUATE RÀPID ──
+  var evaluateRapid = function () {
+    if (!challenge) return;
+    var card = RAPID_CARDS[challenge.cardIndex];
+    if (!card) return;
+    var correctCount = 0;
+    var updates = {};
+    teamMembers.forEach(function (entry) {
+      var pid = entry[0];
+      var pData = entry[1].data;
+      if (pData && pData.answer !== null && pData.answer !== undefined) {
+        var isCorrect = false;
+        if (card.type === 'choice') {
+          isCorrect = parseInt(pData.answer) === card.correct;
+        } else {
+          // Open answer — flexible matching
+          var userAns = (pData.answer || '').toLowerCase().trim();
+          var correctAns = (card.answer.val || '').toLowerCase().trim();
+          isCorrect = userAns === correctAns || correctAns.indexOf(userAns) !== -1 || userAns.indexOf(correctAns) !== -1;
+        }
+        if (isCorrect) {
+          correctCount++;
+          updates['players/' + pid + '/score'] = (entry[1].score || 0) + 3;
+        }
+      }
+    });
+    var subRound = (gs.rapidSubRound || 0) + 1;
+    var teamCorrect = correctCount >= Math.ceil(teamMembers.length / 2);
+    if (teamCorrect) {
+      var newScore = (teamScores[currentTeam] || 0) + 5;
+      updates['gameState/teamScores/' + currentTeam] = newScore;
+    }
+
+    // If we've done all rapid sub-rounds, end the rapid challenge
+    if (subRound >= (gs.rapidTotal || 5)) {
+      var totalRapidScore = (teamScores[currentTeam] || 0) + (teamCorrect ? 5 : 0);
+      updates['gameState/phase'] = 'result';
+      updates['gameState/lastResult'] = totalRapidScore > (teamScores[currentTeam] || 0);
+      updates['gameState/rapidSubRound'] = 0;
+      // Track category stats for rapid
+      var prevR = (categoryStats[currentTeam] || {}).rapid || {
+        wins: 0,
+        attempts: 0
+      };
+      updates['gameState/categoryStats/' + currentTeam + '/rapid'] = {
+        wins: prevR.wins + (totalRapidScore > (teamScores[currentTeam] || 0) ? 1 : 0),
+        attempts: prevR.attempts + 1
+      };
+      PdeGameSounds.play(teamCorrect ? 'win' : 'lose');
+      setShowResult(true);
+    } else {
+      // Next rapid card
+      var newCardIndex = pickCard(RAPID_CARDS.length, usedCards.rapid || []);
+      var newUsedRapid = (usedCards.rapid || []).concat([newCardIndex]);
+      updates['gameState/rapidSubRound'] = subRound;
+      updates['gameState/challenge/cardIndex'] = newCardIndex;
+      updates['gameState/challenge/timer/startedAt'] = Date.now();
+      updates['gameState/usedCards/rapid'] = newUsedRapid;
+      // Clear answers
+      Object.keys(players || {}).forEach(function (pid) {
+        updates['players/' + pid + '/data'] = {
+          answer: null,
+          answeredAt: null
+        };
+      });
+      PdeGameSounds.play(teamCorrect ? 'ding' : 'buzz');
+    }
+    PdeFirebase.ref('rooms/' + roomCode).update(updates);
+  };
+
+  // ── NEXT TURN ──
+  var nextTurn = function () {
+    var nextTeam = (currentTeam + 1) % numTeams;
+    var updates = {
+      'gameState/phase': 'roll',
+      'gameState/currentTeam': nextTeam,
+      'gameState/challenge': null,
+      'gameState/lastResult': null,
+      'gameState/lastResultDetail': null
+    };
+    // Clear answers
+    Object.keys(players || {}).forEach(function (pid) {
+      updates['players/' + pid + '/data'] = {
+        answer: null,
+        answeredAt: null
+      };
+    });
+    PdeFirebase.ref('rooms/' + roomCode).update(updates);
+    setDiceValue(null);
+    setTimerRunning(false);
+    setShowResult(false);
+  };
+
+  // ── END GAME ──
+  var endGame = function () {
+    PdeRoomManager.updateGameState(roomCode, {
+      phase: 'finished',
+      finished: true
+    });
+    setShowConfetti(true);
+    PdeGameSounds.play('win');
+  };
+
+  // ═══ FINISHED SCREEN ═══
+  if (phase === 'finished' || gs.finished) {
+    var sortedTeams = Array.from({
+      length: numTeams
+    }).map(function (_, i) {
+      return {
+        index: i,
+        team: TEAMS[i],
+        score: teamScores[i] || 0,
+        position: positions[i] || 0
+      };
+    }).sort(function (a, b) {
+      return b.score - a.score || b.position - a.position;
+    });
+    var catKeys = Object.keys(CATEGORIES);
+    return /*#__PURE__*/React.createElement(PdeHostView, {
+      title: t('final_results'),
+      emoji: "\u262D",
+      gradient: "from-red-900 to-gray-900"
+    }, /*#__PURE__*/React.createElement(PdeConfetti, {
+      show: showConfetti
+    }), sortedTeams[0] && /*#__PURE__*/React.createElement("div", {
+      className: "text-center"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-8xl mb-2"
+    }, "\uD83C\uDFC6"), /*#__PURE__*/React.createElement("h2", {
+      className: "text-4xl font-black text-yellow-300"
+    }, sortedTeams[0].team.emoji, " ", sortedTeams[0].team.name), /*#__PURE__*/React.createElement("p", {
+      className: "text-white/70 text-xl mt-2"
+    }, sortedTeams[0].score, " ", t('points'), " \u2014 ", t('square'), " ", sortedTeams[0].position)), /*#__PURE__*/React.createElement("div", {
+      className: "grid grid-cols-2 md:grid-cols-3 gap-3 mt-6"
+    }, sortedTeams.map(function (t, i) {
+      var medals = ['🥇', '🥈', '🥉'];
+      return /*#__PURE__*/React.createElement("div", {
+        key: t.index,
+        className: "card-communist p-4 text-center"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "text-2xl"
+      }, medals[i] || i + 1), /*#__PURE__*/React.createElement("div", {
+        className: "text-2xl mt-1"
+      }, t.team.emoji), /*#__PURE__*/React.createElement("div", {
+        className: "font-black text-lg"
+      }, t.team.name), /*#__PURE__*/React.createElement("div", {
+        className: "text-yellow-600 font-bold"
+      }, t.score, " pts"), /*#__PURE__*/React.createElement("div", {
+        className: "text-gray-500 text-sm"
+      }, COMMUNIST_TRANSLATIONS['square']?.[idioma] || 'Casella', " ", t.position, "/", activeBoardSize));
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "mt-8"
+    }, /*#__PURE__*/React.createElement("h3", {
+      className: "text-2xl font-black text-white text-center mb-4"
+    }, "\uD83D\uDCCA ", t('cat_stats')), /*#__PURE__*/React.createElement("div", {
+      className: "overflow-x-auto"
+    }, /*#__PURE__*/React.createElement("table", {
+      className: "w-full text-sm"
+    }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", {
+      className: "text-white/60"
+    }, /*#__PURE__*/React.createElement("th", {
+      className: "text-left py-2 px-2"
+    }, t('team_label')), catKeys.map(function (cat) {
+      return /*#__PURE__*/React.createElement("th", {
+        key: cat,
+        className: "text-center py-2 px-1"
+      }, CATEGORIES[cat].emoji, /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("span", {
+        className: "text-xs"
+      }, CATEGORIES[cat].name));
+    }), /*#__PURE__*/React.createElement("th", {
+      className: "text-center py-2 px-2"
+    }, "Total %"))), /*#__PURE__*/React.createElement("tbody", null, sortedTeams.map(function (t) {
+      var totalWins = 0;
+      var totalAttempts = 0;
+      var teamStats = categoryStats[t.index] || {};
+      return /*#__PURE__*/React.createElement("tr", {
+        key: t.index,
+        className: "border-t border-white/10"
+      }, /*#__PURE__*/React.createElement("td", {
+        className: "py-3 px-2 text-white font-bold"
+      }, /*#__PURE__*/React.createElement("span", {
+        className: "mr-1"
+      }, t.team.emoji), t.team.name), catKeys.map(function (cat) {
+        var s = teamStats[cat] || {
+          wins: 0,
+          attempts: 0
+        };
+        totalWins += s.wins;
+        totalAttempts += s.attempts;
+        var pct = s.attempts > 0 ? Math.round(s.wins / s.attempts * 100) : 0;
+        var color = pct >= 70 ? 'text-green-400' : pct >= 40 ? 'text-yellow-400' : s.attempts > 0 ? 'text-red-400' : 'text-white/30';
+        return /*#__PURE__*/React.createElement("td", {
+          key: cat,
+          className: 'text-center py-3 px-1 font-bold ' + color
+        }, s.attempts > 0 ? s.wins + '/' + s.attempts : '—', s.attempts > 0 && /*#__PURE__*/React.createElement("div", {
+          className: "text-xs font-normal"
+        }, pct, "%"));
+      }), /*#__PURE__*/React.createElement("td", {
+        className: "text-center py-3 px-2 text-white font-black"
+      }, totalAttempts > 0 ? Math.round(totalWins / totalAttempts * 100) + '%' : '—'));
+    }))))), /*#__PURE__*/React.createElement("a", {
+      href: "./",
+      className: "block text-center text-white/60 hover:text-white mt-6"
+    }, "\uD83C\uDFE0 ", t('back_pde')));
+  }
+
+  // ═══ ROLL PHASE ═══
+  if (phase === 'roll') {
+    return /*#__PURE__*/React.createElement(PdeHostView, {
+      title: "",
+      gradient: "from-red-900 to-gray-900"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-center text-white mb-2"
+    }, /*#__PURE__*/React.createElement("h1", {
+      className: "text-3xl md:text-5xl font-black"
+    }, "\u262D Communist Party")), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-2 gap-6"
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(GameBoard, {
+      positions: positions,
+      numTeams: numTeams,
+      currentTeam: currentTeam,
+      boardSize: activeBoardSize
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-4"
+    }, /*#__PURE__*/React.createElement(TeamScoreboard, {
+      positions: positions,
+      teamScores: teamScores,
+      numTeams: numTeams,
+      currentTeam: currentTeam,
+      boardSize: activeBoardSize
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "card-communist p-6 text-center space-y-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-3xl"
+    }, team.emoji), /*#__PURE__*/React.createElement("h2", {
+      className: "text-2xl font-black"
+    }, team.name), /*#__PURE__*/React.createElement("p", {
+      className: "text-gray-500"
+    }, t('team_turn')), diceRolling ? /*#__PURE__*/React.createElement(PdeDiceRoll, {
+      value: diceValue,
+      rolling: true,
+      size: 100
+    }) : diceValue ? /*#__PURE__*/React.createElement("div", {
+      className: "text-6xl font-black text-gray-800"
+    }, diceValue) : /*#__PURE__*/React.createElement("button", {
+      onClick: rollDice,
+      className: "w-full py-4 rounded-2xl text-white font-black text-xl shadow-lg bg-gradient-to-r from-red-500 to-red-700 btn-communist hover:brightness-110"
+    }, "\uD83C\uDFB2 ", t('roll_dice'))), /*#__PURE__*/React.createElement("button", {
+      onClick: endGame,
+      className: "w-full py-3 rounded-xl text-white/60 font-bold text-sm hover:text-white hover:bg-white/10 transition-all"
+    }, "\uD83C\uDFC1 ", t('end_game')))));
+  }
+
+  // ═══ CHALLENGE PHASE ═══
+  if (phase === 'challenge' && challenge) {
+    var catInfo = CATEGORIES[challenge.type];
+    var cardIndex = challenge.cardIndex;
+    return /*#__PURE__*/React.createElement(PdeHostView, {
+      title: "",
+      gradient: "from-red-900 to-gray-900"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-center text-white mb-2"
+    }, /*#__PURE__*/React.createElement("h1", {
+      className: "text-2xl md:text-4xl font-black"
+    }, "\u262D Communist Party")), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-3 gap-6"
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(GameBoard, {
+      positions: positions,
+      numTeams: numTeams,
+      currentTeam: currentTeam,
+      boardSize: activeBoardSize
+    }), /*#__PURE__*/React.createElement(TeamScoreboard, {
+      positions: positions,
+      teamScores: teamScores,
+      numTeams: numTeams,
+      currentTeam: currentTeam,
+      boardSize: activeBoardSize
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "md:col-span-2 space-y-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "card-communist p-6 text-center space-y-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex items-center justify-between"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex items-center gap-2"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-2xl"
+    }, team.emoji), /*#__PURE__*/React.createElement("span", {
+      className: "font-black text-lg"
+    }, team.name)), /*#__PURE__*/React.createElement("div", {
+      className: 'px-4 py-2 rounded-full text-white font-bold ' + catInfo.color
+    }, catInfo.emoji, " ", catInfo.name)), /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-center"
+    }, timerRunning ? /*#__PURE__*/React.createElement(PdeGameTimer, {
+      seconds: catInfo.timer,
+      onComplete: onTimerComplete,
+      size: 100,
+      color: team.hex,
+      running: true
+    }) : /*#__PURE__*/React.createElement("div", {
+      className: "w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-3xl font-black text-gray-500"
+    }, catInfo.timer, "s"))), challenge.type === 'mimica' && /*#__PURE__*/React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-gray-500 text-lg"
+    }, t('mime_host_desc')), /*#__PURE__*/React.createElement("div", {
+      className: "bg-orange-50 rounded-xl p-4"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-orange-600 font-bold"
+    }, t('mime_shown_phone'))), challenge.assignedPlayer && players[challenge.assignedPlayer] && /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-500"
+    }, t('actor'), ": ", /*#__PURE__*/React.createElement("span", {
+      className: "font-bold text-gray-700"
+    }, players[challenge.assignedPlayer].name))), challenge.type === 'dibuixa' && /*#__PURE__*/React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-gray-500 text-lg"
+    }, t('draw_host_desc')), /*#__PURE__*/React.createElement("div", {
+      className: "bg-teal-50 rounded-xl p-4"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-teal-600 font-bold"
+    }, t('draw_shown_phone'))), challenge.assignedPlayer && players[challenge.assignedPlayer] && /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-500"
+    }, t('drawer'), ": ", /*#__PURE__*/React.createElement("span", {
+      className: "font-bold text-gray-700"
+    }, players[challenge.assignedPlayer].name))), challenge.type === 'preguntes' && /*#__PURE__*/React.createElement("div", {
+      className: "space-y-3"
+    }, PREGUNTES_CARDS[cardIndex] && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
+      className: "text-xl font-black text-gray-800 mb-3"
+    }, tCard(PREGUNTES_CARDS[cardIndex].q)), /*#__PURE__*/React.createElement("div", {
+      className: "grid grid-cols-2 gap-2"
+    }, PREGUNTES_CARDS[cardIndex].options.map(function (opt, oi) {
+      var letters = ['A', 'B', 'C', 'D'];
+      return /*#__PURE__*/React.createElement("div", {
+        key: oi,
+        className: "bg-blue-50 rounded-xl p-3 text-left"
+      }, /*#__PURE__*/React.createElement("span", {
+        className: "font-black text-blue-500 mr-2"
+      }, letters[oi]), /*#__PURE__*/React.createElement("span", {
+        className: "text-gray-700"
+      }, tCard(opt)));
+    }))), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-500"
+    }, t('all_answer_phone'))), challenge.type === 'prohibida' && /*#__PURE__*/React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-gray-500 text-lg"
+    }, t('forbid_host_desc')), /*#__PURE__*/React.createElement("div", {
+      className: "bg-purple-50 rounded-xl p-4"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-purple-600 font-bold"
+    }, t('forbid_shown_phone'))), challenge.assignedPlayer && players[challenge.assignedPlayer] && /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-500"
+    }, t('describer'), ": ", /*#__PURE__*/React.createElement("span", {
+      className: "font-bold text-gray-700"
+    }, players[challenge.assignedPlayer].name))), challenge.type === 'rapid' && /*#__PURE__*/React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "bg-yellow-50 rounded-xl p-3"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-yellow-700 font-bold"
+    }, t('rapid_round'), " ", (gs.rapidSubRound || 0) + 1, "/", gs.rapidTotal || 5)), RAPID_CARDS[cardIndex] && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
+      className: "text-xl font-black text-gray-800 mb-3"
+    }, tCard(RAPID_CARDS[cardIndex].q)), RAPID_CARDS[cardIndex].type === 'choice' && RAPID_CARDS[cardIndex].options && /*#__PURE__*/React.createElement("div", {
+      className: "grid grid-cols-2 gap-2"
+    }, RAPID_CARDS[cardIndex].options.map(function (opt, oi) {
+      var letters = ['A', 'B', 'C', 'D'];
+      return /*#__PURE__*/React.createElement("div", {
+        key: oi,
+        className: "bg-yellow-50 rounded-xl p-3 text-left"
+      }, /*#__PURE__*/React.createElement("span", {
+        className: "font-black text-yellow-600 mr-2"
+      }, letters[oi]), /*#__PURE__*/React.createElement("span", {
+        className: "text-gray-700"
+      }, tCard(opt)));
+    }))), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-500"
+    }, t('all_answer_15s'))), /*#__PURE__*/React.createElement("div", {
+      className: "flex gap-3 flex-wrap justify-center"
+    }, !timerRunning && /*#__PURE__*/React.createElement("button", {
+      onClick: startTimer,
+      className: "px-6 py-3 rounded-xl text-white font-bold bg-gradient-to-r from-green-500 to-emerald-600 btn-communist"
+    }, "\u23F1\uFE0F ", t('start_timer')), (challenge.type === 'mimica' || challenge.type === 'dibuixa' || challenge.type === 'prohibida') && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
+      onClick: function () {
+        markResult(true);
+      },
+      className: "px-6 py-3 rounded-xl text-white font-bold bg-gradient-to-r from-green-500 to-green-700 btn-communist"
+    }, "\u2705 ", t('correct_btn')), /*#__PURE__*/React.createElement("button", {
+      onClick: function () {
+        markResult(false);
+      },
+      className: "px-6 py-3 rounded-xl text-white font-bold bg-gradient-to-r from-red-500 to-red-700 btn-communist"
+    }, "\u274C ", t('incorrect_btn'))), challenge.type === 'preguntes' && /*#__PURE__*/React.createElement("button", {
+      onClick: evaluatePreguntes,
+      className: "px-6 py-3 rounded-xl text-white font-bold bg-gradient-to-r from-blue-500 to-blue-700 btn-communist"
+    }, "\uD83D\uDCCA ", t('evaluate')), challenge.type === 'rapid' && /*#__PURE__*/React.createElement("button", {
+      onClick: evaluateRapid,
+      className: "px-6 py-3 rounded-xl text-white font-bold bg-gradient-to-r from-yellow-500 to-yellow-700 btn-communist"
+    }, "\u26A1 ", t('evaluate_rapid')))))));
+  }
+
+  // ═══ RESULT PHASE ═══
+  if (phase === 'result') {
+    var wasCorrect = gs.lastResult;
+    var detail = gs.lastResultDetail;
+    return /*#__PURE__*/React.createElement(PdeHostView, {
+      title: "",
+      gradient: "from-red-900 to-gray-900"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-center text-white mb-4"
+    }, /*#__PURE__*/React.createElement("h1", {
+      className: "text-3xl md:text-5xl font-black"
+    }, "\u262D Communist Party")), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-2 gap-6"
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(GameBoard, {
+      positions: positions,
+      numTeams: numTeams,
+      currentTeam: currentTeam,
+      boardSize: activeBoardSize
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "card-communist p-8 text-center space-y-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-6xl"
+    }, wasCorrect ? '🎉' : '😢'), /*#__PURE__*/React.createElement("h2", {
+      className: 'text-3xl font-black ' + (wasCorrect ? 'text-green-600' : 'text-red-600')
+    }, wasCorrect ? t('correct') : t('incorrect')), /*#__PURE__*/React.createElement("div", {
+      className: "flex items-center justify-center gap-2"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-2xl"
+    }, team.emoji), /*#__PURE__*/React.createElement("span", {
+      className: "font-bold text-lg"
+    }, team.name)), detail && /*#__PURE__*/React.createElement("p", {
+      className: "text-gray-500"
+    }, t('result_label'), ": ", detail), /*#__PURE__*/React.createElement("p", {
+      className: "text-yellow-600 font-bold text-lg"
+    }, teamScores[currentTeam] || 0, " ", t('total_points')), challenge && challenge.type === 'preguntes' && PREGUNTES_CARDS[challenge.cardIndex] && /*#__PURE__*/React.createElement("div", {
+      className: "bg-blue-50 rounded-xl p-4 text-left"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-blue-700 mb-1"
+    }, t('correct_answer')), /*#__PURE__*/React.createElement("p", {
+      className: "text-blue-600"
+    }, tCard(PREGUNTES_CARDS[challenge.cardIndex].options[PREGUNTES_CARDS[challenge.cardIndex].correct])), /*#__PURE__*/React.createElement("p", {
+      className: "text-gray-600 text-sm mt-2"
+    }, tCard(PREGUNTES_CARDS[challenge.cardIndex].explanation))), /*#__PURE__*/React.createElement("button", {
+      onClick: nextTurn,
+      className: "w-full py-4 rounded-2xl text-white font-black text-xl shadow-lg bg-gradient-to-r from-red-500 to-red-700 btn-communist hover:brightness-110"
+    }, "\u27A1\uFE0F ", t('next_turn'))), /*#__PURE__*/React.createElement(TeamScoreboard, {
+      positions: positions,
+      teamScores: teamScores,
+      numTeams: numTeams,
+      currentTeam: currentTeam,
+      boardSize: activeBoardSize
+    }), /*#__PURE__*/React.createElement("button", {
+      onClick: endGame,
+      className: "w-full py-3 rounded-xl text-white/60 font-bold text-sm hover:text-white hover:bg-white/10 transition-all"
+    }, "\uD83C\uDFC1 ", t('end_game')))));
+  }
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PLAYER VIEW
+// ═══════════════════════════════════════════════════════════════
+function CommunistPlayer({
+  roomCode,
+  playerId,
+  players,
+  gameState,
+  idioma
+}) {
+  var t = createTranslator(COMMUNIST_TRANSLATIONS, idioma);
+  var tCard = function (card) {
+    return card?.[idioma] || card?.val || '???';
+  };
+  const [answerSent, setAnswerSent] = useState(false);
+  const [openAnswer, setOpenAnswer] = useState('');
+  var gs = gameState || {};
+  var phase = gs.phase || 'roll';
+  var currentTeam = gs.currentTeam || 0;
+  var challenge = gs.challenge || null;
+  var myPlayer = players[playerId] || {};
+  var myTeam = myPlayer.team;
+  var myTeamInfo = TEAMS[myTeam] || TEAMS[0];
+  var isMyTurn = myTeam === currentTeam;
+  var teamScores = gs.teamScores || {};
+
+  // Reset answerSent when challenge changes
+  useEffect(function () {
+    setAnswerSent(false);
+    setOpenAnswer('');
+  }, [challenge?.cardIndex, challenge?.type, gs.rapidSubRound]);
+
+  // Submit answer
+  var submitAnswer = function (answer) {
+    PdeFirebase.ref('rooms/' + roomCode + '/players/' + playerId + '/data').set({
+      answer: answer,
+      answeredAt: Date.now()
+    });
+    setAnswerSent(true);
+    PdeGameSounds.play('pop');
+  };
+
+  // ═══ WAITING — Not my team's turn ═══
+  if (!isMyTurn && phase !== 'finished') {
+    var activeTeam = TEAMS[currentTeam] || TEAMS[0];
+    return /*#__PURE__*/React.createElement(PdePlayerView, {
+      gradient: "from-gray-900 to-gray-800"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "card-communist p-6 text-center space-y-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-4xl"
+    }, myTeamInfo.emoji), /*#__PURE__*/React.createElement("h2", {
+      className: "font-black text-xl"
+    }, t('team_label'), " ", myTeamInfo.name), /*#__PURE__*/React.createElement("div", {
+      className: 'rounded-xl p-3 ' + myTeamInfo.bgLight
+    }, /*#__PURE__*/React.createElement("p", {
+      className: myTeamInfo.text + ' font-bold'
+    }, myPlayer.name), /*#__PURE__*/React.createElement("p", {
+      className: "text-gray-500 text-sm"
+    }, teamScores[myTeam] || 0, " ", t('points'))), /*#__PURE__*/React.createElement("div", {
+      className: "bg-gray-100 rounded-xl p-4"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-gray-500"
+    }, t('waiting')), /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-gray-700 mt-1"
+    }, activeTeam.emoji, " ", t('turn_of'), " ", activeTeam.name))));
+  }
+
+  // ═══ FINISHED ═══
+  if (phase === 'finished' || gs.finished) {
+    return /*#__PURE__*/React.createElement(PdePlayerView, {
+      gradient: "from-gray-900 to-gray-800"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "card-communist p-6 text-center space-y-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-5xl"
+    }, "\uD83C\uDFC6"), /*#__PURE__*/React.createElement("h2", {
+      className: "font-black text-2xl"
+    }, t('game_over')), /*#__PURE__*/React.createElement("div", {
+      className: 'rounded-xl p-4 ' + myTeamInfo.bgLight
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-2xl"
+    }, myTeamInfo.emoji), /*#__PURE__*/React.createElement("p", {
+      className: 'font-black text-xl ' + myTeamInfo.text
+    }, myTeamInfo.name), /*#__PURE__*/React.createElement("p", {
+      className: "text-yellow-600 font-bold text-lg"
+    }, teamScores[myTeam] || 0, " ", t('points'))), /*#__PURE__*/React.createElement("a", {
+      href: "./",
+      className: "inline-block px-6 py-3 bg-gray-200 rounded-xl font-bold hover:bg-gray-300"
+    }, "\uD83C\uDFE0 ", t('back'))));
+  }
+
+  // ═══ ROLL — Waiting for dice ═══
+  if (phase === 'roll') {
+    return /*#__PURE__*/React.createElement(PdePlayerView, {
+      gradient: "from-gray-900 to-gray-800"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "card-communist p-6 text-center space-y-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-4xl"
+    }, myTeamInfo.emoji), /*#__PURE__*/React.createElement("h2", {
+      className: "font-black text-xl"
+    }, t('your_turn')), /*#__PURE__*/React.createElement("p", {
+      className: "text-gray-500"
+    }, t('teacher_dice')), /*#__PURE__*/React.createElement("div", {
+      className: "bg-yellow-50 rounded-xl p-3"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-yellow-700 font-bold"
+    }, "\uD83C\uDFB2 ", t('waiting_dice'))), /*#__PURE__*/React.createElement("div", {
+      className: 'rounded-xl p-3 ' + myTeamInfo.bgLight
+    }, /*#__PURE__*/React.createElement("p", {
+      className: myTeamInfo.text + ' font-bold'
+    }, teamScores[myTeam] || 0, " ", t('points')))));
+  }
+
+  // ═══ RESULT — Show result ═══
+  if (phase === 'result') {
+    var wasCorrect = gs.lastResult;
+    return /*#__PURE__*/React.createElement(PdePlayerView, {
+      gradient: "from-gray-900 to-gray-800"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "card-communist p-6 text-center space-y-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-5xl"
+    }, wasCorrect ? '🎉' : '😢'), /*#__PURE__*/React.createElement("h2", {
+      className: 'font-black text-2xl ' + (wasCorrect ? 'text-green-600' : 'text-red-600')
+    }, wasCorrect ? t('correct') : t('incorrect')), /*#__PURE__*/React.createElement("p", {
+      className: "text-gray-500"
+    }, t('waiting_next'))));
+  }
+
+  // ═══ CHALLENGE — Show role-specific content ═══
+  if (phase === 'challenge' && challenge) {
+    var catInfo = CATEGORIES[challenge.type];
+    var isAssigned = challenge.assignedPlayer === playerId;
+
+    // ── MÍMICA: assigned player sees concept, others guess ──
+    if (challenge.type === 'mimica') {
+      if (isAssigned) {
+        var card = MIMICA_CARDS[challenge.cardIndex];
+        return /*#__PURE__*/React.createElement(PdePlayerView, {
+          gradient: "from-gray-900 to-gray-800"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "card-communist p-6 text-center space-y-4"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "text-3xl"
+        }, catInfo.emoji), /*#__PURE__*/React.createElement("h3", {
+          className: "font-black text-lg text-orange-600"
+        }, t('you_actor')), /*#__PURE__*/React.createElement("div", {
+          className: "bg-orange-100 rounded-xl p-6"
+        }, /*#__PURE__*/React.createElement("p", {
+          className: "text-sm text-orange-600 mb-2"
+        }, t('act_mime')), /*#__PURE__*/React.createElement("p", {
+          className: "text-3xl font-black text-orange-800"
+        }, card ? tCard(card) : '???')), /*#__PURE__*/React.createElement("p", {
+          className: "text-sm text-gray-500"
+        }, t('no_talking'))));
+      } else {
+        return /*#__PURE__*/React.createElement(PdePlayerView, {
+          gradient: "from-gray-900 to-gray-800"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "card-communist p-6 text-center space-y-4"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "text-3xl"
+        }, catInfo.emoji), /*#__PURE__*/React.createElement("h3", {
+          className: "font-black text-lg text-orange-600"
+        }, t('cat_mimica')), /*#__PURE__*/React.createElement("p", {
+          className: "text-gray-600"
+        }, t('watch_guess')), !answerSent ? /*#__PURE__*/React.createElement("div", {
+          className: "space-y-3"
+        }, /*#__PURE__*/React.createElement("input", {
+          type: "text",
+          placeholder: "Escriu la teua resposta...",
+          value: openAnswer,
+          onChange: function (e) {
+            setOpenAnswer(e.target.value);
+          },
+          className: "w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-orange-500 focus:outline-none text-center font-bold"
+        }), /*#__PURE__*/React.createElement("button", {
+          onClick: function () {
+            submitAnswer(openAnswer);
+          },
+          disabled: !openAnswer.trim(),
+          className: 'w-full py-3 rounded-xl text-white font-bold bg-gradient-to-r from-orange-500 to-orange-600 btn-communist ' + (!openAnswer.trim() ? 'opacity-50' : '')
+        }, "\uD83D\uDCE9 Enviar Resposta")) : /*#__PURE__*/React.createElement("div", {
+          className: "bg-green-100 rounded-xl p-4"
+        }, /*#__PURE__*/React.createElement("p", {
+          className: "text-green-700 font-bold"
+        }, "\u2705 ", t('answer_sent')))));
+      }
+    }
+
+    // ── DIBUIXA: assigned player sees concept, others guess ──
+    if (challenge.type === 'dibuixa') {
+      if (isAssigned) {
+        var card = DIBUIXA_CARDS[challenge.cardIndex];
+        return /*#__PURE__*/React.createElement(PdePlayerView, {
+          gradient: "from-gray-900 to-gray-800"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "card-communist p-6 text-center space-y-4"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "text-3xl"
+        }, catInfo.emoji), /*#__PURE__*/React.createElement("h3", {
+          className: "font-black text-lg text-teal-600"
+        }, t('you_artist')), /*#__PURE__*/React.createElement("div", {
+          className: "bg-teal-100 rounded-xl p-6"
+        }, /*#__PURE__*/React.createElement("p", {
+          className: "text-sm text-teal-600 mb-2"
+        }, t('draw_concept')), /*#__PURE__*/React.createElement("p", {
+          className: "text-3xl font-black text-teal-800"
+        }, card ? tCard(card) : '???')), /*#__PURE__*/React.createElement("p", {
+          className: "text-sm text-gray-500"
+        }, t('no_letters'))));
+      } else {
+        return /*#__PURE__*/React.createElement(PdePlayerView, {
+          gradient: "from-gray-900 to-gray-800"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "card-communist p-6 text-center space-y-4"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "text-3xl"
+        }, catInfo.emoji), /*#__PURE__*/React.createElement("h3", {
+          className: "font-black text-lg text-teal-600"
+        }, t('cat_dibuixa')), /*#__PURE__*/React.createElement("p", {
+          className: "text-gray-600"
+        }, t('watch_guess')), !answerSent ? /*#__PURE__*/React.createElement("div", {
+          className: "space-y-3"
+        }, /*#__PURE__*/React.createElement("input", {
+          type: "text",
+          placeholder: "Escriu la teua resposta...",
+          value: openAnswer,
+          onChange: function (e) {
+            setOpenAnswer(e.target.value);
+          },
+          className: "w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-teal-500 focus:outline-none text-center font-bold"
+        }), /*#__PURE__*/React.createElement("button", {
+          onClick: function () {
+            submitAnswer(openAnswer);
+          },
+          disabled: !openAnswer.trim(),
+          className: 'w-full py-3 rounded-xl text-white font-bold bg-gradient-to-r from-teal-500 to-teal-600 btn-communist ' + (!openAnswer.trim() ? 'opacity-50' : '')
+        }, "\uD83D\uDCE9 Enviar Resposta")) : /*#__PURE__*/React.createElement("div", {
+          className: "bg-green-100 rounded-xl p-4"
+        }, /*#__PURE__*/React.createElement("p", {
+          className: "text-green-700 font-bold"
+        }, "\u2705 ", t('answer_sent')))));
+      }
+    }
+
+    // ── PREGUNTES: All team members answer ──
+    if (challenge.type === 'preguntes') {
+      var card = PREGUNTES_CARDS[challenge.cardIndex];
+      if (!card) return null;
+      return /*#__PURE__*/React.createElement(PdePlayerView, {
+        gradient: "from-gray-900 to-gray-800"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "card-communist p-6 text-center space-y-4"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "text-3xl"
+      }, catInfo.emoji), /*#__PURE__*/React.createElement("h3", {
+        className: "font-black text-lg text-blue-600"
+      }, t('cat_preguntes')), /*#__PURE__*/React.createElement("p", {
+        className: "text-gray-800 font-bold text-lg"
+      }, tCard(card.q)), !answerSent ? /*#__PURE__*/React.createElement("div", {
+        className: "space-y-2"
+      }, card.options.map(function (opt, oi) {
+        var letters = ['A', 'B', 'C', 'D'];
+        return /*#__PURE__*/React.createElement("button", {
+          key: oi,
+          onClick: function () {
+            submitAnswer(oi);
+          },
+          className: "w-full py-3 px-4 rounded-xl bg-blue-50 hover:bg-blue-100 text-left font-bold transition-colors btn-communist"
+        }, /*#__PURE__*/React.createElement("span", {
+          className: "text-blue-500 font-black mr-2"
+        }, letters[oi]), tCard(opt));
+      })) : /*#__PURE__*/React.createElement("div", {
+        className: "bg-green-100 rounded-xl p-4"
+      }, /*#__PURE__*/React.createElement("p", {
+        className: "text-green-700 font-bold"
+      }, "\u2705 ", t('answer_sent')), /*#__PURE__*/React.createElement("p", {
+        className: "text-gray-500 text-sm"
+      }, t('waiting_eval')))));
+    }
+
+    // ── PROHIBIDA: assigned player describes, others guess ──
+    if (challenge.type === 'prohibida') {
+      if (isAssigned) {
+        var card = PROHIBIDA_CARDS[challenge.cardIndex];
+        return /*#__PURE__*/React.createElement(PdePlayerView, {
+          gradient: "from-gray-900 to-gray-800"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "card-communist p-6 text-center space-y-4"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "text-3xl"
+        }, catInfo.emoji), /*#__PURE__*/React.createElement("h3", {
+          className: "font-black text-lg text-purple-600"
+        }, t('you_describer')), /*#__PURE__*/React.createElement("div", {
+          className: "bg-purple-100 rounded-xl p-4"
+        }, /*#__PURE__*/React.createElement("p", {
+          className: "text-sm text-purple-600 mb-2"
+        }, t('describe_word')), /*#__PURE__*/React.createElement("p", {
+          className: "text-3xl font-black text-purple-800"
+        }, card ? tCard(card.word) : '???')), card && /*#__PURE__*/React.createElement("div", {
+          className: "bg-red-100 rounded-xl p-4"
+        }, /*#__PURE__*/React.createElement("p", {
+          className: "text-sm text-red-600 font-bold mb-2"
+        }, "\uD83D\uDEAB ", t('forbidden_words')), /*#__PURE__*/React.createElement("div", {
+          className: "flex flex-wrap gap-2 justify-center"
+        }, (card.forbidden[idioma] || card.forbidden.val).map(function (w, i) {
+          return /*#__PURE__*/React.createElement("span", {
+            key: i,
+            className: "bg-red-200 text-red-800 px-3 py-1 rounded-full font-bold text-sm"
+          }, w);
+        })))));
+      } else {
+        return /*#__PURE__*/React.createElement(PdePlayerView, {
+          gradient: "from-gray-900 to-gray-800"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "card-communist p-6 text-center space-y-4"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "text-3xl"
+        }, catInfo.emoji), /*#__PURE__*/React.createElement("h3", {
+          className: "font-black text-lg text-purple-600"
+        }, t('cat_prohibida')), /*#__PURE__*/React.createElement("p", {
+          className: "text-gray-600"
+        }, t('watch_guess')), !answerSent ? /*#__PURE__*/React.createElement("div", {
+          className: "space-y-3"
+        }, /*#__PURE__*/React.createElement("input", {
+          type: "text",
+          placeholder: "Escriu la paraula...",
+          value: openAnswer,
+          onChange: function (e) {
+            setOpenAnswer(e.target.value);
+          },
+          className: "w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none text-center font-bold"
+        }), /*#__PURE__*/React.createElement("button", {
+          onClick: function () {
+            submitAnswer(openAnswer);
+          },
+          disabled: !openAnswer.trim(),
+          className: 'w-full py-3 rounded-xl text-white font-bold bg-gradient-to-r from-purple-500 to-purple-600 btn-communist ' + (!openAnswer.trim() ? 'opacity-50' : '')
+        }, "\uD83D\uDCE9 Enviar Resposta")) : /*#__PURE__*/React.createElement("div", {
+          className: "bg-green-100 rounded-xl p-4"
+        }, /*#__PURE__*/React.createElement("p", {
+          className: "text-green-700 font-bold"
+        }, "\u2705 ", t('answer_sent')))));
+      }
+    }
+
+    // ── RÀPID: All team members answer quickly ──
+    if (challenge.type === 'rapid') {
+      var card = RAPID_CARDS[challenge.cardIndex];
+      if (!card) return null;
+      return /*#__PURE__*/React.createElement(PdePlayerView, {
+        gradient: "from-gray-900 to-gray-800"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "card-communist p-6 text-center space-y-4"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "text-3xl"
+      }, catInfo.emoji), /*#__PURE__*/React.createElement("h3", {
+        className: "font-black text-lg text-yellow-600"
+      }, t('cat_rapid'), "! ", (gs.rapidSubRound || 0) + 1, "/", gs.rapidTotal || 5), /*#__PURE__*/React.createElement("p", {
+        className: "text-gray-800 font-bold text-lg"
+      }, tCard(card.q)), !answerSent ? card.type === 'choice' && card.options ? /*#__PURE__*/React.createElement("div", {
+        className: "space-y-2"
+      }, card.options.map(function (opt, oi) {
+        var letters = ['A', 'B', 'C', 'D'];
+        return /*#__PURE__*/React.createElement("button", {
+          key: oi,
+          onClick: function () {
+            submitAnswer(oi);
+          },
+          className: "w-full py-3 px-4 rounded-xl bg-yellow-50 hover:bg-yellow-100 text-left font-bold transition-colors btn-communist"
+        }, /*#__PURE__*/React.createElement("span", {
+          className: "text-yellow-600 font-black mr-2"
+        }, letters[oi]), tCard(opt));
+      })) : /*#__PURE__*/React.createElement("div", {
+        className: "space-y-3"
+      }, /*#__PURE__*/React.createElement("input", {
+        type: "text",
+        placeholder: "Escriu la resposta...",
+        value: openAnswer,
+        onChange: function (e) {
+          setOpenAnswer(e.target.value);
+        },
+        onKeyDown: function (e) {
+          if (e.key === 'Enter' && openAnswer.trim()) submitAnswer(openAnswer);
+        },
+        className: "w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-yellow-500 focus:outline-none text-center font-bold"
+      }), /*#__PURE__*/React.createElement("button", {
+        onClick: function () {
+          submitAnswer(openAnswer);
+        },
+        disabled: !openAnswer.trim(),
+        className: 'w-full py-3 rounded-xl text-white font-bold bg-gradient-to-r from-yellow-500 to-yellow-600 btn-communist ' + (!openAnswer.trim() ? 'opacity-50' : '')
+      }, "\u26A1 Enviar!")) : /*#__PURE__*/React.createElement("div", {
+        className: "bg-green-100 rounded-xl p-4"
+      }, /*#__PURE__*/React.createElement("p", {
+        className: "text-green-700 font-bold"
+      }, "\u2705 ", t('answer_sent')), /*#__PURE__*/React.createElement("p", {
+        className: "text-gray-500 text-sm"
+      }, t('waiting_eval_short')))));
+    }
+  }
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════
+ReactDOM.render(/*#__PURE__*/React.createElement(CommunistApp, null), document.getElementById('root'));</script>
+</body>
+</html>

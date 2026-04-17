@@ -2,7 +2,7 @@
 <html lang="ca">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Playground - Aprèn Economia Jugant! | PDE</title>
     <meta name="description" content="10 jocs educatius d'economia per a 1-2 jugadors: teoria de jocs, bombolles especulatives, tragèdia dels comuns, comerç internacional, cost d'oportunitat i més.">
     <meta property="og:title" content="Playground - Aprèn Economia Jugant! | PDE">
@@ -61,7 +61,7 @@ const playSound = (type) => {
             osc.start(ctx.currentTime + i * 0.08);
             osc.stop(ctx.currentTime + i * 0.08 + 0.2);
         });
-    } catch(e) {}
+    } catch(e) { console.warn('PDE: Audio playback failed:', e.message || e); }
 };
 
 const ScoreManager = {
@@ -199,7 +199,7 @@ const JocCompartirRobar = ({ jugadors, onEnd, difficulty }) => {
             <GameCard><Confetti show={showConfetti} /><div className="text-center space-y-5">
                 <div className="flex justify-between items-center">
                     <PlayerBadge name={jugadors.j1} score={punts.j1} color="from-blue-400 to-blue-600" isActive={fase === 'player1'} emoji="🦊" />
-                    <span className="text-lg font-black text-gray-400">Ronda {ronda}/{TOTAL_RONDES}</span>
+                    <span className="text-lg font-black text-gray-500">Ronda {ronda}/{TOTAL_RONDES}</span>
                     <PlayerBadge name={jugadors.j2} score={punts.j2} color="from-pink-400 to-pink-600" isActive={fase === 'player2'} emoji="🐰" />
                 </div>
                 <div className="py-4"><div className="text-6xl mb-2">{emoji}</div><h3 className="text-2xl font-black text-gray-800">{jugadors[jugadorActual]}, tria!</h3><p className="text-gray-500">{fase === 'player1' ? `${jugadors.j2}, no miris! 🙈` : 'És el teu torn!'}</p></div>
@@ -217,7 +217,7 @@ const JocCompartirRobar = ({ jugadors, onEnd, difficulty }) => {
             <GameCard><Confetti show={showConfetti} /><div className="text-center space-y-5">
                 <div className="flex justify-between items-center">
                     <PlayerBadge name={jugadors.j1} score={punts.j1} color="from-blue-400 to-blue-600" emoji="🦊" />
-                    <span className="text-lg font-black text-gray-400">Ronda {ronda}/{TOTAL_RONDES}</span>
+                    <span className="text-lg font-black text-gray-500">Ronda {ronda}/{TOTAL_RONDES}</span>
                     <PlayerBadge name={jugadors.j2} score={punts.j2} color="from-pink-400 to-pink-600" emoji="🐰" />
                 </div>
                 <h3 className="text-2xl font-black text-gray-800">Resultat!</h3>
@@ -468,7 +468,7 @@ const JocSubhasta = ({ jugadors, onEnd, difficulty }) => {
         <GameCard><Confetti show={showConfetti} /><div className="space-y-4">
             <div className="flex justify-between items-center">
                 <PlayerBadge name={jugadors.j1} score={monedes.j1} color="from-blue-400 to-blue-600" isActive={true} emoji="🦊" />
-                <span className="font-bold text-gray-400">{ronda}/{TOTAL_RONDES}</span>
+                <span className="font-bold text-gray-500">{ronda}/{TOTAL_RONDES}</span>
                 <PlayerBadge name={jugadors.j2} score={monedes.j2} color="from-pink-400 to-pink-600" isActive={true} emoji="🐰" />
             </div>
             <div className="text-center bg-gradient-to-r from-yellow-200 to-orange-200 rounded-2xl p-5">
@@ -733,7 +733,7 @@ const JocComuns = ({ jugadors, onEnd, difficulty }) => {
         <GameCard><div className="text-center space-y-4">
             <div className="flex justify-between items-center">
                 <PlayerBadge name={jugadors.j1} score={pescaTotal.j1} color="from-blue-400 to-blue-600" isActive={true} emoji="🦊" />
-                <span className="text-lg font-black text-gray-400">Ronda {ronda}/{TOTAL_RONDES}</span>
+                <span className="text-lg font-black text-gray-500">Ronda {ronda}/{TOTAL_RONDES}</span>
                 <PlayerBadge name={jugadors.j2} score={pescaTotal.j2} color="from-pink-400 to-pink-600" isActive={false} emoji="🐰" />
             </div>
             <BarraSalut />
@@ -757,7 +757,7 @@ const JocComuns = ({ jugadors, onEnd, difficulty }) => {
         <GameCard><div className="text-center space-y-4">
             <div className="flex justify-between items-center">
                 <PlayerBadge name={jugadors.j1} score={pescaTotal.j1} color="from-blue-400 to-blue-600" isActive={false} emoji="🦊" />
-                <span className="text-lg font-black text-gray-400">Ronda {ronda}/{TOTAL_RONDES}</span>
+                <span className="text-lg font-black text-gray-500">Ronda {ronda}/{TOTAL_RONDES}</span>
                 <PlayerBadge name={jugadors.j2} score={pescaTotal.j2} color="from-pink-400 to-pink-600" isActive={true} emoji="🐰" />
             </div>
             <BarraSalut />
@@ -783,7 +783,7 @@ const JocComuns = ({ jugadors, onEnd, difficulty }) => {
             <GameCard><div className="text-center space-y-4">
                 <div className="flex justify-between items-center">
                     <PlayerBadge name={jugadors.j1} score={pescaTotal.j1} color="from-blue-400 to-blue-600" emoji="🦊" />
-                    <span className="text-lg font-black text-gray-400">Ronda {ronda}/{TOTAL_RONDES}</span>
+                    <span className="text-lg font-black text-gray-500">Ronda {ronda}/{TOTAL_RONDES}</span>
                     <PlayerBadge name={jugadors.j2} score={pescaTotal.j2} color="from-pink-400 to-pink-600" emoji="🐰" />
                 </div>
                 <h3 className="text-2xl font-black text-gray-800">Resultat de la ronda!</h3>
@@ -875,7 +875,7 @@ const JocComuns = ({ jugadors, onEnd, difficulty }) => {
                                     <span className="text-[10px] font-bold text-gray-500">{h}</span>
                                     <div className={`w-5 ${color} rounded-t-md transition-all`}
                                          style={{ height: `${height}%` }} />
-                                    <span className="text-[9px] text-gray-400">{i}</span>
+                                    <span className="text-[9px] text-gray-500">{i}</span>
                                 </div>
                             );
                         })}
@@ -1214,7 +1214,7 @@ const JocBombolla = ({ jugadors, onEnd, difficulty, mode }) => {
                         </BigButton>
                     </div>
 
-                    {!potComprar && torn !== 'resolucio' && <p className="text-center text-xs text-gray-400">No tens prou diners per comprar ({preu} 💰)</p>}
+                    {!potComprar && torn !== 'resolucio' && <p className="text-center text-xs text-gray-500">No tens prou diners per comprar ({preu} 💰)</p>}
                 </div>
             </GameCard>
         );
@@ -1238,7 +1238,7 @@ const JocBombolla = ({ jugadors, onEnd, difficulty, mode }) => {
                         <div className="flex justify-center items-center gap-4">
                             <div className="text-center">
                                 <p className="text-sm text-gray-500">Preu abans</p>
-                                <p className="text-2xl font-black text-gray-400 line-through">{preuAnterior} 💰</p>
+                                <p className="text-2xl font-black text-gray-500 line-through">{preuAnterior} 💰</p>
                             </div>
                             <span className="text-3xl">➡️</span>
                             <div className="text-center">
@@ -1463,7 +1463,7 @@ const JocIlla = ({ jugadors, onEnd, difficulty }) => {
                 <div key={i} className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
                     i + 1 < dia ? 'bg-green-400 text-white' :
                     i + 1 === dia ? 'bg-amber-400 text-white scale-110 ring-2 ring-amber-300' :
-                    'bg-gray-200 text-gray-400'
+                    'bg-gray-200 text-gray-500'
                 }`}>{i + 1}</div>
             ))}
         </div>
@@ -1656,21 +1656,21 @@ const JocIlla = ({ jugadors, onEnd, difficulty }) => {
                     <div className="text-center">
                         <p className="text-3xl">🍌</p>
                         <p className="font-black text-green-600">{acumulat.menjar}</p>
-                        <p className="text-xs text-gray-400">Menjar</p>
+                        <p className="text-xs text-gray-500">Menjar</p>
                     </div>
                     <div className="text-center">
                         <p className="text-3xl">🛖</p>
                         <p className="font-black text-amber-600">{acumulat.refugi}</p>
-                        <p className="text-xs text-gray-400">Refugi</p>
+                        <p className="text-xs text-gray-500">Refugi</p>
                     </div>
                     <div className="text-center">
                         <p className="text-3xl">⚙️</p>
                         <p className="font-black text-blue-600">x{multiplicador.toFixed(2)}</p>
-                        <p className="text-xs text-gray-400">Multiplicador</p>
+                        <p className="text-xs text-gray-500">Multiplicador</p>
                     </div>
                 </div>
                 <div className="border-t pt-3">
-                    <p className="text-sm text-gray-400">Puntuació d'exploració</p>
+                    <p className="text-sm text-gray-500">Puntuació d'exploració</p>
                     <p className="text-4xl font-black text-purple-600">🗺️ {acumulat.explorar} pts</p>
                 </div>
             </div>
@@ -1847,7 +1847,7 @@ const JocRiscRecompensa = ({ jugadors, onEnd, difficulty }) => {
         <GameCard><div className="space-y-4">
             <div className="flex justify-between items-center">
                 <PlayerBadge name={jugadors.j1} score={punts.j1} color="from-blue-400 to-blue-600" isActive={!aposta.j1} emoji="🦊" />
-                <span className="font-bold text-gray-400">Ronda {ronda}/{TOTAL_RONDES}</span>
+                <span className="font-bold text-gray-500">Ronda {ronda}/{TOTAL_RONDES}</span>
                 <PlayerBadge name={jugadors.j2} score={punts.j2} color="from-pink-400 to-pink-600" isActive={!aposta.j2} emoji="🐰" />
             </div>
             <h3 className="text-xl font-black text-center">Trieu estratègia!</h3>
@@ -2223,12 +2223,12 @@ const JocComers = ({ jugadors, onEnd, difficulty }) => {
                         <p className="font-bold text-blue-600 mb-2">{jugadors.j1} 🦊</p>
                         <div className="grid grid-cols-2 gap-2 text-sm">
                             <div className="bg-white rounded-xl p-2">
-                                <p className="text-gray-400 text-xs">Autarquia</p>
+                                <p className="text-gray-500 text-xs">Autarquia</p>
                                 <p>🌾 {prodAutJ1.blat} | ⚙️ {prodAutJ1.acer}</p>
                                 <p className="font-black">⭐ {satAutJ1}</p>
                             </div>
                             <div className="bg-white rounded-xl p-2">
-                                <p className="text-gray-400 text-xs">Amb comerç</p>
+                                <p className="text-gray-500 text-xs">Amb comerç</p>
                                 <p>🌾 {finalJ1.blat} | ⚙️ {finalJ1.acer}</p>
                                 <p className="font-black">⭐ {satComJ1}</p>
                             </div>
@@ -2243,12 +2243,12 @@ const JocComers = ({ jugadors, onEnd, difficulty }) => {
                         <p className="font-bold text-pink-600 mb-2">{jugadors.j2} 🐰</p>
                         <div className="grid grid-cols-2 gap-2 text-sm">
                             <div className="bg-white rounded-xl p-2">
-                                <p className="text-gray-400 text-xs">Autarquia</p>
+                                <p className="text-gray-500 text-xs">Autarquia</p>
                                 <p>🌾 {prodAutJ2.blat} | ⚙️ {prodAutJ2.acer}</p>
                                 <p className="font-black">⭐ {satAutJ2}</p>
                             </div>
                             <div className="bg-white rounded-xl p-2">
-                                <p className="text-gray-400 text-xs">Amb comerç</p>
+                                <p className="text-gray-500 text-xs">Amb comerç</p>
                                 <p>🌾 {finalJ2.blat} | ⚙️ {finalJ2.acer}</p>
                                 <p className="font-black">⭐ {satComJ2}</p>
                             </div>
@@ -2286,7 +2286,7 @@ const Leaderboard = ({ onClose }) => {
         <GameCard><div className="space-y-4">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-black text-yellow-600">🏆 Rànquing</h2>
-                <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+                <button onClick={onClose} className="text-gray-500 hover:text-gray-600 text-2xl">✕</button>
             </div>
             {leaderboard.length === 0 ? <p className="text-center text-gray-500 py-8">Encara no hi ha puntuacions!</p> : (
                 <div className="space-y-2">{leaderboard.map((player, i) => (

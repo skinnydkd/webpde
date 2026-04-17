@@ -2,7 +2,7 @@
 <html lang="ca">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Insider Trading 🕵️ - Joc de Deducció Social | PDE</title>
     <meta name="description" content="Insider Trading — Joc de deducció social d'economia per a l'aula. Descobreix l'impostor que no coneix la paraula secreta!">
     <meta property="og:title" content="Insider Trading 🕵️ - Joc de Deducció Social | PDE">
@@ -11,6 +11,9 @@
     <meta property="og:url" content="https://profedeeconomia.es/insider">
     <meta property="og:locale" content="ca_ES">
     <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Insider Trading 🕵️ - Joc de Deducció Social | PDE">
+    <meta name="twitter:description" content="Joc de deducció social d'economia per a l'aula. Descobreix l'impostor!">
     <link rel="canonical" href="https://profedeeconomia.es/insider">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕵️</text></svg>">
     <!-- React + Babel + Tailwind -->
@@ -79,7 +82,7 @@ var INSIDER_TRANSLATIONS = {
     'describe_one_phrase': { val: 'Descriu la teua paraula amb UNA frase', es: 'Describe tu palabra con UNA frase', en: 'Describe your word in ONE phrase' },
     'discussion_phase':    { val: 'Fase de Descripció', es: 'Fase de Descripción', en: 'Description Phase' },
     'current_speaker':     { val: 'Parlant ara:', es: 'Hablando ahora:', en: 'Speaking now:' },
-    'next_speaker':        { val: 'Seguent', es: 'Siguiente', en: 'Next' },
+    'next_speaker':        { val: 'Següent', es: 'Siguiente', en: 'Next' },
     'your_turn_speak':     { val: 'EL TEU TORN!', es: '¡TU TURNO!', en: 'YOUR TURN!' },
     'listen_wait':         { val: 'Escolta i espera el teu torn', es: 'Escucha y espera tu turno', en: 'Listen and wait for your turn' },
     'speaking_now':        { val: 'Parlant ara', es: 'Hablando ahora', en: 'Speaking now' },
@@ -114,7 +117,7 @@ var INSIDER_TRANSLATIONS = {
     'round_results':       { val: 'Resultats de la Ronda', es: 'Resultados de la Ronda', en: 'Round Results' },
     'round_x_of_y':        { val: 'Ronda {x} de {y}', es: 'Ronda {x} de {y}', en: 'Round {x} of {y}' },
     'leaderboard':         { val: 'Classificació', es: 'Clasificación', en: 'Leaderboard' },
-    'next_round':          { val: 'Seguent Ronda', es: 'Siguiente Ronda', en: 'Next Round' },
+    'next_round':          { val: 'Següent Ronda', es: 'Siguiente Ronda', en: 'Next Round' },
     'points':              { val: 'punts', es: 'puntos', en: 'points' },
 
     // Finished
@@ -239,7 +242,7 @@ function InsiderApp() {
     const [players, setPlayers] = useState({});
     const [gameState, setGameState] = useState({});
     var [idioma, setIdioma] = useState(PdeLanguageStore.get());
-    var t = function(key) { return INSIDER_TRANSLATIONS[key]?.[idioma] || INSIDER_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(INSIDER_TRANSLATIONS, idioma);
 
     // Init Firebase
     useEffect(function() { if (PdeFirebase.isConfigured()) PdeFirebase.init(); }, []);
@@ -447,7 +450,7 @@ function InsiderConfig({ players, idioma, t, onConfigDone }) {
                 <div className="text-center">
                     <div className="text-5xl mb-3">🕵️</div>
                     <h2 className="text-2xl font-black text-white">{t('config_title')}</h2>
-                    <p className="text-gray-400 mt-1">{playerCount} jugadors</p>
+                    <p className="text-gray-500 mt-1">{playerCount} jugadors</p>
                 </div>
 
                 {/* Number of impostors */}
@@ -522,10 +525,7 @@ function InsiderConfig({ players, idioma, t, onConfigDone }) {
 // HOST VIEW (projected on classroom screen)
 // ===============================================================
 function InsiderHost({ roomCode, playerId, players, gameState, idioma }) {
-    var t = function(key) {
-        var str = INSIDER_TRANSLATIONS[key]?.[idioma] || INSIDER_TRANSLATIONS[key]?.val || key;
-        return str;
-    };
+    var t = createTranslator(INSIDER_TRANSLATIONS, idioma);
     const [showConfetti, setShowConfetti] = useState(false);
     const [timerKey, setTimerKey] = useState(0);
 
@@ -823,7 +823,7 @@ function InsiderHost({ roomCode, playerId, players, gameState, idioma }) {
             <div className="min-h-screen flex items-center justify-center p-4">
                 <PdeConfetti show={false} />
                 <div className="max-w-2xl w-full text-center space-y-8">
-                    <div className="text-gray-400 font-bold">{t('round_x_of_y').replace('{x}', round).replace('{y}', totalRounds)}</div>
+                    <div className="text-gray-500 font-bold">{t('round_x_of_y').replace('{x}', round).replace('{y}', totalRounds)}</div>
                     <div className="text-8xl" style={{animation: 'pulse-impostor 2s ease-in-out infinite'}}>🤫</div>
                     <h1 className="text-4xl md:text-5xl font-black text-white">{t('memorize_word')}</h1>
                     <p className="text-xl text-amber-400">Mireu els vostres mòbils!</p>
@@ -846,7 +846,7 @@ function InsiderHost({ roomCode, playerId, players, gameState, idioma }) {
         return (
             <div className="min-h-screen flex items-center justify-center p-4">
                 <div className="max-w-3xl w-full space-y-8">
-                    <div className="text-center text-gray-400 font-bold">
+                    <div className="text-center text-gray-500 font-bold">
                         {t('round_x_of_y').replace('{x}', round).replace('{y}', totalRounds)} — {t('discussion_phase')}
                     </div>
 
@@ -879,7 +879,7 @@ function InsiderHost({ roomCode, playerId, players, gameState, idioma }) {
                                     <div key={pid} className={'px-3 py-2 rounded-xl text-sm font-bold transition-all ' +
                                         (isCurrent ? 'bg-amber-500 text-white scale-110 shadow-lg' :
                                          isDone ? 'bg-green-500/20 text-green-400 line-through' :
-                                         'bg-white/10 text-gray-400')}>
+                                         'bg-white/10 text-gray-500')}>
                                         {isDone && '✓ '}{players[pid]?.name || pid}
                                     </div>
                                 );
@@ -896,12 +896,12 @@ function InsiderHost({ roomCode, playerId, players, gameState, idioma }) {
         return (
             <div className="min-h-screen flex items-center justify-center p-4">
                 <div className="max-w-2xl w-full text-center space-y-8">
-                    <div className="text-gray-400 font-bold">{t('round_x_of_y').replace('{x}', round).replace('{y}', totalRounds)}</div>
+                    <div className="text-gray-500 font-bold">{t('round_x_of_y').replace('{x}', round).replace('{y}', totalRounds)}</div>
                     <div className="text-7xl" style={{animation: 'pulse-impostor 1.5s ease-in-out infinite'}}>🗳️</div>
                     <h1 className="text-4xl font-black text-white">{t('voting_progress')}</h1>
                     <div className="bg-white/10 rounded-2xl p-6">
                         <p className="text-3xl font-black text-amber-400">{voteCount} / {expectedVotes}</p>
-                        <p className="text-gray-400 mt-2">{t('votes_cast')}</p>
+                        <p className="text-gray-500 mt-2">{t('votes_cast')}</p>
                     </div>
                     <div className="flex flex-wrap justify-center gap-2">
                         {alivePlayers.map(function(pid) {
@@ -928,7 +928,7 @@ function InsiderHost({ roomCode, playerId, players, gameState, idioma }) {
         return (
             <div className="min-h-screen flex items-center justify-center p-4">
                 <div className="max-w-2xl w-full text-center space-y-8">
-                    <div className="text-gray-400 font-bold">{t('round_x_of_y').replace('{x}', round).replace('{y}', totalRounds)}</div>
+                    <div className="text-gray-500 font-bold">{t('round_x_of_y').replace('{x}', round).replace('{y}', totalRounds)}</div>
                     <h1 className="text-3xl font-black text-white">{t('reveal_title')}</h1>
 
                     <div className={'rounded-3xl p-8 border-2 ' +
@@ -962,7 +962,7 @@ function InsiderHost({ roomCode, playerId, players, gameState, idioma }) {
             <div className="min-h-screen flex items-center justify-center p-4">
                 <PdeConfetti show={showConfetti} />
                 <div className="max-w-2xl w-full text-center space-y-8">
-                    <div className="text-gray-400 font-bold">{t('round_x_of_y').replace('{x}', round).replace('{y}', totalRounds)}</div>
+                    <div className="text-gray-500 font-bold">{t('round_x_of_y').replace('{x}', round).replace('{y}', totalRounds)}</div>
                     <h1 className="text-3xl font-black text-white">{t('guess_phase')}</h1>
 
                     {!guessSubmitted ? (
@@ -989,7 +989,7 @@ function InsiderHost({ roomCode, playerId, players, gameState, idioma }) {
                                 {guessCorrect ? t('guess_correct') : t('guess_wrong')}
                             </p>
                             {gs.impostorGuess && (
-                                <p className="text-gray-400 mt-2">Resposta: &quot;{gs.impostorGuess}&quot;</p>
+                                <p className="text-gray-500 mt-2">Resposta: &quot;{gs.impostorGuess}&quot;</p>
                             )}
                             <p className="text-white font-bold mt-4 text-xl">{t('the_word_was')} <span className="text-amber-400">{currentWord[idioma] || currentWord.val}</span></p>
                         </div>
@@ -1014,7 +1014,7 @@ function InsiderHost({ roomCode, playerId, players, gameState, idioma }) {
                     <div className="text-center">
                         <h1 className="text-3xl font-black text-white">{t('round_results')}</h1>
                         <p className="text-amber-400 font-bold mt-1">{t('round_x_of_y').replace('{x}', round).replace('{y}', totalRounds)}</p>
-                        <p className="text-gray-400 mt-2 text-lg">{t('the_word_was')} <span className="text-amber-400 font-bold">{currentWord[idioma] || currentWord.val}</span></p>
+                        <p className="text-gray-500 mt-2 text-lg">{t('the_word_was')} <span className="text-amber-400 font-bold">{currentWord[idioma] || currentWord.val}</span></p>
                     </div>
 
                     {/* Leaderboard */}
@@ -1114,7 +1114,7 @@ function InsiderHost({ roomCode, playerId, players, gameState, idioma }) {
 // PLAYER VIEW (on student's phone)
 // ===============================================================
 function InsiderPlayer({ roomCode, playerId, players, gameState, idioma }) {
-    var t = function(key) { return INSIDER_TRANSLATIONS[key]?.[idioma] || INSIDER_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(INSIDER_TRANSLATIONS, idioma);
     const [voted, setVoted] = useState(false);
     const [guessText, setGuessText] = useState('');
     const [guessSent, setGuessSent] = useState(false);
@@ -1172,7 +1172,7 @@ function InsiderPlayer({ roomCode, playerId, players, gameState, idioma }) {
                             <p className="text-amber-400 font-bold text-sm mb-2">{t('your_word')}</p>
                             <h2 className="text-4xl font-black text-white mb-4">{myWord}</h2>
                             <div className="text-5xl mb-3">🤫</div>
-                            <p className="text-gray-400 text-sm">{t('you_are_citizen')}</p>
+                            <p className="text-gray-500 text-sm">{t('you_are_citizen')}</p>
                         </div>
                     )}
 
@@ -1195,7 +1195,7 @@ function InsiderPlayer({ roomCode, playerId, players, gameState, idioma }) {
                     {!isAlive ? (
                         <div className="rounded-3xl p-8 bg-white/5 border border-gray-700">
                             <div className="text-5xl mb-4">👻</div>
-                            <p className="text-gray-400">{t('you_eliminated')}</p>
+                            <p className="text-gray-500">{t('you_eliminated')}</p>
                             <p className="text-gray-500 text-sm mt-2">{t('watch_mode')}</p>
                         </div>
                     ) : isMyTurn ? (
@@ -1230,7 +1230,7 @@ function InsiderPlayer({ roomCode, playerId, players, gameState, idioma }) {
                 <div className="min-h-screen flex items-center justify-center p-4">
                     <div className="max-w-sm w-full text-center space-y-6">
                         <div className="text-5xl">👻</div>
-                        <p className="text-gray-400">{t('you_eliminated')}</p>
+                        <p className="text-gray-500">{t('you_eliminated')}</p>
                         <p className="text-gray-500 text-sm">{t('watch_mode')}</p>
                     </div>
                 </div>
@@ -1243,7 +1243,7 @@ function InsiderPlayer({ roomCode, playerId, players, gameState, idioma }) {
                     <div className="max-w-sm w-full text-center space-y-6">
                         <div className="text-5xl">✅</div>
                         <h2 className="text-2xl font-black text-green-400">{t('vote_sent')}</h2>
-                        <p className="text-gray-400">{t('waiting_votes')}</p>
+                        <p className="text-gray-500">{t('waiting_votes')}</p>
                     </div>
                 </div>
             );
@@ -1323,7 +1323,7 @@ function InsiderPlayer({ roomCode, playerId, players, gameState, idioma }) {
                         <div className="text-center">
                             <div className="text-5xl mb-3">🎯</div>
                             <h2 className="text-2xl font-black text-white">{t('guess_the_word')}</h2>
-                            <p className="text-gray-400 mt-2">{t('guess_phase')}</p>
+                            <p className="text-gray-500 mt-2">{t('guess_phase')}</p>
                         </div>
                         <input type="text" value={guessText}
                             onChange={function(e) { setGuessText(e.target.value); }}
@@ -1382,7 +1382,7 @@ function InsiderPlayer({ roomCode, playerId, players, gameState, idioma }) {
                         {myRoundPts > 0 ? (
                             <div>
                                 <p className="text-green-400 text-3xl font-black">+{myRoundPts}</p>
-                                <p className="text-gray-400 text-sm">{t('points')}</p>
+                                <p className="text-gray-500 text-sm">{t('points')}</p>
                             </div>
                         ) : (
                             <p className="text-gray-500">0 {t('points')}</p>
@@ -1410,7 +1410,7 @@ function InsiderPlayer({ roomCode, playerId, players, gameState, idioma }) {
                     <h2 className="text-2xl font-black text-white">{t('game_over')}</h2>
                     <div className="bg-amber-500/20 rounded-2xl p-6 border border-amber-500/30">
                         <p className="text-amber-400 text-3xl font-black">{myTotalPts}</p>
-                        <p className="text-gray-400">{t('points')}</p>
+                        <p className="text-gray-500">{t('points')}</p>
                     </div>
                     <p className="text-gray-500 text-sm">{t('look_screen')}</p>
                 </div>
@@ -1423,7 +1423,7 @@ function InsiderPlayer({ roomCode, playerId, players, gameState, idioma }) {
         <div className="min-h-screen flex items-center justify-center p-4">
             <div className="text-center">
                 <div className="text-5xl animate-bounce">🕵️</div>
-                <p className="text-gray-400 mt-4">{t('waiting_others')}</p>
+                <p className="text-gray-500 mt-4">{t('waiting_others')}</p>
             </div>
         </div>
     );

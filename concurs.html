@@ -2,7 +2,7 @@
 <html lang="ca">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Concurs PDE - Economia, Finances i Empresa</title>
     <meta name="description" content="Posa a prova els teus coneixements d'economia, finances i empresa amb preguntes de càlcul, gràfics i teoria. Competeix pel TOP 10!">
     <meta property="og:title" content="Concurs PDE - Economia, Finances i Empresa">
@@ -808,7 +808,7 @@ function ConcursAula({ idioma, t, bancPreguntes, obtenirPreguntes, onBack }) {
                         ) : (
                             <div className="space-y-3">
                                 <div className="text-8xl">⏳</div>
-                                <h2 className="text-3xl font-black text-gray-400">No has respost</h2>
+                                <h2 className="text-3xl font-black text-gray-500">No has respost</h2>
                             </div>
                         )}
                         <div className="bg-white/10 backdrop-blur rounded-2xl p-4">
@@ -1607,7 +1607,7 @@ function ConcursApp() {
                 osc.start(ctx.currentTime + i * 0.1);
                 osc.stop(ctx.currentTime + i * 0.1 + 0.3);
             });
-        } catch(e) {}
+        } catch(e) { console.warn('PDE: Audio playback failed:', e.message || e); }
     }, [soundEnabled]);
     
     // Vibrar en mòbil
@@ -2396,7 +2396,7 @@ function ConcursApp() {
                                     if (data && data.value) {
                                         entries.push(JSON.parse(data.value));
                                     }
-                                } catch (e) {}
+                                } catch (e) { console.warn('PDE: Failed to parse ranking entry:', e.message || e); }
                             }
                         }
                     } catch (e) {

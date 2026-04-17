@@ -6,15 +6,54 @@
 
 const { useState: _useState, useEffect: _useEffect, useCallback: _useCallback } = React;
 
+// ─── usePdeIdioma Hook ──────────────────────────────────────────
+/**
+ * Unified language hook. Reads from PdeLanguageStore and auto-updates
+ * whenever the language changes (same-tab or cross-tab).
+ *
+ * Returns [idioma, setIdioma]. setIdioma persists to localStorage AND
+ * broadcasts to all other subscribers in this tab/session.
+ *
+ * Usage:
+ *   const [idioma, setIdioma] = usePdeIdioma();
+ *   <PdeHeader idioma={idioma} setIdioma={setIdioma} .../>
+ */
+function usePdeIdioma() {
+    const [idioma, setIdiomaState] = _useState(function() { return PdeLanguageStore.get(); });
+
+    _useEffect(function() {
+        // Sync with any language change from any source (other selectors, other tabs).
+        const unsubscribe = PdeLanguageStore.subscribe(function(lang) {
+            setIdiomaState(function(prev) { return prev === lang ? prev : lang; });
+        });
+        return unsubscribe;
+    }, []);
+
+    const setIdioma = _useCallback(function(lang) {
+        // Single call: .set() persists AND broadcasts. All subscribers update.
+        PdeLanguageStore.set(lang);
+    }, []);
+
+    return [idioma, setIdioma];
+}
+
 // ─── Language Selector ──────────────────────────────────────────
 /**
  * Unified language selector (VAL / ES / EN).
  * @param {{ idioma: string, setIdioma: Function }} props
+ *
+ * The setIdioma callback receives the new language. Callers may either:
+ *  - Use usePdeIdioma() (recommended) — setIdioma auto-broadcasts via the store.
+ *  - Pass a raw useState setter — this component still writes to the store,
+ *    so other subscribers stay in sync.
  */
 function PdeLanguageSelector({ idioma, setIdioma }) {
     const handleChange = _useCallback(function(lang) {
-        setIdioma(lang);
+        if (!PDE_CONFIG.supportedLangs.includes(lang)) return;
+        // Persist + broadcast. Must run BEFORE setIdioma so that if the caller's
+        // setIdioma triggers a re-render + unmount, the store update still fires.
         PdeLanguageStore.set(lang);
+        if (typeof setIdioma === 'function') setIdioma(lang);
     }, [setIdioma]);
 
     return (
@@ -123,7 +162,7 @@ function PdeHeader({ idioma, setIdioma, currentApp, sections, currentSection, se
                 {sections && sections.length > 0 && setSection && (
                     <nav className="hidden xl:flex items-center gap-1 max-w-3xl overflow-x-auto">
                         {sections.map(function(sec) {
-                            var isActive = currentSection === sec.id;
+                            const isActive = currentSection === sec.id;
                             return (
                                 <button
                                     key={sec.id}
@@ -198,7 +237,7 @@ function PdeHeader({ idioma, setIdioma, currentApp, sections, currentSection, se
  * @param {{ appEmoji: string, appName: string, idioma: string }} props
  */
 function PdeFooter({ appEmoji, appName, idioma }) {
-    var t = createTranslator({}, idioma);
+    const t = createTranslator({}, idioma);
 
     return (
         <footer className={PDE_STYLES.footer}>
@@ -253,10 +292,10 @@ function PdeScrollToTop() {
  * }} props
  */
 function PdePrevNext({ sections, currentSection, setSection, idioma }) {
-    var t = createTranslator({}, idioma);
-    var idx = sections.findIndex(function(s) { return s.id === currentSection; });
-    var prev = idx > 0 ? sections[idx - 1] : null;
-    var next = idx < sections.length - 1 ? sections[idx + 1] : null;
+    const t = createTranslator({}, idioma);
+    const idx = sections.findIndex(function(s) { return s.id === currentSection; });
+    const prev = idx > 0 ? sections[idx - 1] : null;
+    const next = idx < sections.length - 1 ? sections[idx + 1] : null;
 
     if (!prev && !next) return null;
 
@@ -272,11 +311,11 @@ function PdePrevNext({ sections, currentSection, setSection, idioma }) {
                     className={PDE_STYLES.prevNextBtn}
                 >
                     {t('nav.prev')}
-                    <span className="hidden sm:inline text-gray-400">({prev.label})</span>
+                    <span className="hidden sm:inline text-gray-500">({prev.label})</span>
                 </button>
             ) : <div></div>}
 
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-gray-500">
                 {idx + 1} / {sections.length}
             </span>
 
@@ -289,7 +328,7 @@ function PdePrevNext({ sections, currentSection, setSection, idioma }) {
                     }}
                     className={PDE_STYLES.prevNextBtn}
                 >
-                    <span className="hidden sm:inline text-gray-400">({next.label})</span>
+                    <span className="hidden sm:inline text-gray-500">({next.label})</span>
                     {t('nav.next')}
                 </button>
             ) : <div></div>}
@@ -303,7 +342,7 @@ function PdePrevNext({ sections, currentSection, setSection, idioma }) {
  * @param {{ idioma: string }} props
  */
 function PdeHomeButton({ idioma }) {
-    var t = createTranslator({}, idioma);
+    const t = createTranslator({}, idioma);
 
     return (
         <a
@@ -325,7 +364,7 @@ function PdeHomeButton({ idioma }) {
 function usePdeDeepLink(section, setSection) {
     // On mount: read hash from URL
     _useEffect(function() {
-        var hash = pdeGetHashSection();
+        const hash = pdeGetHashSection();
         if (hash) setSection(hash);
     }, []);
 
@@ -346,6 +385,7 @@ window.PdeScrollToTop = PdeScrollToTop;
 window.PdePrevNext = PdePrevNext;
 window.PdeHomeButton = PdeHomeButton;
 window.usePdeDeepLink = usePdeDeepLink;
+window.usePdeIdioma = usePdeIdioma;
 
 window.PDE = {
     Header: PdeHeader,
@@ -356,4 +396,5 @@ window.PDE = {
     PrevNext: PdePrevNext,
     HomeButton: PdeHomeButton,
     useDeepLink: usePdeDeepLink,
+    useIdioma: usePdeIdioma,
 };

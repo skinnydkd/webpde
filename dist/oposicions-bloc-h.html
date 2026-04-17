@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloc H: Comptabilitat — Oposicions | PDE</title>
+    <meta name="description" content="Temes 67-71 d'oposicions d'Economia. Patrimoni, metodologia comptable, cicle comptable, PGC, anàlisi d'estats financers i ràtios.">
+    <meta property="og:title" content="Bloc H: Comptabilitat — Oposicions | PDE">
+    <meta property="og:description" content="Temes 67-71 d'oposicions d'Economia. Patrimoni, metodologia comptable, cicle comptable, PGC, anàlisi d'estats financers i ràtios.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/oposicions-bloc-h">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://profedeeconomia.es/oposicions-bloc-h">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📒</text></svg>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <link rel="stylesheet" href="./pde.css">
+<script src="./pde-shared.js"></script>
+    <script src="./pde-components.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #64748b #f8fafc; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background-color: #64748b; border-radius: 3px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-white to-gray-50 min-h-screen">
+    <div id="root"></div>
+    <script>const {
+  useState,
+  useMemo,
+  useEffect
+} = React;
+function BlocHApp() {
+  const [section, setSection] = useState('inicio');
+  const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+  usePdeDeepLink(section, setSection);
+  const pageTranslations = {
+    'nav.oposicions-bloc-h': {
+      val: 'Bloc H: Comptabilitat',
+      es: 'Bloque H: Contabilidad',
+      en: 'Block H: Accounting'
+    },
+    'footer.appname': {
+      val: "Bloc H — Oposicions d'Economia",
+      es: "Bloque H — Oposiciones de Economía",
+      en: 'Block H — Economics Exams'
+    },
+    'inicio.title': {
+      val: 'Bloc H: Comptabilitat',
+      es: 'Bloque H: Contabilidad',
+      en: 'Block H: Accounting'
+    },
+    'inicio.subtitle': {
+      val: "Temes 67-71 de les oposicions d'Economia a Secundària",
+      es: 'Temas 67-71 de las oposiciones de Economía en Secundaria',
+      en: 'Topics 67-71 of the Secondary Economics teaching exams'
+    },
+    'inicio.disponible': {
+      val: 'Disponible',
+      es: 'Disponible',
+      en: 'Available'
+    },
+    'inicio.properament': {
+      val: 'Properament',
+      es: 'Próximamente',
+      en: 'Coming soon'
+    },
+    'inicio.backOpo': {
+      val: '← Tornar a Oposicions',
+      es: '← Volver a Oposiciones',
+      en: '← Back to Exams'
+    },
+    'sec.inicio': {
+      val: 'Inici',
+      es: 'Inicio',
+      en: 'Home'
+    },
+    'sec.tema67': {
+      val: 'Tema 67',
+      es: 'Tema 67',
+      en: 'Topic 67'
+    },
+    'sec.tema68': {
+      val: 'Tema 68',
+      es: 'Tema 68',
+      en: 'Topic 68'
+    },
+    'sec.tema69': {
+      val: 'Tema 69',
+      es: 'Tema 69',
+      en: 'Topic 69'
+    },
+    'sec.tema70': {
+      val: 'Tema 70',
+      es: 'Tema 70',
+      en: 'Topic 70'
+    },
+    'sec.tema71': {
+      val: 'Tema 71',
+      es: 'Tema 71',
+      en: 'Topic 71'
+    },
+    'tab.complet': {
+      val: 'Tema complet',
+      es: 'Tema completo',
+      en: 'Full topic'
+    },
+    'tab.resum': {
+      val: 'Resum / Esquema',
+      es: 'Resumen / Esquema',
+      en: 'Summary / Outline'
+    },
+    'tema67.title': {
+      val: 'El patrimoni. Masses patrimonials.',
+      es: 'El patrimonio. Masas patrimoniales.',
+      en: 'Net worth. Asset classes.'
+    },
+    'tema68.title': {
+      val: 'La metodologia comptable. Comptes i assentaments.',
+      es: 'La metodología contable. Cuentas y asientos.',
+      en: 'Accounting methodology. Accounts and entries.'
+    },
+    'tema69.title': {
+      val: 'El cicle comptable. Regularització i tancament.',
+      es: 'El ciclo contable. Regularización y cierre.',
+      en: 'The accounting cycle. Adjustment and closing.'
+    },
+    'tema70.title': {
+      val: 'El Pla General Comptable.',
+      es: 'El Plan General Contable.',
+      en: 'The General Accounting Plan.'
+    },
+    'tema71.title': {
+      val: "Anàlisi d'estats financers. Ràtios.",
+      es: 'Análisis de estados financieros. Ratios.',
+      en: 'Financial statement analysis. Ratios.'
+    },
+    'placeholder.msg': {
+      val: 'Aquest tema estarà disponible properament.',
+      es: 'Este tema estará disponible próximamente.',
+      en: 'This topic will be available soon.'
+    }
+  };
+  const t = createTranslator(pageTranslations, idioma);
+  const lang = idioma;
+
+  // Reusable components
+  const Card = ({
+    children,
+    className = "",
+    title,
+    icon
+  }) => /*#__PURE__*/React.createElement("div", {
+    className: `bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 hover:shadow-md transition-shadow ${className} animate-fade`
+  }, title && /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-3 mb-5 pb-4 border-b border-slate-100"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-2xl"
+  }, icon), /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-slate-800 text-lg"
+  }, title)), children);
+  const Tabs = ({
+    tabs,
+    active,
+    onChange
+  }) => /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-wrap gap-1 p-1.5 bg-slate-100 rounded-xl"
+  }, tabs.map(tab => /*#__PURE__*/React.createElement("button", {
+    key: tab.id,
+    onClick: () => onChange(tab.id),
+    className: `flex-1 min-w-fit py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${active === tab.id ? 'bg-white shadow-sm text-slate-700' : 'text-slate-500 hover:text-slate-700 hover:bg-white/50'}`
+  }, tab.label)));
+  const FormulaBox = ({
+    formula,
+    desc
+  }) => /*#__PURE__*/React.createElement("div", {
+    className: "my-4 p-5 bg-gradient-to-r from-slate-50 to-gray-100 rounded-xl border border-slate-200"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-center font-mono text-lg text-slate-800 font-semibold"
+  }, formula), desc && /*#__PURE__*/React.createElement("p", {
+    className: "text-center text-sm text-slate-500 mt-2"
+  }, desc));
+  const TheoryBlock = ({
+    title,
+    children,
+    color = "slate"
+  }) => {
+    const colors = {
+      slate: "border-slate-300 bg-slate-50",
+      blue: "border-blue-300 bg-blue-50",
+      green: "border-green-300 bg-green-50",
+      amber: "border-amber-300 bg-amber-50",
+      pink: "border-pink-300 bg-pink-50",
+      violet: "border-violet-300 bg-violet-50",
+      red: "border-red-300 bg-red-50",
+      cyan: "border-cyan-300 bg-cyan-50",
+      emerald: "border-emerald-300 bg-emerald-50",
+      purple: "border-purple-300 bg-purple-50",
+      rose: "border-rose-300 bg-rose-50",
+      indigo: "border-indigo-300 bg-indigo-50",
+      teal: "border-teal-300 bg-teal-50",
+      orange: "border-orange-300 bg-orange-50"
+    };
+    return /*#__PURE__*/React.createElement("div", {
+      className: `border-l-4 ${colors[color] || colors.slate} p-5 rounded-r-xl my-4`
+    }, title && /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-slate-800 mb-3 text-base"
+    }, title), /*#__PURE__*/React.createElement("div", {
+      className: "text-slate-700 text-sm leading-relaxed space-y-2"
+    }, children));
+  };
+  const SectionTitle = ({
+    icon,
+    title,
+    subtitle
+  }) => /*#__PURE__*/React.createElement("div", {
+    className: "mb-8"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-3 mb-2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-3xl"
+  }, icon), /*#__PURE__*/React.createElement("h1", {
+    className: "text-3xl font-black text-slate-800"
+  }, title)), subtitle && /*#__PURE__*/React.createElement("p", {
+    className: "text-slate-500 ml-12"
+  }, subtitle));
+  const BibliografiaBox = ({
+    items
+  }) => /*#__PURE__*/React.createElement("div", {
+    className: "my-6 p-6 bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl border border-slate-200"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "font-bold text-slate-800 mb-4 text-base flex items-center gap-2"
+  }, /*#__PURE__*/React.createElement("span", null, "\uD83D\uDCDA"), " Bibliograf\xEDa"), /*#__PURE__*/React.createElement("ul", {
+    className: "space-y-2"
+  }, items.map((item, i) => /*#__PURE__*/React.createElement("li", {
+    key: i,
+    className: "text-sm text-slate-700 leading-relaxed pl-4 border-l-2 border-slate-200"
+  }, item))));
+  const ClauBox = ({
+    children
+  }) => /*#__PURE__*/React.createElement("div", {
+    className: "my-4 p-5 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-start gap-3"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-2xl"
+  }, "\uD83D\uDD11"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h4", {
+    className: "font-bold text-amber-700 mb-2"
+  }, lang === 'es' ? 'Clave para el 10' : lang === 'en' ? 'Key for top marks' : 'Clau per al 10'), /*#__PURE__*/React.createElement("div", {
+    className: "text-sm text-amber-800 space-y-1"
+  }, children))));
+  const temes = [{
+    num: 67,
+    id: 'tema67',
+    available: true
+  }, {
+    num: 68,
+    id: 'tema68',
+    available: true
+  }, {
+    num: 69,
+    id: 'tema69',
+    available: true
+  }, {
+    num: 70,
+    id: 'tema70',
+    available: true
+  }, {
+    num: 71,
+    id: 'tema71',
+    available: true
+  }];
+  const Inicio = () => /*#__PURE__*/React.createElement("div", {
+    className: "animate-fade"
+  }, /*#__PURE__*/React.createElement("a", {
+    href: "./oposicions",
+    className: "inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-800 mb-6 transition-colors"
+  }, t('inicio.backOpo')), /*#__PURE__*/React.createElement("div", {
+    className: "text-center mb-10"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "inline-flex items-center gap-2 px-4 py-1.5 bg-slate-200 text-slate-700 rounded-full text-sm font-semibold mb-4"
+  }, /*#__PURE__*/React.createElement("span", null, "\uD83D\uDCD2"), " Bloc H"), /*#__PURE__*/React.createElement("h1", {
+    className: "text-4xl font-black text-slate-800 mb-3"
+  }, t('inicio.title')), /*#__PURE__*/React.createElement("p", {
+    className: "text-slate-500 text-lg max-w-2xl mx-auto"
+  }, t('inicio.subtitle'))), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+  }, temes.map(tema => /*#__PURE__*/React.createElement("button", {
+    key: tema.id,
+    onClick: () => {
+      setSection(tema.id);
+      pdeSetHashSection(tema.id);
+      pdeScrollToTop();
+    },
+    className: "text-left p-5 rounded-2xl border bg-white border-slate-200 hover:shadow-lg hover:border-slate-300 cursor-pointer transition-all"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-start gap-3"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "inline-flex items-center justify-center w-10 h-10 rounded-xl text-sm font-black text-white bg-gradient-to-br from-slate-500 to-gray-600"
+  }, "T", tema.num), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1 min-w-0"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-semibold text-slate-800 text-sm leading-snug mb-2"
+  }, t(`tema${tema.num}.title`)), /*#__PURE__*/React.createElement("span", {
+    className: "inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600"
+  }, "\u2713 ", t('inicio.disponible'))))))));
+
+  // ════════════════════════════════════════════════════════════════
+  // TEMA 67 — El patrimoni. Masses patrimonials.
+  // ════════════════════════════════════════════════════════════════
+  const Tema67Complet = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6 animate-fade"
+  }, /*#__PURE__*/React.createElement(Card, {
+    title: "Introducci\xF3",
+    icon: "\uD83D\uDCCC"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-sm text-slate-700 leading-relaxed space-y-3"
+  }, /*#__PURE__*/React.createElement("p", null, "El ", /*#__PURE__*/React.createElement("strong", null, "patrimoni empresarial"), " \xE9s el punt de partida de la comptabilitat: el conjunt de b\xE9ns, drets i obligacions pertanyents a una empresa, valorats en unitats monet\xE0ries. La comptabilitat registra, classifica i resumeix les variacions patrimonials per a proporcionar informaci\xF3 \xFAtil per a la presa de decisions. L'agrupaci\xF3 dels elements patrimonials en ", /*#__PURE__*/React.createElement("strong", null, "masses patrimonials"), " (actiu, passiu, patrimoni net) estructura el balan\xE7 i permet l'an\xE0lisi financera."), /*#__PURE__*/React.createElement("p", null, "Este tema obri el bloc de comptabilitat de les oposicions i \xE9s la base per als temes 68-71. S'estructura en: concepte de patrimoni, elements patrimonials, masses i submasses, equaci\xF3 fonamental i equilibri patrimonial."))), /*#__PURE__*/React.createElement(Card, {
+    title: "1. Concepte de patrimoni",
+    icon: "\uD83D\uDCD8"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "1.1. Definici\xF3",
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, "El ", /*#__PURE__*/React.createElement("strong", null, "patrimoni"), " d'una empresa \xE9s el conjunt de ", /*#__PURE__*/React.createElement("strong", null, "b\xE9ns"), " (elements materials i immaterials de la seua propietat), ", /*#__PURE__*/React.createElement("strong", null, "drets"), " (quantitats que tercers deuen a l'empresa) i ", /*#__PURE__*/React.createElement("strong", null, "obligacions"), " (deutes de l'empresa amb tercers). El ", /*#__PURE__*/React.createElement("strong", null, "patrimoni net"), " \xE9s la difer\xE8ncia: PN = B\xE9ns + Drets \u2212 Obligacions.")), /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "1.2. Equaci\xF3 fonamental",
+    color: "blue"
+  }, /*#__PURE__*/React.createElement("p", null, "El patrimoni s'expressa comptablement mitjan\xE7ant l'", /*#__PURE__*/React.createElement("strong", null, "equaci\xF3 del balan\xE7"), ":", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "ACTIU = PATRIMONI NET + PASSIU"), /*#__PURE__*/React.createElement("br", null), "On: Actiu (A) = b\xE9ns + drets (aplicaci\xF3 de fons); PN = finan\xE7ament propi (no exigible); Passiu (P) = finan\xE7ament ali\xE9 (exigible). L'actiu reflecteix l'", /*#__PURE__*/React.createElement("strong", null, "estructura econ\xF2mica"), " (en qu\xE8 s'inverteix) i el PN+P l'", /*#__PURE__*/React.createElement("strong", null, "estructura financera"), " (d'on s'obtenen els fons).")), /*#__PURE__*/React.createElement(FormulaBox, {
+    formula: "ACTIU = PATRIMONI NET + PASSIU",
+    desc: "Sempre en equilibri. Estructura econ\xF2mica = Estructura financera."
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "my-5 flex justify-center"
+  }, /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 700 320",
+    className: "w-full max-w-2xl",
+    xmlns: "http://www.w3.org/2000/svg"
+  }, /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("linearGradient", {
+    id: "mp-actiu",
+    x1: "0",
+    y1: "0",
+    x2: "0",
+    y2: "1"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "#475569"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "#334155"
+  })), /*#__PURE__*/React.createElement("linearGradient", {
+    id: "mp-pn",
+    x1: "0",
+    y1: "0",
+    x2: "0",
+    y2: "1"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "#64748b"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "#475569"
+  })), /*#__PURE__*/React.createElement("linearGradient", {
+    id: "mp-passiu",
+    x1: "0",
+    y1: "0",
+    x2: "0",
+    y2: "1"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "#94a3b8"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "#64748b"
+  }))), /*#__PURE__*/React.createElement("rect", {
+    x: "30",
+    y: "20",
+    width: "280",
+    height: "230",
+    rx: "12",
+    fill: "url(#mp-actiu)",
+    stroke: "#1e293b",
+    strokeWidth: "2"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "170",
+    y: "52",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "800",
+    fontSize: "18"
+  }, "ACTIU"), /*#__PURE__*/React.createElement("line", {
+    x1: "50",
+    y1: "62",
+    x2: "290",
+    y2: "62",
+    stroke: "white",
+    strokeOpacity: "0.3",
+    strokeWidth: "1"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "50",
+    y: "75",
+    width: "240",
+    height: "70",
+    rx: "8",
+    fill: "white",
+    fillOpacity: "0.15"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "170",
+    y: "100",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "600",
+    fontSize: "13"
+  }, "Actiu No Corrent"), /*#__PURE__*/React.createElement("text", {
+    x: "170",
+    y: "118",
+    textAnchor: "middle",
+    fill: "white",
+    fillOpacity: "0.8",
+    fontSize: "11"
+  }, "(immobilitzat, inversions LP)"), /*#__PURE__*/React.createElement("rect", {
+    x: "50",
+    y: "160",
+    width: "240",
+    height: "70",
+    rx: "8",
+    fill: "white",
+    fillOpacity: "0.15"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "170",
+    y: "185",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "600",
+    fontSize: "13"
+  }, "Actiu Corrent"), /*#__PURE__*/React.createElement("text", {
+    x: "170",
+    y: "203",
+    textAnchor: "middle",
+    fill: "white",
+    fillOpacity: "0.8",
+    fontSize: "11"
+  }, "(exist\xE8ncies, realitzable, disponible)"), /*#__PURE__*/React.createElement("text", {
+    x: "170",
+    y: "268",
+    textAnchor: "middle",
+    fill: "#cbd5e1",
+    fontWeight: "700",
+    fontSize: "12"
+  }, "Estructura Econ\xF2mica"), /*#__PURE__*/React.createElement("rect", {
+    x: "390",
+    y: "20",
+    width: "280",
+    height: "230",
+    rx: "12",
+    fill: "none",
+    stroke: "#1e293b",
+    strokeWidth: "2"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "390",
+    y: "20",
+    width: "280",
+    height: "90",
+    rx: "12",
+    fill: "url(#mp-pn)"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "390",
+    y: "108",
+    width: "280",
+    height: "2",
+    fill: "#1e293b"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "390",
+    y: "110",
+    width: "280",
+    height: "140",
+    rx: "0 0 12 12",
+    fill: "url(#mp-passiu)"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M390 238 Q390 250 402 250 L658 250 Q670 250 670 238",
+    fill: "url(#mp-passiu)"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "530",
+    y: "52",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "800",
+    fontSize: "16"
+  }, "PATRIMONI NET"), /*#__PURE__*/React.createElement("text", {
+    x: "530",
+    y: "74",
+    textAnchor: "middle",
+    fill: "white",
+    fillOpacity: "0.8",
+    fontSize: "11"
+  }, "(capital, reserves, resultat)"), /*#__PURE__*/React.createElement("text", {
+    x: "530",
+    y: "148",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "600",
+    fontSize: "13"
+  }, "Passiu No Corrent"), /*#__PURE__*/React.createElement("text", {
+    x: "530",
+    y: "166",
+    textAnchor: "middle",
+    fill: "white",
+    fillOpacity: "0.8",
+    fontSize: "11"
+  }, "(deutes a LP)"), /*#__PURE__*/React.createElement("text", {
+    x: "530",
+    y: "208",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "600",
+    fontSize: "13"
+  }, "Passiu Corrent"), /*#__PURE__*/React.createElement("text", {
+    x: "530",
+    y: "226",
+    textAnchor: "middle",
+    fill: "white",
+    fillOpacity: "0.8",
+    fontSize: "11"
+  }, "(prove\xEFdors, creditors CP)"), /*#__PURE__*/React.createElement("text", {
+    x: "530",
+    y: "268",
+    textAnchor: "middle",
+    fill: "#cbd5e1",
+    fontWeight: "700",
+    fontSize: "12"
+  }, "Estructura Financera"), /*#__PURE__*/React.createElement("text", {
+    x: "340",
+    y: "140",
+    textAnchor: "middle",
+    fill: "#475569",
+    fontWeight: "900",
+    fontSize: "28"
+  }, "="), /*#__PURE__*/React.createElement("rect", {
+    x: "140",
+    y: "285",
+    width: "420",
+    height: "30",
+    rx: "10",
+    fill: "#f1f5f9",
+    stroke: "#cbd5e1",
+    strokeWidth: "1.5"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "350",
+    y: "305",
+    textAnchor: "middle",
+    fill: "#334155",
+    fontWeight: "800",
+    fontSize: "14"
+  }, "ACTIU = PATRIMONI NET + PASSIU")))), /*#__PURE__*/React.createElement(Card, {
+    title: "2. Masses patrimonials",
+    icon: "\uD83D\uDCD8"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "2.1. Actiu",
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "Actiu no corrent (ANC, immobilitzat):"), " elements que romanen >1 any:", /*#__PURE__*/React.createElement("br", null), "\u2014 ", /*#__PURE__*/React.createElement("em", null, "Immobilitzat intangible:"), " patents, marques, aplicacions inform\xE0tiques, fons de comer\xE7.", /*#__PURE__*/React.createElement("br", null), "\u2014 ", /*#__PURE__*/React.createElement("em", null, "Immobilitzat material:"), " terrenys, construccions, maquin\xE0ria, elements de transport, mobiliari, equips inform\xE0tics. Es registra pel preu d'adquisici\xF3 i es ", /*#__PURE__*/React.createElement("strong", null, "amortitza"), " (menys terrenys).", /*#__PURE__*/React.createElement("br", null), "\u2014 ", /*#__PURE__*/React.createElement("em", null, "Inversions immobili\xE0ries:"), " immobles destinats a obtindre rendes (lloguer), no a l'activitat principal.", /*#__PURE__*/React.createElement("br", null), "\u2014 ", /*#__PURE__*/React.createElement("em", null, "Inversions financeres a LP:"), " accions i participacions en altres empreses, dip\xF2sits a LP."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "Actiu corrent (AC):"), " elements que es renoven en <1 any:", /*#__PURE__*/React.createElement("br", null), "\u2014 ", /*#__PURE__*/React.createElement("em", null, "Exist\xE8ncies:"), " mercaderies, mat\xE8ries primeres, productes en curs, productes acabats.", /*#__PURE__*/React.createElement("br", null), "\u2014 ", /*#__PURE__*/React.createElement("em", null, "Realitzable:"), " clients (factures pendents de cobrament), deutors, efectes comercials a cobrar, inversions financeres a CP, HP deutora (devolucions pendents).", /*#__PURE__*/React.createElement("br", null), "\u2014 ", /*#__PURE__*/React.createElement("em", null, "Disponible (tresoreria):"), " caixa (efectiu) i bancs (saldo en comptes corrents). El m\xE9s l\xEDquid.")), /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "2.2. Patrimoni net",
+    color: "blue"
+  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "Fons propis:"), " capital social (aportacions dels socis), reserves (legal, volunt\xE0ries, estatut\xE0ries), resultat de l'exercici (benefici o p\xE8rdua), resultat d'exercicis anteriors (romanent), dividends a compte (resta).", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Ajustos per canvis de valor:"), " variacions en el valor raonable d'actius financers.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Subvencions, donacions i llegats:"), " subvencions de capital rebudes (s'imputen a resultats a mesura que s'amortitza l'actiu subvencionat).")), /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "2.3. Passiu",
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "Passiu no corrent (PnC, exigible a LP):"), " deutes amb venciment >1 any: deutes amb entitats de cr\xE8dit a LP, prove\xEFdors d'immobilitzat a LP, empr\xE9stits (obligacions emeses), provisions a LP.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Passiu corrent (PC, exigible a CP):"), " deutes amb venciment <1 any: prove\xEFdors (compres de mercaderies a cr\xE8dit), creditors (serveis a cr\xE8dit), deutes amb entitats de cr\xE8dit a CP, HP creditora (impostos a pagar), Organismes SS creditors, sous pendents de pagament, efectes comercials a pagar."))), /*#__PURE__*/React.createElement(Card, {
+    title: "3. Equilibri patrimonial i fons de maniobra",
+    icon: "\uD83D\uDCD8"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "3.1. Fons de maniobra",
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "FM = AC \u2212 PC = (PN + PnC) \u2212 ANC"), /*#__PURE__*/React.createElement("br", null), "FM > 0: equilibri normal (l'actiu corrent cobreix el passiu corrent amb marge). FM < 0: tensi\xF3 financera. FM negatiu persistent \u2192 risc de suspensi\xF3 de pagaments.")), /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "3.2. Situacions patrimonials",
+    color: "blue"
+  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "1. Estabilitat total:"), " A = PN (zero deutes). ", /*#__PURE__*/React.createElement("strong", null, "2. Estabilitat normal:"), " FM > 0. ", /*#__PURE__*/React.createElement("strong", null, "3. Suspensi\xF3 de pagaments:"), " FM < 0 per\xF2 A > P. ", /*#__PURE__*/React.createElement("strong", null, "4. Fallida:"), " PN < 0 (A < P). ", /*#__PURE__*/React.createElement("strong", null, "5. Estabilitat financera m\xEDnima:"), " A = P, PN = 0."))), /*#__PURE__*/React.createElement(Card, {
+    title: "S\xEDntesi",
+    icon: "\uD83D\uDCDD"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, "El patrimoni (b\xE9ns + drets \u2212 obligacions) es representa en el balan\xE7: A = PN + P. L'actiu (estructura econ\xF2mica) es divideix en no corrent (immobilitzat intangible, material, inversions) i corrent (exist\xE8ncies, realitzable, disponible). El PN (fons propis: capital, reserves, resultat) \xE9s finan\xE7ament no exigible. El passiu (exigible) es divideix en no corrent (LP) i corrent (CP). El FM = AC \u2212 PC indica l'equilibri financer: FM > 0 \u2192 estabilitat; FM < 0 \u2192 tensi\xF3. Les 5 situacions patrimonials van de l'estabilitat total a la fallida."))), /*#__PURE__*/React.createElement(BibliografiaBox, {
+    items: ["Plan General de Contabilidad (RD 1514/2007).", "Muñoz Merchante, A. (2021). Introducción a la Contabilidad. Ediciones Académicas.", "Archel, P. et al. (2018). Estados contables, 6.ª ed. Pirámide.", "Bueno Campos, E. (2022). Curso básico de Economía de la Empresa. Pirámide.", "Rivero Torre, P. (2012). Análisis de balances. Pirámide.", "ICAC. Normas de registro y valoración. www.icac.gob.es"]
+  }));
+  const Tema67Resum = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-5 animate-fade"
+  }, /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("div", {
+    className: "p-4 bg-slate-100 rounded-xl border border-slate-200 mb-5"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-center font-bold text-slate-800 text-lg"
+  }, "Tema 67: El patrimoni. Masses patrimonials."), /*#__PURE__*/React.createElement("p", {
+    className: "text-center text-sm text-slate-500 mt-1"
+  }, /*#__PURE__*/React.createElement("em", null, "\"A = PN + P: l'equaci\xF3 fonamental de la comptabilitat\""))), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-4 text-sm text-slate-700"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h4", {
+    className: "font-bold text-slate-800 mb-1"
+  }, "Masses"), /*#__PURE__*/React.createElement("ul", {
+    className: "list-disc pl-5 space-y-1"
+  }, /*#__PURE__*/React.createElement("li", null, "ANC: intangible, material (\u2212amortitzaci\xF3), inversions LP. AC: exist\xE8ncies, realitzable, disponible."), /*#__PURE__*/React.createElement("li", null, "PN: capital, reserves, resultat. PnC: deutes LP. PC: prove\xEFdors, creditors, HP, SS, sous."), /*#__PURE__*/React.createElement("li", null, "FM = AC \u2212 PC. FM>0 \u2192 equilibri. 5 situacions patrimonials.")))), /*#__PURE__*/React.createElement(FormulaBox, {
+    formula: "A = PN + P | FM = AC \u2212 PC"
+  }), /*#__PURE__*/React.createElement(ClauBox, null, /*#__PURE__*/React.createElement("p", null, "- Domina les ", /*#__PURE__*/React.createElement("strong", null, "masses i submasses"), " amb tots els elements."), /*#__PURE__*/React.createElement("p", null, "- Calcula el ", /*#__PURE__*/React.createElement("strong", null, "FM"), " i identifica les 5 situacions."))));
+  const Tema67 = () => {
+    const [vista, setVista] = useState('complet');
+    return /*#__PURE__*/React.createElement("div", {
+      className: "space-y-6"
+    }, /*#__PURE__*/React.createElement(SectionTitle, {
+      icon: "\uD83D\uDCD2",
+      title: "Tema 67",
+      subtitle: t('tema67.title')
+    }), /*#__PURE__*/React.createElement(Tabs, {
+      tabs: [{
+        id: 'complet',
+        label: '📝 ' + t('tab.complet')
+      }, {
+        id: 'resum',
+        label: '📋 ' + t('tab.resum')
+      }],
+      active: vista,
+      onChange: setVista
+    }), vista === 'complet' && /*#__PURE__*/React.createElement(Tema67Complet, null), vista === 'resum' && /*#__PURE__*/React.createElement(Tema67Resum, null));
+  };
+
+  // ════════════════════════════════════════════════════════════════
+  // TEMA 68 — La metodologia comptable. Comptes i assentaments.
+  // ════════════════════════════════════════════════════════════════
+  const Tema68Complet = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6 animate-fade"
+  }, /*#__PURE__*/React.createElement(Card, {
+    title: "Introducci\xF3",
+    icon: "\uD83D\uDCCC"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-sm text-slate-700 leading-relaxed space-y-3"
+  }, /*#__PURE__*/React.createElement("p", null, "La ", /*#__PURE__*/React.createElement("strong", null, "metodologia comptable"), " \xE9s el conjunt de regles i procediments per registrar els fets comptables. Utilitza el sistema de ", /*#__PURE__*/React.createElement("strong", null, "partida doble"), " (Luca Pacioli, 1494): cada transacci\xF3 afecta almenys dos comptes i l'equaci\xF3 A = PN + P es mant\xE9 sempre en equilibri. Els ", /*#__PURE__*/React.createElement("strong", null, "assentaments"), " al Llibre Diari i els ", /*#__PURE__*/React.createElement("strong", null, "comptes"), " al Llibre Major s\xF3n els instruments b\xE0sics."))), /*#__PURE__*/React.createElement(Card, {
+    title: "1. El compte",
+    icon: "\uD83D\uDCD8"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "1.1. Concepte i estructura",
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, "Un ", /*#__PURE__*/React.createElement("strong", null, "compte"), " \xE9s l'instrument que registra les variacions d'un element patrimonial o de gesti\xF3. Estructura en T (o \xABcompte en T\xBB): costat esquerre = ", /*#__PURE__*/React.createElement("strong", null, "DEURE (Debe/Debit)"), "; costat dret = ", /*#__PURE__*/React.createElement("strong", null, "HAVER (Haber/Credit)"), ". ", /*#__PURE__*/React.createElement("strong", null, "Saldo"), " = Suma Deure \u2212 Suma Haver. Si Deure > Haver \u2192 saldo deutor; si Haver > Deure \u2192 saldo creditor.")), /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "1.2. Funcionament dels comptes",
+    color: "blue"
+  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "Comptes d'actiu:"), " naixen i augmenten pel DEURE; disminueixen per l'HAVER. Saldo deutor.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Comptes de passiu i PN:"), " naixen i augmenten per l'HAVER; disminueixen pel DEURE. Saldo creditor.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Comptes de despeses:"), " naixen pel DEURE (augment de despesa). Saldo deutor.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Comptes d'ingressos:"), " naixen per l'HAVER (augment d'ingr\xE9s). Saldo creditor.")), /*#__PURE__*/React.createElement(FormulaBox, {
+    formula: "DEURE (esquerra) | HAVER (dreta) | Actiu i Despeses \u2192 Deure | Passiu, PN i Ingressos \u2192 Haver",
+    desc: "Regla d'or: el que augmenta al costat del seu naixement; el que disminueix al costat contrari"
+  })), /*#__PURE__*/React.createElement(Card, {
+    title: "2. La partida doble i els assentaments",
+    icon: "\uD83D\uDCD8"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "2.1. Principi de la partida doble",
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, "Cada fet comptable es registra amb un ", /*#__PURE__*/React.createElement("strong", null, "assentament"), " al Llibre Diari on: ", /*#__PURE__*/React.createElement("strong", null, "Suma Deure = Suma Haver"), " (sempre). Almenys un compte es carrega (Deure) i almenys un s'abona (Haver). Exemples:", /*#__PURE__*/React.createElement("br", null), "\u2014 Compra mercaderies a cr\xE8dit: (D) Compres de mercaderies / (H) Prove\xEFdors.", /*#__PURE__*/React.createElement("br", null), "\u2014 Cobrament de clients: (D) Bancs / (H) Clients.", /*#__PURE__*/React.createElement("br", null), "\u2014 Pagament de n\xF2mines: (D) Sous i salaris + SS a c\xE0rrec empresa / (H) HP creditora (retencions IRPF) + SS creditora + Bancs.")), /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "2.2. Llibres comptables",
+    color: "blue"
+  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "Llibre Diari:"), " registra cronol\xF2gicament tots els assentaments. Obligatori (art. 25 Codi de Comer\xE7).", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Llibre Major:"), " recull els moviments de cada compte individual (trasllat del Diari). No \xE9s obligatori legalment per\xF2 \xE9s imprescindible en la pr\xE0ctica.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Llibre d'Inventaris i Comptes Anuals:"), " obligatori. Inclou el balan\xE7 inicial, els balan\xE7os trimestrals de comprovaci\xF3 i els comptes anuals (balan\xE7, compte de resultats, mem\xF2ria)."))), /*#__PURE__*/React.createElement(Card, {
+    title: "3. El balan\xE7 de comprovaci\xF3 (sumes i saldos)",
+    icon: "\uD83D\uDCD8"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, "El ", /*#__PURE__*/React.createElement("strong", null, "balan\xE7 de comprovaci\xF3 de sumes i saldos"), " \xE9s un quadre que recull tots els comptes del Major amb les seues sumes de Deure i Haver i el seu saldo. Serveix per verificar que es compleix la partida doble: ", /*#__PURE__*/React.createElement("strong", null, "\u03A3 Sumes Deure = \u03A3 Sumes Haver"), " i ", /*#__PURE__*/React.createElement("strong", null, "\u03A3 Saldos deutors = \u03A3 Saldos creditors"), ". No garanteix que no hi haja errors (un assentament podria estar mal imputat als comptes), per\xF2 detecta desequilibris aritm\xE8tics."))), /*#__PURE__*/React.createElement(Card, {
+    title: "S\xEDntesi",
+    icon: "\uD83D\uDCDD"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, "La comptabilitat utilitza el sistema de partida doble (Pacioli, 1494): cada transacci\xF3 afecta \u22652 comptes i \u03A3 Deure = \u03A3 Haver sempre. Els comptes d'Actiu i Despeses funcionen pel Deure; els de Passiu, PN i Ingressos per l'Haver. El Llibre Diari registra els assentaments cronol\xF2gicament; el Major els agrupa per compte. El balan\xE7 de comprovaci\xF3 verifica l'equilibri aritm\xE8tic."))), /*#__PURE__*/React.createElement(BibliografiaBox, {
+    items: ["Pacioli, L. (1494). Summa de Arithmetica (Tractatus de Computis et Scripturis).", "Plan General de Contabilidad (RD 1514/2007).", "Muñoz Merchante, A. (2021). Introducción a la Contabilidad.", "Código de Comercio (arts. 25-49, libros contables).", "Archel, P. et al. (2018). Estados contables. Pirámide."]
+  }));
+  const Tema68Resum = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-5 animate-fade"
+  }, /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("div", {
+    className: "p-4 bg-slate-100 rounded-xl border border-slate-200 mb-5"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-center font-bold text-slate-800 text-lg"
+  }, "Tema 68: La metodologia comptable. Comptes i assentaments."), /*#__PURE__*/React.createElement("p", {
+    className: "text-center text-sm text-slate-500 mt-1"
+  }, /*#__PURE__*/React.createElement("em", null, "\"Partida doble: \u03A3 Deure = \u03A3 Haver, sempre\""))), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-4 text-sm text-slate-700"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("ul", {
+    className: "list-disc pl-5 space-y-1"
+  }, /*#__PURE__*/React.createElement("li", null, "Compte en T: Deure (esquerra) / Haver (dreta). Saldo = D \u2212 H."), /*#__PURE__*/React.createElement("li", null, "Actiu i Despeses \u2192 naixen al Deure. Passiu, PN, Ingressos \u2192 naixen a l'Haver."), /*#__PURE__*/React.createElement("li", null, "Assentament: sempre \u03A3 D = \u03A3 H. Llibre Diari (obligatori) + Major (per compte)."), /*#__PURE__*/React.createElement("li", null, "Balan\xE7 comprovaci\xF3: verifica equilibri aritm\xE8tic.")))), /*#__PURE__*/React.createElement(FormulaBox, {
+    formula: "\u03A3 Deure = \u03A3 Haver (sempre)"
+  }), /*#__PURE__*/React.createElement(ClauBox, null, /*#__PURE__*/React.createElement("p", null, "- Domina la ", /*#__PURE__*/React.createElement("strong", null, "regla de funcionament"), " dels comptes (D/H per tipus)."), /*#__PURE__*/React.createElement("p", null, "- Sap fer ", /*#__PURE__*/React.createElement("strong", null, "assentaments b\xE0sics"), " (compres, vendes, cobraments, n\xF2mines)."))));
+  const Tema68 = () => {
+    const [vista, setVista] = useState('complet');
+    return /*#__PURE__*/React.createElement("div", {
+      className: "space-y-6"
+    }, /*#__PURE__*/React.createElement(SectionTitle, {
+      icon: "\uD83D\uDCDD",
+      title: "Tema 68",
+      subtitle: t('tema68.title')
+    }), /*#__PURE__*/React.createElement(Tabs, {
+      tabs: [{
+        id: 'complet',
+        label: '📝 ' + t('tab.complet')
+      }, {
+        id: 'resum',
+        label: '📋 ' + t('tab.resum')
+      }],
+      active: vista,
+      onChange: setVista
+    }), vista === 'complet' && /*#__PURE__*/React.createElement(Tema68Complet, null), vista === 'resum' && /*#__PURE__*/React.createElement(Tema68Resum, null));
+  };
+
+  // ════════════════════════════════════════════════════════════════
+  // TEMA 69 — El cicle comptable. Regularització i tancament.
+  // ════════════════════════════════════════════════════════════════
+  const Tema69Complet = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6 animate-fade"
+  }, /*#__PURE__*/React.createElement(Card, {
+    title: "Introducci\xF3",
+    icon: "\uD83D\uDCCC"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-sm text-slate-700 leading-relaxed space-y-3"
+  }, /*#__PURE__*/React.createElement("p", null, "El ", /*#__PURE__*/React.createElement("strong", null, "cicle comptable"), " \xE9s la seq\xFC\xE8ncia d'operacions que es realitza durant un exercici econ\xF2mic (normalment un any) des de l'obertura dels comptes fins al tancament i l'elaboraci\xF3 dels comptes anuals. Inclou el registre diari de les operacions, la regularitzaci\xF3 al final de l'exercici i el tancament. La ", /*#__PURE__*/React.createElement("strong", null, "regularitzaci\xF3"), " \xE9s el proc\xE9s d'ajustos per obtindre el resultat real de l'exercici."))), /*#__PURE__*/React.createElement("div", {
+    className: "my-5 flex justify-center"
+  }, /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 520 420",
+    className: "w-full max-w-lg",
+    xmlns: "http://www.w3.org/2000/svg"
+  }, /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("marker", {
+    id: "cc-arrow",
+    viewBox: "0 0 10 10",
+    refX: "8",
+    refY: "5",
+    markerWidth: "7",
+    markerHeight: "7",
+    orient: "auto-start-reverse"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M 0 0 L 10 5 L 0 10 z",
+    fill: "#475569"
+  }))), /*#__PURE__*/React.createElement("circle", {
+    cx: "260",
+    cy: "210",
+    r: "170",
+    fill: "none",
+    stroke: "#e2e8f0",
+    strokeWidth: "2",
+    strokeDasharray: "8 4"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "205",
+    y: "30",
+    width: "110",
+    height: "44",
+    rx: "10",
+    fill: "#334155"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "260",
+    y: "57",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "700",
+    fontSize: "14"
+  }, "Obertura"), /*#__PURE__*/React.createElement("rect", {
+    x: "395",
+    y: "115",
+    width: "115",
+    height: "44",
+    rx: "10",
+    fill: "#475569"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "452",
+    y: "134",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "700",
+    fontSize: "11"
+  }, "Registre"), /*#__PURE__*/React.createElement("text", {
+    x: "452",
+    y: "149",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "700",
+    fontSize: "11"
+  }, "operacions"), /*#__PURE__*/React.createElement("rect", {
+    x: "395",
+    y: "255",
+    width: "115",
+    height: "44",
+    rx: "10",
+    fill: "#64748b"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "452",
+    y: "282",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "700",
+    fontSize: "13"
+  }, "Regularitzaci\xF3"), /*#__PURE__*/React.createElement("rect", {
+    x: "205",
+    y: "345",
+    width: "110",
+    height: "44",
+    rx: "10",
+    fill: "#475569"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "260",
+    y: "364",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "700",
+    fontSize: "11"
+  }, "Estats"), /*#__PURE__*/React.createElement("text", {
+    x: "260",
+    y: "379",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "700",
+    fontSize: "11"
+  }, "financers"), /*#__PURE__*/React.createElement("rect", {
+    x: "10",
+    y: "255",
+    width: "110",
+    height: "44",
+    rx: "10",
+    fill: "#334155"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "65",
+    y: "282",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "700",
+    fontSize: "13"
+  }, "Tancament"), /*#__PURE__*/React.createElement("rect", {
+    x: "10",
+    y: "115",
+    width: "110",
+    height: "44",
+    rx: "10",
+    fill: "#64748b"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "65",
+    y: "134",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "700",
+    fontSize: "11"
+  }, "Comptes"), /*#__PURE__*/React.createElement("text", {
+    x: "65",
+    y: "149",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "700",
+    fontSize: "11"
+  }, "anuals"), /*#__PURE__*/React.createElement("path", {
+    d: "M 310 55 Q 370 60 400 120",
+    fill: "none",
+    stroke: "#475569",
+    strokeWidth: "2.5",
+    markerEnd: "url(#cc-arrow)"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M 460 159 Q 470 210 460 255",
+    fill: "none",
+    stroke: "#475569",
+    strokeWidth: "2.5",
+    markerEnd: "url(#cc-arrow)"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M 400 285 Q 370 330 315 360",
+    fill: "none",
+    stroke: "#475569",
+    strokeWidth: "2.5",
+    markerEnd: "url(#cc-arrow)"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M 205 370 Q 145 370 120 299",
+    fill: "none",
+    stroke: "#475569",
+    strokeWidth: "2.5",
+    markerEnd: "url(#cc-arrow)"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M 60 255 Q 50 200 55 159",
+    fill: "none",
+    stroke: "#475569",
+    strokeWidth: "2.5",
+    markerEnd: "url(#cc-arrow)"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M 115 125 Q 170 80 205 55",
+    fill: "none",
+    stroke: "#475569",
+    strokeWidth: "2.5",
+    markerEnd: "url(#cc-arrow)"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "260",
+    y: "205",
+    textAnchor: "middle",
+    fill: "#334155",
+    fontWeight: "800",
+    fontSize: "15"
+  }, "CICLE"), /*#__PURE__*/React.createElement("text", {
+    x: "260",
+    y: "224",
+    textAnchor: "middle",
+    fill: "#334155",
+    fontWeight: "800",
+    fontSize: "15"
+  }, "COMPTABLE"))), /*#__PURE__*/React.createElement(Card, {
+    title: "1. Fases del cicle comptable",
+    icon: "\uD83D\uDCD8"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "1.1. Obertura",
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "Assentament d'obertura:"), " al comen\xE7ament de l'exercici, s'obren els comptes amb els saldos del balan\xE7 de tancament de l'exercici anterior. Es carreguen (D) tots els comptes d'actiu i s'abonen (H) tots els comptes de passiu i PN.")), /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "1.2. Registre d'operacions",
+    color: "blue"
+  }, /*#__PURE__*/React.createElement("p", null, "Durant l'exercici es registren al Llibre Diari tots els fets comptables: compres, vendes, cobraments, pagaments, n\xF2mines, amortitzacions, impostos, etc. Es traspassen al Llibre Major.")), /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "1.3. Regularitzaci\xF3",
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, "Al final de l'exercici (31/12), abans de tancar, es realitzen els ", /*#__PURE__*/React.createElement("strong", null, "assentaments de regularitzaci\xF3"), ":", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "1. Amortitzaci\xF3 de l'immobilitzat:"), " (D) Amortitzaci\xF3 de l'immobilitzat material/intangible / (H) Amortitzaci\xF3 acumulada de l'immobilitzat material/intangible.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "2. Regularitzaci\xF3 d'exist\xE8ncies:"), " (D) Variaci\xF3 d'exist\xE8ncies / (H) Exist\xE8ncies inicials \u2192 (D) Exist\xE8ncies finals / (H) Variaci\xF3 d'exist\xE8ncies. El resultat net de la variaci\xF3 d'exist\xE8ncies ajusta el cost de les vendes.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "3. Periodificaci\xF3:"), " imputar ingressos i despeses al per\xEDode al qual corresponen (independentment del cobrament/pagament): despeses anticipades, ingressos anticipats, interessos meritats no ven\xE7uts.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "4. Deterioraments i provisions:"), " registrar p\xE8rdues estimades (clients de dubt\xF3s cobrament, depreciaci\xF3 d'exist\xE8ncies).", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "5. Impost sobre Societats:"), " calcular l'IS sobre el resultat comptable abans d'impostos.")), /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "1.4. Determinaci\xF3 del resultat",
+    color: "blue"
+  }, /*#__PURE__*/React.createElement("p", null, "S'obtingut el resultat de l'exercici traspassant tots els saldos de despeses i ingressos al compte ", /*#__PURE__*/React.createElement("strong", null, "129 \u2014 Resultat de l'exercici"), ":", /*#__PURE__*/React.createElement("br", null), "(D) 129 Resultat / (H) Tots els comptes de despeses (grup 6) \u2192 traspasar saldos de despeses.", /*#__PURE__*/React.createElement("br", null), "(D) Tots els comptes d'ingressos (grup 7) / (H) 129 Resultat \u2192 traspasar saldos d'ingressos.", /*#__PURE__*/React.createElement("br", null), "Si el saldo de 129 \xE9s creditor \u2192 ", /*#__PURE__*/React.createElement("strong", null, "benefici"), ". Si \xE9s deutor \u2192 ", /*#__PURE__*/React.createElement("strong", null, "p\xE8rdua"), ".")), /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "1.5. Tancament",
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, "L'", /*#__PURE__*/React.createElement("strong", null, "assentament de tancament"), " deixa tots els comptes amb saldo zero: s'abonen (H) els comptes amb saldo deutor (actius) i es carreguen (D) els comptes amb saldo creditor (passius i PN, incloent el resultat de l'exercici). El balan\xE7 de situaci\xF3 reflecteix els saldos finals."))), /*#__PURE__*/React.createElement(Card, {
+    title: "2. Els comptes anuals",
+    icon: "\uD83D\uDCD8"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, "Segons el PGC, les empreses han de formular i depositar al Registre Mercantil els ", /*#__PURE__*/React.createElement("strong", null, "comptes anuals"), ":", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "1. Balan\xE7 de situaci\xF3:"), " patrimoni a 31/12 (A = PN + P).", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "2. Compte de p\xE8rdues i guanys:"), " ingressos \u2212 despeses = resultat.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "3. Estat de canvis en el patrimoni net (ECPN):"), " variacions del PN durant l'exercici.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "4. Estat de fluxos d'efectiu (EFE):"), " moviments de tresoreria classificats en explotaci\xF3, inversi\xF3 i finan\xE7ament. Obligatori per a empreses no abreujades.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "5. Mem\xF2ria:"), " amplia i comenta la informaci\xF3 dels anteriors documents."))), /*#__PURE__*/React.createElement(Card, {
+    title: "S\xEDntesi",
+    icon: "\uD83D\uDCDD"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, "El cicle comptable: obertura \u2192 registre operacions \u2192 regularitzaci\xF3 (amortitzacions, exist\xE8ncies, periodificaci\xF3, deterioraments, IS) \u2192 determinaci\xF3 resultat (compte 129: ingressos grup 7 \u2212 despeses grup 6) \u2192 tancament \u2192 comptes anuals (balan\xE7, compte PiG, ECPN, EFE, mem\xF2ria). La regularitzaci\xF3 \xE9s clau per obtindre el resultat real de l'exercici, ajustant per despeses no monet\xE0ries (amortitzaci\xF3), cost de vendes (variaci\xF3 exist\xE8ncies) i periodificaci\xF3."))), /*#__PURE__*/React.createElement(BibliografiaBox, {
+    items: ["Plan General de Contabilidad (RD 1514/2007).", "Muñoz Merchante, A. (2021). Introducción a la Contabilidad.", "Archel, P. et al. (2018). Estados contables. Pirámide.", "Código de Comercio (arts. 34-41, comptes anuals).", "ICAC. Resolucions i consultes. www.icac.gob.es"]
+  }));
+  const Tema69Resum = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-5 animate-fade"
+  }, /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("div", {
+    className: "p-4 bg-slate-100 rounded-xl border border-slate-200 mb-5"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-center font-bold text-slate-800 text-lg"
+  }, "Tema 69: El cicle comptable. Regularitzaci\xF3 i tancament."), /*#__PURE__*/React.createElement("p", {
+    className: "text-center text-sm text-slate-500 mt-1"
+  }, /*#__PURE__*/React.createElement("em", null, "\"Obertura \u2192 Registre \u2192 Regularitzaci\xF3 \u2192 Resultat \u2192 Tancament \u2192 Comptes anuals\""))), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-4 text-sm text-slate-700"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("ul", {
+    className: "list-disc pl-5 space-y-1"
+  }, /*#__PURE__*/React.createElement("li", null, "Obertura: assentament amb saldos anteriors. Registre: fets comptables al Diari/Major."), /*#__PURE__*/React.createElement("li", null, "Regularitzaci\xF3: amortitzacions, exist\xE8ncies, periodificaci\xF3, deterioraments, IS."), /*#__PURE__*/React.createElement("li", null, "Resultat: compte 129 = ingressos (grup 7) \u2212 despeses (grup 6). Creditor \u2192 benefici."), /*#__PURE__*/React.createElement("li", null, "Tancament: tots els comptes a zero. Comptes anuals: balan\xE7, PiG, ECPN, EFE, mem\xF2ria.")))), /*#__PURE__*/React.createElement(ClauBox, null, /*#__PURE__*/React.createElement("p", null, "- Domina les ", /*#__PURE__*/React.createElement("strong", null, "5 fases"), " del cicle amb els assentaments de regularitzaci\xF3."), /*#__PURE__*/React.createElement("p", null, "- Sap determinar el ", /*#__PURE__*/React.createElement("strong", null, "resultat"), " (compte 129) i els ", /*#__PURE__*/React.createElement("strong", null, "5 comptes anuals"), "."))));
+  const Tema69 = () => {
+    const [vista, setVista] = useState('complet');
+    return /*#__PURE__*/React.createElement("div", {
+      className: "space-y-6"
+    }, /*#__PURE__*/React.createElement(SectionTitle, {
+      icon: "\uD83D\uDD04",
+      title: "Tema 69",
+      subtitle: t('tema69.title')
+    }), /*#__PURE__*/React.createElement(Tabs, {
+      tabs: [{
+        id: 'complet',
+        label: '📝 ' + t('tab.complet')
+      }, {
+        id: 'resum',
+        label: '📋 ' + t('tab.resum')
+      }],
+      active: vista,
+      onChange: setVista
+    }), vista === 'complet' && /*#__PURE__*/React.createElement(Tema69Complet, null), vista === 'resum' && /*#__PURE__*/React.createElement(Tema69Resum, null));
+  };
+
+  // ════════════════════════════════════════════════════════════════
+  // TEMA 70 — El Pla General Comptable.
+  // ════════════════════════════════════════════════════════════════
+  const Tema70Complet = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6 animate-fade"
+  }, /*#__PURE__*/React.createElement(Card, {
+    title: "Introducci\xF3",
+    icon: "\uD83D\uDCCC"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-sm text-slate-700 leading-relaxed space-y-3"
+  }, /*#__PURE__*/React.createElement("p", null, "El ", /*#__PURE__*/React.createElement("strong", null, "Pla General de Comptabilitat (PGC)"), " \xE9s la norma que regula la comptabilitat de les empreses espanyoles. El vigent (RD 1514/2007) adapta les ", /*#__PURE__*/React.createElement("strong", null, "Normes Internacionals d'Informaci\xF3 Financera (NIIF/IFRS)"), " de la UE al context espanyol. Existeix tamb\xE9 un ", /*#__PURE__*/React.createElement("strong", null, "PGC de pimes"), " (RD 1515/2007) simplificat. El PGC garanteix la ", /*#__PURE__*/React.createElement("strong", null, "comparabilitat, fiabilitat i rellev\xE0ncia"), " de la informaci\xF3 comptable."))), /*#__PURE__*/React.createElement(Card, {
+    title: "1. Estructura del PGC",
+    icon: "\uD83D\uDCD8"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "1.1. Les cinc parts",
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "1a Part \u2014 Marc conceptual (obligat\xF2ria):"), " defineix els principis comptables (empresa en funcionament, meritaci\xF3, uniformitat, prud\xE8ncia, no compensaci\xF3, import\xE0ncia relativa), els requisits de la informaci\xF3 (rellev\xE0ncia, fiabilitat, comparabilitat, claredat), els elements dels comptes anuals (actiu, passiu, PN, ingressos, despeses) i els criteris de valoraci\xF3 (cost hist\xF2ric, valor raonable, valor net realitzable, valor actual, valor en \xFAs, cost amortitzat)."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "2a Part \u2014 Normes de registre i valoraci\xF3 (obligat\xF2ria):"), " 23 normes que regulen com registrar i valorar cada tipus d'element: immobilitzat material (NRV 2: cost d'adquisici\xF3, amortitzaci\xF3, deteriorament), exist\xE8ncies (NRV 10: PMP o FIFO), ingressos (NRV 14), instruments financers (NRV 9), impostos (NRV 13), etc."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "3a Part \u2014 Comptes anuals (obligat\xF2ria):"), " normes d'elaboraci\xF3, models de balan\xE7, compte PiG, ECPN, EFE i mem\xF2ria (normal i abreujat)."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "4a Part \u2014 Quadre de comptes (orientatiu):"), " llistat codificat de comptes organitzat en 9 grups."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "5a Part \u2014 Definicions i relacions comptables (orientatiu):"), " defineix cada compte i descriu els seus moviments de deure i haver.")), /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "1.2. Els 9 grups de comptes",
+    color: "blue"
+  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "Grup 1 \u2014 Finan\xE7ament b\xE0sic:"), " capital, reserves, deutes a LP, resultat.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Grup 2 \u2014 Actiu no corrent:"), " immobilitzats, amortitzacions, inversions financeres LP.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Grup 3 \u2014 Exist\xE8ncies:"), " mercaderies, mat\xE8ries primeres, productes.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Grup 4 \u2014 Creditors i deutors:"), " prove\xEFdors, clients, HP, SS, personal.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Grup 5 \u2014 Comptes financers:"), " deutes CP, inversions financeres CP, tresoreria.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Grup 6 \u2014 Compres i despeses:"), " compres, serveis exteriors, personal, tributs, financeres, amortitzacions, provisions.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Grup 7 \u2014 Vendes i ingressos:"), " vendes, ingressos financers, subvencions a l'explotaci\xF3.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Grup 8 i 9:"), " despeses i ingressos imputats al PN (variacions de valor raonable, subvencions)."))), /*#__PURE__*/React.createElement(Card, {
+    title: "2. Principis comptables",
+    icon: "\uD83D\uDCD8"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "Empresa en funcionament:"), " es pressuposa que l'empresa continua operant en el futur previsible.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Meritaci\xF3:"), " els ingressos i despeses s'imputen al per\xEDode en qu\xE8 es meriten, independentment del cobrament/pagament (principi fonamental).", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Uniformitat:"), " mantenir els mateixos criteris comptables d'un exercici a l'altre (per facilitar la comparaci\xF3).", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Prud\xE8ncia:"), " nom\xE9s es comptabilitzen els beneficis realitzats; els riscos i p\xE8rdues previsibles es registren tan prompte com es coneixen.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "No compensaci\xF3:"), " no es poden compensar partides d'actiu amb passiu ni ingressos amb despeses (cada element es mostra per separat).", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Import\xE0ncia relativa:"), " es pot simplificar el registre de fets comptables poc significatius."))), /*#__PURE__*/React.createElement(Card, {
+    title: "S\xEDntesi",
+    icon: "\uD83D\uDCDD"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, "El PGC (RD 1514/2007) s'estructura en 5 parts: marc conceptual (principis: empresa en funcionament, meritaci\xF3, uniformitat, prud\xE8ncia, no compensaci\xF3, import\xE0ncia relativa), NRV (23 normes de registre i valoraci\xF3), comptes anuals (models obligatoris), quadre de comptes (9 grups, orientatiu) i definicions (orientatiu). Els grups 1-5 s\xF3n de balan\xE7 (patrimonials); els grups 6-7 de gesti\xF3 (despeses/ingressos); els 8-9 s'imputen al PN. El PGC de pimes simplifica per a empreses menors."))), /*#__PURE__*/React.createElement(BibliografiaBox, {
+    items: ["RD 1514/2007 Plan General de Contabilidad.", "RD 1515/2007 PGC de Pymes.", "ICAC. Consultas y resoluciones. www.icac.gob.es", "Muñoz Merchante, A. (2021). Introducción a la Contabilidad.", "Archel, P. et al. (2018). Estados contables. Pirámide.", "Reglamento (CE) 1606/2002 sobre NIIF adoptadas en la UE."]
+  }));
+  const Tema70Resum = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-5 animate-fade"
+  }, /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("div", {
+    className: "p-4 bg-slate-100 rounded-xl border border-slate-200 mb-5"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-center font-bold text-slate-800 text-lg"
+  }, "Tema 70: El Pla General Comptable."), /*#__PURE__*/React.createElement("p", {
+    className: "text-center text-sm text-slate-500 mt-1"
+  }, /*#__PURE__*/React.createElement("em", null, "\"5 parts, 9 grups, 6 principis: el marc normatiu de la comptabilitat\""))), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-4 text-sm text-slate-700"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("ul", {
+    className: "list-disc pl-5 space-y-1"
+  }, /*#__PURE__*/React.createElement("li", null, "5 parts: marc conceptual (oblig.), NRV (oblig.), comptes anuals (oblig.), quadre comptes (orient.), definicions (orient.)."), /*#__PURE__*/React.createElement("li", null, "6 principis: empresa en funcionament, meritaci\xF3, uniformitat, prud\xE8ncia, no compensaci\xF3, import\xE0ncia relativa."), /*#__PURE__*/React.createElement("li", null, "9 grups: 1-5 balan\xE7 (patrimonials), 6-7 gesti\xF3 (despeses/ingressos), 8-9 PN."), /*#__PURE__*/React.createElement("li", null, "PGC pimes (RD 1515/2007): simplificat.")))), /*#__PURE__*/React.createElement(ClauBox, null, /*#__PURE__*/React.createElement("p", null, "- Coneix les ", /*#__PURE__*/React.createElement("strong", null, "5 parts"), " i la seua obligatorietat."), /*#__PURE__*/React.createElement("p", null, "- Domina els ", /*#__PURE__*/React.createElement("strong", null, "6 principis comptables"), " (esp. meritaci\xF3 i prud\xE8ncia)."), /*#__PURE__*/React.createElement("p", null, "- Identifica els ", /*#__PURE__*/React.createElement("strong", null, "9 grups"), " de comptes amb el seu contingut."))));
+  const Tema70 = () => {
+    const [vista, setVista] = useState('complet');
+    return /*#__PURE__*/React.createElement("div", {
+      className: "space-y-6"
+    }, /*#__PURE__*/React.createElement(SectionTitle, {
+      icon: "\uD83D\uDCD6",
+      title: "Tema 70",
+      subtitle: t('tema70.title')
+    }), /*#__PURE__*/React.createElement(Tabs, {
+      tabs: [{
+        id: 'complet',
+        label: '📝 ' + t('tab.complet')
+      }, {
+        id: 'resum',
+        label: '📋 ' + t('tab.resum')
+      }],
+      active: vista,
+      onChange: setVista
+    }), vista === 'complet' && /*#__PURE__*/React.createElement(Tema70Complet, null), vista === 'resum' && /*#__PURE__*/React.createElement(Tema70Resum, null));
+  };
+
+  // ════════════════════════════════════════════════════════════════
+  // TEMA 71 — Anàlisi d'estats financers. Ràtios.
+  // ════════════════════════════════════════════════════════════════
+  const Tema71Complet = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6 animate-fade"
+  }, /*#__PURE__*/React.createElement(Card, {
+    title: "Introducci\xF3",
+    icon: "\uD83D\uDCCC"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-sm text-slate-700 leading-relaxed space-y-3"
+  }, /*#__PURE__*/React.createElement("p", null, "L'", /*#__PURE__*/React.createElement("strong", null, "an\xE0lisi d'estats financers"), " \xE9s el proc\xE9s d'examinar el balan\xE7, el compte de resultats i altres documents comptables per diagnosticar la situaci\xF3 econ\xF2mica i financera de l'empresa. Els ", /*#__PURE__*/React.createElement("strong", null, "r\xE0tios"), " s\xF3n el principal instrument: quocients entre magnituds comptables que permeten avaluar la liquiditat, solv\xE8ncia, endeutament i rendibilitat. Aquest tema tanca el temari d'oposicions i \xE9s ", /*#__PURE__*/React.createElement("strong", null, "molt freq\xFCent en sup\xF2sits pr\xE0ctics"), "."))), /*#__PURE__*/React.createElement("div", {
+    className: "my-5 flex justify-center"
+  }, /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 740 310",
+    className: "w-full max-w-3xl",
+    xmlns: "http://www.w3.org/2000/svg"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "0",
+    y: "0",
+    width: "740",
+    height: "310",
+    rx: "16",
+    fill: "#f8fafc",
+    stroke: "#e2e8f0",
+    strokeWidth: "1.5"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "370",
+    y: "32",
+    textAnchor: "middle",
+    fill: "#1e293b",
+    fontWeight: "800",
+    fontSize: "17"
+  }, "R\xC0TIOS FINANCERS"), /*#__PURE__*/React.createElement("line", {
+    x1: "30",
+    y1: "44",
+    x2: "710",
+    y2: "44",
+    stroke: "#e2e8f0",
+    strokeWidth: "1.5"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "20",
+    y: "58",
+    width: "220",
+    height: "235",
+    rx: "12",
+    fill: "#334155"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "130",
+    y: "86",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "800",
+    fontSize: "15"
+  }, "LIQUIDITAT"), /*#__PURE__*/React.createElement("line", {
+    x1: "40",
+    y1: "96",
+    x2: "220",
+    y2: "96",
+    stroke: "white",
+    strokeOpacity: "0.2",
+    strokeWidth: "1"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "35",
+    y: "108",
+    width: "190",
+    height: "38",
+    rx: "8",
+    fill: "white",
+    fillOpacity: "0.12"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "130",
+    y: "125",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "600",
+    fontSize: "11"
+  }, "R\xE0tio corrent"), /*#__PURE__*/React.createElement("text", {
+    x: "130",
+    y: "140",
+    textAnchor: "middle",
+    fill: "#cbd5e1",
+    fontSize: "10"
+  }, "AC / PC \u2192 1,5-2"), /*#__PURE__*/React.createElement("rect", {
+    x: "35",
+    y: "155",
+    width: "190",
+    height: "38",
+    rx: "8",
+    fill: "white",
+    fillOpacity: "0.12"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "130",
+    y: "172",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "600",
+    fontSize: "11"
+  }, "Acid test"), /*#__PURE__*/React.createElement("text", {
+    x: "130",
+    y: "187",
+    textAnchor: "middle",
+    fill: "#cbd5e1",
+    fontSize: "10"
+  }, "(AC\u2212Exist) / PC \u2192 ~1"), /*#__PURE__*/React.createElement("rect", {
+    x: "35",
+    y: "202",
+    width: "190",
+    height: "38",
+    rx: "8",
+    fill: "white",
+    fillOpacity: "0.12"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "130",
+    y: "219",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "600",
+    fontSize: "11"
+  }, "Tresoreria"), /*#__PURE__*/React.createElement("text", {
+    x: "130",
+    y: "234",
+    textAnchor: "middle",
+    fill: "#cbd5e1",
+    fontSize: "10"
+  }, "Disp / PC \u2192 0,2-0,3"), /*#__PURE__*/React.createElement("rect", {
+    x: "260",
+    y: "58",
+    width: "220",
+    height: "235",
+    rx: "12",
+    fill: "#475569"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "370",
+    y: "86",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "800",
+    fontSize: "15"
+  }, "ENDEUTAMENT"), /*#__PURE__*/React.createElement("line", {
+    x1: "280",
+    y1: "96",
+    x2: "460",
+    y2: "96",
+    stroke: "white",
+    strokeOpacity: "0.2",
+    strokeWidth: "1"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "275",
+    y: "108",
+    width: "190",
+    height: "38",
+    rx: "8",
+    fill: "white",
+    fillOpacity: "0.12"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "370",
+    y: "125",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "600",
+    fontSize: "11"
+  }, "R\xE0tio endeutament"), /*#__PURE__*/React.createElement("text", {
+    x: "370",
+    y: "140",
+    textAnchor: "middle",
+    fill: "#cbd5e1",
+    fontSize: "10"
+  }, "PT / (PN+PT) \u2192 0,4-0,6"), /*#__PURE__*/React.createElement("rect", {
+    x: "275",
+    y: "155",
+    width: "190",
+    height: "38",
+    rx: "8",
+    fill: "white",
+    fillOpacity: "0.12"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "370",
+    y: "172",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "600",
+    fontSize: "11"
+  }, "Autonomia financera"), /*#__PURE__*/React.createElement("text", {
+    x: "370",
+    y: "187",
+    textAnchor: "middle",
+    fill: "#cbd5e1",
+    fontSize: "10"
+  }, "PN / PT \u2192 >1"), /*#__PURE__*/React.createElement("rect", {
+    x: "275",
+    y: "202",
+    width: "190",
+    height: "38",
+    rx: "8",
+    fill: "white",
+    fillOpacity: "0.12"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "370",
+    y: "219",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "600",
+    fontSize: "11"
+  }, "Qualitat del deute"), /*#__PURE__*/React.createElement("text", {
+    x: "370",
+    y: "234",
+    textAnchor: "middle",
+    fill: "#cbd5e1",
+    fontSize: "10"
+  }, "PC / PT \u2192 menor, millor"), /*#__PURE__*/React.createElement("rect", {
+    x: "500",
+    y: "58",
+    width: "220",
+    height: "235",
+    rx: "12",
+    fill: "#64748b"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "610",
+    y: "86",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "800",
+    fontSize: "15"
+  }, "RENDIBILITAT"), /*#__PURE__*/React.createElement("line", {
+    x1: "520",
+    y1: "96",
+    x2: "700",
+    y2: "96",
+    stroke: "white",
+    strokeOpacity: "0.2",
+    strokeWidth: "1"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "515",
+    y: "108",
+    width: "190",
+    height: "55",
+    rx: "8",
+    fill: "white",
+    fillOpacity: "0.12"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "610",
+    y: "128",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "600",
+    fontSize: "11"
+  }, "Rendibilitat econ\xF2mica (ROA)"), /*#__PURE__*/React.createElement("text", {
+    x: "610",
+    y: "145",
+    textAnchor: "middle",
+    fill: "#cbd5e1",
+    fontSize: "10"
+  }, "RE = BAII / Actiu"), /*#__PURE__*/React.createElement("text", {
+    x: "610",
+    y: "158",
+    textAnchor: "middle",
+    fill: "#cbd5e1",
+    fontSize: "10"
+  }, "= Marge \xD7 Rotaci\xF3"), /*#__PURE__*/React.createElement("rect", {
+    x: "515",
+    y: "172",
+    width: "190",
+    height: "55",
+    rx: "8",
+    fill: "white",
+    fillOpacity: "0.12"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "610",
+    y: "192",
+    textAnchor: "middle",
+    fill: "white",
+    fontWeight: "600",
+    fontSize: "11"
+  }, "Rendibilitat financera (ROE)"), /*#__PURE__*/React.createElement("text", {
+    x: "610",
+    y: "209",
+    textAnchor: "middle",
+    fill: "#cbd5e1",
+    fontSize: "10"
+  }, "RF = BDI / PN"), /*#__PURE__*/React.createElement("text", {
+    x: "610",
+    y: "222",
+    textAnchor: "middle",
+    fill: "#cbd5e1",
+    fontSize: "10"
+  }, "RE>ki \u2192 palanquejament +"))), /*#__PURE__*/React.createElement(Card, {
+    title: "1. An\xE0lisi patrimonial",
+    icon: "\uD83D\uDCD8"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "1.1. Estructura del balan\xE7",
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, "L'an\xE0lisi patrimonial examina la composici\xF3 i evoluci\xF3 de les masses patrimonials: pes relatiu de l'ANC i AC (estructura econ\xF2mica), pes del PN, PnC i PC (estructura financera), evoluci\xF3 temporal (variacions absolutes i relatives).", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "An\xE0lisi vertical (est\xE0tica):"), " cada partida com a % del total (per al balan\xE7: % de l'actiu total; per al compte PiG: % de les vendes).", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "An\xE0lisi horitzontal (din\xE0mica):"), " comparaci\xF3 de dos o m\xE9s exercicis (variaci\xF3 absoluta i percentual de cada partida)."))), /*#__PURE__*/React.createElement(Card, {
+    title: "2. An\xE0lisi financera: liquiditat i solv\xE8ncia",
+    icon: "\uD83D\uDCD8"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "2.1. R\xE0tios de liquiditat (CP)",
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "R\xE0tio de liquiditat (corrent):"), " AC / PC. Ideal: 1,5 \u2212 2. Mesura la capacitat de pagar deutes a CP. <1 \u2192 FM negatiu, tensi\xF3 financera.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "R\xE0tio de tresoreria (acid test):"), " (Realitzable + Disponible) / PC = (AC \u2212 Exist\xE8ncies) / PC. Ideal: ~1. Mesura la liquiditat excloent les exist\xE8ncies (que poden ser dif\xEDcils de vendre r\xE0pidament).", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "R\xE0tio de disponibilitat (cash ratio):"), " Disponible / PC. Ideal: 0,2 \u2212 0,3. Liquiditat immediata.")), /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "2.2. R\xE0tios de solv\xE8ncia i endeutament (LP)",
+    color: "blue"
+  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "R\xE0tio de solv\xE8ncia (garantia):"), " Actiu Total / Passiu Total. Ideal: > 1,5. Si < 1 \u2192 fallida (PN negatiu).", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "R\xE0tio d'endeutament:"), " Passiu Total / (PN + Passiu Total). Ideal: 0,4 \u2212 0,6. Proporci\xF3 de finan\xE7ament ali\xE9 sobre el total.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "R\xE0tio d'autonomia financera:"), " PN / Passiu Total. Ideal: > 1. Grau d'independ\xE8ncia financera.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "R\xE0tio de qualitat del deute:"), " PC / Passiu Total. Com menor, millor (el deute a LP \xE9s menys pressi\xF3 que el de CP).")), /*#__PURE__*/React.createElement(FormulaBox, {
+    formula: "Liquiditat = AC/PC (~1,5-2) | Acid test = (AC\u2212Exist)/PC (~1) | Solv\xE8ncia = AT/PT (>1,5)",
+    desc: "R\xE0tios clau per al diagn\xF2stic financer. Essencials per als sup\xF2sits."
+  })), /*#__PURE__*/React.createElement(Card, {
+    title: "3. An\xE0lisi econ\xF2mica: rendibilitat",
+    icon: "\uD83D\uDCD8"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "3.1. Rendibilitat econ\xF2mica (RE / ROA)",
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "RE = BAII / Actiu Total \xD7 100"), /*#__PURE__*/React.createElement("br", null), "Rendibilitat dels actius, independentment del finan\xE7ament. Descomposici\xF3: ", /*#__PURE__*/React.createElement("strong", null, "RE = Marge (BAII/Vendes) \xD7 Rotaci\xF3 (Vendes/Actiu)"), ".", /*#__PURE__*/React.createElement("br", null), "\u2014 Per millorar la RE: augmentar el marge (pujar preus, reduir costos) i/o augmentar la rotaci\xF3 (vendre m\xE9s amb el mateix actiu).")), /*#__PURE__*/React.createElement(TheoryBlock, {
+    title: "3.2. Rendibilitat financera (RF / ROE)",
+    color: "blue"
+  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "RF = BDI / Patrimoni Net \xD7 100"), /*#__PURE__*/React.createElement("br", null), "Rendibilitat per als propietaris. Dep\xE9n de la RE, l'endeutament i el cost del deute.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Efecte palanquejament financer:"), " si RE > ki (cost del deute) \u2192 endeutar-se augmenta la RF (palanquejament positiu). Si RE < ki \u2192 endeutar-se redueix la RF (negatiu).", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "RF = RE + (RE \u2212 ki) \xD7 (D/PN) \xD7 (1\u2212t)"), ", on t = tipus IS.")), /*#__PURE__*/React.createElement(FormulaBox, {
+    formula: "RE = BAII/Actiu = Marge \xD7 Rotaci\xF3 | RF = BDI/PN",
+    desc: "Palanquejament: si RE > ki \u2192 endeutar-se millora RF"
+  })), /*#__PURE__*/React.createElement(Card, {
+    title: "4. Per\xEDode mitj\xE0 de maduraci\xF3 (PMM)",
+    icon: "\uD83D\uDCD8"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, "El ", /*#__PURE__*/React.createElement("strong", null, "PMM"), " \xE9s el temps que l'empresa tarda a recuperar cada euro invertit en el cicle d'explotaci\xF3:", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "PMM = PM aprovisionament + PM fabricaci\xF3 + PM venda + PM cobrament"), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "PMM financer = PMM \u2212 PM pagament"), " (descompta el cr\xE8dit de prove\xEFdors).", /*#__PURE__*/React.createElement("br", null), "On PM = 365 / Rotaci\xF3. Exemple: Rotaci\xF3 exist\xE8ncies = Cost vendes / Exist\xE8ncies mitjanes; PM exist\xE8ncies = 365 / Rotaci\xF3.", /*#__PURE__*/React.createElement("br", null), "Un ", /*#__PURE__*/React.createElement("strong", null, "PMM menor \u2192 millor"), " (l'empresa recupera els diners abans). El PMM financer pot ser negatiu (cobrament abans de pagar \u2192 autofinan\xE7ament del cicle, com fa Mercadona o Inditex)."))), /*#__PURE__*/React.createElement(Card, {
+    title: "5. An\xE0lisi integral: l'informe",
+    icon: "\uD83D\uDCD8"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, "L'an\xE0lisi d'estats financers integra tots els r\xE0tios en un ", /*#__PURE__*/React.createElement("strong", null, "informe de diagn\xF2stic"), ": situaci\xF3 patrimonial (equilibri, FM), liquiditat (CP), solv\xE8ncia (LP), endeutament, rendibilitat econ\xF2mica i financera, palanquejament, PMM. Es compara amb: exercicis anteriors (evoluci\xF3), empreses del sector (benchmarking), valors ideals/est\xE0ndard. L'informe conclou amb ", /*#__PURE__*/React.createElement("strong", null, "punts forts, febleses i recomanacions"), "."))), /*#__PURE__*/React.createElement(Card, {
+    title: "S\xEDntesi",
+    icon: "\uD83D\uDCDD"
+  }, /*#__PURE__*/React.createElement(TheoryBlock, {
+    color: "slate"
+  }, /*#__PURE__*/React.createElement("p", null, "L'an\xE0lisi d'estats financers utilitza r\xE0tios per diagnosticar: liquiditat (corrent ~1,5-2, acid test ~1, disponibilitat ~0,2-0,3), solv\xE8ncia (garantia >1,5, endeutament 0,4-0,6, autonomia >1), rendibilitat econ\xF2mica (RE = BAII/Actiu = Marge \xD7 Rotaci\xF3) i financera (RF = BDI/PN, afectada pel palanquejament: si RE>ki \u2192 endeutar-se millora RF). El PMM mesura la durada del cicle d'explotaci\xF3 (PMM financer = PMM \u2212 PM pagament; negatiu = autofinan\xE7ament). L'an\xE0lisi integral compara amb exercicis anteriors i sector. Tema essencial per als sup\xF2sits pr\xE0ctics."))), /*#__PURE__*/React.createElement(BibliografiaBox, {
+    items: ["Amat, O. (2018). Análisis de estados financieros, 12.ª ed. Gestión 2000.", "Archel, P. et al. (2018). Estados contables. Pirámide.", "Rivero Torre, P. (2012). Análisis de balances y estados complementarios. Pirámide.", "Garrido, P. & Íñiguez, R. (2017). Análisis de estados contables. Pirámide.", "González Pascual, J. (2016). Análisis de la empresa a través de su información económico-financiera. Pirámide.", "PGC (RD 1514/2007). Normes de registre i valoració.", "Bueno Campos, E. (2022). Curso básico de Economía de la Empresa. Pirámide."]
+  }));
+  const Tema71Resum = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-5 animate-fade"
+  }, /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("div", {
+    className: "p-4 bg-slate-100 rounded-xl border border-slate-200 mb-5"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-center font-bold text-slate-800 text-lg"
+  }, "Tema 71: An\xE0lisi d'estats financers. R\xE0tios."), /*#__PURE__*/React.createElement("p", {
+    className: "text-center text-sm text-slate-500 mt-1"
+  }, /*#__PURE__*/React.createElement("em", null, "\"Liquiditat + Solv\xE8ncia + Rendibilitat + PMM = diagn\xF2stic complet\""))), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-4 text-sm text-slate-700"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h4", {
+    className: "font-bold text-slate-800 mb-1"
+  }, "R\xE0tios clau"), /*#__PURE__*/React.createElement("ul", {
+    className: "list-disc pl-5 space-y-1"
+  }, /*#__PURE__*/React.createElement("li", null, "Liquiditat: AC/PC (~1,5-2). Acid test: (AC\u2212Exist)/PC (~1). Disponibilitat: Disp/PC (~0,2-0,3)."), /*#__PURE__*/React.createElement("li", null, "Solv\xE8ncia: AT/PT (>1,5). Endeutament: PT/(PN+PT) (0,4-0,6). Autonomia: PN/PT (>1)."), /*#__PURE__*/React.createElement("li", null, "RE = BAII/Actiu = Marge \xD7 Rotaci\xF3. RF = BDI/PN."), /*#__PURE__*/React.createElement("li", null, "Palanquejament: RF = RE + (RE\u2212ki)\xD7D/PN\xD7(1\u2212t). RE>ki \u2192 positiu."), /*#__PURE__*/React.createElement("li", null, "PMM = PM aprov. + fabric. + venda + cobr. \u2212 pagament. Negatiu \u2192 autofinan\xE7ament.")))), /*#__PURE__*/React.createElement(FormulaBox, {
+    formula: "RE = BAII/Actiu | RF = BDI/PN | FM = AC\u2212PC",
+    desc: "Les 3 f\xF3rmules clau de l'an\xE0lisi economicofinancera"
+  }), /*#__PURE__*/React.createElement(ClauBox, null, /*#__PURE__*/React.createElement("p", null, "- Domina ", /*#__PURE__*/React.createElement("strong", null, "tots els r\xE0tios"), " amb valors ideals (sup\xF2sits pr\xE0ctics!)."), /*#__PURE__*/React.createElement("p", null, "- Sap ", /*#__PURE__*/React.createElement("strong", null, "descompondre la RE"), " (marge \xD7 rotaci\xF3) i explicar el ", /*#__PURE__*/React.createElement("strong", null, "palanquejament"), "."), /*#__PURE__*/React.createElement("p", null, "- Calcula el ", /*#__PURE__*/React.createElement("strong", null, "PMM financer"), " i interpreta un PMM negatiu."), /*#__PURE__*/React.createElement("p", null, "- Elabora un ", /*#__PURE__*/React.createElement("strong", null, "informe de diagn\xF2stic"), " integrat."))));
+  const Tema71 = () => {
+    const [vista, setVista] = useState('complet');
+    return /*#__PURE__*/React.createElement("div", {
+      className: "space-y-6"
+    }, /*#__PURE__*/React.createElement(SectionTitle, {
+      icon: "\uD83D\uDCCA",
+      title: "Tema 71",
+      subtitle: t('tema71.title')
+    }), /*#__PURE__*/React.createElement(Tabs, {
+      tabs: [{
+        id: 'complet',
+        label: '📝 ' + t('tab.complet')
+      }, {
+        id: 'resum',
+        label: '📋 ' + t('tab.resum')
+      }],
+      active: vista,
+      onChange: setVista
+    }), vista === 'complet' && /*#__PURE__*/React.createElement(Tema71Complet, null), vista === 'resum' && /*#__PURE__*/React.createElement(Tema71Resum, null));
+  };
+
+  // ════════════════════════════════════════════════════════════════
+  // NAVIGATION AND RENDER
+  // ════════════════════════════════════════════════════════════════
+  const headerSections = [{
+    id: 'inicio',
+    label: t('sec.inicio'),
+    emoji: '🏠'
+  }, {
+    id: 'tema67',
+    label: 'T67',
+    emoji: '📒'
+  }, {
+    id: 'tema68',
+    label: 'T68',
+    emoji: '📝'
+  }, {
+    id: 'tema69',
+    label: 'T69',
+    emoji: '🔄'
+  }, {
+    id: 'tema70',
+    label: 'T70',
+    emoji: '📖'
+  }, {
+    id: 'tema71',
+    label: 'T71',
+    emoji: '📊'
+  }];
+  return /*#__PURE__*/React.createElement("div", {
+    className: "min-h-screen"
+  }, /*#__PURE__*/React.createElement(PdeHeader, {
+    idioma: idioma,
+    setIdioma: setIdioma,
+    currentApp: "oposicions-bloc-h",
+    sections: headerSections,
+    currentSection: section,
+    setSection: setSection
+  }), /*#__PURE__*/React.createElement("main", {
+    className: "max-w-7xl mx-auto px-4 py-8"
+  }, section === 'inicio' && /*#__PURE__*/React.createElement(Inicio, null), section === 'tema67' && /*#__PURE__*/React.createElement(Tema67, null), section === 'tema68' && /*#__PURE__*/React.createElement(Tema68, null), section === 'tema69' && /*#__PURE__*/React.createElement(Tema69, null), section === 'tema70' && /*#__PURE__*/React.createElement(Tema70, null), section === 'tema71' && /*#__PURE__*/React.createElement(Tema71, null)), /*#__PURE__*/React.createElement(PdePrevNext, {
+    sections: headerSections,
+    currentSection: section,
+    setSection: setSection,
+    idioma: idioma
+  }), /*#__PURE__*/React.createElement(PdeFooter, {
+    appEmoji: "\uD83D\uDCD2",
+    appName: t('footer.appname'),
+    idioma: idioma
+  }), /*#__PURE__*/React.createElement(PdeScrollToTop, null));
+}
+ReactDOM.render(/*#__PURE__*/React.createElement(BlocHApp, null), document.getElementById('root'));</script>
+</body>
+</html>

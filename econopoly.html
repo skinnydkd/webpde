@@ -2,7 +2,7 @@
 <html lang="ca">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oligopoly - Monopoly Econòmic | PDE</title>
     <meta name="description" content="Joc de taula tipus Monopoly amb economia realista: subhastes, cicles econòmics, R+D i impostos progressius!">
     <meta property="og:title" content="Oligopoly - Monopoly Econòmic | PDE">
@@ -11,6 +11,9 @@
     <meta property="og:url" content="https://profedeeconomia.es/econopoly">
     <meta property="og:locale" content="ca_ES">
     <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Oligopoly - Monopoly Econòmic | PDE">
+    <meta name="twitter:description" content="Joc de taula tipus Monopoly amb economia realista: subhastes, cicles econòmics i R+D!">
     <link rel="canonical" href="https://profedeeconomia.es/econopoly">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
     <!-- React + Babel + Tailwind -->
@@ -74,13 +77,13 @@ var ECONOPOLY_TRANSLATIONS = {
     'close':              { val: 'Tancar', es: 'Cerrar', en: 'Close' },
     'sell':               { val: 'Vendre', es: 'Vender', en: 'Sell' },
     'prev':               { val: 'Anterior', es: 'Anterior', en: 'Previous' },
-    'next':               { val: 'Seguent', es: 'Siguiente', en: 'Next' },
+    'next':               { val: 'Següent', es: 'Siguiente', en: 'Next' },
     'play':               { val: 'Jugar!', es: '¡Jugar!', en: 'Play!' },
     'skip_tutorial':      { val: 'Saltar tutorial', es: 'Saltar tutorial', en: 'Skip tutorial' },
     'expansion':          { val: "L'economia creix! Lloguers +30%, valors de propietats +20%", es: '¡La economía crece! Alquileres +30%, valores de propiedades +20%', en: 'The economy grows! Rents +30%, property values +20%' },
     'recession':          { val: "L'economia es contrau! Lloguers -30%, valors de propietats -20%", es: '¡La economía se contrae! Alquileres -30%, valores de propiedades -20%', en: 'The economy contracts! Rents -30%, property values -20%' },
     'game_over':          { val: 'Partida Acabada!', es: '¡Partida Acabada!', en: 'Game Over!' },
-    'what_learned':       { val: 'Que hem apres?', es: '¿Qué hemos aprendido?', en: 'What did we learn?' }
+    'what_learned':       { val: 'Què hem après?', es: '¿Qué hemos aprendido?', en: 'What did we learn?' }
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -100,11 +103,11 @@ var PLAYER_COLORS = [
 // ═══════════════════════════════════════════════════════════════
 var SECTORS = {
     agricultura: { name: 'Agricultura', emoji: '🌾', color: '#4ade80', lightBg: 'bg-green-100', textColor: 'text-green-700' },
-    industria:   { name: 'Industria', emoji: '🏭', color: '#94a3b8', lightBg: 'bg-gray-200', textColor: 'text-gray-700' },
+    industria:   { name: 'Indústria', emoji: '🏭', color: '#94a3b8', lightBg: 'bg-gray-200', textColor: 'text-gray-700' },
     tech:        { name: 'Tecnologia', emoji: '💻', color: '#818cf8', lightBg: 'bg-indigo-100', textColor: 'text-indigo-700' },
     serveis:     { name: 'Serveis', emoji: '🏨', color: '#f472b6', lightBg: 'bg-pink-100', textColor: 'text-pink-700' },
     energia:     { name: 'Energia', emoji: '⚡', color: '#facc15', lightBg: 'bg-yellow-100', textColor: 'text-yellow-700' },
-    construccio: { name: 'Construccio', emoji: '🏗️', color: '#fb923c', lightBg: 'bg-orange-100', textColor: 'text-orange-700' },
+    construccio: { name: 'Construcció', emoji: '🏗️', color: '#fb923c', lightBg: 'bg-orange-100', textColor: 'text-orange-700' },
     turisme:     { name: 'Turisme', emoji: '✈️', color: '#38bdf8', lightBg: 'bg-sky-100', textColor: 'text-sky-700' },
     financer:    { name: 'Financer', emoji: '🏦', color: '#a78bfa', lightBg: 'bg-violet-100', textColor: 'text-violet-700' }
 };
@@ -117,7 +120,7 @@ var BOARD = [
     { type: 'start', name: 'SORTIDA', emoji: '🏁', shortName: 'SORTIDA' },
     { type: 'property', name: 'Cooperativa Agricola', sector: 'agricultura', price: 60, rent: 6, shortName: 'Cooperativa' },
     { type: 'tax', name: 'IMPOSTOS', emoji: '💰', shortName: 'IMPOSTOS' },
-    { type: 'property', name: 'Fabrica Textil', sector: 'industria', price: 100, rent: 10, shortName: 'Fabrica' },
+    { type: 'property', name: 'Fàbrica Tèxtil', sector: 'industria', price: 100, rent: 10, shortName: 'Fàbrica' },
     { type: 'news', name: 'NOTICIA', emoji: '📰', shortName: 'NOTICIA' },
     { type: 'property', name: 'Startup Digital', sector: 'tech', price: 120, rent: 12, shortName: 'Startup' },
     { type: 'central', name: 'BANC CENTRAL', emoji: '🏛️', shortName: 'BCE' },
@@ -135,7 +138,7 @@ var BOARD = [
     { type: 'central', name: 'BANC CENTRAL', emoji: '🏛️', shortName: 'BCE' },
     { type: 'property', name: 'Resort Turistic', sector: 'turisme', price: 220, rent: 22, shortName: 'Resort' },
     { type: 'news', name: 'NOTICIA', emoji: '📰', shortName: 'NOTICIA' },
-    { type: 'property', name: 'Promotora Immobiliaria', sector: 'construccio', price: 240, rent: 24, shortName: 'Promotora' },
+    { type: 'property', name: 'Promotora Immobiliària', sector: 'construccio', price: 240, rent: 24, shortName: 'Promotora' },
     { type: 'rd', name: 'R+D', emoji: '🔬', shortName: 'R+D' },
     { type: 'property', name: 'Constructora Nacional', sector: 'construccio', price: 260, rent: 26, shortName: 'Constructora' },
     { type: 'central', name: 'BANC CENTRAL', emoji: '🏛️', shortName: 'BCE' },
@@ -156,24 +159,24 @@ var BOARD_SIZE = BOARD.length;
 // NEWS CARDS — 20 economic event cards
 // ═══════════════════════════════════════════════════════════════
 var NEWS_CARDS = [
-    { text: '📈 Boom tecnologic! Les empreses tech augmenten el seu valor un 20%.', effect: { type: 'sector_boost', sector: 'tech', modifier: 1.2 } },
+    { text: '📈 Boom tecnològic! Les empreses tech augmenten el seu valor un 20%.', effect: { type: 'sector_boost', sector: 'tech', modifier: 1.2 } },
     { text: '🛢️ Crisi energetica! El preu del petroli es duplica. Lloguers d\'energia +50%.', effect: { type: 'sector_boost', sector: 'energia', modifier: 1.5 } },
-    { text: '🏠 Bombolla immobiliaria esclata! Propietats de construccio perden 30%.', effect: { type: 'sector_bust', sector: 'construccio', modifier: 0.7 } },
+    { text: '🏠 Bombolla immobiliària esclata! Propietats de construccio perden 30%.', effect: { type: 'sector_bust', sector: 'construccio', modifier: 0.7 } },
     { text: '💶 El BCE baixa els tipus d\'interes al 1%. El credit es barat!', effect: { type: 'interest_rate', rate: 1 } },
     { text: '🎁 Subvencio agricola: cobres 50€ si tens propietats agricoles.', effect: { type: 'subsidy', sector: 'agricultura', amount: 50 } },
     { text: '🦠 Pandemia global! El turisme cau un 40%. Lloguers de turisme -40%.', effect: { type: 'sector_bust', sector: 'turisme', modifier: 0.6 } },
     { text: '🌍 Boom turistic! Europa bat records de visitants. Turisme +30%.', effect: { type: 'sector_boost', sector: 'turisme', modifier: 1.3 } },
     { text: '⚔️ Guerra comercial! Tots els jugadors paguen 30€ d\'aranzels.', effect: { type: 'all_pay', amount: 30 } },
-    { text: '💰 Repartiment del fons public! Cada jugador rep 75€ del tresor.', effect: { type: 'all_receive', amount: 75 } },
+    { text: '💰 Repartiment del fons públic! Cada jugador rep 75€ del tresor.', effect: { type: 'all_receive', amount: 75 } },
     { text: '🏦 Crisi bancaria! El sector financer perd 25% del seu valor.', effect: { type: 'sector_bust', sector: 'financer', modifier: 0.75 } },
     { text: '🌱 Subvencio verda! Cobres 40€ si tens propietats d\'energia.', effect: { type: 'subsidy', sector: 'energia', amount: 40 } },
-    { text: '📉 Recessio industrial! Les fabriques tanquen. Industria -30%.', effect: { type: 'sector_bust', sector: 'industria', modifier: 0.7 } },
+    { text: '📉 Recessió industrial! Les fàbriques tanquen. Indústria -30%.', effect: { type: 'sector_bust', sector: 'industria', modifier: 0.7 } },
     { text: '🎉 Vacances fiscals! El proper impost no es cobra.', effect: { type: 'tax_holiday' } },
-    { text: '📊 Inflacio descontrolada! Tots els preus pugen 15%.', effect: { type: 'inflation', modifier: 1.15 } },
+    { text: '📊 Inflació descontrolada! Tots els preus pugen 15%.', effect: { type: 'inflation', modifier: 1.15 } },
     { text: '🏗️ Pla d\'infraestructures! Construccio +25%.', effect: { type: 'sector_boost', sector: 'construccio', modifier: 1.25 } },
     { text: '💸 Herencia inesperada! El jugador actual rep 100€.', effect: { type: 'current_receive', amount: 100 } },
     { text: '⚖️ Nova regulacio! Multa de 50€ al jugador amb mes patrimoni.', effect: { type: 'richest_pay', amount: 50 } },
-    { text: '🔬 Avanc tecnologic! La propera millora R+D es gratis.', effect: { type: 'free_rd' } },
+    { text: '🔬 Avanç tecnològic! La propera millora R+D és gratis.', effect: { type: 'free_rd' } },
     { text: '🏥 Reforma sanitaria! Serveis guanyen 20% de valor.', effect: { type: 'sector_boost', sector: 'serveis', modifier: 1.2 } },
     { text: '🌾 Collita extraordinaria! Agricultura +35%.', effect: { type: 'sector_boost', sector: 'agricultura', modifier: 1.35 } }
 ];
@@ -182,21 +185,21 @@ var NEWS_CARDS = [
 // EDUCATIONAL ECONOMIC FACTS — Shown between turns and at events
 // ═══════════════════════════════════════════════════════════════
 var ECONOMIC_FACTS = [
-    { title: 'Cicles Economics', text: 'L\'economia alterna entre fases d\'expansio (creixement del PIB, baixa desocupacio) i recessio (caiguda del PIB, alta desocupacio). Cada cicle dura entre 5-10 anys de mitjana.' },
+    { title: 'Cicles Econòmics', text: 'L\'economia alterna entre fases d\'expansio (creixement del PIB, baixa desocupació) i recessió (caiguda del PIB, alta desocupació). Cada cicle dura entre 5-10 anys de mitjana.' },
     { title: 'Impostos Progressius', text: 'Els impostos progressius graven mes als qui mes guanyen. Al joc, com a la vida real, es paga un percentatge mes alt com mes patrimoni es te.' },
     { title: 'R+D i Productivitat', text: 'La inversio en Recerca i Desenvolupament (R+D) es clau per augmentar la productivitat. Les empreses que invertixen en R+D obtenen majors beneficis a llarg termini.' },
     { title: 'Subhastes i Valor', text: 'En una subhasta, el preu final reflecteix el valor que els compradors donen al be. Si ningu puja, el be no te prou demanda al preu actual.' },
-    { title: 'Tipus d\'Interes', text: 'El Banc Central fixa els tipus d\'interes per controlar la inflacio. Tipus baixos estimulen l\'economia (mes credit), tipus alts la refreden.' },
+    { title: 'Tipus d\'Interes', text: 'El Banc Central fixa els tipus d\'interes per controlar la inflació. Tipus baixos estimulen l\'economia (més crèdit), tipus alts la refreden.' },
     { title: 'Diversificacio', text: 'No poseu tots els ous al mateix cistell! Diversificar inversions entre sectors redueix el risc. Si un sector cau, els altres poden compensar.' },
-    { title: 'Fons Public', text: 'Els impostos recaptats van al fons public, que es redistribueix quan passes per la casella de SORTIDA. Aixo simula els serveis publics finançats amb impostos.' },
-    { title: 'Inflacio', text: 'La inflacio es l\'augment generalitzat dels preus. Redueix el poder adquisitiu dels diners. Al joc, les noticies d\'inflacio augmenten tots els lloguers.' },
+    { title: 'Fons Public', text: 'Els impostos recaptats van al fons públic, que es redistribueix quan passes per la casella de SORTIDA. Aixo simula els serveis publics finançats amb impostos.' },
+    { title: 'Inflació', text: 'La inflacio es l\'augment generalitzat dels preus. Redueix el poder adquisitiu dels diners. Al joc, les noticies d\'inflacio augmenten tots els lloguers.' },
     { title: 'Monopoli Natural', text: 'Si un jugador posseeix les dues propietats d\'un sector, te un "monopoli sectorial", similar a com algunes empreses dominen un mercat.' },
-    { title: 'Recessio vs Depressio', text: 'Una recessio es una caiguda temporal del PIB (2 trimestres consecutius). Si dura molt i es profunda, es converteix en una depressio economica.' },
+    { title: 'Recessió vs Depressió', text: 'Una recessió és una caiguda temporal del PIB (2 trimestres consecutius). Si dura molt i es profunda, es converteix en una depressió econòmica.' },
     { title: 'Externalitats', text: 'Les decisions d\'un jugador afecten els altres. Si algú inverteix en R+D i fa pujar el valor del sector, beneficia (o perjudica) a altres propietaris del sector.' },
     { title: 'Cost d\'Oportunitat', text: 'Cada euro gastat en comprar una propietat es un euro que no pots usar per millorar R+D o reservar per impostos. Tota decisio economica te un cost d\'oportunitat.' },
     { title: 'Liquiditat', text: 'Tenir diners en efectiu dona flexibilitat (liquiditat). Pero tenir massa efectiu sense invertir significa perdre rendibilitat potencial.' },
-    { title: 'Valor Afegit', text: 'Les millores R+D representen el valor afegit que una empresa aporta als seus productes. Mes innovacio = mes valor = mes beneficis.' },
-    { title: 'Mercat Lliure', text: 'La casella de Mercat Lliure representa la zona segura de l\'economia on no hi ha intervencio estatal. Es un concepte central del liberalisme economic.' }
+    { title: 'Valor Afegit', text: 'Les millores R+D representen el valor afegit que una empresa aporta als seus productes. Més innovació = més valor = més beneficis.' },
+    { title: 'Mercat Lliure', text: 'La casella de Mercat Lliure representa la zona segura de l\'economia on no hi ha intervenció estatal. Es un concepte central del liberalisme economic.' }
 ];
 
 // ═══════════════════════════════════════════════════════════════
@@ -449,7 +452,7 @@ function PropertyDeed({ propertyIndex, property, cycle, sectorModifiers, showUpg
 
                 {/* Rent table */}
                 <div className="bg-gray-50 rounded-xl p-3">
-                    <div className="text-xs text-gray-400 font-bold mb-2">TAULA DE LLOGUERS</div>
+                    <div className="text-xs text-gray-500 font-bold mb-2">TAULA DE LLOGUERS</div>
                     {RD_LEVELS.map(function(rdInfo, i) {
                         var isActive = i === rdLevel;
                         return (
@@ -473,7 +476,7 @@ function PropertyDeed({ propertyIndex, property, cycle, sectorModifiers, showUpg
                         className={'w-full py-2 rounded-xl font-bold text-sm btn-eco ' +
                             (canUpgrade
                                 ? 'bg-blue-500 text-white hover:bg-blue-600'
-                                : 'bg-gray-200 text-gray-400 cursor-not-allowed')}>
+                                : 'bg-gray-200 text-gray-500 cursor-not-allowed')}>
                         🔬 Millorar a Niv. {rdLevel + 1} — {isFreeRd ? 'GRATIS!' : upgradeCost + '€'}
                     </button>
                 )}
@@ -802,7 +805,7 @@ function OligopolyBoard({ gameState, playerOrder, players }) {
 
                     {/* Interest rate */}
                     <div className="text-xs text-yellow-300 mt-1">
-                        Tipus interes: {gameState.interestRate || 5}%
+                        Tipus interès: {gameState.interestRate || 5}%
                     </div>
 
                     {/* Public fund */}
@@ -875,11 +878,11 @@ function PropertyCard({ propertyIndex, properties, cycle, sectorModifiers, playe
 
                 <div className="grid grid-cols-2 gap-3 mt-3 text-sm">
                     <div className="bg-gray-50 rounded-xl p-2">
-                        <div className="text-gray-400 text-xs">Preu</div>
+                        <div className="text-gray-500 text-xs">Preu</div>
                         <div className="font-black text-lg">{sq.price}€</div>
                     </div>
                     <div className="bg-gray-50 rounded-xl p-2">
-                        <div className="text-gray-400 text-xs">Lloguer</div>
+                        <div className="text-gray-500 text-xs">Lloguer</div>
                         <div className="font-black text-lg text-green-600">{currentRent}€</div>
                     </div>
                 </div>
@@ -893,7 +896,7 @@ function PropertyCard({ propertyIndex, properties, cycle, sectorModifiers, playe
                                  className={'w-5 h-5 rounded-full text-[10px] flex items-center justify-center font-bold ' +
                                      (lvl <= rdLevel && rdLevel > 0
                                          ? 'bg-blue-500 text-white'
-                                         : 'bg-gray-200 text-gray-400')}>
+                                         : 'bg-gray-200 text-gray-500')}>
                                 {lvl}
                             </div>
                         );
@@ -901,7 +904,7 @@ function PropertyCard({ propertyIndex, properties, cycle, sectorModifiers, playe
                 </div>
 
                 {/* Value */}
-                <div className="mt-2 text-xs text-gray-400">
+                <div className="mt-2 text-xs text-gray-500">
                     Valor actual: <span className="font-bold text-gray-600">{currentValue}€</span>
                 </div>
 
@@ -939,7 +942,7 @@ function AuctionOverlay({ auction, properties, playerOrder, players, cycle, sect
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 flex items-center justify-center p-4">
             <div className="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl" style={{ animation: 'bounce-in 0.5s ease-out' }}>
                 <div className="text-center">
-                    <div className="text-sm font-bold text-gray-400 mb-1">🔨 SUBHASTA</div>
+                    <div className="text-sm font-bold text-gray-500 mb-1">🔨 SUBHASTA</div>
                     <div className="h-3 rounded-full mb-3" style={{ backgroundColor: sector.color }}></div>
                     <div className="text-4xl mb-2">{sector.emoji}</div>
                     <h2 className="text-2xl font-black">{sq.name}</h2>
@@ -957,7 +960,7 @@ function AuctionOverlay({ auction, properties, playerOrder, players, cycle, sect
 
                     {/* Current high bid */}
                     <div className="mt-4 bg-gray-50 rounded-2xl p-4">
-                        <div className="text-sm text-gray-400">Oferta mes alta</div>
+                        <div className="text-sm text-gray-500">Oferta mes alta</div>
                         <div className="text-4xl font-black text-emerald-600 mt-1">
                             {auction.highBid || 0}€
                         </div>
@@ -968,7 +971,7 @@ function AuctionOverlay({ auction, properties, playerOrder, players, cycle, sect
                             </div>
                         )}
                         {!highBidder && (
-                            <div className="text-gray-400 text-sm mt-1">Cap oferta encara...</div>
+                            <div className="text-gray-500 text-sm mt-1">Cap oferta encara...</div>
                         )}
                     </div>
 
@@ -1145,7 +1148,7 @@ function EndGameScreen({ playerOrder, players, money, properties, cycle, sectorM
 
                 {/* Full rankings */}
                 <div className="bg-white/10 backdrop-blur rounded-3xl p-5">
-                    <h3 className="text-white font-black text-xl text-center mb-4">📊 Classificacio Final</h3>
+                    <h3 className="text-white font-black text-xl text-center mb-4">📊 Classificació Final</h3>
                     <div className="space-y-2">
                         {rankings.map(function(r, i) {
                             var color = PLAYER_COLORS[r.colorIdx];
@@ -1202,7 +1205,7 @@ function EndGameScreen({ playerOrder, players, money, properties, cycle, sectorM
 
                 {/* Investment analysis per player */}
                 <div className="bg-white/10 backdrop-blur rounded-3xl p-5">
-                    <h3 className="text-white font-black text-lg text-center mb-3">📈 Analisi d'Inversions</h3>
+                    <h3 className="text-white font-black text-lg text-center mb-3">📈 Anàlisi d'Inversions</h3>
                     {rankings.map(function(r) {
                         var owned = getPlayerProperties(r.id, properties);
                         var bestInvestment = null;
@@ -1235,7 +1238,7 @@ function EndGameScreen({ playerOrder, players, money, properties, cycle, sectorM
 
                 {/* Educational takeaways */}
                 <div className="bg-indigo-500/20 rounded-3xl p-5">
-                    <h3 className="text-white font-black text-lg text-center mb-3">💡 Llicons Economiques</h3>
+                    <h3 className="text-white font-black text-lg text-center mb-3">💡 Lliçons Econòmiques</h3>
                     <div className="space-y-3">
                         <div className="flex gap-2 text-white/70 text-sm">
                             <span className="text-lg">📊</span>
@@ -1251,7 +1254,7 @@ function EndGameScreen({ playerOrder, players, money, properties, cycle, sectorM
                         </div>
                         <div className="flex gap-2 text-white/70 text-sm">
                             <span className="text-lg">📈</span>
-                            <p>Els <strong className="text-white">cicles economics</strong> (expansio i recessio) son inevitables. L'estrategia intel·ligent adapta les decisions al context.</p>
+                            <p>Els <strong className="text-white">cicles econòmics</strong> (expansio i recessio) son inevitables. L'estratègia intel·ligent adapta les decisions al context.</p>
                         </div>
                     </div>
                 </div>
@@ -1260,7 +1263,7 @@ function EndGameScreen({ playerOrder, players, money, properties, cycle, sectorM
                     <a href="./" className="inline-block px-8 py-3 bg-white/10 text-white rounded-2xl font-bold hover:bg-white/20">
                         🏠 {t('back_pde')}
                     </a>
-                    <p className="text-white/20 text-xs">Oligopoly — Plataforma Didactica Economica</p>
+                    <p className="text-white/20 text-xs">Oligopoly — Plataforma Didàctica Econòmica</p>
                 </div>
             </div>
         </div>
@@ -1272,7 +1275,7 @@ function EndGameScreen({ playerOrder, players, money, properties, cycle, sectorM
 // HOST VIEW — Main game controller
 // ═══════════════════════════════════════════════════════════════
 function OligopolyHost({ roomCode, playerId, players, gameState, idioma }) {
-    var t = function(key) { return ECONOPOLY_TRANSLATIONS[key]?.[idioma] || ECONOPOLY_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(ECONOPOLY_TRANSLATIONS, idioma);
     const [rolling, setRolling] = useState(false);
     const [showNews, setShowNews] = useState(false);
     const [actionLog, setActionLog] = useState([]);
@@ -1561,7 +1564,7 @@ function OligopolyHost({ roomCode, playerId, players, gameState, idioma }) {
                 var cardIdx = Math.floor(Math.random() * NEWS_CARDS.length);
                 updates['gameState/currentNews'] = cardIdx;
                 updates['gameState/phase'] = 'news';
-                addLog('📰 ' + currentPlayerName + ' rep una noticia economica!');
+                addLog('📰 ' + currentPlayerName + ' rep una notícia econòmica!');
                 PdeGameSounds.play('pop');
                 break;
             }
@@ -1593,7 +1596,7 @@ function OligopolyHost({ roomCode, playerId, players, gameState, idioma }) {
 
             case 'start': {
                 updates['gameState/phase'] = 'action';
-                addLog('🏁 ' + currentPlayerName + ' esta a SORTIDA');
+                addLog('🏁 ' + currentPlayerName + ' està a SORTIDA');
                 break;
             }
 
@@ -1714,7 +1717,7 @@ function OligopolyHost({ roomCode, playerId, players, gameState, idioma }) {
                 var newCycle = cycle === 'expansion' ? 'recession' : 'expansion';
                 updates['gameState/cycle'] = newCycle;
                 updates['gameState/cycleRound'] = 5;
-                addLog(newCycle === 'expansion' ? '📈 EXPANSIO ECONOMICA!' : '📉 RECESSIO ECONOMICA!');
+                addLog(newCycle === 'expansion' ? '📈 EXPANSIÓ ECONÒMICA!' : '📉 RECESSIÓ ECONÒMICA!');
                 PdeGameSounds.play('ding');
             } else {
                 updates['gameState/cycleRound'] = cycleRound;
@@ -1849,7 +1852,7 @@ function OligopolyHost({ roomCode, playerId, players, gameState, idioma }) {
 
                             {phase === 'news' && (
                                 <div className="text-yellow-300 font-bold animate-pulse text-sm text-center">
-                                    📰 Llegint noticia...
+                                    📰 Llegint notícia...
                                 </div>
                             )}
                         </div>
@@ -1924,7 +1927,7 @@ function OligopolyHost({ roomCode, playerId, players, gameState, idioma }) {
 // PLAYER VIEW — Mobile interface for each player
 // ═══════════════════════════════════════════════════════════════
 function OligopolyPlayer({ roomCode, playerId, players, gameState, idioma }) {
-    var t = function(key) { return ECONOPOLY_TRANSLATIONS[key]?.[idioma] || ECONOPOLY_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(ECONOPOLY_TRANSLATIONS, idioma);
     const [bidAmount, setBidAmount] = useState('');
     const [lastBid, setLastBid] = useState(0);
 
@@ -2048,7 +2051,7 @@ function OligopolyPlayer({ roomCode, playerId, players, gameState, idioma }) {
                 {/* Cycle indicator */}
                 <div className={'rounded-xl px-3 py-2 text-center text-sm font-bold ' +
                     (cycle === 'expansion' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300')}>
-                    {cycle === 'expansion' ? '📈 Expansio economica' : '📉 Recessio economica'}
+                    {cycle === 'expansion' ? '📈 Expansió econòmica' : '📉 Recessió econòmica'}
                     <span className="text-white/30 ml-2">Interes: {gs.interestRate || 5}%</span>
                 </div>
 
@@ -2141,7 +2144,7 @@ function OligopolyPlayer({ roomCode, playerId, players, gameState, idioma }) {
                                                     className={'px-3 py-1.5 rounded-lg text-xs font-bold btn-eco ' +
                                                         (canUpgrade
                                                             ? 'bg-blue-500 text-white'
-                                                            : 'bg-gray-600 text-gray-400 cursor-not-allowed')}>
+                                                            : 'bg-gray-600 text-gray-500 cursor-not-allowed')}>
                                                 {gs.freeRd ? 'GRATIS!' : cost + '€'}
                                             </button>
                                         ) : (
@@ -2270,7 +2273,7 @@ function OligopolyPlayer({ roomCode, playerId, players, gameState, idioma }) {
                         <span>Fons public: {gs.publicFund || 0}€</span>
                     </div>
                     <div className="mt-1 flex justify-center gap-3 text-[10px] text-white/20">
-                        <span>Tipus interes: {gs.interestRate || 5}%</span>
+                        <span>Tipus interès: {gs.interestRate || 5}%</span>
                         <span>Canvi cicle: {gs.cycleRound || 5} rondes</span>
                     </div>
                 </div>
@@ -2398,7 +2401,7 @@ function StrategyTip({ myProperties, myMoney, cycle, properties, playerId, round
     });
 
     if (totalProps === 0) {
-        tip = 'Encara no tens propietats. Estalvia per la propera subhasta i ofereix amb estrategia!';
+        tip = 'Encara no tens propietats. Estalvia per la propera subhasta i ofereix amb estratègia!';
         emoji = '🎯';
     } else if (myMoney < 50 && totalProps > 0) {
         tip = 'Alerta! Tens poca liquiditat. Considera vendre alguna propietat per evitar la bancarrota si caus en un lloguer alt.';
@@ -2410,19 +2413,19 @@ function StrategyTip({ myProperties, myMoney, cycle, properties, playerId, round
         tip = 'Tens un monopoli! Inverteix en R+D per maximitzar els lloguers. Amb R+D 3 + monopoli, els lloguers es multipliquen x6!';
         emoji = '🔬';
     } else if (cycle === 'recession' && myMoney > 200) {
-        tip = 'Estem en recessio: bon moment per comprar propietats barates! Els valors son baixos pero pujaran quan arribi l\'expansio.';
+        tip = 'Estem en recessió: bon moment per comprar propietats barates! Els valors són baixos però pujaran quan arribi l\'expansio.';
         emoji = '📉';
     } else if (cycle === 'expansion' && roundsLeft < 5) {
-        tip = 'Ultimes rondes en expansio! Maximitza el rendiment de les teues propietats amb R+D.';
+        tip = 'Últimes rondes en expansió! Maximitza el rendiment de les teues propietats amb R+D.';
         emoji = '📈';
     } else if (roundsLeft <= 3) {
-        tip = 'Ultimes rondes! El patrimoni net final determina el guanyador. Considera si val la pena invertir mes o conservar efectiu.';
+        tip = 'Últimes rondes! El patrimoni net final determina el guanyador. Considera si val la pena invertir més o conservar efectiu.';
         emoji = '🏁';
     } else if (totalRd === 0 && totalProps >= 2) {
-        tip = 'No has invertit en R+D! La innovacio multiplica els teus lloguers. Inverteix en la propietat que mes visiten.';
+        tip = 'No has invertit en R+D! La innovació multiplica els teus lloguers. Inverteix en la propietat que més visiten.';
         emoji = '🔬';
     } else {
-        tip = 'Bona posicio! Equilibra compres noves amb millores R+D i manten prou efectiu per a impostos inesperats.';
+        tip = 'Bona posició! Equilibra compres noves amb millores R+D i manten prou efectiu per a impostos inesperats.';
         emoji = '✅';
     }
 
@@ -2431,7 +2434,7 @@ function StrategyTip({ myProperties, myMoney, cycle, properties, playerId, round
             <div className="flex gap-2">
                 <span className="text-lg flex-shrink-0">{emoji}</span>
                 <div>
-                    <div className="text-indigo-300 font-bold text-[10px] mb-0.5">CONSELL ESTRATEGIC</div>
+                    <div className="text-indigo-300 font-bold text-[10px] mb-0.5">CONSELL ESTRATÈGIC</div>
                     <p className="text-white/50 text-xs leading-relaxed">{tip}</p>
                 </div>
             </div>
@@ -2444,16 +2447,18 @@ function StrategyTip({ myProperties, myMoney, cycle, properties, playerId, round
 // RULES SCREEN — Game tutorial before lobby
 // ═══════════════════════════════════════════════════════════════
 function RulesScreen({ onContinue }) {
+    const [idioma] = usePdeIdioma();
+    var t = createTranslator(ECONOPOLY_TRANSLATIONS, idioma);
     const [currentPage, setCurrentPage] = useState(0);
 
     var pages = [
         {
-            title: 'Que es Oligopoly?',
+            title: 'Què és Oligopoly?',
             emoji: '🏛️',
             content: [
-                'Oligopoly es un joc de taula estil Monopoly amb mecaniques economiques realistes.',
-                'Compra propietats, inverteix en R+D, gestiona cicles economics i paga impostos progressius.',
-                'El professor controla el taulell des de la pantalla principal. Els alumnes juguen des del mobil.'
+                'Oligopoly és un joc de taula estil Monopoly amb mecàniques econòmiques realistes.',
+                'Compra propietats, inverteix en R+D, gestiona cicles econòmics i paga impostos progressius.',
+                'El professor controla el taulell des de la pantalla principal. Els alumnes juguen des del mòbil.'
             ]
         },
         {
@@ -2461,26 +2466,26 @@ function RulesScreen({ onContinue }) {
             emoji: '🗺️',
             content: [
                 '28 caselles: 16 propietats en 8 sectors, 4 noticies, 3 Banc Central, 2 impostos, R+D, Mercat Lliure i Sortida.',
-                'Les propietats pertanyen a sectors economics: Agricultura, Industria, Tecnologia, Serveis, Energia, Construccio, Turisme i Financer.',
+                'Les propietats pertanyen a sectors econòmics: Agricultura, Indústria, Tecnologia, Serveis, Energia, Construcció, Turisme i Financer.',
                 'Posseir les dues propietats d\'un sector et dona un MONOPOLI: els lloguers es dupliquen!'
             ]
         },
         {
-            title: 'Mecaniques de Joc',
+            title: 'Mecàniques de Joc',
             emoji: '🎲',
             content: [
                 'Tires 2 daus i mous la teua fitxa. Si caus en una propietat sense propietari, s\'obre una SUBHASTA.',
                 'Tots els jugadors poden pujar a la subhasta des del seu mobil durant 30 segons.',
-                'Si caus en propietat aliena, pagues lloguer. El lloguer depen del nivell R+D, el cicle economic i les noticies.'
+                'Si caus en propietat aliena, pagues lloguer. El lloguer depèn del nivell R+D, el cicle econòmic i les noticies.'
             ]
         },
         {
-            title: 'R+D i Innovacio',
+            title: 'R+D i Innovació',
             emoji: '🔬',
             content: [
                 'Pots millorar les teues propietats amb R+D: 3 nivells que multipliquen el lloguer (x1.5, x2, x3).',
-                'El cost de R+D depen del valor de la propietat. La casella R+D dona un 50% de descompte!',
-                'Les noticies economiques a vegades regalen millores R+D gratuites.'
+                'El cost de R+D depèn del valor de la propietat. La casella R+D dona un 50% de descompte!',
+                'Les notícies econòmiques a vegades regalen millores R+D gratuïtes.'
             ]
         },
         {
@@ -2488,16 +2493,16 @@ function RulesScreen({ onContinue }) {
             emoji: '📈',
             content: [
                 'Cada 5 rondes, l\'economia canvia: EXPANSIO (+30% lloguers, +20% valors) o RECESSIO (-30% lloguers, -20% valors).',
-                'Els impostos son progressius: 5% (patrimoni < 500€), 10% (500-1000€), 15% (> 1000€).',
-                'Els impostos van al fons public, que es distribueix parcialment als jugadors que passen per SORTIDA.'
+                'Els impostos són progressius: 5% (patrimoni < 500€), 10% (500-1000€), 15% (> 1000€).',
+                'Els impostos van al fons públic, que es distribueix parcialment als jugadors que passen per SORTIDA.'
             ]
         },
         {
             title: 'Com Guanyar',
             emoji: '🏆',
             content: [
-                'El joc dura 20 rondes. Guanya qui tingui el PATRIMONI NET mes alt (efectiu + valor de propietats).',
-                'Estrategia: diversifica sectors, inverteix en R+D, gestiona la liquiditat i anticipa els cicles.',
+                'El joc dura 20 rondes. Guanya qui tingui el PATRIMONI NET més alt (efectiu + valor de propietats).',
+                'Estratègia: diversifica sectors, inverteix en R+D, gestiona la liquiditat i anticipa els cicles.',
                 'Preparat? Crea o uneix-te a una partida!'
             ]
         }
@@ -2544,18 +2549,18 @@ function RulesScreen({ onContinue }) {
                     {currentPage > 0 && (
                         <button onClick={function() { setCurrentPage(currentPage - 1); }}
                             className="flex-1 py-3 rounded-2xl bg-white/10 text-white font-bold btn-eco hover:bg-white/20">
-                            ← {ECONOPOLY_TRANSLATIONS['prev']?.[PdeLanguageStore.get()] || 'Anterior'}
+                            ← {t('prev') || 'Anterior'}
                         </button>
                     )}
                     {currentPage < pages.length - 1 ? (
                         <button onClick={function() { setCurrentPage(currentPage + 1); }}
                             className="flex-1 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold btn-eco hover:brightness-110">
-                            {ECONOPOLY_TRANSLATIONS['next']?.[PdeLanguageStore.get()] || 'Seguent'} →
+                            {t('next') || 'Següent'} →
                         </button>
                     ) : (
                         <button onClick={onContinue}
                             className="flex-1 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black text-xl btn-eco hover:brightness-110 shadow-lg">
-                            🎮 {ECONOPOLY_TRANSLATIONS['play']?.[PdeLanguageStore.get()] || 'Jugar!'}
+                            🎮 {t('play') || 'Jugar!'}
                         </button>
                     )}
                 </div>
@@ -2564,12 +2569,12 @@ function RulesScreen({ onContinue }) {
                 {currentPage < pages.length - 1 && (
                     <button onClick={onContinue}
                         className="w-full text-center text-white/30 hover:text-white/60 text-sm">
-                        {ECONOPOLY_TRANSLATIONS['skip_tutorial']?.[PdeLanguageStore.get()] || 'Saltar tutorial'} →
+                        {t('skip_tutorial') || 'Saltar tutorial'} →
                     </button>
                 )}
 
                 <div className="text-center">
-                    <a href="./" className="text-white/20 hover:text-white/40 text-xs">🏠 {ECONOPOLY_TRANSLATIONS['back_pde']?.[PdeLanguageStore.get()] || 'Tornar a PDE'}</a>
+                    <a href="./" className="text-white/20 hover:text-white/40 text-xs">🏠 {t('back_pde') || 'Tornar a PDE'}</a>
                 </div>
             </div>
         </div>
@@ -2588,7 +2593,7 @@ function OligopolyApp() {
     const [players, setPlayers] = useState({});
     const [gameState, setGameState] = useState({});
     var [idioma, setIdioma] = useState(PdeLanguageStore.get());
-    var t = function(key) { return ECONOPOLY_TRANSLATIONS[key]?.[idioma] || ECONOPOLY_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(ECONOPOLY_TRANSLATIONS, idioma);
 
     useEffect(function() { if (PdeFirebase.isConfigured()) PdeFirebase.init(); }, []);
 

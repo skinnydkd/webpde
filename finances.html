@@ -32,6 +32,28 @@
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #10b981; cursor: pointer; border: 2px solid white; }
         input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: #10b981; cursor: pointer; border: 2px solid white; }
     </style>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Course",
+        "name": "Finances Personals - Guia Completa d'Inversió",
+        "description": "Guia interactiva de finances personals i inversió: calculadora d'interès compost, simulador de cartera, test de perfil inversor, Bitcoin, fiscalitat i més.",
+        "url": "https://profedeeconomia.es/finances",
+        "provider": {
+            "@type": "Organization",
+            "name": "PDE - Plataforma Didàctica Econòmica",
+            "url": "https://profedeeconomia.es"
+        },
+        "inLanguage": ["ca", "es", "en"],
+        "isAccessibleForFree": true,
+        "educationalLevel": ["Batxillerat", "Universitat", "Educació d'Adults"],
+        "about": [
+            {"@type": "Thing", "name": "Finances Personals"},
+            {"@type": "Thing", "name": "Inversió"},
+            {"@type": "Thing", "name": "Fiscalitat"}
+        ]
+    }
+    </script>
 </head>
 <body class="bg-gradient-to-br from-amber-50 via-white to-pink-50">
     <div id="root"></div>
@@ -1077,7 +1099,7 @@
                                 { indice: 'Nikkei 225', periodo: '1950-2024 (74 ' + (idioma === 'en' ? 'years' : t('inicio.anys')) + ')', rent: '7.2%', nota: t('inicio.225_majors_empreses_japó'), color: 'pink' },
                             ].map((d, i) => (
                                 <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                                    <div><p className="font-bold text-gray-800">{d.indice}</p><p className="text-xs text-gray-500">{d.periodo}</p><p className="text-xs text-gray-400">{d.nota}</p></div>
+                                    <div><p className="font-bold text-gray-800">{d.indice}</p><p className="text-xs text-gray-500">{d.periodo}</p><p className="text-xs text-gray-500">{d.nota}</p></div>
                                     <p className={`text-lg font-black text-${d.color}-500`}>{d.rent}</p>
                                 </div>
                             ))}
@@ -1093,7 +1115,7 @@
                                 { indice: t('inicio.inflació_eua'), periodo: '1928-2024 (96 ' + (idioma === 'en' ? 'years' : t('inicio.anys')) + ')', rent: '3.0%', nota: t('inicio.superes_açò_perds_poder'), color: 'red' },
                             ].map((d, i) => (
                                 <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                                    <div><p className="font-bold text-gray-800">{d.indice}</p><p className="text-xs text-gray-500">{d.periodo}</p><p className="text-xs text-gray-400">{d.nota}</p></div>
+                                    <div><p className="font-bold text-gray-800">{d.indice}</p><p className="text-xs text-gray-500">{d.periodo}</p><p className="text-xs text-gray-500">{d.nota}</p></div>
                                     <p className={`text-lg font-black text-${d.color}-500`}>{d.rent}</p>
                                 </div>
                             ))}
@@ -1114,7 +1136,7 @@
                         
                         {/* Inflació per monedes */}
                         <h4 className="font-bold text-gray-700 text-sm mb-2">💸 {t('inicio.inflació_moneda_pèrdua_poder')}</h4>
-                        <p className="text-xs text-gray-400 mb-2">{t('inicio.teus_diners_rendeixen_més')}</p>
+                        <p className="text-xs text-gray-500 mb-2">{t('inicio.teus_diners_rendeixen_més')}</p>
                         <div className="space-y-2">
                             {[
                                 { moneda: t('inicio.dòlar_eua'), periodo: '2000-2024 (24 ' + (idioma === 'en' ? 'years' : t('inicio.anys')) + ')', rent: '2.5%', nota: t('inicio.100_2000_55_avui') },
@@ -1127,7 +1149,7 @@
                                 { moneda: t('inicio.lira_turca'), periodo: '2000-2024 (24 ' + (idioma === 'en' ? 'years' : t('inicio.anys')) + ')', rent: '~25%', nota: t('inicio.alta_inflació_recent') },
                             ].map((d, i) => (
                                 <div key={i} className={`flex items-center justify-between p-3 rounded-xl ${parseFloat(d.rent) > 10 ? 'bg-red-50 border border-red-200' : 'bg-gray-50'}`}>
-                                    <div><p className="font-bold text-gray-800">{d.moneda}</p><p className="text-xs text-gray-500">{d.periodo}</p><p className={`text-xs ${parseFloat(d.rent) > 10 ? 'text-red-500' : 'text-gray-400'}`}>{d.nota}</p></div>
+                                    <div><p className="font-bold text-gray-800">{d.moneda}</p><p className="text-xs text-gray-500">{d.periodo}</p><p className={`text-xs ${parseFloat(d.rent) > 10 ? 'text-red-500' : 'text-gray-500'}`}>{d.nota}</p></div>
                                     <p className={`text-lg font-black ${parseFloat(d.rent) > 10 ? 'text-red-500' : parseFloat(d.rent) < 1 ? 'text-emerald-500' : 'text-amber-500'}`}>{d.rent}</p>
                                 </div>
                             ))}
@@ -1276,10 +1298,10 @@
                     <div><h2 className="text-2xl font-black text-gray-800 flex items-center gap-3 mb-2"><Calculator className="text-pink-500" /> {t('calc', 'title')}</h2><p className="text-gray-500">{t('calculadora.modifica_valors_veure_creixen')}</p></div>
                     <div className="grid lg:grid-cols-2 gap-6">
                         <div className="bg-white rounded-xl p-6 border border-gray-200 space-y-6">
-                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">💰 {t('calc', 'capitalInicial')}</span><span className="text-gray-800 font-bold text-lg">{calcCapital.toLocaleString()}€</span></label><input type="range" min="0" max="100000" step="1000" value={calcCapital} onChange={(e) => setCalcCapital(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-400 mt-1"><span>0€</span><span>100.000€</span></div></div>
-                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">📅 {t('calc', 'aportacionMensual')}</span><span className="text-gray-800 font-bold text-lg">{calcMensual}€/{idioma === 'en' ? 'month' : 'mes'}</span></label><input type="range" min="0" max="2000" step="50" value={calcMensual} onChange={(e) => setCalcMensual(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-400 mt-1"><span>0€</span><span>2.000€</span></div></div>
-                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">📈 {t('calc', 'rentabilidadAnual')}</span><span className="text-gray-800 font-bold text-lg">{calcRent}%</span></label><input type="range" min="1" max="15" step="0.5" value={calcRent} onChange={(e) => setCalcRent(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-400 mt-1"><span>1%</span><span>15%</span></div></div>
-                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">⏱️ {t('calc', 'plazo')}</span><span className="text-gray-800 font-bold text-lg">{calcAnios} {t('calc', 'anos')}</span></label><input type="range" min="1" max="40" step="1" value={calcAnios} onChange={(e) => setCalcAnios(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-400 mt-1"><span>1 {idioma === 'en' ? 'year' : 'año'}</span><span>40 {t('calc', 'anos')}</span></div></div>
+                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">💰 {t('calc', 'capitalInicial')}</span><span className="text-gray-800 font-bold text-lg">{calcCapital.toLocaleString()}€</span></label><input type="range" min="0" max="100000" step="1000" value={calcCapital} onChange={(e) => setCalcCapital(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-500 mt-1"><span>0€</span><span>100.000€</span></div></div>
+                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">📅 {t('calc', 'aportacionMensual')}</span><span className="text-gray-800 font-bold text-lg">{calcMensual}€/{idioma === 'en' ? 'month' : 'mes'}</span></label><input type="range" min="0" max="2000" step="50" value={calcMensual} onChange={(e) => setCalcMensual(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-500 mt-1"><span>0€</span><span>2.000€</span></div></div>
+                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">📈 {t('calc', 'rentabilidadAnual')}</span><span className="text-gray-800 font-bold text-lg">{calcRent}%</span></label><input type="range" min="1" max="15" step="0.5" value={calcRent} onChange={(e) => setCalcRent(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-500 mt-1"><span>1%</span><span>15%</span></div></div>
+                            <div><label className="flex justify-between text-sm mb-3"><span className="text-gray-500">⏱️ {t('calc', 'plazo')}</span><span className="text-gray-800 font-bold text-lg">{calcAnios} {t('calc', 'anos')}</span></label><input type="range" min="1" max="40" step="1" value={calcAnios} onChange={(e) => setCalcAnios(Number(e.target.value))} className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer" /><div className="flex justify-between text-xs text-gray-500 mt-1"><span>1 {idioma === 'en' ? 'year' : 'año'}</span><span>40 {t('calc', 'anos')}</span></div></div>
                             <div className="grid grid-cols-2 gap-3 pt-4 border-t border-gray-200">
                                 <div className="text-center p-4 bg-gray-50 rounded-xl"><p className="text-xs text-gray-500 mb-1">{t('calc', 'aportado')}</p><p className="text-xl font-bold text-gray-600">{totalAportado.toLocaleString()}€</p></div>
                                 <div className="text-center p-4 bg-pink-50 rounded-xl border border-pink-200"><p className="text-xs text-gray-500 mb-1">{t('calc', 'totalFinal')}</p><p className="text-xl font-bold text-pink-500">{capitalFinal.toLocaleString()}€</p></div>
@@ -1342,7 +1364,7 @@
                                 <button key={i} onClick={() => setCartera({ rv: c.rv, rf: c.rf, oro: c.oro, cash: c.cash })} className="p-4 bg-gray-50 rounded-xl hover:bg-gray-50 transition-all text-left border border-transparent hover:border-pink-200">
                                     <p className="font-bold text-gray-800 mb-2">{c.nombre}</p>
                                     <div className="flex gap-0.5 mb-3 h-3 rounded-full overflow-hidden">{c.rv > 0 && <div className="bg-emerald-500" style={{width: `${c.rv}%`}}></div>}{c.rf > 0 && <div className="bg-blue-500" style={{width: `${c.rf}%`}}></div>}{c.oro > 0 && <div className="bg-amber-500" style={{width: `${c.oro}%`}}></div>}{c.cash > 0 && <div className="bg-slate-500" style={{width: `${c.cash}%`}}></div>}</div>
-                                    <p className="text-sm text-pink-500 font-medium">Rent: {c.rent}</p><p className="text-xs text-gray-400">Horizonte: {c.horizonte}</p>
+                                    <p className="text-sm text-pink-500 font-medium">Rent: {c.rent}</p><p className="text-xs text-gray-500">Horizonte: {c.horizonte}</p>
                                 </button>
                             ))}
                         </div>
@@ -1373,10 +1395,10 @@
                                 {s.best && <span className="inline-block text-xs bg-emerald-500 text-white px-2 py-1 rounded-full mb-3">✓ {t('estrategias.recomanada')}</span>}
                                 <h4 className="font-bold text-gray-800 text-lg">{s.nombre}</h4>
                                 <p className="text-sm text-gray-500 my-2">{s.desc}</p>
-                                <p className="text-xs text-gray-400 mb-3">{s.explicacion}</p>
+                                <p className="text-xs text-gray-500 mb-3">{s.explicacion}</p>
                                 <div className="space-y-1 text-xs">
-                                    <p><span className="text-gray-400">{t('estrategias.risc')}</span> <span className="text-gray-800">{s.riesgo}</span></p>
-                                    <p><span className="text-gray-400">{t('estrategias.esforç')}</span> <span className="text-gray-800">{s.esfuerzo}</span></p>
+                                    <p><span className="text-gray-500">{t('estrategias.risc')}</span> <span className="text-gray-800">{s.riesgo}</span></p>
+                                    <p><span className="text-gray-500">{t('estrategias.esforç')}</span> <span className="text-gray-800">{s.esfuerzo}</span></p>
                                 </div>
                             </div>
                         ))}
@@ -1389,7 +1411,7 @@
                                 { nombre: t('estrategias.apalancament'), stat: t('estrategias.risc_ruïna'), desc: t('estrategias.pots_perdre_més_100') },
                                 { nombre: t('estrategias.seguir_rumorstips'), stat: t('estrategias.compres_car_vens_barat'), desc: t('estrategias.fomo_destrueix_rendibilitat') }
                             ].map((item, i) => (
-                                <div key={i} className="p-4 bg-white rounded-xl border border-red-100"><p className="font-bold text-gray-800">{item.nombre}</p><p className="text-red-600 font-bold text-sm">{item.stat}</p><p className="text-xs text-gray-400 mt-1">{item.desc}</p></div>
+                                <div key={i} className="p-4 bg-white rounded-xl border border-red-100"><p className="font-bold text-gray-800">{item.nombre}</p><p className="text-red-600 font-bold text-sm">{item.stat}</p><p className="text-xs text-gray-500 mt-1">{item.desc}</p></div>
                             ))}
                         </div>
                     </div>
@@ -1401,7 +1423,7 @@
                     <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3"><Brain className="text-pink-500" /> {t('psicologia.psicologia_linversor')}</h2>
                     <div className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 rounded-xl p-6 border border-pink-500/30 text-center">
                         <p className="text-xl text-gray-600">{t('psicologia.mercat_transfereix_diners_dels')}<span className="text-pink-400 font-bold">{t('psicologia.impacients')}</span>{t('psicologia.als')}<span className="text-pink-500 font-bold">{t('psicologia.pacients')}</span>"</p>
-                        <p className="text-sm text-gray-400 mt-2">— Warren Buffett</p>
+                        <p className="text-sm text-gray-500 mt-2">— Warren Buffett</p>
                     </div>
                     
                     {/* Per què és important */}
@@ -1415,7 +1437,7 @@
                             <div key={i} className="bg-white rounded-xl p-5 border border-gray-200">
                                 <div className="flex items-center gap-3 mb-3"><div className="p-2 bg-pink-100 rounded-lg border border-pink-200"><s.icono className="text-pink-500" size={24} /></div><h4 className="font-bold text-gray-800 text-lg">{s.nombre}</h4></div>
                                 <p className="text-sm text-gray-500 mb-3">{s.descripcion}</p>
-                                <div className="p-3 bg-gray-50 rounded-lg mb-3"><p className="text-xs text-gray-400">{t('psicologia.exemple')}</p><p className="text-sm text-gray-600">{s.ejemplo}</p></div>
+                                <div className="p-3 bg-gray-50 rounded-lg mb-3"><p className="text-xs text-gray-500">{t('psicologia.exemple')}</p><p className="text-sm text-gray-600">{s.ejemplo}</p></div>
                                 <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-200"><p className="text-xs text-emerald-600"><strong>✓ {t('psicologia.solució')}</strong> {s.solucion}</p></div>
                             </div>
                         ))}
@@ -1495,7 +1517,7 @@
                                     if (respondido) {
                                         if (esSeleccionada) { clases += esCorrecta ? "bg-emerald-500 text-white" : "bg-red-500 text-white"; }
                                         else if (esCorrecta) { clases += "bg-pink-100 border-2 border-emerald-500 text-emerald-600"; }
-                                        else { clases += "bg-gray-50 text-gray-400"; }
+                                        else { clases += "bg-gray-50 text-gray-500"; }
                                     } else { clases += "bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-800"; }
                                     return (
                                         <button key={i} onClick={() => { if (!respondido) { setQuizRespuestas(p => ({...p, [quizPregunta]: i})); setTimeout(() => { if (quizPregunta < 9) { setQuizPregunta(quizPregunta + 1); } else { setQuizTerminado(true); } }, 1000); }}} disabled={respondido} className={clases}>{opt}</button>
@@ -1673,7 +1695,7 @@
                                     <p className="text-gray-300 mb-4">{t('bitcoin.pseudònim_creador_creadors_bitcoin')}</p>
                                     <div className="p-4 bg-white/10 rounded-xl">
                                         <p className="font-mono text-sm italic">"Bitcoin: A Peer-to-Peer Electronic Cash System"</p>
-                                        <p className="text-xs text-gray-400 mt-1">— White paper, 31 octubre 2008</p>
+                                        <p className="text-xs text-gray-500 mt-1">— White paper, 31 octubre 2008</p>
                                     </div>
                                 </div>
                                 
@@ -2118,7 +2140,7 @@
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowGlosario(false)}>
                     <div className="bg-gradient-to-br from-amber-50 via-white to-pink-50 rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden border border-gray-200" onClick={e => e.stopPropagation()}>
                         <div className="p-4 border-b border-gray-200 flex items-center justify-between"><h3 className="text-lg font-bold text-gray-800 flex items-center gap-2"><BookOpen className="text-pink-500" /> Glosario financiero</h3><button onClick={() => setShowGlosario(false)} className="p-2 hover:bg-white rounded-lg"><X className="text-gray-500" /></button></div>
-                        <div className="p-4 border-b border-gray-200"><div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} /><input type="text" placeholder="Buscar término..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-800 focus:outline-none focus:border-emerald-500" /></div></div>
+                        <div className="p-4 border-b border-gray-200"><div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} /><input type="text" placeholder="Buscar término..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-800 focus:outline-none focus:border-emerald-500" /></div></div>
                         <div className="overflow-y-auto max-h-[50vh] p-4 space-y-2">{filteredGlosario.map((item, i) => (<div key={i} className="p-4 bg-white rounded-xl"><p className="font-bold text-pink-500">{item.term}</p><p className="text-sm text-gray-600 mt-1">{item.def}</p></div>))}</div>
                     </div>
                 </div>
@@ -2130,7 +2152,7 @@
                     
                     <PdeHeader
                         idioma={idioma}
-                        setIdioma={(lang) => { setIdioma(lang); PdeLanguageStore.set(lang); }}
+                        setIdioma={setIdioma}
                         currentApp="finances"
                         sections={[
                             { id: 'inicio', emoji: '🏠', label: t('nav', 'inicio') },
