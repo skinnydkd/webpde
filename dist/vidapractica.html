@@ -1,0 +1,2987 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vida Pràctica - Educació Financera Quotidiana</title>
+    <meta name="description" content="Aprèn tot el que mai t'han ensenyat: nòmines, hipoteques, IRPF, contractes, estalvi i molt més amb simuladors interactius.">
+    <meta property="og:title" content="Vida Pràctica - Educació Financera Quotidiana | PDE">
+    <meta property="og:description" content="Simuladors de nòmines, hipoteques, IRPF, pressupost personal i més.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/vidapractica">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://profedeeconomia.es/vidapractica">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💼</text></svg>">
+    <link rel="stylesheet" href="./pde.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
+<script src="https://unpkg.com/recharts@2.1.16/umd/Recharts.js"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        * { scrollbar-width: thin; scrollbar-color: #ec4899 #fdf2f8; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #fdf2f8; }
+        ::-webkit-scrollbar-thumb { background-color: #ec4899; border-radius: 3px; }
+        input[type="range"] { -webkit-appearance: none; height: 8px; border-radius: 4px; background: #fce4ec; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #ec4899; cursor: pointer; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    </style>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Course",
+        "name": "Vida Pràctica - Educació Financera Quotidiana",
+        "description": "Aprèn tot el que mai t'han ensenyat: nòmines, hipoteques, IRPF, contractes, estalvi i molt més amb simuladors interactius.",
+        "url": "https://profedeeconomia.es/vidapractica",
+        "provider": {
+            "@type": "Organization",
+            "name": "PDE - Plataforma Didàctica Econòmica",
+            "url": "https://profedeeconomia.es"
+        },
+        "inLanguage": ["ca", "es", "en"],
+        "isAccessibleForFree": true,
+        "educationalLevel": ["ESO", "Batxillerat", "Educació d'Adults"],
+        "about": [
+            {"@type": "Thing", "name": "Educació Financera"},
+            {"@type": "Thing", "name": "Nòmines i Contractes"},
+            {"@type": "Thing", "name": "Hipoteques i IRPF"}
+        ]
+    }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-white to-pink-50 min-h-screen">
+    <div id="root"></div>
+    <script>const {
+  useState,
+  useMemo
+} = React;
+const {
+  AreaChart,
+  Area,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart: RechartsBarChart,
+  Bar,
+  Legend
+} = Recharts;
+
+// ============================================================================
+// TRADUCCIONS VAL/ES
+// ============================================================================
+const translations = {
+  // Títol i descripció
+  title: {
+    val: 'Vida Pràctica',
+    es: 'Vida Práctica'
+  },
+  subtitle: {
+    val: "Tot el que mai t'han ensenyat sobre la vida adulta",
+    es: "Todo lo que nunca te enseñaron sobre la vida adulta"
+  },
+  // Navegació
+  nav: {
+    inicio: {
+      val: 'Inici',
+      es: 'Inicio'
+    },
+    nomina: {
+      val: 'Nòmina',
+      es: 'Nómina'
+    },
+    hipoteca: {
+      val: 'Hipoteca',
+      es: 'Hipoteca'
+    },
+    estalvi: {
+      val: 'Estalvi',
+      es: 'Ahorro'
+    },
+    pressupost: {
+      val: 'Pressupost',
+      es: 'Presupuesto'
+    },
+    prestec: {
+      val: 'Préstec',
+      es: 'Préstamo'
+    },
+    renda: {
+      val: 'Renda',
+      es: 'Renta'
+    },
+    impostos: {
+      val: 'Impostos',
+      es: 'Impuestos'
+    },
+    factures: {
+      val: 'Factures',
+      es: 'Facturas'
+    },
+    lloguer: {
+      val: 'Lloguer',
+      es: 'Alquiler'
+    },
+    contractes: {
+      val: 'Contractes',
+      es: 'Contratos'
+    },
+    cv: {
+      val: 'CV',
+      es: 'CV'
+    },
+    glossari: {
+      val: 'Glossari',
+      es: 'Glosario'
+    }
+  },
+  // Cards de l'inici
+  cards: {
+    nomina: {
+      val: 'Calcula el teu salari net',
+      es: 'Calcula tu salario neto'
+    },
+    hipoteca: {
+      val: 'Quota mensual i interessos',
+      es: 'Cuota mensual e intereses'
+    },
+    estalvi: {
+      val: 'Interès compost',
+      es: 'Interés compuesto'
+    },
+    prestec: {
+      val: 'Calculadora de quotes',
+      es: 'Calculadora de cuotas'
+    },
+    pressupost: {
+      val: 'Gestiona els teus diners',
+      es: 'Gestiona tu dinero'
+    },
+    renda: {
+      val: 'IRPF i deduccions',
+      es: 'IRPF y deducciones'
+    },
+    impostos: {
+      val: "Pressupostos de l'Estat",
+      es: 'Presupuestos del Estado'
+    },
+    factures: {
+      val: 'Llum, gas i aigua',
+      es: 'Luz, gas y agua'
+    },
+    lloguer: {
+      val: 'Contractes i drets',
+      es: 'Contratos y derechos'
+    },
+    contractes: {
+      val: 'Tipus i drets laborals',
+      es: 'Tipos y derechos laborales'
+    },
+    cv: {
+      val: 'Com fer un bon currículum',
+      es: 'Cómo hacer un buen currículum'
+    },
+    glossari: {
+      val: 'Termes financers',
+      es: 'Términos financieros'
+    }
+  },
+  // Nòmina
+  nomina: {
+    title: {
+      val: '💳 Calculadora de Nòmina',
+      es: '💳 Calculadora de Nómina'
+    },
+    salarioBrut: {
+      val: 'Salari Brut Mensual',
+      es: 'Salario Bruto Mensual'
+    },
+    pagues: {
+      val: 'Pagues anuals',
+      es: 'Pagas anuales'
+    },
+    situacio: {
+      val: 'Situació personal',
+      es: 'Situación personal'
+    },
+    solter: {
+      val: 'Solter/a',
+      es: 'Soltero/a'
+    },
+    casat: {
+      val: 'Casat/da',
+      es: 'Casado/a'
+    },
+    fills: {
+      val: 'Amb fills',
+      es: 'Con hijos'
+    },
+    salariNet: {
+      val: 'SALARI NET',
+      es: 'SALARIO NETO'
+    },
+    ssLabel: {
+      val: 'Seguretat Social (~6.35%)',
+      es: 'Seguridad Social (~6.35%)'
+    },
+    irpfLabel: {
+      val: 'Retenció IRPF',
+      es: 'Retención IRPF'
+    },
+    anual: {
+      val: 'anual',
+      es: 'anual'
+    },
+    teoria: {
+      val: '📚 Entén la teua nòmina',
+      es: '📚 Entiende tu nómina'
+    },
+    teoriaDesc: {
+      val: "La nòmina és el document que reflecteix el teu salari i les deduccions. Entendre-la és fonamental per controlar les teues finances.",
+      es: "La nómina es el documento que refleja tu salario y las deducciones. Entenderla es fundamental para controlar tus finanzas."
+    },
+    formula: {
+      val: 'SALARI NET = SALARI BRUT - SEGURETAT SOCIAL - IRPF',
+      es: 'SALARIO NETO = SALARIO BRUTO - SEGURIDAD SOCIAL - IRPF'
+    }
+  },
+  // Hipoteca
+  hipoteca: {
+    title: {
+      val: '🏠 Simulador d\'Hipoteca',
+      es: '🏠 Simulador de Hipoteca'
+    },
+    capital: {
+      val: 'Capital a demanar',
+      es: 'Capital a solicitar'
+    },
+    interes: {
+      val: 'Tipus d\'interès anual',
+      es: 'Tipo de interés anual'
+    },
+    anys: {
+      val: 'Anys',
+      es: 'Años'
+    },
+    quotaMensual: {
+      val: 'QUOTA MENSUAL',
+      es: 'CUOTA MENSUAL'
+    },
+    totalPagar: {
+      val: 'Total a pagar',
+      es: 'Total a pagar'
+    },
+    totalInteressos: {
+      val: 'Total interessos',
+      es: 'Total intereses'
+    },
+    teoria: {
+      val: '📚 Què és una hipoteca?',
+      es: '📚 ¿Qué es una hipoteca?'
+    },
+    teoriaDesc: {
+      val: "Una hipoteca és un préstec a llarg termini per comprar un habitatge, garantit per l'immoble mateix.",
+      es: "Una hipoteca es un préstamo a largo plazo para comprar una vivienda, garantizado por el inmueble mismo."
+    }
+  },
+  // Estalvi
+  estalvi: {
+    title: {
+      val: '🐷 Calculadora d\'Estalvi',
+      es: '🐷 Calculadora de Ahorro'
+    },
+    capInicial: {
+      val: 'Capital inicial',
+      es: 'Capital inicial'
+    },
+    aportacioMensual: {
+      val: 'Aportació mensual',
+      es: 'Aportación mensual'
+    },
+    interes: {
+      val: 'Interès anual',
+      es: 'Interés anual'
+    },
+    anys: {
+      val: 'Anys',
+      es: 'Años'
+    },
+    totalFinal: {
+      val: 'TOTAL FINAL',
+      es: 'TOTAL FINAL'
+    },
+    aportat: {
+      val: 'Total aportat',
+      es: 'Total aportado'
+    },
+    guanys: {
+      val: 'Guanys per interès',
+      es: 'Ganancias por interés'
+    }
+  },
+  // Préstec
+  prestec: {
+    title: {
+      val: '💸 Calculadora de Préstec',
+      es: '💸 Calculadora de Préstamo'
+    },
+    capital: {
+      val: 'Capital',
+      es: 'Capital'
+    },
+    interes: {
+      val: 'Interès anual (TIN)',
+      es: 'Interés anual (TIN)'
+    },
+    mesos: {
+      val: 'Mesos',
+      es: 'Meses'
+    },
+    quotaMensual: {
+      val: 'QUOTA MENSUAL',
+      es: 'CUOTA MENSUAL'
+    },
+    tae: {
+      val: 'TAE equivalent',
+      es: 'TAE equivalente'
+    }
+  },
+  // Pressupost
+  pressupost: {
+    title: {
+      val: '💰 Gestor de Pressupost',
+      es: '💰 Gestor de Presupuesto'
+    },
+    ingressos: {
+      val: 'Ingressos mensuals',
+      es: 'Ingresos mensuales'
+    },
+    habitatge: {
+      val: 'Habitatge',
+      es: 'Vivienda'
+    },
+    menjar: {
+      val: 'Menjar',
+      es: 'Comida'
+    },
+    transport: {
+      val: 'Transport',
+      es: 'Transporte'
+    },
+    serveis: {
+      val: 'Serveis',
+      es: 'Servicios'
+    },
+    oci: {
+      val: 'Oci',
+      es: 'Ocio'
+    },
+    altres: {
+      val: 'Altres',
+      es: 'Otros'
+    },
+    disponible: {
+      val: 'DISPONIBLE PER ESTALVIAR',
+      es: 'DISPONIBLE PARA AHORRAR'
+    }
+  },
+  // Renda
+  renda: {
+    title: {
+      val: '🧾 Declaració de la Renda (IRPF)',
+      es: '🧾 Declaración de la Renta (IRPF)'
+    },
+    queEs: {
+      val: '📚 Què és la Declaració de la Renda?',
+      es: '📚 ¿Qué es la Declaración de la Renta?'
+    },
+    ingressos: {
+      val: 'Ingressos bruts anuals',
+      es: 'Ingresos brutos anuales'
+    },
+    deduccions: {
+      val: 'Deduccions (hipoteca, donacions...)',
+      es: 'Deducciones (hipoteca, donaciones...)'
+    },
+    retencions: {
+      val: 'Retencions ja pagades',
+      es: 'Retenciones ya pagadas'
+    },
+    baseImposable: {
+      val: 'Base imposable',
+      es: 'Base imponible'
+    },
+    quotaPagar: {
+      val: 'Quota a pagar',
+      es: 'Cuota a pagar'
+    },
+    jaPagat: {
+      val: 'Ja has pagat (retencions)',
+      es: 'Ya has pagado (retenciones)'
+    },
+    etTornen: {
+      val: 'ET TORNEN',
+      es: 'TE DEVUELVEN'
+    },
+    aPagar: {
+      val: 'A PAGAR',
+      es: 'A PAGAR'
+    }
+  },
+  // Impostos
+  impostos: {
+    title: {
+      val: '🏛️ On van els teus impostos?',
+      es: '🏛️ ¿Dónde van tus impuestos?'
+    },
+    salariAnual: {
+      val: 'Salari brut anual',
+      es: 'Salario bruto anual'
+    },
+    totalImpostos: {
+      val: 'TOTAL IMPOSTOS',
+      es: 'TOTAL IMPUESTOS'
+    },
+    pensions: {
+      val: 'Pensions',
+      es: 'Pensiones'
+    },
+    deute: {
+      val: 'Deute públic',
+      es: 'Deuda pública'
+    },
+    defensa: {
+      val: 'Defensa',
+      es: 'Defensa'
+    }
+  },
+  // Factures
+  factures: {
+    title: {
+      val: '🔌 Factures i Subministraments',
+      es: '🔌 Facturas y Suministros'
+    },
+    potencia: {
+      val: 'Potència contractada (kW)',
+      es: 'Potencia contratada (kW)'
+    },
+    consum: {
+      val: 'Consum mensual (kWh)',
+      es: 'Consumo mensual (kWh)'
+    },
+    totalMensual: {
+      val: 'TOTAL MENSUAL',
+      es: 'TOTAL MENSUAL'
+    }
+  },
+  // Lloguer
+  lloguer: {
+    title: {
+      val: '🏘️ Tot sobre el Lloguer',
+      es: '🏘️ Todo sobre el Alquiler'
+    },
+    lloguerMes: {
+      val: 'Lloguer mensual',
+      es: 'Alquiler mensual'
+    },
+    ingressosNets: {
+      val: 'Ingressos nets mensuals',
+      es: 'Ingresos netos mensuales'
+    },
+    percentatge: {
+      val: '% dels ingressos',
+      es: '% de los ingresos'
+    },
+    saludable: {
+      val: 'Saludable!',
+      es: '¡Saludable!'
+    },
+    atencio: {
+      val: 'Atenció!',
+      es: '¡Atención!'
+    },
+    recomanat: {
+      val: 'Recomanat: màx 30-35%',
+      es: 'Recomendado: máx 30-35%'
+    },
+    superes: {
+      val: 'Superes el 30% recomanat',
+      es: 'Superas el 30% recomendado'
+    }
+  },
+  // Contractes
+  contractes: {
+    title: {
+      val: '📋 Tipus de Contractes',
+      es: '📋 Tipos de Contratos'
+    },
+    indefinit: {
+      val: 'Indefinit',
+      es: 'Indefinido'
+    },
+    temporal: {
+      val: 'Temporal',
+      es: 'Temporal'
+    },
+    formacio: {
+      val: 'Formació',
+      es: 'Formación'
+    },
+    practiques: {
+      val: 'Pràctiques',
+      es: 'Prácticas'
+    }
+  },
+  // CV
+  cv: {
+    title: {
+      val: '📄 Com fer un bon CV',
+      es: '📄 Cómo hacer un buen CV'
+    }
+  },
+  // Glossari
+  glossari: {
+    title: {
+      val: '📖 Glossari Financer',
+      es: '📖 Glosario Financiero'
+    },
+    cerca: {
+      val: 'Cercar terme...',
+      es: 'Buscar término...'
+    }
+  },
+  // Comuns
+  common: {
+    simulador: {
+      val: 'Simulador',
+      es: 'Simulador'
+    },
+    resultat: {
+      val: 'Resultat',
+      es: 'Resultado'
+    },
+    analisi: {
+      val: 'Anàlisi',
+      es: 'Análisis'
+    },
+    consells: {
+      val: 'Consells',
+      es: 'Consejos'
+    },
+    important: {
+      val: 'Important',
+      es: 'Importante'
+    },
+    mes: {
+      val: 'mes',
+      es: 'mes'
+    },
+    any: {
+      val: 'any',
+      es: 'año'
+    }
+  },
+  // Auto-migrated from inline ternaries
+  'glossari.vida_pràctica': {
+    val: "Vida Pràctica",
+    es: "Vida Práctica",
+    en: "Vida Práctica"
+  }
+};
+
+// Gràfic de barres simple
+const BarChart = ({
+  data,
+  height = 120
+}) => {
+  const max = Math.max(...data.map(d => d.value));
+  return /*#__PURE__*/React.createElement("div", {
+    className: "flex items-end gap-2 justify-center",
+    style: {
+      height
+    }
+  }, data.map((d, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    className: "flex flex-col items-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-xs font-bold mb-1"
+  }, d.value >= 1000 ? `${(d.value / 1000).toFixed(0)}k` : d.value), /*#__PURE__*/React.createElement("div", {
+    className: "rounded-t transition-all w-8",
+    style: {
+      height: Math.max(4, d.value / max * (height - 40)),
+      backgroundColor: d.color || '#8b5cf6'
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "text-xs mt-1 text-gray-500"
+  }, d.label))));
+};
+function App() {
+  const [section, setSection] = useState('inicio');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+
+  // Funció de traducció
+  const t = (category, key) => {
+    try {
+      if (key) return translations[category][key][idioma] || translations[category][key]['val'];
+      return translations[category][idioma] || translations[category]['val'];
+    } catch {
+      return key || category;
+    }
+  };
+
+  // Simulador Nòmina
+  const [salarioBrut, setSalarioBrut] = useState(2000);
+  const [pagues, setPagues] = useState(14);
+  const [categoriaIRPF, setCategoriaIRPF] = useState('solter');
+
+  // Simulador Hipoteca
+  const [hipCapital, setHipCapital] = useState(200000);
+  const [hipInteres, setHipInteres] = useState(3);
+  const [hipAnys, setHipAnys] = useState(25);
+
+  // Simulador Estalvi
+  const [estCapInicial, setEstCapInicial] = useState(1000);
+  const [estAportacio, setEstAportacio] = useState(200);
+  const [estInteres, setEstInteres] = useState(5);
+  const [estAnys, setEstAnys] = useState(10);
+
+  // Simulador Préstec
+  const [prestCapital, setPrestCapital] = useState(10000);
+  const [prestInteres, setPrestInteres] = useState(7);
+  const [prestMesos, setPrestMesos] = useState(36);
+
+  // Fons Emergència
+  const [feDespesesMes, setFeDespesesMes] = useState(1500);
+  const [feMesos, setFeMesos] = useState(6);
+
+  // Pressupost Personal
+  const [presIngressos, setPresIngressos] = useState(2000);
+  const [presHabitatge, setPresHabitatge] = useState(600);
+  const [presAlimentacio, setPresAlimentacio] = useState(300);
+  const [presTransport, setPresTransport] = useState(150);
+  const [presSubministres, setPresSubministres] = useState(100);
+  const [presOci, setPresOci] = useState(150);
+  const [presAltres, setPresAltres] = useState(100);
+  const [presEstalvi, setPresEstalvi] = useState(200);
+
+  // Càlcul Pressupost
+  const calculPressupost = useMemo(() => {
+    const totalDespeses = presHabitatge + presAlimentacio + presTransport + presSubministres + presOci + presAltres;
+    const disponible = presIngressos - totalDespeses;
+    const percentEstalvi = (presEstalvi / presIngressos * 100).toFixed(1);
+    const percentHabitatge = (presHabitatge / presIngressos * 100).toFixed(1);
+    const saludFinanciera = disponible >= presEstalvi ? disponible >= presEstalvi * 1.5 ? 'excel·lent' : 'bona' : disponible >= 0 ? 'ajustada' : 'crítica';
+    return {
+      totalDespeses,
+      disponible,
+      percentEstalvi,
+      percentHabitatge,
+      saludFinanciera
+    };
+  }, [presIngressos, presHabitatge, presAlimentacio, presTransport, presSubministres, presOci, presAltres, presEstalvi]);
+  const dadesPressupost = [{
+    nom: 'Habitatge',
+    valor: presHabitatge,
+    color: '#ec4899',
+    emoji: '🏠'
+  }, {
+    nom: 'Alimentació',
+    valor: presAlimentacio,
+    color: '#f97316',
+    emoji: '🍽️'
+  }, {
+    nom: 'Transport',
+    valor: presTransport,
+    color: '#eab308',
+    emoji: '🚗'
+  }, {
+    nom: 'Subministres',
+    valor: presSubministres,
+    color: '#22c55e',
+    emoji: '💡'
+  }, {
+    nom: 'Oci',
+    valor: presOci,
+    color: '#3b82f6',
+    emoji: '🎬'
+  }, {
+    nom: 'Altres',
+    valor: presAltres,
+    color: '#8b5cf6',
+    emoji: '📦'
+  }, {
+    nom: 'Estalvi',
+    valor: presEstalvi,
+    color: '#14b8a6',
+    emoji: '🐷'
+  }];
+
+  // Càlcul Nòmina
+  const calculNomina = useMemo(() => {
+    const brutAnual = salarioBrut * pagues;
+    const ssPercent = 6.35;
+    const ss = salarioBrut * (ssPercent / 100);
+    let irpfPercent;
+    if (brutAnual <= 12450) irpfPercent = 19;else if (brutAnual <= 20200) irpfPercent = 24;else if (brutAnual <= 35200) irpfPercent = 30;else if (brutAnual <= 60000) irpfPercent = 37;else irpfPercent = 45;
+    if (categoriaIRPF === 'casat2fills') irpfPercent -= 5;else if (categoriaIRPF === 'casat') irpfPercent -= 2;
+    irpfPercent = Math.max(irpfPercent, 0);
+    const irpf = salarioBrut * (irpfPercent / 100);
+    const net = salarioBrut - ss - irpf;
+    return {
+      brutAnual,
+      ss,
+      ssPercent,
+      irpf,
+      irpfPercent,
+      net,
+      netAnual: net * pagues
+    };
+  }, [salarioBrut, pagues, categoriaIRPF]);
+
+  // Càlcul Hipoteca
+  const calculHipoteca = useMemo(() => {
+    const r = hipInteres / 100 / 12;
+    const n = hipAnys * 12;
+    const quota = hipCapital * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+    const totalPagat = quota * n;
+    const totalInteressos = totalPagat - hipCapital;
+    return {
+      quota,
+      totalPagat,
+      totalInteressos
+    };
+  }, [hipCapital, hipInteres, hipAnys]);
+
+  // Càlcul Estalvi
+  const calculEstalvi = useMemo(() => {
+    const r = estInteres / 100;
+    let total = estCapInicial;
+    let totalAportat = estCapInicial;
+    for (let any = 1; any <= estAnys; any++) {
+      total = total * (1 + r) + estAportacio * 12;
+      totalAportat += estAportacio * 12;
+    }
+    return {
+      totalFinal: Math.round(total),
+      totalAportat: Math.round(totalAportat),
+      totalInteressos: Math.round(total - totalAportat)
+    };
+  }, [estCapInicial, estAportacio, estInteres, estAnys]);
+
+  // Càlcul Préstec
+  const calculPrestec = useMemo(() => {
+    const r = prestInteres / 100 / 12;
+    const quota = prestCapital * (r * Math.pow(1 + r, prestMesos)) / (Math.pow(1 + r, prestMesos) - 1);
+    const totalPagat = quota * prestMesos;
+    const totalInteressos = totalPagat - prestCapital;
+    const tae = (Math.pow(1 + r, 12) - 1) * 100;
+    return {
+      quota,
+      totalPagat,
+      totalInteressos,
+      tae
+    };
+  }, [prestCapital, prestInteres, prestMesos]);
+  const fonEmergencia = feDespesesMes * feMesos;
+  const Card = ({
+    children,
+    className = ''
+  }) => /*#__PURE__*/React.createElement("div", {
+    className: `bg-white rounded-2xl border border-gray-100 p-6 shadow-sm ${className}`
+  }, children);
+  const Slider = ({
+    label,
+    value,
+    onChange,
+    min,
+    max,
+    step = 1,
+    suffix = ''
+  }) => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between text-sm"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-gray-600"
+  }, label), /*#__PURE__*/React.createElement("span", {
+    className: "font-bold text-violet-600"
+  }, value.toLocaleString(), suffix)), /*#__PURE__*/React.createElement("input", {
+    type: "range",
+    min: min,
+    max: max,
+    step: step,
+    value: value,
+    onChange: e => onChange(Number(e.target.value)),
+    className: "w-full"
+  }));
+  const Inicio = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-8"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-center"
+  }, /*#__PURE__*/React.createElement("h2", {
+    className: "text-3xl font-black text-gray-800 mb-2"
+  }, "\uD83D\uDCBC ", t('title')), /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-500"
+  }, t('subtitle'))), /*#__PURE__*/React.createElement("div", {
+    className: "grid sm:grid-cols-2 lg:grid-cols-4 gap-4"
+  }, [{
+    id: 'nomina',
+    emoji: '💳',
+    title: t('nav', 'nomina'),
+    desc: t('cards', 'nomina')
+  }, {
+    id: 'hipoteca',
+    emoji: '🏠',
+    title: t('nav', 'hipoteca'),
+    desc: t('cards', 'hipoteca')
+  }, {
+    id: 'estalvi',
+    emoji: '🐷',
+    title: t('nav', 'estalvi'),
+    desc: t('cards', 'estalvi')
+  }, {
+    id: 'prestec',
+    emoji: '💸',
+    title: t('nav', 'prestec'),
+    desc: t('cards', 'prestec')
+  }, {
+    id: 'pressupost',
+    emoji: '💰',
+    title: t('nav', 'pressupost'),
+    desc: t('cards', 'pressupost')
+  }, {
+    id: 'renda',
+    emoji: '🧾',
+    title: t('nav', 'renda'),
+    desc: t('cards', 'renda')
+  }, {
+    id: 'impostos',
+    emoji: '🏛️',
+    title: t('nav', 'impostos'),
+    desc: t('cards', 'impostos')
+  }, {
+    id: 'factures',
+    emoji: '🔌',
+    title: t('nav', 'factures'),
+    desc: t('cards', 'factures')
+  }, {
+    id: 'lloguer',
+    emoji: '🏘️',
+    title: t('nav', 'lloguer'),
+    desc: t('cards', 'lloguer')
+  }, {
+    id: 'contractes',
+    emoji: '📋',
+    title: t('nav', 'contractes'),
+    desc: t('cards', 'contractes')
+  }, {
+    id: 'cv',
+    emoji: '📄',
+    title: t('nav', 'cv'),
+    desc: t('cards', 'cv')
+  }, {
+    id: 'glossari',
+    emoji: '📖',
+    title: t('nav', 'glossari'),
+    desc: t('cards', 'glossari')
+  }].map(card => /*#__PURE__*/React.createElement("button", {
+    key: card.id,
+    onClick: () => setSection(card.id),
+    className: "group p-5 bg-white rounded-2xl border border-gray-100 hover:border-violet-300 hover:shadow-lg transition-all text-left"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-3xl mb-2"
+  }, card.emoji), /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800"
+  }, card.title), /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500"
+  }, card.desc)))));
+  const Nomina = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6"
+  }, /*#__PURE__*/React.createElement("h2", {
+    className: "text-2xl font-black text-gray-800"
+  }, "\uD83D\uDCB3 Entendre la N\xF2mina"), /*#__PURE__*/React.createElement(Card, {
+    className: "bg-gradient-to-r from-violet-50 to-purple-50 border-violet-200"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800 mb-3"
+  }, "\uD83D\uDCDA Qu\xE8 \xE9s una n\xF2mina?"), /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-600 text-sm mb-4"
+  }, "La n\xF2mina \xE9s el document que reflecteix el pagament que rep un treballador per la seva feina. Inclou el ", /*#__PURE__*/React.createElement("strong", null, "salari brut"), " (total guanyat) i les ", /*#__PURE__*/React.createElement("strong", null, "deduccions"), " (impostos i cotitzacions), resultant en el ", /*#__PURE__*/React.createElement("strong", null, "salari net"), " (el que reps al compte)."), /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-white rounded-lg text-sm text-center"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "font-bold text-violet-600"
+  }, "SALARI NET = BRUT - SEGURETAT SOCIAL - IRPF"))), /*#__PURE__*/React.createElement("div", {
+    className: "grid lg:grid-cols-2 gap-6"
+  }, /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800 mb-4"
+  }, "\u2699\uFE0F Calcula la teua n\xF2mina"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-4"
+  }, /*#__PURE__*/React.createElement(Slider, {
+    label: "Salari brut mensual",
+    value: salarioBrut,
+    onChange: setSalarioBrut,
+    min: 1000,
+    max: 10000,
+    step: 50,
+    suffix: "\u20AC"
+  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-gray-600 mb-2"
+  }, "Nombre de pagues"), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2"
+  }, [12, 14].map(p => /*#__PURE__*/React.createElement("button", {
+    key: p,
+    onClick: () => setPagues(p),
+    className: `flex-1 py-2 rounded-lg font-bold ${pagues === p ? 'bg-violet-500 text-white' : 'bg-gray-100'}`
+  }, p, " pagues"))), /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500 mt-1"
+  }, "14 pagues = 2 extres (juny/desembre) que es reparteixen")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-gray-600 mb-2"
+  }, "Situaci\xF3 personal"), /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-wrap gap-2"
+  }, [['solter', 'Solter/a'], ['casat', 'Casat/da'], ['casat2fills', '2+ fills']].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+    key: k,
+    onClick: () => setCategoriaIRPF(k),
+    className: `px-3 py-2 rounded-lg text-sm ${categoriaIRPF === k ? 'bg-violet-500 text-white' : 'bg-gray-100'}`
+  }, l))), /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500 mt-1"
+  }, "Afecta les retencions d'IRPF")))), /*#__PURE__*/React.createElement(Card, {
+    className: "bg-gradient-to-br from-violet-500 to-purple-600 text-white border-0"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold mb-4"
+  }, "\uD83D\uDCCA La teua n\xF2mina"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between py-2 border-b border-white/20"
+  }, /*#__PURE__*/React.createElement("span", null, "Salari Brut"), /*#__PURE__*/React.createElement("span", {
+    className: "font-bold"
+  }, salarioBrut, "\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between py-2 border-b border-white/20"
+  }, /*#__PURE__*/React.createElement("span", null, "Seguretat Social (", calculNomina.ssPercent, "%)"), /*#__PURE__*/React.createElement("span", {
+    className: "text-red-200"
+  }, "-", calculNomina.ss.toFixed(0), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between py-2 border-b border-white/20"
+  }, /*#__PURE__*/React.createElement("span", null, "IRPF (~", calculNomina.irpfPercent, "%)"), /*#__PURE__*/React.createElement("span", {
+    className: "text-red-200"
+  }, "-", calculNomina.irpf.toFixed(0), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between py-3 bg-white/20 rounded-xl px-3 -mx-1"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "font-bold"
+  }, "SALARI NET"), /*#__PURE__*/React.createElement("span", {
+    className: "font-black text-2xl"
+  }, calculNomina.net.toFixed(0), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 gap-2 text-sm mt-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "p-2 bg-white/10 rounded-lg text-center"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-white/70"
+  }, "Net Anual"), /*#__PURE__*/React.createElement("p", {
+    className: "font-bold"
+  }, calculNomina.netAnual.toLocaleString(), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "p-2 bg-white/10 rounded-lg text-center"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-white/70"
+  }, "Retencions/mes"), /*#__PURE__*/React.createElement("p", {
+    className: "font-bold"
+  }, (calculNomina.ss + calculNomina.irpf).toFixed(0), "\u20AC")))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800 mb-4"
+  }, "\uD83D\uDCD6 Components de la n\xF2mina explicats"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "p-4 bg-green-50 border border-green-200 rounded-xl"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "font-bold text-green-700 mb-2"
+  }, "\uD83D\uDCB5 Salari Brut"), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-gray-600 mb-2"
+  }, "El total pactat amb l'empresa abans de cap deducci\xF3. Pot incloure:"), /*#__PURE__*/React.createElement("ul", {
+    className: "text-sm text-gray-600 list-disc list-inside space-y-1"
+  }, /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("strong", null, "Salari base:"), " Segons conveni o contracte"), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("strong", null, "Complements:"), " Antiguitat, perillositat, nocturnitat..."), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("strong", null, "Hores extra:"), " A part o compensades amb temps lliure"), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("strong", null, "Incentius:"), " Comissions, bonus per objectius..."))), /*#__PURE__*/React.createElement("div", {
+    className: "p-4 bg-blue-50 border border-blue-200 rounded-xl"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "font-bold text-blue-700 mb-2"
+  }, "\uD83C\uDFE5 Seguretat Social (SS)"), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-gray-600 mb-2"
+  }, "Cotitzaci\xF3 obligat\xF2ria que pagues tu (~6.35%) i l'empresa (~30%). Cobreix:"), /*#__PURE__*/React.createElement("ul", {
+    className: "text-sm text-gray-600 list-disc list-inside space-y-1"
+  }, /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("strong", null, "Jubilaci\xF3:"), " La teua futura pensi\xF3"), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("strong", null, "Sanitat:"), " Sistema p\xFAblic de salut"), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("strong", null, "Atur:"), " Prestaci\xF3 si perds la feina"), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("strong", null, "Formaci\xF3:"), " Cursos subvencionats"), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("strong", null, "Accidents:"), " Cobertura per accidents laborals"))), /*#__PURE__*/React.createElement("div", {
+    className: "p-4 bg-amber-50 border border-amber-200 rounded-xl"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "font-bold text-amber-700 mb-2"
+  }, "\uD83D\uDCCA IRPF (Impost sobre la Renda)"), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-gray-600 mb-2"
+  }, "Impost progressiu: com m\xE9s guanyes, m\xE9s percentatge pagues. Trams 2024:"), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 md:grid-cols-5 gap-2 text-xs mt-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "p-2 bg-white rounded-lg text-center"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold"
+  }, "Fins 12.450\u20AC"), /*#__PURE__*/React.createElement("p", {
+    className: "text-amber-600"
+  }, "19%")), /*#__PURE__*/React.createElement("div", {
+    className: "p-2 bg-white rounded-lg text-center"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold"
+  }, "12.450-20.200\u20AC"), /*#__PURE__*/React.createElement("p", {
+    className: "text-amber-600"
+  }, "24%")), /*#__PURE__*/React.createElement("div", {
+    className: "p-2 bg-white rounded-lg text-center"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold"
+  }, "20.200-35.200\u20AC"), /*#__PURE__*/React.createElement("p", {
+    className: "text-amber-600"
+  }, "30%")), /*#__PURE__*/React.createElement("div", {
+    className: "p-2 bg-white rounded-lg text-center"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold"
+  }, "35.200-60.000\u20AC"), /*#__PURE__*/React.createElement("p", {
+    className: "text-amber-600"
+  }, "37%")), /*#__PURE__*/React.createElement("div", {
+    className: "p-2 bg-white rounded-lg text-center"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold"
+  }, "M\xE9s de 60.000\u20AC"), /*#__PURE__*/React.createElement("p", {
+    className: "text-amber-600"
+  }, "45%"))), /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500 mt-2"
+  }, "\u26A0\uFE0F Les retencions s\xF3n a compte. A la Declaraci\xF3 de la Renda es calcula l'import real i es torna o paga la difer\xE8ncia.")))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800 mb-4"
+  }, "\uD83D\uDCA1 Consells pr\xE0ctics"), /*#__PURE__*/React.createElement("div", {
+    className: "grid md:grid-cols-2 gap-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-violet-50 rounded-xl"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold text-violet-700"
+  }, "\uD83D\uDCDD Revisa sempre la n\xF2mina"), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-gray-600"
+  }, "Comprova que les hores, complements i deduccions s\xF3n correctes.")), /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-violet-50 rounded-xl"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold text-violet-700"
+  }, "\uD83D\uDCC1 Guarda les n\xF2mines"), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-gray-600"
+  }, "Les necessitar\xE0s per declaraci\xF3 de renda, hipoteca, prestacions...")), /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-violet-50 rounded-xl"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold text-violet-700"
+  }, "\uD83E\uDDEE Negocia el brut, no el net"), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-gray-600"
+  }, "El net dep\xE8n de la teua situaci\xF3 personal, el brut \xE9s comparable.")), /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-violet-50 rounded-xl"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold text-violet-700"
+  }, "\uD83D\uDCC5 Atenci\xF3 a les pagues extra"), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-gray-600"
+  }, "12 pagues = mensualitats m\xE9s altes. 14 pagues = 2 \"bonus\" a l'any.")))));
+  const Hipoteca = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6"
+  }, /*#__PURE__*/React.createElement("h2", {
+    className: "text-2xl font-black text-gray-800"
+  }, "\uD83C\uDFE0 Tot sobre la Hipoteca"), /*#__PURE__*/React.createElement(Card, {
+    className: "bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800 mb-3"
+  }, "\uD83D\uDCDA Qu\xE8 \xE9s una hipoteca?"), /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-600 text-sm mb-3"
+  }, "Una hipoteca \xE9s un ", /*#__PURE__*/React.createElement("strong", null, "pr\xE9stec a llarg termini"), " garantit per l'immoble que compres. Si no pagues, el banc pot quedar-se la casa. Per aix\xF2 els interessos s\xF3n m\xE9s baixos que altres pr\xE9stecs."), /*#__PURE__*/React.createElement("div", {
+    className: "grid md:grid-cols-3 gap-3 text-sm"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-white rounded-lg text-center"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold text-emerald-600"
+  }, "\uD83C\uDFE6 El banc"), /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-500"
+  }, "Presta diners (capital)")), /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-white rounded-lg text-center"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold text-emerald-600"
+  }, "\uD83D\uDC64 Tu"), /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-500"
+  }, "Tornes capital + interessos")), /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-white rounded-lg text-center"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold text-emerald-600"
+  }, "\uD83C\uDFE0 Garantia"), /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-500"
+  }, "L'immoble respon del deute")))), /*#__PURE__*/React.createElement("div", {
+    className: "grid lg:grid-cols-2 gap-6"
+  }, /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800 mb-4"
+  }, "\u2699\uFE0F Calcula la teua hipoteca"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-4"
+  }, /*#__PURE__*/React.createElement(Slider, {
+    label: "Import del pr\xE9stec",
+    value: hipCapital,
+    onChange: setHipCapital,
+    min: 50000,
+    max: 500000,
+    step: 5000,
+    suffix: "\u20AC"
+  }), /*#__PURE__*/React.createElement(Slider, {
+    label: "Inter\xE8s anual (TIN)",
+    value: hipInteres,
+    onChange: setHipInteres,
+    min: 1,
+    max: 8,
+    step: 0.1,
+    suffix: "%"
+  }), /*#__PURE__*/React.createElement(Slider, {
+    label: "Termini",
+    value: hipAnys,
+    onChange: setHipAnys,
+    min: 5,
+    max: 40,
+    suffix: " anys"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-500"
+  }, "\uD83D\uDCA1 Sistema d'amortitzaci\xF3 franc\xE9s: quotes constants, primer pagues m\xE9s interessos.")), /*#__PURE__*/React.createElement(Card, {
+    className: "bg-gradient-to-br from-emerald-500 to-teal-500 text-white border-0"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold mb-4"
+  }, "\uD83D\uDCCA Resultat"), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-3 gap-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-center p-3 bg-white/20 rounded-xl"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-white/70"
+  }, "Quota mensual"), /*#__PURE__*/React.createElement("p", {
+    className: "font-black text-xl"
+  }, calculHipoteca.quota.toFixed(0), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "text-center p-3 bg-white/20 rounded-xl"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-white/70"
+  }, "Total a pagar"), /*#__PURE__*/React.createElement("p", {
+    className: "font-black text-xl"
+  }, (calculHipoteca.totalPagat / 1000).toFixed(0), "k\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "text-center p-3 bg-white/20 rounded-xl"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-white/70"
+  }, "Interessos"), /*#__PURE__*/React.createElement("p", {
+    className: "font-black text-xl text-red-200"
+  }, (calculHipoteca.totalInteressos / 1000).toFixed(0), "k\u20AC"))), /*#__PURE__*/React.createElement("div", {
+    className: "mt-4 p-3 bg-white/10 rounded-xl text-sm"
+  }, /*#__PURE__*/React.createElement("p", null, "\u26A0\uFE0F Pagar\xE0s ", /*#__PURE__*/React.createElement("strong", null, (calculHipoteca.totalInteressos / hipCapital * 100).toFixed(0), "%"), " extra en interessos (", hipAnys, " anys \xD7 ", (calculHipoteca.quota * 12).toFixed(0), "\u20AC/any)")), /*#__PURE__*/React.createElement("div", {
+    className: "mt-3 grid grid-cols-2 gap-2 text-sm"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "p-2 bg-white/10 rounded-lg text-center"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-white/70"
+  }, "Quotes totals"), /*#__PURE__*/React.createElement("p", {
+    className: "font-bold"
+  }, hipAnys * 12)), /*#__PURE__*/React.createElement("div", {
+    className: "p-2 bg-white/10 rounded-lg text-center"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-white/70"
+  }, "Cost per any"), /*#__PURE__*/React.createElement("p", {
+    className: "font-bold"
+  }, (calculHipoteca.quota * 12).toFixed(0), "\u20AC"))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800 mb-4"
+  }, "\uD83D\uDCCB Tipus d'hipoteca"), /*#__PURE__*/React.createElement("div", {
+    className: "grid md:grid-cols-3 gap-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "p-4 bg-blue-50 border border-blue-200 rounded-xl"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "font-bold text-blue-700 mb-2"
+  }, "\uD83D\uDD12 Tipus Fix"), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-gray-600 mb-2"
+  }, "L'inter\xE8s no canvia mai. Pagues sempre el mateix."), /*#__PURE__*/React.createElement("div", {
+    className: "text-xs space-y-1"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-green-600"
+  }, "\u2713 Estabilitat i seguretat"), /*#__PURE__*/React.createElement("p", {
+    className: "text-green-600"
+  }, "\u2713 Saps el que pagar\xE0s"), /*#__PURE__*/React.createElement("p", {
+    className: "text-red-600"
+  }, "\u2717 Sol ser m\xE9s car inicialment"))), /*#__PURE__*/React.createElement("div", {
+    className: "p-4 bg-amber-50 border border-amber-200 rounded-xl"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "font-bold text-amber-700 mb-2"
+  }, "\uD83D\uDCCA Tipus Variable"), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-gray-600 mb-2"
+  }, "Eur\xEDbor + diferencial. Canvia cada 6-12 mesos."), /*#__PURE__*/React.createElement("div", {
+    className: "text-xs space-y-1"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-green-600"
+  }, "\u2713 Sol ser m\xE9s barat inicialment"), /*#__PURE__*/React.createElement("p", {
+    className: "text-red-600"
+  }, "\u2717 Risc si l'Eur\xEDbor puja"), /*#__PURE__*/React.createElement("p", {
+    className: "text-red-600"
+  }, "\u2717 Quotes imprevisibles"))), /*#__PURE__*/React.createElement("div", {
+    className: "p-4 bg-violet-50 border border-violet-200 rounded-xl"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "font-bold text-violet-700 mb-2"
+  }, "\u2696\uFE0F Tipus Mixt"), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-gray-600 mb-2"
+  }, "Fix uns anys, despr\xE9s variable."), /*#__PURE__*/React.createElement("div", {
+    className: "text-xs space-y-1"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-green-600"
+  }, "\u2713 Seguretat inicial"), /*#__PURE__*/React.createElement("p", {
+    className: "text-green-600"
+  }, "\u2713 Possibilitat de baixar despr\xE9s"), /*#__PURE__*/React.createElement("p", {
+    className: "text-red-600"
+  }, "\u2717 Risc a llarg termini"))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800 mb-4"
+  }, "\uD83D\uDCB8 Despeses de compra (que molts obliden!)"), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-gray-600 mb-4"
+  }, "A m\xE9s del preu de la casa, necessites ~10-12% extra per despeses:"), /*#__PURE__*/React.createElement("div", {
+    className: "grid md:grid-cols-2 gap-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-gray-50 rounded-xl"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between mb-1"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "font-bold text-gray-700"
+  }, "Impostos"), /*#__PURE__*/React.createElement("span", {
+    className: "text-gray-600"
+  }, "6-10%")), /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500"
+  }, "ITP (segona m\xE0) o IVA+AJD (obra nova)")), /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-gray-50 rounded-xl"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between mb-1"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "font-bold text-gray-700"
+  }, "Notaria"), /*#__PURE__*/React.createElement("span", {
+    className: "text-gray-600"
+  }, "~600-1.200\u20AC")), /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500"
+  }, "Escriptures i c\xF2pies")), /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-gray-50 rounded-xl"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between mb-1"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "font-bold text-gray-700"
+  }, "Registre"), /*#__PURE__*/React.createElement("span", {
+    className: "text-gray-600"
+  }, "~300-600\u20AC")), /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500"
+  }, "Inscripci\xF3 al Registre de la Propietat")), /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-gray-50 rounded-xl"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between mb-1"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "font-bold text-gray-700"
+  }, "Gestoria"), /*#__PURE__*/React.createElement("span", {
+    className: "text-gray-600"
+  }, "~300-500\u20AC")), /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500"
+  }, "Tramitaci\xF3 de documents")), /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-gray-50 rounded-xl"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between mb-1"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "font-bold text-gray-700"
+  }, "Taxaci\xF3"), /*#__PURE__*/React.createElement("span", {
+    className: "text-gray-600"
+  }, "~300-500\u20AC")), /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500"
+  }, "Valoraci\xF3 oficial de l'immoble")), /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-emerald-50 border border-emerald-200 rounded-xl"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between mb-1"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "font-bold text-emerald-700"
+  }, "Entrada"), /*#__PURE__*/React.createElement("span", {
+    className: "text-emerald-600"
+  }, "~20%")), /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-emerald-600"
+  }, "El banc sol finan\xE7ar m\xE0x 80%")))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800 mb-4"
+  }, "\uD83D\uDCA1 Consells clau"), /*#__PURE__*/React.createElement("div", {
+    className: "grid md:grid-cols-2 gap-3"
+  }, [{
+    icon: '📊',
+    title: 'Quota màxima',
+    desc: 'No superis el 30-35% dels ingressos nets familiars'
+  }, {
+    icon: '💰',
+    title: 'Entrada + despeses',
+    desc: 'Necessites ~30% del preu estalviat (20% entrada + 10% despeses)'
+  }, {
+    icon: '🔍',
+    title: 'Compara',
+    desc: 'Demana ofertes a 3-4 bancs mínim. Negocia!'
+  }, {
+    icon: '📝',
+    title: 'Llegeix la FEIN',
+    desc: "Fitxa Europea d'Informació Normalitzada: tota la info de l'oferta"
+  }, {
+    icon: '⚖️',
+    title: 'Comissions',
+    desc: "Obertura, amortització anticipada... llegeix la lletra petita"
+  }, {
+    icon: '📅',
+    title: 'Amortització',
+    desc: 'Pots reduir termini o quota pagant més del compte'
+  }].map((c, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    className: "flex items-start gap-3 p-3 bg-emerald-50 rounded-xl"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-xl"
+  }, c.icon), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold text-emerald-700"
+  }, c.title), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-gray-600"
+  }, c.desc)))))));
+  const Estalvi = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6"
+  }, /*#__PURE__*/React.createElement("h2", {
+    className: "text-2xl font-black text-gray-800"
+  }, "\uD83D\uDC37 Simulador d'Estalvi"), /*#__PURE__*/React.createElement("div", {
+    className: "grid lg:grid-cols-2 gap-6"
+  }, /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800 mb-4"
+  }, "\u2699\uFE0F El teu pla"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-4"
+  }, /*#__PURE__*/React.createElement(Slider, {
+    label: "Capital inicial",
+    value: estCapInicial,
+    onChange: setEstCapInicial,
+    min: 0,
+    max: 50000,
+    step: 500,
+    suffix: "\u20AC"
+  }), /*#__PURE__*/React.createElement(Slider, {
+    label: "Aportaci\xF3 mensual",
+    value: estAportacio,
+    onChange: setEstAportacio,
+    min: 0,
+    max: 2000,
+    step: 25,
+    suffix: "\u20AC"
+  }), /*#__PURE__*/React.createElement(Slider, {
+    label: "Rendiment anual",
+    value: estInteres,
+    onChange: setEstInteres,
+    min: 1,
+    max: 15,
+    step: 0.5,
+    suffix: "%"
+  }), /*#__PURE__*/React.createElement(Slider, {
+    label: "Anys",
+    value: estAnys,
+    onChange: setEstAnys,
+    min: 1,
+    max: 40,
+    suffix: " anys"
+  }))), /*#__PURE__*/React.createElement(Card, {
+    className: "bg-gradient-to-br from-amber-500 to-orange-500 text-white border-0"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold mb-4"
+  }, "\uD83D\uDCCA En ", estAnys, " anys"), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-3 gap-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-center p-3 bg-white/20 rounded-xl"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-white/70"
+  }, "Total"), /*#__PURE__*/React.createElement("p", {
+    className: "font-black text-xl"
+  }, (calculEstalvi.totalFinal / 1000).toFixed(0), "k\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "text-center p-3 bg-white/20 rounded-xl"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-white/70"
+  }, "Aportat"), /*#__PURE__*/React.createElement("p", {
+    className: "font-black text-xl"
+  }, (calculEstalvi.totalAportat / 1000).toFixed(0), "k\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "text-center p-3 bg-white/20 rounded-xl"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-white/70"
+  }, "Guanys"), /*#__PURE__*/React.createElement("p", {
+    className: "font-black text-xl text-green-200"
+  }, "+", (calculEstalvi.totalInteressos / 1000).toFixed(0), "k\u20AC"))), /*#__PURE__*/React.createElement("div", {
+    className: "mt-4 p-3 bg-white/10 rounded-xl text-sm text-center"
+  }, /*#__PURE__*/React.createElement("p", null, "\uD83D\uDE80 Els interessos s\xF3n el ", /*#__PURE__*/React.createElement("strong", null, (calculEstalvi.totalInteressos / calculEstalvi.totalFinal * 100).toFixed(0), "%"), " del total!")))), /*#__PURE__*/React.createElement(Card, {
+    className: "bg-violet-50 border-violet-200"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800 mb-4"
+  }, "\uD83D\uDEE1\uFE0F Fons d'Emerg\xE8ncia"), /*#__PURE__*/React.createElement("div", {
+    className: "grid md:grid-cols-3 gap-4 items-center"
+  }, /*#__PURE__*/React.createElement(Slider, {
+    label: "Despeses mensuals",
+    value: feDespesesMes,
+    onChange: setFeDespesesMes,
+    min: 500,
+    max: 5000,
+    step: 100,
+    suffix: "\u20AC"
+  }), /*#__PURE__*/React.createElement(Slider, {
+    label: "Mesos de coix\xED",
+    value: feMesos,
+    onChange: setFeMesos,
+    min: 3,
+    max: 12,
+    suffix: " mesos"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "text-center p-4 bg-violet-500 text-white rounded-xl"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm"
+  }, "Necessites"), /*#__PURE__*/React.createElement("p", {
+    className: "font-black text-3xl"
+  }, fonEmergencia.toLocaleString(), "\u20AC")))));
+  const Prestec = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6"
+  }, /*#__PURE__*/React.createElement("h2", {
+    className: "text-2xl font-black text-gray-800"
+  }, "\uD83D\uDCB8 Calculadora de Pr\xE9stec"), /*#__PURE__*/React.createElement("div", {
+    className: "grid lg:grid-cols-2 gap-6"
+  }, /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800 mb-4"
+  }, "\u2699\uFE0F Par\xE0metres"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-4"
+  }, /*#__PURE__*/React.createElement(Slider, {
+    label: "Import",
+    value: prestCapital,
+    onChange: setPrestCapital,
+    min: 1000,
+    max: 50000,
+    step: 500,
+    suffix: "\u20AC"
+  }), /*#__PURE__*/React.createElement(Slider, {
+    label: "TIN anual",
+    value: prestInteres,
+    onChange: setPrestInteres,
+    min: 1,
+    max: 25,
+    step: 0.5,
+    suffix: "%"
+  }), /*#__PURE__*/React.createElement(Slider, {
+    label: "Termini",
+    value: prestMesos,
+    onChange: setPrestMesos,
+    min: 6,
+    max: 84,
+    suffix: " mesos"
+  }))), /*#__PURE__*/React.createElement(Card, {
+    className: "bg-gradient-to-br from-rose-500 to-pink-500 text-white border-0"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold mb-4"
+  }, "\uD83D\uDCCA Resultat"), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 gap-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-center p-3 bg-white/20 rounded-xl"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-white/70"
+  }, "Quota/mes"), /*#__PURE__*/React.createElement("p", {
+    className: "font-black text-xl"
+  }, calculPrestec.quota.toFixed(2), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "text-center p-3 bg-white/20 rounded-xl"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-white/70"
+  }, "TAE"), /*#__PURE__*/React.createElement("p", {
+    className: "font-black text-xl"
+  }, calculPrestec.tae.toFixed(2), "%")), /*#__PURE__*/React.createElement("div", {
+    className: "text-center p-3 bg-white/20 rounded-xl"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-white/70"
+  }, "Total"), /*#__PURE__*/React.createElement("p", {
+    className: "font-black text-xl"
+  }, calculPrestec.totalPagat.toFixed(0), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "text-center p-3 bg-white/20 rounded-xl"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-white/70"
+  }, "Interessos"), /*#__PURE__*/React.createElement("p", {
+    className: "font-black text-xl text-red-200"
+  }, calculPrestec.totalInteressos.toFixed(0), "\u20AC"))))), /*#__PURE__*/React.createElement("div", {
+    className: "p-4 bg-red-50 border border-red-200 rounded-xl"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-red-700"
+  }, "\u26A0\uFE0F Compte amb els pr\xE9stecs r\xE0pids!"), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-red-600 mt-1"
+  }, "Els \"mini cr\xE8dits\" poden tenir TAE ", '>', " 1000%. Un pr\xE9stec de 300\u20AC pot costar-te 500\u20AC+. Evita'ls!")));
+  const Pressupost = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6"
+  }, /*#__PURE__*/React.createElement("h2", {
+    className: "text-2xl font-black text-gray-800"
+  }, "\uD83D\uDCB0 Pressupost Personal"), /*#__PURE__*/React.createElement(Card, {
+    className: "bg-gradient-to-r from-violet-50 to-purple-50 border-violet-200"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800 mb-3"
+  }, "\uD83D\uDCDA Qu\xE8 \xE9s un pressupost personal?"), /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-600 text-sm mb-3"
+  }, "Un pressupost \xE9s un ", /*#__PURE__*/React.createElement("strong", null, "pla per als teus diners"), ". Et permet saber exactament on van els teus ingressos, identificar on pots reduir despeses i assegurar-te que est\xE0s estalviant per al futur."), /*#__PURE__*/React.createElement("div", {
+    className: "grid md:grid-cols-3 gap-3 text-sm"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-white rounded-lg"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold text-violet-600"
+  }, "\uD83D\uDCCA Regla 50/30/20"), /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-500"
+  }, "50% necessitats, 30% desitjos, 20% estalvi")), /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-white rounded-lg"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold text-violet-600"
+  }, "\uD83C\uDFE0 Regla del 30%"), /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-500"
+  }, "L'habitatge no hauria de superar el 30% dels ingressos")), /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-white rounded-lg"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold text-violet-600"
+  }, "\uD83C\uDFAF Paga't primer"), /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-500"
+  }, "Estalvia en rebre el sou, no el que sobra")))), /*#__PURE__*/React.createElement("div", {
+    className: "grid lg:grid-cols-2 gap-6"
+  }, /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800 mb-4"
+  }, "\u2699\uFE0F Els teus ingressos i despeses"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-4"
+  }, /*#__PURE__*/React.createElement(Slider, {
+    label: "\uD83D\uDCB5 Ingressos mensuals",
+    value: presIngressos,
+    onChange: setPresIngressos,
+    min: 800,
+    max: 8000,
+    step: 50,
+    suffix: "\u20AC"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "border-t border-gray-100 pt-4"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500 mb-3"
+  }, "DESPESES FIXES"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement(Slider, {
+    label: "\uD83C\uDFE0 Habitatge (lloguer/hipoteca)",
+    value: presHabitatge,
+    onChange: setPresHabitatge,
+    min: 0,
+    max: 2500,
+    step: 25,
+    suffix: "\u20AC"
+  }), /*#__PURE__*/React.createElement(Slider, {
+    label: "\uD83D\uDCA1 Subministres (llum, gas, aigua)",
+    value: presSubministres,
+    onChange: setPresSubministres,
+    min: 0,
+    max: 500,
+    step: 10,
+    suffix: "\u20AC"
+  }), /*#__PURE__*/React.createElement(Slider, {
+    label: "\uD83D\uDE97 Transport",
+    value: presTransport,
+    onChange: setPresTransport,
+    min: 0,
+    max: 500,
+    step: 10,
+    suffix: "\u20AC"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "border-t border-gray-100 pt-4"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500 mb-3"
+  }, "DESPESES VARIABLES"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement(Slider, {
+    label: "\uD83C\uDF7D\uFE0F Alimentaci\xF3",
+    value: presAlimentacio,
+    onChange: setPresAlimentacio,
+    min: 100,
+    max: 1000,
+    step: 25,
+    suffix: "\u20AC"
+  }), /*#__PURE__*/React.createElement(Slider, {
+    label: "\uD83C\uDFAC Oci i entreteniment",
+    value: presOci,
+    onChange: setPresOci,
+    min: 0,
+    max: 500,
+    step: 10,
+    suffix: "\u20AC"
+  }), /*#__PURE__*/React.createElement(Slider, {
+    label: "\uD83D\uDCE6 Altres despeses",
+    value: presAltres,
+    onChange: setPresAltres,
+    min: 0,
+    max: 500,
+    step: 10,
+    suffix: "\u20AC"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "border-t border-gray-100 pt-4"
+  }, /*#__PURE__*/React.createElement(Slider, {
+    label: "\uD83D\uDC37 Objectiu d'estalvi",
+    value: presEstalvi,
+    onChange: setPresEstalvi,
+    min: 0,
+    max: 2000,
+    step: 25,
+    suffix: "\u20AC"
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-4"
+  }, /*#__PURE__*/React.createElement(Card, {
+    className: `border-2 ${calculPressupost.saludFinanciera === 'excel·lent' ? 'bg-green-50 border-green-300' : calculPressupost.saludFinanciera === 'bona' ? 'bg-blue-50 border-blue-300' : calculPressupost.saludFinanciera === 'ajustada' ? 'bg-amber-50 border-amber-300' : 'bg-red-50 border-red-300'}`
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between items-center mb-4"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800"
+  }, "\uD83D\uDCCA Resum"), /*#__PURE__*/React.createElement("span", {
+    className: `px-3 py-1 rounded-full text-sm font-bold ${calculPressupost.saludFinanciera === 'excel·lent' ? 'bg-green-500 text-white' : calculPressupost.saludFinanciera === 'bona' ? 'bg-blue-500 text-white' : calculPressupost.saludFinanciera === 'ajustada' ? 'bg-amber-500 text-white' : 'bg-red-500 text-white'}`
+  }, "Salut: ", calculPressupost.saludFinanciera)), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 gap-3 mb-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-white rounded-xl text-center"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500"
+  }, "Ingressos"), /*#__PURE__*/React.createElement("p", {
+    className: "font-black text-xl text-gray-800"
+  }, presIngressos.toLocaleString(), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-white rounded-xl text-center"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500"
+  }, "Despeses"), /*#__PURE__*/React.createElement("p", {
+    className: "font-black text-xl text-gray-800"
+  }, calculPressupost.totalDespeses.toLocaleString(), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-white rounded-xl text-center"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500"
+  }, "Disponible"), /*#__PURE__*/React.createElement("p", {
+    className: `font-black text-xl ${calculPressupost.disponible >= 0 ? 'text-green-600' : 'text-red-600'}`
+  }, calculPressupost.disponible >= 0 ? '+' : '', calculPressupost.disponible.toLocaleString(), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-white rounded-xl text-center"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500"
+  }, "Taxa d'estalvi"), /*#__PURE__*/React.createElement("p", {
+    className: "font-black text-xl text-violet-600"
+  }, calculPressupost.percentEstalvi, "%"))), calculPressupost.disponible < presEstalvi && /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-white rounded-xl text-sm"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-amber-700"
+  }, "\u26A0\uFE0F No arribes al teu objectiu d'estalvi. Et falten ", /*#__PURE__*/React.createElement("strong", null, (presEstalvi - calculPressupost.disponible).toLocaleString(), "\u20AC")))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800 mb-4"
+  }, "\uD83D\uDCC8 Distribuci\xF3 de despeses"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-2"
+  }, dadesPressupost.map((cat, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    className: "flex items-center gap-3"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-lg"
+  }, cat.emoji), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between text-sm mb-1"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-gray-600"
+  }, cat.nom), /*#__PURE__*/React.createElement("span", {
+    className: "font-bold"
+  }, cat.valor, "\u20AC (", (cat.valor / presIngressos * 100).toFixed(0), "%)")), /*#__PURE__*/React.createElement("div", {
+    className: "h-2 bg-gray-100 rounded-full overflow-hidden"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "h-full rounded-full",
+    style: {
+      width: `${Math.min(cat.valor / presIngressos * 100, 100)}%`,
+      backgroundColor: cat.color
+    }
+  }))))))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800 mb-4"
+  }, "\uD83D\uDCA1 Consells per millorar el teu pressupost"), /*#__PURE__*/React.createElement("div", {
+    className: "grid md:grid-cols-2 gap-4 text-sm"
+  }, Number(calculPressupost.percentHabitatge) > 30 && /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-red-50 border border-red-200 rounded-lg"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold text-red-700"
+  }, "\uD83C\uDFE0 Habitatge massa alt (", calculPressupost.percentHabitatge, "%)"), /*#__PURE__*/React.createElement("p", {
+    className: "text-red-600"
+  }, "Hauria de ser m\xE0xim 30%. Considera compartir pis o buscar alternatives.")), Number(calculPressupost.percentEstalvi) < 10 && /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-amber-50 border border-amber-200 rounded-lg"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold text-amber-700"
+  }, "\uD83D\uDC37 Estalvi insuficient (", calculPressupost.percentEstalvi, "%)"), /*#__PURE__*/React.createElement("p", {
+    className: "text-amber-600"
+  }, "Intenta arribar al 20% dels ingressos. Revisa despeses d'oci i altres.")), Number(calculPressupost.percentEstalvi) >= 20 && /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-green-50 border border-green-200 rounded-lg"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold text-green-700"
+  }, "\uD83C\uDF89 Excel\xB7lent taxa d'estalvi!"), /*#__PURE__*/React.createElement("p", {
+    className: "text-green-600"
+  }, "Est\xE0s estalviant m\xE9s del 20%. Considera invertir els excedents.")), /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-blue-50 border border-blue-200 rounded-lg"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold text-blue-700"
+  }, "\uD83D\uDCF1 Automatitza l'estalvi"), /*#__PURE__*/React.createElement("p", {
+    className: "text-blue-600"
+  }, "Configura una transfer\xE8ncia autom\xE0tica el dia que cobres.")), /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-violet-50 border border-violet-200 rounded-lg"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold text-violet-700"
+  }, "\uD83D\uDCDD Revisa mensualment"), /*#__PURE__*/React.createElement("p", {
+    className: "text-violet-600"
+  }, "Dedica 15 minuts al mes per revisar i ajustar el pressupost.")))));
+
+  // ===== SECCIÓ DECLARACIÓ DE LA RENDA =====
+  const Renda = () => {
+    const [ingressos, setIngressos] = useState(25000);
+    const [deduccions, setDeduccions] = useState(2000);
+    const [retencions, setRetencions] = useState(4000);
+    const calculRenda = useMemo(() => {
+      const baseImposable = Math.max(0, ingressos - deduccions);
+      // Trams IRPF 2024 simplificats
+      let quota = 0;
+      if (baseImposable > 0) quota += Math.min(baseImposable, 12450) * 0.19;
+      if (baseImposable > 12450) quota += Math.min(baseImposable - 12450, 7750) * 0.24;
+      if (baseImposable > 20200) quota += Math.min(baseImposable - 20200, 15000) * 0.30;
+      if (baseImposable > 35200) quota += Math.min(baseImposable - 35200, 24800) * 0.37;
+      if (baseImposable > 60000) quota += (baseImposable - 60000) * 0.45;
+      const resultat = retencions - quota;
+      return {
+        baseImposable,
+        quota: Math.round(quota),
+        resultat: Math.round(resultat)
+      };
+    }, [ingressos, deduccions, retencions]);
+    return /*#__PURE__*/React.createElement("div", {
+      className: "space-y-6"
+    }, /*#__PURE__*/React.createElement("h2", {
+      className: "text-2xl font-black text-gray-800"
+    }, "\uD83E\uDDFE Declaraci\xF3 de la Renda (IRPF)"), /*#__PURE__*/React.createElement(Card, {
+      className: "bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200"
+    }, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-3"
+    }, "\uD83D\uDCDA Qu\xE8 \xE9s la Declaraci\xF3 de la Renda?"), /*#__PURE__*/React.createElement("p", {
+      className: "text-gray-600 text-sm mb-3"
+    }, "L'IRPF (Impost sobre la Renda de les Persones F\xEDsiques) \xE9s un impost que grava els ingressos que has obtingut durant l'any. La declaraci\xF3 \xE9s el document on calcules si has pagat de m\xE9s (et tornen diners) o de menys (has de pagar) segons les ", /*#__PURE__*/React.createElement("strong", null, "retencions"), " que t'han fet a les n\xF2mines."), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-white rounded-lg text-sm text-center"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "font-bold text-amber-600"
+    }, "RESULTAT = RETENCIONS - QUOTA A PAGAR"), /*#__PURE__*/React.createElement("p", {
+      className: "text-xs text-gray-500 mt-1"
+    }, "Positiu = Et tornen | Negatiu = Has de pagar"))), /*#__PURE__*/React.createElement("div", {
+      className: "grid lg:grid-cols-2 gap-6"
+    }, /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\uD83E\uDDEE Simulador b\xE0sic"), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-4"
+    }, /*#__PURE__*/React.createElement(Slider, {
+      label: "Ingressos bruts anuals",
+      value: ingressos,
+      onChange: setIngressos,
+      min: 10000,
+      max: 100000,
+      step: 1000,
+      suffix: "\u20AC"
+    }), /*#__PURE__*/React.createElement(Slider, {
+      label: "Deduccions (hipoteca, donacions...)",
+      value: deduccions,
+      onChange: setDeduccions,
+      min: 0,
+      max: 10000,
+      step: 100,
+      suffix: "\u20AC"
+    }), /*#__PURE__*/React.createElement(Slider, {
+      label: "Retencions ja pagades",
+      value: retencions,
+      onChange: setRetencions,
+      min: 0,
+      max: 30000,
+      step: 100,
+      suffix: "\u20AC"
+    }))), /*#__PURE__*/React.createElement(Card, {
+      className: `border-0 text-white ${calculRenda.resultat >= 0 ? 'bg-gradient-to-br from-emerald-500 to-teal-500' : 'bg-gradient-to-br from-red-500 to-rose-500'}`
+    }, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold mb-4"
+    }, "\uD83D\uDCCA Resultat estimat"), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between py-2 border-b border-white/20"
+    }, /*#__PURE__*/React.createElement("span", null, "Base imposable"), /*#__PURE__*/React.createElement("span", {
+      className: "font-bold"
+    }, calculRenda.baseImposable.toLocaleString(), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between py-2 border-b border-white/20"
+    }, /*#__PURE__*/React.createElement("span", null, "Quota a pagar"), /*#__PURE__*/React.createElement("span", {
+      className: "font-bold"
+    }, calculRenda.quota.toLocaleString(), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between py-2 border-b border-white/20"
+    }, /*#__PURE__*/React.createElement("span", null, "Ja has pagat (retencions)"), /*#__PURE__*/React.createElement("span", {
+      className: "font-bold"
+    }, retencions.toLocaleString(), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between py-3 bg-white/20 rounded-xl px-3"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "font-bold"
+    }, calculRenda.resultat >= 0 ? 'ET TORNEN' : 'A PAGAR'), /*#__PURE__*/React.createElement("span", {
+      className: "font-black text-2xl"
+    }, Math.abs(calculRenda.resultat).toLocaleString(), "\u20AC"))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\uD83D\uDCCA Trams IRPF 2024 (estatal + auton\xF2mic)"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600 mb-4"
+    }, "L'IRPF \xE9s ", /*#__PURE__*/React.createElement("strong", null, "progressiu"), ": nom\xE9s pagues el percentatge alt per la part que supera cada tram."), /*#__PURE__*/React.createElement("div", {
+      className: "grid grid-cols-2 md:grid-cols-5 gap-2"
+    }, [{
+      tram: 'Fins 12.450€',
+      percent: '19%',
+      color: 'emerald'
+    }, {
+      tram: '12.450-20.200€',
+      percent: '24%',
+      color: 'teal'
+    }, {
+      tram: '20.200-35.200€',
+      percent: '30%',
+      color: 'amber'
+    }, {
+      tram: '35.200-60.000€',
+      percent: '37%',
+      color: 'orange'
+    }, {
+      tram: 'Més de 60.000€',
+      percent: '45%',
+      color: 'red'
+    }].map((t, i) => /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: `p-3 bg-${t.color}-50 border border-${t.color}-200 rounded-lg text-center`
+    }, /*#__PURE__*/React.createElement("p", {
+      className: `font-bold text-${t.color}-700`
+    }, t.percent), /*#__PURE__*/React.createElement("p", {
+      className: "text-xs text-gray-600"
+    }, t.tram))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\u2753 Quan \xE9s obligat\xF2ria?"), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-2 gap-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-green-50 border border-green-200 rounded-xl"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-green-700 mb-2"
+    }, "\u2705 NO obligat\xF2ria si..."), /*#__PURE__*/React.createElement("ul", {
+      className: "text-sm text-gray-600 space-y-1"
+    }, /*#__PURE__*/React.createElement("li", null, "\u2022 Ingressos < 22.000\u20AC/any d'un sol pagador"), /*#__PURE__*/React.createElement("li", null, "\u2022 Ingressos < 15.000\u20AC/any de diversos pagadors"), /*#__PURE__*/React.createElement("li", null, "\u2022 Nom\xE9s rendes exemptes o amb retenci\xF3"))), /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-amber-50 border border-amber-200 rounded-xl"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-amber-700 mb-2"
+    }, "\u26A0\uFE0F S\xCD obligat\xF2ria si..."), /*#__PURE__*/React.createElement("ul", {
+      className: "text-sm text-gray-600 space-y-1"
+    }, /*#__PURE__*/React.createElement("li", null, "\u2022 M\xE9s de 22.000\u20AC/any"), /*#__PURE__*/React.createElement("li", null, "\u2022 M\xE9s de 15.000\u20AC amb 2+ pagadors"), /*#__PURE__*/React.createElement("li", null, "\u2022 Vols aplicar deduccions (hipoteca, fills...)"), /*#__PURE__*/React.createElement("li", null, "\u2022 Et surt a tornar i vols els diners"))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\uD83D\uDCA1 Deduccions m\xE9s comunes"), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-3 gap-3"
+    }, [{
+      emoji: '🏠',
+      title: 'Hipoteca habitatge habitual',
+      desc: 'Fins 9.040€/any (compres abans 2013)'
+    }, {
+      emoji: '👶',
+      title: 'Maternitat/Paternitat',
+      desc: 'Fins 1.200€/any per fill < 3 anys'
+    }, {
+      emoji: '👴',
+      title: 'Ascendents/Descendents',
+      desc: 'Mínims personals i familiars'
+    }, {
+      emoji: '💼',
+      title: 'Plans de pensions',
+      desc: 'Fins 1.500€/any'
+    }, {
+      emoji: '🎓',
+      title: "Deducció per lloguer",
+      desc: 'Segons comunitat autònoma'
+    }, {
+      emoji: '❤️',
+      title: 'Donacions',
+      desc: '80% primers 150€, 35-40% resta'
+    }].map((d, i) => /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: "p-3 bg-violet-50 rounded-xl"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-violet-700"
+    }, d.emoji, " ", d.title), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, d.desc))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\uD83D\uDCDD Consells pr\xE0ctics"), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-2 gap-3"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-emerald-50 rounded-lg flex items-start gap-2"
+    }, /*#__PURE__*/React.createElement("span", null, "\uD83D\uDCC5"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-emerald-700"
+    }, "Termini: abril-juny"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "La campanya sol ser abril-juny de l'any seg\xFCent"))), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-emerald-50 rounded-lg flex items-start gap-2"
+    }, /*#__PURE__*/React.createElement("span", null, "\uD83D\uDCF1"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-emerald-700"
+    }, "Usa el borrador"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "Hisenda ja t\xE9 les teues dades, revisa-les!"))), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-emerald-50 rounded-lg flex items-start gap-2"
+    }, /*#__PURE__*/React.createElement("span", null, "\uD83D\uDD0D"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-emerald-700"
+    }, "Revisa deduccions"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "El borrador no inclou tot, afegeix el que falta"))), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-emerald-50 rounded-lg flex items-start gap-2"
+    }, /*#__PURE__*/React.createElement("span", null, "\uD83D\uDCBE"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-emerald-700"
+    }, "Guarda justificants"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "Pot revisar fins 4 anys enrere"))))));
+  };
+
+  // ===== SECCIÓ IMPOSTOS I PRESSUPOSTOS GENERALS DE L'ESTAT =====
+  const Impostos = () => {
+    const [salariAnual, setSalariAnual] = useState(25000);
+
+    // Dades dels PGE 2023 (últims aprovats)
+    const pressupostTotal = 450721; // milions €
+    const pib = 1462000; // milions € aprox
+
+    // Distribució de la despesa (en milions €)
+    const despesaData = [{
+      nom: 'Pensions',
+      valor: 190684,
+      percent: 42.3,
+      color: '#ec4899',
+      emoji: '👴'
+    }, {
+      nom: 'Deute públic',
+      valor: 31171,
+      percent: 6.9,
+      color: '#8b5cf6',
+      emoji: '💳'
+    }, {
+      nom: 'Atur i SS',
+      valor: 21282,
+      percent: 4.7,
+      color: '#f59e0b',
+      emoji: '🏥'
+    }, {
+      nom: 'Defensa',
+      valor: 12312,
+      percent: 2.7,
+      color: '#6b7280',
+      emoji: '🛡️'
+    }, {
+      nom: 'Infraestructures',
+      valor: 14580,
+      percent: 3.2,
+      color: '#10b981',
+      emoji: '🚄'
+    }, {
+      nom: 'Seguretat',
+      valor: 11340,
+      percent: 2.5,
+      color: '#3b82f6',
+      emoji: '👮'
+    }, {
+      nom: 'Educació (estatal)',
+      valor: 5890,
+      percent: 1.3,
+      color: '#14b8a6',
+      emoji: '🎓'
+    }, {
+      nom: 'Altres',
+      valor: 163462,
+      percent: 36.3,
+      color: '#d1d5db',
+      emoji: '📦'
+    }];
+
+    // Càlcul dels impostos d'un salari
+    const calculImpostos = useMemo(() => {
+      // IRPF aproximat (sense deduccions)
+      let irpf = 0;
+      if (salariAnual > 0) irpf += Math.min(salariAnual, 12450) * 0.19;
+      if (salariAnual > 12450) irpf += Math.min(salariAnual - 12450, 7750) * 0.24;
+      if (salariAnual > 20200) irpf += Math.min(salariAnual - 20200, 15000) * 0.30;
+      if (salariAnual > 35200) irpf += Math.min(salariAnual - 35200, 24800) * 0.37;
+      if (salariAnual > 60000) irpf += (salariAnual - 60000) * 0.45;
+      const ss = salariAnual * 0.0635; // Cotització treballador ~6.35%
+      const iva = (salariAnual - irpf - ss) * 0.15; // Estima ~15% del net en IVA (consum)
+      const total = irpf + ss + iva;
+
+      // Com es distribueix el que pagues
+      const perPensions = total * 0.423;
+      const perDeute = total * 0.069;
+      const perDefensa = total * 0.027;
+      const perAltre = total - perPensions - perDeute - perDefensa;
+      return {
+        irpf,
+        ss,
+        iva,
+        total,
+        perPensions,
+        perDeute,
+        perDefensa,
+        perAltre
+      };
+    }, [salariAnual]);
+    return /*#__PURE__*/React.createElement("div", {
+      className: "space-y-6"
+    }, /*#__PURE__*/React.createElement("h2", {
+      className: "text-2xl font-black text-gray-800"
+    }, "\uD83C\uDFDB\uFE0F On van els teus impostos?"), /*#__PURE__*/React.createElement(Card, {
+      className: "bg-gradient-to-r from-indigo-50 to-violet-50 border-indigo-200"
+    }, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-3"
+    }, "\uD83D\uDCDA Els Pressupostos Generals de l'Estat"), /*#__PURE__*/React.createElement("p", {
+      className: "text-gray-600 text-sm mb-3"
+    }, "Els ", /*#__PURE__*/React.createElement("strong", null, "Pressupostos Generals de l'Estat (PGE)"), " s\xF3n el document on es recullen tots els ingressos i despeses previstos per a un any. Els elabora el Govern i els aproven les Corts. Determinen en qu\xE8 es gastar\xE0 el diner p\xFAblic: sanitat, pensions, educaci\xF3, infraestructures..."), /*#__PURE__*/React.createElement("div", {
+      className: "grid grid-cols-3 gap-3 text-center"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-white rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-2xl font-black text-indigo-600"
+    }, "450.721M\u20AC"), /*#__PURE__*/React.createElement("p", {
+      className: "text-xs text-gray-500"
+    }, "PGE 2023")), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-white rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-2xl font-black text-indigo-600"
+    }, "~31%"), /*#__PURE__*/React.createElement("p", {
+      className: "text-xs text-gray-500"
+    }, "del PIB")), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-white rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-2xl font-black text-indigo-600"
+    }, "~9.500\u20AC"), /*#__PURE__*/React.createElement("p", {
+      className: "text-xs text-gray-500"
+    }, "per habitant")))), /*#__PURE__*/React.createElement("div", {
+      className: "grid lg:grid-cols-2 gap-6"
+    }, /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\uD83E\uDDEE On van els TEUS impostos?"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-500 mb-4"
+    }, "Introdueix el teu salari brut anual i veur\xE0s una estimaci\xF3 de quant pagues i a on va."), /*#__PURE__*/React.createElement(Slider, {
+      label: "Salari brut anual",
+      value: salariAnual,
+      onChange: setSalariAnual,
+      min: 10000,
+      max: 100000,
+      step: 1000,
+      suffix: "\u20AC"
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "mt-4 space-y-2"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between p-2 bg-gray-50 rounded"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-sm"
+    }, "IRPF (estimat)"), /*#__PURE__*/React.createElement("span", {
+      className: "font-bold"
+    }, calculImpostos.irpf.toFixed(0), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between p-2 bg-gray-50 rounded"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-sm"
+    }, "Seguretat Social"), /*#__PURE__*/React.createElement("span", {
+      className: "font-bold"
+    }, calculImpostos.ss.toFixed(0), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between p-2 bg-gray-50 rounded"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-sm"
+    }, "IVA (estima consum)"), /*#__PURE__*/React.createElement("span", {
+      className: "font-bold"
+    }, calculImpostos.iva.toFixed(0), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between p-3 bg-indigo-100 rounded-lg font-bold"
+    }, /*#__PURE__*/React.createElement("span", null, "TOTAL IMPOSTOS"), /*#__PURE__*/React.createElement("span", {
+      className: "text-indigo-700"
+    }, calculImpostos.total.toFixed(0), "\u20AC/any")))), /*#__PURE__*/React.createElement(Card, {
+      className: "bg-gradient-to-br from-indigo-500 to-violet-600 text-white border-0"
+    }, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold mb-4"
+    }, "\uD83D\uDCCA Distribuci\xF3 dels teus ", calculImpostos.total.toFixed(0), "\u20AC"), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-white/20 rounded-lg"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between items-center"
+    }, /*#__PURE__*/React.createElement("span", null, "\uD83D\uDC74 Pensions"), /*#__PURE__*/React.createElement("span", {
+      className: "font-black text-xl"
+    }, calculImpostos.perPensions.toFixed(0), "\u20AC")), /*#__PURE__*/React.createElement("p", {
+      className: "text-xs text-white/70 mt-1"
+    }, "42% del pressupost va a pensions")), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-white/10 rounded-lg"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between items-center"
+    }, /*#__PURE__*/React.createElement("span", null, "\uD83D\uDCB3 Deute p\xFAblic"), /*#__PURE__*/React.createElement("span", {
+      className: "font-bold"
+    }, calculImpostos.perDeute.toFixed(0), "\u20AC"))), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-white/10 rounded-lg"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between items-center"
+    }, /*#__PURE__*/React.createElement("span", null, "\uD83D\uDEE1\uFE0F Defensa"), /*#__PURE__*/React.createElement("span", {
+      className: "font-bold"
+    }, calculImpostos.perDefensa.toFixed(0), "\u20AC"))), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-white/10 rounded-lg"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between items-center"
+    }, /*#__PURE__*/React.createElement("span", null, "\uD83D\uDCE6 Resta (sanitat, educaci\xF3...)"), /*#__PURE__*/React.createElement("span", {
+      className: "font-bold"
+    }, calculImpostos.perAltre.toFixed(0), "\u20AC")))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\uD83D\uDCCA On es gasta el pressupost? (PGE 2023)"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-500 mb-4"
+    }, "\u26A0\uFE0F ", /*#__PURE__*/React.createElement("strong", null, "Important:"), " Sanitat i Educaci\xF3 els gestionen principalment les CCAA, per aix\xF2 semblen baixos. El gasto REAL en educaci\xF3 a Espanya \xE9s ~5% del PIB sumant totes les administracions."), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-3"
+    }, despesaData.map((d, i) => /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: "flex items-center gap-3"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-xl w-8"
+    }, d.emoji), /*#__PURE__*/React.createElement("div", {
+      className: "flex-1"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between text-sm mb-1"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "font-medium"
+    }, d.nom), /*#__PURE__*/React.createElement("span", {
+      className: "text-gray-500"
+    }, d.valor.toLocaleString(), "M\u20AC (", d.percent, "%)")), /*#__PURE__*/React.createElement("div", {
+      className: "h-4 bg-gray-100 rounded-full overflow-hidden"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "h-full rounded-full transition-all",
+      style: {
+        width: `${Math.min(d.percent * 2.3, 100)}%`,
+        backgroundColor: d.color
+      }
+    }))))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\uD83D\uDCB0 D'on venen els ingressos?"), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-2 lg:grid-cols-4 gap-3"
+    }, [{
+      nom: 'IRPF',
+      percent: '~24%',
+      desc: 'Impost sobre la renda de les persones',
+      color: 'pink',
+      emoji: '👤'
+    }, {
+      nom: 'IVA',
+      percent: '~18%',
+      desc: 'Impost sobre el valor afegit (consum)',
+      color: 'amber',
+      emoji: '🛒'
+    }, {
+      nom: 'Cotitzacions SS',
+      percent: '~35%',
+      desc: 'Seguretat Social (empresa + treballador)',
+      color: 'emerald',
+      emoji: '🏥'
+    }, {
+      nom: 'Impost Societats',
+      percent: '~7%',
+      desc: 'Impost sobre beneficis empresarials',
+      color: 'blue',
+      emoji: '🏢'
+    }, {
+      nom: 'Impostos especials',
+      percent: '~5%',
+      desc: 'Alcohol, tabac, hidrocarburs',
+      color: 'violet',
+      emoji: '⛽'
+    }, {
+      nom: 'Altres impostos',
+      percent: '~4%',
+      desc: 'Patrimoni, successions, transmissions...',
+      color: 'gray',
+      emoji: '📋'
+    }, {
+      nom: 'Taxes i preus',
+      percent: '~3%',
+      desc: 'DNI, passaport, taxes judicials...',
+      color: 'teal',
+      emoji: '🎫'
+    }, {
+      nom: 'Altres ingressos',
+      percent: '~4%',
+      desc: 'Transferències UE, loteries...',
+      color: 'indigo',
+      emoji: '🌍'
+    }].map((i, idx) => /*#__PURE__*/React.createElement("div", {
+      key: idx,
+      className: `p-3 bg-${i.color}-50 border border-${i.color}-200 rounded-xl`
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex items-center gap-2 mb-1"
+    }, /*#__PURE__*/React.createElement("span", null, i.emoji), /*#__PURE__*/React.createElement("span", {
+      className: `font-bold text-${i.color}-700`
+    }, i.nom)), /*#__PURE__*/React.createElement("p", {
+      className: "text-lg font-black text-gray-800"
+    }, i.percent), /*#__PURE__*/React.createElement("p", {
+      className: "text-xs text-gray-500"
+    }, i.desc))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\uD83D\uDCDA Com s'organitza el pressupost?"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600 mb-4"
+    }, "El pressupost es pot veure des de 3 perspectives diferents:"), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-3 gap-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-blue-50 border border-blue-200 rounded-xl"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-blue-700 mb-2"
+    }, "\uD83C\uDFDB\uFE0F Org\xE0nica"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600 mb-2"
+    }, /*#__PURE__*/React.createElement("strong", null, "QUI"), " gasta els diners?"), /*#__PURE__*/React.createElement("ul", {
+      className: "text-xs text-gray-500 space-y-1"
+    }, /*#__PURE__*/React.createElement("li", null, "\u2022 Ministeri d'Hisenda"), /*#__PURE__*/React.createElement("li", null, "\u2022 Ministeri de Defensa"), /*#__PURE__*/React.createElement("li", null, "\u2022 Seguretat Social"), /*#__PURE__*/React.createElement("li", null, "\u2022 etc."))), /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-emerald-50 border border-emerald-200 rounded-xl"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-emerald-700 mb-2"
+    }, "\uD83C\uDFAF Funcional"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600 mb-2"
+    }, /*#__PURE__*/React.createElement("strong", null, "PER A QU\xC8"), " es gasta?"), /*#__PURE__*/React.createElement("ul", {
+      className: "text-xs text-gray-500 space-y-1"
+    }, /*#__PURE__*/React.createElement("li", null, "\u2022 Protecci\xF3 social"), /*#__PURE__*/React.createElement("li", null, "\u2022 Sanitat"), /*#__PURE__*/React.createElement("li", null, "\u2022 Educaci\xF3"), /*#__PURE__*/React.createElement("li", null, "\u2022 Defensa"))), /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-amber-50 border border-amber-200 rounded-xl"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-amber-700 mb-2"
+    }, "\uD83D\uDCB0 Econ\xF2mica"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600 mb-2"
+    }, /*#__PURE__*/React.createElement("strong", null, "EN QU\xC8"), " es gasta?"), /*#__PURE__*/React.createElement("ul", {
+      className: "text-xs text-gray-500 space-y-1"
+    }, /*#__PURE__*/React.createElement("li", null, "\u2022 Personal (sous)"), /*#__PURE__*/React.createElement("li", null, "\u2022 B\xE9ns i serveis"), /*#__PURE__*/React.createElement("li", null, "\u2022 Inversions"), /*#__PURE__*/React.createElement("li", null, "\u2022 Transfer\xE8ncies"))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\uD83D\uDCC8 Dades clau que has de saber"), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-2 gap-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-rose-50 border border-rose-200 rounded-xl"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-rose-700 mb-2"
+    }, "\uD83D\uDC74 Pensions: la partida m\xE9s gran"), /*#__PURE__*/React.createElement("ul", {
+      className: "text-sm text-gray-600 space-y-1"
+    }, /*#__PURE__*/React.createElement("li", null, "\u2022 ", /*#__PURE__*/React.createElement("strong", null, "42%"), " del pressupost va a pensions"), /*#__PURE__*/React.createElement("li", null, "\u2022 ", /*#__PURE__*/React.createElement("strong", null, "11,5%"), " del PIB"), /*#__PURE__*/React.createElement("li", null, "\u2022 +10 milions de pensionistes"), /*#__PURE__*/React.createElement("li", null, "\u2022 Pensi\xF3 mitjana: ~1.250\u20AC/mes"), /*#__PURE__*/React.createElement("li", null, "\u2022 73% s\xF3n pensions de jubilaci\xF3"))), /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-violet-50 border border-violet-200 rounded-xl"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-violet-700 mb-2"
+    }, "\uD83D\uDCB3 El deute p\xFAblic"), /*#__PURE__*/React.createElement("ul", {
+      className: "text-sm text-gray-600 space-y-1"
+    }, /*#__PURE__*/React.createElement("li", null, "\u2022 Deute total: ~1,5 bilions \u20AC (~110% PIB)"), /*#__PURE__*/React.createElement("li", null, "\u2022 Interessos: ~31.000M\u20AC/any"), /*#__PURE__*/React.createElement("li", null, "\u2022 Si gastem m\xE9s del que ingressem = d\xE8ficit"), /*#__PURE__*/React.createElement("li", null, "\u2022 El d\xE8ficit s'acumula com a deute"))), /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-amber-50 border border-amber-200 rounded-xl"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-amber-700 mb-2"
+    }, "\u26A0\uFE0F Atenci\xF3 amb les comparacions"), /*#__PURE__*/React.createElement("ul", {
+      className: "text-sm text-gray-600 space-y-1"
+    }, /*#__PURE__*/React.createElement("li", null, "\u2022 Sanitat i educaci\xF3 van a les CCAA"), /*#__PURE__*/React.createElement("li", null, "\u2022 No \xE9s cert que \"Defensa > Educaci\xF3\""), /*#__PURE__*/React.createElement("li", null, "\u2022 Cal sumar Estat + CCAA + Ajuntaments"))), /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-emerald-50 border border-emerald-200 rounded-xl"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-emerald-700 mb-2"
+    }, "\uD83D\uDDF3\uFE0F El proc\xE9s pressupostari"), /*#__PURE__*/React.createElement("ul", {
+      className: "text-sm text-gray-600 space-y-1"
+    }, /*#__PURE__*/React.createElement("li", null, "\u2022 El Govern elabora els PGE"), /*#__PURE__*/React.createElement("li", null, "\u2022 Les Corts els aproven"), /*#__PURE__*/React.createElement("li", null, "\u2022 S'han d'aprovar abans del 31/12"), /*#__PURE__*/React.createElement("li", null, "\u2022 Si no, es prorroguen els anteriors"))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\uD83D\uDD17 Recursos per saber-ne m\xE9s"), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-2 gap-3"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-indigo-50 rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-indigo-700"
+    }, "\uD83D\uDCCA dondevanmisimpuestos.es"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "Visualitzaci\xF3 interactiva dels PGE (organitzaci\xF3 sense \xE0nim de lucre)")), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-indigo-50 rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-indigo-700"
+    }, "\uD83C\uDFDB\uFE0F sepg.pap.hacienda.gob.es"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "Web oficial del Ministeri d'Hisenda amb totes les dades")), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-indigo-50 rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-indigo-700"
+    }, "\uD83D\uDCF0 transparencia.gob.es"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "Portal de Transpar\xE8ncia del Govern d'Espanya")), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-indigo-50 rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-indigo-700"
+    }, "\uD83D\uDCD6 Llibre Blau i Llibre Groc"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "Documents oficials que expliquen l'estructura dels PGE")))));
+  };
+
+  // ===== SECCIÓ FACTURES I SUBMINISTRAMENTS =====
+  const Factures = () => {
+    const [potenciaKw, setPotenciaKw] = useState(4.6);
+    const [consumKwh, setConsumKwh] = useState(200);
+    const calculLlum = useMemo(() => {
+      // Preus aproximats 2024 (PVPC)
+      const preuPotencia = 30.67; // €/kW/any
+      const preuEnergia = 0.12; // €/kWh mitjà
+      const costPotencia = potenciaKw * preuPotencia / 12;
+      const costEnergia = consumKwh * preuEnergia;
+      const subtotal = costPotencia + costEnergia;
+      const impostElectric = subtotal * 0.051; // 5.1%
+      const lloguerComptador = 0.81;
+      const baseIVA = subtotal + impostElectric + lloguerComptador;
+      const iva = baseIVA * 0.10; // 10% IVA reduït
+      const total = baseIVA + iva;
+      return {
+        costPotencia,
+        costEnergia,
+        impostElectric,
+        lloguerComptador,
+        iva,
+        total
+      };
+    }, [potenciaKw, consumKwh]);
+    return /*#__PURE__*/React.createElement("div", {
+      className: "space-y-6"
+    }, /*#__PURE__*/React.createElement("h2", {
+      className: "text-2xl font-black text-gray-800"
+    }, "\uD83D\uDD0C Factures i Subministraments"), /*#__PURE__*/React.createElement(Card, {
+      className: "bg-gradient-to-r from-yellow-50 to-amber-50 border-amber-200"
+    }, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-3"
+    }, "\uD83D\uDCDA Entendre les factures"), /*#__PURE__*/React.createElement("p", {
+      className: "text-gray-600 text-sm"
+    }, "Les factures de subministraments (llum, gas, aigua) tenen conceptes que molta gent no ent\xE9n. Aprendre a llegir-les et permet ", /*#__PURE__*/React.createElement("strong", null, "detectar errors"), ", ", /*#__PURE__*/React.createElement("strong", null, "optimitzar el consum"), "i ", /*#__PURE__*/React.createElement("strong", null, "estalviar diners"), " triant la tarifa adequada.")), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\uD83D\uDCA1 Factura de la Llum"), /*#__PURE__*/React.createElement("div", {
+      className: "grid lg:grid-cols-2 gap-6"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "space-y-4"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-medium text-gray-700"
+    }, "\uD83E\uDDEE Simulador"), /*#__PURE__*/React.createElement(Slider, {
+      label: "Pot\xE8ncia contractada (kW)",
+      value: potenciaKw,
+      onChange: setPotenciaKw,
+      min: 2.3,
+      max: 10,
+      step: 0.1,
+      suffix: " kW"
+    }), /*#__PURE__*/React.createElement(Slider, {
+      label: "Consum mensual (kWh)",
+      value: consumKwh,
+      onChange: setConsumKwh,
+      min: 50,
+      max: 500,
+      step: 10,
+      suffix: " kWh"
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-amber-50 border border-amber-200 rounded-xl"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "space-y-2 text-sm"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between"
+    }, /*#__PURE__*/React.createElement("span", null, "Terme de pot\xE8ncia"), /*#__PURE__*/React.createElement("span", null, calculLlum.costPotencia.toFixed(2), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between"
+    }, /*#__PURE__*/React.createElement("span", null, "Terme d'energia"), /*#__PURE__*/React.createElement("span", null, calculLlum.costEnergia.toFixed(2), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between text-gray-500"
+    }, /*#__PURE__*/React.createElement("span", null, "Impost el\xE8ctric (5.1%)"), /*#__PURE__*/React.createElement("span", null, calculLlum.impostElectric.toFixed(2), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between text-gray-500"
+    }, /*#__PURE__*/React.createElement("span", null, "Lloguer comptador"), /*#__PURE__*/React.createElement("span", null, calculLlum.lloguerComptador.toFixed(2), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between text-gray-500"
+    }, /*#__PURE__*/React.createElement("span", null, "IVA (10%)"), /*#__PURE__*/React.createElement("span", null, calculLlum.iva.toFixed(2), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between font-bold text-lg pt-2 border-t border-amber-300"
+    }, /*#__PURE__*/React.createElement("span", null, "TOTAL MENSUAL"), /*#__PURE__*/React.createElement("span", {
+      className: "text-amber-700"
+    }, calculLlum.total.toFixed(2), "\u20AC"))))), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-medium text-gray-700"
+    }, "\uD83D\uDCD6 Components"), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-blue-50 rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-blue-700"
+    }, "\u26A1 Terme de pot\xE8ncia"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "El que pagues per tenir electricitat disponible, independentment del consum. Com una \"quota fixa\".")), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-green-50 rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-green-700"
+    }, "\uD83D\uDD0B Terme d'energia"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "El que pagues pel consum real en kWh. Amb discriminaci\xF3 hor\xE0ria pots estalviar consumint en hores vall.")), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-violet-50 rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-violet-700"
+    }, "\uD83D\uDCCA Peatges i c\xE0rrecs"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "Costos de transport i distribuci\xF3. Regulats pel govern, iguals per a totes les comercialitzadores."))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\u23F0 Tipus de tarifa el\xE8ctrica"), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-2 gap-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-emerald-50 border border-emerald-200 rounded-xl"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-emerald-700 mb-2"
+    }, "\uD83C\uDFF7\uFE0F PVPC (Preu regulat)"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600 mb-2"
+    }, "Preu que varia cada hora segons el mercat majorista."), /*#__PURE__*/React.createElement("ul", {
+      className: "text-xs text-gray-500 space-y-1"
+    }, /*#__PURE__*/React.createElement("li", null, "\u2713 Pot ser m\xE9s barat si consumes en hores vall"), /*#__PURE__*/React.createElement("li", null, "\u2713 Transparent, sense perman\xE8ncia"), /*#__PURE__*/React.createElement("li", null, "\u2717 Imprevisible, pot pujar molt"))), /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-blue-50 border border-blue-200 rounded-xl"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-blue-700 mb-2"
+    }, "\uD83D\uDCDD Mercat lliure (Fix)"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600 mb-2"
+    }, "Preu pactat amb la comercialitzadora."), /*#__PURE__*/React.createElement("ul", {
+      className: "text-xs text-gray-500 space-y-1"
+    }, /*#__PURE__*/React.createElement("li", null, "\u2713 Estabilitat, saps el que pagar\xE0s"), /*#__PURE__*/React.createElement("li", null, "\u2713 Ofertes i descomptes"), /*#__PURE__*/React.createElement("li", null, "\u2717 Pot tenir perman\xE8ncia i penalitzacions"))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\uD83D\uDD25 Factura del Gas"), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-2 gap-4"
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600 mb-3"
+    }, "Similar a la llum, per\xF2 m\xE9s senzilla:"), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-2"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-orange-50 rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-orange-700"
+    }, "\uD83D\uDCCB Terme fix"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "Quota mensual per tenir gas disponible")), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-orange-50 rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-orange-700"
+    }, "\uD83D\uDD25 Terme variable"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "Consum en kWh (no m\xB3 directament)")), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-gray-50 rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-gray-700"
+    }, "\uD83D\uDCB0 Impostos"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "Impost hidrocarburs + IVA 21%")))), /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-amber-50 border border-amber-200 rounded-xl"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-amber-700 mb-3"
+    }, "\uD83D\uDCA1 Consells per estalviar"), /*#__PURE__*/React.createElement("ul", {
+      className: "text-sm text-gray-600 space-y-2"
+    }, /*#__PURE__*/React.createElement("li", null, "\u2022 Revisa la pot\xE8ncia: molts tenen m\xE9s del necessari"), /*#__PURE__*/React.createElement("li", null, "\u2022 Compara comercialitzadores cada any"), /*#__PURE__*/React.createElement("li", null, "\u2022 Calefacci\xF3 a 20-21\xB0C, cada grau = +7% consum"), /*#__PURE__*/React.createElement("li", null, "\u2022 Revisa finestres i a\xEFllament"), /*#__PURE__*/React.createElement("li", null, "\u2022 Considera aerot\xE8rmia si tens llum barata"))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\uD83D\uDCA7 Factura de l'Aigua"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600 mb-4"
+    }, "Gestionada per l'Ajuntament o empresa municipal. Sol tenir trams de consum."), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-3 gap-3"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-blue-50 rounded-lg text-center"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-blue-700"
+    }, "\uD83D\uDEB0 Quota de servei"), /*#__PURE__*/React.createElement("p", {
+      className: "text-xs text-gray-600"
+    }, "Part fixa mensual")), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-blue-50 rounded-lg text-center"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-blue-700"
+    }, "\uD83D\uDCCA Consum per trams"), /*#__PURE__*/React.createElement("p", {
+      className: "text-xs text-gray-600"
+    }, "Com m\xE9s consums, m\xE9s car per m\xB3")), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-blue-50 rounded-lg text-center"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-blue-700"
+    }, "\uD83C\uDFED Clavegueram"), /*#__PURE__*/React.createElement("p", {
+      className: "text-xs text-gray-600"
+    }, "Tractament d'aig\xFCes residuals"))), /*#__PURE__*/React.createElement("div", {
+      className: "mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-sm"
+    }, /*#__PURE__*/React.createElement("strong", null, "\uD83D\uDCA1 Consum mitj\xE0:"), " ~100-150 litres/persona/dia. Una fam\xEDlia de 4: ~15-20 m\xB3/mes"))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\uD83C\uDF31 Resum: com estalviar"), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-3 gap-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-yellow-50 border border-yellow-200 rounded-xl"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-yellow-700 mb-2"
+    }, "\uD83D\uDCA1 Llum"), /*#__PURE__*/React.createElement("ul", {
+      className: "text-sm text-gray-600 space-y-1"
+    }, /*#__PURE__*/React.createElement("li", null, "\u2022 LED a tot arreu"), /*#__PURE__*/React.createElement("li", null, "\u2022 Electrodom\xE8stics A+++"), /*#__PURE__*/React.createElement("li", null, "\u2022 Hores vall (nit, caps de setmana)"), /*#__PURE__*/React.createElement("li", null, "\u2022 Revisa pot\xE8ncia contractada"))), /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-orange-50 border border-orange-200 rounded-xl"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-orange-700 mb-2"
+    }, "\uD83D\uDD25 Gas"), /*#__PURE__*/React.createElement("ul", {
+      className: "text-sm text-gray-600 space-y-1"
+    }, /*#__PURE__*/React.createElement("li", null, "\u2022 Term\xF2stat a 20-21\xB0C"), /*#__PURE__*/React.createElement("li", null, "\u2022 A\xEFlla finestres i portes"), /*#__PURE__*/React.createElement("li", null, "\u2022 Caldera eficient"), /*#__PURE__*/React.createElement("li", null, "\u2022 Dutxes curtes"))), /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-blue-50 border border-blue-200 rounded-xl"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-blue-700 mb-2"
+    }, "\uD83D\uDCA7 Aigua"), /*#__PURE__*/React.createElement("ul", {
+      className: "text-sm text-gray-600 space-y-1"
+    }, /*#__PURE__*/React.createElement("li", null, "\u2022 Aixetes amb airejadors"), /*#__PURE__*/React.createElement("li", null, "\u2022 Cisternes de doble desc\xE0rrega"), /*#__PURE__*/React.createElement("li", null, "\u2022 Rentadora i rentavaixelles plens"), /*#__PURE__*/React.createElement("li", null, "\u2022 Revisa fuites"))))));
+  };
+
+  // ===== SECCIÓ LLOGUER =====
+  const Lloguer = () => {
+    const [lloguerMes, setLloguerMes] = useState(800);
+    const [ingressosNets, setIngressosNets] = useState(1800);
+    const calculLloguer = useMemo(() => {
+      const percentatge = lloguerMes / ingressosNets * 100;
+      const fianca = lloguerMes; // 1 mes mínim
+      const despesesEntrada = lloguerMes * 2 + 200; // fiança + 1r mes + gestió
+      const saludable = percentatge <= 30;
+      return {
+        percentatge,
+        fianca,
+        despesesEntrada,
+        saludable
+      };
+    }, [lloguerMes, ingressosNets]);
+    return /*#__PURE__*/React.createElement("div", {
+      className: "space-y-6"
+    }, /*#__PURE__*/React.createElement("h2", {
+      className: "text-2xl font-black text-gray-800"
+    }, "\uD83C\uDFD8\uFE0F Tot sobre el Lloguer"), /*#__PURE__*/React.createElement(Card, {
+      className: "bg-gradient-to-r from-rose-50 to-pink-50 border-rose-200"
+    }, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-3"
+    }, "\uD83D\uDCDA Llogar un pis"), /*#__PURE__*/React.createElement("p", {
+      className: "text-gray-600 text-sm"
+    }, "El lloguer \xE9s sovint el primer pas cap a la independ\xE8ncia. Entendre els teus ", /*#__PURE__*/React.createElement("strong", null, "drets"), ", les ", /*#__PURE__*/React.createElement("strong", null, "obligacions"), " i el ", /*#__PURE__*/React.createElement("strong", null, "contracte"), " et protegeix de problemes i abusos.")), /*#__PURE__*/React.createElement("div", {
+      className: "grid lg:grid-cols-2 gap-6"
+    }, /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\uD83E\uDDEE \xC9s assumible aquest lloguer?"), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-4"
+    }, /*#__PURE__*/React.createElement(Slider, {
+      label: "Lloguer mensual",
+      value: lloguerMes,
+      onChange: setLloguerMes,
+      min: 300,
+      max: 2000,
+      step: 50,
+      suffix: "\u20AC"
+    }), /*#__PURE__*/React.createElement(Slider, {
+      label: "Ingressos nets mensuals",
+      value: ingressosNets,
+      onChange: setIngressosNets,
+      min: 1000,
+      max: 5000,
+      step: 100,
+      suffix: "\u20AC"
+    }))), /*#__PURE__*/React.createElement(Card, {
+      className: `border-0 text-white ${calculLloguer.saludable ? 'bg-gradient-to-br from-emerald-500 to-teal-500' : 'bg-gradient-to-br from-amber-500 to-orange-500'}`
+    }, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold mb-4"
+    }, "\uD83D\uDCCA An\xE0lisi"), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between py-2 border-b border-white/20"
+    }, /*#__PURE__*/React.createElement("span", null, "% dels ingressos"), /*#__PURE__*/React.createElement("span", {
+      className: "font-black text-2xl"
+    }, calculLloguer.percentatge.toFixed(0), "%")), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-white/20 rounded-xl text-center"
+    }, calculLloguer.saludable ? /*#__PURE__*/React.createElement("p", null, "\u2705 ", /*#__PURE__*/React.createElement("strong", null, "Saludable!"), " Recomanat: m\xE0x 30-35%") : /*#__PURE__*/React.createElement("p", null, "\u26A0\uFE0F ", /*#__PURE__*/React.createElement("strong", null, "Atenci\xF3!"), " Superes el 30% recomanat")), /*#__PURE__*/React.createElement("div", {
+      className: "grid grid-cols-2 gap-2 text-sm mt-2"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "p-2 bg-white/10 rounded-lg text-center"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-white/70"
+    }, "Fian\xE7a m\xEDnima"), /*#__PURE__*/React.createElement("p", {
+      className: "font-bold"
+    }, calculLloguer.fianca, "\u20AC")), /*#__PURE__*/React.createElement("div", {
+      className: "p-2 bg-white/10 rounded-lg text-center"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-white/70"
+    }, "Entrada estimada"), /*#__PURE__*/React.createElement("p", {
+      className: "font-bold"
+    }, calculLloguer.despesesEntrada, "\u20AC")))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\uD83D\uDCDD El contracte de lloguer"), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-2 gap-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-violet-50 rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-violet-700"
+    }, "\uD83D\uDCC5 Durada"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "M\xEDnim legal: 5 anys (7 si propietari \xE9s empresa). El propietari no pot fer-te fora abans.")), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-violet-50 rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-violet-700"
+    }, "\uD83D\uDCB0 Fian\xE7a"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "M\xE0xim legal: ", /*#__PURE__*/React.createElement("strong", null, "1 mes"), " de lloguer (habitatge). Es diposita a l'organisme oficial.")), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-violet-50 rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-violet-700"
+    }, "\uD83D\uDD12 Garanties addicionals"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "M\xE0xim 2 mesos addicionals. Total: fins a 3 mesos entre tot."))), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-amber-50 rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-amber-700"
+    }, "\uD83D\uDCC8 Actualitzaci\xF3 renda"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "M\xE0xim IPC (o \xEDndex legal). No poden pujar el que vulguin.")), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-amber-50 rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-amber-700"
+    }, "\uD83D\uDEAA Desistiment inquil\xED"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "Pots marxar als 6 mesos amb 30 dies d'av\xEDs. Pot haver penalitzaci\xF3 pactada.")), /*#__PURE__*/React.createElement("div", {
+      className: "p-3 bg-amber-50 rounded-lg"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-amber-700"
+    }, "\uD83D\uDD27 Reparacions"), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "Habitabilitat = propietari. \xDAs diari (<150\u20AC) = inquil\xED."))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\u2696\uFE0F Drets de l'inquil\xED"), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-2 gap-3"
+    }, [{
+      icon: '🏠',
+      dret: 'Habitatge en condicions',
+      desc: "L'habitatge ha de ser habitable i segur"
+    }, {
+      icon: '🔒',
+      dret: 'Estabilitat',
+      desc: "No et poden fer fora sense causa justificada"
+    }, {
+      icon: '📝',
+      dret: 'Contracte per escrit',
+      desc: "Sempre demana'l, és la teua protecció"
+    }, {
+      icon: '🧾',
+      dret: 'Rebuts de pagament',
+      desc: "Guarda tots els rebuts del lloguer"
+    }, {
+      icon: '🔧',
+      dret: 'Reparacions necessàries',
+      desc: "El propietari ha de mantenir l'habitatge"
+    }, {
+      icon: '💰',
+      dret: 'Recuperar fiança',
+      desc: "Si deixes el pis bé, te la tornen (màx 30 dies)"
+    }].map((d, i) => /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: "flex items-start gap-3 p-3 bg-emerald-50 rounded-lg"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-xl"
+    }, d.icon), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-emerald-700"
+    }, d.dret), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, d.desc)))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\uD83D\uDCCB Obligacions de l'inquil\xED"), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-3 gap-3"
+    }, [{
+      icon: '💵',
+      title: 'Pagar el lloguer',
+      desc: 'Puntualment, en la forma acordada'
+    }, {
+      icon: '🏠',
+      title: 'Cuidar el pis',
+      desc: "Mantenir-lo en bon estat, com si fos teu"
+    }, {
+      icon: '🔔',
+      title: 'Comunicar desperfectes',
+      desc: 'Avisa el propietari de problemes greus'
+    }, {
+      icon: '🙅',
+      title: 'No fer obres',
+      desc: 'Sense permís escrit del propietari'
+    }, {
+      icon: '👥',
+      title: 'No subarrendar',
+      desc: 'Llevat que el contracte ho permeti'
+    }, {
+      icon: '📅',
+      title: 'Retornar al final',
+      desc: 'En les mateixes condicions (ús normal)'
+    }].map((o, i) => /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: "p-3 bg-rose-50 rounded-lg text-center"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-xl mb-1"
+    }, o.icon), /*#__PURE__*/React.createElement("p", {
+      className: "font-bold text-rose-700 text-sm"
+    }, o.title), /*#__PURE__*/React.createElement("p", {
+      className: "text-xs text-gray-600"
+    }, o.desc))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\u2705 Checklist abans de firmar"), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-2 gap-3"
+    }, ['Visita el pis de dia i comprova tot', 'Demana nota simple del Registre (qui és el propietari)', 'Verifica el certificat energètic', 'Fes fotos de l\'estat actual', 'Llegeix TOT el contracte abans de firmar', 'Comprova que la fiança va al dipòsit oficial', 'Acorda per escrit qui paga cada despesa', 'Demana còpia firmada del contracte'].map((c, i) => /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: "flex items-center gap-2 p-2 bg-violet-50 rounded-lg"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-violet-500 font-bold"
+    }, "\u2610"), /*#__PURE__*/React.createElement("span", {
+      className: "text-sm text-gray-700"
+    }, c))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-gray-800 mb-4"
+    }, "\uD83D\uDCB8 Qui paga qu\xE8?"), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-2 gap-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-rose-50 border border-rose-200 rounded-xl"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-rose-700 mb-2"
+    }, "\uD83D\uDC64 INQUIL\xCD paga"), /*#__PURE__*/React.createElement("ul", {
+      className: "text-sm text-gray-600 space-y-1"
+    }, /*#__PURE__*/React.createElement("li", null, "\u2022 Lloguer mensual"), /*#__PURE__*/React.createElement("li", null, "\u2022 Subministraments (llum, gas, aigua)"), /*#__PURE__*/React.createElement("li", null, "\u2022 Petites reparacions d'\xFAs (<150\u20AC)"), /*#__PURE__*/React.createElement("li", null, "\u2022 Taxa d'escombraries (si s'acorda)"))), /*#__PURE__*/React.createElement("div", {
+      className: "p-4 bg-blue-50 border border-blue-200 rounded-xl"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "font-bold text-blue-700 mb-2"
+    }, "\uD83C\uDFE0 PROPIETARI paga"), /*#__PURE__*/React.createElement("ul", {
+      className: "text-sm text-gray-600 space-y-1"
+    }, /*#__PURE__*/React.createElement("li", null, "\u2022 IBI (Impost de B\xE9ns Immobles)"), /*#__PURE__*/React.createElement("li", null, "\u2022 Comunitat de ve\xEFns"), /*#__PURE__*/React.createElement("li", null, "\u2022 Asseguran\xE7a de l'edifici"), /*#__PURE__*/React.createElement("li", null, "\u2022 Reparacions d'habitabilitat"), /*#__PURE__*/React.createElement("li", null, "\u2022 Despeses de formalitzaci\xF3 contracte"))))));
+  };
+  const Contractes = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6"
+  }, /*#__PURE__*/React.createElement("h2", {
+    className: "text-2xl font-black text-gray-800"
+  }, "\uD83D\uDCCB Tipus de Contractes"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-4"
+  }, [{
+    nom: '🟢 Indefinit',
+    desc: 'Sense data de fi. El més estable.',
+    indem: '33 dies/any (màx 24 mensualitats)',
+    pros: ['Estabilitat', 'Accés a hipoteca', 'Més protecció']
+  }, {
+    nom: '🟡 Temporal',
+    desc: 'Data de fi. Molt limitat des de reforma 2022.',
+    indem: '12 dies/any',
+    pros: ['Entrada ràpida', 'Pot ser indefinit']
+  }, {
+    nom: '🔵 Pràctiques',
+    desc: 'Per a titulats recents. Màx 1 any.',
+    indem: 'Sense indemnització',
+    pros: ['Primera experiència', 'Cotització SS']
+  }, {
+    nom: '🟣 Formació',
+    desc: 'Treball + formació. 16-30 anys.',
+    indem: 'Sense indemnització',
+    pros: ['Aprens mentre treballes', 'Pot ser indefinit']
+  }, {
+    nom: '🟤 Fix-discontinu',
+    desc: 'Treballs estacionals.',
+    indem: '33 dies/any com indefinit',
+    pros: ['Estabilitat estacional', 'Atur entre temporades']
+  }].map((c, i) => /*#__PURE__*/React.createElement(Card, {
+    key: i
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-col md:flex-row md:items-center gap-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex-1"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800 text-lg"
+  }, c.nom), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-gray-500"
+  }, c.desc)), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-violet-50 rounded-xl"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500"
+  }, "Indemnitzaci\xF3"), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm font-medium text-violet-700"
+  }, c.indem)), /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-emerald-50 rounded-xl"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500"
+  }, "Avantatges"), c.pros.map((p, j) => /*#__PURE__*/React.createElement("p", {
+    key: j,
+    className: "text-xs text-emerald-600"
+  }, "\u2713 ", p)))))))), /*#__PURE__*/React.createElement(Card, {
+    className: "bg-violet-50 border-violet-200"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800 mb-3"
+  }, "\uD83D\uDEE1\uFE0F Drets b\xE0sics"), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 md:grid-cols-3 gap-2"
+  }, ['SMI: 1.134€/mes (14 pagues)', '30 dies vacances/any', '14 festius', 'Baixa per malaltia', 'Permís maternitat/paternitat: 16 setmanes', 'Finiquito en acabar'].map((d, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    className: "text-sm text-gray-600"
+  }, "\u2713 ", d)))));
+  const CV = () => /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6"
+  }, /*#__PURE__*/React.createElement("h2", {
+    className: "text-2xl font-black text-gray-800"
+  }, "\uD83D\uDCC4 Com fer un CV Professional"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-4"
+  }, [{
+    num: '1',
+    t: 'Dades personals',
+    d: 'Nom, telèfon, email, LinkedIn. NO foto llevat que la demanen.',
+    tips: ['Email professional', 'LinkedIn actualitzat']
+  }, {
+    num: '2',
+    t: 'Perfil',
+    d: '2-3 línies resumint qui ets i què aportes.',
+    tips: ['Adapta a cada oferta', 'Paraules clau']
+  }, {
+    num: '3',
+    t: 'Experiència',
+    d: 'De recent a antic. Empresa, càrrec, èxits amb dades.',
+    tips: ['Verbs d\'acció', 'Quantifica: "+25% vendes"']
+  }, {
+    num: '4',
+    t: 'Formació',
+    d: 'Títols i cursos rellevants.',
+    tips: ['No cal ESO', 'Certificacions reconegudes']
+  }, {
+    num: '5',
+    t: 'Habilitats',
+    d: 'Idiomes (nivell real), programes, competències.',
+    tips: ['Sigues honest', 'Prioritza segons oferta']
+  }].map((p, i) => /*#__PURE__*/React.createElement(Card, {
+    key: i
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-10 h-10 bg-violet-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0"
+  }, p.num), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-gray-800"
+  }, p.t), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-gray-500"
+  }, p.d), /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-wrap gap-2 mt-2"
+  }, p.tips.map((tip, j) => /*#__PURE__*/React.createElement("span", {
+    key: j,
+    className: "text-xs px-2 py-1 bg-violet-100 text-violet-700 rounded-full"
+  }, "\uD83D\uDCA1 ", tip)))))))), /*#__PURE__*/React.createElement("div", {
+    className: "grid md:grid-cols-2 gap-4"
+  }, /*#__PURE__*/React.createElement(Card, {
+    className: "bg-red-50 border-red-200"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-red-700 mb-2"
+  }, "\u274C Errors"), ['Més de 2 pàgines', 'Faltes ortografia', 'Email sexy_boy@...', 'Mentir', 'Disseny recarregat'].map((e, i) => /*#__PURE__*/React.createElement("p", {
+    key: i,
+    className: "text-sm text-red-600"
+  }, "\u2022 ", e))), /*#__PURE__*/React.createElement(Card, {
+    className: "bg-emerald-50 border-emerald-200"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-bold text-emerald-700 mb-2"
+  }, "\u2705 Consells"), ['Guarda en PDF', 'Nom: CV_Nom_Cognom.pdf', 'Revisa diverses vegades', 'Adapta a cada oferta', 'Plantilla neta'].map((c, i) => /*#__PURE__*/React.createElement("p", {
+    key: i,
+    className: "text-sm text-emerald-600"
+  }, "\u2022 ", c)))));
+  const glossari = [{
+    t: 'IRPF',
+    d: "Impost sobre la Renda. L'impost pels teus ingressos."
+  }, {
+    t: 'Salari brut',
+    d: 'Total abans de deduccions.'
+  }, {
+    t: 'Salari net',
+    d: 'El que reps després de deduccions.'
+  }, {
+    t: 'Seguretat Social',
+    d: 'Sistema públic: sanitat, pensions, atur.'
+  }, {
+    t: 'Euríbor',
+    d: 'Índex per hipoteques variables.'
+  }, {
+    t: 'TAE',
+    d: "Cost real d'un préstec amb comissions."
+  }, {
+    t: 'TIN',
+    d: "Interès pur sense comissions."
+  }, {
+    t: 'Amortització',
+    d: 'Pagament del capital del préstec.'
+  }, {
+    t: 'Finiquito',
+    d: 'Liquidació quan acaba el contracte.'
+  }, {
+    t: 'Indemnització',
+    d: 'Compensació per acomiadament.'
+  }, {
+    t: 'Conveni',
+    d: 'Acord que regula condicions laborals del sector.'
+  }, {
+    t: 'Base imposable',
+    d: "Import sobre el qual es calcula l'impost."
+  }, {
+    t: 'Retenció',
+    d: "Quantitat descomptada a compte de l'IRPF."
+  }, {
+    t: 'Hipoteca',
+    d: "Préstec amb garantia d'un immoble."
+  }, {
+    t: 'Diferencial',
+    d: "Marge que el banc afegeix a l'Euríbor."
+  }, {
+    t: 'Interès compost',
+    d: 'Interessos que generen nous interessos.'
+  }];
+  const Glossari = () => {
+    const filtered = glossari.filter(g => g.t.toLowerCase().includes(searchTerm.toLowerCase()) || g.d.toLowerCase().includes(searchTerm.toLowerCase()));
+    return /*#__PURE__*/React.createElement("div", {
+      className: "space-y-6"
+    }, /*#__PURE__*/React.createElement("h2", {
+      className: "text-2xl font-black text-gray-800"
+    }, "\uD83D\uDCD6 Glossari"), /*#__PURE__*/React.createElement("input", {
+      type: "text",
+      value: searchTerm,
+      onChange: e => setSearchTerm(e.target.value),
+      placeholder: "\uD83D\uDD0D Cerca un terme...",
+      className: "w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500"
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "grid md:grid-cols-2 gap-4"
+    }, filtered.map((g, i) => /*#__PURE__*/React.createElement(Card, {
+      key: i
+    }, /*#__PURE__*/React.createElement("h3", {
+      className: "font-bold text-violet-600"
+    }, g.t), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, g.d)))));
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "min-h-screen"
+  }, /*#__PURE__*/React.createElement(PdeHeader, {
+    idioma: idioma,
+    setIdioma: setIdioma,
+    currentApp: "vidapractica",
+    sections: [{
+      id: 'inicio',
+      label: t('nav', 'inicio'),
+      emoji: '🏠'
+    }, {
+      id: 'nomina',
+      label: t('nav', 'nomina'),
+      emoji: '💳'
+    }, {
+      id: 'hipoteca',
+      label: t('nav', 'hipoteca'),
+      emoji: '🏠'
+    }, {
+      id: 'estalvi',
+      label: t('nav', 'estalvi'),
+      emoji: '🐷'
+    }, {
+      id: 'pressupost',
+      label: t('nav', 'pressupost'),
+      emoji: '💰'
+    }, {
+      id: 'prestec',
+      label: t('nav', 'prestec'),
+      emoji: '💸'
+    }, {
+      id: 'renda',
+      label: t('nav', 'renda'),
+      emoji: '🧾'
+    }, {
+      id: 'impostos',
+      label: t('nav', 'impostos'),
+      emoji: '🏛️'
+    }, {
+      id: 'factures',
+      label: t('nav', 'factures'),
+      emoji: '🔌'
+    }, {
+      id: 'lloguer',
+      label: t('nav', 'lloguer'),
+      emoji: '🏘️'
+    }, {
+      id: 'contractes',
+      label: t('nav', 'contractes'),
+      emoji: '📋'
+    }, {
+      id: 'cv',
+      label: t('nav', 'cv'),
+      emoji: '📄'
+    }, {
+      id: 'glossari',
+      label: t('nav', 'glossari'),
+      emoji: '📖'
+    }],
+    currentSection: section,
+    setSection: setSection
+  }), /*#__PURE__*/React.createElement("main", {
+    className: "max-w-6xl mx-auto px-4 py-8"
+  }, section === 'inicio' && /*#__PURE__*/React.createElement(Inicio, null), section === 'nomina' && /*#__PURE__*/React.createElement(Nomina, null), section === 'hipoteca' && /*#__PURE__*/React.createElement(Hipoteca, null), section === 'estalvi' && /*#__PURE__*/React.createElement(Estalvi, null), section === 'pressupost' && /*#__PURE__*/React.createElement(Pressupost, null), section === 'prestec' && /*#__PURE__*/React.createElement(Prestec, null), section === 'renda' && /*#__PURE__*/React.createElement(Renda, null), section === 'impostos' && /*#__PURE__*/React.createElement(Impostos, null), section === 'factures' && /*#__PURE__*/React.createElement(Factures, null), section === 'lloguer' && /*#__PURE__*/React.createElement(Lloguer, null), section === 'contractes' && /*#__PURE__*/React.createElement(Contractes, null), section === 'cv' && /*#__PURE__*/React.createElement(CV, null), section === 'glossari' && /*#__PURE__*/React.createElement(Glossari, null)), /*#__PURE__*/React.createElement(PdeFooter, {
+    appEmoji: "\uD83D\uDCBC",
+    appName: t('glossari.vida_pràctica'),
+    idioma: idioma
+  }), /*#__PURE__*/React.createElement(PdeScrollToTop, null));
+}
+ReactDOM.render(/*#__PURE__*/React.createElement(App, null), document.getElementById('root'));</script>
+</body>
+</html>

@@ -1,0 +1,3276 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oligopoly - Monopoly Econòmic | PDE</title>
+    <meta name="description" content="Joc de taula tipus Monopoly amb economia realista: subhastes, cicles econòmics, R+D i impostos progressius!">
+    <meta property="og:title" content="Oligopoly - Monopoly Econòmic | PDE">
+    <meta property="og:description" content="Monopoly econòmic educatiu multijugador amb mecàniques reals!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/econopoly">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Oligopoly - Monopoly Econòmic | PDE">
+    <meta name="twitter:description" content="Joc de taula tipus Monopoly amb economia realista: subhastes, cicles econòmics i R+D!">
+    <link rel="canonical" href="https://profedeeconomia.es/econopoly">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+    <!-- React + Babel + Tailwind -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <link rel="stylesheet" href="./pde.css">
+<!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <!-- QR Code -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <!-- PDE Shared -->
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js"></script>
+    <script src="./pde-game-engine.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; scrollbar-width: thin; scrollbar-color: #10b981 #064e3b; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #064e3b; }
+        ::-webkit-scrollbar-thumb { background-color: #10b981; border-radius: 3px; }
+        @keyframes fall { 0% { transform: translateY(-100%) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(16,185,129,0.3); } 50% { box-shadow: 0 0 40px rgba(16,185,129,0.6); } }
+        @keyframes spin-dice { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.2); } 100% { transform: rotate(360deg) scale(1); } }
+        @keyframes slide-in { 0% { transform: translateY(30px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        @keyframes slide-up { 0% { transform: translateY(20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        @keyframes bounce-in { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes countdown-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+        @keyframes cycle-shift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .btn-eco { transition: all 0.15s; }
+        .btn-eco:active { transform: scale(0.96); }
+        .card-eco { background: linear-gradient(145deg, #ffffff 0%, #f0fdf4 100%); border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .board-square { transition: all 0.3s ease; }
+        .board-square:hover { z-index: 10; transform: scale(1.08); }
+        .player-token { transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .auction-bid { animation: slide-up 0.3s ease-out; }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-emerald-900 via-gray-900 to-teal-950">
+    <div id="root"></div>
+    <script>const {
+  useState,
+  useEffect,
+  useRef,
+  useCallback
+} = React;
+
+// ═══════════════════════════════════════════════════════════════
+// TRANSLATIONS
+// ═══════════════════════════════════════════════════════════════
+var ECONOPOLY_TRANSLATIONS = {
+  'back_pde': {
+    val: 'Tornar a PDE',
+    es: 'Volver a PDE',
+    en: 'Back to PDE'
+  },
+  'round_x_of_y': {
+    val: 'Ronda {x} / {y}',
+    es: 'Ronda {x} / {y}',
+    en: 'Round {x} / {y}'
+  },
+  'final_results': {
+    val: 'Resultats finals',
+    es: 'Resultados finales',
+    en: 'Final results'
+  },
+  'patrimony': {
+    val: 'Patrimoni',
+    es: 'Patrimonio',
+    en: 'Net Worth'
+  },
+  'roll_dice': {
+    val: 'Tirar Daus',
+    es: 'Tirar Dados',
+    en: 'Roll Dice'
+  },
+  'rolling': {
+    val: 'Tirant...',
+    es: 'Tirando...',
+    en: 'Rolling...'
+  },
+  'end_turn': {
+    val: 'Finalitzar Torn',
+    es: 'Finalizar Turno',
+    en: 'End Turn'
+  },
+  'auction_ongoing': {
+    val: 'Subhasta en curs...',
+    es: 'Subasta en curso...',
+    en: 'Auction ongoing...'
+  },
+  'close_auction': {
+    val: 'Tancar subhasta ara',
+    es: 'Cerrar subasta ahora',
+    en: 'Close auction now'
+  },
+  'end_game': {
+    val: 'Finalitzar Partida',
+    es: 'Finalizar Partida',
+    en: 'End Game'
+  },
+  'other_players': {
+    val: 'Altres jugadors',
+    es: 'Otros jugadores',
+    en: 'Other players'
+  },
+  'sell_property': {
+    val: 'Vendre propietat al banc (50% del valor)',
+    es: 'Vender propiedad al banco (50% del valor)',
+    en: 'Sell property to bank (50% value)'
+  },
+  'close': {
+    val: 'Tancar',
+    es: 'Cerrar',
+    en: 'Close'
+  },
+  'sell': {
+    val: 'Vendre',
+    es: 'Vender',
+    en: 'Sell'
+  },
+  'prev': {
+    val: 'Anterior',
+    es: 'Anterior',
+    en: 'Previous'
+  },
+  'next': {
+    val: 'Següent',
+    es: 'Siguiente',
+    en: 'Next'
+  },
+  'play': {
+    val: 'Jugar!',
+    es: '¡Jugar!',
+    en: 'Play!'
+  },
+  'skip_tutorial': {
+    val: 'Saltar tutorial',
+    es: 'Saltar tutorial',
+    en: 'Skip tutorial'
+  },
+  'expansion': {
+    val: "L'economia creix! Lloguers +30%, valors de propietats +20%",
+    es: '¡La economía crece! Alquileres +30%, valores de propiedades +20%',
+    en: 'The economy grows! Rents +30%, property values +20%'
+  },
+  'recession': {
+    val: "L'economia es contrau! Lloguers -30%, valors de propietats -20%",
+    es: '¡La economía se contrae! Alquileres -30%, valores de propiedades -20%',
+    en: 'The economy contracts! Rents -30%, property values -20%'
+  },
+  'game_over': {
+    val: 'Partida Acabada!',
+    es: '¡Partida Acabada!',
+    en: 'Game Over!'
+  },
+  'what_learned': {
+    val: 'Què hem après?',
+    es: '¿Qué hemos aprendido?',
+    en: 'What did we learn?'
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════
+// PLAYER COLORS — Up to 6 players
+// ═══════════════════════════════════════════════════════════════
+var PLAYER_COLORS = [{
+  name: 'Blau',
+  emoji: '🔵',
+  hex: '#3b82f6',
+  bg: 'bg-blue-500',
+  light: 'bg-blue-100',
+  text: 'text-blue-700',
+  border: 'border-blue-500'
+}, {
+  name: 'Roig',
+  emoji: '🔴',
+  hex: '#ef4444',
+  bg: 'bg-red-500',
+  light: 'bg-red-100',
+  text: 'text-red-700',
+  border: 'border-red-500'
+}, {
+  name: 'Verd',
+  emoji: '🟢',
+  hex: '#22c55e',
+  bg: 'bg-green-500',
+  light: 'bg-green-100',
+  text: 'text-green-700',
+  border: 'border-green-500'
+}, {
+  name: 'Groc',
+  emoji: '🟡',
+  hex: '#eab308',
+  bg: 'bg-yellow-500',
+  light: 'bg-yellow-100',
+  text: 'text-yellow-700',
+  border: 'border-yellow-500'
+}, {
+  name: 'Lila',
+  emoji: '🟣',
+  hex: '#a855f7',
+  bg: 'bg-purple-500',
+  light: 'bg-purple-100',
+  text: 'text-purple-700',
+  border: 'border-purple-500'
+}, {
+  name: 'Rosa',
+  emoji: '🩷',
+  hex: '#ec4899',
+  bg: 'bg-pink-500',
+  light: 'bg-pink-100',
+  text: 'text-pink-700',
+  border: 'border-pink-500'
+}];
+
+// ═══════════════════════════════════════════════════════════════
+// SECTORS — 8 economic sectors with 2 properties each
+// ═══════════════════════════════════════════════════════════════
+var SECTORS = {
+  agricultura: {
+    name: 'Agricultura',
+    emoji: '🌾',
+    color: '#4ade80',
+    lightBg: 'bg-green-100',
+    textColor: 'text-green-700'
+  },
+  industria: {
+    name: 'Indústria',
+    emoji: '🏭',
+    color: '#94a3b8',
+    lightBg: 'bg-gray-200',
+    textColor: 'text-gray-700'
+  },
+  tech: {
+    name: 'Tecnologia',
+    emoji: '💻',
+    color: '#818cf8',
+    lightBg: 'bg-indigo-100',
+    textColor: 'text-indigo-700'
+  },
+  serveis: {
+    name: 'Serveis',
+    emoji: '🏨',
+    color: '#f472b6',
+    lightBg: 'bg-pink-100',
+    textColor: 'text-pink-700'
+  },
+  energia: {
+    name: 'Energia',
+    emoji: '⚡',
+    color: '#facc15',
+    lightBg: 'bg-yellow-100',
+    textColor: 'text-yellow-700'
+  },
+  construccio: {
+    name: 'Construcció',
+    emoji: '🏗️',
+    color: '#fb923c',
+    lightBg: 'bg-orange-100',
+    textColor: 'text-orange-700'
+  },
+  turisme: {
+    name: 'Turisme',
+    emoji: '✈️',
+    color: '#38bdf8',
+    lightBg: 'bg-sky-100',
+    textColor: 'text-sky-700'
+  },
+  financer: {
+    name: 'Financer',
+    emoji: '🏦',
+    color: '#a78bfa',
+    lightBg: 'bg-violet-100',
+    textColor: 'text-violet-700'
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════
+// BOARD — 28 squares in classic Monopoly arrangement
+// ═══════════════════════════════════════════════════════════════
+var BOARD = [
+// Bottom row, left to right (indices 0-6)
+{
+  type: 'start',
+  name: 'SORTIDA',
+  emoji: '🏁',
+  shortName: 'SORTIDA'
+}, {
+  type: 'property',
+  name: 'Cooperativa Agricola',
+  sector: 'agricultura',
+  price: 60,
+  rent: 6,
+  shortName: 'Cooperativa'
+}, {
+  type: 'tax',
+  name: 'IMPOSTOS',
+  emoji: '💰',
+  shortName: 'IMPOSTOS'
+}, {
+  type: 'property',
+  name: 'Fàbrica Tèxtil',
+  sector: 'industria',
+  price: 100,
+  rent: 10,
+  shortName: 'Fàbrica'
+}, {
+  type: 'news',
+  name: 'NOTICIA',
+  emoji: '📰',
+  shortName: 'NOTICIA'
+}, {
+  type: 'property',
+  name: 'Startup Digital',
+  sector: 'tech',
+  price: 120,
+  rent: 12,
+  shortName: 'Startup'
+}, {
+  type: 'central',
+  name: 'BANC CENTRAL',
+  emoji: '🏛️',
+  shortName: 'BCE'
+},
+// Right column, top to bottom (indices 7-13)
+{
+  type: 'property',
+  name: 'Cadena Hotelera',
+  sector: 'serveis',
+  price: 140,
+  rent: 14,
+  shortName: 'Hotel'
+}, {
+  type: 'news',
+  name: 'NOTICIA',
+  emoji: '📰',
+  shortName: 'NOTICIA'
+}, {
+  type: 'property',
+  name: 'Planta Solar',
+  sector: 'energia',
+  price: 160,
+  rent: 16,
+  shortName: 'Solar'
+}, {
+  type: 'property',
+  name: 'Refineria',
+  sector: 'energia',
+  price: 180,
+  rent: 18,
+  shortName: 'Refineria'
+}, {
+  type: 'freemarket',
+  name: 'MERCAT LLIURE',
+  emoji: '🆓',
+  shortName: 'LLIURE'
+}, {
+  type: 'property',
+  name: 'Aerolinia Nacional',
+  sector: 'turisme',
+  price: 200,
+  rent: 20,
+  shortName: 'Aerolinia'
+}, {
+  type: 'tax',
+  name: 'IMPOSTOS',
+  emoji: '💰',
+  shortName: 'IMPOSTOS'
+},
+// Top row, right to left (indices 14-20)
+{
+  type: 'central',
+  name: 'BANC CENTRAL',
+  emoji: '🏛️',
+  shortName: 'BCE'
+}, {
+  type: 'property',
+  name: 'Resort Turistic',
+  sector: 'turisme',
+  price: 220,
+  rent: 22,
+  shortName: 'Resort'
+}, {
+  type: 'news',
+  name: 'NOTICIA',
+  emoji: '📰',
+  shortName: 'NOTICIA'
+}, {
+  type: 'property',
+  name: 'Promotora Immobiliària',
+  sector: 'construccio',
+  price: 240,
+  rent: 24,
+  shortName: 'Promotora'
+}, {
+  type: 'rd',
+  name: 'R+D',
+  emoji: '🔬',
+  shortName: 'R+D'
+}, {
+  type: 'property',
+  name: 'Constructora Nacional',
+  sector: 'construccio',
+  price: 260,
+  rent: 26,
+  shortName: 'Constructora'
+}, {
+  type: 'central',
+  name: 'BANC CENTRAL',
+  emoji: '🏛️',
+  shortName: 'BCE'
+},
+// Left column, bottom to top (indices 21-27)
+{
+  type: 'property',
+  name: 'Banc Comercial',
+  sector: 'financer',
+  price: 280,
+  rent: 28,
+  shortName: 'Banc'
+}, {
+  type: 'news',
+  name: 'NOTICIA',
+  emoji: '📰',
+  shortName: 'NOTICIA'
+}, {
+  type: 'property',
+  name: 'Asseguradora',
+  sector: 'financer',
+  price: 300,
+  rent: 30,
+  shortName: 'Asseguradora'
+}, {
+  type: 'property',
+  name: 'Exportadora Agroalimentaria',
+  sector: 'agricultura',
+  price: 320,
+  rent: 32,
+  shortName: 'Exportadora'
+}, {
+  type: 'property',
+  name: 'Hospital Privat',
+  sector: 'serveis',
+  price: 340,
+  rent: 34,
+  shortName: 'Hospital'
+}, {
+  type: 'property',
+  name: 'Big Tech',
+  sector: 'tech',
+  price: 380,
+  rent: 38,
+  shortName: 'Big Tech'
+}, {
+  type: 'property',
+  name: 'Plataforma Petroli',
+  sector: 'industria',
+  price: 400,
+  rent: 40,
+  shortName: 'Petroli'
+}];
+var BOARD_SIZE = BOARD.length;
+
+// ═══════════════════════════════════════════════════════════════
+// NEWS CARDS — 20 economic event cards
+// ═══════════════════════════════════════════════════════════════
+var NEWS_CARDS = [{
+  text: '📈 Boom tecnològic! Les empreses tech augmenten el seu valor un 20%.',
+  effect: {
+    type: 'sector_boost',
+    sector: 'tech',
+    modifier: 1.2
+  }
+}, {
+  text: '🛢️ Crisi energetica! El preu del petroli es duplica. Lloguers d\'energia +50%.',
+  effect: {
+    type: 'sector_boost',
+    sector: 'energia',
+    modifier: 1.5
+  }
+}, {
+  text: '🏠 Bombolla immobiliària esclata! Propietats de construccio perden 30%.',
+  effect: {
+    type: 'sector_bust',
+    sector: 'construccio',
+    modifier: 0.7
+  }
+}, {
+  text: '💶 El BCE baixa els tipus d\'interes al 1%. El credit es barat!',
+  effect: {
+    type: 'interest_rate',
+    rate: 1
+  }
+}, {
+  text: '🎁 Subvencio agricola: cobres 50€ si tens propietats agricoles.',
+  effect: {
+    type: 'subsidy',
+    sector: 'agricultura',
+    amount: 50
+  }
+}, {
+  text: '🦠 Pandemia global! El turisme cau un 40%. Lloguers de turisme -40%.',
+  effect: {
+    type: 'sector_bust',
+    sector: 'turisme',
+    modifier: 0.6
+  }
+}, {
+  text: '🌍 Boom turistic! Europa bat records de visitants. Turisme +30%.',
+  effect: {
+    type: 'sector_boost',
+    sector: 'turisme',
+    modifier: 1.3
+  }
+}, {
+  text: '⚔️ Guerra comercial! Tots els jugadors paguen 30€ d\'aranzels.',
+  effect: {
+    type: 'all_pay',
+    amount: 30
+  }
+}, {
+  text: '💰 Repartiment del fons públic! Cada jugador rep 75€ del tresor.',
+  effect: {
+    type: 'all_receive',
+    amount: 75
+  }
+}, {
+  text: '🏦 Crisi bancaria! El sector financer perd 25% del seu valor.',
+  effect: {
+    type: 'sector_bust',
+    sector: 'financer',
+    modifier: 0.75
+  }
+}, {
+  text: '🌱 Subvencio verda! Cobres 40€ si tens propietats d\'energia.',
+  effect: {
+    type: 'subsidy',
+    sector: 'energia',
+    amount: 40
+  }
+}, {
+  text: '📉 Recessió industrial! Les fàbriques tanquen. Indústria -30%.',
+  effect: {
+    type: 'sector_bust',
+    sector: 'industria',
+    modifier: 0.7
+  }
+}, {
+  text: '🎉 Vacances fiscals! El proper impost no es cobra.',
+  effect: {
+    type: 'tax_holiday'
+  }
+}, {
+  text: '📊 Inflació descontrolada! Tots els preus pugen 15%.',
+  effect: {
+    type: 'inflation',
+    modifier: 1.15
+  }
+}, {
+  text: '🏗️ Pla d\'infraestructures! Construccio +25%.',
+  effect: {
+    type: 'sector_boost',
+    sector: 'construccio',
+    modifier: 1.25
+  }
+}, {
+  text: '💸 Herencia inesperada! El jugador actual rep 100€.',
+  effect: {
+    type: 'current_receive',
+    amount: 100
+  }
+}, {
+  text: '⚖️ Nova regulacio! Multa de 50€ al jugador amb mes patrimoni.',
+  effect: {
+    type: 'richest_pay',
+    amount: 50
+  }
+}, {
+  text: '🔬 Avanç tecnològic! La propera millora R+D és gratis.',
+  effect: {
+    type: 'free_rd'
+  }
+}, {
+  text: '🏥 Reforma sanitaria! Serveis guanyen 20% de valor.',
+  effect: {
+    type: 'sector_boost',
+    sector: 'serveis',
+    modifier: 1.2
+  }
+}, {
+  text: '🌾 Collita extraordinaria! Agricultura +35%.',
+  effect: {
+    type: 'sector_boost',
+    sector: 'agricultura',
+    modifier: 1.35
+  }
+}];
+
+// ═══════════════════════════════════════════════════════════════
+// EDUCATIONAL ECONOMIC FACTS — Shown between turns and at events
+// ═══════════════════════════════════════════════════════════════
+var ECONOMIC_FACTS = [{
+  title: 'Cicles Econòmics',
+  text: 'L\'economia alterna entre fases d\'expansio (creixement del PIB, baixa desocupació) i recessió (caiguda del PIB, alta desocupació). Cada cicle dura entre 5-10 anys de mitjana.'
+}, {
+  title: 'Impostos Progressius',
+  text: 'Els impostos progressius graven mes als qui mes guanyen. Al joc, com a la vida real, es paga un percentatge mes alt com mes patrimoni es te.'
+}, {
+  title: 'R+D i Productivitat',
+  text: 'La inversio en Recerca i Desenvolupament (R+D) es clau per augmentar la productivitat. Les empreses que invertixen en R+D obtenen majors beneficis a llarg termini.'
+}, {
+  title: 'Subhastes i Valor',
+  text: 'En una subhasta, el preu final reflecteix el valor que els compradors donen al be. Si ningu puja, el be no te prou demanda al preu actual.'
+}, {
+  title: 'Tipus d\'Interes',
+  text: 'El Banc Central fixa els tipus d\'interes per controlar la inflació. Tipus baixos estimulen l\'economia (més crèdit), tipus alts la refreden.'
+}, {
+  title: 'Diversificacio',
+  text: 'No poseu tots els ous al mateix cistell! Diversificar inversions entre sectors redueix el risc. Si un sector cau, els altres poden compensar.'
+}, {
+  title: 'Fons Public',
+  text: 'Els impostos recaptats van al fons públic, que es redistribueix quan passes per la casella de SORTIDA. Aixo simula els serveis publics finançats amb impostos.'
+}, {
+  title: 'Inflació',
+  text: 'La inflacio es l\'augment generalitzat dels preus. Redueix el poder adquisitiu dels diners. Al joc, les noticies d\'inflacio augmenten tots els lloguers.'
+}, {
+  title: 'Monopoli Natural',
+  text: 'Si un jugador posseeix les dues propietats d\'un sector, te un "monopoli sectorial", similar a com algunes empreses dominen un mercat.'
+}, {
+  title: 'Recessió vs Depressió',
+  text: 'Una recessió és una caiguda temporal del PIB (2 trimestres consecutius). Si dura molt i es profunda, es converteix en una depressió econòmica.'
+}, {
+  title: 'Externalitats',
+  text: 'Les decisions d\'un jugador afecten els altres. Si algú inverteix en R+D i fa pujar el valor del sector, beneficia (o perjudica) a altres propietaris del sector.'
+}, {
+  title: 'Cost d\'Oportunitat',
+  text: 'Cada euro gastat en comprar una propietat es un euro que no pots usar per millorar R+D o reservar per impostos. Tota decisio economica te un cost d\'oportunitat.'
+}, {
+  title: 'Liquiditat',
+  text: 'Tenir diners en efectiu dona flexibilitat (liquiditat). Pero tenir massa efectiu sense invertir significa perdre rendibilitat potencial.'
+}, {
+  title: 'Valor Afegit',
+  text: 'Les millores R+D representen el valor afegit que una empresa aporta als seus productes. Més innovació = més valor = més beneficis.'
+}, {
+  title: 'Mercat Lliure',
+  text: 'La casella de Mercat Lliure representa la zona segura de l\'economia on no hi ha intervenció estatal. Es un concepte central del liberalisme economic.'
+}];
+
+// ═══════════════════════════════════════════════════════════════
+// SECTOR MONOPOLY BONUSES — When owning both properties in a sector
+// ═══════════════════════════════════════════════════════════════
+var SECTOR_PROPERTIES = {};
+BOARD.forEach(function (sq, idx) {
+  if (sq.type === 'property') {
+    if (!SECTOR_PROPERTIES[sq.sector]) SECTOR_PROPERTIES[sq.sector] = [];
+    SECTOR_PROPERTIES[sq.sector].push(idx);
+  }
+});
+
+// Check if a player has monopoly on a sector
+function hasSectorMonopoly(playerId, sector, properties) {
+  var sectorProps = SECTOR_PROPERTIES[sector];
+  if (!sectorProps || sectorProps.length === 0) return false;
+  return sectorProps.every(function (idx) {
+    return properties[idx] && properties[idx].owner === playerId;
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ECONOMIC INDICATORS — Track game economy health
+// ═══════════════════════════════════════════════════════════════
+function calculateEconomicIndicators(gameState) {
+  var gs = gameState || {};
+  var money = gs.money || {};
+  var properties = gs.properties || {};
+  var playerOrder = gs.playerOrder || [];
+
+  // Total money in circulation
+  var totalMoney = 0;
+  playerOrder.forEach(function (pid) {
+    totalMoney += money[pid] || 0;
+  });
+
+  // Properties owned vs total
+  var totalProps = 0;
+  var ownedProps = 0;
+  Object.keys(properties).forEach(function (idx) {
+    totalProps++;
+    if (properties[idx] && properties[idx].owner) ownedProps++;
+  });
+
+  // Wealth inequality (Gini-like simplified)
+  var netWorths = playerOrder.map(function (pid) {
+    return calculateNetWorth(pid, money, properties, gs.cycle, gs.sectorModifiers);
+  }).sort(function (a, b) {
+    return a - b;
+  });
+  var avgWealth = netWorths.reduce(function (a, b) {
+    return a + b;
+  }, 0) / (netWorths.length || 1);
+  var giniNum = 0;
+  netWorths.forEach(function (w, i) {
+    netWorths.forEach(function (w2) {
+      giniNum += Math.abs(w - w2);
+    });
+  });
+  var giniDen = 2 * netWorths.length * netWorths.length * (avgWealth || 1);
+  var gini = Math.round(giniNum / giniDen * 100);
+
+  // Average R+D level
+  var totalRd = 0;
+  var rdCount = 0;
+  Object.keys(properties).forEach(function (idx) {
+    if (properties[idx] && properties[idx].owner) {
+      totalRd += properties[idx].rdLevel || 0;
+      rdCount++;
+    }
+  });
+  var avgRd = rdCount > 0 ? (totalRd / rdCount).toFixed(1) : '0.0';
+  return {
+    totalMoney: totalMoney,
+    ownedProps: ownedProps,
+    totalProps: totalProps,
+    ownershipRate: totalProps > 0 ? Math.round(ownedProps / totalProps * 100) : 0,
+    gini: Math.min(100, gini),
+    avgRd: avgRd,
+    publicFund: gs.publicFund || 0,
+    avgWealth: Math.round(avgWealth)
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DICE ANIMATION COMPONENT — Visual 2d6 dice roll
+// ═══════════════════════════════════════════════════════════════
+function DiceRollAnimation({
+  dice,
+  rolling,
+  onComplete
+}) {
+  const [d1Display, setD1Display] = useState(dice ? dice[0] : 1);
+  const [d2Display, setD2Display] = useState(dice ? dice[1] : 1);
+  const [isAnimating, setIsAnimating] = useState(false);
+  useEffect(function () {
+    if (!rolling) return;
+    setIsAnimating(true);
+    var count = 0;
+    var interval = setInterval(function () {
+      setD1Display(Math.floor(Math.random() * 6) + 1);
+      setD2Display(Math.floor(Math.random() * 6) + 1);
+      count++;
+      if (count >= 12) {
+        clearInterval(interval);
+        if (dice) {
+          setD1Display(dice[0]);
+          setD2Display(dice[1]);
+        }
+        setIsAnimating(false);
+        PdeGameSounds.play('pop');
+        if (onComplete) setTimeout(onComplete, 300);
+      }
+    }, 80);
+    return function () {
+      clearInterval(interval);
+    };
+  }, [rolling]);
+  var diceFaces = {
+    1: '⚀',
+    2: '⚁',
+    3: '⚂',
+    4: '⚃',
+    5: '⚄',
+    6: '⚅'
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-3 justify-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: 'w-16 h-16 rounded-2xl bg-white shadow-lg flex items-center justify-center ' + (isAnimating ? 'animate-bounce' : ''),
+    style: {
+      animation: isAnimating ? 'spin-dice 0.3s ease infinite' : 'none'
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-3xl"
+  }, diceFaces[d1Display] || d1Display)), /*#__PURE__*/React.createElement("div", {
+    className: 'w-16 h-16 rounded-2xl bg-white shadow-lg flex items-center justify-center ' + (isAnimating ? 'animate-bounce' : ''),
+    style: {
+      animation: isAnimating ? 'spin-dice 0.3s ease 0.1s infinite' : 'none'
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-3xl"
+  }, diceFaces[d2Display] || d2Display)));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ECONOMIC INDICATORS PANEL — Shows live economy stats on host
+// ═══════════════════════════════════════════════════════════════
+function EconomicIndicatorsPanel({
+  gameState
+}) {
+  var indicators = calculateEconomicIndicators(gameState);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/5 rounded-2xl p-3"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "text-white/50 text-xs font-bold mb-2"
+  }, "\uD83D\uDCCA Indicadors Economics"), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 gap-2 text-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/5 rounded-xl p-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-[10px] text-white/40"
+  }, "Moneda en circ."), /*#__PURE__*/React.createElement("div", {
+    className: "text-emerald-300 font-bold text-sm"
+  }, indicators.totalMoney.toLocaleString(), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/5 rounded-xl p-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-[10px] text-white/40"
+  }, "Propietats venudes"), /*#__PURE__*/React.createElement("div", {
+    className: "text-amber-300 font-bold text-sm"
+  }, indicators.ownedProps, "/", indicators.totalProps)), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/5 rounded-xl p-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-[10px] text-white/40"
+  }, "Desigualtat (Gini)"), /*#__PURE__*/React.createElement("div", {
+    className: 'font-bold text-sm ' + (indicators.gini > 60 ? 'text-red-300' : indicators.gini > 30 ? 'text-yellow-300' : 'text-green-300')
+  }, indicators.gini, "%")), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/5 rounded-xl p-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-[10px] text-white/40"
+  }, "R+D mitjana"), /*#__PURE__*/React.createElement("div", {
+    className: "text-blue-300 font-bold text-sm"
+  }, indicators.avgRd))));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ECONOMIC FACT TOOLTIP — Random economic lesson shown during game
+// ═══════════════════════════════════════════════════════════════
+function EconomicFactBanner({
+  visible
+}) {
+  const [factIdx, setFactIdx] = useState(0);
+  useEffect(function () {
+    if (visible) {
+      setFactIdx(Math.floor(Math.random() * ECONOMIC_FACTS.length));
+    }
+  }, [visible]);
+  if (!visible) return null;
+  var fact = ECONOMIC_FACTS[factIdx];
+  return /*#__PURE__*/React.createElement("div", {
+    className: "bg-indigo-500/20 rounded-2xl p-3 border border-indigo-400/20",
+    style: {
+      animation: 'slide-up 0.4s ease-out'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-start gap-2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-lg"
+  }, "\uD83D\uDCA1"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "text-indigo-300 font-bold text-xs"
+  }, fact.title), /*#__PURE__*/React.createElement("div", {
+    className: "text-white/60 text-[11px] mt-0.5 leading-relaxed"
+  }, fact.text))));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CYCLE CHANGE OVERLAY — Big visual announcement
+// ═══════════════════════════════════════════════════════════════
+function CycleChangeOverlay({
+  cycle,
+  show,
+  onDismiss
+}) {
+  if (!show) return null;
+  var isExpansion = cycle === 'expansion';
+  return /*#__PURE__*/React.createElement("div", {
+    className: "fixed inset-0 bg-black/70 backdrop-blur-sm z-40 flex items-center justify-center p-4",
+    onClick: onDismiss
+  }, /*#__PURE__*/React.createElement("div", {
+    className: 'rounded-3xl p-10 text-center max-w-md w-full shadow-2xl ' + (isExpansion ? 'bg-gradient-to-br from-green-500 to-emerald-600' : 'bg-gradient-to-br from-red-500 to-rose-600'),
+    style: {
+      animation: 'bounce-in 0.6s ease-out'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-7xl mb-4"
+  }, isExpansion ? '📈' : '📉'), /*#__PURE__*/React.createElement("h2", {
+    className: "text-4xl font-black text-white mb-2"
+  }, isExpansion ? 'EXPANSIO!' : 'RECESSIO!'), /*#__PURE__*/React.createElement("p", {
+    className: "text-white/80 text-lg"
+  }, isExpansion ? 'L\'economia creix! Lloguers +30%, valors de propietats +20%' : 'L\'economia es contrau! Lloguers -30%, valors de propietats -20%'), /*#__PURE__*/React.createElement("div", {
+    className: "mt-6 text-white/50 text-sm"
+  }, "Toca per continuar")));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PROPERTY DEED COMPONENT — Detailed deed card for player view
+// ═══════════════════════════════════════════════════════════════
+function PropertyDeed({
+  propertyIndex,
+  property,
+  cycle,
+  sectorModifiers,
+  showUpgrade,
+  onUpgrade,
+  upgradeCost,
+  canUpgrade,
+  isFreeRd
+}) {
+  var sq = BOARD[propertyIndex];
+  if (!sq || sq.type !== 'property') return null;
+  var sector = SECTORS[sq.sector];
+  var rdLevel = property ? property.rdLevel || 0 : 0;
+
+  // Show rent at each R+D level
+  var rentLevels = RD_LEVELS.map(function (rdInfo) {
+    var cycleMult = cycle === 'expansion' ? 1.3 : cycle === 'recession' ? 0.7 : 1;
+    var sectorMod = sectorModifiers && sectorModifiers[sq.sector] ? sectorModifiers[sq.sector] : 1;
+    return Math.round(sq.rent * rdInfo.multiplier * cycleMult * sectorMod);
+  });
+  return /*#__PURE__*/React.createElement("div", {
+    className: "bg-white rounded-2xl overflow-hidden shadow-xl max-w-xs mx-auto"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "py-2 text-center text-white font-black text-sm",
+    style: {
+      backgroundColor: sector.color
+    }
+  }, sector.emoji, " ", sector.name.toUpperCase()), /*#__PURE__*/React.createElement("div", {
+    className: "p-4 space-y-3"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "text-center font-black text-lg"
+  }, sq.name), /*#__PURE__*/React.createElement("div", {
+    className: "text-center"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-2xl font-black"
+  }, sq.price, "\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "bg-gray-50 rounded-xl p-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-xs text-gray-500 font-bold mb-2"
+  }, "TAULA DE LLOGUERS"), RD_LEVELS.map(function (rdInfo, i) {
+    var isActive = i === rdLevel;
+    return /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: 'flex justify-between items-center py-1 px-2 rounded-lg text-sm ' + (isActive ? 'bg-emerald-100 font-bold' : '')
+    }, /*#__PURE__*/React.createElement("span", {
+      className: isActive ? 'text-emerald-700' : 'text-gray-500'
+    }, i === 0 ? 'Base' : 'R+D Niv. ' + i, i > 0 && /*#__PURE__*/React.createElement("span", {
+      className: "text-[10px] ml-1"
+    }, "(x", rdInfo.multiplier, ")")), /*#__PURE__*/React.createElement("span", {
+      className: isActive ? 'text-emerald-700' : 'text-gray-500'
+    }, rentLevels[i], "\u20AC"));
+  })), showUpgrade && rdLevel < 3 && /*#__PURE__*/React.createElement("button", {
+    onClick: onUpgrade,
+    disabled: !canUpgrade,
+    className: 'w-full py-2 rounded-xl font-bold text-sm btn-eco ' + (canUpgrade ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-200 text-gray-500 cursor-not-allowed')
+  }, "\uD83D\uDD2C Millorar a Niv. ", rdLevel + 1, " \u2014 ", isFreeRd ? 'GRATIS!' : upgradeCost + '€'), rdLevel >= 3 && showUpgrade && /*#__PURE__*/React.createElement("div", {
+    className: "text-center text-blue-500 font-bold text-sm"
+  }, "\u2B50 MAX R+D!")));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// R+D LEVELS — Upgrade multipliers and costs
+// ═══════════════════════════════════════════════════════════════
+var RD_LEVELS = [{
+  level: 0,
+  multiplier: 1.0,
+  costFactor: 0,
+  label: 'Base'
+}, {
+  level: 1,
+  multiplier: 1.5,
+  costFactor: 0.5,
+  label: 'Nivell 1'
+}, {
+  level: 2,
+  multiplier: 2.0,
+  costFactor: 0.75,
+  label: 'Nivell 2'
+}, {
+  level: 3,
+  multiplier: 3.0,
+  costFactor: 1.0,
+  label: 'Nivell 3'
+}];
+
+// ═══════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════
+
+// Calculate rent for a property considering R+D, cycle, news modifiers, and monopoly bonus
+function calculateRent(propertyIndex, properties, cycle, sectorModifiers) {
+  var sq = BOARD[propertyIndex];
+  if (!sq || sq.type !== 'property') return 0;
+  var prop = properties[propertyIndex];
+  if (!prop || !prop.owner) return 0;
+  var baseRent = sq.rent;
+  var rdLevel = prop.rdLevel || 0;
+  var rdMult = RD_LEVELS[rdLevel] ? RD_LEVELS[rdLevel].multiplier : 1;
+  var cycleMult = cycle === 'expansion' ? 1.3 : cycle === 'recession' ? 0.7 : 1;
+  var sectorMod = sectorModifiers && sectorModifiers[sq.sector] ? sectorModifiers[sq.sector] : 1;
+
+  // Monopoly bonus: if player owns all properties in the sector, rent is doubled
+  var monopolyMult = 1;
+  if (hasSectorMonopoly(prop.owner, sq.sector, properties)) {
+    monopolyMult = 2;
+  }
+  return Math.round(baseRent * rdMult * cycleMult * sectorMod * monopolyMult);
+}
+
+// Calculate property value for net worth
+function calculatePropertyValue(propertyIndex, properties, cycle, sectorModifiers) {
+  var sq = BOARD[propertyIndex];
+  if (!sq || sq.type !== 'property') return 0;
+  var prop = properties[propertyIndex];
+  if (!prop) return 0;
+  var basePrice = sq.price;
+  var cycleMult = cycle === 'expansion' ? 1.2 : cycle === 'recession' ? 0.8 : 1;
+  var sectorMod = sectorModifiers && sectorModifiers[sq.sector] ? sectorModifiers[sq.sector] : 1;
+  var rdInvestment = 0;
+  for (var i = 1; i <= (prop.rdLevel || 0); i++) {
+    rdInvestment += Math.round(sq.price * RD_LEVELS[i].costFactor);
+  }
+  return Math.round(basePrice * cycleMult * sectorMod) + rdInvestment;
+}
+
+// Calculate net worth for a player
+function calculateNetWorth(playerId, money, properties, cycle, sectorModifiers) {
+  var cash = money && money[playerId] ? money[playerId] : 0;
+  var propValue = 0;
+  if (properties) {
+    Object.keys(properties).forEach(function (idx) {
+      if (properties[idx] && properties[idx].owner === playerId) {
+        propValue += calculatePropertyValue(parseInt(idx), properties, cycle, sectorModifiers);
+      }
+    });
+  }
+  return cash + propValue;
+}
+
+// Calculate progressive tax
+function calculateTax(netWorth) {
+  if (netWorth > 1000) return Math.round(netWorth * 0.15);
+  if (netWorth > 500) return Math.round(netWorth * 0.10);
+  return Math.round(netWorth * 0.05);
+}
+
+// Get R+D upgrade cost (with optional discount)
+function getRdUpgradeCost(propertyIndex, currentLevel, discount) {
+  var sq = BOARD[propertyIndex];
+  if (!sq || sq.type !== 'property') return Infinity;
+  var nextLevel = (currentLevel || 0) + 1;
+  if (nextLevel > 3) return Infinity;
+  var cost = Math.round(sq.price * RD_LEVELS[nextLevel].costFactor);
+  if (discount) cost = Math.round(cost * (1 - discount));
+  return cost;
+}
+
+// Get properties owned by a player
+function getPlayerProperties(playerId, properties) {
+  var result = [];
+  if (!properties) return result;
+  Object.keys(properties).forEach(function (idx) {
+    if (properties[idx] && properties[idx].owner === playerId) {
+      result.push(parseInt(idx));
+    }
+  });
+  return result;
+}
+
+// Get player color index from player order
+function getPlayerColorIndex(playerId, playerOrder) {
+  if (!playerOrder) return 0;
+  var idx = playerOrder.indexOf(playerId);
+  return idx >= 0 ? idx : 0;
+}
+
+// Map board index to CSS grid position (9x9 grid)
+// 28 squares on outer ring: 4 corners + 4 sides of 5 = 4 + 4*6 = 28 ✓
+// Using 9x9 grid: bottom row cols 1-7, right col rows 7-1, top row cols 7-1, left col rows 2-8
+// Corners at: (9,1), (9,7), (1,7), (1,1) — NOT used, we use connected path instead
+//
+// Actual layout: each side has 7 squares, corners connect the sides
+// Bottom: row 9, col 1..7
+// Right: row 8..2, col 9 — connects via (9,8→8,9 gap)
+//
+// Simplification: Use a 9-col x 9-row grid. Place squares on the outer edge.
+// We have 28 squares. 9*4 - 4 = 32 for a full perimeter. So some cells are empty.
+// Place 7 per side, leaving 1 empty cell at each "corner transition".
+var GRID_POSITIONS = [
+// Bottom row, left to right (indices 0-6): row 9, cols 1-7
+{
+  row: 9,
+  col: 1
+},
+// 0: SORTIDA
+{
+  row: 9,
+  col: 2
+},
+// 1: Cooperativa
+{
+  row: 9,
+  col: 3
+},
+// 2: IMPOSTOS
+{
+  row: 9,
+  col: 4
+},
+// 3: Fabrica
+{
+  row: 9,
+  col: 5
+},
+// 4: NOTICIA
+{
+  row: 9,
+  col: 6
+},
+// 5: Startup
+{
+  row: 9,
+  col: 7
+},
+// 6: BCE (corner-ish)
+
+// Right column, bottom to top (indices 7-13): rows 8..2, col 9
+{
+  row: 8,
+  col: 9
+},
+// 7: Cadena Hotelera
+{
+  row: 7,
+  col: 9
+},
+// 8: NOTICIA
+{
+  row: 6,
+  col: 9
+},
+// 9: Planta Solar
+{
+  row: 5,
+  col: 9
+},
+// 10: Refineria
+{
+  row: 4,
+  col: 9
+},
+// 11: MERCAT LLIURE
+{
+  row: 3,
+  col: 9
+},
+// 12: Aerolinia
+{
+  row: 2,
+  col: 9
+},
+// 13: IMPOSTOS
+
+// Top row, right to left (indices 14-20): row 1, cols 9..3
+{
+  row: 1,
+  col: 9
+},
+// 14: BCE
+{
+  row: 1,
+  col: 8
+},
+// 15: Resort
+{
+  row: 1,
+  col: 7
+},
+// 16: NOTICIA
+{
+  row: 1,
+  col: 6
+},
+// 17: Promotora
+{
+  row: 1,
+  col: 5
+},
+// 18: R+D
+{
+  row: 1,
+  col: 4
+},
+// 19: Constructora
+{
+  row: 1,
+  col: 3
+},
+// 20: BCE
+
+// Left column, top to bottom (indices 21-27): rows 2..8, col 1
+{
+  row: 2,
+  col: 1
+},
+// 21: Banc Comercial
+{
+  row: 3,
+  col: 1
+},
+// 22: NOTICIA
+{
+  row: 4,
+  col: 1
+},
+// 23: Asseguradora
+{
+  row: 5,
+  col: 1
+},
+// 24: Exportadora
+{
+  row: 6,
+  col: 1
+},
+// 25: Hospital Privat
+{
+  row: 7,
+  col: 1
+},
+// 26: Big Tech
+{
+  row: 8,
+  col: 1
+} // 27: Plataforma Petroli
+];
+
+// ═══════════════════════════════════════════════════════════════
+// BOARD SQUARE COMPONENT
+// ═══════════════════════════════════════════════════════════════
+function BoardSquare({
+  index,
+  square,
+  property,
+  playerPositions,
+  playerOrder,
+  currentPlayerIdx,
+  isAuctioning
+}) {
+  var pos = GRID_POSITIONS[index];
+  var isCorner = index === 0 || index === 6 || index === 14 || index === 20;
+  var isProperty = square.type === 'property';
+  var sector = isProperty ? SECTORS[square.sector] : null;
+  var ownerColor = null;
+  if (isProperty && property && property.owner) {
+    var ownerIdx = getPlayerColorIndex(property.owner, playerOrder);
+    ownerColor = PLAYER_COLORS[ownerIdx];
+  }
+
+  // Find players on this square
+  var playersHere = [];
+  if (playerPositions && playerOrder) {
+    playerOrder.forEach(function (pid, pidx) {
+      if (playerPositions[pid] === index) {
+        playersHere.push({
+          id: pid,
+          colorIdx: pidx
+        });
+      }
+    });
+  }
+  var squareStyle = {
+    gridRow: pos.row,
+    gridColumn: pos.col,
+    minWidth: 0,
+    minHeight: 0
+  };
+  var sectorColor = sector ? sector.color : '#6b7280';
+  var highlight = isAuctioning ? 'ring-4 ring-yellow-400 ring-offset-2 z-20' : '';
+  return /*#__PURE__*/React.createElement("div", {
+    className: 'board-square relative flex flex-col rounded-lg overflow-hidden shadow-md border border-white/20 ' + highlight,
+    style: squareStyle,
+    title: square.name
+  }, isProperty && /*#__PURE__*/React.createElement("div", {
+    className: "h-2 w-full flex-shrink-0",
+    style: {
+      backgroundColor: sectorColor
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    className: 'flex-1 flex flex-col items-center justify-center p-0.5 text-center ' + (isProperty ? 'bg-white' : 'bg-gray-100'),
+    style: ownerColor ? {
+      backgroundColor: ownerColor.hex + '22'
+    } : {}
+  }, !isProperty && /*#__PURE__*/React.createElement("span", {
+    className: "text-xs md:text-sm leading-none"
+  }, square.emoji), isProperty && /*#__PURE__*/React.createElement("span", {
+    className: "text-xs leading-none"
+  }, sector.emoji), /*#__PURE__*/React.createElement("span", {
+    className: "text-[7px] md:text-[8px] font-bold leading-tight truncate w-full px-0.5"
+  }, square.shortName || square.name), isProperty && /*#__PURE__*/React.createElement("span", {
+    className: "text-[6px] md:text-[7px] font-semibold text-gray-500"
+  }, square.price, "\u20AC"), isProperty && property && property.rdLevel > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-0.5 mt-0.5"
+  }, Array.from({
+    length: property.rdLevel
+  }).map(function (_, i) {
+    return /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: "w-1.5 h-1.5 rounded-full bg-blue-500"
+    });
+  })), ownerColor && /*#__PURE__*/React.createElement("div", {
+    className: "w-3 h-3 rounded-full border border-white shadow-sm mt-0.5",
+    style: {
+      backgroundColor: ownerColor.hex
+    }
+  })), playersHere.length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "absolute bottom-0 right-0 flex flex-wrap gap-0.5 p-0.5"
+  }, playersHere.map(function (p) {
+    var c = PLAYER_COLORS[p.colorIdx];
+    var isCurrent = p.colorIdx === currentPlayerIdx;
+    return /*#__PURE__*/React.createElement("div", {
+      key: p.id,
+      className: 'player-token rounded-full border border-white shadow ' + (isCurrent ? 'w-4 h-4 animate-pulse' : 'w-3 h-3'),
+      style: {
+        backgroundColor: c.hex
+      }
+    });
+  })));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GAME BOARD COMPONENT — 9x9 CSS Grid
+// ═══════════════════════════════════════════════════════════════
+function OligopolyBoard({
+  gameState,
+  playerOrder,
+  players
+}) {
+  var positions = gameState.positions || {};
+  var properties = gameState.properties || {};
+  var currentPlayerIdx = gameState.currentPlayer || 0;
+  var auctionIdx = gameState.currentAuction ? gameState.currentAuction.propertyIndex : null;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "w-full max-w-2xl mx-auto aspect-square p-1"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-full h-full grid gap-0.5 md:gap-1",
+    style: {
+      gridTemplateColumns: 'repeat(9, 1fr)',
+      gridTemplateRows: 'repeat(9, 1fr)'
+    }
+  }, BOARD.map(function (sq, idx) {
+    return /*#__PURE__*/React.createElement(BoardSquare, {
+      key: idx,
+      index: idx,
+      square: sq,
+      property: properties[idx],
+      playerPositions: positions,
+      playerOrder: playerOrder,
+      currentPlayerIdx: currentPlayerIdx,
+      isAuctioning: auctionIdx === idx
+    });
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "rounded-2xl bg-gray-800/80 backdrop-blur flex flex-col items-center justify-center p-2 text-center",
+    style: {
+      gridRow: '2 / 9',
+      gridColumn: '2 / 9'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: 'rounded-xl px-3 py-1.5 mb-2 font-black text-sm ' + (gameState.cycle === 'expansion' ? 'bg-green-500/30 text-green-300' : gameState.cycle === 'recession' ? 'bg-red-500/30 text-red-300' : 'bg-gray-500/30 text-gray-300')
+  }, gameState.cycle === 'expansion' ? '📈 EXPANSIO' : gameState.cycle === 'recession' ? '📉 RECESSIO' : '📊 Estable'), /*#__PURE__*/React.createElement("div", {
+    className: "text-2xl md:text-3xl font-black text-white mb-1"
+  }, "\uD83C\uDFDB\uFE0F"), /*#__PURE__*/React.createElement("div", {
+    className: "text-xs md:text-sm font-black text-white/80"
+  }, "OLIGOPOLY"), /*#__PURE__*/React.createElement("div", {
+    className: "text-xs text-white/60 mt-2"
+  }, t('round_x_of_y').replace('{x}', gameState.round || 1).replace('{y}', gameState.maxRounds || 20)), /*#__PURE__*/React.createElement("div", {
+    className: "text-xs text-yellow-300 mt-1"
+  }, "Tipus inter\xE8s: ", gameState.interestRate || 5, "%"), /*#__PURE__*/React.createElement("div", {
+    className: "text-xs text-emerald-300 mt-0.5"
+  }, "Fons public: ", gameState.publicFund || 0, "\u20AC"), /*#__PURE__*/React.createElement("div", {
+    className: "text-[10px] text-white/40 mt-1"
+  }, "Canvi cicle en ", gameState.cycleRound || 5, " rondes"), playerOrder && playerOrder[currentPlayerIdx] && players && /*#__PURE__*/React.createElement("div", {
+    className: "mt-2 flex items-center gap-1.5 bg-white/10 rounded-lg px-2 py-1"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-3 h-3 rounded-full",
+    style: {
+      backgroundColor: PLAYER_COLORS[currentPlayerIdx].hex
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "text-white text-xs font-bold"
+  }, players[playerOrder[currentPlayerIdx]] ? players[playerOrder[currentPlayerIdx]].name : '?')), gameState.diceValue && /*#__PURE__*/React.createElement("div", {
+    className: "mt-2 flex gap-1"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-8 h-8 rounded-lg bg-white flex items-center justify-center font-black text-sm"
+  }, gameState.diceValue[0]), /*#__PURE__*/React.createElement("div", {
+    className: "w-8 h-8 rounded-lg bg-white flex items-center justify-center font-black text-sm"
+  }, gameState.diceValue[1])))));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PROPERTY CARD COMPONENT — Detailed property display
+// ═══════════════════════════════════════════════════════════════
+function PropertyCard({
+  propertyIndex,
+  properties,
+  cycle,
+  sectorModifiers,
+  playerOrder,
+  large
+}) {
+  var sq = BOARD[propertyIndex];
+  if (!sq || sq.type !== 'property') return null;
+  var sector = SECTORS[sq.sector];
+  var prop = properties ? properties[propertyIndex] : null;
+  var ownerColor = null;
+  if (prop && prop.owner) {
+    var ownerIdx = getPlayerColorIndex(prop.owner, playerOrder);
+    ownerColor = PLAYER_COLORS[ownerIdx];
+  }
+  var currentRent = calculateRent(propertyIndex, properties || {}, cycle, sectorModifiers);
+  var currentValue = calculatePropertyValue(propertyIndex, properties || {}, cycle, sectorModifiers);
+  var rdLevel = prop ? prop.rdLevel || 0 : 0;
+  return /*#__PURE__*/React.createElement("div", {
+    className: 'bg-white rounded-2xl overflow-hidden shadow-xl ' + (large ? 'max-w-sm mx-auto' : 'max-w-xs')
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "h-3",
+    style: {
+      backgroundColor: sector.color
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "p-4 text-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-3xl mb-1"
+  }, sector.emoji), /*#__PURE__*/React.createElement("h3", {
+    className: "font-black text-lg"
+  }, sq.name), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-gray-500"
+  }, sector.name), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 gap-3 mt-3 text-sm"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-gray-50 rounded-xl p-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-gray-500 text-xs"
+  }, "Preu"), /*#__PURE__*/React.createElement("div", {
+    className: "font-black text-lg"
+  }, sq.price, "\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "bg-gray-50 rounded-xl p-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-gray-500 text-xs"
+  }, "Lloguer"), /*#__PURE__*/React.createElement("div", {
+    className: "font-black text-lg text-green-600"
+  }, currentRent, "\u20AC"))), /*#__PURE__*/React.createElement("div", {
+    className: "mt-3 flex items-center justify-center gap-2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-xs text-gray-500"
+  }, "R+D:"), [0, 1, 2, 3].map(function (lvl) {
+    return /*#__PURE__*/React.createElement("div", {
+      key: lvl,
+      className: 'w-5 h-5 rounded-full text-[10px] flex items-center justify-center font-bold ' + (lvl <= rdLevel && rdLevel > 0 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-500')
+    }, lvl);
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "mt-2 text-xs text-gray-500"
+  }, "Valor actual: ", /*#__PURE__*/React.createElement("span", {
+    className: "font-bold text-gray-600"
+  }, currentValue, "\u20AC")), ownerColor && /*#__PURE__*/React.createElement("div", {
+    className: "mt-2 flex items-center justify-center gap-1"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-3 h-3 rounded-full",
+    style: {
+      backgroundColor: ownerColor.hex
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "text-xs font-bold",
+    style: {
+      color: ownerColor.hex
+    }
+  }, ownerColor.name))));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AUCTION OVERLAY — Bidding interface shown on host screen
+// ═══════════════════════════════════════════════════════════════
+function AuctionOverlay({
+  auction,
+  properties,
+  playerOrder,
+  players,
+  cycle,
+  sectorModifiers
+}) {
+  if (!auction) return null;
+  var sq = BOARD[auction.propertyIndex];
+  var sector = SECTORS[sq.sector];
+  var highBidder = auction.highBidder;
+  var highBidderName = '—';
+  var highBidderColor = null;
+  if (highBidder && players && players[highBidder]) {
+    highBidderName = players[highBidder].name;
+    var bidderIdx = getPlayerColorIndex(highBidder, playerOrder);
+    highBidderColor = PLAYER_COLORS[bidderIdx];
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    className: "fixed inset-0 bg-black/70 backdrop-blur-sm z-40 flex items-center justify-center p-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl",
+    style: {
+      animation: 'bounce-in 0.5s ease-out'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-sm font-bold text-gray-500 mb-1"
+  }, "\uD83D\uDD28 SUBHASTA"), /*#__PURE__*/React.createElement("div", {
+    className: "h-3 rounded-full mb-3",
+    style: {
+      backgroundColor: sector.color
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "text-4xl mb-2"
+  }, sector.emoji), /*#__PURE__*/React.createElement("h2", {
+    className: "text-2xl font-black"
+  }, sq.name), /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-500"
+  }, sector.name, " \u2014 Preu base: ", sq.price, "\u20AC"), /*#__PURE__*/React.createElement("div", {
+    className: "mt-4"
+  }, /*#__PURE__*/React.createElement(PdeGameTimer, {
+    seconds: auction.timeLeft || 30,
+    running: true,
+    size: 90,
+    color: "#10b981"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "mt-4 bg-gray-50 rounded-2xl p-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-sm text-gray-500"
+  }, "Oferta mes alta"), /*#__PURE__*/React.createElement("div", {
+    className: "text-4xl font-black text-emerald-600 mt-1"
+  }, auction.highBid || 0, "\u20AC"), highBidderColor && /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-center gap-2 mt-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-4 h-4 rounded-full",
+    style: {
+      backgroundColor: highBidderColor.hex
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "font-bold"
+  }, highBidderName)), !highBidder && /*#__PURE__*/React.createElement("div", {
+    className: "text-gray-500 text-sm mt-1"
+  }, "Cap oferta encara...")), auction.bids && Object.keys(auction.bids).length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "mt-3 max-h-32 overflow-y-auto"
+  }, Object.entries(auction.bids).sort(function (a, b) {
+    return b[1] - a[1];
+  }).map(function (entry) {
+    var pid = entry[0];
+    var bid = entry[1];
+    var pName = players && players[pid] ? players[pid].name : '?';
+    var pIdx = getPlayerColorIndex(pid, playerOrder);
+    var pColor = PLAYER_COLORS[pIdx];
+    return /*#__PURE__*/React.createElement("div", {
+      key: pid,
+      className: "auction-bid flex items-center justify-between px-3 py-1 text-sm"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex items-center gap-1"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "w-2.5 h-2.5 rounded-full",
+      style: {
+        backgroundColor: pColor.hex
+      }
+    }), /*#__PURE__*/React.createElement("span", {
+      className: "font-medium"
+    }, pName)), /*#__PURE__*/React.createElement("span", {
+      className: "font-bold"
+    }, bid, "\u20AC"));
+  })))));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// NEWS CARD OVERLAY — Shows drawn news card on host screen
+// ═══════════════════════════════════════════════════════════════
+function NewsOverlay({
+  cardIndex,
+  onDismiss
+}) {
+  if (cardIndex === null || cardIndex === undefined) return null;
+  var card = NEWS_CARDS[cardIndex];
+  if (!card) return null;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "fixed inset-0 bg-black/70 backdrop-blur-sm z-40 flex items-center justify-center p-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl text-center",
+    style: {
+      animation: 'bounce-in 0.5s ease-out'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-6xl mb-4"
+  }, "\uD83D\uDCF0"), /*#__PURE__*/React.createElement("h2", {
+    className: "text-xl font-black mb-4"
+  }, "NOTICIA ECONOMICA"), /*#__PURE__*/React.createElement("div", {
+    className: "bg-amber-50 rounded-2xl p-5 text-lg font-medium text-gray-700 mb-6"
+  }, card.text), onDismiss && /*#__PURE__*/React.createElement("button", {
+    onClick: onDismiss,
+    className: "px-8 py-3 bg-emerald-500 text-white rounded-2xl font-bold hover:bg-emerald-600 btn-eco"
+  }, "\u2705 Aplicar efecte")));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PLAYER SCOREBOARD — Shows all players' money and status
+// ═══════════════════════════════════════════════════════════════
+function PlayerScoreboard({
+  playerOrder,
+  players,
+  money,
+  properties,
+  cycle,
+  sectorModifiers,
+  currentPlayer
+}) {
+  if (!playerOrder || !players) return null;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/10 backdrop-blur rounded-2xl p-3"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "text-white font-black text-center mb-2 text-sm"
+  }, "\uD83D\uDCB0 Jugadors"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-1.5"
+  }, playerOrder.map(function (pid, idx) {
+    var p = players[pid];
+    if (!p || p.connected === false) return null;
+    var color = PLAYER_COLORS[idx];
+    var cash = money ? money[pid] || 0 : 0;
+    var netWorth = calculateNetWorth(pid, money, properties, cycle, sectorModifiers);
+    var ownedCount = getPlayerProperties(pid, properties).length;
+    var isActive = idx === currentPlayer;
+    return /*#__PURE__*/React.createElement("div", {
+      key: pid,
+      className: 'flex items-center gap-2 rounded-xl px-2 py-1.5 transition-all ' + (isActive ? 'bg-white/20 ring-1 ring-white scale-[1.02]' : 'bg-white/5')
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "w-4 h-4 rounded-full flex-shrink-0",
+      style: {
+        backgroundColor: color.hex
+      }
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "flex-1 min-w-0"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-white font-bold text-xs truncate"
+    }, isActive && '▶ ', p.name), /*#__PURE__*/React.createElement("div", {
+      className: "text-white/50 text-[10px]"
+    }, ownedCount, " prop.")), /*#__PURE__*/React.createElement("div", {
+      className: "text-right flex-shrink-0"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-emerald-300 font-black text-xs"
+    }, cash, "\u20AC"), /*#__PURE__*/React.createElement("div", {
+      className: "text-white/40 text-[10px]"
+    }, "val: ", netWorth, "\u20AC")));
+  })));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// END GAME SCREEN — Final results and statistics
+// ═══════════════════════════════════════════════════════════════
+function EndGameScreen({
+  playerOrder,
+  players,
+  money,
+  properties,
+  cycle,
+  sectorModifiers
+}) {
+  const [showConfetti, setShowConfetti] = useState(true);
+
+  // Calculate final rankings
+  var rankings = (playerOrder || []).map(function (pid, idx) {
+    var p = players ? players[pid] : null;
+    if (!p) return null;
+    var cash = money ? money[pid] || 0 : 0;
+    var owned = getPlayerProperties(pid, properties);
+    var propValue = 0;
+    owned.forEach(function (propIdx) {
+      propValue += calculatePropertyValue(propIdx, properties, cycle, sectorModifiers);
+    });
+    var netWorth = cash + propValue;
+    return {
+      id: pid,
+      name: p.name,
+      colorIdx: idx,
+      cash: cash,
+      propValue: propValue,
+      netWorth: netWorth,
+      properties: owned.length
+    };
+  }).filter(Boolean).sort(function (a, b) {
+    return b.netWorth - a.netWorth;
+  });
+  var medals = ['🥇', '🥈', '🥉'];
+  useEffect(function () {
+    PdeGameSounds.play('win');
+    var timer = setTimeout(function () {
+      setShowConfetti(false);
+    }, 6000);
+    return function () {
+      clearTimeout(timer);
+    };
+  }, []);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "min-h-screen bg-gradient-to-br from-emerald-900 via-gray-900 to-teal-950 p-4 md:p-8"
+  }, /*#__PURE__*/React.createElement(PdeConfetti, {
+    show: showConfetti
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "max-w-2xl mx-auto space-y-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-center text-white"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-6xl mb-2"
+  }, "\uD83C\uDFC6"), /*#__PURE__*/React.createElement("h1", {
+    className: "text-4xl md:text-5xl font-black"
+  }, "FINAL D'OLIGOPOLY!"), /*#__PURE__*/React.createElement("p", {
+    className: "text-emerald-300 text-lg mt-2"
+  }, t('final_results'))), rankings.length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "bg-gradient-to-br from-yellow-400 to-amber-500 rounded-3xl p-6 text-center shadow-2xl"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-5xl mb-2"
+  }, "\uD83D\uDC51"), /*#__PURE__*/React.createElement("h2", {
+    className: "text-3xl font-black text-white"
+  }, rankings[0].name), /*#__PURE__*/React.createElement("p", {
+    className: "text-white/80 text-xl mt-1"
+  }, t('patrimony'), ": ", rankings[0].netWorth.toLocaleString(), "\u20AC"), /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-center gap-4 mt-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/20 rounded-xl px-3 py-1"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-white/60 text-xs"
+  }, "Efectiu"), /*#__PURE__*/React.createElement("div", {
+    className: "text-white font-bold"
+  }, rankings[0].cash, "\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/20 rounded-xl px-3 py-1"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-white/60 text-xs"
+  }, "Propietats"), /*#__PURE__*/React.createElement("div", {
+    className: "text-white font-bold"
+  }, rankings[0].properties)), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/20 rounded-xl px-3 py-1"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-white/60 text-xs"
+  }, "Valor prop."), /*#__PURE__*/React.createElement("div", {
+    className: "text-white font-bold"
+  }, rankings[0].propValue, "\u20AC")))), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/10 backdrop-blur rounded-3xl p-5"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "text-white font-black text-xl text-center mb-4"
+  }, "\uD83D\uDCCA Classificaci\xF3 Final"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-2"
+  }, rankings.map(function (r, i) {
+    var color = PLAYER_COLORS[r.colorIdx];
+    return /*#__PURE__*/React.createElement("div", {
+      key: r.id,
+      className: 'flex items-center gap-3 px-4 py-3 rounded-2xl transition-all ' + (i === 0 ? 'bg-yellow-500/20 scale-[1.02]' : 'bg-white/5')
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-2xl w-10 text-center"
+    }, medals[i] || i + 1), /*#__PURE__*/React.createElement("div", {
+      className: "w-5 h-5 rounded-full",
+      style: {
+        backgroundColor: color.hex
+      }
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "flex-1"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-white font-bold"
+    }, r.name), /*#__PURE__*/React.createElement("span", {
+      className: "text-white/40 text-xs ml-2"
+    }, r.properties, " propietats")), /*#__PURE__*/React.createElement("div", {
+      className: "text-right"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-emerald-300 font-black"
+    }, r.netWorth.toLocaleString(), "\u20AC"), /*#__PURE__*/React.createElement("div", {
+      className: "text-white/30 text-xs"
+    }, r.cash, "\u20AC efectiu + ", r.propValue, "\u20AC prop.")));
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/10 backdrop-blur rounded-3xl p-5"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "text-white font-black text-lg text-center mb-3"
+  }, "\uD83C\uDFE2 Propietats per Sector"), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 md:grid-cols-4 gap-2"
+  }, Object.entries(SECTORS).map(function (entry) {
+    var sectorKey = entry[0];
+    var sector = entry[1];
+    var sectorProps = SECTOR_PROPERTIES[sectorKey] || [];
+    var owners = sectorProps.map(function (idx) {
+      return properties[idx] && properties[idx].owner ? properties[idx].owner : null;
+    }).filter(Boolean);
+    var uniqueOwners = owners.filter(function (v, i, a) {
+      return a.indexOf(v) === i;
+    });
+    var hasMonopoly = uniqueOwners.length === 1 && owners.length === sectorProps.length;
+    return /*#__PURE__*/React.createElement("div", {
+      key: sectorKey,
+      className: 'rounded-xl p-2 text-center ' + (hasMonopoly ? 'bg-yellow-500/20 ring-1 ring-yellow-400/50' : 'bg-white/5')
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-lg"
+    }, sector.emoji), /*#__PURE__*/React.createElement("div", {
+      className: "text-white text-xs font-bold"
+    }, sector.name), /*#__PURE__*/React.createElement("div", {
+      className: "text-white/40 text-[10px]"
+    }, owners.length, "/", sectorProps.length, " venudes"), hasMonopoly && /*#__PURE__*/React.createElement("div", {
+      className: "text-yellow-300 text-[10px] font-bold"
+    }, "\u2B50 Monopoli!"));
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/10 backdrop-blur rounded-3xl p-5"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "text-white font-black text-lg text-center mb-3"
+  }, "\uD83D\uDCC8 An\xE0lisi d'Inversions"), rankings.map(function (r) {
+    var owned = getPlayerProperties(r.id, properties);
+    var bestInvestment = null;
+    var bestReturn = 0;
+    var worstInvestment = null;
+    var worstReturn = Infinity;
+    owned.forEach(function (propIdx) {
+      var sq = BOARD[propIdx];
+      var prop = properties[propIdx];
+      var value = calculatePropertyValue(propIdx, properties, cycle, sectorModifiers);
+      var returnRate = (value - sq.price) / sq.price * 100;
+      if (returnRate > bestReturn) {
+        bestReturn = returnRate;
+        bestInvestment = sq.shortName;
+      }
+      if (returnRate < worstReturn) {
+        worstReturn = returnRate;
+        worstInvestment = sq.shortName;
+      }
+    });
+    var color = PLAYER_COLORS[r.colorIdx];
+    return /*#__PURE__*/React.createElement("div", {
+      key: r.id,
+      className: "flex items-center gap-3 py-2 border-b border-white/5 last:border-0"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "w-3 h-3 rounded-full flex-shrink-0",
+      style: {
+        backgroundColor: color.hex
+      }
+    }), /*#__PURE__*/React.createElement("span", {
+      className: "text-white font-bold text-sm flex-1"
+    }, r.name), bestInvestment && /*#__PURE__*/React.createElement("span", {
+      className: "text-green-300 text-xs"
+    }, "\uD83D\uDCC8 ", bestInvestment, " (+", Math.round(bestReturn), "%)"), worstInvestment && owned.length > 1 && /*#__PURE__*/React.createElement("span", {
+      className: "text-red-300 text-xs ml-2"
+    }, "\uD83D\uDCC9 ", worstInvestment, " (", Math.round(worstReturn) > 0 ? '+' : '', Math.round(worstReturn), "%)"));
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "bg-indigo-500/20 rounded-3xl p-5"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "text-white font-black text-lg text-center mb-3"
+  }, "\uD83D\uDCA1 Lli\xE7ons Econ\xF2miques"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2 text-white/70 text-sm"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-lg"
+  }, "\uD83D\uDCCA"), /*#__PURE__*/React.createElement("p", null, "La ", /*#__PURE__*/React.createElement("strong", {
+    className: "text-white"
+  }, "diversificacio"), " redueix el risc. Els jugadors amb propietats en multiples sectors resisteixen millor les crisis sectorials.")), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2 text-white/70 text-sm"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-lg"
+  }, "\uD83D\uDD2C"), /*#__PURE__*/React.createElement("p", null, "La ", /*#__PURE__*/React.createElement("strong", {
+    className: "text-white"
+  }, "inversio en R+D"), " multiplica els beneficis a llarg termini. Com a l'economia real, les empreses innovadores generen mes rendiment.")), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2 text-white/70 text-sm"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-lg"
+  }, "\uD83D\uDCB0"), /*#__PURE__*/React.createElement("p", null, "Els ", /*#__PURE__*/React.createElement("strong", {
+    className: "text-white"
+  }, "impostos progressius"), " redistribueixen la riquesa. Qui mes te, mes contribueix al be comu.")), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2 text-white/70 text-sm"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-lg"
+  }, "\uD83D\uDCC8"), /*#__PURE__*/React.createElement("p", null, "Els ", /*#__PURE__*/React.createElement("strong", {
+    className: "text-white"
+  }, "cicles econ\xF2mics"), " (expansio i recessio) son inevitables. L'estrat\xE8gia intel\xB7ligent adapta les decisions al context.")))), /*#__PURE__*/React.createElement("div", {
+    className: "text-center space-y-3"
+  }, /*#__PURE__*/React.createElement("a", {
+    href: "./",
+    className: "inline-block px-8 py-3 bg-white/10 text-white rounded-2xl font-bold hover:bg-white/20"
+  }, "\uD83C\uDFE0 ", t('back_pde')), /*#__PURE__*/React.createElement("p", {
+    className: "text-white/20 text-xs"
+  }, "Oligopoly \u2014 Plataforma Did\xE0ctica Econ\xF2mica"))));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HOST VIEW — Main game controller
+// ═══════════════════════════════════════════════════════════════
+function OligopolyHost({
+  roomCode,
+  playerId,
+  players,
+  gameState,
+  idioma
+}) {
+  var t = createTranslator(ECONOPOLY_TRANSLATIONS, idioma);
+  const [rolling, setRolling] = useState(false);
+  const [showNews, setShowNews] = useState(false);
+  const [actionLog, setActionLog] = useState([]);
+  const [showCycleChange, setShowCycleChange] = useState(false);
+  const [showFact, setShowFact] = useState(false);
+  const [lastCycle, setLastCycle] = useState(null);
+  const auctionTimerRef = useRef(null);
+  var gs = gameState || {};
+  var playerOrder = gs.playerOrder || [];
+  var currentPlayerIdx = gs.currentPlayer || 0;
+  var currentPid = playerOrder[currentPlayerIdx];
+  var currentPlayerName = players && currentPid && players[currentPid] ? players[currentPid].name : '?';
+  var phase = gs.phase || 'roll';
+  var money = gs.money || {};
+  var properties = gs.properties || {};
+  var positions = gs.positions || {};
+  var cycle = gs.cycle || 'expansion';
+  var sectorModifiers = gs.sectorModifiers || {};
+  var round = gs.round || 1;
+  var maxRounds = gs.maxRounds || 20;
+
+  // Add a log entry
+  var addLog = function (msg) {
+    setActionLog(function (prev) {
+      return [msg].concat(prev).slice(0, 20);
+    });
+  };
+
+  // Detect cycle changes and show overlay
+  useEffect(function () {
+    if (gs.cycle && lastCycle && gs.cycle !== lastCycle) {
+      setShowCycleChange(true);
+      setTimeout(function () {
+        setShowCycleChange(false);
+      }, 4000);
+    }
+    setLastCycle(gs.cycle || null);
+  }, [gs.cycle]);
+
+  // Show economic fact between turns
+  useEffect(function () {
+    if (phase === 'roll') {
+      setShowFact(true);
+      var timer = setTimeout(function () {
+        setShowFact(false);
+      }, 8000);
+      return function () {
+        clearTimeout(timer);
+      };
+    } else {
+      setShowFact(false);
+    }
+  }, [phase, currentPlayerIdx]);
+
+  // Auction timer management
+  useEffect(function () {
+    if (phase !== 'auction' || !gs.currentAuction) return;
+
+    // The host manages the auction countdown locally and updates Firebase
+    var auctionStart = gs.currentAuction.startedAt || Date.now();
+    var duration = 30000; // 30 seconds
+
+    auctionTimerRef.current = setInterval(function () {
+      var elapsed = Date.now() - auctionStart;
+      var remaining = Math.max(0, Math.ceil((duration - elapsed) / 1000));
+      if (remaining <= 0) {
+        clearInterval(auctionTimerRef.current);
+        resolveAuction();
+      }
+    }, 1000);
+    return function () {
+      if (auctionTimerRef.current) clearInterval(auctionTimerRef.current);
+    };
+  }, [phase, gs.currentAuction?.propertyIndex]);
+
+  // Listen for player bids during auction
+  useEffect(function () {
+    if (phase !== 'auction' || !gs.currentAuction) return;
+    var ref = PdeFirebase.ref('rooms/' + roomCode + '/playerActions');
+    ref.on('child_changed', function (snap) {
+      var data = snap.val();
+      if (data && data.type === 'bid' && data.amount) {
+        handleBid(snap.key, data.amount);
+      }
+    });
+    ref.on('child_added', function (snap) {
+      var data = snap.val();
+      if (data && data.type === 'bid' && data.amount) {
+        handleBid(snap.key, data.amount);
+      }
+    });
+    return function () {
+      ref.off();
+    };
+  }, [phase, gs.currentAuction?.propertyIndex]);
+
+  // Listen for player R+D requests
+  useEffect(function () {
+    if (phase !== 'action') return;
+    var ref = PdeFirebase.ref('rooms/' + roomCode + '/playerActions');
+    ref.on('child_changed', function (snap) {
+      var data = snap.val();
+      if (data && data.type === 'rd_upgrade') {
+        handleRdUpgrade(snap.key, data.propertyIndex);
+      }
+    });
+    return function () {
+      ref.off();
+    };
+  }, [phase, currentPid]);
+
+  // Handle a bid from a player
+  var handleBid = function (bidderId, amount) {
+    var auction = gs.currentAuction;
+    if (!auction) return;
+    var currentHigh = auction.highBid || 0;
+    var playerMoney = money[bidderId] || 0;
+    if (amount <= currentHigh || amount > playerMoney) return;
+    var updates = {};
+    updates['gameState/currentAuction/bids/' + bidderId] = amount;
+    updates['gameState/currentAuction/highBid'] = amount;
+    updates['gameState/currentAuction/highBidder'] = bidderId;
+    PdeFirebase.ref('rooms/' + roomCode).update(updates);
+    var bidderName = players && players[bidderId] ? players[bidderId].name : '?';
+    addLog(bidderName + ' ofereix ' + amount + '€');
+    PdeGameSounds.play('coin');
+  };
+
+  // Resolve auction (timer ended)
+  var resolveAuction = function () {
+    var auction = gs.currentAuction;
+    if (!auction) return;
+    var updates = {};
+    if (auction.highBidder && auction.highBid) {
+      // Winner pays and gets property
+      var winnerMoney = (money[auction.highBidder] || 0) - auction.highBid;
+      updates['gameState/money/' + auction.highBidder] = winnerMoney;
+      updates['gameState/properties/' + auction.propertyIndex] = {
+        owner: auction.highBidder,
+        rdLevel: 0
+      };
+      var winnerName = players && players[auction.highBidder] ? players[auction.highBidder].name : '?';
+      addLog('🔨 ' + winnerName + ' compra ' + BOARD[auction.propertyIndex].name + ' per ' + auction.highBid + '€');
+      PdeGameSounds.play('win');
+    } else {
+      addLog('🔨 Cap oferta — propietat no venuda');
+      PdeGameSounds.play('buzz');
+    }
+    updates['gameState/currentAuction'] = null;
+    updates['gameState/phase'] = 'action';
+    PdeFirebase.ref('rooms/' + roomCode).update(updates);
+  };
+
+  // Handle R+D upgrade request from player
+  var handleRdUpgrade = function (pid, propIdx) {
+    if (pid !== currentPid) return;
+    var prop = properties[propIdx];
+    if (!prop || prop.owner !== pid) return;
+    var currentLevel = prop.rdLevel || 0;
+    if (currentLevel >= 3) return;
+    var discount = gs.freeRd ? 1 : gs.rdDiscount || 0;
+    var cost = getRdUpgradeCost(propIdx, currentLevel, discount);
+    var playerMoney = money[pid] || 0;
+    if (cost > playerMoney) return;
+    var updates = {};
+    updates['gameState/money/' + pid] = playerMoney - cost;
+    updates['gameState/properties/' + propIdx + '/rdLevel'] = currentLevel + 1;
+    if (gs.freeRd) {
+      updates['gameState/freeRd'] = null;
+    }
+    PdeFirebase.ref('rooms/' + roomCode).update(updates);
+    var pName = players && players[pid] ? players[pid].name : '?';
+    addLog('🔬 ' + pName + ' millora R+D de ' + BOARD[propIdx].shortName + ' a nivell ' + (currentLevel + 1));
+    PdeGameSounds.play('ding');
+
+    // Clear the action so player can do another
+    PdeFirebase.ref('rooms/' + roomCode + '/playerActions/' + pid).set(null);
+  };
+
+  // ── DICE ROLL ──
+  var handleRollDice = function () {
+    if (phase !== 'roll' || rolling) return;
+    setRolling(true);
+    var d1 = Math.floor(Math.random() * 6) + 1;
+    var d2 = Math.floor(Math.random() * 6) + 1;
+    var total = d1 + d2;
+    PdeGameSounds.play('pop');
+    setTimeout(function () {
+      setRolling(false);
+
+      // Move player
+      var currentPos = positions[currentPid] || 0;
+      var newPos = (currentPos + total) % BOARD_SIZE;
+      var passedStart = currentPos + total >= BOARD_SIZE && currentPos !== 0;
+      var updates = {};
+      updates['gameState/diceValue'] = [d1, d2];
+      updates['gameState/positions/' + currentPid] = newPos;
+
+      // Collect 200€ when passing start
+      if (passedStart) {
+        var fundBonus = Math.min(gs.publicFund || 0, 50);
+        var startBonus = 200 + fundBonus;
+        updates['gameState/money/' + currentPid] = (money[currentPid] || 0) + startBonus;
+        updates['gameState/publicFund'] = Math.max(0, (gs.publicFund || 0) - fundBonus);
+        addLog('🏁 ' + currentPlayerName + ' passa per SORTIDA i cobra ' + startBonus + '€');
+      }
+      PdeFirebase.ref('rooms/' + roomCode).update(updates).then(function () {
+        // Process the square landed on
+        setTimeout(function () {
+          processSquare(newPos, passedStart);
+        }, 500);
+      });
+      addLog('🎲 ' + currentPlayerName + ' tira ' + d1 + '+' + d2 + '=' + total);
+    }, 1200);
+  };
+
+  // ── PROCESS SQUARE ──
+  var processSquare = function (squareIndex, passedStart) {
+    var sq = BOARD[squareIndex];
+    var updates = {};
+    switch (sq.type) {
+      case 'property':
+        {
+          var prop = properties[squareIndex];
+          if (!prop || !prop.owner) {
+            // Unowned → start auction
+            updates['gameState/phase'] = 'auction';
+            updates['gameState/currentAuction'] = {
+              propertyIndex: squareIndex,
+              bids: {},
+              highBid: 0,
+              highBidder: null,
+              startedAt: Date.now(),
+              timeLeft: 30
+            };
+            addLog('🔨 Subhasta de ' + sq.name + '!');
+            PdeGameSounds.play('ding');
+          } else if (prop.owner === currentPid) {
+            // Own property → action phase (can upgrade R+D)
+            updates['gameState/phase'] = 'action';
+            addLog('🏠 ' + currentPlayerName + ' visita la seua propietat ' + sq.shortName);
+          } else {
+            // Owned by other → pay rent
+            var rent = calculateRent(squareIndex, properties, cycle, sectorModifiers);
+            var payerMoney = (money[currentPid] || 0) - rent;
+            var ownerMoney = (money[prop.owner] || 0) + rent;
+            updates['gameState/money/' + currentPid] = Math.max(0, payerMoney);
+            updates['gameState/money/' + prop.owner] = ownerMoney;
+            updates['gameState/phase'] = 'action';
+            var ownerName = players && players[prop.owner] ? players[prop.owner].name : '?';
+            addLog('💸 ' + currentPlayerName + ' paga ' + rent + '€ de lloguer a ' + ownerName);
+            PdeGameSounds.play('coin');
+          }
+          break;
+        }
+      case 'tax':
+        {
+          if (gs.taxHoliday) {
+            updates['gameState/phase'] = 'action';
+            updates['gameState/taxHoliday'] = null;
+            addLog('🎉 Vacances fiscals! ' + currentPlayerName + ' no paga impostos');
+          } else {
+            var nw = calculateNetWorth(currentPid, money, properties, cycle, sectorModifiers);
+            var tax = calculateTax(nw);
+            var afterTax = Math.max(0, (money[currentPid] || 0) - tax);
+            updates['gameState/money/' + currentPid] = afterTax;
+            updates['gameState/publicFund'] = (gs.publicFund || 0) + tax;
+            updates['gameState/phase'] = 'action';
+            addLog('💰 ' + currentPlayerName + ' paga ' + tax + '€ d\'impostos (patrimoni: ' + nw + '€)');
+            PdeGameSounds.play('buzz');
+          }
+          break;
+        }
+      case 'news':
+        {
+          var cardIdx = Math.floor(Math.random() * NEWS_CARDS.length);
+          updates['gameState/currentNews'] = cardIdx;
+          updates['gameState/phase'] = 'news';
+          addLog('📰 ' + currentPlayerName + ' rep una notícia econòmica!');
+          PdeGameSounds.play('pop');
+          break;
+        }
+      case 'central':
+        {
+          var rates = [2, 5, 8, 12];
+          var newRate = rates[Math.floor(Math.random() * rates.length)];
+          updates['gameState/interestRate'] = newRate;
+          updates['gameState/phase'] = 'action';
+          addLog('🏛️ El Banc Central fixa els tipus al ' + newRate + '%');
+          PdeGameSounds.play('ding');
+          break;
+        }
+      case 'rd':
+        {
+          // Can upgrade any owned property at 50% discount
+          updates['gameState/rdDiscount'] = 0.5;
+          updates['gameState/phase'] = 'action';
+          addLog('🔬 ' + currentPlayerName + ' pot millorar R+D amb 50% de descompte!');
+          PdeGameSounds.play('ding');
+          break;
+        }
+      case 'freemarket':
+        {
+          updates['gameState/phase'] = 'action';
+          addLog('🆓 ' + currentPlayerName + ' descansa al Mercat Lliure');
+          break;
+        }
+      case 'start':
+        {
+          updates['gameState/phase'] = 'action';
+          addLog('🏁 ' + currentPlayerName + ' està a SORTIDA');
+          break;
+        }
+      default:
+        {
+          updates['gameState/phase'] = 'action';
+        }
+    }
+    PdeFirebase.ref('rooms/' + roomCode).update(updates);
+  };
+
+  // ── APPLY NEWS EFFECT ──
+  var handleApplyNews = function () {
+    var cardIdx = gs.currentNews;
+    if (cardIdx === null || cardIdx === undefined) return;
+    var card = NEWS_CARDS[cardIdx];
+    if (!card) return;
+    var effect = card.effect;
+    var updates = {};
+    switch (effect.type) {
+      case 'sector_boost':
+      case 'sector_bust':
+        {
+          var newMods = Object.assign({}, sectorModifiers);
+          var currentMod = newMods[effect.sector] || 1;
+          newMods[effect.sector] = Math.round(currentMod * effect.modifier * 100) / 100;
+          updates['gameState/sectorModifiers'] = newMods;
+          break;
+        }
+      case 'interest_rate':
+        {
+          updates['gameState/interestRate'] = effect.rate;
+          break;
+        }
+      case 'subsidy':
+        {
+          // Pay bonus to players with properties in sector
+          playerOrder.forEach(function (pid) {
+            var owned = getPlayerProperties(pid, properties);
+            var hasSector = owned.some(function (idx) {
+              return BOARD[idx].sector === effect.sector;
+            });
+            if (hasSector) {
+              updates['gameState/money/' + pid] = (money[pid] || 0) + effect.amount;
+            }
+          });
+          break;
+        }
+      case 'all_pay':
+        {
+          playerOrder.forEach(function (pid) {
+            updates['gameState/money/' + pid] = Math.max(0, (money[pid] || 0) - effect.amount);
+            updates['gameState/publicFund'] = (gs.publicFund || 0) + effect.amount * playerOrder.length;
+          });
+          break;
+        }
+      case 'all_receive':
+        {
+          playerOrder.forEach(function (pid) {
+            updates['gameState/money/' + pid] = (money[pid] || 0) + effect.amount;
+          });
+          break;
+        }
+      case 'tax_holiday':
+        {
+          updates['gameState/taxHoliday'] = true;
+          break;
+        }
+      case 'inflation':
+        {
+          // Increase all rents via sector modifiers
+          var newMods2 = Object.assign({}, sectorModifiers);
+          Object.keys(SECTORS).forEach(function (s) {
+            newMods2[s] = Math.round((newMods2[s] || 1) * effect.modifier * 100) / 100;
+          });
+          updates['gameState/sectorModifiers'] = newMods2;
+          break;
+        }
+      case 'current_receive':
+        {
+          updates['gameState/money/' + currentPid] = (money[currentPid] || 0) + effect.amount;
+          break;
+        }
+      case 'richest_pay':
+        {
+          var richest = null;
+          var maxNW = -1;
+          playerOrder.forEach(function (pid) {
+            var nw = calculateNetWorth(pid, money, properties, cycle, sectorModifiers);
+            if (nw > maxNW) {
+              maxNW = nw;
+              richest = pid;
+            }
+          });
+          if (richest) {
+            updates['gameState/money/' + richest] = Math.max(0, (money[richest] || 0) - effect.amount);
+            updates['gameState/publicFund'] = (gs.publicFund || 0) + effect.amount;
+          }
+          break;
+        }
+      case 'free_rd':
+        {
+          updates['gameState/freeRd'] = true;
+          break;
+        }
+    }
+    updates['gameState/currentNews'] = null;
+    updates['gameState/phase'] = 'action';
+    PdeFirebase.ref('rooms/' + roomCode).update(updates);
+    PdeGameSounds.play('pop');
+  };
+
+  // ── END TURN ──
+  var handleEndTurn = function () {
+    if (phase !== 'action') return;
+    var nextPlayerIdx = (currentPlayerIdx + 1) % playerOrder.length;
+    var newRound = round;
+    var updates = {};
+
+    // If we've gone around once, increment round
+    if (nextPlayerIdx === 0) {
+      newRound = round + 1;
+      updates['gameState/round'] = newRound;
+
+      // Check cycle change
+      var cycleRound = (gs.cycleRound || 5) - 1;
+      if (cycleRound <= 0) {
+        var newCycle = cycle === 'expansion' ? 'recession' : 'expansion';
+        updates['gameState/cycle'] = newCycle;
+        updates['gameState/cycleRound'] = 5;
+        addLog(newCycle === 'expansion' ? '📈 EXPANSIÓ ECONÒMICA!' : '📉 RECESSIÓ ECONÒMICA!');
+        PdeGameSounds.play('ding');
+      } else {
+        updates['gameState/cycleRound'] = cycleRound;
+      }
+
+      // Check game end
+      if (newRound > maxRounds) {
+        updates['gameState/phase'] = 'finished';
+        updates['gameState/finished'] = true;
+        PdeFirebase.ref('rooms/' + roomCode).update(updates);
+        addLog('🏁 FINAL DEL JOC!');
+        return;
+      }
+    }
+    updates['gameState/currentPlayer'] = nextPlayerIdx;
+    updates['gameState/phase'] = 'roll';
+    updates['gameState/diceValue'] = null;
+    updates['gameState/rdDiscount'] = 0;
+    updates['gameState/freeRd'] = null;
+
+    // Clear player actions
+    updates['playerActions'] = null;
+    PdeFirebase.ref('rooms/' + roomCode).update(updates);
+    var nextPid = playerOrder[nextPlayerIdx];
+    var nextName = players && players[nextPid] ? players[nextPid].name : '?';
+    addLog('➡️ Torn de ' + nextName);
+  };
+
+  // ── FINISHED ──
+  if (gs.finished) {
+    return /*#__PURE__*/React.createElement(EndGameScreen, {
+      playerOrder: playerOrder,
+      players: players,
+      money: money,
+      properties: properties,
+      cycle: cycle,
+      sectorModifiers: sectorModifiers
+    });
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    className: "min-h-screen bg-gradient-to-br from-emerald-900 via-gray-900 to-teal-950 p-2 md:p-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "max-w-7xl mx-auto"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-center text-white mb-2"
+  }, /*#__PURE__*/React.createElement("h1", {
+    className: "text-xl md:text-3xl font-black"
+  }, "\uD83C\uDFDB\uFE0F OLIGOPOLY")), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-1 lg:grid-cols-4 gap-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "lg:col-span-3"
+  }, /*#__PURE__*/React.createElement(OligopolyBoard, {
+    gameState: gs,
+    playerOrder: playerOrder,
+    players: players
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/10 backdrop-blur rounded-2xl p-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2 mb-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-5 h-5 rounded-full",
+    style: {
+      backgroundColor: PLAYER_COLORS[currentPlayerIdx].hex
+    }
+  }), /*#__PURE__*/React.createElement("h3", {
+    className: "text-white font-black"
+  }, currentPlayerName), /*#__PURE__*/React.createElement("span", {
+    className: "text-emerald-300 font-bold ml-auto"
+  }, money[currentPid] || 0, "\u20AC")), phase === 'roll' && /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, (rolling || gs.diceValue) && /*#__PURE__*/React.createElement(DiceRollAnimation, {
+    dice: gs.diceValue,
+    rolling: rolling
+  }), /*#__PURE__*/React.createElement("button", {
+    onClick: handleRollDice,
+    disabled: rolling,
+    className: 'w-full py-4 rounded-2xl text-white font-black text-xl shadow-lg btn-eco ' + (rolling ? 'bg-gray-500 cursor-wait' : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:brightness-110')
+  }, rolling ? '🎲 ' + t('rolling') : '🎲 ' + t('roll_dice')), !rolling && positions[currentPid] !== undefined && /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/5 rounded-xl p-2 text-center"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-white/50 text-xs"
+  }, "\uD83D\uDCCD ", BOARD[positions[currentPid]].emoji || '', " ", BOARD[positions[currentPid]].name))), phase === 'action' && /*#__PURE__*/React.createElement("div", {
+    className: "space-y-2"
+  }, gs.rdDiscount > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "bg-blue-500/20 rounded-xl px-3 py-2 text-blue-300 text-xs text-center"
+  }, "\uD83D\uDD2C Descompte R+D: ", Math.round(gs.rdDiscount * 100), "%"), gs.freeRd && /*#__PURE__*/React.createElement("div", {
+    className: "bg-purple-500/20 rounded-xl px-3 py-2 text-purple-300 text-xs text-center"
+  }, "\uD83D\uDD2C Propera millora R+D gratis!"), /*#__PURE__*/React.createElement("button", {
+    onClick: handleEndTurn,
+    className: "w-full py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 text-white font-black text-lg shadow-lg btn-eco hover:brightness-110"
+  }, "\u27A1\uFE0F ", t('end_turn'))), phase === 'auction' && /*#__PURE__*/React.createElement("div", {
+    className: "text-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-yellow-300 font-bold animate-pulse text-sm"
+  }, "\uD83D\uDD28 ", t('auction_ongoing')), /*#__PURE__*/React.createElement("button", {
+    onClick: resolveAuction,
+    className: "mt-2 w-full py-2 rounded-xl bg-red-500 text-white font-bold text-sm btn-eco"
+  }, "\u23E9 ", t('close_auction'))), phase === 'news' && /*#__PURE__*/React.createElement("div", {
+    className: "text-yellow-300 font-bold animate-pulse text-sm text-center"
+  }, "\uD83D\uDCF0 Llegint not\xEDcia...")), /*#__PURE__*/React.createElement(PlayerScoreboard, {
+    playerOrder: playerOrder,
+    players: players,
+    money: money,
+    properties: properties,
+    cycle: cycle,
+    sectorModifiers: sectorModifiers,
+    currentPlayer: currentPlayerIdx
+  }), /*#__PURE__*/React.createElement(EconomicIndicatorsPanel, {
+    gameState: gs
+  }), /*#__PURE__*/React.createElement(EconomicFactBanner, {
+    visible: showFact && phase === 'roll'
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/5 rounded-2xl p-3 max-h-48 overflow-y-auto"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "text-white/40 text-xs font-bold mb-1"
+  }, "\uD83D\uDCCB Registre"), actionLog.map(function (msg, i) {
+    return /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: "text-white/60 text-xs py-0.5 border-b border-white/5"
+    }, msg);
+  }), actionLog.length === 0 && /*#__PURE__*/React.createElement("div", {
+    className: "text-white/20 text-xs"
+  }, "Cap activitat encara"))))), phase === 'auction' && gs.currentAuction && /*#__PURE__*/React.createElement(AuctionOverlay, {
+    auction: gs.currentAuction,
+    properties: properties,
+    playerOrder: playerOrder,
+    players: players,
+    cycle: cycle,
+    sectorModifiers: sectorModifiers
+  }), phase === 'news' && gs.currentNews !== null && gs.currentNews !== undefined && /*#__PURE__*/React.createElement(NewsOverlay, {
+    cardIndex: gs.currentNews,
+    onDismiss: handleApplyNews
+  }), /*#__PURE__*/React.createElement(CycleChangeOverlay, {
+    cycle: gs.cycle,
+    show: showCycleChange,
+    onDismiss: function () {
+      setShowCycleChange(false);
+    }
+  }));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PLAYER VIEW — Mobile interface for each player
+// ═══════════════════════════════════════════════════════════════
+function OligopolyPlayer({
+  roomCode,
+  playerId,
+  players,
+  gameState,
+  idioma
+}) {
+  var t = createTranslator(ECONOPOLY_TRANSLATIONS, idioma);
+  const [bidAmount, setBidAmount] = useState('');
+  const [lastBid, setLastBid] = useState(0);
+  var gs = gameState || {};
+  var playerOrder = gs.playerOrder || [];
+  var currentPlayerIdx = gs.currentPlayer || 0;
+  var currentPid = playerOrder[currentPlayerIdx];
+  var isMyTurn = currentPid === playerId;
+  var phase = gs.phase || 'roll';
+  var money = gs.money || {};
+  var properties = gs.properties || {};
+  var positions = gs.positions || {};
+  var cycle = gs.cycle || 'expansion';
+  var sectorModifiers = gs.sectorModifiers || {};
+  var round = gs.round || 1;
+  var maxRounds = gs.maxRounds || 20;
+  var myMoney = money[playerId] || 0;
+  var myPos = positions[playerId] || 0;
+  var myProperties = getPlayerProperties(playerId, properties);
+  var myColorIdx = getPlayerColorIndex(playerId, playerOrder);
+  var myColor = PLAYER_COLORS[myColorIdx];
+  var myNetWorth = calculateNetWorth(playerId, money, properties, cycle, sectorModifiers);
+  var myName = players && players[playerId] ? players[playerId].name : '?';
+  var currentPlayerName = players && currentPid && players[currentPid] ? players[currentPid].name : '?';
+
+  // Submit a bid
+  var handleBid = function () {
+    var amount = parseInt(bidAmount);
+    if (!amount || amount <= 0) return;
+    var currentHigh = gs.currentAuction && gs.currentAuction.highBid ? gs.currentAuction.highBid : 0;
+    if (amount <= currentHigh) return;
+    if (amount > myMoney) return;
+    PdeFirebase.ref('rooms/' + roomCode + '/playerActions/' + playerId).set({
+      type: 'bid',
+      amount: amount,
+      timestamp: Date.now()
+    });
+    setLastBid(amount);
+    setBidAmount('');
+    PdeGameSounds.play('coin');
+  };
+
+  // Request R+D upgrade
+  var handleRequestRd = function (propIdx) {
+    PdeFirebase.ref('rooms/' + roomCode + '/playerActions/' + playerId).set({
+      type: 'rd_upgrade',
+      propertyIndex: propIdx,
+      timestamp: Date.now()
+    });
+    PdeGameSounds.play('pop');
+  };
+
+  // ── FINISHED ──
+  if (gs.finished) {
+    var rankings = (playerOrder || []).map(function (pid, idx) {
+      var p = players ? players[pid] : null;
+      if (!p) return null;
+      var nw = calculateNetWorth(pid, money, properties, cycle, sectorModifiers);
+      return {
+        id: pid,
+        name: p.name,
+        netWorth: nw,
+        colorIdx: idx
+      };
+    }).filter(Boolean).sort(function (a, b) {
+      return b.netWorth - a.netWorth;
+    });
+    var myRank = rankings.findIndex(function (r) {
+      return r.id === playerId;
+    }) + 1;
+    var medals = ['🥇', '🥈', '🥉'];
+    return /*#__PURE__*/React.createElement("div", {
+      className: "min-h-screen bg-gradient-to-br from-emerald-900 via-gray-900 to-teal-950 p-4 flex items-center justify-center"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "max-w-sm w-full text-center space-y-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-6xl"
+    }, medals[myRank - 1] || '🏁'), /*#__PURE__*/React.createElement("h1", {
+      className: "text-3xl font-black text-white"
+    }, t('game_over')), /*#__PURE__*/React.createElement("div", {
+      className: "bg-white/10 rounded-2xl p-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-white/60 text-sm"
+    }, "#", myRank), /*#__PURE__*/React.createElement("div", {
+      className: "text-4xl font-black text-emerald-300"
+    }, "#", myRank), /*#__PURE__*/React.createElement("div", {
+      className: "text-white font-bold mt-1"
+    }, t('patrimony'), ": ", myNetWorth.toLocaleString(), "\u20AC")), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-1"
+    }, rankings.map(function (r, i) {
+      return /*#__PURE__*/React.createElement("div", {
+        key: r.id,
+        className: 'flex items-center gap-2 px-3 py-1.5 rounded-xl ' + (r.id === playerId ? 'bg-emerald-500/30' : 'bg-white/5')
+      }, /*#__PURE__*/React.createElement("span", {
+        className: "text-sm"
+      }, medals[i] || i + 1), /*#__PURE__*/React.createElement("div", {
+        className: "w-3 h-3 rounded-full",
+        style: {
+          backgroundColor: PLAYER_COLORS[r.colorIdx].hex
+        }
+      }), /*#__PURE__*/React.createElement("span", {
+        className: "text-white text-sm font-medium flex-1 text-left"
+      }, r.name), /*#__PURE__*/React.createElement("span", {
+        className: "text-emerald-300 text-sm font-bold"
+      }, r.netWorth, "\u20AC"));
+    }))));
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    className: "min-h-screen bg-gradient-to-br from-emerald-900 via-gray-900 to-teal-950 p-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "max-w-md mx-auto space-y-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-3 bg-white/10 rounded-2xl p-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-10 h-10 rounded-full flex items-center justify-center text-lg",
+    style: {
+      backgroundColor: myColor.hex
+    }
+  }, myColor.emoji), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-white font-bold"
+  }, myName), /*#__PURE__*/React.createElement("div", {
+    className: "text-white/50 text-xs"
+  }, "Casella: ", myPos, " \u2014 ", BOARD[myPos].shortName || BOARD[myPos].name)), /*#__PURE__*/React.createElement("div", {
+    className: "text-right"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-emerald-300 font-black text-xl"
+  }, myMoney, "\u20AC"), /*#__PURE__*/React.createElement("div", {
+    className: "text-white/40 text-xs"
+  }, "Val: ", myNetWorth, "\u20AC"))), /*#__PURE__*/React.createElement("div", {
+    className: 'rounded-2xl px-4 py-3 text-center font-bold ' + (isMyTurn ? 'bg-emerald-500/30 text-emerald-300' : 'bg-white/5 text-white/40')
+  }, isMyTurn ? '🎯 ES EL TEU TORN!' : '⏳ Torn de ' + currentPlayerName), /*#__PURE__*/React.createElement("div", {
+    className: 'rounded-xl px-3 py-2 text-center text-sm font-bold ' + (cycle === 'expansion' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300')
+  }, cycle === 'expansion' ? '📈 Expansió econòmica' : '📉 Recessió econòmica', /*#__PURE__*/React.createElement("span", {
+    className: "text-white/30 ml-2"
+  }, "Interes: ", gs.interestRate || 5, "%")), phase === 'auction' && gs.currentAuction && /*#__PURE__*/React.createElement("div", {
+    className: "bg-yellow-500/20 rounded-2xl p-4 space-y-3",
+    style: {
+      animation: 'slide-up 0.3s ease-out'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-sm text-yellow-300 font-bold"
+  }, "\uD83D\uDD28 SUBHASTA"), /*#__PURE__*/React.createElement("div", {
+    className: "text-2xl mt-1"
+  }, SECTORS[BOARD[gs.currentAuction.propertyIndex].sector].emoji), /*#__PURE__*/React.createElement("div", {
+    className: "text-white font-black"
+  }, BOARD[gs.currentAuction.propertyIndex].name), /*#__PURE__*/React.createElement("div", {
+    className: "text-white/60 text-sm"
+  }, "Preu base: ", BOARD[gs.currentAuction.propertyIndex].price, "\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/10 rounded-xl p-3 text-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-white/50 text-xs"
+  }, "Oferta actual"), /*#__PURE__*/React.createElement("div", {
+    className: "text-3xl font-black text-yellow-300"
+  }, gs.currentAuction.highBid || 0, "\u20AC"), gs.currentAuction.highBidder === playerId && /*#__PURE__*/React.createElement("div", {
+    className: "text-green-300 text-xs font-bold mt-1"
+  }, "\u2705 Tu lideres!")), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    value: bidAmount,
+    onChange: function (e) {
+      setBidAmount(e.target.value);
+    },
+    placeholder: "La teua oferta...",
+    min: (gs.currentAuction.highBid || 0) + 10,
+    max: myMoney,
+    className: "flex-1 px-4 py-3 rounded-xl bg-white/10 text-white font-bold text-lg text-center border border-white/20 focus:outline-none focus:border-yellow-400"
+  }), /*#__PURE__*/React.createElement("button", {
+    onClick: handleBid,
+    disabled: !bidAmount || parseInt(bidAmount) <= (gs.currentAuction.highBid || 0) || parseInt(bidAmount) > myMoney,
+    className: "px-6 py-3 rounded-xl bg-yellow-500 text-white font-black text-lg btn-eco disabled:opacity-40"
+  }, "Oferir!")), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2 flex-wrap justify-center"
+  }, [10, 20, 50, 100].map(function (increment) {
+    var quickBid = (gs.currentAuction.highBid || 0) + increment;
+    if (quickBid > myMoney) return null;
+    return /*#__PURE__*/React.createElement("button", {
+      key: increment,
+      onClick: function () {
+        setBidAmount(String(quickBid));
+      },
+      className: "px-3 py-1.5 rounded-lg bg-white/10 text-white text-sm font-bold btn-eco hover:bg-white/20"
+    }, "+", increment, "\u20AC = ", quickBid, "\u20AC");
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "text-center text-white/30 text-xs"
+  }, "El teu saldo: ", myMoney, "\u20AC")), isMyTurn && phase === 'action' && myProperties.length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "bg-blue-500/20 rounded-2xl p-4"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "text-white font-bold text-sm mb-2"
+  }, "\uD83D\uDD2C Millorar R+D"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-2"
+  }, myProperties.map(function (propIdx) {
+    var sq = BOARD[propIdx];
+    var prop = properties[propIdx];
+    var rdLevel = prop ? prop.rdLevel || 0 : 0;
+    var discount = gs.freeRd ? 1 : gs.rdDiscount || 0;
+    var cost = getRdUpgradeCost(propIdx, rdLevel, discount);
+    var canUpgrade = rdLevel < 3 && cost <= myMoney;
+    var sector = SECTORS[sq.sector];
+    return /*#__PURE__*/React.createElement("div", {
+      key: propIdx,
+      className: "flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-sm"
+    }, sector.emoji), /*#__PURE__*/React.createElement("div", {
+      className: "flex-1 min-w-0"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-white text-xs font-bold truncate"
+    }, sq.shortName), /*#__PURE__*/React.createElement("div", {
+      className: "flex gap-0.5 mt-0.5"
+    }, [1, 2, 3].map(function (lvl) {
+      return /*#__PURE__*/React.createElement("div", {
+        key: lvl,
+        className: 'w-2 h-2 rounded-full ' + (lvl <= rdLevel ? 'bg-blue-400' : 'bg-white/20')
+      });
+    }))), rdLevel < 3 ? /*#__PURE__*/React.createElement("button", {
+      onClick: function () {
+        handleRequestRd(propIdx);
+      },
+      disabled: !canUpgrade,
+      className: 'px-3 py-1.5 rounded-lg text-xs font-bold btn-eco ' + (canUpgrade ? 'bg-blue-500 text-white' : 'bg-gray-600 text-gray-500 cursor-not-allowed')
+    }, gs.freeRd ? 'GRATIS!' : cost + '€') : /*#__PURE__*/React.createElement("span", {
+      className: "text-xs text-blue-300 font-bold"
+    }, "MAX"));
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/10 rounded-2xl p-4"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "text-white font-bold text-sm mb-2"
+  }, "\uD83C\uDFE2 Les meues propietats (", myProperties.length, ")"), myProperties.length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-wrap gap-1 mb-2"
+  }, Object.entries(SECTORS).map(function (entry) {
+    var sectorKey = entry[0];
+    var sector = entry[1];
+    var sectorProps = SECTOR_PROPERTIES[sectorKey] || [];
+    var myInSector = sectorProps.filter(function (idx) {
+      return properties[idx] && properties[idx].owner === playerId;
+    }).length;
+    if (myInSector === 0) return null;
+    var hasMonopoly = myInSector === sectorProps.length;
+    return /*#__PURE__*/React.createElement("div", {
+      key: sectorKey,
+      className: 'rounded-lg px-2 py-0.5 text-[10px] font-bold ' + (hasMonopoly ? 'bg-yellow-500/30 text-yellow-300' : 'bg-white/10 text-white/50')
+    }, sector.emoji, " ", myInSector, "/", sectorProps.length, hasMonopoly && ' ⭐');
+  })), myProperties.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "text-white/30 text-xs text-center py-2"
+  }, "Encara no tens propietats") : /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 gap-2"
+  }, myProperties.map(function (propIdx) {
+    var sq = BOARD[propIdx];
+    var prop = properties[propIdx];
+    var sector = SECTORS[sq.sector];
+    var rdLevel = prop ? prop.rdLevel || 0 : 0;
+    var rent = calculateRent(propIdx, properties, cycle, sectorModifiers);
+    var isMonopoly = hasSectorMonopoly(playerId, sq.sector, properties);
+    var value = calculatePropertyValue(propIdx, properties, cycle, sectorModifiers);
+    return /*#__PURE__*/React.createElement("div", {
+      key: propIdx,
+      className: 'bg-white/5 rounded-xl p-2 text-center ' + (isMonopoly ? 'ring-1 ring-yellow-400/30' : '')
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "h-1.5 rounded-full mb-1",
+      style: {
+        backgroundColor: sector.color
+      }
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "text-sm"
+    }, sector.emoji), /*#__PURE__*/React.createElement("div", {
+      className: "text-white text-[10px] font-bold truncate"
+    }, sq.shortName), /*#__PURE__*/React.createElement("div", {
+      className: "text-emerald-300 text-xs font-bold"
+    }, rent, "\u20AC/torn"), /*#__PURE__*/React.createElement("div", {
+      className: "text-white/30 text-[9px]"
+    }, "val: ", value, "\u20AC"), rdLevel > 0 && /*#__PURE__*/React.createElement("div", {
+      className: "flex gap-0.5 justify-center mt-0.5"
+    }, Array.from({
+      length: rdLevel
+    }).map(function (_, i) {
+      return /*#__PURE__*/React.createElement("div", {
+        key: i,
+        className: "w-1.5 h-1.5 rounded-full bg-blue-400"
+      });
+    })), isMonopoly && /*#__PURE__*/React.createElement("div", {
+      className: "text-[9px] text-yellow-300 font-bold mt-0.5"
+    }, "x2 monopoli"));
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/5 rounded-2xl p-3"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "text-white/40 text-xs font-bold mb-1"
+  }, "\uD83D\uDC65 ", t('other_players')), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-1"
+  }, playerOrder.map(function (pid, idx) {
+    if (pid === playerId) return null;
+    var p = players ? players[pid] : null;
+    if (!p || p.connected === false) return null;
+    var c = PLAYER_COLORS[idx];
+    var nw = calculateNetWorth(pid, money, properties, cycle, sectorModifiers);
+    var isCurrent = idx === currentPlayerIdx;
+    return /*#__PURE__*/React.createElement("div", {
+      key: pid,
+      className: "flex items-center gap-2 text-xs"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "w-2.5 h-2.5 rounded-full",
+      style: {
+        backgroundColor: c.hex
+      }
+    }), /*#__PURE__*/React.createElement("span", {
+      className: 'text-white/60 flex-1 ' + (isCurrent ? 'text-white font-bold' : '')
+    }, isCurrent && '▶ ', p.name), /*#__PURE__*/React.createElement("span", {
+      className: "text-white/30"
+    }, nw, "\u20AC"));
+  }))), phase === 'news' && gs.currentNews !== null && gs.currentNews !== undefined && /*#__PURE__*/React.createElement("div", {
+    className: "bg-amber-500/20 rounded-2xl p-4 text-center",
+    style: {
+      animation: 'slide-up 0.3s ease-out'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-3xl mb-2"
+  }, "\uD83D\uDCF0"), /*#__PURE__*/React.createElement("div", {
+    className: "text-white font-medium text-sm"
+  }, NEWS_CARDS[gs.currentNews].text)), isMyTurn && phase === 'action' && myProperties.length > 0 && /*#__PURE__*/React.createElement(SellPropertyPanel, {
+    playerId: playerId,
+    properties: properties,
+    money: money,
+    cycle: cycle,
+    sectorModifiers: sectorModifiers,
+    roomCode: roomCode,
+    myProperties: myProperties
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/5 rounded-2xl p-3 text-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between text-white/30 text-xs"
+  }, /*#__PURE__*/React.createElement("span", null, "Ronda ", round, "/", maxRounds), /*#__PURE__*/React.createElement("span", null, "Fons public: ", gs.publicFund || 0, "\u20AC")), /*#__PURE__*/React.createElement("div", {
+    className: "mt-1 flex justify-center gap-3 text-[10px] text-white/20"
+  }, /*#__PURE__*/React.createElement("span", null, "Tipus inter\xE8s: ", gs.interestRate || 5, "%"), /*#__PURE__*/React.createElement("span", null, "Canvi cicle: ", gs.cycleRound || 5, " rondes"))), /*#__PURE__*/React.createElement(StrategyTip, {
+    myProperties: myProperties,
+    myMoney: myMoney,
+    cycle: cycle,
+    properties: properties,
+    playerId: playerId,
+    round: round,
+    maxRounds: maxRounds
+  })));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SELL PROPERTY PANEL — Player can sell properties back to bank
+// ═══════════════════════════════════════════════════════════════
+function SellPropertyPanel({
+  playerId,
+  properties,
+  money,
+  cycle,
+  sectorModifiers,
+  roomCode,
+  myProperties
+}) {
+  const [showSell, setShowSell] = useState(false);
+  const [confirmSell, setConfirmSell] = useState(null);
+  var handleSell = function (propIdx) {
+    var sq = BOARD[propIdx];
+    var salePrice = Math.round(calculatePropertyValue(propIdx, properties, cycle, sectorModifiers) * 0.5);
+    var updates = {};
+    updates['gameState/money/' + playerId] = (money[playerId] || 0) + salePrice;
+    updates['gameState/properties/' + propIdx] = {
+      owner: null,
+      rdLevel: 0
+    };
+    PdeFirebase.ref('rooms/' + roomCode).update(updates);
+    setConfirmSell(null);
+    setShowSell(false);
+    PdeGameSounds.play('coin');
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "bg-red-500/10 rounded-2xl p-3"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: function () {
+      setShowSell(!showSell);
+    },
+    className: "w-full text-center text-red-300 text-xs font-bold"
+  }, showSell ? '✕ Tancar' : '🏪 Vendre propietat al banc (50% del valor)'), showSell && /*#__PURE__*/React.createElement("div", {
+    className: "mt-2 space-y-1.5"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-white/40 text-[10px] text-center mb-2"
+  }, "El banc compra propietats al 50% del seu valor actual. Util si necessites liquiditat urgent!"), myProperties.map(function (propIdx) {
+    var sq = BOARD[propIdx];
+    var sector = SECTORS[sq.sector];
+    var salePrice = Math.round(calculatePropertyValue(propIdx, properties, cycle, sectorModifiers) * 0.5);
+    if (confirmSell === propIdx) {
+      return /*#__PURE__*/React.createElement("div", {
+        key: propIdx,
+        className: "bg-red-500/20 rounded-xl p-2 text-center"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "text-white text-xs font-bold mb-1"
+      }, "Segur que vols vendre ", sq.shortName, " per ", salePrice, "\u20AC?"), /*#__PURE__*/React.createElement("div", {
+        className: "flex gap-2 justify-center"
+      }, /*#__PURE__*/React.createElement("button", {
+        onClick: function () {
+          handleSell(propIdx);
+        },
+        className: "px-4 py-1 rounded-lg bg-red-500 text-white text-xs font-bold btn-eco"
+      }, "Si, vendre!"), /*#__PURE__*/React.createElement("button", {
+        onClick: function () {
+          setConfirmSell(null);
+        },
+        className: "px-4 py-1 rounded-lg bg-white/10 text-white text-xs btn-eco"
+      }, "Cancel\xB7lar")));
+    }
+    return /*#__PURE__*/React.createElement("div", {
+      key: propIdx,
+      className: "flex items-center gap-2 bg-white/5 rounded-xl px-2 py-1.5"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-xs"
+    }, sector.emoji), /*#__PURE__*/React.createElement("span", {
+      className: "text-white text-xs font-medium flex-1 truncate"
+    }, sq.shortName), /*#__PURE__*/React.createElement("button", {
+      onClick: function () {
+        setConfirmSell(propIdx);
+      },
+      className: "px-3 py-1 rounded-lg bg-red-500/30 text-red-300 text-xs font-bold btn-eco"
+    }, "Vendre ", salePrice, "\u20AC"));
+  })));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STRATEGY TIP — Context-aware strategy suggestion for player
+// ═══════════════════════════════════════════════════════════════
+function StrategyTip({
+  myProperties,
+  myMoney,
+  cycle,
+  properties,
+  playerId,
+  round,
+  maxRounds
+}) {
+  var tip = '';
+  var emoji = '💡';
+
+  // Generate context-aware tip
+  var totalProps = myProperties.length;
+  var roundsLeft = maxRounds - round;
+
+  // Check sector distribution
+  var sectors = {};
+  myProperties.forEach(function (idx) {
+    var s = BOARD[idx].sector;
+    sectors[s] = (sectors[s] || 0) + 1;
+  });
+  var sectorCount = Object.keys(sectors).length;
+  var hasMonopoly = Object.keys(sectors).some(function (s) {
+    return hasSectorMonopoly(playerId, s, properties);
+  });
+
+  // Check R+D levels
+  var totalRd = 0;
+  var maxableRd = 0;
+  myProperties.forEach(function (idx) {
+    var prop = properties[idx];
+    totalRd += prop ? prop.rdLevel || 0 : 0;
+    if (prop && (prop.rdLevel || 0) < 3) maxableRd++;
+  });
+  if (totalProps === 0) {
+    tip = 'Encara no tens propietats. Estalvia per la propera subhasta i ofereix amb estratègia!';
+    emoji = '🎯';
+  } else if (myMoney < 50 && totalProps > 0) {
+    tip = 'Alerta! Tens poca liquiditat. Considera vendre alguna propietat per evitar la bancarrota si caus en un lloguer alt.';
+    emoji = '⚠️';
+  } else if (!hasMonopoly && sectorCount > 1 && totalProps >= 2) {
+    tip = 'Intenta completar un sector per aconseguir el bonus de monopoli (lloguers x2)! Puja fort en subhastes de sectors on ja tens propietats.';
+    emoji = '🏗️';
+  } else if (hasMonopoly && maxableRd > 0 && myMoney > 100) {
+    tip = 'Tens un monopoli! Inverteix en R+D per maximitzar els lloguers. Amb R+D 3 + monopoli, els lloguers es multipliquen x6!';
+    emoji = '🔬';
+  } else if (cycle === 'recession' && myMoney > 200) {
+    tip = 'Estem en recessió: bon moment per comprar propietats barates! Els valors són baixos però pujaran quan arribi l\'expansio.';
+    emoji = '📉';
+  } else if (cycle === 'expansion' && roundsLeft < 5) {
+    tip = 'Últimes rondes en expansió! Maximitza el rendiment de les teues propietats amb R+D.';
+    emoji = '📈';
+  } else if (roundsLeft <= 3) {
+    tip = 'Últimes rondes! El patrimoni net final determina el guanyador. Considera si val la pena invertir més o conservar efectiu.';
+    emoji = '🏁';
+  } else if (totalRd === 0 && totalProps >= 2) {
+    tip = 'No has invertit en R+D! La innovació multiplica els teus lloguers. Inverteix en la propietat que més visiten.';
+    emoji = '🔬';
+  } else {
+    tip = 'Bona posició! Equilibra compres noves amb millores R+D i manten prou efectiu per a impostos inesperats.';
+    emoji = '✅';
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    className: "bg-indigo-500/10 rounded-2xl p-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-lg flex-shrink-0"
+  }, emoji), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "text-indigo-300 font-bold text-[10px] mb-0.5"
+  }, "CONSELL ESTRAT\xC8GIC"), /*#__PURE__*/React.createElement("p", {
+    className: "text-white/50 text-xs leading-relaxed"
+  }, tip))));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RULES SCREEN — Game tutorial before lobby
+// ═══════════════════════════════════════════════════════════════
+function RulesScreen({
+  onContinue
+}) {
+  const [idioma] = usePdeIdioma();
+  var t = createTranslator(ECONOPOLY_TRANSLATIONS, idioma);
+  const [currentPage, setCurrentPage] = useState(0);
+  var pages = [{
+    title: 'Què és Oligopoly?',
+    emoji: '🏛️',
+    content: ['Oligopoly és un joc de taula estil Monopoly amb mecàniques econòmiques realistes.', 'Compra propietats, inverteix en R+D, gestiona cicles econòmics i paga impostos progressius.', 'El professor controla el taulell des de la pantalla principal. Els alumnes juguen des del mòbil.']
+  }, {
+    title: 'El Taulell',
+    emoji: '🗺️',
+    content: ['28 caselles: 16 propietats en 8 sectors, 4 noticies, 3 Banc Central, 2 impostos, R+D, Mercat Lliure i Sortida.', 'Les propietats pertanyen a sectors econòmics: Agricultura, Indústria, Tecnologia, Serveis, Energia, Construcció, Turisme i Financer.', 'Posseir les dues propietats d\'un sector et dona un MONOPOLI: els lloguers es dupliquen!']
+  }, {
+    title: 'Mecàniques de Joc',
+    emoji: '🎲',
+    content: ['Tires 2 daus i mous la teua fitxa. Si caus en una propietat sense propietari, s\'obre una SUBHASTA.', 'Tots els jugadors poden pujar a la subhasta des del seu mobil durant 30 segons.', 'Si caus en propietat aliena, pagues lloguer. El lloguer depèn del nivell R+D, el cicle econòmic i les noticies.']
+  }, {
+    title: 'R+D i Innovació',
+    emoji: '🔬',
+    content: ['Pots millorar les teues propietats amb R+D: 3 nivells que multipliquen el lloguer (x1.5, x2, x3).', 'El cost de R+D depèn del valor de la propietat. La casella R+D dona un 50% de descompte!', 'Les notícies econòmiques a vegades regalen millores R+D gratuïtes.']
+  }, {
+    title: 'Cicles i Impostos',
+    emoji: '📈',
+    content: ['Cada 5 rondes, l\'economia canvia: EXPANSIO (+30% lloguers, +20% valors) o RECESSIO (-30% lloguers, -20% valors).', 'Els impostos són progressius: 5% (patrimoni < 500€), 10% (500-1000€), 15% (> 1000€).', 'Els impostos van al fons públic, que es distribueix parcialment als jugadors que passen per SORTIDA.']
+  }, {
+    title: 'Com Guanyar',
+    emoji: '🏆',
+    content: ['El joc dura 20 rondes. Guanya qui tingui el PATRIMONI NET més alt (efectiu + valor de propietats).', 'Estratègia: diversifica sectors, inverteix en R+D, gestiona la liquiditat i anticipa els cicles.', 'Preparat? Crea o uneix-te a una partida!']
+  }];
+  var page = pages[currentPage];
+  return /*#__PURE__*/React.createElement("div", {
+    className: "min-h-screen bg-gradient-to-br from-emerald-900 via-gray-900 to-teal-950 flex items-center justify-center p-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "max-w-lg w-full space-y-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-7xl mb-3"
+  }, page.emoji), /*#__PURE__*/React.createElement("h1", {
+    className: "text-3xl font-black text-white"
+  }, page.title), /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-center gap-1 mt-3"
+  }, pages.map(function (_, i) {
+    return /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: 'w-2.5 h-2.5 rounded-full transition-all ' + (i === currentPage ? 'bg-emerald-400 scale-125' : 'bg-white/20'),
+      onClick: function () {
+        setCurrentPage(i);
+      }
+    });
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/10 backdrop-blur rounded-3xl p-6 space-y-4",
+    style: {
+      animation: 'slide-in 0.3s ease-out'
+    }
+  }, page.content.map(function (text, i) {
+    return /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: "flex gap-3"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "w-6 h-6 rounded-full bg-emerald-500/30 flex items-center justify-center flex-shrink-0 mt-0.5"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-emerald-300 text-xs font-bold"
+    }, i + 1)), /*#__PURE__*/React.createElement("p", {
+      className: "text-white/80 text-sm leading-relaxed"
+    }, text));
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-3"
+  }, currentPage > 0 && /*#__PURE__*/React.createElement("button", {
+    onClick: function () {
+      setCurrentPage(currentPage - 1);
+    },
+    className: "flex-1 py-3 rounded-2xl bg-white/10 text-white font-bold btn-eco hover:bg-white/20"
+  }, "\u2190 ", t('prev') || 'Anterior'), currentPage < pages.length - 1 ? /*#__PURE__*/React.createElement("button", {
+    onClick: function () {
+      setCurrentPage(currentPage + 1);
+    },
+    className: "flex-1 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold btn-eco hover:brightness-110"
+  }, t('next') || 'Següent', " \u2192") : /*#__PURE__*/React.createElement("button", {
+    onClick: onContinue,
+    className: "flex-1 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black text-xl btn-eco hover:brightness-110 shadow-lg"
+  }, "\uD83C\uDFAE ", t('play') || 'Jugar!')), currentPage < pages.length - 1 && /*#__PURE__*/React.createElement("button", {
+    onClick: onContinue,
+    className: "w-full text-center text-white/30 hover:text-white/60 text-sm"
+  }, t('skip_tutorial') || 'Saltar tutorial', " \u2192"), /*#__PURE__*/React.createElement("div", {
+    className: "text-center"
+  }, /*#__PURE__*/React.createElement("a", {
+    href: "./",
+    className: "text-white/20 hover:text-white/40 text-xs"
+  }, "\uD83C\uDFE0 ", t('back_pde') || 'Tornar a PDE'))));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MAIN APP — Entry point with rules → lobby → game phases
+// ═══════════════════════════════════════════════════════════════
+function OligopolyApp() {
+  var urlRoom = PdeRoomManager.getRoomFromURL();
+  const [phase, setPhase] = useState(urlRoom ? 'lobby' : 'rules');
+  const [gameInfo, setGameInfo] = useState(null);
+  const [meta, setMeta] = useState({});
+  const [players, setPlayers] = useState({});
+  const [gameState, setGameState] = useState({});
+  var [idioma, setIdioma] = useState(PdeLanguageStore.get());
+  var t = createTranslator(ECONOPOLY_TRANSLATIONS, idioma);
+  useEffect(function () {
+    if (PdeFirebase.isConfigured()) PdeFirebase.init();
+  }, []);
+
+  // Subscribe to room data
+  useEffect(function () {
+    if (!gameInfo) return;
+    var unsub1 = PdeRoomManager.onPlayersChange(gameInfo.roomCode, setPlayers);
+    var unsub2 = PdeRoomManager.onGameStateChange(gameInfo.roomCode, setGameState);
+    var unsub3 = PdeRoomManager.onMetaChange(gameInfo.roomCode, setMeta);
+    return function () {
+      unsub1();
+      unsub2();
+      unsub3();
+    };
+  }, [gameInfo && gameInfo.roomCode]);
+
+  // Listen for game start (player side)
+  useEffect(function () {
+    if (meta.status === 'playing' && phase === 'lobby') {
+      setPhase('playing');
+    }
+  }, [meta.status]);
+  if (!PdeFirebase.isConfigured()) {
+    return /*#__PURE__*/React.createElement(PdeFirebaseError, null);
+  }
+  var handleGameStart = function (info) {
+    setGameInfo(info);
+    setPhase('playing');
+    if (info.isHost) {
+      // Build player order from connected players (excluding host duplication)
+      var connectedPlayers = Object.keys(info.players).filter(function (id) {
+        return info.players[id].connected !== false;
+      });
+
+      // Shuffle player order
+      var shuffled = connectedPlayers.sort(function () {
+        return Math.random() - 0.5;
+      });
+
+      // Initialize game state
+      var initialPositions = {};
+      var initialMoney = {};
+      var initialProperties = {};
+      shuffled.forEach(function (pid) {
+        initialPositions[pid] = 0;
+        initialMoney[pid] = 1500;
+      });
+
+      // Initialize all property squares
+      BOARD.forEach(function (sq, idx) {
+        if (sq.type === 'property') {
+          initialProperties[idx] = {
+            owner: null,
+            rdLevel: 0
+          };
+        }
+      });
+      PdeRoomManager.setGameState(info.roomCode, {
+        round: 1,
+        maxRounds: 20,
+        phase: 'roll',
+        currentPlayer: 0,
+        playerOrder: shuffled,
+        positions: initialPositions,
+        money: initialMoney,
+        properties: initialProperties,
+        cycle: 'expansion',
+        cycleRound: 5,
+        interestRate: 5,
+        publicFund: 0,
+        currentAuction: null,
+        currentNews: null,
+        diceValue: null,
+        sectorModifiers: {},
+        taxHoliday: false,
+        freeRd: false,
+        rdDiscount: 0,
+        finished: false
+      });
+    }
+  };
+
+  // ── Rules ──
+  if (phase === 'rules') {
+    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: 'fixed',
+        top: 12,
+        right: 12,
+        zIndex: 9999,
+        display: 'flex',
+        gap: 4
+      }
+    }, ['val', 'es', 'en'].map(function (l) {
+      return /*#__PURE__*/React.createElement("button", {
+        key: l,
+        onClick: function () {
+          setIdioma(l);
+          PdeLanguageStore.set(l);
+        },
+        style: {
+          padding: '4px 10px',
+          borderRadius: 8,
+          fontSize: 13,
+          fontWeight: idioma === l ? 800 : 500,
+          background: idioma === l ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.2)',
+          color: idioma === l ? '#1a1a2e' : 'white',
+          border: 'none',
+          cursor: 'pointer'
+        }
+      }, l.toUpperCase());
+    })), /*#__PURE__*/React.createElement(RulesScreen, {
+      onContinue: function () {
+        setPhase('lobby');
+      }
+    }));
+  }
+
+  // ── Lobby ──
+  if (phase === 'lobby') {
+    return /*#__PURE__*/React.createElement(PdeGameLobby, {
+      gameType: "econopoly",
+      gameName: "Oligopoly",
+      gameEmoji: "\uD83C\uDFDB\uFE0F",
+      gameGradient: "from-emerald-600 to-teal-700",
+      minPlayers: 2,
+      maxPlayers: 6,
+      onGameStart: handleGameStart,
+      teamMode: false
+    });
+  }
+
+  // ── Game ──
+  if (phase === 'playing' && gameInfo) {
+    if (gameInfo.isHost) {
+      return /*#__PURE__*/React.createElement(OligopolyHost, {
+        roomCode: gameInfo.roomCode,
+        playerId: gameInfo.playerId,
+        players: players,
+        gameState: gameState,
+        idioma: idioma
+      });
+    } else {
+      return /*#__PURE__*/React.createElement(OligopolyPlayer, {
+        roomCode: gameInfo.roomCode,
+        playerId: gameInfo.playerId,
+        players: players,
+        gameState: gameState,
+        idioma: idioma
+      });
+    }
+  }
+  return null;
+}
+ReactDOM.render(/*#__PURE__*/React.createElement(OligopolyApp, null), document.getElementById('root'));</script>
+</body>
+</html>

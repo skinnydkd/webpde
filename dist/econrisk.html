@@ -1,0 +1,3140 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Systemic Risk - Escoles Econòmiques en Guerra | PDE</title>
+    <meta name="description" content="Joc de taula tipus Risk on 4 escoles econòmiques lluiten pel control mundial. Estratègia, combat i economia!">
+    <meta property="og:title" content="Systemic Risk - Escoles Econòmiques en Guerra | PDE">
+    <meta property="og:description" content="Systemic Risk: Keynesians vs Marxistes vs Austríacs vs Neoclàssics!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://profedeeconomia.es/econrisk">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:site_name" content="PDE - Plataforma Didàctica Econòmica">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Systemic Risk - Escoles Econòmiques en Guerra | PDE">
+    <meta name="twitter:description" content="Joc de taula tipus Risk on 4 escoles econòmiques lluiten pel control mundial.">
+    <link rel="canonical" href="https://profedeeconomia.es/econrisk">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x2694;&#xFE0F;</text></svg>">
+    <!-- React + Babel + Tailwind -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <link rel="stylesheet" href="./pde.css">
+<!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <!-- QR Code -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <!-- PDE Shared -->
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js"></script>
+    <script src="./pde-game-engine.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; scrollbar-width: thin; scrollbar-color: #6366f1 #1e1b4b; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1e1b4b; }
+        ::-webkit-scrollbar-thumb { background-color: #6366f1; border-radius: 3px; }
+        @keyframes fall { 0% { transform: translateY(-100%) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(99,102,241,0.3); } 50% { box-shadow: 0 0 40px rgba(99,102,241,0.6); } }
+        @keyframes slide-in { 0% { transform: translateY(30px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
+        @keyframes dice-roll { 0% { transform: rotate(0deg) scale(1); } 25% { transform: rotate(90deg) scale(1.2); } 50% { transform: rotate(180deg) scale(0.9); } 75% { transform: rotate(270deg) scale(1.1); } 100% { transform: rotate(360deg) scale(1); } }
+        @keyframes territory-glow { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.4); } }
+        .territory-hover:hover { filter: brightness(1.2); cursor: pointer; }
+        .territory-selected { animation: territory-glow 1s ease-in-out infinite; }
+        .dice-rolling { animation: dice-roll 0.3s linear infinite; }
+        .combat-shake { animation: shake 0.5s ease; }
+        .btn-risk { transition: all 0.15s; }
+        .btn-risk:active { transform: scale(0.96); }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-zinc-950">
+    <div id="root"></div>
+    <script>const {
+  useState,
+  useEffect,
+  useRef,
+  useCallback
+} = React;
+
+// =====================================================================
+// TRANSLATIONS
+// =====================================================================
+var ECONRISK_TRANSLATIONS = {
+  'multiplayer': {
+    val: 'Multijugador Online',
+    es: 'Multijugador Online',
+    en: 'Online Multiplayer'
+  },
+  'local_game': {
+    val: 'Partida Local (vs IA)',
+    es: 'Partida Local (vs IA)',
+    en: 'Local Game (vs AI)'
+  },
+  'how_to_play': {
+    val: 'Com es juga?',
+    es: '¿Cómo se juega?',
+    en: 'How to play?'
+  },
+  'rule_1': {
+    val: '24 territoris en 6 continents',
+    es: '24 territorios en 6 continentes',
+    en: '24 territories across 6 continents'
+  },
+  'rule_2': {
+    val: 'Combat amb daus (atacant vs defensor)',
+    es: 'Combate con dados (atacante vs defensor)',
+    en: 'Dice combat (attacker vs defender)'
+  },
+  'rule_3': {
+    val: 'Guanya reforços cada torn (més territoris = més unitats)',
+    es: 'Gana refuerzos cada turno (más territorios = más unidades)',
+    en: 'Earn reinforcements each turn (more territories = more units)'
+  },
+  'rule_4': {
+    val: 'Controla 18 territoris o elimina tots els rivals',
+    es: 'Controla 18 territorios o elimina a todos los rivales',
+    en: 'Control 18 territories or eliminate all rivals'
+  },
+  'rule_5': {
+    val: 'Esdeveniments econòmics aleatoris cada ronda',
+    es: 'Eventos económicos aleatorios cada ronda',
+    en: 'Random economic events each round'
+  },
+  'rule_6': {
+    val: 'Cada escola te un poder especial unic',
+    es: 'Cada escuela tiene un poder especial único',
+    en: 'Each school has a unique special power'
+  },
+  'back_pde': {
+    val: 'Tornar a PDE',
+    es: 'Volver a PDE',
+    en: 'Back to PDE'
+  },
+  'back': {
+    val: 'Tornar',
+    es: 'Volver',
+    en: 'Back'
+  },
+  'round_x_of_y': {
+    val: 'Ronda {x}/{y}',
+    es: 'Ronda {x}/{y}',
+    en: 'Round {x}/{y}'
+  },
+  'waiting_start': {
+    val: 'Esperant que comence la partida...',
+    es: 'Esperando que empiece la partida...',
+    en: 'Waiting for the game to start...'
+  },
+  'waiting_host': {
+    val: "Esperant que l'amfitrio aplique l'esdeveniment...",
+    es: 'Esperando que el anfitrión aplique el evento...',
+    en: "Waiting for the host to apply the event..."
+  },
+  'the_risk_changes': {
+    val: 'El risc que ho canvia tot',
+    es: 'El riesgo que lo cambia todo',
+    en: 'The risk that changes everything'
+  }
+};
+
+// =====================================================================
+// FACTIONS
+// =====================================================================
+var FACTIONS = [{
+  id: 'keynesians',
+  name: 'Keynesians',
+  emoji: '\u{1F535}',
+  color: '#3b82f6',
+  bgClass: 'bg-blue-500',
+  lightBg: 'bg-blue-100',
+  textClass: 'text-blue-700',
+  borderClass: 'border-blue-500',
+  motto: 'La despesa pública crea prosperitat',
+  power: {
+    name: 'Estímul Fiscal',
+    description: '+2 unitats gratis cada 3 torns',
+    icon: '\u{1F4B6}'
+  },
+  teachings: ['Intervenció estatal', 'Despesa pública', 'Multiplicador keynesià', 'Plena ocupació']
+}, {
+  id: 'marxistes',
+  name: 'Marxistes',
+  emoji: '\u{1F534}',
+  color: '#ef4444',
+  bgClass: 'bg-red-500',
+  lightBg: 'bg-red-100',
+  textClass: 'text-red-700',
+  borderClass: 'border-red-500',
+  motto: 'Treballadors del mon, uniu-vos!',
+  power: {
+    name: 'Revolució',
+    description: 'Conquesta automàtica de territoris amb 1 sola unitat enemiga',
+    icon: '\u270A'
+  },
+  teachings: ['Lluita de classes', 'Propietat col\u00B7lectiva', 'Planificacio central', 'Plusvalua']
+}, {
+  id: 'austrics',
+  name: 'Austríacs',
+  emoji: '\u{1F7E1}',
+  color: '#eab308',
+  bgClass: 'bg-yellow-500',
+  lightBg: 'bg-yellow-100',
+  textClass: 'text-yellow-700',
+  borderClass: 'border-yellow-500',
+  motto: "El mercat lliure es l'ordre espontani",
+  power: {
+    name: 'Patro Or',
+    description: '+1 defensa permanent a tots els territoris',
+    icon: '\u{1FA99}'
+  },
+  teachings: ['Lliure mercat pur', 'Cicles econòmics', 'Moneda sana', 'Praxeologia']
+}, {
+  id: 'neoclassics',
+  name: 'Neoclàssics',
+  emoji: '\u{1F7E2}',
+  color: '#22c55e',
+  bgClass: 'bg-green-500',
+  lightBg: 'bg-green-100',
+  textClass: 'text-green-700',
+  borderClass: 'border-green-500',
+  motto: "Els mercats tendeixen a l'equilibri",
+  power: {
+    name: 'Lliure Comerç',
+    description: 'Pot atacar territoris no-adjacents (1 vegada per torn)',
+    icon: '\u{1F310}'
+  },
+  teachings: ['Equilibri general', 'Eficiencia de mercats', 'Globalitzacio', 'Avantatge comparatiu']
+}];
+
+// =====================================================================
+// MAP DATA
+// =====================================================================
+var CONTINENTS = {
+  northAmerica: {
+    name: 'America del Nord',
+    bonus: 5,
+    territories: ['usa_east', 'usa_west', 'canada', 'mexico']
+  },
+  southAmerica: {
+    name: 'America del Sud',
+    bonus: 3,
+    territories: ['brasil', 'argentina', 'andes']
+  },
+  europe: {
+    name: 'Europa',
+    bonus: 5,
+    territories: ['europa_occ', 'europa_central', 'europa_est', 'nordics', 'mediterrani']
+  },
+  africa: {
+    name: 'Africa',
+    bonus: 3,
+    territories: ['africa_nord', 'africa_occ', 'africa_est', 'africa_sud']
+  },
+  asia: {
+    name: 'Asia',
+    bonus: 7,
+    territories: ['orient_mitja', 'india', 'xina', 'japo', 'sudest_asia']
+  },
+  oceania: {
+    name: 'Oceania',
+    bonus: 2,
+    territories: ['australia', 'nova_zelanda', 'illes_pacific']
+  }
+};
+var TERRITORIES = {
+  usa_east: {
+    name: 'EUA Est',
+    continent: 'northAmerica',
+    adjacent: ['usa_west', 'canada', 'mexico', 'europa_occ'],
+    cx: 185,
+    cy: 150
+  },
+  usa_west: {
+    name: 'EUA Oest',
+    continent: 'northAmerica',
+    adjacent: ['usa_east', 'canada', 'mexico', 'japo'],
+    cx: 115,
+    cy: 150
+  },
+  canada: {
+    name: 'Canada',
+    continent: 'northAmerica',
+    adjacent: ['usa_east', 'usa_west', 'nordics'],
+    cx: 150,
+    cy: 80
+  },
+  mexico: {
+    name: 'Mexic',
+    continent: 'northAmerica',
+    adjacent: ['usa_east', 'usa_west', 'andes', 'brasil'],
+    cx: 140,
+    cy: 210
+  },
+  brasil: {
+    name: 'Brasil',
+    continent: 'southAmerica',
+    adjacent: ['argentina', 'andes', 'mexico', 'africa_occ'],
+    cx: 225,
+    cy: 320
+  },
+  argentina: {
+    name: 'Argentina',
+    continent: 'southAmerica',
+    adjacent: ['brasil', 'andes'],
+    cx: 200,
+    cy: 390
+  },
+  andes: {
+    name: 'Andes',
+    continent: 'southAmerica',
+    adjacent: ['brasil', 'argentina', 'mexico'],
+    cx: 165,
+    cy: 310
+  },
+  europa_occ: {
+    name: 'Europa Occ.',
+    continent: 'europe',
+    adjacent: ['europa_central', 'nordics', 'mediterrani', 'usa_east', 'africa_nord'],
+    cx: 425,
+    cy: 125
+  },
+  europa_central: {
+    name: 'Europa Central',
+    continent: 'europe',
+    adjacent: ['europa_occ', 'europa_est', 'nordics', 'mediterrani'],
+    cx: 470,
+    cy: 115
+  },
+  europa_est: {
+    name: 'Europa Est',
+    continent: 'europe',
+    adjacent: ['europa_central', 'nordics', 'orient_mitja', 'xina'],
+    cx: 520,
+    cy: 105
+  },
+  nordics: {
+    name: 'Nòrdics',
+    continent: 'europe',
+    adjacent: ['europa_occ', 'europa_central', 'europa_est', 'canada'],
+    cx: 455,
+    cy: 60
+  },
+  mediterrani: {
+    name: 'Mediterrani',
+    continent: 'europe',
+    adjacent: ['europa_occ', 'europa_central', 'africa_nord', 'orient_mitja'],
+    cx: 445,
+    cy: 175
+  },
+  africa_nord: {
+    name: 'Africa Nord',
+    continent: 'africa',
+    adjacent: ['europa_occ', 'mediterrani', 'africa_occ', 'africa_est', 'orient_mitja'],
+    cx: 430,
+    cy: 245
+  },
+  africa_occ: {
+    name: 'Africa Occ.',
+    continent: 'africa',
+    adjacent: ['africa_nord', 'africa_est', 'africa_sud', 'brasil'],
+    cx: 395,
+    cy: 315
+  },
+  africa_est: {
+    name: 'Africa Est',
+    continent: 'africa',
+    adjacent: ['africa_nord', 'africa_occ', 'africa_sud', 'orient_mitja', 'india'],
+    cx: 480,
+    cy: 315
+  },
+  africa_sud: {
+    name: 'Africa Sud',
+    continent: 'africa',
+    adjacent: ['africa_occ', 'africa_est', 'australia'],
+    cx: 440,
+    cy: 385
+  },
+  orient_mitja: {
+    name: 'Orient Mitja',
+    continent: 'asia',
+    adjacent: ['europa_est', 'mediterrani', 'africa_nord', 'africa_est', 'india'],
+    cx: 545,
+    cy: 205
+  },
+  india: {
+    name: 'India',
+    continent: 'asia',
+    adjacent: ['orient_mitja', 'xina', 'sudest_asia', 'africa_est'],
+    cx: 605,
+    cy: 245
+  },
+  xina: {
+    name: 'Xina',
+    continent: 'asia',
+    adjacent: ['europa_est', 'india', 'japo', 'sudest_asia'],
+    cx: 650,
+    cy: 155
+  },
+  japo: {
+    name: 'Japó',
+    continent: 'asia',
+    adjacent: ['xina', 'usa_west', 'illes_pacific'],
+    cx: 720,
+    cy: 145
+  },
+  sudest_asia: {
+    name: 'Sud-est Asiàtic',
+    continent: 'asia',
+    adjacent: ['india', 'xina', 'australia', 'illes_pacific'],
+    cx: 660,
+    cy: 265
+  },
+  australia: {
+    name: 'Austràlia',
+    continent: 'oceania',
+    adjacent: ['sudest_asia', 'nova_zelanda', 'illes_pacific', 'africa_sud'],
+    cx: 685,
+    cy: 375
+  },
+  nova_zelanda: {
+    name: 'Nova Zelanda',
+    continent: 'oceania',
+    adjacent: ['australia', 'illes_pacific'],
+    cx: 740,
+    cy: 415
+  },
+  illes_pacific: {
+    name: 'Illes Pacífic',
+    continent: 'oceania',
+    adjacent: ['australia', 'nova_zelanda', 'japo', 'sudest_asia'],
+    cx: 740,
+    cy: 325
+  }
+};
+var TERRITORY_KEYS = Object.keys(TERRITORIES);
+
+// =====================================================================
+// INITIAL DISTRIBUTION
+// =====================================================================
+var INITIAL_DISTRIBUTION = {
+  keynesians: ['usa_east', 'usa_west', 'canada', 'europa_occ', 'nordics', 'europa_central'],
+  marxistes: ['europa_est', 'xina', 'orient_mitja', 'india', 'sudest_asia', 'africa_nord'],
+  austrics: ['australia', 'nova_zelanda', 'illes_pacific', 'japo', 'mediterrani', 'africa_est'],
+  neoclassics: ['mexico', 'brasil', 'argentina', 'andes', 'africa_occ', 'africa_sud']
+};
+
+// =====================================================================
+// EVENT CARDS
+// =====================================================================
+var EVENT_CARDS = [{
+  title: 'Crisi del Deute',
+  text: 'Tots els jugadors perden 2 unitats del territori amb mes tropes.',
+  effect: 'lose_units_max',
+  amount: 2
+}, {
+  title: 'Acord Comercial',
+  text: 'Dos continents adjacents no poden ser atacats aquest torn.',
+  effect: 'peace_continents'
+}, {
+  title: 'Sancions Econòmiques',
+  text: 'El jugador amb més territoris perd 3 unitats distribuides.',
+  effect: 'sanctions_leader',
+  amount: 3
+}, {
+  title: 'Boom Exportador',
+  text: 'Qui controla un continent sencer guanya +3 unitats extra.',
+  effect: 'continent_bonus',
+  amount: 3
+}, {
+  title: 'Recessió Global',
+  text: 'Ningu rep bonus de continent aquest torn.',
+  effect: 'no_continent_bonus'
+}, {
+  title: 'Descobriment Tecnològic',
+  text: 'El jugador amb menys territoris guanya 4 unitats.',
+  effect: 'help_weakest',
+  amount: 4
+}, {
+  title: 'Alianca Temporal',
+  text: 'Els dos jugadors amb menys territoris guanyen +2 unitats.',
+  effect: 'help_two_weakest',
+  amount: 2
+}, {
+  title: 'Hiperinflacio',
+  text: 'Tots els jugadors perden 1 unitat de cada territori amb 3+ unitats.',
+  effect: 'inflation_penalty'
+}, {
+  title: 'Ajuda Humanitaria',
+  text: 'Tots els territoris amb 1 sola unitat guanyen +1.',
+  effect: 'humanitarian_aid'
+}, {
+  title: 'Guerra Comercial',
+  text: 'El jugador que va primer pot fer 2 atacs extra aquest torn.',
+  effect: 'extra_attacks',
+  amount: 2
+}, {
+  title: 'Revolució Industrial',
+  text: 'Tots els jugadors guanyen 1 unitat per cada 3 territoris.',
+  effect: 'industrial_revolution'
+}, {
+  title: 'Fuga de Capitals',
+  text: 'El jugador amb més territoris transfereix 2 unitats al jugador amb menys.',
+  effect: 'wealth_transfer',
+  amount: 2
+}, {
+  title: 'Pacte de No Agressió',
+  text: 'No es pot atacar Europa aquest torn.',
+  effect: 'peace_europe'
+}, {
+  title: 'Primavera Economica',
+  text: 'Tots els jugadors guanyen +2 unitats.',
+  effect: 'spring_bonus',
+  amount: 2
+}, {
+  title: 'Crisi Financera de 2008',
+  text: 'El sector financer (Europa i Am. Nord) perd 1 unitat per territori.',
+  effect: 'financial_crisis'
+}];
+
+// =====================================================================
+// EDUCATIONAL FACTS
+// =====================================================================
+var FACTION_FACTS = {
+  keynesians: ['John Maynard Keynes va revolucionar l\'economia amb la seua "Teoria General" (1936).', 'El multiplicador keynesià explica com 1 euro de despesa pública pot generar més d\'1 euro de PIB.', 'Keynes defensava que l\'Estat ha d\'intervenir en èpoques de recessió per estimular la demanda.', 'La trampa de la liquiditat es un concepte keynesià on la política monetària deixa de ser efectiva.'],
+  marxistes: ['Karl Marx va escriure "El Capital" (1867), analitzant el capitalisme des de la teoria del valor-treball.', 'La plusvalua es la diferencia entre el valor que produeix un treballador i el que rep com a salari.', 'Marx va predir que el capitalisme generaria crisis cicliques d\'acumulacio.', 'La dialèctica materialista de Marx veu la historia com una lluita entre classes socials.'],
+  austrics: ['L\'Escola Austrica va ser fundada per Carl Menger el 1871 amb la teoria del valor subjectiu.', 'Friedrich Hayek va guanyar el Nobel el 1974 per la seua teoria dels cicles econòmics.', 'Ludwig von Mises va demostrar que el calcul economic es impossible en el socialisme pur.', 'La praxeologia estudia l\'accio humana com a base de tota teoria economica.'],
+  neoclassics: ['L\'economia neoclassica combina l\'oferta i demanda amb el marginalisme de Walras, Jevons i Menger.', 'L\'equilibri general de Walras mostra com tots els mercats s\'interconnecten.', 'L\'avantatge comparatiu de Ricardo explica per què el comerç beneficia totes les nacions.', 'Milton Friedman va ser un neoclassic monetarista que defensava els mercats lliures amb regles monetaries.']
+};
+
+// =====================================================================
+// SVG TERRITORY PATHS
+// =====================================================================
+var TERRITORY_PATHS = {
+  canada: 'M100,45 L200,40 L210,70 L195,95 L110,95 L95,75 Z',
+  usa_west: 'M80,100 L145,100 L150,120 L155,180 L110,195 L75,175 L70,130 Z',
+  usa_east: 'M155,100 L215,95 L230,130 L225,175 L200,190 L160,180 L155,120 Z',
+  mexico: 'M95,200 L175,195 L185,240 L160,260 L115,255 L90,230 Z',
+  andes: 'M125,270 L170,265 L175,330 L155,350 L130,345 L120,300 Z',
+  brasil: 'M180,270 L265,280 L270,340 L250,365 L195,360 L180,330 Z',
+  argentina: 'M140,355 L225,370 L220,420 L190,435 L155,425 L140,395 Z',
+  nordics: 'M420,30 L500,28 L505,65 L490,80 L425,82 L415,60 Z',
+  europa_occ: 'M395,88 L450,85 L455,140 L450,160 L400,158 L390,125 Z',
+  europa_central: 'M455,85 L505,82 L510,135 L500,155 L458,155 L455,140 Z',
+  europa_est: 'M510,72 L560,68 L565,120 L555,145 L510,140 L510,82 Z',
+  mediterrani: 'M405,165 L500,162 L505,205 L490,215 L410,218 L400,195 Z',
+  africa_nord: 'M390,225 L510,222 L515,270 L500,285 L395,288 L385,260 Z',
+  africa_occ: 'M360,295 L440,292 L445,340 L430,360 L365,355 L355,325 Z',
+  africa_est: 'M448,292 L525,288 L530,340 L515,360 L450,355 L448,340 Z',
+  africa_sud: 'M385,365 L500,362 L495,415 L470,430 L410,428 L390,410 Z',
+  orient_mitja: 'M510,175 L580,170 L585,230 L575,250 L515,248 L510,215 Z',
+  india: 'M575,215 L640,210 L648,270 L635,290 L580,288 L573,250 Z',
+  xina: 'M615,115 L700,110 L705,175 L690,195 L620,192 L615,160 Z',
+  japo: 'M710,110 L755,108 L758,165 L745,180 L715,178 L710,150 Z',
+  sudest_asia: 'M630,230 L700,225 L705,290 L690,305 L635,302 L628,270 Z',
+  australia: 'M645,340 L730,335 L735,400 L715,415 L655,412 L645,385 Z',
+  nova_zelanda: 'M720,400 L765,398 L768,440 L755,450 L725,448 L718,425 Z',
+  illes_pacific: 'M710,295 L770,292 L773,340 L758,352 L715,350 L710,325 Z'
+};
+
+// Continent colors for subtle background tinting
+var CONTINENT_COLORS = {
+  northAmerica: 'rgba(100,150,200,0.08)',
+  southAmerica: 'rgba(100,200,100,0.08)',
+  europe: 'rgba(200,150,100,0.08)',
+  africa: 'rgba(200,200,100,0.08)',
+  asia: 'rgba(200,100,100,0.08)',
+  oceania: 'rgba(100,200,200,0.08)'
+};
+
+// =====================================================================
+// UTILITY FUNCTIONS
+// =====================================================================
+
+function rollDice() {
+  return Math.floor(Math.random() * 6) + 1;
+}
+function getTerritoriesByFaction(territories, factionIdx) {
+  var result = [];
+  TERRITORY_KEYS.forEach(function (key) {
+    if (territories[key] && territories[key].faction === factionIdx) {
+      result.push(key);
+    }
+  });
+  return result;
+}
+function countTerritories(territories, factionIdx) {
+  return getTerritoriesByFaction(territories, factionIdx).length;
+}
+function totalUnits(territories, factionIdx) {
+  var sum = 0;
+  TERRITORY_KEYS.forEach(function (key) {
+    if (territories[key] && territories[key].faction === factionIdx) {
+      sum += territories[key].units;
+    }
+  });
+  return sum;
+}
+function getContinentBonuses(territories, factionIdx) {
+  var bonus = 0;
+  Object.keys(CONTINENTS).forEach(function (cKey) {
+    var cont = CONTINENTS[cKey];
+    var ownsAll = cont.territories.every(function (tKey) {
+      return territories[tKey] && territories[tKey].faction === factionIdx;
+    });
+    if (ownsAll) bonus += cont.bonus;
+  });
+  return bonus;
+}
+function getControlledContinents(territories, factionIdx) {
+  var controlled = [];
+  Object.keys(CONTINENTS).forEach(function (cKey) {
+    var cont = CONTINENTS[cKey];
+    var ownsAll = cont.territories.every(function (tKey) {
+      return territories[tKey] && territories[tKey].faction === factionIdx;
+    });
+    if (ownsAll) controlled.push(cKey);
+  });
+  return controlled;
+}
+function calculateReinforcements(territories, factionIdx, noContBonus) {
+  var tCount = countTerritories(territories, factionIdx);
+  var base = Math.max(3, Math.floor(tCount / 3));
+  var contBonus = noContBonus ? 0 : getContinentBonuses(territories, factionIdx);
+  return base + contBonus;
+}
+function isAdjacent(t1, t2) {
+  return TERRITORIES[t1] && TERRITORIES[t1].adjacent.indexOf(t2) !== -1;
+}
+function isFactionEliminated(territories, factionIdx) {
+  return countTerritories(territories, factionIdx) === 0;
+}
+function checkVictory(territories) {
+  for (var i = 0; i < 4; i++) {
+    if (countTerritories(territories, i) >= 18) return i;
+  }
+  var alive = [];
+  for (var j = 0; j < 4; j++) {
+    if (countTerritories(territories, j) > 0) alive.push(j);
+  }
+  if (alive.length === 1) return alive[0];
+  return -1;
+}
+function getWinnerByTerritories(territories) {
+  var best = -1;
+  var bestCount = 0;
+  for (var i = 0; i < 4; i++) {
+    var c = countTerritories(territories, i);
+    if (c > bestCount) {
+      bestCount = c;
+      best = i;
+    }
+  }
+  return best;
+}
+function createInitialTerritories() {
+  var terrs = {};
+  FACTIONS.forEach(function (faction, idx) {
+    var dist = INITIAL_DISTRIBUTION[faction.id];
+    dist.forEach(function (tKey) {
+      terrs[tKey] = {
+        faction: idx,
+        units: 3
+      };
+    });
+  });
+  return terrs;
+}
+function createInitialGameState() {
+  return {
+    round: 1,
+    maxRounds: 15,
+    phase: 'event',
+    currentPlayer: 0,
+    playerOrder: [0, 1, 2, 3],
+    territories: createInitialTerritories(),
+    reinforcements: {
+      available: 0,
+      placed: {}
+    },
+    currentEvent: null,
+    combatLog: [],
+    eliminated: [],
+    factionPowerUsed: {},
+    extraAttacks: 0,
+    peaceEurope: false,
+    noContBonus: false,
+    nonAdjacentUsed: false,
+    fortifyDone: false,
+    finished: false,
+    winner: -1,
+    history: []
+  };
+}
+
+// =====================================================================
+// AI LOGIC (simple for unfilled factions)
+// =====================================================================
+function aiReinforce(territories, factionIdx, available) {
+  var myTerrs = getTerritoriesByFaction(territories, factionIdx);
+  if (myTerrs.length === 0) return territories;
+  var newTerrs = JSON.parse(JSON.stringify(territories));
+  // Find territories adjacent to enemies (frontline), reinforce those
+  var frontline = myTerrs.filter(function (t) {
+    return TERRITORIES[t].adjacent.some(function (adj) {
+      return newTerrs[adj] && newTerrs[adj].faction !== factionIdx;
+    });
+  });
+  var targets = frontline.length > 0 ? frontline : myTerrs;
+  for (var i = 0; i < available; i++) {
+    var t = targets[Math.floor(Math.random() * targets.length)];
+    newTerrs[t].units += 1;
+  }
+  return newTerrs;
+}
+function aiAttack(territories, factionIdx) {
+  var newTerrs = JSON.parse(JSON.stringify(territories));
+  var log = [];
+  var maxAttacks = 5;
+  var attacks = 0;
+  while (attacks < maxAttacks) {
+    var myTerrs = getTerritoriesByFaction(newTerrs, factionIdx).filter(function (t) {
+      return newTerrs[t].units >= 2;
+    });
+    if (myTerrs.length === 0) break;
+    var validAttacks = [];
+    myTerrs.forEach(function (t) {
+      TERRITORIES[t].adjacent.forEach(function (adj) {
+        if (newTerrs[adj] && newTerrs[adj].faction !== factionIdx) {
+          validAttacks.push({
+            from: t,
+            to: adj
+          });
+        }
+      });
+    });
+    // Prefer attacking weaker territories
+    validAttacks.sort(function (a, b) {
+      return newTerrs[a.to].units - newTerrs[b.to].units;
+    });
+    if (validAttacks.length === 0) break;
+    var chosen = validAttacks[0];
+    if (newTerrs[chosen.from].units <= newTerrs[chosen.to].units + 1 && Math.random() > 0.3) break;
+    var result = resolveCombat(newTerrs[chosen.from].units, newTerrs[chosen.to].units, factionIdx, newTerrs[chosen.to].faction);
+    newTerrs[chosen.from].units -= result.attackerLoss;
+    newTerrs[chosen.to].units -= result.defenderLoss;
+    if (newTerrs[chosen.to].units <= 0) {
+      newTerrs[chosen.to].faction = factionIdx;
+      var movedUnits = Math.min(newTerrs[chosen.from].units - 1, 2);
+      newTerrs[chosen.to].units = Math.max(1, movedUnits);
+      newTerrs[chosen.from].units -= movedUnits > 0 ? movedUnits : 0;
+      if (newTerrs[chosen.from].units < 1) newTerrs[chosen.from].units = 1;
+    }
+    log.push(FACTIONS[factionIdx].emoji + ' ' + FACTIONS[factionIdx].name + ' ataca ' + TERRITORIES[chosen.to].name + ' des de ' + TERRITORIES[chosen.from].name);
+    attacks++;
+  }
+  return {
+    territories: newTerrs,
+    log: log
+  };
+}
+function resolveCombat(attackerUnits, defenderUnits, attackerFaction, defenderFaction) {
+  var numAttackDice = Math.min(3, attackerUnits - 1);
+  var numDefendDice = Math.min(2, defenderUnits);
+  if (numAttackDice <= 0) return {
+    attackerLoss: 0,
+    defenderLoss: 0,
+    attackDice: [],
+    defendDice: []
+  };
+  var attackDice = [];
+  for (var a = 0; a < numAttackDice; a++) attackDice.push(rollDice());
+  var defendDice = [];
+  for (var d = 0; d < numDefendDice; d++) defendDice.push(rollDice());
+  // Austrian bonus: defender gets +1 to highest die
+  if (defenderFaction !== undefined && FACTIONS[defenderFaction] && FACTIONS[defenderFaction].id === 'austrics') {
+    defendDice.sort(function (x, y) {
+      return y - x;
+    });
+    defendDice[0] = Math.min(6, defendDice[0] + 1);
+  }
+  attackDice.sort(function (x, y) {
+    return y - x;
+  });
+  defendDice.sort(function (x, y) {
+    return y - x;
+  });
+  var attackerLoss = 0;
+  var defenderLoss = 0;
+  var comparisons = Math.min(attackDice.length, defendDice.length);
+  for (var c = 0; c < comparisons; c++) {
+    if (attackDice[c] > defendDice[c]) {
+      defenderLoss++;
+    } else {
+      attackerLoss++;
+    }
+  }
+  return {
+    attackerLoss: attackerLoss,
+    defenderLoss: defenderLoss,
+    attackDice: attackDice,
+    defendDice: defendDice
+  };
+}
+
+// =====================================================================
+// APPLY EVENT
+// =====================================================================
+function applyEvent(event, territories, currentPlayer) {
+  var newTerrs = JSON.parse(JSON.stringify(territories));
+  var info = '';
+  switch (event.effect) {
+    case 'lose_units_max':
+      for (var f = 0; f < 4; f++) {
+        var maxT = null;
+        var maxU = 0;
+        TERRITORY_KEYS.forEach(function (k) {
+          if (newTerrs[k].faction === f && newTerrs[k].units > maxU) {
+            maxU = newTerrs[k].units;
+            maxT = k;
+          }
+        });
+        if (maxT) newTerrs[maxT].units = Math.max(1, newTerrs[maxT].units - event.amount);
+      }
+      info = 'Tots perden unitats del seu territori mes fort.';
+      break;
+    case 'sanctions_leader':
+      var leader = getWinnerByTerritories(newTerrs);
+      var leaderTerrs = getTerritoriesByFaction(newTerrs, leader);
+      var toRemove = event.amount;
+      while (toRemove > 0 && leaderTerrs.length > 0) {
+        var t = leaderTerrs[Math.floor(Math.random() * leaderTerrs.length)];
+        if (newTerrs[t].units > 1) {
+          newTerrs[t].units--;
+          toRemove--;
+        } else {
+          leaderTerrs = leaderTerrs.filter(function (x) {
+            return x !== t;
+          });
+        }
+      }
+      info = FACTIONS[leader].name + ' reben sancions.';
+      break;
+    case 'continent_bonus':
+      for (var fb = 0; fb < 4; fb++) {
+        var controlled = getControlledContinents(newTerrs, fb);
+        if (controlled.length > 0) {
+          var fTerrs = getTerritoriesByFaction(newTerrs, fb);
+          if (fTerrs.length > 0) {
+            var target = fTerrs[Math.floor(Math.random() * fTerrs.length)];
+            newTerrs[target].units += event.amount;
+            info += FACTIONS[fb].name + ' guanyen +' + event.amount + '. ';
+          }
+        }
+      }
+      if (!info) info = 'Cap jugador controla un continent sencer.';
+      break;
+    case 'no_continent_bonus':
+      info = 'Recessió: sense bonus de continent aquest torn.';
+      break;
+    case 'help_weakest':
+      var weakest = 0;
+      var weakCount = 999;
+      for (var fw = 0; fw < 4; fw++) {
+        var c = countTerritories(newTerrs, fw);
+        if (c > 0 && c < weakCount) {
+          weakCount = c;
+          weakest = fw;
+        }
+      }
+      var wTerrs = getTerritoriesByFaction(newTerrs, weakest);
+      if (wTerrs.length > 0) {
+        var wTarget = wTerrs[Math.floor(Math.random() * wTerrs.length)];
+        newTerrs[wTarget].units += event.amount;
+      }
+      info = FACTIONS[weakest].name + ' reben ajuda tecnològica.';
+      break;
+    case 'help_two_weakest':
+      var counts = [];
+      for (var fh = 0; fh < 4; fh++) counts.push({
+        f: fh,
+        c: countTerritories(newTerrs, fh)
+      });
+      counts.sort(function (a, b) {
+        return a.c - b.c;
+      });
+      var helped = counts.filter(function (x) {
+        return x.c > 0;
+      }).slice(0, 2);
+      helped.forEach(function (h) {
+        var hTerrs = getTerritoriesByFaction(newTerrs, h.f);
+        if (hTerrs.length > 0) {
+          var ht = hTerrs[Math.floor(Math.random() * hTerrs.length)];
+          newTerrs[ht].units += event.amount;
+        }
+      });
+      info = 'Alianca temporal activa.';
+      break;
+    case 'inflation_penalty':
+      TERRITORY_KEYS.forEach(function (k) {
+        if (newTerrs[k].units >= 3) newTerrs[k].units -= 1;
+      });
+      info = 'Hiperinflacio redueix tropes!';
+      break;
+    case 'humanitarian_aid':
+      TERRITORY_KEYS.forEach(function (k) {
+        if (newTerrs[k].units === 1) newTerrs[k].units += 1;
+      });
+      info = 'Ajuda humanitaria: +1 als mes debils.';
+      break;
+    case 'extra_attacks':
+      info = 'El jugador actual te 2 atacs extra.';
+      break;
+    case 'industrial_revolution':
+      for (var fi = 0; fi < 4; fi++) {
+        var tc = countTerritories(newTerrs, fi);
+        var bonus = Math.floor(tc / 3);
+        if (bonus > 0) {
+          var fiTerrs = getTerritoriesByFaction(newTerrs, fi);
+          if (fiTerrs.length > 0) {
+            var fiTarget = fiTerrs[Math.floor(Math.random() * fiTerrs.length)];
+            newTerrs[fiTarget].units += bonus;
+          }
+        }
+      }
+      info = 'Revolució industrial: mes unitats per territori.';
+      break;
+    case 'wealth_transfer':
+      var richest = getWinnerByTerritories(newTerrs);
+      var poorest = 0;
+      var poorCount = 999;
+      for (var fp = 0; fp < 4; fp++) {
+        var pc = countTerritories(newTerrs, fp);
+        if (pc > 0 && pc < poorCount) {
+          poorCount = pc;
+          poorest = fp;
+        }
+      }
+      if (richest !== poorest) {
+        var rTerrs = getTerritoriesByFaction(newTerrs, richest);
+        var pTerrs = getTerritoriesByFaction(newTerrs, poorest);
+        var transferred = 0;
+        for (var ti = 0; ti < rTerrs.length && transferred < event.amount; ti++) {
+          if (newTerrs[rTerrs[ti]].units > 1) {
+            newTerrs[rTerrs[ti]].units--;
+            transferred++;
+          }
+        }
+        if (pTerrs.length > 0) {
+          var pTarget = pTerrs[Math.floor(Math.random() * pTerrs.length)];
+          newTerrs[pTarget].units += transferred;
+        }
+      }
+      info = 'Transferencia de riquesa completada.';
+      break;
+    case 'peace_europe':
+      info = 'Pacte de no agressió: Europa protegida.';
+      break;
+    case 'peace_continents':
+      info = 'Acord comercial: dos continents protegits.';
+      break;
+    case 'spring_bonus':
+      for (var fs = 0; fs < 4; fs++) {
+        var sTerrs = getTerritoriesByFaction(newTerrs, fs);
+        if (sTerrs.length > 0) {
+          var sTarget = sTerrs[Math.floor(Math.random() * sTerrs.length)];
+          newTerrs[sTarget].units += event.amount;
+        }
+      }
+      info = 'Primavera economica: tots reben unitats!';
+      break;
+    case 'financial_crisis':
+      var crisisContinents = ['northAmerica', 'europe'];
+      crisisContinents.forEach(function (cc) {
+        CONTINENTS[cc].territories.forEach(function (tKey) {
+          if (newTerrs[tKey].units > 1) newTerrs[tKey].units -= 1;
+        });
+      });
+      info = 'Crisi financera afecta Europa i America del Nord.';
+      break;
+    default:
+      info = 'Event aplicat.';
+  }
+  return {
+    territories: newTerrs,
+    info: info
+  };
+}
+
+// =====================================================================
+// DICE DISPLAY COMPONENT
+// =====================================================================
+function DiceFace({
+  value,
+  color,
+  size
+}) {
+  var sz = size || 50;
+  var bgColor = color || '#ffffff';
+  var dotColor = color === '#ef4444' || color === '#3b82f6' ? '#ffffff' : '#1f2937';
+  if (bgColor === '#ffffff') dotColor = '#1f2937';
+  var dotPositions = {
+    1: [[50, 50]],
+    2: [[25, 25], [75, 75]],
+    3: [[25, 25], [50, 50], [75, 75]],
+    4: [[25, 25], [75, 25], [25, 75], [75, 75]],
+    5: [[25, 25], [75, 25], [50, 50], [25, 75], [75, 75]],
+    6: [[25, 25], [75, 25], [25, 50], [75, 50], [25, 75], [75, 75]]
+  };
+  var dots = dotPositions[value] || dotPositions[1];
+  return /*#__PURE__*/React.createElement("svg", {
+    width: sz,
+    height: sz,
+    viewBox: "0 0 100 100"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "5",
+    y: "5",
+    width: "90",
+    height: "90",
+    rx: "15",
+    fill: bgColor,
+    stroke: "#374151",
+    strokeWidth: "2"
+  }), dots.map(function (pos, i) {
+    return /*#__PURE__*/React.createElement("circle", {
+      key: i,
+      cx: pos[0],
+      cy: pos[1],
+      r: "8",
+      fill: dotColor
+    });
+  }));
+}
+
+// =====================================================================
+// SVG MAP COMPONENT
+// =====================================================================
+function GameMap({
+  territories,
+  selectedTerritory,
+  validTargets,
+  onTerritoryClick,
+  phase,
+  currentFaction
+}) {
+  // Draw connection lines between adjacent territories
+  var drawnLines = {};
+  var connections = [];
+  TERRITORY_KEYS.forEach(function (tKey) {
+    var t = TERRITORIES[tKey];
+    t.adjacent.forEach(function (adjKey) {
+      var lineKey = [tKey, adjKey].sort().join('-');
+      if (!drawnLines[lineKey]) {
+        drawnLines[lineKey] = true;
+        var adj = TERRITORIES[adjKey];
+        // Skip very long lines (cross-ocean) for aesthetics, but still allow clicks
+        var dist = Math.sqrt(Math.pow(t.cx - adj.cx, 2) + Math.pow(t.cy - adj.cy, 2));
+        if (dist < 350) {
+          connections.push({
+            from: tKey,
+            to: adjKey,
+            x1: t.cx,
+            y1: t.cy,
+            x2: adj.cx,
+            y2: adj.cy
+          });
+        }
+      }
+    });
+  });
+  return /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 800 470",
+    className: "w-full h-auto rounded-2xl",
+    style: {
+      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)'
+    }
+  }, /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("radialGradient", {
+    id: "ocean",
+    cx: "50%",
+    cy: "50%",
+    r: "70%"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "#1e3a5f",
+    stopOpacity: "0.3"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "#0f172a",
+    stopOpacity: "0.1"
+  })), /*#__PURE__*/React.createElement("filter", {
+    id: "glow"
+  }, /*#__PURE__*/React.createElement("feGaussianBlur", {
+    stdDeviation: "3",
+    result: "blur"
+  }), /*#__PURE__*/React.createElement("feMerge", null, /*#__PURE__*/React.createElement("feMergeNode", {
+    in: "blur"
+  }), /*#__PURE__*/React.createElement("feMergeNode", {
+    in: "SourceGraphic"
+  }))), /*#__PURE__*/React.createElement("filter", {
+    id: "selectedGlow"
+  }, /*#__PURE__*/React.createElement("feGaussianBlur", {
+    stdDeviation: "5",
+    result: "blur"
+  }), /*#__PURE__*/React.createElement("feMerge", null, /*#__PURE__*/React.createElement("feMergeNode", {
+    in: "blur"
+  }), /*#__PURE__*/React.createElement("feMergeNode", {
+    in: "blur"
+  }), /*#__PURE__*/React.createElement("feMergeNode", {
+    in: "SourceGraphic"
+  })))), /*#__PURE__*/React.createElement("rect", {
+    width: "800",
+    height: "470",
+    fill: "url(#ocean)"
+  }), connections.map(function (conn) {
+    var isHighlighted = (selectedTerritory === conn.from || selectedTerritory === conn.to) && validTargets && (validTargets.indexOf(conn.from) !== -1 || validTargets.indexOf(conn.to) !== -1);
+    return /*#__PURE__*/React.createElement("line", {
+      key: conn.from + '-' + conn.to,
+      x1: conn.x1,
+      y1: conn.y1,
+      x2: conn.x2,
+      y2: conn.y2,
+      stroke: isHighlighted ? '#fbbf24' : 'rgba(148,163,184,0.15)',
+      strokeWidth: isHighlighted ? 2 : 1,
+      strokeDasharray: isHighlighted ? '' : '4,4'
+    });
+  }), TERRITORY_KEYS.map(function (tKey) {
+    var t = TERRITORIES[tKey];
+    var tState = territories[tKey];
+    if (!tState) return null;
+    var faction = FACTIONS[tState.faction];
+    var isSelected = selectedTerritory === tKey;
+    var isTarget = validTargets && validTargets.indexOf(tKey) !== -1;
+    var isOwn = tState.faction === currentFaction;
+    var path = TERRITORY_PATHS[tKey];
+    var fillColor = faction.color;
+    var fillOpacity = isSelected ? 0.9 : isTarget ? 0.7 : 0.5;
+    var strokeColor = isSelected ? '#fbbf24' : isTarget ? '#ef4444' : faction.color;
+    var strokeWidth = isSelected ? 3 : isTarget ? 2.5 : 1;
+    return /*#__PURE__*/React.createElement("g", {
+      key: tKey,
+      className: isSelected ? 'territory-selected' : isTarget || phase === 'reinforce' && isOwn || phase === 'attack' && isOwn || phase === 'fortify' && isOwn ? 'territory-hover' : '',
+      onClick: function () {
+        if (onTerritoryClick) onTerritoryClick(tKey);
+      },
+      style: {
+        cursor: onTerritoryClick && (isTarget || isOwn || phase === 'reinforce') ? 'pointer' : 'default'
+      }
+    }, /*#__PURE__*/React.createElement("path", {
+      d: path,
+      fill: fillColor,
+      fillOpacity: fillOpacity,
+      stroke: strokeColor,
+      strokeWidth: strokeWidth,
+      filter: isSelected ? 'url(#selectedGlow)' : isTarget ? 'url(#glow)' : ''
+    }), /*#__PURE__*/React.createElement("circle", {
+      cx: t.cx,
+      cy: t.cy,
+      r: "14",
+      fill: faction.color,
+      stroke: "#ffffff",
+      strokeWidth: "2",
+      filter: isSelected ? 'url(#selectedGlow)' : ''
+    }), /*#__PURE__*/React.createElement("text", {
+      x: t.cx,
+      y: t.cy + 1,
+      textAnchor: "middle",
+      dominantBaseline: "central",
+      fill: "white",
+      fontSize: "11",
+      fontWeight: "900",
+      fontFamily: "Plus Jakarta Sans"
+    }, tState.units), /*#__PURE__*/React.createElement("text", {
+      x: t.cx,
+      y: t.cy - 20,
+      textAnchor: "middle",
+      dominantBaseline: "central",
+      fill: "rgba(255,255,255,0.85)",
+      fontSize: "7",
+      fontWeight: "600",
+      fontFamily: "Plus Jakarta Sans"
+    }, t.name));
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "150",
+    y: "30",
+    textAnchor: "middle",
+    fill: "rgba(255,255,255,0.3)",
+    fontSize: "9",
+    fontWeight: "700"
+  }, "AM. NORD (+5)"), /*#__PURE__*/React.createElement("text", {
+    x: "195",
+    y: "275",
+    textAnchor: "middle",
+    fill: "rgba(255,255,255,0.3)",
+    fontSize: "9",
+    fontWeight: "700"
+  }, "AM. SUD (+3)"), /*#__PURE__*/React.createElement("text", {
+    x: "465",
+    y: "45",
+    textAnchor: "middle",
+    fill: "rgba(255,255,255,0.3)",
+    fontSize: "9",
+    fontWeight: "700"
+  }, "EUROPA (+5)"), /*#__PURE__*/React.createElement("text", {
+    x: "440",
+    y: "295",
+    textAnchor: "middle",
+    fill: "rgba(255,255,255,0.3)",
+    fontSize: "9",
+    fontWeight: "700"
+  }, "AFRICA (+3)"), /*#__PURE__*/React.createElement("text", {
+    x: "640",
+    y: "100",
+    textAnchor: "middle",
+    fill: "rgba(255,255,255,0.3)",
+    fontSize: "9",
+    fontWeight: "700"
+  }, "ASIA (+7)"), /*#__PURE__*/React.createElement("text", {
+    x: "720",
+    y: "380",
+    textAnchor: "middle",
+    fill: "rgba(255,255,255,0.3)",
+    fontSize: "9",
+    fontWeight: "700"
+  }, "OCEANIA (+2)"));
+}
+
+// =====================================================================
+// FACTION CARD COMPONENT
+// =====================================================================
+function FactionCard({
+  faction,
+  territories,
+  factionIdx,
+  compact
+}) {
+  var terrCount = countTerritories(territories, factionIdx);
+  var units = totalUnits(territories, factionIdx);
+  var continents = getControlledContinents(territories, factionIdx);
+  if (compact) {
+    return /*#__PURE__*/React.createElement("div", {
+      className: 'rounded-xl p-2 border-2 ' + faction.borderClass + ' ' + faction.lightBg
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex items-center gap-2"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-xl"
+    }, faction.emoji), /*#__PURE__*/React.createElement("span", {
+      className: 'font-bold text-sm ' + faction.textClass
+    }, faction.name), /*#__PURE__*/React.createElement("span", {
+      className: "text-xs text-gray-500 ml-auto"
+    }, terrCount, "T / ", units, "U")));
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    className: 'rounded-2xl p-4 border-2 ' + faction.borderClass + ' ' + faction.lightBg + ' space-y-2'
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-3xl"
+  }, faction.emoji), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
+    className: 'font-black text-lg ' + faction.textClass
+  }, faction.name), /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500 italic"
+  }, "\"", faction.motto, "\""))), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-3 text-sm"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/60 rounded-lg px-2 py-1"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "font-bold"
+  }, terrCount), " ", /*#__PURE__*/React.createElement("span", {
+    className: "text-gray-500"
+  }, "territoris")), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/60 rounded-lg px-2 py-1"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "font-bold"
+  }, units), " ", /*#__PURE__*/React.createElement("span", {
+    className: "text-gray-500"
+  }, "unitats"))), /*#__PURE__*/React.createElement("div", {
+    className: 'rounded-lg px-2 py-1 text-xs ' + faction.lightBg
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "font-bold"
+  }, faction.power.icon, " ", faction.power.name, ":"), " ", faction.power.description), continents.length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "text-xs text-gray-600"
+  }, "Continents: ", continents.map(function (c) {
+    return CONTINENTS[c].name;
+  }).join(', ')));
+}
+
+// =====================================================================
+// EVENT CARD OVERLAY
+// =====================================================================
+function EventCardOverlay({
+  event,
+  onApply
+}) {
+  if (!event) return null;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4",
+    style: {
+      animation: 'slide-in 0.3s ease'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 text-center border-2 border-amber-300"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-5xl"
+  }, "\uD83D\uDCDC"), /*#__PURE__*/React.createElement("h2", {
+    className: "text-2xl font-black text-amber-800"
+  }, event.title), /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-700"
+  }, event.text), /*#__PURE__*/React.createElement("button", {
+    onClick: onApply,
+    className: "w-full py-3 rounded-xl bg-amber-500 text-white font-bold text-lg hover:bg-amber-600 btn-risk"
+  }, "Aplicar Efecte")));
+}
+
+// =====================================================================
+// COMBAT OVERLAY
+// =====================================================================
+function CombatOverlay({
+  combat,
+  onClose
+}) {
+  if (!combat) return null;
+  var attFaction = FACTIONS[combat.attackerFaction];
+  var defFaction = FACTIONS[combat.defenderFaction];
+  return /*#__PURE__*/React.createElement("div", {
+    className: "fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-gray-900 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4 text-center border border-gray-700 combat-shake"
+  }, /*#__PURE__*/React.createElement("h2", {
+    className: "text-2xl font-black text-white"
+  }, "Combat"), /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between items-center gap-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex-1 space-y-2"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold text-lg",
+    style: {
+      color: attFaction.color
+    }
+  }, attFaction.emoji, " ", attFaction.name), /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-500 text-sm"
+  }, TERRITORIES[combat.from].name), /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-center gap-1"
+  }, combat.result.attackDice.map(function (d, i) {
+    return /*#__PURE__*/React.createElement(DiceFace, {
+      key: i,
+      value: d,
+      color: attFaction.color,
+      size: 45
+    });
+  })), /*#__PURE__*/React.createElement("p", {
+    className: "text-red-400 text-sm font-bold"
+  }, "-", combat.result.attackerLoss, " unitat", combat.result.attackerLoss !== 1 ? 's' : '')), /*#__PURE__*/React.createElement("div", {
+    className: "text-3xl font-black text-gray-500"
+  }, "VS"), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1 space-y-2"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold text-lg",
+    style: {
+      color: defFaction.color
+    }
+  }, defFaction.emoji, " ", defFaction.name), /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-500 text-sm"
+  }, TERRITORIES[combat.to].name), /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-center gap-1"
+  }, combat.result.defendDice.map(function (d, i) {
+    return /*#__PURE__*/React.createElement(DiceFace, {
+      key: i,
+      value: d,
+      color: defFaction.color,
+      size: 45
+    });
+  })), /*#__PURE__*/React.createElement("p", {
+    className: "text-red-400 text-sm font-bold"
+  }, "-", combat.result.defenderLoss, " unitat", combat.result.defenderLoss !== 1 ? 's' : ''))), combat.conquered && /*#__PURE__*/React.createElement("div", {
+    className: "bg-green-900/50 rounded-xl p-3"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-green-400 font-bold text-lg"
+  }, "Territori Conquistat!")), /*#__PURE__*/React.createElement("button", {
+    onClick: onClose,
+    className: "w-full py-3 rounded-xl bg-gray-700 text-white font-bold hover:bg-gray-600 btn-risk"
+  }, "Continuar")));
+}
+
+// =====================================================================
+// GAME STATS (End game)
+// =====================================================================
+function GameStats({
+  gameState
+}) {
+  var terrs = gameState.territories;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 gap-3"
+  }, FACTIONS.map(function (f, i) {
+    var tc = countTerritories(terrs, i);
+    var tu = totalUnits(terrs, i);
+    var cc = getControlledContinents(terrs, i);
+    return /*#__PURE__*/React.createElement("div", {
+      key: f.id,
+      className: 'rounded-xl p-3 border-2 ' + f.borderClass + ' ' + f.lightBg
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex items-center gap-2 mb-1"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-xl"
+    }, f.emoji), /*#__PURE__*/React.createElement("span", {
+      className: 'font-bold ' + f.textClass
+    }, f.name)), /*#__PURE__*/React.createElement("div", {
+      className: "text-sm text-gray-600 space-y-0.5"
+    }, /*#__PURE__*/React.createElement("p", null, "Territoris: ", /*#__PURE__*/React.createElement("span", {
+      className: "font-bold"
+    }, tc)), /*#__PURE__*/React.createElement("p", null, "Unitats: ", /*#__PURE__*/React.createElement("span", {
+      className: "font-bold"
+    }, tu)), cc.length > 0 && /*#__PURE__*/React.createElement("p", null, "Continents: ", /*#__PURE__*/React.createElement("span", {
+      className: "font-bold"
+    }, cc.length))));
+  }));
+}
+
+// =====================================================================
+// HOST GAME VIEW
+// =====================================================================
+function HostGameView({
+  roomCode,
+  playerId,
+  players,
+  initialGameState
+}) {
+  const [gameState, setGameState] = useState(function () {
+    return initialGameState || createInitialGameState();
+  });
+  const [showEvent, setShowEvent] = useState(null);
+  const [combatResult, setCombatResult] = useState(null);
+  const [combatLog, setCombatLog] = useState([]);
+  const [aiProcessing, setAiProcessing] = useState(false);
+
+  // Determine which factions are human vs AI
+  var playerIds = Object.keys(players).filter(function (id) {
+    return players[id].connected !== false;
+  });
+  var factionAssignment = {};
+  playerIds.forEach(function (pid, idx) {
+    factionAssignment[pid] = idx % 4;
+  });
+  var humanFactions = {};
+  Object.values(factionAssignment).forEach(function (f) {
+    humanFactions[f] = true;
+  });
+  var isAI = function (fIdx) {
+    return !humanFactions[fIdx];
+  };
+
+  // Sync game state to Firebase
+  useEffect(function () {
+    if (roomCode) {
+      PdeRoomManager.setGameState(roomCode, gameState);
+    }
+  }, [gameState]);
+
+  // Listen to player actions
+  useEffect(function () {
+    if (!roomCode) return;
+    var unsub = PdeRoomManager.onGameStateChange(roomCode, function (state) {
+      if (state && state.playerAction) {
+        handlePlayerAction(state.playerAction);
+        // Clear the action
+        PdeRoomManager.updateGameState(roomCode, {
+          playerAction: null
+        });
+      }
+    });
+    return unsub;
+  }, [roomCode]);
+  var gs = gameState;
+  var currentFactionIdx = gs.playerOrder[gs.currentPlayer];
+  var currentFaction = FACTIONS[currentFactionIdx];
+  function addLog(msg) {
+    setCombatLog(function (prev) {
+      return [msg].concat(prev).slice(0, 30);
+    });
+  }
+  function handlePlayerAction(action) {
+    if (!action || !action.type) return;
+    switch (action.type) {
+      case 'reinforce':
+        if (gs.phase === 'reinforce' && action.territory && gs.territories[action.territory] && gs.territories[action.territory].faction === currentFactionIdx && gs.reinforcements.available > 0) {
+          setGameState(function (prev) {
+            var newTerrs = JSON.parse(JSON.stringify(prev.territories));
+            newTerrs[action.territory].units += 1;
+            var placed = JSON.parse(JSON.stringify(prev.reinforcements.placed || {}));
+            placed[action.territory] = (placed[action.territory] || 0) + 1;
+            return Object.assign({}, prev, {
+              territories: newTerrs,
+              reinforcements: {
+                available: prev.reinforcements.available - 1,
+                placed: placed
+              }
+            });
+          });
+        }
+        break;
+      case 'attack':
+        performAttack(action.from, action.to);
+        break;
+      case 'end_attacks':
+        advancePhase();
+        break;
+      case 'fortify':
+        performFortify(action.from, action.to, action.amount);
+        break;
+      case 'end_fortify':
+        advancePhase();
+        break;
+    }
+  }
+  function startTurn() {
+    // Draw event
+    var eventIdx = Math.floor(Math.random() * EVENT_CARDS.length);
+    var event = EVENT_CARDS[eventIdx];
+    setShowEvent(event);
+    setGameState(function (prev) {
+      return Object.assign({}, prev, {
+        phase: 'event',
+        currentEvent: event,
+        factionPowerUsed: {},
+        nonAdjacentUsed: false,
+        fortifyDone: false,
+        peaceEurope: event.effect === 'peace_europe',
+        noContBonus: event.effect === 'no_continent_bonus',
+        extraAttacks: event.effect === 'extra_attacks' ? event.amount : 0
+      });
+    });
+  }
+  function applyCurrentEvent() {
+    var event = showEvent;
+    setShowEvent(null);
+    if (!event) return;
+    var result = applyEvent(event, gs.territories, gs.currentPlayer);
+    addLog('Event: ' + event.title + ' - ' + result.info);
+    // Move to reinforce phase
+    var reinforceCount = calculateReinforcements(result.territories, currentFactionIdx, gs.noContBonus);
+    // Keynesian power: +2 every 3 rounds
+    if (currentFaction.id === 'keynesians' && gs.round % 3 === 0) {
+      reinforceCount += 2;
+      addLog(currentFaction.emoji + ' Estímul Fiscal: +2 unitats extra!');
+    }
+    setGameState(function (prev) {
+      return Object.assign({}, prev, {
+        phase: 'reinforce',
+        territories: result.territories,
+        reinforcements: {
+          available: reinforceCount,
+          placed: {}
+        },
+        currentEvent: null
+      });
+    });
+    // If AI, process automatically
+    if (isAI(currentFactionIdx)) {
+      setTimeout(function () {
+        processAITurn(result.territories, reinforceCount);
+      }, 1000);
+    }
+  }
+  function processAITurn(territories, reinforceCount) {
+    setAiProcessing(true);
+    // 1. Reinforce
+    var afterReinforce = aiReinforce(territories || gs.territories, currentFactionIdx, reinforceCount || 0);
+    addLog(currentFaction.emoji + ' ' + currentFaction.name + ' (IA) desplega reforços.');
+    // 2. Attack
+    setTimeout(function () {
+      var attackResult = aiAttack(afterReinforce, currentFactionIdx);
+      attackResult.log.forEach(function (l) {
+        addLog(l);
+      });
+      setGameState(function (prev) {
+        return Object.assign({}, prev, {
+          territories: attackResult.territories,
+          reinforcements: {
+            available: 0,
+            placed: {}
+          },
+          phase: 'fortify'
+        });
+      });
+      // 3. Skip fortify, advance
+      setTimeout(function () {
+        setAiProcessing(false);
+        advanceToNextPlayer(attackResult.territories);
+      }, 500);
+    }, 800);
+  }
+  function finishReinforce() {
+    if (gs.reinforcements.available > 0) return;
+    setGameState(function (prev) {
+      return Object.assign({}, prev, {
+        phase: 'attack'
+      });
+    });
+  }
+  function performAttack(from, to) {
+    if (!from || !to) return;
+    var terrs = gs.territories;
+    if (terrs[from].faction !== currentFactionIdx) return;
+    if (terrs[to].faction === currentFactionIdx) return;
+    if (terrs[from].units < 2) return;
+    // Adjacency check (Neoclassics can attack non-adjacent once)
+    if (!isAdjacent(from, to)) {
+      if (currentFaction.id === 'neoclassics' && !gs.nonAdjacentUsed) {
+        setGameState(function (prev) {
+          return Object.assign({}, prev, {
+            nonAdjacentUsed: true
+          });
+        });
+      } else {
+        return;
+      }
+    }
+    // Peace Europe check
+    if (gs.peaceEurope && TERRITORIES[to].continent === 'europe') {
+      addLog('Pacte de no agressió: no es pot atacar Europa!');
+      return;
+    }
+    // Marxist power: auto-conquer with 1 unit
+    if (currentFaction.id === 'marxistes' && terrs[to].units === 1) {
+      addLog(currentFaction.emoji + ' Revolució! Conquesta automàtica de ' + TERRITORIES[to].name);
+      setGameState(function (prev) {
+        var newTerrs = JSON.parse(JSON.stringify(prev.territories));
+        var moveUnits = Math.min(newTerrs[from].units - 1, 2);
+        newTerrs[to] = {
+          faction: currentFactionIdx,
+          units: Math.max(1, moveUnits)
+        };
+        newTerrs[from].units -= moveUnits;
+        if (newTerrs[from].units < 1) newTerrs[from].units = 1;
+        return Object.assign({}, prev, {
+          territories: newTerrs
+        });
+      });
+      PdeGameSounds.play('win');
+      return;
+    }
+    // Normal combat
+    var result = resolveCombat(terrs[from].units, terrs[to].units, currentFactionIdx, terrs[to].faction);
+    var conquered = false;
+    setGameState(function (prev) {
+      var newTerrs = JSON.parse(JSON.stringify(prev.territories));
+      newTerrs[from].units -= result.attackerLoss;
+      newTerrs[to].units -= result.defenderLoss;
+      if (newTerrs[to].units <= 0) {
+        conquered = true;
+        var moveUnits = Math.min(newTerrs[from].units - 1, 3);
+        newTerrs[to] = {
+          faction: currentFactionIdx,
+          units: Math.max(1, moveUnits)
+        };
+        newTerrs[from].units -= moveUnits;
+        if (newTerrs[from].units < 1) newTerrs[from].units = 1;
+      }
+      return Object.assign({}, prev, {
+        territories: newTerrs
+      });
+    });
+    var defFaction = FACTIONS[terrs[to].faction];
+    addLog(currentFaction.emoji + ' ' + currentFaction.name + ' ataca ' + TERRITORIES[to].name + ' (' + result.attackDice.join(',') + ' vs ' + result.defendDice.join(',') + ')' + (conquered ? ' - CONQUISTAT!' : ''));
+    setCombatResult({
+      from: from,
+      to: to,
+      attackerFaction: currentFactionIdx,
+      defenderFaction: terrs[to].faction,
+      result: result,
+      conquered: conquered
+    });
+    if (conquered) PdeGameSounds.play('win');else PdeGameSounds.play('buzz');
+  }
+  function performFortify(from, to, amount) {
+    if (gs.fortifyDone) return;
+    if (!from || !to || !amount) return;
+    var terrs = gs.territories;
+    if (terrs[from].faction !== currentFactionIdx || terrs[to].faction !== currentFactionIdx) return;
+    if (!isAdjacent(from, to)) return;
+    var maxMove = terrs[from].units - 1;
+    var moveAmount = Math.min(amount, maxMove);
+    if (moveAmount <= 0) return;
+    setGameState(function (prev) {
+      var newTerrs = JSON.parse(JSON.stringify(prev.territories));
+      newTerrs[from].units -= moveAmount;
+      newTerrs[to].units += moveAmount;
+      return Object.assign({}, prev, {
+        territories: newTerrs,
+        fortifyDone: true
+      });
+    });
+    addLog(currentFaction.emoji + ' Fortifica: ' + moveAmount + ' unitats de ' + TERRITORIES[from].name + ' a ' + TERRITORIES[to].name);
+  }
+  function advancePhase() {
+    if (gs.phase === 'attack') {
+      setGameState(function (prev) {
+        return Object.assign({}, prev, {
+          phase: 'fortify'
+        });
+      });
+    } else if (gs.phase === 'fortify') {
+      advanceToNextPlayer(gs.territories);
+    }
+  }
+  function advanceToNextPlayer(terrs) {
+    var territories = terrs || gs.territories;
+    // Check victory
+    var winner = checkVictory(territories);
+    if (winner !== -1) {
+      setGameState(function (prev) {
+        return Object.assign({}, prev, {
+          finished: true,
+          winner: winner,
+          territories: territories
+        });
+      });
+      PdeGameSounds.play('win');
+      return;
+    }
+    // Next player
+    var nextPlayer = gs.currentPlayer + 1;
+    var nextRound = gs.round;
+    if (nextPlayer >= gs.playerOrder.length) {
+      nextPlayer = 0;
+      nextRound++;
+    }
+    // Check max rounds
+    if (nextRound > gs.maxRounds) {
+      var winByCount = getWinnerByTerritories(territories);
+      setGameState(function (prev) {
+        return Object.assign({}, prev, {
+          finished: true,
+          winner: winByCount,
+          territories: territories
+        });
+      });
+      PdeGameSounds.play('win');
+      return;
+    }
+    // Skip eliminated factions
+    var skips = 0;
+    while (isFactionEliminated(territories, gs.playerOrder[nextPlayer]) && skips < 4) {
+      nextPlayer++;
+      if (nextPlayer >= gs.playerOrder.length) {
+        nextPlayer = 0;
+        nextRound++;
+      }
+      skips++;
+    }
+    if (nextRound > gs.maxRounds) {
+      var winByCount2 = getWinnerByTerritories(territories);
+      setGameState(function (prev) {
+        return Object.assign({}, prev, {
+          finished: true,
+          winner: winByCount2,
+          territories: territories
+        });
+      });
+      return;
+    }
+    setGameState(function (prev) {
+      return Object.assign({}, prev, {
+        currentPlayer: nextPlayer,
+        round: nextRound,
+        phase: 'event',
+        territories: territories,
+        reinforcements: {
+          available: 0,
+          placed: {}
+        },
+        factionPowerUsed: {},
+        nonAdjacentUsed: false,
+        fortifyDone: false,
+        peaceEurope: false,
+        noContBonus: false,
+        extraAttacks: 0
+      });
+    });
+    // Auto-start next turn
+    setTimeout(function () {
+      startTurn();
+    }, 500);
+  }
+
+  // Start first turn on mount
+  useEffect(function () {
+    if (gs.phase === 'event' && !gs.currentEvent && !gs.finished) {
+      startTurn();
+    }
+  }, []);
+
+  // ── FINISHED VIEW ──
+  if (gs.finished) {
+    var winnerFaction = FACTIONS[gs.winner];
+    var facts = FACTION_FACTS[winnerFaction.id];
+    return /*#__PURE__*/React.createElement("div", {
+      className: "min-h-screen p-4 md:p-8 bg-gradient-to-br from-slate-900 via-gray-900 to-zinc-950"
+    }, /*#__PURE__*/React.createElement(PdeConfetti, {
+      show: true
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "max-w-5xl mx-auto space-y-6"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-center space-y-3"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-7xl"
+    }, winnerFaction.emoji), /*#__PURE__*/React.createElement("h1", {
+      className: "text-4xl md:text-6xl font-black text-white"
+    }, winnerFaction.name, " guanyen!"), /*#__PURE__*/React.createElement("p", {
+      className: "text-xl text-gray-500"
+    }, "\"", winnerFaction.motto, "\""), /*#__PURE__*/React.createElement("p", {
+      className: "text-gray-500"
+    }, "Ronda ", gs.round, " de ", gs.maxRounds)), /*#__PURE__*/React.createElement("div", {
+      className: "rounded-2xl overflow-hidden border border-gray-700"
+    }, /*#__PURE__*/React.createElement(GameMap, {
+      territories: gs.territories,
+      currentFaction: gs.winner
+    })), /*#__PURE__*/React.createElement(GameStats, {
+      gameState: gs
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "bg-white/10 backdrop-blur rounded-2xl p-5 space-y-3"
+    }, /*#__PURE__*/React.createElement("h3", {
+      className: "text-xl font-black text-white"
+    }, "Sabies que...?"), facts && facts.map(function (fact, i) {
+      return /*#__PURE__*/React.createElement("p", {
+        key: i,
+        className: "text-gray-300 text-sm"
+      }, winnerFaction.emoji, " ", fact);
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "bg-white/10 backdrop-blur rounded-2xl p-5 space-y-4"
+    }, /*#__PURE__*/React.createElement("h3", {
+      className: "text-xl font-black text-white"
+    }, "Les 4 Escoles Econ\xF2miques"), FACTIONS.map(function (f) {
+      return /*#__PURE__*/React.createElement("div", {
+        key: f.id,
+        className: "space-y-1"
+      }, /*#__PURE__*/React.createElement("p", {
+        className: "font-bold",
+        style: {
+          color: f.color
+        }
+      }, f.emoji, " ", f.name), /*#__PURE__*/React.createElement("div", {
+        className: "flex flex-wrap gap-1"
+      }, f.teachings.map(function (t, ti) {
+        return /*#__PURE__*/React.createElement("span", {
+          key: ti,
+          className: "text-xs bg-white/10 text-gray-300 px-2 py-1 rounded-full"
+        }, t);
+      })));
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "text-center"
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: function () {
+        window.location.reload();
+      },
+      className: "px-8 py-4 rounded-2xl bg-indigo-600 text-white font-black text-xl hover:bg-indigo-500 btn-risk"
+    }, "Nova Partida"))));
+  }
+
+  // ── MAIN HOST VIEW ──
+  var phaseNames = {
+    event: 'Esdeveniment',
+    reinforce: 'Reforços',
+    attack: 'Atac',
+    fortify: 'Fortificar'
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "min-h-screen p-3 md:p-6 bg-gradient-to-br from-slate-900 via-gray-900 to-zinc-950"
+  }, showEvent && /*#__PURE__*/React.createElement(EventCardOverlay, {
+    event: showEvent,
+    onApply: applyCurrentEvent
+  }), combatResult && /*#__PURE__*/React.createElement(CombatOverlay, {
+    combat: combatResult,
+    onClose: function () {
+      setCombatResult(null);
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "max-w-7xl mx-auto space-y-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-wrap items-center justify-between gap-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-3"
+  }, /*#__PURE__*/React.createElement("a", {
+    href: "./",
+    className: "text-gray-500 hover:text-white text-sm"
+  }, "\uD83C\uDF93 PDE"), /*#__PURE__*/React.createElement("span", {
+    className: "text-gray-700"
+  }, "|"), /*#__PURE__*/React.createElement("h1", {
+    className: "text-xl md:text-2xl font-black text-white"
+  }, "Systemic Risk")), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-3 text-sm text-gray-500"
+  }, /*#__PURE__*/React.createElement("span", null, "Ronda ", gs.round, "/", gs.maxRounds), /*#__PURE__*/React.createElement("span", {
+    className: "text-gray-700"
+  }, "|"), /*#__PURE__*/React.createElement("span", null, "Sala: ", /*#__PURE__*/React.createElement("span", {
+    className: "font-mono font-bold text-white"
+  }, roomCode)))), /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-wrap items-center justify-between gap-3 bg-white/5 rounded-2xl p-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-3"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-3xl"
+  }, currentFaction.emoji), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "font-black text-lg",
+    style: {
+      color: currentFaction.color
+    }
+  }, currentFaction.name, " ", isAI(currentFactionIdx) ? '(IA)' : ''), /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-500 text-sm"
+  }, currentFaction.motto))), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2"
+  }, ['event', 'reinforce', 'attack', 'fortify'].map(function (p) {
+    var isActive = gs.phase === p;
+    return /*#__PURE__*/React.createElement("div", {
+      key: p,
+      className: 'px-3 py-1 rounded-full text-xs font-bold ' + (isActive ? 'bg-indigo-500 text-white' : 'bg-gray-800 text-gray-500')
+    }, phaseNames[p]);
+  }))), gs.phase === 'reinforce' && !isAI(currentFactionIdx) && /*#__PURE__*/React.createElement("div", {
+    className: "bg-indigo-900/50 rounded-xl p-3 flex items-center justify-between"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-indigo-200"
+  }, "Unitats per desplegar: ", /*#__PURE__*/React.createElement("span", {
+    className: "font-black text-xl text-white"
+  }, gs.reinforcements.available)), gs.reinforcements.available === 0 && /*#__PURE__*/React.createElement("button", {
+    onClick: finishReinforce,
+    className: "px-4 py-2 rounded-xl bg-indigo-500 text-white font-bold btn-risk hover:bg-indigo-400"
+  }, "Continuar a Atac")), gs.phase === 'attack' && !isAI(currentFactionIdx) && /*#__PURE__*/React.createElement("div", {
+    className: "bg-red-900/50 rounded-xl p-3 flex items-center justify-between"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-red-200"
+  }, "Fase d'atac - Selecciona territori propi i objectiu enemic"), /*#__PURE__*/React.createElement("button", {
+    onClick: advancePhase,
+    className: "px-4 py-2 rounded-xl bg-red-500 text-white font-bold btn-risk hover:bg-red-400"
+  }, "Acabar Atacs")), gs.phase === 'fortify' && !isAI(currentFactionIdx) && /*#__PURE__*/React.createElement("div", {
+    className: "bg-green-900/50 rounded-xl p-3 flex items-center justify-between"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-green-200"
+  }, gs.fortifyDone ? 'Fortificació completada' : 'Pots moure unitats entre territoris adjacents'), /*#__PURE__*/React.createElement("button", {
+    onClick: function () {
+      advanceToNextPlayer();
+    },
+    className: "px-4 py-2 rounded-xl bg-green-500 text-white font-bold btn-risk hover:bg-green-400"
+  }, "Acabar Torn")), aiProcessing && /*#__PURE__*/React.createElement("div", {
+    className: "bg-yellow-900/50 rounded-xl p-3 text-center"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-yellow-200 animate-pulse font-bold"
+  }, currentFaction.emoji, " ", currentFaction.name, " (IA) est\xE0 pensant...")), /*#__PURE__*/React.createElement("div", {
+    className: "grid lg:grid-cols-4 gap-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "lg:col-span-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "rounded-2xl overflow-hidden border border-gray-700 shadow-2xl"
+  }, /*#__PURE__*/React.createElement(GameMap, {
+    territories: gs.territories,
+    phase: gs.phase,
+    currentFaction: currentFactionIdx,
+    onTerritoryClick: function (tKey) {
+      if (isAI(currentFactionIdx)) return;
+      // For human: send action via firebase
+      if (gs.phase === 'reinforce') {
+        if (gs.territories[tKey].faction === currentFactionIdx && gs.reinforcements.available > 0) {
+          handlePlayerAction({
+            type: 'reinforce',
+            territory: tKey
+          });
+        }
+      }
+    }
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, FACTIONS.map(function (f, i) {
+    var isActive = i === currentFactionIdx;
+    return /*#__PURE__*/React.createElement("div", {
+      key: f.id,
+      className: 'rounded-xl p-2 border transition-all ' + (isActive ? 'border-white/30 bg-white/10 ring-1 ring-white/20' : 'border-gray-800 bg-gray-900/50')
+    }, /*#__PURE__*/React.createElement(FactionCard, {
+      faction: f,
+      territories: gs.territories,
+      factionIdx: i,
+      compact: true
+    }));
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "bg-gray-900/80 rounded-xl p-3 max-h-64 overflow-y-auto border border-gray-800"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "text-xs font-bold text-gray-500 mb-2 uppercase"
+  }, "Registre de combat"), combatLog.length === 0 && /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-600 text-xs"
+  }, "Cap accio encara..."), combatLog.map(function (log, i) {
+    return /*#__PURE__*/React.createElement("p", {
+      key: i,
+      className: "text-xs text-gray-500 py-0.5 border-b border-gray-800/50"
+    }, log);
+  }))))));
+}
+
+// =====================================================================
+// PLAYER GAME VIEW (Phone)
+// =====================================================================
+function PlayerGameView({
+  roomCode,
+  playerId,
+  factionIdx
+}) {
+  const [idioma] = usePdeIdioma();
+  var t = createTranslator(ECONRISK_TRANSLATIONS, idioma);
+  const [gameState, setGameState] = useState({});
+  const [selectedSource, setSelectedSource] = useState(null);
+  const [selectedTarget, setSelectedTarget] = useState(null);
+  const [fortifyAmount, setFortifyAmount] = useState(1);
+  useEffect(function () {
+    if (!roomCode) return;
+    var unsub = PdeRoomManager.onGameStateChange(roomCode, function (state) {
+      if (state) setGameState(state);
+    });
+    return unsub;
+  }, [roomCode]);
+  var gs = gameState;
+  if (!gs.territories) {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-gray-900 p-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-center text-white space-y-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-6xl animate-bounce"
+    }, "\u2694\uFE0F"), /*#__PURE__*/React.createElement("h2", {
+      className: "text-2xl font-black"
+    }, "Systemic Risk"), /*#__PURE__*/React.createElement("p", {
+      className: "text-gray-500 animate-pulse"
+    }, t('waiting_start') || 'Esperant que comence la partida...')));
+  }
+  var myFaction = FACTIONS[factionIdx];
+  var currentFactionIdx = gs.playerOrder ? gs.playerOrder[gs.currentPlayer] : 0;
+  var isMyTurn = currentFactionIdx === factionIdx;
+  var myTerritories = getTerritoriesByFaction(gs.territories, factionIdx);
+  var myUnits = totalUnits(gs.territories, factionIdx);
+  var myContinents = getControlledContinents(gs.territories, factionIdx);
+  function sendAction(action) {
+    PdeRoomManager.updateGameState(roomCode, {
+      playerAction: action
+    });
+  }
+
+  // ── FINISHED ──
+  if (gs.finished) {
+    var isWinner = gs.winner === factionIdx;
+    var winFaction = FACTIONS[gs.winner];
+    return /*#__PURE__*/React.createElement("div", {
+      className: "min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-gray-900 p-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "max-w-sm w-full space-y-4 text-center"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-7xl"
+    }, isWinner ? '\u{1F3C6}' : '\u{1F614}'), /*#__PURE__*/React.createElement("h2", {
+      className: "text-3xl font-black text-white"
+    }, isWinner ? 'Has guanyat!' : winFaction.name + ' guanyen!'), /*#__PURE__*/React.createElement("div", {
+      className: 'rounded-2xl p-4 ' + myFaction.lightBg
+    }, /*#__PURE__*/React.createElement("p", {
+      className: 'font-bold ' + myFaction.textClass
+    }, myFaction.emoji, " ", myFaction.name), /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-600"
+    }, "Territoris finals: ", myTerritories.length)), /*#__PURE__*/React.createElement("div", {
+      className: "bg-white/10 backdrop-blur rounded-xl p-4 text-left space-y-2"
+    }, /*#__PURE__*/React.createElement("h4", {
+      className: "text-white font-bold text-sm"
+    }, "Sabies que...?"), (FACTION_FACTS[myFaction.id] || []).slice(0, 2).map(function (fact, i) {
+      return /*#__PURE__*/React.createElement("p", {
+        key: i,
+        className: "text-gray-300 text-xs"
+      }, fact);
+    }))));
+  }
+
+  // ── WAITING FOR MY TURN ──
+  if (!isMyTurn) {
+    var curFaction = FACTIONS[currentFactionIdx];
+    return /*#__PURE__*/React.createElement("div", {
+      className: "min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-gray-900 p-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "max-w-sm w-full space-y-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-center space-y-2"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-4xl"
+    }, myFaction.emoji), /*#__PURE__*/React.createElement("h2", {
+      className: "text-xl font-black text-white"
+    }, myFaction.name)), /*#__PURE__*/React.createElement("div", {
+      className: "bg-white/10 backdrop-blur rounded-xl p-4 text-center"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-gray-300 text-sm"
+    }, "Torn actual:"), /*#__PURE__*/React.createElement("p", {
+      className: "font-black text-lg",
+      style: {
+        color: curFaction.color
+      }
+    }, curFaction.emoji, " ", curFaction.name), /*#__PURE__*/React.createElement("p", {
+      className: "text-gray-500 text-xs mt-1"
+    }, "Ronda ", gs.round, "/", gs.maxRounds)), /*#__PURE__*/React.createElement("div", {
+      className: 'rounded-xl p-3 ' + myFaction.lightBg
+    }, /*#__PURE__*/React.createElement("p", {
+      className: 'font-bold text-sm ' + myFaction.textClass
+    }, "Els meus territoris (", myTerritories.length, ")"), /*#__PURE__*/React.createElement("div", {
+      className: "mt-2 flex flex-wrap gap-1"
+    }, myTerritories.map(function (tKey) {
+      return /*#__PURE__*/React.createElement("span", {
+        key: tKey,
+        className: "text-xs bg-white/70 px-2 py-0.5 rounded-full"
+      }, TERRITORIES[tKey].name, " (", gs.territories[tKey].units, ")");
+    })), myContinents.length > 0 && /*#__PURE__*/React.createElement("p", {
+      className: "text-xs text-gray-600 mt-2"
+    }, "Continents controlats: ", myContinents.map(function (c) {
+      return CONTINENTS[c].name;
+    }).join(', '))), /*#__PURE__*/React.createElement("div", {
+      className: "bg-white/5 rounded-xl p-3 text-center"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-gray-500"
+    }, myFaction.power.icon, " ", myFaction.power.name), /*#__PURE__*/React.createElement("p", {
+      className: "text-xs text-gray-500"
+    }, myFaction.power.description))));
+  }
+
+  // ── MY TURN ──
+  var phaseLabel = {
+    event: 'Esdeveniment',
+    reinforce: 'Reforços',
+    attack: 'Atac',
+    fortify: 'Fortificar'
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "min-h-screen bg-gradient-to-br from-slate-900 to-gray-900 p-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "max-w-sm mx-auto space-y-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-center space-y-1"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-3xl"
+  }, myFaction.emoji), /*#__PURE__*/React.createElement("h2", {
+    className: "text-lg font-black text-white"
+  }, myFaction.name, " - El teu torn!"), /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-center gap-1"
+  }, ['event', 'reinforce', 'attack', 'fortify'].map(function (p) {
+    return /*#__PURE__*/React.createElement("span", {
+      key: p,
+      className: 'px-2 py-0.5 rounded-full text-xs font-bold ' + (gs.phase === p ? 'text-white' : 'bg-gray-800 text-gray-600'),
+      style: gs.phase === p ? {
+        backgroundColor: myFaction.color
+      } : {}
+    }, phaseLabel[p]);
+  }))), gs.phase === 'event' && /*#__PURE__*/React.createElement("div", {
+    className: "bg-amber-900/30 rounded-xl p-4 text-center"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-amber-200"
+  }, t('waiting_host') || "Esperant que l'amfitrio aplique l'esdeveniment...")), gs.phase === 'reinforce' && /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-indigo-900/50 rounded-xl p-3 text-center"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-indigo-200 text-sm"
+  }, "Unitats disponibles"), /*#__PURE__*/React.createElement("p", {
+    className: "text-3xl font-black text-white"
+  }, gs.reinforcements.available)), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-1"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-500 text-xs font-bold uppercase"
+  }, "Toca un territori per afegir unitat:"), myTerritories.map(function (tKey) {
+    var placed = gs.reinforcements.placed && gs.reinforcements.placed[tKey] || 0;
+    return /*#__PURE__*/React.createElement("button", {
+      key: tKey,
+      onClick: function () {
+        if (gs.reinforcements.available > 0) {
+          sendAction({
+            type: 'reinforce',
+            territory: tKey
+          });
+        }
+      },
+      disabled: gs.reinforcements.available <= 0,
+      className: 'w-full flex items-center justify-between px-3 py-2 rounded-lg btn-risk ' + (gs.reinforcements.available > 0 ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-gray-800 text-gray-600 cursor-not-allowed')
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "font-bold text-sm"
+    }, TERRITORIES[tKey].name), /*#__PURE__*/React.createElement("span", {
+      className: "flex items-center gap-2"
+    }, placed > 0 && /*#__PURE__*/React.createElement("span", {
+      className: "text-green-400 text-xs"
+    }, "+", placed), /*#__PURE__*/React.createElement("span", {
+      className: "bg-white/20 rounded-full w-7 h-7 flex items-center justify-center font-black text-sm"
+    }, gs.territories[tKey].units)));
+  }))), gs.phase === 'attack' && /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-500 text-xs font-bold uppercase mb-1"
+  }, "1. Selecciona territori atacant:"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-1 max-h-40 overflow-y-auto"
+  }, myTerritories.filter(function (t) {
+    return gs.territories[t].units >= 2;
+  }).map(function (tKey) {
+    var isSelected = selectedSource === tKey;
+    return /*#__PURE__*/React.createElement("button", {
+      key: tKey,
+      onClick: function () {
+        setSelectedSource(tKey);
+        setSelectedTarget(null);
+      },
+      className: 'w-full flex items-center justify-between px-3 py-2 rounded-lg btn-risk text-sm ' + (isSelected ? 'ring-2 ring-yellow-400 bg-yellow-900/30 text-yellow-200' : 'bg-white/10 text-white hover:bg-white/20')
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "font-bold"
+    }, TERRITORIES[tKey].name), /*#__PURE__*/React.createElement("span", {
+      className: "font-black"
+    }, gs.territories[tKey].units));
+  }))), selectedSource && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-500 text-xs font-bold uppercase mb-1"
+  }, "2. Selecciona objectiu:"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-1 max-h-40 overflow-y-auto"
+  }, function () {
+    var adjacentEnemies = TERRITORIES[selectedSource].adjacent.filter(function (adj) {
+      return gs.territories[adj] && gs.territories[adj].faction !== factionIdx;
+    });
+    // Neoclassics: all enemy territories if non-adjacent not used
+    if (myFaction.id === 'neoclassics' && !gs.nonAdjacentUsed) {
+      TERRITORY_KEYS.forEach(function (k) {
+        if (gs.territories[k].faction !== factionIdx && adjacentEnemies.indexOf(k) === -1) {
+          adjacentEnemies.push(k);
+        }
+      });
+    }
+    return adjacentEnemies;
+  }().map(function (tKey) {
+    var defFaction = FACTIONS[gs.territories[tKey].faction];
+    var isSelected = selectedTarget === tKey;
+    var isAdj = isAdjacent(selectedSource, tKey);
+    return /*#__PURE__*/React.createElement("button", {
+      key: tKey,
+      onClick: function () {
+        setSelectedTarget(tKey);
+      },
+      className: 'w-full flex items-center justify-between px-3 py-2 rounded-lg btn-risk text-sm ' + (isSelected ? 'ring-2 ring-red-400 bg-red-900/30 text-red-200' : 'bg-white/10 text-white hover:bg-white/20')
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "flex items-center gap-1"
+    }, /*#__PURE__*/React.createElement("span", null, defFaction.emoji), /*#__PURE__*/React.createElement("span", {
+      className: "font-bold"
+    }, TERRITORIES[tKey].name), !isAdj && /*#__PURE__*/React.createElement("span", {
+      className: "text-xs text-yellow-400"
+    }, "(no adj.)")), /*#__PURE__*/React.createElement("span", {
+      className: "font-black",
+      style: {
+        color: defFaction.color
+      }
+    }, gs.territories[tKey].units));
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: function () {
+      if (selectedSource && selectedTarget) {
+        sendAction({
+          type: 'attack',
+          from: selectedSource,
+          to: selectedTarget
+        });
+        setSelectedTarget(null);
+      }
+    },
+    disabled: !selectedSource || !selectedTarget,
+    className: 'flex-1 py-3 rounded-xl font-black text-lg btn-risk ' + (selectedSource && selectedTarget ? 'bg-red-600 text-white hover:bg-red-500' : 'bg-gray-800 text-gray-600 cursor-not-allowed')
+  }, "Atacar!"), /*#__PURE__*/React.createElement("button", {
+    onClick: function () {
+      sendAction({
+        type: 'end_attacks'
+      });
+      setSelectedSource(null);
+      setSelectedTarget(null);
+    },
+    className: "px-4 py-3 rounded-xl bg-gray-700 text-white font-bold btn-risk hover:bg-gray-600"
+  }, "Acabar")), myFaction.id === 'marxistes' && /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-red-300 text-center"
+  }, myFaction.power.icon, " Conquesta autom\xE0tica contra territoris amb 1 unitat!"), myFaction.id === 'neoclassics' && !gs.nonAdjacentUsed && /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-green-300 text-center"
+  }, myFaction.power.icon, " Pots atacar 1 territori no-adjacent!")), gs.phase === 'fortify' && /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, gs.fortifyDone ? /*#__PURE__*/React.createElement("div", {
+    className: "text-center space-y-3"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-green-300"
+  }, "Fortificaci\xF3 completada!"), /*#__PURE__*/React.createElement("button", {
+    onClick: function () {
+      sendAction({
+        type: 'end_fortify'
+      });
+    },
+    className: "w-full py-3 rounded-xl bg-green-600 text-white font-black text-lg btn-risk hover:bg-green-500"
+  }, "Acabar Torn")) : /*#__PURE__*/React.createElement("div", {
+    className: "space-y-2"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-500 text-xs font-bold uppercase"
+  }, "Mou unitats entre territoris adjacents (opcional):"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-500 text-xs mb-1"
+  }, "Origen:"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-1 max-h-32 overflow-y-auto"
+  }, myTerritories.filter(function (t) {
+    return gs.territories[t].units >= 2;
+  }).map(function (tKey) {
+    return /*#__PURE__*/React.createElement("button", {
+      key: tKey,
+      onClick: function () {
+        setSelectedSource(tKey);
+        setSelectedTarget(null);
+      },
+      className: 'w-full flex items-center justify-between px-3 py-1.5 rounded-lg btn-risk text-sm ' + (selectedSource === tKey ? 'ring-2 ring-green-400 bg-green-900/30 text-green-200' : 'bg-white/10 text-white hover:bg-white/20')
+    }, /*#__PURE__*/React.createElement("span", null, TERRITORIES[tKey].name), /*#__PURE__*/React.createElement("span", {
+      className: "font-black"
+    }, gs.territories[tKey].units));
+  }))), selectedSource && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-500 text-xs mb-1"
+  }, "Dest\xED:"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-1 max-h-32 overflow-y-auto"
+  }, TERRITORIES[selectedSource].adjacent.filter(function (adj) {
+    return gs.territories[adj] && gs.territories[adj].faction === factionIdx;
+  }).map(function (tKey) {
+    return /*#__PURE__*/React.createElement("button", {
+      key: tKey,
+      onClick: function () {
+        setSelectedTarget(tKey);
+      },
+      className: 'w-full flex items-center justify-between px-3 py-1.5 rounded-lg btn-risk text-sm ' + (selectedTarget === tKey ? 'ring-2 ring-green-400 bg-green-900/30 text-green-200' : 'bg-white/10 text-white hover:bg-white/20')
+    }, /*#__PURE__*/React.createElement("span", null, TERRITORIES[tKey].name), /*#__PURE__*/React.createElement("span", {
+      className: "font-black"
+    }, gs.territories[tKey].units));
+  }))), selectedSource && selectedTarget && /*#__PURE__*/React.createElement("div", {
+    className: "space-y-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-between bg-white/10 rounded-lg p-2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-gray-300 text-sm"
+  }, "Unitats:"), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: function () {
+      setFortifyAmount(Math.max(1, fortifyAmount - 1));
+    },
+    className: "w-8 h-8 rounded-full bg-gray-700 text-white font-bold btn-risk"
+  }, "-"), /*#__PURE__*/React.createElement("span", {
+    className: "text-white font-black text-xl w-8 text-center"
+  }, fortifyAmount), /*#__PURE__*/React.createElement("button", {
+    onClick: function () {
+      var max = gs.territories[selectedSource].units - 1;
+      setFortifyAmount(Math.min(max, fortifyAmount + 1));
+    },
+    className: "w-8 h-8 rounded-full bg-gray-700 text-white font-bold btn-risk"
+  }, "+"))), /*#__PURE__*/React.createElement("button", {
+    onClick: function () {
+      sendAction({
+        type: 'fortify',
+        from: selectedSource,
+        to: selectedTarget,
+        amount: fortifyAmount
+      });
+      setSelectedSource(null);
+      setSelectedTarget(null);
+      setFortifyAmount(1);
+    },
+    className: "w-full py-3 rounded-xl bg-green-600 text-white font-black btn-risk hover:bg-green-500"
+  }, "Moure Unitats")), /*#__PURE__*/React.createElement("button", {
+    onClick: function () {
+      sendAction({
+        type: 'end_fortify'
+      });
+    },
+    className: "w-full py-2 rounded-xl bg-gray-700 text-gray-300 font-bold text-sm btn-risk hover:bg-gray-600"
+  }, "Saltar Fortificaci\xF3"))), /*#__PURE__*/React.createElement("div", {
+    className: 'rounded-xl p-3 ' + myFaction.lightBg
+  }, /*#__PURE__*/React.createElement("p", {
+    className: 'font-bold text-sm mb-1 ' + myFaction.textClass
+  }, myFaction.emoji, " Territoris (", myTerritories.length, ") - ", myUnits, " unitats"), /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-wrap gap-1"
+  }, myTerritories.map(function (tKey) {
+    return /*#__PURE__*/React.createElement("span", {
+      key: tKey,
+      className: "text-xs bg-white/70 px-2 py-0.5 rounded-full"
+    }, TERRITORIES[tKey].name, " (", gs.territories[tKey].units, ")");
+  })), myContinents.length > 0 && /*#__PURE__*/React.createElement("p", {
+    className: "text-xs mt-1",
+    style: {
+      color: myFaction.color
+    }
+  }, "Continents: ", myContinents.map(function (c) {
+    return CONTINENTS[c].name + ' (+' + CONTINENTS[c].bonus + ')';
+  }).join(', '))), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/5 rounded-xl p-3"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500 font-bold uppercase mb-1"
+  }, "Ensenyaments ", myFaction.name), /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-wrap gap-1"
+  }, myFaction.teachings.map(function (t, i) {
+    return /*#__PURE__*/React.createElement("span", {
+      key: i,
+      className: "text-xs px-2 py-0.5 rounded-full",
+      style: {
+        backgroundColor: myFaction.color + '33',
+        color: myFaction.color
+      }
+    }, t);
+  })))));
+}
+
+// =====================================================================
+// MAIN APP
+// =====================================================================
+function SystemicRiskApp() {
+  const [gameMode, setGameMode] = useState(null); // null, 'lobby', 'host', 'player', 'local'
+  const [gameInfo, setGameInfo] = useState(null);
+  const [localGameState, setLocalGameState] = useState(null);
+  var [idioma, setIdioma] = useState(PdeLanguageStore.get());
+  var t = createTranslator(ECONRISK_TRANSLATIONS, idioma);
+
+  // Check for Firebase
+  var firebaseReady = PdeFirebase.isConfigured();
+
+  // Check URL for room param
+  useEffect(function () {
+    var roomCode = PdeRoomManager.getRoomFromURL();
+    if (roomCode) {
+      setGameMode('lobby');
+    }
+  }, []);
+
+  // Start screen
+  if (!gameMode) {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-gray-900 to-zinc-950"
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: 'fixed',
+        top: 12,
+        right: 12,
+        zIndex: 9999,
+        display: 'flex',
+        gap: 4
+      }
+    }, ['val', 'es', 'en'].map(function (l) {
+      return /*#__PURE__*/React.createElement("button", {
+        key: l,
+        onClick: function () {
+          setIdioma(l);
+          PdeLanguageStore.set(l);
+        },
+        style: {
+          padding: '4px 10px',
+          borderRadius: 8,
+          fontSize: 13,
+          fontWeight: idioma === l ? 800 : 500,
+          background: idioma === l ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.2)',
+          color: idioma === l ? '#1a1a2e' : 'white',
+          border: 'none',
+          cursor: 'pointer'
+        }
+      }, l.toUpperCase());
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "max-w-lg w-full space-y-6 text-center"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "space-y-2"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-7xl"
+    }, "\u2694\uFE0F"), /*#__PURE__*/React.createElement("h1", {
+      className: "text-5xl md:text-6xl font-black text-white tracking-tight"
+    }, "Systemic Risk"), /*#__PURE__*/React.createElement("p", {
+      className: "text-gray-500 text-lg"
+    }, t('the_risk_changes'))), /*#__PURE__*/React.createElement("div", {
+      className: "grid grid-cols-2 gap-2"
+    }, FACTIONS.map(function (f) {
+      return /*#__PURE__*/React.createElement("div", {
+        key: f.id,
+        className: 'rounded-xl p-3 border ' + f.borderClass + ' ' + f.lightBg + ' text-center'
+      }, /*#__PURE__*/React.createElement("span", {
+        className: "text-2xl"
+      }, f.emoji), /*#__PURE__*/React.createElement("p", {
+        className: 'font-bold text-sm ' + f.textClass
+      }, f.name), /*#__PURE__*/React.createElement("p", {
+        className: "text-xs text-gray-500 italic mt-0.5"
+      }, "\"", f.motto, "\""), /*#__PURE__*/React.createElement("p", {
+        className: "text-xs mt-1"
+      }, f.power.icon, " ", f.power.name));
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "space-y-3"
+    }, firebaseReady && /*#__PURE__*/React.createElement("button", {
+      onClick: function () {
+        setGameMode('lobby');
+      },
+      className: "w-full py-5 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-black text-xl shadow-lg btn-risk hover:brightness-110"
+    }, "\uD83D\uDCFA ", t('multiplayer')), /*#__PURE__*/React.createElement("button", {
+      onClick: function () {
+        setGameMode('local');
+        setLocalGameState(createInitialGameState());
+      },
+      className: "w-full py-5 rounded-2xl bg-white text-gray-800 font-black text-xl shadow-lg btn-risk hover:bg-gray-100"
+    }, "\uD83C\uDFAE ", t('local_game'))), /*#__PURE__*/React.createElement("div", {
+      className: "bg-white/5 rounded-2xl p-4 text-left space-y-2"
+    }, /*#__PURE__*/React.createElement("h3", {
+      className: "text-white font-bold"
+    }, t('how_to_play')), /*#__PURE__*/React.createElement("ul", {
+      className: "text-gray-500 text-sm space-y-1"
+    }, /*#__PURE__*/React.createElement("li", null, "\uD83C\uDF0D ", t('rule_1')), /*#__PURE__*/React.createElement("li", null, "\u2694\uFE0F ", t('rule_2')), /*#__PURE__*/React.createElement("li", null, "\uD83D\uDCB0 ", t('rule_3')), /*#__PURE__*/React.createElement("li", null, "\uD83C\uDFC6 ", t('rule_4')), /*#__PURE__*/React.createElement("li", null, "\uD83D\uDCDC ", t('rule_5')), /*#__PURE__*/React.createElement("li", null, "\u2728 ", t('rule_6')))), /*#__PURE__*/React.createElement("a", {
+      href: "./",
+      className: "inline-block text-gray-500 hover:text-white transition-colors text-sm"
+    }, "\uD83C\uDF93 ", t('back_pde'))));
+  }
+
+  // ── ONLINE LOBBY ──
+  if (gameMode === 'lobby') {
+    if (!firebaseReady) {
+      return /*#__PURE__*/React.createElement(PdeFirebaseError, null);
+    }
+    return /*#__PURE__*/React.createElement(PdeGameLobby, {
+      gameType: "econrisk",
+      gameName: "Systemic Risk",
+      gameEmoji: "\u2694\uFE0F",
+      gameGradient: "from-indigo-600 to-purple-600",
+      minPlayers: 2,
+      maxPlayers: 4,
+      teamMode: false,
+      onGameStart: function (info) {
+        // Assign factions to players
+        var playerIds = Object.keys(info.players).filter(function (id) {
+          return info.players[id].connected !== false;
+        });
+        var factionAssignment = {};
+        playerIds.forEach(function (pid, idx) {
+          factionAssignment[pid] = idx % 4;
+        });
+        // Set faction assignments in Firebase
+        PdeRoomManager.updateGameState(info.roomCode, {
+          factionAssignment: factionAssignment
+        });
+        // Update player teams
+        playerIds.forEach(function (pid, idx) {
+          PdeRoomManager.updatePlayer(info.roomCode, pid, {
+            team: idx % 4
+          });
+        });
+        setGameInfo(Object.assign({}, info, {
+          factionAssignment: factionAssignment
+        }));
+        if (info.isHost) {
+          setGameMode('host');
+        } else {
+          setGameMode('player');
+        }
+      }
+    });
+  }
+
+  // ── HOST VIEW ──
+  if (gameMode === 'host' && gameInfo) {
+    return /*#__PURE__*/React.createElement(HostGameView, {
+      roomCode: gameInfo.roomCode,
+      playerId: gameInfo.playerId,
+      players: gameInfo.players
+    });
+  }
+
+  // ── PLAYER VIEW ──
+  if (gameMode === 'player' && gameInfo) {
+    var myFactionIdx = gameInfo.factionAssignment ? gameInfo.factionAssignment[gameInfo.playerId] : 0;
+    return /*#__PURE__*/React.createElement(PlayerGameView, {
+      roomCode: gameInfo.roomCode,
+      playerId: gameInfo.playerId,
+      factionIdx: myFactionIdx
+    });
+  }
+
+  // ── LOCAL GAME (vs AI) ──
+  if (gameMode === 'local' && localGameState) {
+    return /*#__PURE__*/React.createElement(LocalGameView, {
+      initialState: localGameState,
+      onExit: function () {
+        setGameMode(null);
+        setLocalGameState(null);
+      }
+    });
+  }
+  return null;
+}
+
+// =====================================================================
+// LOCAL GAME VIEW (Single player vs AI)
+// =====================================================================
+function LocalGameView({
+  initialState,
+  onExit
+}) {
+  const [idioma] = usePdeIdioma();
+  var t = createTranslator(ECONRISK_TRANSLATIONS, idioma);
+  const [gs, setGs] = useState(initialState);
+  const [showEvent, setShowEvent] = useState(null);
+  const [combatResult, setCombatResult] = useState(null);
+  const [combatLog, setCombatLog] = useState([]);
+  const [selectedSource, setSelectedSource] = useState(null);
+  const [selectedTarget, setSelectedTarget] = useState(null);
+  const [fortifyAmount, setFortifyAmount] = useState(1);
+  const [aiProcessing, setAiProcessing] = useState(false);
+  var humanFaction = 0; // Player is always Keynesians
+  var currentFactionIdx = gs.playerOrder[gs.currentPlayer];
+  var currentFaction = FACTIONS[currentFactionIdx];
+  var isHumanTurn = currentFactionIdx === humanFaction;
+  function addLog(msg) {
+    setCombatLog(function (prev) {
+      return [msg].concat(prev).slice(0, 50);
+    });
+  }
+  function startTurn() {
+    var eventIdx = Math.floor(Math.random() * EVENT_CARDS.length);
+    var event = EVENT_CARDS[eventIdx];
+    setShowEvent(event);
+    setGs(function (prev) {
+      return Object.assign({}, prev, {
+        phase: 'event',
+        currentEvent: event,
+        factionPowerUsed: {},
+        nonAdjacentUsed: false,
+        fortifyDone: false,
+        peaceEurope: event.effect === 'peace_europe',
+        noContBonus: event.effect === 'no_continent_bonus',
+        extraAttacks: event.effect === 'extra_attacks' ? event.amount : 0
+      });
+    });
+  }
+  function applyCurrentEvent() {
+    var event = showEvent;
+    setShowEvent(null);
+    if (!event) return;
+    var result = applyEvent(event, gs.territories, gs.currentPlayer);
+    addLog('Event: ' + event.title + ' - ' + result.info);
+    var reinforceCount = calculateReinforcements(result.territories, currentFactionIdx, event.effect === 'no_continent_bonus');
+    if (currentFaction.id === 'keynesians' && gs.round % 3 === 0) {
+      reinforceCount += 2;
+      addLog(currentFaction.emoji + ' Estímul Fiscal: +2 unitats extra!');
+    }
+    setGs(function (prev) {
+      return Object.assign({}, prev, {
+        phase: 'reinforce',
+        territories: result.territories,
+        reinforcements: {
+          available: reinforceCount,
+          placed: {}
+        },
+        currentEvent: null
+      });
+    });
+    // If AI turn, process automatically
+    if (currentFactionIdx !== humanFaction) {
+      setTimeout(function () {
+        processAITurnLocal(result.territories, reinforceCount);
+      }, 800);
+    }
+  }
+  function processAITurnLocal(territories, reinforceCount) {
+    setAiProcessing(true);
+    var afterReinforce = aiReinforce(territories, currentFactionIdx, reinforceCount);
+    addLog(currentFaction.emoji + ' ' + currentFaction.name + ' (IA) desplega reforços.');
+    setTimeout(function () {
+      var attackResult = aiAttack(afterReinforce, currentFactionIdx);
+      attackResult.log.forEach(function (l) {
+        addLog(l);
+      });
+      setTimeout(function () {
+        setAiProcessing(false);
+        advanceToNextPlayerLocal(attackResult.territories);
+      }, 500);
+    }, 600);
+  }
+  function advanceToNextPlayerLocal(terrs) {
+    var territories = terrs || gs.territories;
+    var winner = checkVictory(territories);
+    if (winner !== -1) {
+      setGs(function (prev) {
+        return Object.assign({}, prev, {
+          finished: true,
+          winner: winner,
+          territories: territories
+        });
+      });
+      PdeGameSounds.play('win');
+      return;
+    }
+    var nextPlayer = gs.currentPlayer + 1;
+    var nextRound = gs.round;
+    if (nextPlayer >= gs.playerOrder.length) {
+      nextPlayer = 0;
+      nextRound++;
+    }
+    if (nextRound > gs.maxRounds) {
+      var w = getWinnerByTerritories(territories);
+      setGs(function (prev) {
+        return Object.assign({}, prev, {
+          finished: true,
+          winner: w,
+          territories: territories
+        });
+      });
+      PdeGameSounds.play('win');
+      return;
+    }
+    var skips = 0;
+    while (isFactionEliminated(territories, gs.playerOrder[nextPlayer]) && skips < 4) {
+      nextPlayer++;
+      if (nextPlayer >= gs.playerOrder.length) {
+        nextPlayer = 0;
+        nextRound++;
+      }
+      skips++;
+    }
+    if (nextRound > gs.maxRounds) {
+      var w2 = getWinnerByTerritories(territories);
+      setGs(function (prev) {
+        return Object.assign({}, prev, {
+          finished: true,
+          winner: w2,
+          territories: territories
+        });
+      });
+      return;
+    }
+    setGs(function (prev) {
+      return Object.assign({}, prev, {
+        currentPlayer: nextPlayer,
+        round: nextRound,
+        phase: 'event',
+        territories: territories,
+        reinforcements: {
+          available: 0,
+          placed: {}
+        },
+        factionPowerUsed: {},
+        nonAdjacentUsed: false,
+        fortifyDone: false,
+        peaceEurope: false,
+        noContBonus: false,
+        extraAttacks: 0
+      });
+    });
+    setTimeout(function () {
+      startTurn();
+    }, 300);
+  }
+  useEffect(function () {
+    if (gs.phase === 'event' && !gs.currentEvent && !gs.finished) {
+      startTurn();
+    }
+  }, []);
+
+  // ── FINISHED ──
+  if (gs.finished) {
+    var winnerFaction = FACTIONS[gs.winner];
+    var facts = FACTION_FACTS[winnerFaction.id];
+    var isHumanWin = gs.winner === humanFaction;
+    return /*#__PURE__*/React.createElement("div", {
+      className: "min-h-screen p-4 md:p-8 bg-gradient-to-br from-slate-900 via-gray-900 to-zinc-950"
+    }, /*#__PURE__*/React.createElement(PdeConfetti, {
+      show: isHumanWin
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "max-w-5xl mx-auto space-y-6"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-center space-y-3"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-7xl"
+    }, isHumanWin ? '\u{1F3C6}' : winnerFaction.emoji), /*#__PURE__*/React.createElement("h1", {
+      className: "text-4xl md:text-6xl font-black text-white"
+    }, isHumanWin ? 'Has guanyat!' : winnerFaction.name + ' guanyen!'), /*#__PURE__*/React.createElement("p", {
+      className: "text-xl text-gray-500"
+    }, "\"", winnerFaction.motto, "\"")), /*#__PURE__*/React.createElement("div", {
+      className: "rounded-2xl overflow-hidden border border-gray-700"
+    }, /*#__PURE__*/React.createElement(GameMap, {
+      territories: gs.territories,
+      currentFaction: gs.winner
+    })), /*#__PURE__*/React.createElement(GameStats, {
+      gameState: gs
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "bg-white/10 backdrop-blur rounded-2xl p-5 space-y-3"
+    }, /*#__PURE__*/React.createElement("h3", {
+      className: "text-xl font-black text-white"
+    }, "Sabies que...?"), facts && facts.map(function (fact, i) {
+      return /*#__PURE__*/React.createElement("p", {
+        key: i,
+        className: "text-gray-300 text-sm"
+      }, winnerFaction.emoji, " ", fact);
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "bg-white/10 backdrop-blur rounded-2xl p-5 space-y-4"
+    }, /*#__PURE__*/React.createElement("h3", {
+      className: "text-xl font-black text-white"
+    }, "Les 4 Escoles Econ\xF2miques"), FACTIONS.map(function (f) {
+      return /*#__PURE__*/React.createElement("div", {
+        key: f.id,
+        className: "space-y-1"
+      }, /*#__PURE__*/React.createElement("p", {
+        className: "font-bold",
+        style: {
+          color: f.color
+        }
+      }, f.emoji, " ", f.name), /*#__PURE__*/React.createElement("div", {
+        className: "flex flex-wrap gap-1"
+      }, f.teachings.map(function (t, ti) {
+        return /*#__PURE__*/React.createElement("span", {
+          key: ti,
+          className: "text-xs bg-white/10 text-gray-300 px-2 py-1 rounded-full"
+        }, t);
+      })));
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "flex gap-3 justify-center"
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: function () {
+        window.location.reload();
+      },
+      className: "px-8 py-4 rounded-2xl bg-indigo-600 text-white font-black text-xl hover:bg-indigo-500 btn-risk"
+    }, "Nova Partida"), /*#__PURE__*/React.createElement("button", {
+      onClick: onExit,
+      className: "px-8 py-4 rounded-2xl bg-gray-700 text-white font-bold text-xl hover:bg-gray-600 btn-risk"
+    }, t('back') || 'Tornar'))));
+  }
+
+  // ── MAIN LOCAL VIEW ──
+  var phaseNames = {
+    event: 'Esdeveniment',
+    reinforce: 'Reforços',
+    attack: 'Atac',
+    fortify: 'Fortificar'
+  };
+  var myTerritories = getTerritoriesByFaction(gs.territories, humanFaction);
+  var myFaction = FACTIONS[humanFaction];
+
+  // Valid targets for map highlighting
+  var mapValidTargets = null;
+  if (isHumanTurn && gs.phase === 'attack' && selectedSource) {
+    mapValidTargets = TERRITORIES[selectedSource].adjacent.filter(function (adj) {
+      return gs.territories[adj] && gs.territories[adj].faction !== humanFaction;
+    });
+    if (myFaction.id === 'neoclassics' && !gs.nonAdjacentUsed) {
+      TERRITORY_KEYS.forEach(function (k) {
+        if (gs.territories[k].faction !== humanFaction && mapValidTargets.indexOf(k) === -1) {
+          mapValidTargets.push(k);
+        }
+      });
+    }
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    className: "min-h-screen p-3 md:p-6 bg-gradient-to-br from-slate-900 via-gray-900 to-zinc-950"
+  }, showEvent && /*#__PURE__*/React.createElement(EventCardOverlay, {
+    event: showEvent,
+    onApply: applyCurrentEvent
+  }), combatResult && /*#__PURE__*/React.createElement(CombatOverlay, {
+    combat: combatResult,
+    onClose: function () {
+      setCombatResult(null);
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "max-w-7xl mx-auto space-y-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-wrap items-center justify-between gap-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-3"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: onExit,
+    className: "text-gray-500 hover:text-white text-sm"
+  }, "\u2190 ", t('back') || 'Tornar'), /*#__PURE__*/React.createElement("span", {
+    className: "text-gray-700"
+  }, "|"), /*#__PURE__*/React.createElement("h1", {
+    className: "text-xl md:text-2xl font-black text-white"
+  }, "\u2694\uFE0F Systemic Risk")), /*#__PURE__*/React.createElement("div", {
+    className: "text-sm text-gray-500"
+  }, (t('round_x_of_y') || '').replace('{x}', gs.round).replace('{y}', gs.maxRounds) || 'Ronda ' + gs.round + '/' + gs.maxRounds)), /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-wrap items-center justify-between gap-3 bg-white/5 rounded-2xl p-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-3"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-3xl"
+  }, currentFaction.emoji), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "font-black text-lg",
+    style: {
+      color: currentFaction.color
+    }
+  }, currentFaction.name, " ", !isHumanTurn ? '(IA)' : '(Tu)'))), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2"
+  }, ['event', 'reinforce', 'attack', 'fortify'].map(function (p) {
+    return /*#__PURE__*/React.createElement("div", {
+      key: p,
+      className: 'px-3 py-1 rounded-full text-xs font-bold ' + (gs.phase === p ? 'bg-indigo-500 text-white' : 'bg-gray-800 text-gray-500')
+    }, phaseNames[p]);
+  }))), aiProcessing && /*#__PURE__*/React.createElement("div", {
+    className: "bg-yellow-900/50 rounded-xl p-3 text-center"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-yellow-200 animate-pulse font-bold"
+  }, currentFaction.emoji, " ", currentFaction.name, " (IA) est\xE0 pensant...")), isHumanTurn && gs.phase === 'reinforce' && /*#__PURE__*/React.createElement("div", {
+    className: "bg-indigo-900/50 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-indigo-200"
+  }, "Unitats per desplegar: ", /*#__PURE__*/React.createElement("span", {
+    className: "font-black text-xl text-white"
+  }, gs.reinforcements.available)), gs.reinforcements.available === 0 && /*#__PURE__*/React.createElement("button", {
+    onClick: function () {
+      setGs(function (prev) {
+        return Object.assign({}, prev, {
+          phase: 'attack'
+        });
+      });
+    },
+    className: "px-4 py-2 rounded-xl bg-indigo-500 text-white font-bold btn-risk hover:bg-indigo-400"
+  }, "Continuar a Atac")), isHumanTurn && gs.phase === 'attack' && /*#__PURE__*/React.createElement("div", {
+    className: "bg-red-900/50 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-red-200 text-sm"
+  }, "Selecciona territori propi (2+ unitats) i objectiu enemic adjacent", myFaction.id === 'marxistes' && /*#__PURE__*/React.createElement("span", {
+    className: "text-red-300 ml-1"
+  }, "(auto-conquesta amb 1 unitat!)"), myFaction.id === 'neoclassics' && !gs.nonAdjacentUsed && /*#__PURE__*/React.createElement("span", {
+    className: "text-green-300 ml-1"
+  }, "(1 atac no-adjacent disponible!)")), /*#__PURE__*/React.createElement("button", {
+    onClick: function () {
+      setSelectedSource(null);
+      setSelectedTarget(null);
+      setGs(function (prev) {
+        return Object.assign({}, prev, {
+          phase: 'fortify'
+        });
+      });
+    },
+    className: "px-4 py-2 rounded-xl bg-red-500 text-white font-bold btn-risk hover:bg-red-400"
+  }, "Acabar Atacs")), isHumanTurn && gs.phase === 'fortify' && /*#__PURE__*/React.createElement("div", {
+    className: "bg-green-900/50 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-green-200 text-sm"
+  }, gs.fortifyDone ? 'Fortificació completada' : 'Mou unitats entre territoris adjacents (opcional)'), /*#__PURE__*/React.createElement("button", {
+    onClick: function () {
+      setSelectedSource(null);
+      setSelectedTarget(null);
+      advanceToNextPlayerLocal();
+    },
+    className: "px-4 py-2 rounded-xl bg-green-500 text-white font-bold btn-risk hover:bg-green-400"
+  }, "Acabar Torn")), /*#__PURE__*/React.createElement("div", {
+    className: "grid lg:grid-cols-4 gap-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "lg:col-span-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "rounded-2xl overflow-hidden border border-gray-700 shadow-2xl"
+  }, /*#__PURE__*/React.createElement(GameMap, {
+    territories: gs.territories,
+    phase: gs.phase,
+    currentFaction: isHumanTurn ? humanFaction : currentFactionIdx,
+    selectedTerritory: selectedSource,
+    validTargets: mapValidTargets,
+    onTerritoryClick: function (tKey) {
+      if (!isHumanTurn || aiProcessing) return;
+      if (gs.phase === 'reinforce') {
+        if (gs.territories[tKey].faction === humanFaction && gs.reinforcements.available > 0) {
+          setGs(function (prev) {
+            var newTerrs = JSON.parse(JSON.stringify(prev.territories));
+            newTerrs[tKey].units += 1;
+            var placed = JSON.parse(JSON.stringify(prev.reinforcements.placed || {}));
+            placed[tKey] = (placed[tKey] || 0) + 1;
+            return Object.assign({}, prev, {
+              territories: newTerrs,
+              reinforcements: {
+                available: prev.reinforcements.available - 1,
+                placed: placed
+              }
+            });
+          });
+          PdeGameSounds.play('pop');
+        }
+      } else if (gs.phase === 'attack') {
+        if (!selectedSource) {
+          // Select source
+          if (gs.territories[tKey].faction === humanFaction && gs.territories[tKey].units >= 2) {
+            setSelectedSource(tKey);
+            setSelectedTarget(null);
+            PdeGameSounds.play('click');
+          }
+        } else if (selectedSource === tKey) {
+          // Deselect
+          setSelectedSource(null);
+          setSelectedTarget(null);
+        } else if (gs.territories[tKey].faction === humanFaction) {
+          // Switch source
+          if (gs.territories[tKey].units >= 2) {
+            setSelectedSource(tKey);
+            setSelectedTarget(null);
+            PdeGameSounds.play('click');
+          }
+        } else {
+          // Attack target
+          var canAttack = isAdjacent(selectedSource, tKey);
+          if (!canAttack && myFaction.id === 'neoclassics' && !gs.nonAdjacentUsed) {
+            canAttack = true;
+          }
+          if (gs.peaceEurope && TERRITORIES[tKey].continent === 'europe') {
+            addLog('No es pot atacar Europa (Pacte de No Agressió)!');
+            return;
+          }
+          if (canAttack) {
+            // Marxist auto-conquer
+            if (myFaction.id === 'marxistes' && gs.territories[tKey].units === 1) {
+              addLog(myFaction.emoji + ' Revolució! Conquesta automàtica de ' + TERRITORIES[tKey].name + '!');
+              setGs(function (prev) {
+                var newTerrs = JSON.parse(JSON.stringify(prev.territories));
+                var moveUnits = Math.min(newTerrs[selectedSource].units - 1, 2);
+                newTerrs[tKey] = {
+                  faction: humanFaction,
+                  units: Math.max(1, moveUnits)
+                };
+                newTerrs[selectedSource].units -= moveUnits;
+                if (newTerrs[selectedSource].units < 1) newTerrs[selectedSource].units = 1;
+                var nonAdj = !isAdjacent(selectedSource, tKey) ? true : prev.nonAdjacentUsed;
+                return Object.assign({}, prev, {
+                  territories: newTerrs,
+                  nonAdjacentUsed: nonAdj
+                });
+              });
+              PdeGameSounds.play('win');
+              setSelectedSource(null);
+              setSelectedTarget(null);
+              return;
+            }
+            // Normal combat
+            var result = resolveCombat(gs.territories[selectedSource].units, gs.territories[tKey].units, humanFaction, gs.territories[tKey].faction);
+            var conquered = false;
+            setGs(function (prev) {
+              var newTerrs = JSON.parse(JSON.stringify(prev.territories));
+              newTerrs[selectedSource].units -= result.attackerLoss;
+              newTerrs[tKey].units -= result.defenderLoss;
+              if (newTerrs[tKey].units <= 0) {
+                conquered = true;
+                var moveUnits = Math.min(newTerrs[selectedSource].units - 1, 3);
+                newTerrs[tKey] = {
+                  faction: humanFaction,
+                  units: Math.max(1, moveUnits)
+                };
+                newTerrs[selectedSource].units -= moveUnits;
+                if (newTerrs[selectedSource].units < 1) newTerrs[selectedSource].units = 1;
+              }
+              var nonAdj = !isAdjacent(selectedSource, tKey) ? true : prev.nonAdjacentUsed;
+              return Object.assign({}, prev, {
+                territories: newTerrs,
+                nonAdjacentUsed: nonAdj
+              });
+            });
+            var defFactionIdx = gs.territories[tKey].faction;
+            addLog(myFaction.emoji + ' ' + myFaction.name + ' ataca ' + TERRITORIES[tKey].name + ' (' + result.attackDice.join(',') + ' vs ' + result.defendDice.join(',') + ')' + (conquered ? ' - CONQUISTAT!' : ''));
+            setCombatResult({
+              from: selectedSource,
+              to: tKey,
+              attackerFaction: humanFaction,
+              defenderFaction: defFactionIdx,
+              result: result,
+              conquered: conquered
+            });
+            if (conquered) {
+              PdeGameSounds.play('win');
+            } else {
+              PdeGameSounds.play('buzz');
+            }
+            setSelectedSource(null);
+            setSelectedTarget(null);
+          }
+        }
+      } else if (gs.phase === 'fortify' && !gs.fortifyDone) {
+        if (!selectedSource) {
+          if (gs.territories[tKey].faction === humanFaction && gs.territories[tKey].units >= 2) {
+            setSelectedSource(tKey);
+            PdeGameSounds.play('click');
+          }
+        } else if (selectedSource === tKey) {
+          setSelectedSource(null);
+          setSelectedTarget(null);
+        } else if (gs.territories[tKey].faction === humanFaction && isAdjacent(selectedSource, tKey)) {
+          // Fortify
+          var maxMove = gs.territories[selectedSource].units - 1;
+          var moveAmt = Math.min(fortifyAmount, maxMove);
+          if (moveAmt > 0) {
+            setGs(function (prev) {
+              var newTerrs = JSON.parse(JSON.stringify(prev.territories));
+              newTerrs[selectedSource].units -= moveAmt;
+              newTerrs[tKey].units += moveAmt;
+              return Object.assign({}, prev, {
+                territories: newTerrs,
+                fortifyDone: true
+              });
+            });
+            addLog(myFaction.emoji + ' Fortifica: ' + moveAmt + 'u de ' + TERRITORIES[selectedSource].name + ' a ' + TERRITORIES[tKey].name);
+            PdeGameSounds.play('pop');
+          }
+          setSelectedSource(null);
+          setSelectedTarget(null);
+        }
+      }
+    }
+  })), isHumanTurn && gs.phase === 'fortify' && !gs.fortifyDone && selectedSource && /*#__PURE__*/React.createElement("div", {
+    className: "mt-2 flex items-center justify-center gap-3 bg-white/5 rounded-xl p-3"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-gray-300 text-sm"
+  }, "Unitats a moure:"), /*#__PURE__*/React.createElement("button", {
+    onClick: function () {
+      setFortifyAmount(Math.max(1, fortifyAmount - 1));
+    },
+    className: "w-8 h-8 rounded-full bg-gray-700 text-white font-bold btn-risk"
+  }, "-"), /*#__PURE__*/React.createElement("span", {
+    className: "text-white font-black text-xl w-8 text-center"
+  }, fortifyAmount), /*#__PURE__*/React.createElement("button", {
+    onClick: function () {
+      var max = gs.territories[selectedSource].units - 1;
+      setFortifyAmount(Math.min(max, fortifyAmount + 1));
+    },
+    className: "w-8 h-8 rounded-full bg-gray-700 text-white font-bold btn-risk"
+  }, "+"), /*#__PURE__*/React.createElement("span", {
+    className: "text-gray-500 text-xs"
+  }, "(max: ", gs.territories[selectedSource].units - 1, ")"))), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, FACTIONS.map(function (f, i) {
+    var isActive = i === currentFactionIdx;
+    var isHuman = i === humanFaction;
+    return /*#__PURE__*/React.createElement("div", {
+      key: f.id,
+      className: 'rounded-xl p-2 border transition-all ' + (isActive ? 'border-white/30 bg-white/10 ring-1 ring-white/20' : 'border-gray-800 bg-gray-900/50')
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex items-center gap-2"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-xl"
+    }, f.emoji), /*#__PURE__*/React.createElement("span", {
+      className: 'font-bold text-sm ' + f.textClass
+    }, f.name), isHuman && /*#__PURE__*/React.createElement("span", {
+      className: "text-xs text-yellow-400 ml-auto"
+    }, "(Tu)"), !isHuman && /*#__PURE__*/React.createElement("span", {
+      className: "text-xs text-gray-600 ml-auto"
+    }, "IA")), /*#__PURE__*/React.createElement("div", {
+      className: "flex gap-2 mt-1 text-xs text-gray-500"
+    }, /*#__PURE__*/React.createElement("span", null, countTerritories(gs.territories, i), "T"), /*#__PURE__*/React.createElement("span", null, totalUnits(gs.territories, i), "U"), getControlledContinents(gs.territories, i).length > 0 && /*#__PURE__*/React.createElement("span", {
+      className: "text-yellow-500"
+    }, getControlledContinents(gs.territories, i).length, "C")));
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "bg-gray-900/80 rounded-xl p-3 max-h-64 overflow-y-auto border border-gray-800"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "text-xs font-bold text-gray-500 mb-2 uppercase"
+  }, "Registre"), combatLog.length === 0 && /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-600 text-xs"
+  }, "Cap accio encara..."), combatLog.map(function (log, i) {
+    return /*#__PURE__*/React.createElement("p", {
+      key: i,
+      className: "text-xs text-gray-500 py-0.5 border-b border-gray-800/50"
+    }, log);
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/5 rounded-xl p-3"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500 font-bold uppercase mb-1"
+  }, "El teu poder"), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-white"
+  }, myFaction.power.icon, " ", myFaction.power.name), /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-gray-500"
+  }, myFaction.power.description))))));
+}
+
+// =====================================================================
+// RENDER
+// =====================================================================
+ReactDOM.render(/*#__PURE__*/React.createElement(SystemicRiskApp, null), document.getElementById('root'));</script>
+</body>
+</html>
