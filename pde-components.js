@@ -162,7 +162,7 @@ function PdeHeader({ idioma, setIdioma, currentApp, sections, currentSection, se
                 {sections && sections.length > 0 && setSection && (
                     <nav className="hidden xl:flex items-center gap-1 max-w-3xl overflow-x-auto">
                         {sections.map(function(sec) {
-                            var isActive = currentSection === sec.id;
+                            const isActive = currentSection === sec.id;
                             return (
                                 <button
                                     key={sec.id}
@@ -237,7 +237,7 @@ function PdeHeader({ idioma, setIdioma, currentApp, sections, currentSection, se
  * @param {{ appEmoji: string, appName: string, idioma: string }} props
  */
 function PdeFooter({ appEmoji, appName, idioma }) {
-    var t = createTranslator({}, idioma);
+    const t = createTranslator({}, idioma);
 
     return (
         <footer className={PDE_STYLES.footer}>
@@ -292,10 +292,10 @@ function PdeScrollToTop() {
  * }} props
  */
 function PdePrevNext({ sections, currentSection, setSection, idioma }) {
-    var t = createTranslator({}, idioma);
-    var idx = sections.findIndex(function(s) { return s.id === currentSection; });
-    var prev = idx > 0 ? sections[idx - 1] : null;
-    var next = idx < sections.length - 1 ? sections[idx + 1] : null;
+    const t = createTranslator({}, idioma);
+    const idx = sections.findIndex(function(s) { return s.id === currentSection; });
+    const prev = idx > 0 ? sections[idx - 1] : null;
+    const next = idx < sections.length - 1 ? sections[idx + 1] : null;
 
     if (!prev && !next) return null;
 
@@ -342,7 +342,7 @@ function PdePrevNext({ sections, currentSection, setSection, idioma }) {
  * @param {{ idioma: string }} props
  */
 function PdeHomeButton({ idioma }) {
-    var t = createTranslator({}, idioma);
+    const t = createTranslator({}, idioma);
 
     return (
         <a
@@ -364,7 +364,7 @@ function PdeHomeButton({ idioma }) {
 function usePdeDeepLink(section, setSection) {
     // On mount: read hash from URL
     _useEffect(function() {
-        var hash = pdeGetHashSection();
+        const hash = pdeGetHashSection();
         if (hash) setSection(hash);
     }, []);
 

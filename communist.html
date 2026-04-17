@@ -1049,7 +1049,7 @@ function CommunistApp() {
     const [players, setPlayers] = useState({});
     const [gameState, setGameState] = useState({});
     var [idioma, setIdioma] = useState(PdeLanguageStore.get());
-    var t = function(key) { return COMMUNIST_TRANSLATIONS[key]?.[idioma] || COMMUNIST_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(COMMUNIST_TRANSLATIONS, idioma);
 
     useEffect(function() { if (PdeFirebase.isConfigured()) PdeFirebase.init(); }, []);
 
@@ -1323,7 +1323,7 @@ function TeamScoreboard({ positions, teamScores, numTeams, currentTeam, boardSiz
 // HOST VIEW
 // ═══════════════════════════════════════════════════════════════
 function CommunistHost({ roomCode, playerId, players, gameState, idioma }) {
-    var t = function(key) { return COMMUNIST_TRANSLATIONS[key]?.[idioma] || COMMUNIST_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(COMMUNIST_TRANSLATIONS, idioma);
     var tCard = function(card) { return card?.[idioma] || card?.val || '???'; };
     const [showConfetti, setShowConfetti] = useState(false);
     const [diceValue, setDiceValue] = useState(null);
@@ -1953,7 +1953,7 @@ function CommunistHost({ roomCode, playerId, players, gameState, idioma }) {
 // PLAYER VIEW
 // ═══════════════════════════════════════════════════════════════
 function CommunistPlayer({ roomCode, playerId, players, gameState, idioma }) {
-    var t = function(key) { return COMMUNIST_TRANSLATIONS[key]?.[idioma] || COMMUNIST_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(COMMUNIST_TRANSLATIONS, idioma);
     var tCard = function(card) { return card?.[idioma] || card?.val || '???'; };
     const [answerSent, setAnswerSent] = useState(false);
     const [openAnswer, setOpenAnswer] = useState('');

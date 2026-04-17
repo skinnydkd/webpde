@@ -242,7 +242,7 @@ function InsiderApp() {
     const [players, setPlayers] = useState({});
     const [gameState, setGameState] = useState({});
     var [idioma, setIdioma] = useState(PdeLanguageStore.get());
-    var t = function(key) { return INSIDER_TRANSLATIONS[key]?.[idioma] || INSIDER_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(INSIDER_TRANSLATIONS, idioma);
 
     // Init Firebase
     useEffect(function() { if (PdeFirebase.isConfigured()) PdeFirebase.init(); }, []);
@@ -525,10 +525,7 @@ function InsiderConfig({ players, idioma, t, onConfigDone }) {
 // HOST VIEW (projected on classroom screen)
 // ===============================================================
 function InsiderHost({ roomCode, playerId, players, gameState, idioma }) {
-    var t = function(key) {
-        var str = INSIDER_TRANSLATIONS[key]?.[idioma] || INSIDER_TRANSLATIONS[key]?.val || key;
-        return str;
-    };
+    var t = createTranslator(INSIDER_TRANSLATIONS, idioma);
     const [showConfetti, setShowConfetti] = useState(false);
     const [timerKey, setTimerKey] = useState(0);
 
@@ -1117,7 +1114,7 @@ function InsiderHost({ roomCode, playerId, players, gameState, idioma }) {
 // PLAYER VIEW (on student's phone)
 // ===============================================================
 function InsiderPlayer({ roomCode, playerId, players, gameState, idioma }) {
-    var t = function(key) { return INSIDER_TRANSLATIONS[key]?.[idioma] || INSIDER_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(INSIDER_TRANSLATIONS, idioma);
     const [voted, setVoted] = useState(false);
     const [guessText, setGuessText] = useState('');
     const [guessSent, setGuessSent] = useState(false);

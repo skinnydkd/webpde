@@ -1462,7 +1462,7 @@ function HostGameView({ roomCode, playerId, players, initialGameState }) {
 // =====================================================================
 function PlayerGameView({ roomCode, playerId, factionIdx }) {
     const [idioma] = usePdeIdioma();
-    var t = function(key) { return ECONRISK_TRANSLATIONS[key]?.[idioma] || ECONRISK_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(ECONRISK_TRANSLATIONS, idioma);
     const [gameState, setGameState] = useState({});
     const [selectedSource, setSelectedSource] = useState(null);
     const [selectedTarget, setSelectedTarget] = useState(null);
@@ -1872,7 +1872,7 @@ function SystemicRiskApp() {
     const [gameInfo, setGameInfo] = useState(null);
     const [localGameState, setLocalGameState] = useState(null);
     var [idioma, setIdioma] = useState(PdeLanguageStore.get());
-    var t = function(key) { return ECONRISK_TRANSLATIONS[key]?.[idioma] || ECONRISK_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(ECONRISK_TRANSLATIONS, idioma);
 
     // Check for Firebase
     var firebaseReady = PdeFirebase.isConfigured();
@@ -2035,7 +2035,7 @@ function SystemicRiskApp() {
 // =====================================================================
 function LocalGameView({ initialState, onExit }) {
     const [idioma] = usePdeIdioma();
-    var t = function(key) { return ECONRISK_TRANSLATIONS[key]?.[idioma] || ECONRISK_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(ECONRISK_TRANSLATIONS, idioma);
     const [gs, setGs] = useState(initialState);
     const [showEvent, setShowEvent] = useState(null);
     const [combatResult, setCombatResult] = useState(null);

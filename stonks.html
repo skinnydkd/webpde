@@ -217,7 +217,7 @@ function StonksApp() {
     const [players, setPlayers] = useState({});
     const [gameState, setGameState] = useState({});
     var [idioma, setIdioma] = useState(PdeLanguageStore.get());
-    var t = function(key) { return STONKS_TRANSLATIONS[key]?.[idioma] || STONKS_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(STONKS_TRANSLATIONS, idioma);
 
     // Init Firebase
     useEffect(function() { if (PdeFirebase.isConfigured()) PdeFirebase.init(); }, []);
@@ -346,7 +346,7 @@ function StonksApp() {
 // STONKS HOST VIEW (projected on classroom screen)
 // ═══════════════════════════════════════════════════════════════
 function StonksHost({ roomCode, playerId, players, gameState, idioma }) {
-    var t = function(key) { return STONKS_TRANSLATIONS[key]?.[idioma] || STONKS_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(STONKS_TRANSLATIONS, idioma);
     var tAsset = function(key) { return STONKS_DATA.assetNames[key]?.[idioma] || STONKS_DATA.assetNames[key]?.val || key; };
     var tInfo = function(key) { return STONKS_DATA.assetInfo[key]?.[idioma] || STONKS_DATA.assetInfo[key]?.val || ''; };
     const [showConfetti, setShowConfetti] = useState(false);
@@ -814,7 +814,7 @@ function StonksHost({ roomCode, playerId, players, gameState, idioma }) {
 // STONKS PLAYER VIEW (on student's phone)
 // ═══════════════════════════════════════════════════════════════
 function StonksPlayer({ roomCode, playerId, players, gameState, idioma }) {
-    var t = function(key) { return STONKS_TRANSLATIONS[key]?.[idioma] || STONKS_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(STONKS_TRANSLATIONS, idioma);
     var tAsset = function(key) { return STONKS_DATA.assetNames[key]?.[idioma] || STONKS_DATA.assetNames[key]?.val || key; };
     var tInfo = function(key) { return STONKS_DATA.assetInfo[key]?.[idioma] || STONKS_DATA.assetInfo[key]?.val || ''; };
     const [allocation, setAllocation] = useState({

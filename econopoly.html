@@ -1275,7 +1275,7 @@ function EndGameScreen({ playerOrder, players, money, properties, cycle, sectorM
 // HOST VIEW — Main game controller
 // ═══════════════════════════════════════════════════════════════
 function OligopolyHost({ roomCode, playerId, players, gameState, idioma }) {
-    var t = function(key) { return ECONOPOLY_TRANSLATIONS[key]?.[idioma] || ECONOPOLY_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(ECONOPOLY_TRANSLATIONS, idioma);
     const [rolling, setRolling] = useState(false);
     const [showNews, setShowNews] = useState(false);
     const [actionLog, setActionLog] = useState([]);
@@ -1927,7 +1927,7 @@ function OligopolyHost({ roomCode, playerId, players, gameState, idioma }) {
 // PLAYER VIEW — Mobile interface for each player
 // ═══════════════════════════════════════════════════════════════
 function OligopolyPlayer({ roomCode, playerId, players, gameState, idioma }) {
-    var t = function(key) { return ECONOPOLY_TRANSLATIONS[key]?.[idioma] || ECONOPOLY_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(ECONOPOLY_TRANSLATIONS, idioma);
     const [bidAmount, setBidAmount] = useState('');
     const [lastBid, setLastBid] = useState(0);
 
@@ -2448,7 +2448,7 @@ function StrategyTip({ myProperties, myMoney, cycle, properties, playerId, round
 // ═══════════════════════════════════════════════════════════════
 function RulesScreen({ onContinue }) {
     const [idioma] = usePdeIdioma();
-    var t = function(key) { return ECONOPOLY_TRANSLATIONS[key]?.[idioma] || ECONOPOLY_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(ECONOPOLY_TRANSLATIONS, idioma);
     const [currentPage, setCurrentPage] = useState(0);
 
     var pages = [
@@ -2593,7 +2593,7 @@ function OligopolyApp() {
     const [players, setPlayers] = useState({});
     const [gameState, setGameState] = useState({});
     var [idioma, setIdioma] = useState(PdeLanguageStore.get());
-    var t = function(key) { return ECONOPOLY_TRANSLATIONS[key]?.[idioma] || ECONOPOLY_TRANSLATIONS[key]?.val || key; };
+    var t = createTranslator(ECONOPOLY_TRANSLATIONS, idioma);
 
     useEffect(function() { if (PdeFirebase.isConfigured()) PdeFirebase.init(); }, []);
 

@@ -1642,7 +1642,7 @@
                 try {
                     var draft = localStorage.getItem('pde_sa_draft');
                     if (draft) return JSON.parse(draft);
-                } catch (e) {}
+                } catch (e) { console.warn('PDE: Failed to load SA draft:', e.message || e); }
                 return createEmptySA();
             });
 
@@ -1662,7 +1662,7 @@
             function handleNewSA() {
                 setSA(createEmptySA());
                 setStep(0);
-                try { localStorage.removeItem('pde_sa_draft'); } catch (e) {}
+                try { localStorage.removeItem('pde_sa_draft'); } catch (e) { /* Intentional: localStorage unavailable in private browsing */ }
             }
 
             function handleLoadDraft() {
@@ -1672,7 +1672,7 @@
                         setSA(JSON.parse(draft));
                         alert(idioma === 'es' ? 'Borrador cargado' : idioma === 'en' ? 'Draft loaded' : 'Esborrany carregat');
                     }
-                } catch (e) {}
+                } catch (e) { console.warn('PDE: Failed to load SA draft:', e.message || e); }
             }
 
             return (

@@ -106,7 +106,7 @@ var PdeRoomManager = {
                     // Store in localStorage for reconnection
                     try {
                         localStorage.setItem('pde_room', JSON.stringify({ code: code, playerId: hostId, isHost: true }));
-                    } catch (e) {}
+                    } catch (e) { /* Intentional: localStorage unavailable in private browsing */ }
 
                     resolve({ roomCode: code, playerId: hostId });
                 });
@@ -147,7 +147,7 @@ var PdeRoomManager = {
 
                     try {
                         localStorage.setItem('pde_room', JSON.stringify({ code: roomCode, playerId: playerId, isHost: false }));
-                    } catch (e) {}
+                    } catch (e) { /* Intentional: localStorage unavailable in private browsing */ }
 
                     resolve({ roomCode: roomCode, playerId: playerId });
                 });
@@ -219,7 +219,7 @@ var PdeRoomManager = {
 
     // Clear saved room
     clearSavedRoom: function() {
-        try { localStorage.removeItem('pde_room'); } catch (e) {}
+        try { localStorage.removeItem('pde_room'); } catch (e) { /* Intentional: localStorage unavailable in private browsing */ }
     },
 
     // Cleanup: delete room
@@ -257,7 +257,7 @@ var PdeGameSounds = {
                 osc.start(ctx.currentTime + i * 0.08);
                 osc.stop(ctx.currentTime + i * 0.08 + 0.2);
             });
-        } catch (e) {}
+        } catch (e) { console.warn('PDE: Audio playback failed:', e.message || e); }
     }
 };
 

@@ -73,7 +73,7 @@ var PdeLanguageStore = {
 
     get: function() {
         try {
-            var lang = localStorage.getItem(this.KEY);
+            const lang = localStorage.getItem(this.KEY);
             return PDE_CONFIG.supportedLangs.includes(lang) ? lang : PDE_CONFIG.defaultLang;
         } catch (e) {
             return PDE_CONFIG.defaultLang;
@@ -108,7 +108,7 @@ var PdeLanguageStore = {
      * @returns {() => void} Unsubscribe function.
      */
     subscribe: function(callback) {
-        var self = this;
+        const self = this;
         function onCustom(e) {
             callback((e && e.detail && e.detail.lang) || self.get());
         }
@@ -126,7 +126,7 @@ var PdeLanguageStore = {
 
 // Sync <html lang> on initial load (matches stored language preference)
 try {
-    var _initLang = PdeLanguageStore.get();
+    const _initLang = PdeLanguageStore.get();
     document.documentElement.lang = PdeLanguageStore.LANG_MAP[_initLang] || _initLang;
 } catch (e) {}
 
@@ -157,8 +157,8 @@ function createTranslator(pageTranslations, idioma) {
         }
 
         // 3. Try dot-notation in page translations
-        var parts = key.split('.');
-        var val = pageTranslations;
+        const parts = key.split('.');
+        let val = pageTranslations;
         for (var i = 0; i < parts.length; i++) {
             val = val && val[parts[i]];
             if (!val) break;
@@ -228,8 +228,8 @@ function pdeScrollToTop() {
  * E.g., "economia.html" → "economia", "index.html" → "index"
  */
 function pdeCurrentApp() {
-    var path = window.location.pathname;
-    var filename = path.split('/').pop() || 'index.html';
+    const path = window.location.pathname;
+    const filename = path.split('/').pop() || 'index.html';
     return filename.replace('.html', '') || 'index';
 }
 
@@ -238,7 +238,7 @@ function pdeCurrentApp() {
  * Returns the hash without '#', or null if no hash.
  */
 function pdeGetHashSection() {
-    var hash = window.location.hash;
+    const hash = window.location.hash;
     return hash ? hash.slice(1) : null;
 }
 
