@@ -357,7 +357,7 @@ function PdeGameLeaderboard({ players, sortBy = 'score', maxVisible = 10, title 
                         </div>
                     );
                 })}
-                {sorted.length === 0 && <p className="text-center text-gray-400">Cap jugador encara</p>}
+                {sorted.length === 0 && <p className="text-center text-gray-500">Cap jugador encara</p>}
             </div>
         </div>
     );
@@ -483,7 +483,7 @@ function PdeGameLobby({ gameType, gameName, gameEmoji, gameGradient, minPlayers 
                             📱 Unir-se amb Codi
                         </button>
                     </div>
-                    <a href="./" className="inline-block text-gray-400 hover:text-white transition-colors">🏠 Tornar</a>
+                    <a href="./" className="inline-block text-gray-500 hover:text-white transition-colors">🏠 Tornar</a>
                 </div>
             </div>
         );
@@ -509,7 +509,7 @@ function PdeGameLobby({ gameType, gameName, gameEmoji, gameGradient, minPlayers 
                             (!playerName.trim() ? ' opacity-50 cursor-not-allowed' : '')}>
                         🚀 Crear Sala
                     </button>
-                    <button onClick={function() { setMode('choose'); }} className="w-full text-gray-400 hover:text-gray-600">← Tornar</button>
+                    <button onClick={function() { setMode('choose'); }} className="w-full text-gray-500 hover:text-gray-600">← Tornar</button>
                 </div>
             </div>
         );
@@ -526,7 +526,7 @@ function PdeGameLobby({ gameType, gameName, gameEmoji, gameGradient, minPlayers 
                     {/* Header */}
                     <div className="text-center text-white">
                         <h1 className="text-4xl md:text-6xl font-black">{gameEmoji} {gameName}</h1>
-                        <p className="text-xl text-gray-400 mt-2">Esperant jugadors...</p>
+                        <p className="text-xl text-gray-500 mt-2">Esperant jugadors...</p>
                     </div>
 
                     {/* Room code + QR */}
@@ -534,11 +534,11 @@ function PdeGameLobby({ gameType, gameName, gameEmoji, gameGradient, minPlayers 
                         <div className="bg-white rounded-3xl p-6 text-center shadow-2xl">
                             <p className="text-gray-500 font-bold mb-2">CODI DE LA SALA</p>
                             <p className="text-5xl md:text-7xl font-black tracking-widest text-gray-800 font-mono">{roomCode}</p>
-                            <p className="text-sm text-gray-400 mt-3">o escaneja el QR →</p>
+                            <p className="text-sm text-gray-500 mt-3">o escaneja el QR →</p>
                         </div>
                         <div className="bg-white rounded-3xl p-6 text-center shadow-2xl flex flex-col items-center justify-center">
                             <PdeQRCode url={gameUrl} size={180} />
-                            <p className="text-xs text-gray-400 mt-2 break-all">{gameUrl}</p>
+                            <p className="text-xs text-gray-500 mt-2 break-all">{gameUrl}</p>
                         </div>
                     </div>
 
@@ -602,7 +602,7 @@ function PdeGameLobby({ gameType, gameName, gameEmoji, gameGradient, minPlayers 
                         🎮 Entrar!
                     </button>
                     {!urlRoom && (
-                        <button onClick={function() { setMode('choose'); }} className="w-full text-gray-400 hover:text-gray-600">← Tornar</button>
+                        <button onClick={function() { setMode('choose'); }} className="w-full text-gray-500 hover:text-gray-600">← Tornar</button>
                     )}
                 </div>
             </div>

@@ -789,7 +789,7 @@
                                 className={'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ' +
                                     (isActive ? 'bg-green-600 text-white shadow-lg' :
                                      isDone ? 'bg-green-100 text-green-700 cursor-pointer hover:bg-green-200' :
-                                     'bg-gray-100 text-gray-400 cursor-default')}
+                                     'bg-gray-100 text-gray-500 cursor-default')}
                             >
                                 <span className={'w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ' +
                                     (isActive ? 'bg-white text-green-600' :
@@ -864,7 +864,7 @@
                                             <p className="text-sm text-gray-500">{subj.nivel[idioma] || subj.nivel.val}</p>
                                         </div>
                                     </div>
-                                    <p className="text-xs text-gray-400 mt-2">{subj.normativa}</p>
+                                    <p className="text-xs text-gray-500 mt-2">{subj.normativa}</p>
                                     {isSelected && <div className="mt-3 text-green-600 text-sm font-semibold flex items-center gap-1">✓ Seleccionada</div>}
                                 </button>
                             );
@@ -883,7 +883,7 @@
                                         <span className="text-2xl">{tmpl.emoji}</span>
                                         <h4 className="font-semibold text-gray-800 text-sm leading-tight">{tmpl.name[idioma] || tmpl.name.val}</h4>
                                     </div>
-                                    <div className="flex items-center gap-2 text-xs text-gray-400">
+                                    <div className="flex items-center gap-2 text-xs text-gray-500">
                                         <span>{subj.emoji} {subj.name[idioma] || subj.name.val}</span>
                                         <span>·</span>
                                         <span>{tmpl.sessions} {t('sessions')}</span>
@@ -953,7 +953,7 @@
         // ============================================================
         function Step3Curriculum({ sa, setSA, t, idioma }) {
             var curriculum = CURRICULUM[sa.subject];
-            if (!curriculum) return <div className="text-center text-gray-400 py-10">Selecciona primer una assignatura</div>;
+            if (!curriculum) return <div className="text-center text-gray-500 py-10">Selecciona primer una assignatura</div>;
 
             function toggleArray(field, value) {
                 setSA(function(prev) {
@@ -985,7 +985,7 @@
                     {/* CE Selection */}
                     <div className="mb-8">
                         <h4 className="text-md font-bold text-gray-700 mb-3">{t('ceTitle')}</h4>
-                        <p className="text-sm text-gray-400 mb-3">{t('selectCE')}</p>
+                        <p className="text-sm text-gray-500 mb-3">{t('selectCE')}</p>
                         <div className="space-y-3">
                             {curriculum.ce.map(function(ce) {
                                 var isSelected = sa.selectedCE.includes(ce.id);
@@ -1012,7 +1012,7 @@
                     {sa.selectedCE.length > 0 && (
                         <div className="mb-8">
                             <h4 className="text-md font-bold text-gray-700 mb-3">{t('caTitle')}</h4>
-                            <p className="text-sm text-gray-400 mb-3">{t('selectCA')}</p>
+                            <p className="text-sm text-gray-500 mb-3">{t('selectCA')}</p>
                             {curriculum.ce.filter(function(ce) { return sa.selectedCE.includes(ce.id); }).map(function(ce) {
                                 return (
                                     <div key={ce.id} className="mb-4">
@@ -1043,7 +1043,7 @@
                     {/* Saberes Básicos Selection */}
                     <div className="mb-8">
                         <h4 className="text-md font-bold text-gray-700 mb-3">{t('saberesTitle')}</h4>
-                        <p className="text-sm text-gray-400 mb-3">{t('selectSaberes')}</p>
+                        <p className="text-sm text-gray-500 mb-3">{t('selectSaberes')}</p>
                         {curriculum.saberes.map(function(bloque) {
                             return (
                                 <div key={bloque.bloque} className="mb-4">
@@ -1074,14 +1074,14 @@
                     {/* Key Competences (auto-selected from CE but editable) */}
                     <div className="mb-4">
                         <h4 className="text-md font-bold text-gray-700 mb-3">{t('ccTitle')}</h4>
-                        <p className="text-sm text-gray-400 mb-3">{t('selectCC')}</p>
+                        <p className="text-sm text-gray-500 mb-3">{t('selectCC')}</p>
                         <div className="flex flex-wrap gap-2">
                             {COMPETENCIES_CLAU.map(function(cc) {
                                 var isSelected = sa.selectedCC.includes(cc.id);
                                 return (
                                     <button key={cc.id} onClick={function() { toggleArray('selectedCC', cc.id); }}
                                         className={'px-3 py-2 rounded-lg text-sm font-medium transition-all ' +
-                                            (isSelected ? cc.color + ' ring-2 ring-offset-1 ring-green-400' : 'bg-gray-100 text-gray-400 hover:bg-gray-200')}>
+                                            (isSelected ? cc.color + ' ring-2 ring-offset-1 ring-green-400' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>
                                         {cc.emoji} {cc.id}
                                     </button>
                                 );
@@ -1159,7 +1159,7 @@
                             return (
                                 <div key={act.id} className={'bg-white rounded-xl border border-gray-200 p-4 border-l-4 ' + phaseColor}>
                                     <div className="flex items-center justify-between mb-3">
-                                        <span className="text-sm font-bold text-gray-400">#{idx + 1}</span>
+                                        <span className="text-sm font-bold text-gray-500">#{idx + 1}</span>
                                         <button onClick={function() { removeActivity(idx); }} className="text-xs text-red-400 hover:text-red-600 transition-colors">
                                             {t('removeAct')} ✕
                                         </button>
@@ -1324,7 +1324,7 @@
                                                         (isSelected ? 'border-' + section.color + '-400 bg-' + section.color + '-50' : 'border-gray-200 bg-white hover:border-gray-300')}>
                                                     <div className="flex items-start gap-2">
                                                         <span className={'w-5 h-5 rounded flex items-center justify-center text-xs flex-shrink-0 ' +
-                                                            (isSelected ? 'bg-' + section.color + '-500 text-white' : 'bg-gray-200 text-gray-400')}>{isSelected ? '✓' : ''}</span>
+                                                            (isSelected ? 'bg-' + section.color + '-500 text-white' : 'bg-gray-200 text-gray-500')}>{isSelected ? '✓' : ''}</span>
                                                         <span>{item.desc[idioma] || item.desc.val}</span>
                                                     </div>
                                                 </button>
@@ -1498,10 +1498,10 @@
                                                     var grouping = GROUPINGS.find(function(g) { return g.id === act.grouping; });
                                                     return (
                                                         <tr key={act.id}>
-                                                            <td className="border border-gray-200 px-3 py-2 text-center font-bold text-gray-400">{idx + 1}</td>
+                                                            <td className="border border-gray-200 px-3 py-2 text-center font-bold text-gray-500">{idx + 1}</td>
                                                             <td className="border border-gray-200 px-3 py-2">
                                                                 <strong>{act.name}</strong>
-                                                                {act.description && <p className="text-xs text-gray-400 mt-1">{act.description}</p>}
+                                                                {act.description && <p className="text-xs text-gray-500 mt-1">{act.description}</p>}
                                                             </td>
                                                             <td className="border border-gray-200 px-3 py-2">{actType ? actType.emoji + ' ' + (actType.name[idioma] || actType.name.val) : act.type}</td>
                                                             <td className="border border-gray-200 px-3 py-2">{grouping ? grouping.emoji + ' ' + (grouping.name[idioma] || grouping.name.val) : act.grouping}</td>
@@ -1600,7 +1600,7 @@
                             )}
 
                             {/* Normativa reference */}
-                            <div className="pt-4 border-t border-gray-100 text-xs text-gray-400">
+                            <div className="pt-4 border-t border-gray-100 text-xs text-gray-500">
                                 <p>{curriculum.normativa} · {idioma === 'es' ? 'Generado con PDE' : idioma === 'en' ? 'Generated with PDE' : 'Generat amb PDE'} · {new Date().toLocaleDateString()}</p>
                             </div>
                         </div>
@@ -1692,7 +1692,7 @@
                             <button onClick={function() { if (canProceed()) setStep(step + 1); }}
                                 disabled={!canProceed()}
                                 className={'px-6 py-3 rounded-xl font-medium transition-all ' +
-                                    (canProceed() ? 'bg-green-600 text-white hover:bg-green-700 shadow-lg' : 'bg-gray-200 text-gray-400 cursor-not-allowed')}>
+                                    (canProceed() ? 'bg-green-600 text-white hover:bg-green-700 shadow-lg' : 'bg-gray-200 text-gray-500 cursor-not-allowed')}>
                                 {t('next')} →
                             </button>
                         ) : (
@@ -1816,7 +1816,7 @@
                                     <div key={qt} className="mb-6">
                                         <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
                                             {qtype ? qtype.emoji : ''} {qtype ? qtype.label : qt}
-                                            <span className="text-xs font-normal text-gray-400">({weight}% — {count} {count === 1 ? idioma === 'es' ? 'pregunta' : idioma === 'en' ? 'question' : 'pregunta' : idioma === 'es' ? 'preguntas' : idioma === 'en' ? 'questions' : 'preguntes'})</span>
+                                            <span className="text-xs font-normal text-gray-500">({weight}% — {count} {count === 1 ? idioma === 'es' ? 'pregunta' : idioma === 'en' ? 'question' : 'pregunta' : idioma === 'es' ? 'preguntas' : idioma === 'en' ? 'questions' : 'preguntes'})</span>
                                         </h3>
 
                                         {Array.from({ length: count }, function(_, i) {
@@ -1837,7 +1837,7 @@
                                                     <div key={i} className="mb-3 pl-4 border-l-2 border-gray-200 flex items-center gap-3">
                                                         <span className="text-gray-700">{i + 1}.</span>
                                                         <span className="flex-1 text-gray-500">______________________________________</span>
-                                                        <span className="text-xs text-gray-400">V / F</span>
+                                                        <span className="text-xs text-gray-500">V / F</span>
                                                     </div>
                                                 );
                                             } else if (qt === 'testProblem') {
@@ -1860,7 +1860,7 @@
                                 );
                             })}
 
-                            <div className="pt-4 border-t border-gray-100 text-xs text-gray-400">
+                            <div className="pt-4 border-t border-gray-100 text-xs text-gray-500">
                                 <p>{curriculum.normativa} · {idioma === 'es' ? 'Generado con PDE' : idioma === 'en' ? 'Generated with PDE' : 'Generat amb PDE'} · {new Date().toLocaleDateString()}</p>
                             </div>
                         </div>
@@ -1885,7 +1885,7 @@
                                                     (isSelected ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-white hover:border-green-300')}>
                                                 <span className="text-2xl block mb-1">{subj.emoji}</span>
                                                 <span className="text-xs font-semibold text-gray-700">{subj.name[idioma] || subj.name.val}</span>
-                                                <span className="text-xs text-gray-400 block">{subj.nivel[idioma] || subj.nivel.val}</span>
+                                                <span className="text-xs text-gray-500 block">{subj.nivel[idioma] || subj.nivel.val}</span>
                                             </button>
                                         );
                                     })}
@@ -1896,7 +1896,7 @@
                             {curriculum && (
                                 <div className="mb-6">
                                     <label className="block text-sm font-bold text-gray-700 mb-2">{t('testTopics')}</label>
-                                    <p className="text-xs text-gray-400 mb-2">{idioma === 'es' ? 'Selecciona los temas a evaluar (dejar vacío = todos)' : idioma === 'en' ? 'Select topics to assess (empty = all)' : 'Selecciona els temes a avaluar (buit = tots)'}</p>
+                                    <p className="text-xs text-gray-500 mb-2">{idioma === 'es' ? 'Selecciona los temas a evaluar (dejar vacío = todos)' : idioma === 'en' ? 'Select topics to assess (empty = all)' : 'Selecciona els temes a avaluar (buit = tots)'}</p>
                                     {curriculum.saberes.map(function(bloque) {
                                         return (
                                             <div key={bloque.bloque} className="mb-3">
@@ -1953,7 +1953,7 @@
                                                                 updateConfig('weights', w);
                                                             }}
                                                             className="w-16 px-2 py-1 border border-gray-300 rounded text-xs text-center" />
-                                                        <span className="text-xs text-gray-400">%</span>
+                                                        <span className="text-xs text-gray-500">%</span>
                                                     </div>
                                                 );
                                             })}
@@ -2002,7 +2002,7 @@
 
                             <button onClick={generateTest} disabled={!config.subject}
                                 className={'w-full py-4 rounded-xl font-bold text-lg transition-all ' +
-                                    (config.subject ? 'bg-green-600 text-white hover:bg-green-700 shadow-lg' : 'bg-gray-200 text-gray-400 cursor-not-allowed')}>
+                                    (config.subject ? 'bg-green-600 text-white hover:bg-green-700 shadow-lg' : 'bg-gray-200 text-gray-500 cursor-not-allowed')}>
                                 {t('testGenerate')}
                             </button>
                         </div>

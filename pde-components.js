@@ -311,11 +311,11 @@ function PdePrevNext({ sections, currentSection, setSection, idioma }) {
                     className={PDE_STYLES.prevNextBtn}
                 >
                     {t('nav.prev')}
-                    <span className="hidden sm:inline text-gray-400">({prev.label})</span>
+                    <span className="hidden sm:inline text-gray-500">({prev.label})</span>
                 </button>
             ) : <div></div>}
 
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-gray-500">
                 {idx + 1} / {sections.length}
             </span>
 
@@ -328,7 +328,7 @@ function PdePrevNext({ sections, currentSection, setSection, idioma }) {
                     }}
                     className={PDE_STYLES.prevNextBtn}
                 >
-                    <span className="hidden sm:inline text-gray-400">({next.label})</span>
+                    <span className="hidden sm:inline text-gray-500">({next.label})</span>
                     {t('nav.next')}
                 </button>
             ) : <div></div>}

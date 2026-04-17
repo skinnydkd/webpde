@@ -80,6 +80,9 @@ var PdeLanguageStore = {
         }
     },
 
+    // Map internal lang codes to BCP 47 tags for <html lang>
+    LANG_MAP: { val: 'ca', es: 'es', en: 'en' },
+
     set: function(lang) {
         if (!PDE_CONFIG.supportedLangs.includes(lang)) return;
         try {
@@ -87,6 +90,10 @@ var PdeLanguageStore = {
         } catch (e) {
             // localStorage not available (private browsing, etc.)
         }
+        // Update <html lang> for screen readers and browser heuristics
+        try {
+            document.documentElement.lang = this.LANG_MAP[lang] || lang;
+        } catch (e) {}
         // Always broadcast, even if localStorage failed — UI should still react.
         try {
             window.dispatchEvent(new CustomEvent(this.EVENT, { detail: { lang: lang } }));
@@ -116,6 +123,12 @@ var PdeLanguageStore = {
         };
     },
 };
+
+// Sync <html lang> on initial load (matches stored language preference)
+try {
+    var _initLang = PdeLanguageStore.get();
+    document.documentElement.lang = PdeLanguageStore.LANG_MAP[_initLang] || _initLang;
+} catch (e) {}
 
 // ─── Translation Factory ────────────────────────────────────────
 /**
@@ -166,7 +179,7 @@ var PDE_STYLES = {
     headerContainer: 'max-w-7xl mx-auto px-4 py-3 flex items-center justify-between',
 
     // Footer
-    footer: 'py-6 text-center text-sm text-gray-400 border-t border-gray-100 mt-8',
+    footer: 'py-6 text-center text-sm text-gray-500 border-t border-gray-100 mt-8',
 
     // Language selector
     langGroup: 'flex items-center gap-1 bg-gray-100 rounded-lg p-1',
