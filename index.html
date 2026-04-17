@@ -50,12 +50,245 @@
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         @keyframes goldPulse { 0%, 100% { box-shadow: 0 0 5px #fbbf24, 0 0 10px #f59e0b; } 50% { box-shadow: 0 0 15px #fbbf24, 0 0 25px #f59e0b; } }
         .gold-glow { animation: goldPulse 2s ease-in-out infinite; }
+
+        /* ── Splash Animations ── */
+        @keyframes pigDrop {
+            0% { transform: translateY(-120vh) rotate(-30deg) scale(0.3); opacity: 0; }
+            40% { transform: translateY(10vh) rotate(10deg) scale(1.3); opacity: 1; }
+            55% { transform: translateY(-8vh) rotate(-5deg) scale(0.95); }
+            70% { transform: translateY(3vh) rotate(3deg) scale(1.05); }
+            85% { transform: translateY(-1vh) rotate(-1deg) scale(0.98); }
+            100% { transform: translateY(0) rotate(0deg) scale(1); }
+        }
+        @keyframes pigShake {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            10% { transform: rotate(-12deg) scale(1.1); }
+            20% { transform: rotate(12deg) scale(1.1); }
+            30% { transform: rotate(-8deg) scale(1.05); }
+            40% { transform: rotate(8deg) scale(1.05); }
+            50% { transform: rotate(-4deg) scale(1.02); }
+            60% { transform: rotate(4deg) scale(1.02); }
+            70% { transform: rotate(0deg) scale(1); }
+        }
+        @keyframes coinBurst {
+            0% { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 0; }
+            20% { opacity: 1; transform: translate(calc(var(--coin-x) * 0.3), calc(var(--coin-y) * 0.3)) scale(1.3) rotate(calc(var(--coin-rot) * 0.3)); }
+            100% { opacity: 0; transform: translate(var(--coin-x), var(--coin-y)) scale(0.4) rotate(var(--coin-rot)); }
+        }
+        @keyframes splashReveal {
+            0% { clip-path: circle(0% at 50% 50%); }
+            100% { clip-path: circle(150% at 50% 50%); }
+        }
+        @keyframes pigEyeBlink {
+            0%, 42%, 50%, 100% { transform: scaleY(1); }
+            45% { transform: scaleY(0.1); }
+        }
+        @keyframes textPopIn {
+            0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+            60% { transform: scale(1.15) rotate(3deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        @keyframes sparkle {
+            0%, 100% { transform: scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: scale(1) rotate(180deg); opacity: 1; }
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 0.8; }
+            100% { transform: translateY(-60px) scale(0.5); opacity: 0; }
+        }
+        .splash-pig { animation: pigDrop 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        .splash-pig-shake { animation: pigShake 0.6s ease-in-out; }
+        .splash-text { animation: textPopIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; opacity: 0; }
+        .splash-reveal { animation: splashReveal 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-amber-50 via-white to-pink-50">
     <div id="root"></div>
     <script type="text/babel">
-        const { useState, useMemo, useEffect } = React;
+        const { useState, useMemo, useEffect, useCallback, useRef } = React;
+
+        // ─── Splash Screen: The PDE Piggy ──────────────────────────
+        function PdeSplash({ onComplete }) {
+            const [phase, setPhase] = useState('drop');    // drop → shake → coins → text → exit
+            const [coins, setCoins] = useState([]);
+            const [sparkles, setSparkles] = useState([]);
+            const containerRef = useRef(null);
+
+            // Coin burst generator
+            const generateCoins = useCallback(() => {
+                const coinEmojis = ['💰', '🪙', '💵', '💶', '📈', '💎', '⭐'];
+                const newCoins = [];
+                for (let i = 0; i < 24; i++) {
+                    const angle = (i / 24) * 360 + (Math.random() * 30 - 15);
+                    const distance = 120 + Math.random() * 200;
+                    const rad = (angle * Math.PI) / 180;
+                    newCoins.push({
+                        id: i,
+                        emoji: coinEmojis[Math.floor(Math.random() * coinEmojis.length)],
+                        x: Math.cos(rad) * distance,
+                        y: Math.sin(rad) * distance - 40,
+                        rotation: Math.random() * 720 - 360,
+                        delay: Math.random() * 0.15,
+                        duration: 0.6 + Math.random() * 0.4,
+                        size: 1.2 + Math.random() * 1.4,
+                    });
+                }
+                return newCoins;
+            }, []);
+
+            // Generate sparkles
+            const generateSparkles = useCallback(() => {
+                const newSparkles = [];
+                for (let i = 0; i < 12; i++) {
+                    newSparkles.push({
+                        id: i,
+                        x: Math.random() * 100,
+                        y: Math.random() * 100,
+                        delay: Math.random() * 1.5,
+                        size: 0.6 + Math.random() * 1,
+                    });
+                }
+                return newSparkles;
+            }, []);
+
+            useEffect(() => {
+                // Phase timeline
+                const timers = [];
+                // Drop → shake (after pig lands)
+                timers.push(setTimeout(() => setPhase('shake'), 900));
+                // Shake → coins burst
+                timers.push(setTimeout(() => {
+                    setPhase('coins');
+                    setCoins(generateCoins());
+                    setSparkles(generateSparkles());
+                }, 1500));
+                // Show text
+                timers.push(setTimeout(() => setPhase('text'), 1900));
+                // Exit
+                timers.push(setTimeout(() => setPhase('exit'), 3600));
+                // Done
+                timers.push(setTimeout(() => onComplete(), 4400));
+
+                return () => timers.forEach(clearTimeout);
+            }, []);
+
+            // Skip on tap/click
+            const handleSkip = useCallback(() => {
+                setPhase('exit');
+                setTimeout(onComplete, 500);
+            }, [onComplete]);
+
+            if (phase === 'done') return null;
+
+            return (
+                <div
+                    ref={containerRef}
+                    onClick={handleSkip}
+                    className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden select-none"
+                    style={{
+                        background: 'linear-gradient(135deg, #fdf2f8 0%, #fce7f3 25%, #fbcfe8 50%, #f9a8d4 75%, #f472b6 100%)',
+                        opacity: phase === 'exit' ? 0 : 1,
+                        transition: 'opacity 0.8s ease-out',
+                        cursor: 'pointer',
+                    }}
+                >
+                    {/* Background sparkles */}
+                    {sparkles.map(s => (
+                        <div key={'s' + s.id} style={{
+                            position: 'absolute',
+                            left: s.x + '%',
+                            top: s.y + '%',
+                            fontSize: s.size + 'rem',
+                            animation: 'sparkle 1.2s ease-in-out infinite',
+                            animationDelay: s.delay + 's',
+                        }}>
+                            {'✨'}
+                        </div>
+                    ))}
+
+                    {/* Piggy container */}
+                    <div style={{ position: 'relative', display: 'inline-block' }}>
+                        {/* The Pig */}
+                        <div
+                            className={phase === 'drop' ? 'splash-pig' : (phase === 'shake' ? 'splash-pig-shake' : '')}
+                            style={{
+                                fontSize: 'clamp(100px, 25vw, 180px)',
+                                lineHeight: 1,
+                                filter: 'drop-shadow(0 20px 40px rgba(236, 72, 153, 0.4))',
+                                transform: phase === 'coins' || phase === 'text' || phase === 'exit' ? 'scale(1)' : undefined,
+                                transition: 'transform 0.3s ease',
+                            }}
+                        >
+                            {'\uD83D\uDC37'}
+                        </div>
+
+                        {/* Coin burst */}
+                        {coins.map(c => (
+                            <div key={'c' + c.id} style={{
+                                position: 'absolute',
+                                left: '50%',
+                                top: '50%',
+                                fontSize: c.size + 'rem',
+                                animation: `coinBurst ${c.duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards`,
+                                animationDelay: c.delay + 's',
+                                '--coin-x': c.x + 'px',
+                                '--coin-y': c.y + 'px',
+                                '--coin-rot': c.rotation + 'deg',
+                            }}>
+                                {c.emoji}
+                            </div>
+                        ))}
+
+                        {/* Floating coins after burst */}
+                        {(phase === 'text' || phase === 'exit') && [0,1,2,3,4].map(i => (
+                            <div key={'f' + i} style={{
+                                position: 'absolute',
+                                left: (20 + i * 15) + '%',
+                                bottom: '100%',
+                                fontSize: '1.5rem',
+                                animation: 'floatUp 2s ease-out infinite',
+                                animationDelay: (i * 0.3) + 's',
+                            }}>
+                                {['💰','🪙','💵','💶','⭐'][i]}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Text */}
+                    {(phase === 'text' || phase === 'exit') && (
+                        <div className="mt-6 text-center">
+                            <h1 className="splash-text text-5xl md:text-7xl font-black text-pink-600 mb-2"
+                                style={{ textShadow: '0 4px 20px rgba(236, 72, 153, 0.3)', animationDelay: '0s' }}>
+                                PDE
+                            </h1>
+                            <p className="splash-text text-lg md:text-xl font-bold text-pink-400"
+                               style={{ animationDelay: '0.15s' }}>
+                                Plataforma Did&agrave;ctica Econ&ograve;mica
+                            </p>
+                            <p className="splash-text text-sm text-pink-300 mt-3"
+                               style={{ animationDelay: '0.3s' }}>
+                                Toca per continuar
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Piggy nose glow */}
+                    {phase !== 'drop' && (
+                        <div style={{
+                            position: 'absolute',
+                            width: 'clamp(200px, 50vw, 350px)',
+                            height: 'clamp(200px, 50vw, 350px)',
+                            borderRadius: '50%',
+                            background: 'radial-gradient(circle, rgba(251,191,36,0.15) 0%, transparent 70%)',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -60%)',
+                            pointerEvents: 'none',
+                        }} />
+                    )}
+                </div>
+            );
+        }
 
         const translations = {
             platform: { val: 'Plataforma Didàctica Econòmica', es: 'Plataforma Didáctica Económica', en: 'Economic Educational Platform' },
@@ -297,6 +530,12 @@
         };
 
         function HomePage() {
+            const [showSplash, setShowSplash] = useState(() => {
+                try {
+                    if (sessionStorage.getItem('pde_splash_shown')) return false;
+                    return true;
+                } catch (e) { return false; }
+            });
             const [menuOpen, setMenuOpen] = useState(false);
             const [idioma, setIdioma] = useState(PdeLanguageStore.get());
             const [activeTab, setActiveTab] = useState(() => {
@@ -581,6 +820,12 @@
 
             return (
                 <div className="min-h-screen">
+                    {showSplash && (
+                        <PdeSplash onComplete={() => {
+                            setShowSplash(false);
+                            try { sessionStorage.setItem('pde_splash_shown', '1'); } catch (e) {}
+                        }} />
+                    )}
                     <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
                         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
                             <div className="flex items-center gap-2">
