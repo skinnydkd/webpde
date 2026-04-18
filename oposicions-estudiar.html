@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eines d'Estudi — Oposicions | PDE</title>
+    <meta name="description" content="Eines d'estudi per a opositors d'Economia: planificador, simulacre d'examen, flashcards amb repetició espaiada i tracker de progrés.">
+    <meta property="og:title" content="Eines d'Estudi — Oposicions | PDE">
+    <meta property="og:description" content="Planificador, simulacre, flashcards amb SM-2 i tracker de progrés per a opositors d'Economia.">
+    <meta property="og:image" content="https://profedeeconomia.es/og/oposicions-estudiar.png">
+    <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:type" content="image/png">
+    <meta property="og:type" content="website"><meta property="og:url" content="https://profedeeconomia.es/oposicions-estudiar"><meta property="og:locale" content="ca_ES"><meta property="og:site_name" content="PDE">
+    <meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://profedeeconomia.es/og/oposicions-estudiar.png">
+    <link rel="canonical" href="https://profedeeconomia.es/oposicions-estudiar">
+    <link rel="alternate" hreflang="ca" href="https://profedeeconomia.es/oposicions-estudiar"><link rel="alternate" hreflang="es" href="https://profedeeconomia.es/oposicions-estudiar"><link rel="alternate" hreflang="en" href="https://profedeeconomia.es/oposicions-estudiar"><link rel="alternate" hreflang="x-default" href="https://profedeeconomia.es/oposicions-estudiar">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.1.16/umd/Recharts.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./pde-shared.js"></script>
+    <script src="./pde-components.js" type="text/babel"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #7c3aed #f5f3ff; }
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #f5f3ff; } ::-webkit-scrollbar-thumb { background-color: #7c3aed; border-radius: 3px; }
+        .dark { color-scheme: dark; } .dark body { background: #111827 !important; color: #e5e7eb; } .dark .bg-gradient-to-br { background: #111827 !important; }
+        @media print { body { background: white !important; color: black !important; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.5); } 70% { box-shadow: 0 0 0 15px rgba(124, 58, 237, 0); } 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+        .pulse-ring { animation: pulse-ring 2s infinite; }
+        .card-flip { transform-style: preserve-3d; transition: transform 0.6s; }
+        .card-flip.flipped { transform: rotateY(180deg); }
+        .card-face { backface-visibility: hidden; position: absolute; width: 100%; height: 100%; }
+        .card-back { transform: rotateY(180deg); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-violet-50 via-white to-purple-50 min-h-screen">
+    <div id="root"></div>
+    <script type="text/babel">
+    const { useState, useMemo, useEffect, useRef } = React;
+    const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, Legend, BarChart, Bar, PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } = Recharts;
+
+    // ════════════════════════════════════════════════════════════════
+    // TEMARI OFICIAL BOE — DADES
+    // ════════════════════════════════════════════════════════════════
+    const TEMARI = [
+        { num: 1, bloc: 'A', title: "L'objecte de l'Economia. Economia política. Relacions amb altres CCSS.", keywords: ['Robbins', 'escassetat', 'Samuelson'] },
+        { num: 2, bloc: 'A', title: "Mètodes en Economia. Positiva i normativa. Judicis de valor.", keywords: ['Popper', 'hipotètic-deductiu', 'Friedman 1953'] },
+        { num: 3, bloc: 'A', title: "Tècniques i procediments. Models. Variables. Números índex.", keywords: ['Laspeyres', 'Paasche', 'Fisher'] },
+        { num: 4, bloc: 'A', title: "Evolució pensament econòmic. Economia clàssica. Marxisme. Neoclàssics.", keywords: ['Smith 1776', 'Marx', 'Marshall 1890'] },
+        { num: 5, bloc: 'A', title: "Institucionalisme. Keynesianisme. Monetarisme. Tendències actuals.", keywords: ['Keynes 1936', 'Friedman', 'Kahneman'] },
+        { num: 6, bloc: 'A', title: "Base humana activitat econòmica. Necessitat. Béns econòmics.", keywords: ['Maslow 1943', 'béns lliures', 'paradoxa del valor'] },
+        { num: 7, bloc: 'A', title: "Factors productius. FPP. Cost oportunitat. Progrés tècnic.", keywords: ['FPP', 'rendiments decreixents', 'Schumpeter'] },
+        { num: 8, bloc: 'A', title: "Problemes econòmics. Decisions: tradició, mercat, autoritat. Sistemes.", keywords: ['capitalisme', 'economies mixtes'] },
+        { num: 9, bloc: 'A', title: "Divisió del treball. Especialització. Interdependència. Sectors.", keywords: ['Smith divisió', 'Fisher-Clark'] },
+        { num: 10, bloc: 'A', title: "Del troc al diner. Mercat. Demanda, oferta i equilibri.", keywords: ['Walras', 'mà invisible', 'equilibri'] },
+        { num: 11, bloc: 'B', title: "Teoria demanda. Utilitat. Comportament consumidor. Slutsky.", keywords: ['Hicks', 'Slutsky 1915', 'efecte renda'] },
+        { num: 12, bloc: 'B', title: "Funció producció. Isoquantes i isocostos. Rendiments.", keywords: ['Cobb-Douglas 1928'] },
+        { num: 13, bloc: 'B', title: "Costos CP i LP. Economies d'escala. Dimensió òptima.", keywords: ['CMeLT', 'U-shaped'] },
+        { num: 14, bloc: 'B', title: "Competència perfecta. Supòsits. CP.", keywords: ['P=CMg', 'benefici normal'] },
+        { num: 15, bloc: 'B', title: "Competència imperfecta. Monopoli. Regulació.", keywords: ['IMg=CMg', 'deadweight', 'Lerner'] },
+        { num: 16, bloc: 'B', title: "Oligopoli. Colusió. Competència monopolística. Diferenciació.", keywords: ['Cournot', 'Bertrand', 'Nash'] },
+        { num: 17, bloc: 'B', title: "Desequilibris i fallades de mercat. Béns públics. Externalitats.", keywords: ['Pigou 1920', 'Coase 1960', 'Edgeworth'] },
+        { num: 18, bloc: 'B', title: "Intervenció de l'Estat. Justificació. Instruments.", keywords: ['Musgrave 1959', '3 funcions'] },
+        { num: 19, bloc: 'B', title: "Distribució de la renda. Teoria marginal. Polítiques.", keywords: ['Lorenz', 'Gini', 'Piketty'] },
+        { num: 20, bloc: 'C', title: "Fluxos de renda. Comptabilitat nacional. PIB i magnituds.", keywords: ['Kuznets Nobel 1971', 'SEC 2010'] },
+        { num: 21, bloc: 'C', title: "Demanda agregada. Consum, estalvi, inversió. Multiplicador. OA.", keywords: ['Keynes 1936', 'k=1/(1−c)', 'IS-LM'] },
+        { num: 22, bloc: 'C', title: "Sector públic i política fiscal. Dèficit, deute.", keywords: ['Musgrave', 'crowding-out', 'PEC UE'] },
+        { num: 23, bloc: 'C', title: "Finançament de l'economia. Diner, bancs, intermediaris.", keywords: ['m=1/r', 'Basilea III', 'M3'] },
+        { num: 24, bloc: 'C', title: "Banc Central i política monetària. Instruments.", keywords: ['BCE 2%', 'QE', 'Kydland-Prescott 1977'] },
+        { num: 25, bloc: 'C', title: "Comerç internacional. Ventaja comparativa. BdP.", keywords: ['Ricardo 1817', 'Krugman Nobel 2008', 'OMC'] },
+        { num: 26, bloc: 'C', title: "Pagaments internacionals i divises. Tipus de canvi.", keywords: ['Mundell-Fleming', 'PPP Cassel 1918', 'triangle'] },
+        { num: 27, bloc: 'D', title: "Creixement i desenvolupament. Factors. Subdesenvolupament.", keywords: ['Solow 1956', 'Romer 1986', 'Acemoglu Nobel 2024'] },
+        { num: 28, bloc: 'D', title: "Límits del creixement. Medi ambient. Desenvolupament sostenible.", keywords: ['Brundtland 1987', 'Rockström 2009', 'Raworth'] },
+        { num: 29, bloc: 'D', title: "Cicles econòmics. Teories. Polítiques estabilitzadores.", keywords: ['Juglar', 'Schumpeter', 'Minsky 1986', 'RBC'] },
+        { num: 30, bloc: 'D', title: "Inflació: classes, efectes, teories. Polítiques.", keywords: ['Fisher MV=PY', 'Phillips 1958', 'NAIRU'] },
+        { num: 31, bloc: 'D', title: "Mercat de treball. Teories sobre atur. Polítiques d'ocupació.", keywords: ['Histeresi Blanchard-Summers', 'Card-Krueger Nobel 2021'] },
+        { num: 32, bloc: 'D', title: "Noves tecnologies, ocupació i qualificació.", keywords: ['SBTC Katz-Murphy', 'Frey-Osborne', 'AI Act'] },
+        { num: 33, bloc: 'D', title: "Crisi i desajustos. Economia submergida. Sindicalisme.", keywords: ['Schneider', 'ERTE', 'RDL 32/2021'] },
+        { num: 34, bloc: 'D', title: "Cooperació econòmica internacional. UE.", keywords: ['Balassa 1961', 'Maastricht 1992', 'Draghi 2024'] },
+        { num: 35, bloc: 'D', title: "Producció i consum. Societat de consum. Protecció consumidors.", keywords: ['Galbraith 1958', 'Baudrillard 1970', 'LGDCU'] },
+        { num: 36, bloc: 'D', title: "Economia del Benestar. Pobresa, igualtat, eficiència. Estat del Benestar.", keywords: ['Pareto', 'Arrow 1951', 'Rawls 1971', 'Esping-Andersen 1990'] },
+        { num: 37, bloc: 'D', title: "Qualitat de vida i indicadors. IDH. Cap a un índex global.", keywords: ['Sen-Stiglitz-Fitoussi 2009', 'Happiness Report'] },
+        { num: 38, bloc: 'E', title: "Concepte d'empresa i empresari. Enfocament sistèmic.", keywords: ['Schumpeter 1911', 'Cantillon 1755', 'Bueno Campos'] },
+        { num: 39, bloc: 'E', title: "Fixació d'objectius. Teoria de l'organització.", keywords: ['Drucker MBO 1954', 'SMART Doran 1981', 'OKR'] },
+        { num: 40, bloc: 'E', title: "Localització de l'empresa. Models. Economies d'aglomeració.", keywords: ['Weber 1909', 'Hotelling 1929', 'Krugman NGE'] },
+        { num: 41, bloc: 'E', title: "Dimensió de l'empresa. Dimensió òptima.", keywords: ['UE 2003/361', 'Ansoff 1957', 'Dunning OLI'] },
+        { num: 42, bloc: 'E', title: "Sistema de producció. Productivitat. Millora.", keywords: ['Woodward 1965', 'TPS Ohno', 'Six Sigma', 'Industria 4.0'] },
+        { num: 43, bloc: 'E', title: "Costos. Punt mort. Procés de formació.", keywords: ['Q*=CF/(P−CVu)', 'ABC Kaplan-Cooper 1988'] },
+        { num: 44, bloc: 'E', title: "Planificació i programació de la producció.", keywords: ['MRP Orlicky 1975', 'PERT 1958', 'EOQ Harris 1913'] },
+        { num: 45, bloc: 'E', title: "Màrqueting: naturalesa, evolució. Investigació. Segmentació.", keywords: ['Kotler 1967', 'McCarthy 4P 1960', 'Ries-Trout 1981'] },
+        { num: 46, bloc: 'E', title: "Política de producte i distribució. Cicle de vida. Canals.", keywords: ['Levitt 1965 PLC', 'BCG 1970', 'Osterwalder'] },
+        { num: 47, bloc: 'E', title: "Política de comunicació. Publicitat. Mitjans.", keywords: ['AIDA Lewis 1898', 'DAGMAR', 'GRP', 'DSA'] },
+        { num: 48, bloc: 'E', title: "Política de preus. Mètodes. Estratègia de màrqueting.", keywords: ['Pigou 1920', 'Lerner', 'skimming vs penetració'] },
+        { num: 49, bloc: 'F', title: "Concepte i classes d'inversió. Criteris de selecció.", keywords: ['VAN', 'TIR', 'Dean 1951', 'Massé 1959'] },
+        { num: 50, bloc: 'F', title: "Risc, inflació i impostos. Programació d'inversions.", keywords: ['CAPM Sharpe 1964', 'Fisher 1930', 'real options Myers'] },
+        { num: 51, bloc: 'F', title: "Finançament. PMM i fons de maniobra. Extern.", keywords: ['FM=AC−PC', 'NOF', 'Llei 18/2022'] },
+        { num: 52, bloc: 'F', title: "Finançament interna. Autofinançament. Amortització.", keywords: ['Lohmann-Ruchti 1953', 'Jensen free cash flow 1986'] },
+        { num: 53, bloc: 'F', title: "Cost del capital. WACC.", keywords: ['WACC=(E/V)Ke+(D/V)Kd(1−t)', 'EVA', 'Gordon-Shapiro 1959'] },
+        { num: 54, bloc: 'F', title: "Estructura financera òptima. Modigliani-Miller. Dividends.", keywords: ['MM 1958/1963', 'Myers-Majluf 1984', 'pecking order'] },
+        { num: 55, bloc: 'F', title: "Capitalització. Equivalència financera. Rendes.", keywords: ['Cₙ=C₀(1+i)ⁿ', 'TAE', 'Vₐ=c/i'] },
+        { num: 56, bloc: 'F', title: "Préstecs. Mètodes d'amortització. Emprèstits.", keywords: ['Sistema francès', 'YTM', 'Llei 5/2019'] },
+        { num: 57, bloc: 'G', title: "Presa de decisions. Incertesa i risc. Sistemes oberts.", keywords: ['Simon 1947', 'Ansoff 1965', 'Raiffa 1968'] },
+        { num: 58, bloc: 'G', title: "Planificació. Elements, etapes. Control. Sistemes integrats.", keywords: ['Fayol 1916', 'Drucker MBO', 'BSC Kaplan-Norton 1992'] },
+        { num: 59, bloc: 'G', title: "Empresa com a organització. Teories clàssiques i modernes.", keywords: ['Taylor 1911', 'Fayol', 'Weber', 'Mayo Hawthorne', 'Coase 1937'] },
+        { num: 60, bloc: 'G', title: "Estructures formals i informals. Dinàmica de grups.", keywords: ['Chandler 1962', 'Mintzberg 1979', 'Tuckman 1965'] },
+        { num: 61, bloc: 'G', title: "Lideratge i estils de direcció. Delegació.", keywords: ['Blake-Mouton 9×9', 'Hersey-Blanchard', 'Bass 4Is'] },
+        { num: 62, bloc: 'G', title: "Cultura i imatge. Estil Z. Ètica.", keywords: ['Schein 1985', 'Hofstede 1980', 'Carroll RSC', 'CSRD'] },
+        { num: 63, bloc: 'G', title: "Comunicació a l'empresa. Xarxes i estratègia.", keywords: ['Shannon-Weaver 1948', 'Bavelas-Leavitt', 'Coombs crisi'] },
+        { num: 64, bloc: 'G', title: "Clima i motivació. Tipologia. Satisfacció.", keywords: ['Maslow', 'Herzberg 1959', 'Vroom VIE', 'Deci-Ryan SDT'] },
+        { num: 65, bloc: 'G', title: "Propietat-control. Tecnoestructura. Govern corporatiu.", keywords: ['Berle-Means 1932', 'Galbraith 1967', 'Jensen-Meckling 1976'] },
+        { num: 66, bloc: 'H', title: "Anàlisi comptable. PGC i comptes anuals.", keywords: ['PGC 2007', 'NIIF', 'CSRD 2022/2464'] },
+        { num: 67, bloc: 'H', title: "Patrimoni i valoració. Valoració d'empreses.", keywords: ['A=PN+P', 'DCF', 'Pablo Fernández IESE'] },
+        { num: 68, bloc: 'H', title: "Anàlisi d'estats comptables. Ràtios.", keywords: ['DuPont', 'ROA/ROE', 'Altman Z-score 1968'] },
+        { num: 69, bloc: 'H', title: "Balanç Social. Auditoria social.", keywords: ['Carroll 1991', 'GRI', 'ESRS', 'ISO 26000'] },
+        { num: 70, bloc: 'H', title: "Didàctica de l'Economia. Metodologies.", keywords: ['LOMLOE', 'Bloom', 'Ausubel', 'Samuelson'] },
+        { num: 71, bloc: 'H', title: "Projecte empresarial com a metodologia.", keywords: ['Kilpatrick 1918', 'Canvas Osterwalder 2010', 'Lean Startup Ries 2011'] },
+    ];
+
+    const BLOCS = [
+        { id: 'A', color: 'purple', emoji: '📖', title: 'Fonaments', range: '1-10', href: 'oposicions-bloc-a' },
+        { id: 'B', color: 'pink', emoji: '📊', title: 'Microeconomia', range: '11-19', href: 'oposicions-bloc-b' },
+        { id: 'C', color: 'blue', emoji: '🌐', title: 'Macroeconomia', range: '20-26', href: 'oposicions-bloc-c' },
+        { id: 'D', color: 'red', emoji: '📈', title: 'Creixement i Treball', range: '27-37', href: 'oposicions-bloc-d' },
+        { id: 'E', color: 'orange', emoji: '🏢', title: 'Empresa I', range: '38-48', href: 'oposicions-bloc-e' },
+        { id: 'F', color: 'emerald', emoji: '💰', title: 'Finançament', range: '49-56', href: 'oposicions-bloc-f' },
+        { id: 'G', color: 'indigo', emoji: '🎯', title: 'Direcció', range: '57-65', href: 'oposicions-bloc-g' },
+        { id: 'H', color: 'teal', emoji: '📘', title: 'Comptabilitat', range: '66-71', href: 'oposicions-bloc-h' },
+    ];
+
+    // ════════════════════════════════════════════════════════════════
+    // FLASHCARDS — concepts clau (50+ cards)
+    // ════════════════════════════════════════════════════════════════
+    const FLASHCARDS = [
+        // Bloc A
+        { id: 'fc1', bloc: 'A', tema: 1, front: 'Definició d\'Economia de Robbins (1932)', back: '«Ciència que estudia la conducta humana com una relació entre fins i mitjans escassos que tenen usos alternatius»' },
+        { id: 'fc2', bloc: 'A', tema: 5, front: 'Revolució keynesiana (1936)', back: 'Keynes, General Theory: la demanda agregada mou l\'economia. Justifica intervenció estatal per estabilitzar.' },
+        { id: 'fc3', bloc: 'A', tema: 7, front: 'Frontera de Possibilitats de Producció (FPP)', back: 'Combinacions màximes de dos béns produïbles amb recursos i tecnologia donats. Còncava per costos d\'oportunitat creixents.' },
+        { id: 'fc4', bloc: 'A', tema: 10, front: 'Llei de l\'oferta i la demanda', back: 'El preu d\'equilibri és aquell on O=D. Si P&gt;P*, excés oferta. Si P&lt;P*, excés demanda.' },
+        // Bloc B
+        { id: 'fc5', bloc: 'B', tema: 11, front: 'Efecte Slutsky (descomposició)', back: 'Efecte total = Efecte substitució + Efecte renda. Slutsky (1915) va formalitzar la descomposició.' },
+        { id: 'fc6', bloc: 'B', tema: 15, front: 'Regla òptima del monopoli', back: 'IMg = CMg. Preu al tram elàstic. Índex de Lerner: (P−CMg)/P = 1/|E_p|.' },
+        { id: 'fc7', bloc: 'B', tema: 17, front: 'Coase (1960) — Teorema', back: 'Si drets de propietat ben definits i costos transacció baixos, parts negocien eficientment sense Estat.' },
+        { id: 'fc8', bloc: 'B', tema: 19, front: 'Corba de Lorenz i Gini', back: 'Corba de Lorenz mostra distribució acumulada de renda. Gini = àrea entre diagonal i corba / àrea triangle. 0=igualtat, 1=màxima desigualtat.' },
+        // Bloc C
+        { id: 'fc9', bloc: 'C', tema: 20, front: 'Els 3 mètodes de càlcul del PIB', back: '(1) Producció: Σ VAB + IVA. (2) Despesa: C+I+G+(X−M). (3) Renda: salaris + EBE + impostos nets.' },
+        { id: 'fc10', bloc: 'C', tema: 21, front: 'Multiplicador keynesià', back: 'k = 1/(1−c), on c és PMC. Si c=0,8 → k=5. Un ΔG=10 genera ΔY=50.' },
+        { id: 'fc11', bloc: 'C', tema: 23, front: 'Multiplicador monetari', back: 'm = 1/r (simple) o m = (1+e)/(r+e) (complet). Determina quant creix M1 per unitat de base monetària.' },
+        { id: 'fc12', bloc: 'C', tema: 25, front: 'Avantatge comparatiu (Ricardo 1817)', back: 'Un país s\'ha d\'especialitzar en els béns on el seu cost d\'oportunitat és menor, encara que no tingui avantatge absolut.' },
+        { id: 'fc13', bloc: 'C', tema: 26, front: 'Triangle d\'impossibilitat (Mundell)', back: 'No poden coexistir 3 a la vegada: (1) tipus fix, (2) política monetària autònoma, (3) lliure mobilitat de capital.' },
+        // Bloc D
+        { id: 'fc14', bloc: 'D', tema: 27, front: 'Residual de Solow (1957)', back: 'Part del creixement del PIB que no s\'explica per acumulació de K i L. Representa el progrés tècnic (TFP).' },
+        { id: 'fc15', bloc: 'D', tema: 29, front: 'Cicles econòmics — tipologia', back: 'Kitchin (3-4a inventaris), Juglar (8-11a inversió), Kuznets (15-25a demogràfics), Kondratiev (45-60a tecnològics).' },
+        { id: 'fc16', bloc: 'D', tema: 30, front: 'Corba de Phillips i NAIRU', back: 'Relació inversa atur-inflació a CP. A LP és vertical al NAIRU (Friedman-Phelps 1967-68). Expectatives clau.' },
+        { id: 'fc17', bloc: 'D', tema: 36, front: 'Criteri de Pareto', back: 'Una situació és Pareto-òptima si no es pot millorar ningú sense empitjorar un altre. Primer teorema: equilibri competitiu és Pareto-òptim.' },
+        // Bloc E
+        { id: 'fc18', bloc: 'E', tema: 38, front: 'Destrucció creativa (Schumpeter 1911)', back: 'L\'empresari innovador destrueix equilibris anteriors i genera nous. 5 innovacions: producte, procés, mercat, input, estructura.' },
+        { id: 'fc19', bloc: 'E', tema: 42, front: 'Economies d\'escala — tipus', back: 'Tècniques (divisió treball), financeres (crèdit barat), comercials (poder negociació), aprenentatge (Wright 1936), d\'abast (Panzar-Willig 1981).' },
+        { id: 'fc20', bloc: 'E', tema: 43, front: 'Punt mort (break-even)', back: 'Q* = CF / (P − CVu). Quantitat que cobreix tots els costos. (P−CVu) = marge de contribució unitari.' },
+        { id: 'fc21', bloc: 'E', tema: 45, front: '4 P de McCarthy (1960)', back: 'Product, Price, Place, Promotion. Ampliat a 7P per serveis (Booms-Bitner 1981): +People, Process, Physical evidence.' },
+        // Bloc F
+        { id: 'fc22', bloc: 'F', tema: 49, front: 'Fórmula del VAN', back: 'VAN = −A + Σⱼ FCⱼ/(1+k)ʲ. Regla: acceptar si VAN &gt; 0 (genera valor). Criteri fonamental de selecció d\'inversions.' },
+        { id: 'fc23', bloc: 'F', tema: 50, front: 'CAPM (Sharpe 1964)', back: 'E(Rᵢ) = r_f + βᵢ · (E(R_m) − r_f). El beta mesura risc sistemàtic. β&gt;1: més volàtil que mercat.' },
+        { id: 'fc24', bloc: 'F', tema: 53, front: 'Fórmula del WACC', back: 'WACC = (E/V)·Ke + (D/V)·Kd·(1−t). Cost mig ponderat. Taxa de descompte per a valoració d\'empresa.' },
+        { id: 'fc25', bloc: 'F', tema: 54, front: 'Teorema de Modigliani-Miller (1963)', back: 'Amb impostos: V_L = V_U + t·D. L\'empresa palanquejada val més que la sense deute per l\'escut fiscal.' },
+        { id: 'fc26', bloc: 'F', tema: 55, front: 'TAE vs. TIN', back: 'TAE = (1 + TIN/m)^m − 1. Incorpora capitalització i comissions. Regulada per Banco de España (Circular 5/2012).' },
+        { id: 'fc27', bloc: 'F', tema: 56, front: 'Quota del sistema francès', back: 'c = C · i / [1 − (1+i)⁻ⁿ]. Quotes constants. Amortització creixent, interessos decreixents.' },
+        // Bloc G
+        { id: 'fc28', bloc: 'G', tema: 57, front: 'Criteris de decisió en incertesa', back: 'Laplace (equiprobabilitat), Wald (maximin, pessimista), Maximax (optimista), Hurwicz (mix α), Savage (mínim penediment).' },
+        { id: 'fc29', bloc: 'G', tema: 59, front: '14 principis de Fayol (1916)', back: 'Divisió treball, autoritat, disciplina, unitat comandament, unitat direcció, subordinació interès, remuneració, centralització, jerarquia, ordre, equitat, estabilitat, iniciativa, unió personal.' },
+        { id: 'fc30', bloc: 'G', tema: 60, front: '5 parts de l\'organització (Mintzberg 1979)', back: 'Àpex estratègic, línia intermèdia, nucli operatiu, tecnoestructura, staff de suport.' },
+        { id: 'fc31', bloc: 'G', tema: 61, front: 'Graella gerencial Blake-Mouton (1964)', back: 'Matriu 9×9: preocupació producció (x) × preocupació persones (y). Òptim 9.9 (equip).' },
+        { id: 'fc32', bloc: 'G', tema: 62, front: '3 nivells de cultura (Schein 1985)', back: '(1) Artefactes visibles. (2) Valors proclamats. (3) Supòsits bàsics inconscients (essència).' },
+        { id: 'fc33', bloc: 'G', tema: 64, front: 'Teoria VIE de Vroom (1964)', back: 'Motivació = Expectativa × Instrumentalitat × València. Si qualsevol és 0, motivació nul·la.' },
+        { id: 'fc34', bloc: 'G', tema: 65, front: 'Teoria de l\'agència (Jensen-Meckling 1976)', back: 'Principal (accionista) delega en agent (directiu). Costos agència = monitoratge + bonding + pèrdua residual.' },
+        // Bloc H
+        { id: 'fc35', bloc: 'H', tema: 66, front: 'Parts del PGC 2007', back: '(1) Marc conceptual. (2) Normes Registre i Valoració. (3) Comptes anuals. (4) Quadre de comptes. (5) Definicions.' },
+        { id: 'fc36', bloc: 'H', tema: 67, front: 'Equació fonamental comptable', back: 'A = PN + P (Actiu = Patrimoni Net + Passiu). Sempre s\'ha de complir.' },
+        { id: 'fc37', bloc: 'H', tema: 68, front: 'Identitat de DuPont', back: 'ROE = Marge × Rotació × Palanquejament = (BN/V) · (V/A) · (A/PN). Desglossa les palanques del ROE.' },
+        { id: 'fc38', bloc: 'H', tema: 69, front: 'Piràmide de Carroll (1991) — RSC', back: '4 nivells: (1) Econòmica. (2) Legal. (3) Ètica. (4) Filantròpica. Base d\'RSC.' },
+        { id: 'fc39', bloc: 'H', tema: 71, front: 'Business Model Canvas (Osterwalder 2010)', back: '9 blocs: proposta valor, segments, canals, relacions, ingressos, recursos, activitats, aliances, costos.' },
+        // Extra temes A/B
+        { id: 'fc40', bloc: 'A', tema: 4, front: 'Els 4 pares fundadors', back: 'Smith (1776, clàssic), Marx (socialisme, plusvàlua), Marshall (1890, neoclàssic), Keynes (1936, intervenció).' },
+        { id: 'fc41', bloc: 'A', tema: 6, front: 'Paradoxa del valor', back: 'Per què l\'aigua val poc i els diamants molt? Menger-Jevons-Walras (1871-74): valor = utilitat MARGINAL, no total.' },
+        { id: 'fc42', bloc: 'B', tema: 12, front: 'Funció Cobb-Douglas (1928)', back: 'Q = A · K^α · L^β. Rendiments constants si α+β=1. Flexible per ajust empíric.' },
+        { id: 'fc43', bloc: 'B', tema: 16, front: 'Model de Cournot vs. Bertrand', back: 'Cournot: empreses decideixen quantitat. Bertrand: decideixen preu. En Bertrand amb béns homogenis, preu = CMg (paradoxa).' },
+        { id: 'fc44', bloc: 'B', tema: 18, front: 'Musgrave (1959) — 3 funcions Estat', back: '(1) Assignativa (fallades mercat). (2) Distributiva (equitat). (3) Estabilitzadora (cicle macro).' },
+        { id: 'fc45', bloc: 'D', tema: 31, front: 'Histeresi (Blanchard-Summers 1986)', back: 'Atur perllongat erosiona capital humà i xarxes socials, fent que l\'atur persisteixi fins i tot quan millora l\'economia. Explica cas espanyol.' },
+        { id: 'fc46', bloc: 'D', tema: 32, front: 'SBTC vs. RBTC', back: 'Skill-Biased (Katz-Murphy 1992): tecnologia complementa qualificats. Routine-Biased (Autor 2003): substitueix tasques rutinàries. Polarització.' },
+        { id: 'fc47', bloc: 'E', tema: 44, front: 'Fórmula EOQ (Harris 1913)', back: 'EOQ = √(2·D·S/H). D=demanda, S=cost comanda, H=cost emmagatzematge. Minimitza costos totals d\'inventari.' },
+        { id: 'fc48', bloc: 'E', tema: 46, front: 'Matriu BCG (1970)', back: '2×2: creixement mercat × quota relativa. 4 quadrants: estrelles, vaques lleteres, interrogants, gossos.' },
+        { id: 'fc49', bloc: 'F', tema: 51, front: 'Fons de Maniobra', back: 'FM = AC − PC = Recursos Permanents − Actiu No Corrent. Si &gt; 0, saludable. NOF = existències + clients − proveïdors.' },
+        { id: 'fc50', bloc: 'G', tema: 58, front: 'Objectius SMART (Doran 1981)', back: 'Specific, Measurable, Achievable, Relevant, Time-bound. Criteri per formular objectius útils.' },
+    ];
+
+    // ════════════════════════════════════════════════════════════════
+    // QUIZ BANK — Preguntes tipus test
+    // ════════════════════════════════════════════════════════════════
+    const QUIZ = [
+        { id: 1, bloc: 'A', tema: 1, q: 'Qui va formular la definició clàssica d\'Economia basada en l\'escassetat?', opts: ['Adam Smith (1776)', 'Lionel Robbins (1932)', 'Paul Samuelson (1948)', 'Alfred Marshall (1890)'], correct: 1 },
+        { id: 2, bloc: 'A', tema: 5, q: 'L\'any de publicació de la General Theory de Keynes és:', opts: ['1929', '1936', '1945', '1776'], correct: 1 },
+        { id: 3, bloc: 'B', tema: 15, q: 'En un monopoli, el benefici es maximitza quan:', opts: ['P = CMg', 'IMg = CMg', 'IT = CT', 'CMe = CMg'], correct: 1 },
+        { id: 4, bloc: 'B', tema: 17, q: 'El teorema de Coase (1960) afirma que:', opts: ['L\'Estat ha d\'intervenir sempre en externalitats', 'Amb drets ben definits i costos transacció baixos, les parts negocien eficientment', 'Els monopolis són inevitables', 'El mercat no pot resoldre externalitats'], correct: 1 },
+        { id: 5, bloc: 'C', tema: 20, q: 'La fórmula del PIB pel mètode de la despesa és:', opts: ['PIB = Y + C + I', 'PIB = C + I + G + (X − M)', 'PIB = W + B + R + I', 'PIB = VAB · deflactor'], correct: 1 },
+        { id: 6, bloc: 'C', tema: 21, q: 'Si la PMC és 0,75, el multiplicador keynesià és:', opts: ['1,33', '2', '3', '4'], correct: 3 },
+        { id: 7, bloc: 'C', tema: 25, q: 'El concepte d\'avantatge comparatiu és de:', opts: ['Adam Smith', 'David Ricardo', 'John Stuart Mill', 'Heckscher-Ohlin'], correct: 1 },
+        { id: 8, bloc: 'C', tema: 26, q: 'El Tractat de Maastricht es va signar el:', opts: ['1957', '1986', '1992', '2002'], correct: 2 },
+        { id: 9, bloc: 'D', tema: 27, q: 'El Premi Nobel d\'Economia 2024 va ser per:', opts: ['Cicles econòmics', 'Institucions i prosperitat (Acemoglu-Robinson-Johnson)', 'Política monetària', 'Comerç internacional'], correct: 1 },
+        { id: 10, bloc: 'D', tema: 29, q: 'Els cicles llargs de 45-60 anys tecnològics són de:', opts: ['Kitchin', 'Juglar', 'Kuznets', 'Kondratiev'], correct: 3 },
+        { id: 11, bloc: 'D', tema: 30, q: 'L\'equació quantitativa del diner és:', opts: ['M = V·P·Y', 'M·V = P·Y', 'M = k·P·Y', 'M·Y = V·P'], correct: 1 },
+        { id: 12, bloc: 'E', tema: 40, q: 'El model d\'Alfred Weber (1909) es refereix a:', opts: ['Estructures organitzatives', 'Localització industrial', 'Burocràcia', 'Màrqueting'], correct: 1 },
+        { id: 13, bloc: 'E', tema: 43, q: 'Si CF=50.000€, CVu=10€, P=25€, el punt mort és:', opts: ['2.000 unitats', '3.333 unitats', '5.000 unitats', '10.000 unitats'], correct: 1 },
+        { id: 14, bloc: 'E', tema: 45, q: 'Les 4 P del màrqueting inclouen:', opts: ['Product, Price, People, Profit', 'Product, Price, Place, Promotion', 'Profit, People, Planet, Purpose', 'Production, Performance, Price, Promotion'], correct: 1 },
+        { id: 15, bloc: 'F', tema: 49, q: 'El VAN d\'un projecte és positiu, això significa que:', opts: ['La TIR és 0', 'Destrueix valor', 'Genera valor i és acceptable', 'S\'ha de rebutjar'], correct: 2 },
+        { id: 16, bloc: 'F', tema: 54, q: 'Segons Modigliani-Miller (1963), amb impostos:', opts: ['V_L = V_U', 'V_L = V_U + t·D', 'V_L &lt; V_U sempre', 'L\'estructura de capital és irrellevant'], correct: 1 },
+        { id: 17, bloc: 'F', tema: 55, q: 'Si TIN=6% i es capitalitza mensualment, la TAE és:', opts: ['6,00%', '6,17%', '6,50%', '7,20%'], correct: 1 },
+        { id: 18, bloc: 'G', tema: 57, q: 'La obra fundacional d\'Herbert Simon sobre management és:', opts: ['The Nature of the Firm (1937)', 'Administrative Behavior (1947)', 'The Practice of Management (1954)', 'Corporate Strategy (1965)'], correct: 1 },
+        { id: 19, bloc: 'G', tema: 59, q: 'Els experiments de Hawthorne (1924-32) van ser liderats per:', opts: ['Taylor', 'Fayol', 'Mayo', 'Weber'], correct: 2 },
+        { id: 20, bloc: 'G', tema: 61, q: 'El millor estil segons la graella Blake-Mouton (1964) és:', opts: ['1.1 (empobrit)', '9.1 (autoritari)', '1.9 (country club)', '9.9 (equip)'], correct: 3 },
+        { id: 21, bloc: 'G', tema: 64, q: 'La teoria dels 2 factors va ser formulada per:', opts: ['Maslow (1943)', 'Herzberg (1959)', 'McClelland (1961)', 'Alderfer (1969)'], correct: 1 },
+        { id: 22, bloc: 'H', tema: 66, q: 'El Pla General de Comptabilitat vigent és el del:', opts: ['1990', '2007', '2015', '2022'], correct: 1 },
+        { id: 23, bloc: 'H', tema: 68, q: 'La fórmula de l\'identitat DuPont és:', opts: ['ROE = ROA + Kd', 'ROE = Marge × Rotació × Palanquejament', 'ROE = BN/A', 'ROE = (ROI − Kd)·D/E'], correct: 1 },
+        { id: 24, bloc: 'H', tema: 71, q: 'El Business Model Canvas fou creat per:', opts: ['Eric Ries (2011)', 'Clayton Christensen', 'Alexander Osterwalder (2010)', 'Steve Blank'], correct: 2 },
+        { id: 25, bloc: 'A', tema: 7, q: 'La Frontera de Possibilitats de Producció és còncava perquè:', opts: ['Hi ha rendiments constants', 'Els costos d\'oportunitat són creixents', 'Hi ha economies d\'escala', 'Els recursos són substituibles perfectament'], correct: 1 },
+        { id: 26, bloc: 'B', tema: 19, q: 'L\'índex de Gini oscil·la entre:', opts: ['-1 i +1', '0 i 100', '0 i 1', '0 i ∞'], correct: 2 },
+        { id: 27, bloc: 'C', tema: 24, q: 'L\'objectiu d\'inflació del BCE és:', opts: ['0%', '2%', '5%', 'menys de 10%'], correct: 1 },
+        { id: 28, bloc: 'D', tema: 36, q: 'Esping-Andersen (1990) classifica els Estats de Benestar en:', opts: ['2 tipus', '3 tipus (liberal, conservador, socialdemòcrata)', '5 tipus', 'No els classifica'], correct: 1 },
+        { id: 29, bloc: 'E', tema: 47, q: 'El model AIDA en comunicació comercial fou formulat per:', opts: ['Ogilvy', 'E. St. Elmo Lewis (1898)', 'Kotler', 'Ries-Trout'], correct: 1 },
+        { id: 30, bloc: 'F', tema: 56, q: 'En el sistema francès d\'amortització de préstecs:', opts: ['La quota d\'amortització és constant', 'La quota total és constant', 'Només s\'amortitza al final', 'No hi ha interessos'], correct: 1 },
+    ];
+
+    // ════════════════════════════════════════════════════════════════
+    // STORAGE HELPERS (localStorage)
+    // ════════════════════════════════════════════════════════════════
+    const Storage = {
+        get: (key, defaultValue) => {
+            try {
+                const v = localStorage.getItem(key);
+                return v ? JSON.parse(v) : defaultValue;
+            } catch (e) { return defaultValue; }
+        },
+        set: (key, value) => {
+            try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+        },
+    };
+
+    // SM-2 Algorithm (spaced repetition)
+    function sm2Review(card, quality) {
+        // quality: 0-5 (0=total fail, 5=perfect). We use 0 (again), 3 (hard), 4 (good), 5 (easy)
+        let { repetitions = 0, easeFactor = 2.5, interval = 0 } = card;
+        if (quality < 3) {
+            repetitions = 0;
+            interval = 1;
+        } else {
+            if (repetitions === 0) interval = 1;
+            else if (repetitions === 1) interval = 6;
+            else interval = Math.round(interval * easeFactor);
+            repetitions += 1;
+            easeFactor = easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+            if (easeFactor < 1.3) easeFactor = 1.3;
+        }
+        const nextReview = new Date();
+        nextReview.setDate(nextReview.getDate() + interval);
+        return { ...card, repetitions, easeFactor, interval, nextReview: nextReview.toISOString(), lastQuality: quality, lastReview: new Date().toISOString() };
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    // APP
+    // ════════════════════════════════════════════════════════════════
+    function EstudiarApp() {
+        const [section, setSection] = useState('dashboard');
+        const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+        usePdeDeepLink(section, setSection);
+
+        // Global state — carrega de localStorage
+        const [progress, setProgress] = useState(() => Storage.get('pde_estudi_progress', {}));
+        const [flashState, setFlashState] = useState(() => Storage.get('pde_estudi_flash', {}));
+        const [simHistory, setSimHistory] = useState(() => Storage.get('pde_estudi_sim', []));
+        const [quizHistory, setQuizHistory] = useState(() => Storage.get('pde_estudi_quiz', []));
+        const [plan, setPlan] = useState(() => Storage.get('pde_estudi_plan', { examDate: '', minutesPerDay: 120 }));
+
+        // Persist
+        useEffect(() => Storage.set('pde_estudi_progress', progress), [progress]);
+        useEffect(() => Storage.set('pde_estudi_flash', flashState), [flashState]);
+        useEffect(() => Storage.set('pde_estudi_sim', simHistory), [simHistory]);
+        useEffect(() => Storage.set('pde_estudi_quiz', quizHistory), [quizHistory]);
+        useEffect(() => Storage.set('pde_estudi_plan', plan), [plan]);
+
+        const pageTranslations = {
+            'nav.oposicions-estudiar': { val: 'Eines d\'Estudi', es: 'Herramientas de Estudio', en: 'Study Tools' },
+            'footer.appname': { val: "Eines d'Estudi — Oposicions", es: "Herramientas — Oposiciones", en: 'Study Tools — Exams' },
+            'inicio.backOpo': { val: "← Tornar a Oposicions", es: '← Volver', en: '← Back' },
+            'sec.dashboard': { val: 'Dashboard', es: 'Dashboard', en: 'Dashboard' },
+            'sec.planner': { val: 'Planificador', es: 'Planificador', en: 'Planner' },
+            'sec.flashcards': { val: 'Flashcards', es: 'Flashcards', en: 'Flashcards' },
+            'sec.quiz': { val: 'Quiz', es: 'Quiz', en: 'Quiz' },
+            'sec.simulacre': { val: 'Simulacre', es: 'Simulacro', en: 'Mock Exam' },
+            'sec.progres': { val: 'Progrés', es: 'Progreso', en: 'Progress' },
+        };
+        const t = createTranslator(pageTranslations, idioma);
+        const lang = idioma;
+
+        // ── Components ──
+        const Card = ({ children, className = '' }) => (
+            <div className={`bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 animate-fade ${className}`}>{children}</div>
+        );
+
+        const Stat = ({ label, value, sub, color = 'violet' }) => (
+            <div className={`p-5 rounded-2xl border bg-gradient-to-br from-${color}-50 to-white border-${color}-100`}>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
+                <p className={`text-3xl font-black text-${color}-600 mt-1`}>{value}</p>
+                {sub && <p className="text-xs text-slate-500 mt-1">{sub}</p>}
+            </div>
+        );
+
+        const progressPct = () => {
+            const studied = Object.values(progress).filter(s => s.status === 'done' || s.status === 'mastered').length;
+            return Math.round(studied / TEMARI.length * 100);
+        };
+
+        const flashDueCount = () => {
+            const now = new Date();
+            return FLASHCARDS.filter(fc => {
+                const st = flashState[fc.id];
+                if (!st) return true;
+                return new Date(st.nextReview) <= now;
+            }).length;
+        };
+
+        // ════════════════════════════════════════════════════════════
+        // DASHBOARD
+        // ════════════════════════════════════════════════════════════
+        const Dashboard = () => {
+            const studiedTemes = Object.entries(progress).filter(([k, v]) => v.status === 'done' || v.status === 'mastered').length;
+            const masteredTemes = Object.entries(progress).filter(([k, v]) => v.status === 'mastered').length;
+            const flashReviewed = Object.keys(flashState).length;
+            const simsDone = simHistory.length;
+            const quizAvg = quizHistory.length > 0 ? Math.round(quizHistory.reduce((a, b) => a + (b.score || 0), 0) / quizHistory.length) : 0;
+
+            let daysToExam = null;
+            if (plan.examDate) {
+                const d = Math.ceil((new Date(plan.examDate) - new Date()) / (1000 * 60 * 60 * 24));
+                daysToExam = d > 0 ? d : 0;
+            }
+
+            const byBloc = BLOCS.map(b => {
+                const temesB = TEMARI.filter(t => t.bloc === b.id);
+                const studiedB = temesB.filter(t => progress[t.num]?.status === 'done' || progress[t.num]?.status === 'mastered').length;
+                return { bloc: b.id, temes: temesB.length, studied: studiedB, pct: Math.round(studiedB / temesB.length * 100) };
+            });
+
+            return (
+                <div className="space-y-6 animate-fade">
+                    <div>
+                        <h2 className="text-3xl font-black text-slate-800 mb-2">👋 {lang === 'es' ? 'Hola, opositor!' : lang === 'en' ? 'Hi, candidate!' : 'Hola, opositor!'}</h2>
+                        <p className="text-slate-500">{lang === 'es' ? 'Aquí tienes un resumen de tu progreso.' : lang === 'en' ? 'Here\'s your progress summary.' : 'Ací tens un resum del teu progrés.'}</p>
+                    </div>
+
+                    {/* Stats grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <Stat label={lang === 'es' ? 'Temas estudiados' : 'Temes estudiats'} value={`${studiedTemes}/71`} sub={`${progressPct()}%`} color="violet" />
+                        <Stat label={lang === 'es' ? 'Temas dominados' : 'Temes dominats'} value={masteredTemes} sub="⭐" color="amber" />
+                        <Stat label="Flashcards" value={flashReviewed} sub={`${flashDueCount()} ${lang === 'es' ? 'por repasar' : 'per repassar'}`} color="purple" />
+                        <Stat label={lang === 'es' ? 'Simulacros' : 'Simulacres'} value={simsDone} sub={quizAvg ? `Quiz avg: ${quizAvg}%` : ''} color="indigo" />
+                    </div>
+
+                    {daysToExam !== null && (
+                        <Card>
+                            <div className="flex items-center justify-between flex-wrap gap-4">
+                                <div>
+                                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{lang === 'es' ? 'Examen en' : 'Examen en'}</p>
+                                    <p className="text-5xl font-black text-violet-600 mt-1">{daysToExam} <span className="text-2xl">{lang === 'es' ? 'dies' : 'dies'}</span></p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-xs text-slate-500">{lang === 'es' ? 'Horas restantes recomendadas' : 'Hores restants recomanades'}</p>
+                                    <p className="text-2xl font-bold text-slate-800">{Math.round(daysToExam * plan.minutesPerDay / 60)}h</p>
+                                </div>
+                            </div>
+                        </Card>
+                    )}
+
+                    {/* Progress per bloc */}
+                    <Card>
+                        <h3 className="font-bold text-slate-800 mb-4">{lang === 'es' ? 'Progreso por bloque' : 'Progrés per bloc'}</h3>
+                        <div className="space-y-3">
+                            {byBloc.map(b => {
+                                const blocInfo = BLOCS.find(x => x.id === b.bloc);
+                                return (
+                                    <div key={b.bloc}>
+                                        <div className="flex items-center justify-between text-sm mb-1">
+                                            <span className="font-semibold text-slate-700"><span className="mr-2">{blocInfo.emoji}</span>Bloc {b.bloc} · {blocInfo.title}</span>
+                                            <span className="text-slate-500 text-xs">{b.studied}/{b.temes} ({b.pct}%)</span>
+                                        </div>
+                                        <div className="w-full bg-slate-100 rounded-full h-2">
+                                            <div className={`bg-${blocInfo.color}-500 h-2 rounded-full transition-all`} style={{width: `${b.pct}%`}}></div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </Card>
+
+                    {/* Quick actions */}
+                    <Card>
+                        <h3 className="font-bold text-slate-800 mb-4">{lang === 'es' ? 'Acciones rápidas' : 'Accions ràpides'}</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <button onClick={() => { setSection('flashcards'); pdeSetHashSection('flashcards'); }} className="p-4 rounded-xl bg-violet-50 hover:bg-violet-100 border border-violet-200 transition-colors text-left">
+                                <div className="text-2xl mb-1">🃏</div>
+                                <p className="font-bold text-violet-800 text-sm">Flashcards</p>
+                                <p className="text-xs text-violet-600">{flashDueCount()} {lang === 'es' ? 'por repasar' : 'per repassar'}</p>
+                            </button>
+                            <button onClick={() => { setSection('quiz'); pdeSetHashSection('quiz'); }} className="p-4 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 transition-colors text-left">
+                                <div className="text-2xl mb-1">🎯</div>
+                                <p className="font-bold text-purple-800 text-sm">Quiz</p>
+                                <p className="text-xs text-purple-600">{QUIZ.length} {lang === 'es' ? 'preguntas' : 'preguntes'}</p>
+                            </button>
+                            <button onClick={() => { setSection('simulacre'); pdeSetHashSection('simulacre'); }} className="p-4 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors text-left">
+                                <div className="text-2xl mb-1">⏱️</div>
+                                <p className="font-bold text-indigo-800 text-sm">{lang === 'es' ? 'Simulacro' : 'Simulacre'}</p>
+                                <p className="text-xs text-indigo-600">{lang === 'es' ? 'Tema aleatorio' : 'Tema aleatori'}</p>
+                            </button>
+                            <button onClick={() => { setSection('planner'); pdeSetHashSection('planner'); }} className="p-4 rounded-xl bg-pink-50 hover:bg-pink-100 border border-pink-200 transition-colors text-left">
+                                <div className="text-2xl mb-1">📅</div>
+                                <p className="font-bold text-pink-800 text-sm">{lang === 'es' ? 'Planificador' : 'Planificador'}</p>
+                                <p className="text-xs text-pink-600">{lang === 'es' ? 'Organiza tu estudio' : 'Organitza el teu estudi'}</p>
+                            </button>
+                        </div>
+                    </Card>
+                </div>
+            );
+        };
+
+        // ════════════════════════════════════════════════════════════
+        // PLANNER
+        // ════════════════════════════════════════════════════════════
+        const Planner = () => {
+            const [examDate, setExamDate] = useState(plan.examDate);
+            const [minutes, setMinutes] = useState(plan.minutesPerDay);
+
+            const saveP = () => {
+                setPlan({ examDate, minutesPerDay: minutes });
+                alert(lang === 'es' ? '¡Plan guardado!' : 'Pla guardat!');
+            };
+
+            return (
+                <div className="space-y-6 animate-fade max-w-3xl">
+                    <div>
+                        <h2 className="text-3xl font-black text-slate-800 mb-2">📅 {lang === 'es' ? 'Planificador' : 'Planificador'}</h2>
+                        <p className="text-slate-500">{lang === 'es' ? 'Organiza tu estudio amb objetius realistes.' : 'Organitza el teu estudi amb objectius realistes.'}</p>
+                    </div>
+
+                    <Card>
+                        <div className="space-y-5">
+                            <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-2">{lang === 'es' ? 'Fecha del examen' : 'Data de l\'examen'}</label>
+                                <input type="date" value={examDate} onChange={e => setExamDate(e.target.value)} className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-violet-400 focus:outline-none" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-2">{lang === 'es' ? 'Minutos de estudio al día' : 'Minuts d\'estudi al dia'}</label>
+                                <input type="range" min="30" max="480" step="30" value={minutes} onChange={e => setMinutes(parseInt(e.target.value))} className="w-full" />
+                                <p className="text-center text-2xl font-black text-violet-600 mt-2">{minutes} min ({Math.round(minutes / 60 * 10) / 10}h)</p>
+                            </div>
+                            <button onClick={saveP} className="w-full py-3 px-5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold">{lang === 'es' ? 'Guardar plan' : 'Guardar pla'}</button>
+                        </div>
+                    </Card>
+
+                    {/* Sugerencia de distribución */}
+                    {examDate && (
+                        <Card>
+                            <h3 className="font-bold text-slate-800 mb-3">💡 {lang === 'es' ? 'Sugerencia de distribución' : 'Suggeriment de distribució'}</h3>
+                            {(() => {
+                                const days = Math.ceil((new Date(examDate) - new Date()) / (1000*60*60*24));
+                                if (days <= 0) return <p className="text-red-600">{lang === 'es' ? 'La fecha del examen ya ha pasado.' : 'La data ja ha passat.'}</p>;
+                                const totalHours = days * minutes / 60;
+                                const hoursPerTema = Math.round(totalHours / 71 * 10) / 10;
+                                return (
+                                    <div className="space-y-2 text-sm">
+                                        <p>⏱️ <strong>{days}</strong> {lang === 'es' ? 'días restantes' : 'dies restants'}</p>
+                                        <p>🎯 <strong>{Math.round(totalHours)}h</strong> {lang === 'es' ? 'totales de estudio' : 'totals d\'estudi'}</p>
+                                        <p>📚 <strong>~{hoursPerTema}h</strong> {lang === 'es' ? 'por tema (71 temas)' : 'per tema (71 temes)'}</p>
+                                        <div className="mt-3 p-4 bg-violet-50 rounded-lg border border-violet-200">
+                                            <p className="font-bold text-violet-800 mb-1">{lang === 'es' ? 'Recomendación' : 'Recomanació'}:</p>
+                                            <p className="text-violet-700 text-xs">{hoursPerTema < 2 ? (lang === 'es' ? 'Poco tiempo. Prioritza temas A-B-C que son fundamentales.' : 'Poc temps. Prioritza temes A-B-C fonamentals.') : hoursPerTema > 6 ? (lang === 'es' ? 'Tiempo amplio. Puedes aprofundir i fer molts simulacres.' : 'Temps ampli. Pots aprofundir i fer molts simulacres.') : (lang === 'es' ? 'Tiempo razonable. Alterna temari + flashcards + simulacros.' : 'Temps raonable. Alterna temari + flashcards + simulacres.')}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+                        </Card>
+                    )}
+                </div>
+            );
+        };
+
+        // ════════════════════════════════════════════════════════════
+        // FLASHCARDS
+        // ════════════════════════════════════════════════════════════
+        const FlashcardsView = () => {
+            const [filter, setFilter] = useState('due');
+            const [idx, setIdx] = useState(0);
+            const [flipped, setFlipped] = useState(false);
+
+            const now = new Date();
+            const pool = useMemo(() => {
+                if (filter === 'due') return FLASHCARDS.filter(fc => {
+                    const st = flashState[fc.id];
+                    if (!st) return true;
+                    return new Date(st.nextReview) <= now;
+                });
+                if (filter === 'all') return FLASHCARDS;
+                return FLASHCARDS.filter(fc => fc.bloc === filter);
+            }, [filter, flashState]);
+
+            const current = pool[idx];
+
+            const answer = (quality) => {
+                if (!current) return;
+                const prev = flashState[current.id] || {};
+                const updated = sm2Review(prev, quality);
+                setFlashState({ ...flashState, [current.id]: updated });
+                setFlipped(false);
+                setIdx(i => i + 1 >= pool.length ? 0 : i + 1);
+            };
+
+            if (!current) {
+                return (
+                    <div className="max-w-2xl mx-auto animate-fade">
+                        <h2 className="text-3xl font-black text-slate-800 mb-4">🃏 Flashcards</h2>
+                        <Card><div className="text-center py-12"><p className="text-4xl mb-4">🎉</p><p className="text-lg font-bold text-slate-700">{lang === 'es' ? '¡Todo repasado!' : 'Tot repassat!'}</p><p className="text-slate-500 text-sm mt-2">{lang === 'es' ? 'No hay cards pendientes. Vuelve más tarde.' : 'No hi ha cards pendents. Torna més tard.'}</p></div></Card>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="max-w-2xl mx-auto animate-fade space-y-4">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                        <h2 className="text-3xl font-black text-slate-800">🃏 Flashcards</h2>
+                        <select value={filter} onChange={e => { setFilter(e.target.value); setIdx(0); }} className="px-4 py-2 rounded-xl border border-slate-200 text-sm font-semibold">
+                            <option value="due">{lang === 'es' ? 'Por repasar' : 'Per repassar'}</option>
+                            <option value="all">{lang === 'es' ? 'Todas' : 'Totes'}</option>
+                            {BLOCS.map(b => <option key={b.id} value={b.id}>Bloc {b.id}</option>)}
+                        </select>
+                    </div>
+
+                    <p className="text-center text-sm text-slate-500">Card {idx + 1} / {pool.length} · Bloc {current.bloc} · Tema {current.tema}</p>
+
+                    <div className="relative h-72 cursor-pointer" onClick={() => setFlipped(!flipped)}>
+                        <div className={`card-flip ${flipped ? 'flipped' : ''} h-full relative`}>
+                            {/* Front */}
+                            <div className="card-face w-full h-full bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl shadow-xl p-8 flex items-center justify-center text-center">
+                                <div>
+                                    <p className="text-white/70 text-xs uppercase mb-3 font-semibold">{lang === 'es' ? 'Pregunta' : 'Pregunta'}</p>
+                                    <p className="text-white text-xl font-bold leading-snug">{current.front}</p>
+                                    <p className="text-white/50 text-xs mt-6">{lang === 'es' ? 'Click per veure resposta' : 'Clica per veure resposta'}</p>
+                                </div>
+                            </div>
+                            {/* Back */}
+                            <div className="card-face card-back w-full h-full bg-white border-2 border-violet-200 rounded-2xl shadow-xl p-8 flex items-center justify-center text-center">
+                                <div>
+                                    <p className="text-violet-600 text-xs uppercase mb-3 font-semibold">{lang === 'es' ? 'Respuesta' : 'Resposta'}</p>
+                                    <p className="text-slate-800 text-base leading-relaxed" dangerouslySetInnerHTML={{__html: current.back}}></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {flipped && (
+                        <div className="grid grid-cols-4 gap-2 animate-fade">
+                            <button onClick={() => answer(0)} className="py-3 px-2 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 font-bold text-sm">❌ {lang === 'es' ? 'Fallo' : 'Fall'}</button>
+                            <button onClick={() => answer(3)} className="py-3 px-2 rounded-xl bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold text-sm">🤔 {lang === 'es' ? 'Difícil' : 'Difícil'}</button>
+                            <button onClick={() => answer(4)} className="py-3 px-2 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold text-sm">✓ {lang === 'es' ? 'Bien' : 'Bé'}</button>
+                            <button onClick={() => answer(5)} className="py-3 px-2 rounded-xl bg-green-100 hover:bg-green-200 text-green-700 font-bold text-sm">🎯 {lang === 'es' ? 'Fàcil' : 'Fàcil'}</button>
+                        </div>
+                    )}
+                    {!flipped && (
+                        <button onClick={() => setFlipped(true)} className="w-full py-3 px-5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold">{lang === 'es' ? 'Mostrar respuesta' : 'Mostrar resposta'}</button>
+                    )}
+                </div>
+            );
+        };
+
+        // ════════════════════════════════════════════════════════════
+        // QUIZ
+        // ════════════════════════════════════════════════════════════
+        const QuizView = () => {
+            const [started, setStarted] = useState(false);
+            const [numQs, setNumQs] = useState(10);
+            const [idx, setIdx] = useState(0);
+            const [answers, setAnswers] = useState([]);
+            const [selected, setSelected] = useState(null);
+            const [showFeedback, setShowFeedback] = useState(false);
+            const [questions, setQuestions] = useState([]);
+            const [finished, setFinished] = useState(false);
+
+            const start = () => {
+                const shuffled = [...QUIZ].sort(() => Math.random() - 0.5).slice(0, numQs);
+                setQuestions(shuffled);
+                setIdx(0);
+                setAnswers([]);
+                setStarted(true);
+                setFinished(false);
+                setSelected(null);
+                setShowFeedback(false);
+            };
+
+            const submitAnswer = () => {
+                if (selected === null) return;
+                const q = questions[idx];
+                const isCorrect = selected === q.correct;
+                setAnswers([...answers, { qid: q.id, correct: isCorrect, chosen: selected }]);
+                setShowFeedback(true);
+                setTimeout(() => {
+                    setShowFeedback(false);
+                    setSelected(null);
+                    if (idx + 1 >= questions.length) {
+                        const score = Math.round([...answers, { qid: q.id, correct: isCorrect }].filter(a => a.correct).length / questions.length * 100);
+                        setQuizHistory([...quizHistory, { date: new Date().toISOString(), score, total: questions.length }]);
+                        setFinished(true);
+                    } else {
+                        setIdx(i => i + 1);
+                    }
+                }, 1500);
+            };
+
+            if (!started) {
+                return (
+                    <div className="max-w-2xl mx-auto animate-fade space-y-4">
+                        <h2 className="text-3xl font-black text-slate-800">🎯 Quiz</h2>
+                        <Card>
+                            <p className="text-sm text-slate-700 mb-4">{lang === 'es' ? 'Prueba tus conocimientos con preguntes tipus test.' : 'Posa a prova els teus coneixements amb preguntes tipus test.'}</p>
+                            <div className="mb-4">
+                                <label className="block text-sm font-bold text-slate-700 mb-2">{lang === 'es' ? 'Número de preguntas' : 'Nombre de preguntes'}</label>
+                                <div className="flex gap-2">
+                                    {[5, 10, 20, 30].map(n => (
+                                        <button key={n} onClick={() => setNumQs(n)} className={`flex-1 py-2 rounded-xl font-bold text-sm ${numQs === n ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-700'}`}>{n}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <button onClick={start} className="w-full py-3 px-5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold">🚀 {lang === 'es' ? 'Empezar' : 'Començar'}</button>
+                        </Card>
+
+                        {quizHistory.length > 0 && (
+                            <Card>
+                                <h3 className="font-bold text-slate-800 mb-3">📊 {lang === 'es' ? 'Últimos quizzes' : 'Últims quizzes'}</h3>
+                                <div className="space-y-2 text-sm">
+                                    {quizHistory.slice(-5).reverse().map((h, i) => (
+                                        <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-slate-50">
+                                            <span className="text-slate-600 text-xs">{new Date(h.date).toLocaleDateString()}</span>
+                                            <span className={`font-bold ${h.score >= 70 ? 'text-green-600' : h.score >= 50 ? 'text-orange-600' : 'text-red-600'}`}>{h.score}%</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </Card>
+                        )}
+                    </div>
+                );
+            }
+
+            if (finished) {
+                const correctCount = answers.filter(a => a.correct).length;
+                const score = Math.round(correctCount / questions.length * 100);
+                return (
+                    <div className="max-w-2xl mx-auto animate-fade">
+                        <Card>
+                            <div className="text-center py-6">
+                                <p className="text-6xl mb-4">{score >= 80 ? '🏆' : score >= 60 ? '😊' : '💪'}</p>
+                                <h3 className="text-3xl font-black text-slate-800 mb-2">{score}%</h3>
+                                <p className="text-slate-600 mb-4">{correctCount} / {questions.length} {lang === 'es' ? 'correctes' : 'correctes'}</p>
+                                <button onClick={() => { setStarted(false); setFinished(false); }} className="py-3 px-6 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold">{lang === 'es' ? '↻ Nou quiz' : '↻ Nou quiz'}</button>
+                            </div>
+                        </Card>
+                    </div>
+                );
+            }
+
+            const q = questions[idx];
+            return (
+                <div className="max-w-2xl mx-auto animate-fade space-y-4">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-xl font-bold text-slate-800">🎯 Quiz</h2>
+                        <span className="text-sm text-slate-500">{idx + 1} / {questions.length}</span>
+                    </div>
+                    <div className="w-full bg-slate-100 rounded-full h-2">
+                        <div className="bg-violet-500 h-2 rounded-full transition-all" style={{width: `${(idx + 1) / questions.length * 100}%`}}></div>
+                    </div>
+
+                    <Card>
+                        <p className="text-xs text-slate-500 mb-2">Bloc {q.bloc} · Tema {q.tema}</p>
+                        <p className="text-lg font-bold text-slate-800 mb-5">{q.q}</p>
+                        <div className="space-y-2">
+                            {q.opts.map((opt, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => !showFeedback && setSelected(i)}
+                                    disabled={showFeedback}
+                                    className={`w-full text-left p-3 rounded-xl border-2 transition-all ${
+                                        showFeedback
+                                            ? i === q.correct ? 'bg-green-50 border-green-400 text-green-800' : i === selected ? 'bg-red-50 border-red-400 text-red-800' : 'bg-slate-50 border-slate-200 text-slate-600'
+                                            : selected === i ? 'bg-violet-50 border-violet-400 text-violet-800' : 'bg-white border-slate-200 hover:border-violet-300'
+                                    }`}
+                                >
+                                    <span className="font-semibold">{String.fromCharCode(65 + i)}.</span> <span dangerouslySetInnerHTML={{__html: opt}}></span>
+                                    {showFeedback && i === q.correct && <span className="ml-2">✓</span>}
+                                    {showFeedback && i === selected && i !== q.correct && <span className="ml-2">✗</span>}
+                                </button>
+                            ))}
+                        </div>
+                        {!showFeedback && (
+                            <button onClick={submitAnswer} disabled={selected === null} className={`w-full mt-4 py-3 px-5 rounded-xl font-bold ${selected === null ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-violet-600 hover:bg-violet-700 text-white'}`}>{lang === 'es' ? 'Respondre' : 'Respondre'}</button>
+                        )}
+                    </Card>
+                </div>
+            );
+        };
+
+        // ════════════════════════════════════════════════════════════
+        // SIMULACRE
+        // ════════════════════════════════════════════════════════════
+        const Simulacre = () => {
+            const [phase, setPhase] = useState('setup'); // setup | running | done
+            const [blocFilter, setBlocFilter] = useState('all');
+            const [duration, setDuration] = useState(90); // min
+            const [currentTema, setCurrentTema] = useState(null);
+            const [timeLeft, setTimeLeft] = useState(0);
+            const [rating, setRating] = useState(null);
+            const [notes, setNotes] = useState('');
+            const intervalRef = useRef(null);
+
+            useEffect(() => {
+                if (phase === 'running') {
+                    intervalRef.current = setInterval(() => {
+                        setTimeLeft(t => {
+                            if (t <= 1) {
+                                clearInterval(intervalRef.current);
+                                setPhase('selfassess');
+                                return 0;
+                            }
+                            return t - 1;
+                        });
+                    }, 1000);
+                }
+                return () => clearInterval(intervalRef.current);
+            }, [phase]);
+
+            const start = () => {
+                const pool = blocFilter === 'all' ? TEMARI : TEMARI.filter(t => t.bloc === blocFilter);
+                const random = pool[Math.floor(Math.random() * pool.length)];
+                setCurrentTema(random);
+                setTimeLeft(duration * 60);
+                setPhase('running');
+            };
+
+            const saveSim = () => {
+                setSimHistory([...simHistory, {
+                    date: new Date().toISOString(),
+                    tema: currentTema.num,
+                    blocId: currentTema.bloc,
+                    duration,
+                    rating,
+                    notes,
+                }]);
+                if (rating >= 3) {
+                    setProgress({ ...progress, [currentTema.num]: { status: rating >= 4 ? 'mastered' : 'done', date: new Date().toISOString() } });
+                }
+                setPhase('setup');
+                setCurrentTema(null);
+                setRating(null);
+                setNotes('');
+            };
+
+            const formatTime = (s) => `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+
+            if (phase === 'setup') {
+                return (
+                    <div className="max-w-2xl mx-auto animate-fade space-y-4">
+                        <h2 className="text-3xl font-black text-slate-800">⏱️ {lang === 'es' ? 'Simulacro' : 'Simulacre'}</h2>
+                        <Card>
+                            <p className="text-sm text-slate-700 mb-4">{lang === 'es' ? 'Simulació d\'examen: tema aleatori + cronòmetre. Després autoavalua\'t.' : 'Simulació d\'examen: tema aleatori + cronòmetre. Després autoavalua\'t.'}</p>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-2">Bloc</label>
+                                    <select value={blocFilter} onChange={e => setBlocFilter(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-slate-200">
+                                        <option value="all">{lang === 'es' ? 'Cualquier bloque' : 'Qualsevol bloc'}</option>
+                                        {BLOCS.map(b => <option key={b.id} value={b.id}>Bloc {b.id} · {b.title}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-2">{lang === 'es' ? 'Durada' : 'Durada'}</label>
+                                    <div className="flex gap-2">
+                                        {[30, 60, 90, 120].map(d => (
+                                            <button key={d} onClick={() => setDuration(d)} className={`flex-1 py-2 rounded-xl font-bold text-sm ${duration === d ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-700'}`}>{d} min</button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <button onClick={start} className="w-full py-3 px-5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold">🎲 {lang === 'es' ? 'Començar' : 'Començar'}</button>
+                            </div>
+                        </Card>
+
+                        {simHistory.length > 0 && (
+                            <Card>
+                                <h3 className="font-bold text-slate-800 mb-3">📋 {lang === 'es' ? 'Simulacres previs' : 'Simulacres previs'}</h3>
+                                <div className="space-y-2 text-sm">
+                                    {simHistory.slice(-5).reverse().map((s, i) => (
+                                        <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-slate-50">
+                                            <span className="text-slate-600">T{s.tema} · Bloc {s.blocId}</span>
+                                            <span className="text-slate-500 text-xs">{new Date(s.date).toLocaleDateString()}</span>
+                                            <span className="font-bold text-violet-600">{'⭐'.repeat(s.rating || 0)}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </Card>
+                        )}
+                    </div>
+                );
+            }
+
+            if (phase === 'running') {
+                return (
+                    <div className="max-w-2xl mx-auto animate-fade space-y-4">
+                        <Card>
+                            <p className="text-xs text-slate-500 uppercase mb-1">{lang === 'es' ? 'Tema asignado' : 'Tema assignat'}</p>
+                            <h2 className="text-2xl font-black text-slate-800 mb-4">Tema {currentTema.num}: {currentTema.title}</h2>
+                            <div className="bg-violet-50 p-5 rounded-xl border border-violet-200 mb-4">
+                                <p className="text-xs font-semibold text-violet-700 mb-1">Bloc {currentTema.bloc}</p>
+                                <p className="text-xs text-violet-600">Paraules clau: {currentTema.keywords.join(', ')}</p>
+                            </div>
+                            <div className="text-center my-6">
+                                <p className="text-xs text-slate-500 uppercase mb-1">{lang === 'es' ? 'Temps restant' : 'Temps restant'}</p>
+                                <p className={`text-7xl font-black ${timeLeft < 600 ? 'text-red-600' : 'text-violet-600'}`}>{formatTime(timeLeft)}</p>
+                            </div>
+                            <div className="flex gap-2">
+                                <button onClick={() => setPhase('selfassess')} className="flex-1 py-3 px-5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold">{lang === 'es' ? 'Acabar' : 'Acabar'}</button>
+                                <button onClick={() => { clearInterval(intervalRef.current); setPhase('setup'); setCurrentTema(null); }} className="px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold">{lang === 'es' ? 'Cancelar' : 'Cancel·lar'}</button>
+                            </div>
+                        </Card>
+                    </div>
+                );
+            }
+
+            // Selfassess
+            return (
+                <div className="max-w-2xl mx-auto animate-fade space-y-4">
+                    <Card>
+                        <h3 className="text-xl font-bold text-slate-800 mb-4">📊 {lang === 'es' ? 'Autoevaluació' : 'Autoavaluació'}</h3>
+                        <p className="text-sm text-slate-600 mb-4">{lang === 'es' ? 'Tema' : 'Tema'}: <strong>{currentTema.num} · {currentTema.title}</strong></p>
+                        <div className="mb-4">
+                            <p className="text-sm font-bold text-slate-700 mb-2">{lang === 'es' ? '¿Cómo ha ido?' : 'Com ha anat?'}</p>
+                            <div className="flex gap-2">
+                                {[1, 2, 3, 4, 5].map(r => (
+                                    <button key={r} onClick={() => setRating(r)} className={`flex-1 py-3 rounded-xl font-bold ${rating === r ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-700'}`}>{r} ⭐</button>
+                                ))}
+                            </div>
+                            <p className="text-xs text-slate-500 mt-2">{lang === 'es' ? '1=Molt malament · 3=OK · 5=Excel·lent' : '1=Molt malament · 3=OK · 5=Excel·lent'}</p>
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-bold text-slate-700 mb-2">{lang === 'es' ? 'Notes' : 'Notes'}</label>
+                            <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder={lang === 'es' ? 'Què has fet bé, què has de millorar...' : 'Què has fet bé, què has de millorar...'} className="w-full p-3 border border-slate-200 rounded-xl text-sm" rows={4} />
+                        </div>
+                        <button onClick={saveSim} disabled={rating === null} className={`w-full py-3 px-5 rounded-xl font-bold ${rating === null ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-violet-600 hover:bg-violet-700 text-white'}`}>{lang === 'es' ? 'Guardar' : 'Guardar'}</button>
+                    </Card>
+                </div>
+            );
+        };
+
+        // ════════════════════════════════════════════════════════════
+        // PROGRES (temari per bloc amb status)
+        // ════════════════════════════════════════════════════════════
+        const ProgresView = () => {
+            const updateStatus = (num, status) => {
+                setProgress({ ...progress, [num]: { status, date: new Date().toISOString() } });
+            };
+
+            return (
+                <div className="space-y-4 animate-fade">
+                    <h2 className="text-3xl font-black text-slate-800">📈 {lang === 'es' ? 'Progreso' : 'Progrés'}</h2>
+                    <p className="text-sm text-slate-600">{lang === 'es' ? 'Marca cada tema según tu dominio.' : 'Marca cada tema segons el teu domini.'}</p>
+
+                    {BLOCS.map(bloc => {
+                        const temesBloc = TEMARI.filter(t => t.bloc === bloc.id);
+                        return (
+                            <Card key={bloc.id}>
+                                <h3 className="font-bold text-slate-800 mb-3 flex items-center gap-2"><span>{bloc.emoji}</span> Bloc {bloc.id} · {bloc.title} <a href={`./${bloc.href}`} className="text-xs font-normal text-violet-600 hover:underline">↗ {lang === 'es' ? 'Ver temas' : 'Veure temes'}</a></h3>
+                                <div className="space-y-2">
+                                    {temesBloc.map(tema => {
+                                        const st = progress[tema.num]?.status || 'pending';
+                                        return (
+                                            <div key={tema.num} className="flex items-center gap-2 p-2 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors">
+                                                <span className="font-bold text-xs w-8 text-slate-700">T{tema.num}</span>
+                                                <span className="flex-1 text-xs text-slate-700 truncate">{tema.title}</span>
+                                                <div className="flex gap-1">
+                                                    <button onClick={() => updateStatus(tema.num, 'pending')} title="Pendent" className={`w-8 h-8 rounded-lg text-sm font-bold ${st === 'pending' ? 'bg-slate-400 text-white' : 'bg-slate-200 text-slate-600'}`}>·</button>
+                                                    <button onClick={() => updateStatus(tema.num, 'studying')} title="Estudiant" className={`w-8 h-8 rounded-lg text-sm font-bold ${st === 'studying' ? 'bg-orange-500 text-white' : 'bg-orange-100 text-orange-600'}`}>📖</button>
+                                                    <button onClick={() => updateStatus(tema.num, 'done')} title="Estudiat" className={`w-8 h-8 rounded-lg text-sm font-bold ${st === 'done' ? 'bg-violet-500 text-white' : 'bg-violet-100 text-violet-600'}`}>✓</button>
+                                                    <button onClick={() => updateStatus(tema.num, 'mastered')} title="Dominat" className={`w-8 h-8 rounded-lg text-sm font-bold ${st === 'mastered' ? 'bg-green-500 text-white' : 'bg-green-100 text-green-600'}`}>⭐</button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </Card>
+                        );
+                    })}
+                </div>
+            );
+        };
+
+        // ════════════════════════════════════════════════════════════
+        // NAV / RENDER
+        // ════════════════════════════════════════════════════════════
+        const headerSections = [
+            { id: 'dashboard', label: t('sec.dashboard'), emoji: '🏠' },
+            { id: 'planner', label: t('sec.planner'), emoji: '📅' },
+            { id: 'flashcards', label: t('sec.flashcards'), emoji: '🃏' },
+            { id: 'quiz', label: t('sec.quiz'), emoji: '🎯' },
+            { id: 'simulacre', label: t('sec.simulacre'), emoji: '⏱️' },
+            { id: 'progres', label: t('sec.progres'), emoji: '📈' },
+        ];
+
+        return (
+            <div className="min-h-screen">
+                <PdeHeader idioma={idioma} setIdioma={setIdioma} currentApp="oposicions-estudiar" sections={headerSections} currentSection={section} setSection={setSection} />
+                <main className="max-w-6xl mx-auto px-4 py-8">
+                    <a href="./oposicions" className="inline-flex items-center gap-2 text-sm text-violet-600 hover:text-violet-800 mb-4 transition-colors">{t('inicio.backOpo')}</a>
+                    {section === 'dashboard' && <Dashboard />}
+                    {section === 'planner' && <Planner />}
+                    {section === 'flashcards' && <FlashcardsView />}
+                    {section === 'quiz' && <QuizView />}
+                    {section === 'simulacre' && <Simulacre />}
+                    {section === 'progres' && <ProgresView />}
+                </main>
+                <PdePrevNext sections={headerSections} currentSection={section} setSection={setSection} idioma={idioma} />
+                <PdeFooter appEmoji="🎓" appName={t('footer.appname')} idioma={idioma} />
+                <PdeScrollToTop />
+            </div>
+        );
+    }
+
+    ReactDOM.render(<EstudiarApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
