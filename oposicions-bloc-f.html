@@ -927,7 +927,204 @@
             const [vista, setVista] = useState('complet');
             return <div className="space-y-6"><SectionTitle icon="🏛️" title="Tema 52" subtitle={t('tema52.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema52Complet />}{vista === 'resum' && <Tema52Resum />}</div>;
         };
-        const Tema53 = () => <TemaPlaceholder num={53} title={t('tema53.title')} icon="⚖️" />;
+        // ════════════════════════════════════════════════════════════════
+        // TEMA 53 — El cost del capital (WACC)
+        // ════════════════════════════════════════════════════════════════
+        const Tema53Complet = () => (
+            <div className="space-y-6 animate-fade">
+                <Card title="Introducció" icon="📌">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>Invertir no surt gratis: tota unitat de capital té un <strong>cost d'oportunitat</strong>. El <strong>cost del capital</strong> és la rendibilitat mínima que l'empresa ha d'aconseguir perquè la inversió <em>no destruïsca valor</em>. Serveix de taxa de descompte per al VAN (Temes 49-50) i és determinant per a la valoració d'empreses (DCF, EVA).</p>
+                        <p>El concepte fonamental és el <strong>WACC</strong> (<em>Weighted Average Cost of Capital</em>), cost mig ponderat que combina les fonts de finançament. La pujada de tipus del BCE 2022-2024 ha elevat el WACC de moltes empreses, exigint a projectes rendibilitats més altes per a ser viables. Saber calcular-lo i interpretar-lo és una competència bàsica per al graduat en economia i empresa.</p>
+                        <p>Aquest tema s'estructura en 5 blocs: (1) concepte i rellevància del cost del capital; (2) cost del deute (Kd); (3) cost dels recursos propis (Ke); (4) WACC; (5) palanquejament financer i aplicacions.</p>
+                    </div>
+                </Card>
+
+                <Card title="1. Concepte i rellevància" icon="⚖️">
+                    <TheoryBlock title="1.1. Cost del capital com a llindar mínim" color="emerald">
+                        <p>El <strong>cost del capital</strong> (k) és la rendibilitat mínima exigida a qualsevol inversió perquè cobreisca el cost d'oportunitat dels recursos financers. Dos enfocaments clàssics:</p>
+                        <p><strong>a) Enfocament del mercat</strong>: el cost del capital és el rendiment que els inversors exigeixen per finançar l'empresa.</p>
+                        <p><strong>b) Enfocament del projecte</strong>: és la taxa de tall (<em>hurdle rate</em>) per decidir si un projecte es porta a terme.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.2. Utilitats" color="violet">
+                        <p>(1) <strong>Avaluació d'inversions</strong>: taxa de descompte en VAN.</p>
+                        <p>(2) <strong>Valoració d'empreses</strong>: DCF (Discounted Cash Flow).</p>
+                        <p>(3) <strong>Estructura òptima de capital</strong> (Tema 54).</p>
+                        <p>(4) <strong>Creació de valor</strong>: EVA = (ROIC − WACC) × Capital invertit. Una empresa crea valor si ROIC &gt; WACC.</p>
+                        <p>(5) <strong>Objectius de rendibilitat</strong> per unitats de negoci.</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="EVA = (ROIC − WACC) × Capital invertit" desc="Economic Value Added (Stern-Stewart): creació de valor si ROIC > WACC" />
+                </Card>
+
+                <Card title="2. Cost del deute (Kd)" icon="💳">
+                    <TheoryBlock title="2.1. Definició i càlcul" color="indigo">
+                        <p>El <strong>cost del deute</strong> (Kd) és el tipus d'interès efectiu que paga l'empresa pels seus préstecs, obligacions i altres deutes financers. Tres enfocaments:</p>
+                        <p><strong>a) Tipus contractual</strong>: TIN o TAE del préstec. Inclou comissions per la TAE.</p>
+                        <p><strong>b) Rendibilitat al venciment (YTM)</strong>: en el cas d'obligacions cotitzades. Reflecteix el cost actual.</p>
+                        <p><strong>c) Promig ponderat dels deutes</strong>: quan hi ha múltiples fonts.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.2. Cost efectiu després d'impostos" color="emerald">
+                        <p>Com ja es va exposar al Tema 50, els interessos són <strong>deduïbles</strong> de l'Impost de Societats. Per tant, el cost efectiu del deute és:</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="Kd efectiu = Kd bruto · (1 − t)" desc="Escut fiscal del deute. T = tipus impositiu (25 % general a Espanya)" />
+
+                    <TheoryBlock title="2.3. Exemple numèric" color="amber">
+                        <p>Empresa amb préstec de 1.000.000 € al 5 % TIN. Tipus impositiu 25 %.</p>
+                        <p>Cost brut: 5 %. Cost efectiu: 5 % × (1 − 0,25) = <strong>3,75 %</strong>. L'escut fiscal estalvia 12.500 € anuals (25 % de 50.000 € d'interessos).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.4. Factors que afecten Kd" color="rose">
+                        <p>(1) <strong>Tipus d'interès lliure de risc</strong>: bons del Tresor.</p>
+                        <p>(2) <strong>Spread creditici</strong>: segons rating (Moody's, S&P, Fitch).</p>
+                        <p>(3) <strong>Garanties</strong>: hipotecàries redueixen cost.</p>
+                        <p>(4) <strong>Termini</strong>: LT normalment més car que CT.</p>
+                        <p>(5) <strong>Relació bancària</strong> i volum.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="3. Cost dels recursos propis (Ke)" icon="💼">
+                    <TheoryBlock title="3.1. Concepte" color="violet">
+                        <p>El <strong>cost dels recursos propis</strong> (Ke) és la rendibilitat mínima exigida pels accionistes. Té una dimensió explícita difícil —no hi ha un contracte amb un tipus d'interès escrit— però és perfectament determinable amb models financers.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.2. Model CAPM (Sharpe 1964)" color="indigo">
+                        <p>El <strong>CAPM</strong>, ja presentat al Tema 50, és l'eina més usada per estimar Ke:</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="Ke = r_f + β · (R_m − r_f)" desc="CAPM. β mesura risc sistemàtic; R_m − r_f és la prima de mercat" />
+
+                    <TheoryBlock title="3.3. Model de Gordon-Shapiro (1959)" color="emerald">
+                        <p>Basat en la valoració d'una acció com a suma actualitzada de dividends perpetus amb creixement g:</p>
+                        <p>P₀ = D₁ / (Ke − g). Aïllant: <strong>Ke = D₁/P₀ + g</strong>.</p>
+                        <p>On D₁ és el dividend esperat al període 1, P₀ el preu actual i g la taxa de creixement sostenible.</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="Ke = D₁/P₀ + g" desc="Gordon-Shapiro (1959). Model de creixement constant dels dividends" />
+
+                    <TheoryBlock title="3.4. Models alternatius" color="amber">
+                        <p><strong>APT</strong> (Ross 1976): múltiples factors de risc.</p>
+                        <p><strong>Fama-French 3-factor</strong> (1992): mercat + mida + B/M.</p>
+                        <p><strong>Fama-French 5-factor</strong> (2015): + rendibilitat + inversió.</p>
+                        <p><strong>Build-up method</strong>: per a empreses no cotitzades. Partir de r_f i afegir primes successives (mercat, mida, sector, empresa específica).</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="4. El WACC (Weighted Average Cost of Capital)" icon="🧮">
+                    <TheoryBlock title="4.1. Fórmula bàsica" color="emerald">
+                        <p>El <strong>WACC</strong> és la mitjana ponderada del cost del deute i del cost dels recursos propis, segons les respectives proporcions en l'estructura de capital:</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="WACC = (E/V) · Ke + (D/V) · Kd · (1−t)" desc="E = equity, D = deute, V = E+D. Hamada / Miller-Modigliani amb impostos" />
+
+                    <TheoryBlock title="4.2. Exemple numèric" color="indigo">
+                        <p>Empresa amb estructura: Equity 6 M€, Deute 4 M€. Ke = 10 %, Kd = 4 %, t = 25 %.</p>
+                        <p>V = 10 M€. E/V = 0,6. D/V = 0,4.</p>
+                        <p>WACC = 0,6 × 10 % + 0,4 × 4 % × 0,75 = 6 % + 1,2 % = <strong>7,2 %</strong>.</p>
+                        <p>Interpretació: qualsevol projecte amb rendibilitat esperada &lt; 7,2 % destruirà valor per a l'empresa.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.3. Valors de mercat vs. comptables" color="rose">
+                        <p>Principi fonamental: les ponderacions E/V i D/V s'han d'usar a <strong>valors de mercat</strong>, no comptables. El valor comptable de l'equity pot diferir significativament del de mercat (especialment en empreses cotitzades o amb intangibles).</p>
+                        <p>Aproximacions: capitalització borsària per a equity; valor de mercat dels bons per al deute (o valor nominal si no cotitzen).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.4. Extensions" color="cyan">
+                        <p>• <strong>WACC per divisions</strong>: cada unitat de negoci pot tenir WACC diferent segons risc.</p>
+                        <p>• <strong>WACC nominal vs. real</strong>: ajust per inflació (Tema 50).</p>
+                        <p>• <strong>WACC marginal</strong>: per a ampliacions de capital.</p>
+                        <p>• <strong>WACC internacional</strong>: incorporar risc país.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="5. Palanquejament financer" icon="📈">
+                    <TheoryBlock title="5.1. Concepte" color="indigo">
+                        <p>El <strong>palanquejament financer</strong> (<em>financial leverage</em>) és l'ús de deute per finançar l'empresa i les seues inversions. Amplifica el rendiment sobre els fons propis (ROE) quan la rendibilitat econòmica (ROI) supera el cost del deute, però també amplifica les pèrdues en cas contrari.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.2. Efecte del palanquejament sobre la rendibilitat financera" color="violet">
+                        <p>La relació entre rendibilitat econòmica (ROI) i financera (ROE) ve donada per:</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="ROE = ROI + (ROI − Kd) · D/E · (1 − t)" desc="Palanquejament financer: amplifica el ROE si ROI > Kd" />
+
+                    <TheoryBlock title="5.3. Interpretació" color="emerald">
+                        <p>• Si <strong>ROI &gt; Kd</strong>: el palanquejament amplifica el ROE positivament. «Palanca positiva».</p>
+                        <p>• Si <strong>ROI &lt; Kd</strong>: el palanquejament erosiona el ROE. «Palanca negativa».</p>
+                        <p>• Si <strong>ROI = Kd</strong>: el palanquejament és neutre.</p>
+                        <p><strong>Exemple</strong>: ROI = 10 %, Kd = 4 %, D/E = 1 (50 % deute), t = 25 %. ROE = 10 % + (10 % − 4 %) × 1 × 0,75 = 10 % + 4,5 % = <strong>14,5 %</strong>. El palanquejament puja el ROE de 10 % a 14,5 %.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.4. Grau de palanquejament" color="amber">
+                        <p><strong>GAF</strong> (Grau d'Apalancament Financer) = Δ %ROE / Δ %BAII. Mesura la sensibilitat del ROE davant variacions del benefici operatiu. Un GAF alt indica alta sensibilitat i risc.</p>
+                        <p>Una empresa amb GAF = 2 veurà el seu ROE pujar un 20 % si el BAII puja un 10 %... o caure un 20 % si el BAII cau un 10 %.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.5. Límits del palanquejament" color="rose">
+                        <p>Un excés de deute genera:</p>
+                        <p>• <strong>Costos de fallida</strong>: probabilitat d'insolvència i costos associats (legals, operatius, de reputació).</p>
+                        <p>• <strong>Restriccions de covenants</strong>: els bancs imposen condicions.</p>
+                        <p>• <strong>Pèrdua de flexibilitat</strong>: incapacitat d'aprofitar oportunitats.</p>
+                        <p>Aquest equilibri entre escut fiscal i costos de fallida és el fonament de la <strong>teoria del trade-off</strong> desenvolupada al Tema 54.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="Conclusió" icon="✅">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>El <strong>cost del capital</strong> és la vara de mesurar de qualsevol decisió d'inversió i valoració empresarial. El càlcul del <strong>WACC</strong> integra el cost del deute (amb escut fiscal, <strong>Modigliani-Miller 1963</strong>) i el cost dels recursos propis (estimat via <strong>CAPM de Sharpe 1964</strong> o <strong>Gordon-Shapiro 1959</strong>), ponderats per l'estructura de capital.</p>
+                        <p>El <strong>palanquejament financer</strong> amplifica el ROE quan ROI &gt; Kd, però també els riscos. Un ús intel·ligent del deute, aprofitant l'escut fiscal sense comprometre la solvència, és una de les palanques de creació de valor més estudiades en les finances modernes. El concepte de <strong>EVA</strong> (Stern-Stewart) captura de forma elegant aquesta idea: només les inversions amb rendibilitat superior al WACC creen valor. El docent ha de transmetre que els números (Kd, Ke, WACC, ROE) encapsulen decisions estratègiques amb conseqüències profundes sobre la salut i la sostenibilitat empresarial.</p>
+                    </div>
+                </Card>
+
+                <BibliografiaBox items={[
+                    'MODIGLIANI, F. i MILLER, M.H. (1958): «The Cost of Capital», AER, 48.',
+                    'MODIGLIANI, F. i MILLER, M.H. (1963): «Corporate Income Taxes and the Cost of Capital», AER, 53.',
+                    'GORDON, M.J. i SHAPIRO, E. (1959): «Capital Equipment Analysis», Management Science, 3.',
+                    'SHARPE, W.F. (1964): «Capital Asset Prices», J. of Finance, 19.',
+                    'HAMADA, R.S. (1972): «The Effect of the Firm\'s Capital Structure on Systematic Risk», J. of Finance, 27.',
+                    'ROSS, S.A. (1976): «The Arbitrage Theory of Capital Asset Pricing», JET, 13.',
+                    'FAMA, E.F. i FRENCH, K.R. (1992): «The Cross-Section of Expected Stock Returns», J. of Finance, 47.',
+                    'STERN, J. i SHIELY, J. (2001): The EVA Challenge, Wiley.',
+                    'BREALEY, R., MYERS, S. i ALLEN, F. (2020): Principles of Corporate Finance, 13a ed., McGraw-Hill.',
+                    'DAMODARAN, A. (2011): Applied Corporate Finance, 4a ed., Wiley.',
+                    'FERNÁNDEZ, P. (2019): Valoración de Empresas, IESE Business School.',
+                ]} />
+            </div>
+        );
+
+        const Tema53Resum = () => (
+            <div className="space-y-5 animate-fade">
+                <Card>
+                    <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200 mb-5">
+                        <p className="text-center font-bold text-emerald-800 text-lg">Tema 53: Cost del capital (WACC)</p>
+                        <p className="text-center text-sm text-emerald-600 mt-1">WACC = (E/V)·Ke + (D/V)·Kd·(1−t)</p>
+                    </div>
+                    <div className="space-y-4 text-sm text-slate-700">
+                        <div><h4 className="font-bold text-slate-800 mb-1">1. Concepte</h4><ul className="list-disc pl-5 space-y-1"><li>Rendibilitat mínima exigida (hurdle rate).</li><li>EVA = (ROIC − WACC) · Capital.</li><li>Crea valor si ROIC &gt; WACC.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">2. Kd</h4><ul className="list-disc pl-5 space-y-1"><li>TIN, TAE, YTM, promig ponderat.</li><li>Escut fiscal: Kd_ef = Kd·(1−t).</li><li>Factors: r_f, spread, garanties, termini.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">3. Ke</h4><ul className="list-disc pl-5 space-y-1"><li>CAPM (Sharpe 1964): Ke = r_f + β(R_m − r_f).</li><li>Gordon-Shapiro (1959): Ke = D₁/P₀ + g.</li><li>APT, Fama-French 3/5 factors, build-up.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">4. WACC</h4><ul className="list-disc pl-5 space-y-1"><li>WACC = (E/V)·Ke + (D/V)·Kd·(1−t).</li><li>Ponderacions a valors de mercat.</li><li>Extensions: divisions, marginal, internacional.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">5. Palanquejament</h4><ul className="list-disc pl-5 space-y-1"><li>ROE = ROI + (ROI−Kd)·D/E·(1−t).</li><li>Positiu si ROI &gt; Kd.</li><li>GAF = Δ%ROE / Δ%BAII.</li><li>Límits: costos de fallida.</li></ul></div>
+                    </div>
+                    <FormulaBox formula="WACC = (E/V)·Ke + (D/V)·Kd·(1−t)" />
+                    <FormulaBox formula="ROE = ROI + (ROI − Kd)·D/E·(1−t)" desc="Palanquejament" />
+                    <ClauBox>
+                        <p>- Calcula el <strong>WACC</strong> amb un exemple numèric (E/V, D/V, Ke, Kd·(1−t)).</p>
+                        <p>- Cita <strong>Modigliani-Miller (1958, 1963)</strong>, <strong>Sharpe CAPM (1964)</strong>, <strong>Gordon-Shapiro (1959)</strong>.</p>
+                        <p>- Resol un exemple de <strong>palanquejament financer</strong> mostrant ROE amplificat.</p>
+                        <p>- Connecta amb <strong>EVA</strong> (Stern-Stewart) com a indicador de creació de valor.</p>
+                    </ClauBox>
+                </Card>
+            </div>
+        );
+
+        const Tema53 = () => {
+            const [vista, setVista] = useState('complet');
+            return <div className="space-y-6"><SectionTitle icon="⚖️" title="Tema 53" subtitle={t('tema53.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema53Complet />}{vista === 'resum' && <Tema53Resum />}</div>;
+        };
         const Tema54 = () => <TemaPlaceholder num={54} title={t('tema54.title')} icon="📊" />;
         const Tema55 = () => <TemaPlaceholder num={55} title={t('tema55.title')} icon="📈" />;
         const Tema56 = () => <TemaPlaceholder num={56} title={t('tema56.title')} icon="🧾" />;
