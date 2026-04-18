@@ -770,7 +770,225 @@
             const [vista, setVista] = useState('complet');
             return <div className="space-y-6"><SectionTitle icon="📍" title="Tema 40" subtitle={t('tema40.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema40Complet />}{vista === 'resum' && <Tema40Resum />}</div>;
         };
-        const Tema41 = () => <TemaPlaceholder num={41} title={t('tema41.title')} icon="📏" />;
+        // ════════════════════════════════════════════════════════════════
+        // TEMA 41 — Dimensió de l'empresa
+        // ════════════════════════════════════════════════════════════════
+        const Tema41Complet = () => (
+            <div className="space-y-6 animate-fade">
+                <Card title="Introducció" icon="📌">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>La <strong>dimensió</strong> o <strong>grandària</strong> de l'empresa condiciona profundament la seua estratègia, costos, capacitat d'innovació i resiliència. No existeix una única dimensió òptima: depèn del sector, del mercat, de la tecnologia i del moment del cicle vital. Una microempresa artesana i una multinacional automobilística juguen partits diferents amb regles diferents.</p>
+                        <p>El teixit empresarial espanyol es caracteritza per un pes excepcional de les PyMES: el 99,83 % de les empreses segons la UE 2003/361, amb només 5.500 grans empreses (0,17 %). Aquesta estructura, comparada amb la dels EUA o Alemanya, explica bona part de la bretxa de productivitat espanyola respecte a les economies avançades. Els programes de suport a la PIME (ICO, Enisa, CDTI) i la reforma de l'IAE cerquen fomentar el creixement empresarial.</p>
+                        <p>El tema s'estructura en 5 blocs: (1) concepte i criteris de mesura; (2) dimensió òptima: economies i deseconomies d'escala; (3) mesures de dimensió; (4) creixement empresarial; (5) dimensió i ocupació.</p>
+                    </div>
+                </Card>
+
+                <Card title="1. Concepte i criteris de mesura" icon="📏">
+                    <TheoryBlock title="1.1. Què significa dimensió?" color="orange">
+                        <p>La <strong>dimensió</strong> d'una empresa fa referència a la seua <strong>grandària relativa</strong> en termes de capacitat productiva, recursos utilitzats i/o resultats obtinguts. Cal distingir-la d'altres conceptes:</p>
+                        <p>• <strong>Dimensió tècnica (o mida de planta)</strong>: capacitat productiva instal·lada.</p>
+                        <p>• <strong>Dimensió econòmica</strong>: volum de producció o vendes.</p>
+                        <p>• <strong>Dimensió ocupacional</strong>: nombre de treballadors.</p>
+                        <p>• <strong>Dimensió patrimonial</strong>: valor dels actius o del capital.</p>
+                        <p>• <strong>Dimensió del mercat</strong>: quota de mercat, àmbit geogràfic.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.2. Criteris de classificació UE (2003/361)" color="violet">
+                        <p>La <strong>Recomanació 2003/361/CE</strong> estableix 3 criteris:</p>
+                        <p>• <strong>Nombre de treballadors</strong>.</p>
+                        <p>• <strong>Volum de negoci anual</strong>.</p>
+                        <p>• <strong>Balanç general anual</strong>.</p>
+                        <p>I 4 categories:</p>
+                        <p>• Micro: &lt;10 trab. · &lt;2 M€ · &lt;2 M€.</p>
+                        <p>• Petita: 10-49 · &lt;10 M€ · &lt;10 M€.</p>
+                        <p>• Mitjana: 50-249 · &lt;50 M€ · &lt;43 M€.</p>
+                        <p>• Gran: ≥250 trab. o més límits superats.</p>
+                        <p>Important: ha de complir-se el criteri de treballadors <strong>i</strong> (un dels dos financers) per mantenir la categoria. A més, es computen les empreses associades o vinculades.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="2. Dimensió òptima: economies i deseconomies d'escala" icon="⚖️">
+                    <TheoryBlock title="2.1. El concepte de dimensió òptima" color="indigo">
+                        <p>La <strong>dimensió òptima</strong> d'una empresa és aquella en què el cost mitjà unitari de producció és mínim a llarg termini. Es determina per la intersecció entre <strong>economies d'escala</strong> (reducció de costos mitjans amb l'augment de producció) i <strong>deseconomies d'escala</strong> (augment de costos amb mides excessives).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.2. Economies d'escala" color="emerald">
+                        <p>Les <strong>economies d'escala</strong> deriven de:</p>
+                        <p><strong>a) Economies tècniques</strong>: divisió del treball i especialització (Adam Smith, 1776); major eficiència de maquinària gran; major utilització; llei dels 2/3 (costos del contenidor creixen 2/3 més lent que volum).</p>
+                        <p><strong>b) Economies financeres</strong>: millor accés a finançament; tipus d'interès més baixos; major poder de negociació amb bancs.</p>
+                        <p><strong>c) Economies comercials</strong>: poder davant proveïdors i distribuïdors; publicitat massiva; marca potent.</p>
+                        <p><strong>d) Economies d'aprenentatge</strong>: corba d'experiència de Wright (1936): els costos unitaris cauen un 20-30 % cada vegada que es duplica la producció acumulada.</p>
+                        <p><strong>e) Economies d'abast</strong> (<em>scope</em>, Panzar-Willig, 1981): diversificació productiva aprofitant actius comuns.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.3. Deseconomies d'escala" color="red">
+                        <p>A partir de certa dimensió, apareixen <strong>deseconomies</strong>:</p>
+                        <p>• <strong>Dificultats de coordinació</strong>: més jerarquies, més burocràcia, comunicació lenta.</p>
+                        <p>• <strong>Pèrdua de motivació</strong>: alienació, anonimat, menys autonomia.</p>
+                        <p>• <strong>Diseconomies X</strong> (Leibenstein, 1966): ineficiència organitzativa per falta de pressió competitiva.</p>
+                        <p>• <strong>Dificultats de gestió</strong>: racionalitat limitada de l'alta direcció.</p>
+                        <p>• <strong>Problemes d'agència</strong> amplificats (Jensen-Meckling, Tema 65).</p>
+                    </TheoryBlock>
+
+                    {/* SVG Corba de cost mig llarg termini */}
+                    <div className="my-6 flex justify-center">
+                        <svg viewBox="0 0 560 340" className="w-full max-w-2xl mx-auto" style={{fontFamily: 'Plus Jakarta Sans, sans-serif'}}>
+                            <text x="280" y="22" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#1e293b">Corba de cost mig a llarg termini (CMeLT)</text>
+                            <line x1="60" y1="280" x2="520" y2="280" stroke="#475569" strokeWidth="2"/>
+                            <line x1="60" y1="280" x2="60" y2="50" stroke="#475569" strokeWidth="2"/>
+                            <polygon points="520,280 510,275 510,285" fill="#475569"/>
+                            <polygon points="60,50 55,60 65,60" fill="#475569"/>
+                            <text x="530" y="285" fontSize="12" fontWeight="600" fill="#475569">Quantitat</text>
+                            <text x="30" y="45" fontSize="12" fontWeight="600" fill="#475569">CMe</text>
+                            <path d="M 90 80 Q 180 210 290 240 Q 400 270 500 120" fill="none" stroke="#ea580c" strokeWidth="3"/>
+                            <text x="150" y="130" fontSize="11" fontWeight="bold" fill="#16a34a">Economies d'escala</text>
+                            <text x="160" y="148" fontSize="10" fill="#16a34a">(CMe ↓)</text>
+                            <circle cx="290" cy="240" r="6" fill="#2563eb" stroke="#1e40af" strokeWidth="2"/>
+                            <text x="290" y="262" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#1e40af">Dimensió òptima</text>
+                            <line x1="290" y1="240" x2="290" y2="280" stroke="#2563eb" strokeDasharray="3,3"/>
+                            <text x="400" y="170" fontSize="11" fontWeight="bold" fill="#dc2626">Deseconomies</text>
+                            <text x="410" y="188" fontSize="10" fill="#dc2626">(CMe ↑)</text>
+                            {/* Minimum line */}
+                            <line x1="60" y1="240" x2="290" y2="240" stroke="#2563eb" strokeDasharray="3,3"/>
+                            <text x="35" y="244" fontSize="10" fontWeight="bold" fill="#1e40af">CMe*</text>
+                            <text x="285" y="305" textAnchor="middle" fontSize="10" fontWeight="bold" fill="#1e40af">Q*</text>
+                        </svg>
+                    </div>
+
+                    <FormulaBox formula="CMe(Q) = CT(Q)/Q  |  min CMe ⇒ d CMe/dQ = 0 ⇒ CMg = CMe" desc="Dimensió òptima: el cost marginal iguala el cost mitjà" />
+                </Card>
+
+                <Card title="3. Mesures de dimensió" icon="📊">
+                    <TheoryBlock title="3.1. Mesures absolutes" color="violet">
+                        <p>Indicadors quantitatius sobre la mida de l'empresa:</p>
+                        <p>• <strong>Volum de vendes</strong> (o xifra de negocis): facturació anual.</p>
+                        <p>• <strong>Nombre de treballadors</strong>: plantilla mitjana equivalent a jornada completa.</p>
+                        <p>• <strong>Actius totals</strong>: valor del balanç.</p>
+                        <p>• <strong>Capital propi</strong>: fons propis.</p>
+                        <p>• <strong>Valor afegit brut (VAB)</strong>: producció menys consums intermedis.</p>
+                        <p>• <strong>Capacitat productiva</strong>: tones, unitats, m².</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.2. Mesures relatives" color="blue">
+                        <p>• <strong>Quota de mercat</strong>: vendes de l'empresa / vendes totals del sector.</p>
+                        <p>• <strong>Concentració sectorial</strong>: índex CR4 (quota de les 4 primeres), CR8, Herfindahl-Hirschman (HHI = Σ qᵢ²).</p>
+                        <p>• <strong>Quocient de capital intensive</strong>: capital per treballador.</p>
+                        <p>• <strong>Productivitat del treball</strong>: VAB/treballador.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.3. Indicadors compostos i rànquings" color="cyan">
+                        <p>Classificacions habituals: <strong>Fortune 500</strong>, <strong>Forbes Global 2000</strong>, <strong>Financial Times 500</strong>, <strong>Ranking Merco</strong> (reputació + grandària). Al rànquing Fortune Global 500 2024, les empreses espanyoles presents són <em>Banco Santander</em>, <em>BBVA</em>, <em>Repsol</em>, <em>Telefónica</em>, <em>Iberdrola</em>, <em>Inditex</em>, <em>Mapfre</em>, <em>ACS</em> (8 empreses).</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="4. Creixement empresarial" icon="📈">
+                    <TheoryBlock title="4.1. Modalitats de creixement" color="indigo">
+                        <p><strong>Creixement intern (orgànic)</strong>: augmentar capacitat pròpia. Construir nova planta, obrir nous punts de venda. Avantatges: control, cultura coherent. Inconvenients: lent, limitat per recursos interns.</p>
+                        <p><strong>Creixement extern (inorgànic)</strong>: adquirir o fusionar-se amb altres empreses. Avantatges: velocitat, accés a actius estratègics (marques, patents, xarxes). Inconvenients: risc d'integració, sobrepagament (<em>winner's curse</em>).</p>
+                        <p>Cas paradigmàtic espanyol: <em>Telefónica</em> va créixer externament els anys 90-2000 (compra d'operadores a Amèrica Llatina, GVT, O2); actualment està desapalancant-se amb vendes d'actius.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.2. Matriu d'Ansoff (1957)" color="violet">
+                        <p><strong>Igor Ansoff</strong> va formular la matriu que classifica les estratègies de creixement segons producte i mercat:</p>
+                        <p>• <strong>Penetració de mercat</strong> (producte actual / mercat actual): augmentar quota. Baix risc.</p>
+                        <p>• <strong>Desenvolupament de producte</strong> (nou / actual): innovar. Risc mitjà.</p>
+                        <p>• <strong>Desenvolupament de mercat</strong> (actual / nou): expansió geogràfica, nous segments. Risc mitjà.</p>
+                        <p>• <strong>Diversificació</strong> (nou / nou): relacionada o no. Risc alt.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.3. Integració i diversificació" color="emerald">
+                        <p><strong>Integració vertical</strong>: cap amunt (cap a proveïdors) o cap avall (cap a clients). Cas: <em>Inditex</em> integra disseny, producció i venda. Motivacions: reducció de costos de transacció (Williamson), seguretat de subministrament, control de qualitat.</p>
+                        <p><strong>Integració horitzontal</strong>: adquisició de competidors del mateix mercat. Augmenta quota. Subjecte a control antitrust (CNMC, DG Comp).</p>
+                        <p><strong>Diversificació relacionada</strong>: nou producte amb sinergies (Google → Android, Gmail).</p>
+                        <p><strong>Diversificació no relacionada (conglomerat)</strong>: negocis aliens (LVMH: luxe + hotels + vins). Risc de disperses directives.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.4. Internacionalització" color="amber">
+                        <p>Vies de <strong>internacionalització</strong>:</p>
+                        <p>(1) <strong>Exportació</strong> directa o indirecta.</p>
+                        <p>(2) <strong>Contractuals</strong>: llicències, franquícies, joint-ventures.</p>
+                        <p>(3) <strong>Inversió directa</strong> (IED): filial, adquisició.</p>
+                        <p>La <strong>teoria eclèctica de Dunning</strong> (OLI, 1977) explica per què les empreses internacionalitzen: avantatges d'<strong>O</strong>wnership, <strong>L</strong>ocation, <strong>I</strong>nternalization. Espanya té empreses multinacionals líders al seu sector: <em>Inditex</em> (213 mercats), <em>ACS</em>, <em>Ferrovial</em>, <em>Meliá</em>, <em>Grifols</em>.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="5. Dimensió i ocupació" icon="👥">
+                    <TheoryBlock title="5.1. Distribució empresarial a Espanya" color="rose">
+                        <p>Segons el DIRCE 2024:</p>
+                        <p>• <strong>55,6 % autònoms sense assalariats</strong> (1,83 M).</p>
+                        <p>• <strong>40,0 % microempreses</strong> (1,32 M, 1-9 trab.).</p>
+                        <p>• <strong>3,9 % petites</strong> (128.000, 10-49 trab.).</p>
+                        <p>• <strong>0,45 % mitjanes</strong> (14.700, 50-249).</p>
+                        <p>• <strong>0,17 % grans</strong> (5.500, ≥250).</p>
+                        <p>Comparativa: a Alemanya hi ha més del doble de mitjanes proporcionalment (les famoses <em>Mittelstand</em>), tradicionalment considerades la columna vertebral de l'economia alemanya.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.2. Dimensió i productivitat" color="indigo">
+                        <p>La productivitat creix generalment amb la dimensió fins a un límit. A Espanya, la productivitat mitjana de les grans empreses és un 50-60 % superior a la de les microempreses (Banc d'Espanya, 2023). Causes: economies d'escala, majors inversions en R+D, millor capital humà, internacionalització.</p>
+                        <p>La <strong>bretxa de productivitat</strong> respecte a la UE s'explica en gran part per la petita dimensió empresarial mitjana. Polítiques de foment del creixement (Enisa, ICEX, Cre100do, Next Tech) busquen reduir aquesta bretxa.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.3. Dimensió i ocupació" color="violet">
+                        <p>Les <strong>microempreses i PyMES</strong> concentren el 66 % de l'ocupació privada a Espanya; les <strong>grans empreses</strong>, el 34 %. Tot i que les PyMES generen més volum d'ocupació, les grans empreses paguen salaris mitjans superiors (~50 % més) i ofereixen més estabilitat contractual.</p>
+                        <p>Les <strong>polítiques públiques</strong> cerquen: (a) foment de l'emprenedoria (Llei 14/2013), (b) suport al creixement (Enisa, ICO), (c) reducció de llindar fiscal per a PIMES (IS reduït al 15 % primers 2 anys), (d) simplificació administrativa (Llei 25/2013 de factura electrònica).</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="Conclusió" icon="✅">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>La dimensió empresarial es determina per l'intersecció entre <strong>economies</strong> (tècniques, financeres, comercials, d'aprenentatge, d'abast) i <strong>deseconomies</strong> d'escala (coordinació, motivació, X-ineficiències). La <strong>corba CMeLT</strong> sintetitza analíticament aquest equilibri. La tipologia europea (<strong>Recomanació 2003/361/CE</strong>) ofereix el marc classificatori.</p>
+                        <p>Les estratègies de creixement (intern/extern, segons matriu d'Ansoff, integració vertical/horitzontal, diversificació, internacionalització Dunning OLI) exigeixen decisions complexes. El teixit empresarial espanyol, dominat per PyMES, presenta una oportunitat estratègica: fomentar el creixement de les empreses mitjanes podria reduir significativament la bretxa de productivitat amb les economies més avançades. En un context de transformació digital, transició energètica i fragmentació geopolítica, la dimensió òptima esdevé cada cop més contextual: en alguns sectors (microxips, aeroespacial) es necessiten gegants globals; en altres (moda, tecnologia), la flexibilitat d'empreses mitjanes altament especialitzades pot ser l'avantatge competitiu decisiu.</p>
+                    </div>
+                </Card>
+
+                <BibliografiaBox items={[
+                    'SMITH, A. (1776): An Inquiry into the Nature and Causes of the Wealth of Nations, Strahan & Cadell.',
+                    'WRIGHT, T.P. (1936): «Factors affecting the cost of airplanes», Journal of the Aeronautical Sciences.',
+                    'ANSOFF, H.I. (1957): «Strategies for Diversification», Harvard Business Review, 35.',
+                    'LEIBENSTEIN, H. (1966): «Allocative Efficiency vs X-Efficiency», AER, 56.',
+                    'DUNNING, J.H. (1977): «Trade, Location of Economic Activity and the MNE», paradigm eclèctic OLI.',
+                    'PANZAR, J.C. i WILLIG, R.D. (1981): «Economies of Scope», AER, 71(2).',
+                    'CHANDLER, A.D. (1990): Scale and Scope, Harvard Univ. Press.',
+                    'PORTER, M.E. (1985): Competitive Advantage, Free Press.',
+                    'WILLIAMSON, O.E. (1985): The Economic Institutions of Capitalism, Free Press.',
+                    'CANALS, J. (2000): La internacionalización de la empresa, McGraw-Hill.',
+                    'INE (2024): Directorio Central de Empresas (DIRCE).',
+                    'BANCO DE ESPAÑA (2023): Informe Anual — Productividad y tamaño empresarial.',
+                    'Recomanació 2003/361/CE (PIME).',
+                    'Llei 14/2013, de suport a emprenedors i internacionalització.',
+                ]} />
+            </div>
+        );
+
+        const Tema41Resum = () => (
+            <div className="space-y-5 animate-fade">
+                <Card>
+                    <div className="p-4 bg-orange-50 rounded-xl border border-orange-200 mb-5">
+                        <p className="text-center font-bold text-orange-800 text-lg">Tema 41: Dimensió de l'empresa</p>
+                        <p className="text-center text-sm text-orange-600 mt-1"><em>Dimensió òptima: on CMg = CMe</em></p>
+                    </div>
+                    <div className="space-y-4 text-sm text-slate-700">
+                        <div><h4 className="font-bold text-slate-800 mb-1">1. Concepte</h4><ul className="list-disc pl-5 space-y-1"><li>Dimensió tècnica, econòmica, ocupacional, patrimonial, de mercat.</li><li>UE 2003/361: micro / petita / mitjana / gran (3 criteris: trab., vendes, actiu).</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">2. Dimensió òptima</h4><ul className="list-disc pl-5 space-y-1"><li>Economies d'escala: tècniques, financeres, comercials, aprenentatge (Wright 1936), abast (Panzar-Willig 1981).</li><li>Deseconomies: coordinació, motivació, X-ineficiència (Leibenstein 1966), agència.</li><li>Dimensió òptima: min CMe ⇒ CMg = CMe.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">3. Mesures</h4><ul className="list-disc pl-5 space-y-1"><li>Absolutes: vendes, treballadors, actius, VAB.</li><li>Relatives: quota de mercat, HHI.</li><li>Rànquings: Fortune 500, Forbes 2000.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">4. Creixement</h4><ul className="list-disc pl-5 space-y-1"><li>Intern (orgànic) vs. extern (M&A).</li><li>Matriu Ansoff (1957): penetració, desenv. producte, desenv. mercat, diversificació.</li><li>Integració vertical / horitzontal.</li><li>Internacionalització: teoria OLI de Dunning (1977).</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">5. Espanya</h4><ul className="list-disc pl-5 space-y-1"><li>99,83 % PyMES · 0,17 % grans (INE 2024).</li><li>Bretxa productivitat per dimensió petita vs. Mittelstand alemany.</li><li>Polítiques: Enisa, ICO, Llei 14/2013.</li></ul></div>
+                    </div>
+                    <FormulaBox formula="min CMe(Q) ⇒ CMg(Q) = CMe(Q)" />
+                    <ClauBox>
+                        <p>- Domina les <strong>5 economies d'escala</strong> (tècniques, financeres, comercials, aprenentatge, abast).</p>
+                        <p>- Dibuixa la <strong>corba CMeLT</strong> amb economies i deseconomies.</p>
+                        <p>- Cita <strong>Ansoff (1957)</strong> per a matriu de creixement i <strong>Dunning OLI (1977)</strong> per a internacionalització.</p>
+                        <p>- Contrasta PyMES espanyoles amb <strong>Mittelstand</strong> alemanyes (actualitat).</p>
+                    </ClauBox>
+                </Card>
+            </div>
+        );
+
+        const Tema41 = () => {
+            const [vista, setVista] = useState('complet');
+            return <div className="space-y-6"><SectionTitle icon="📏" title="Tema 41" subtitle={t('tema41.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema41Complet />}{vista === 'resum' && <Tema41Resum />}</div>;
+        };
         const Tema42 = () => <TemaPlaceholder num={42} title={t('tema42.title')} icon="⚙️" />;
         const Tema43 = () => <TemaPlaceholder num={43} title={t('tema43.title')} icon="💰" />;
         const Tema44 = () => <TemaPlaceholder num={44} title={t('tema44.title')} icon="📋" />;
