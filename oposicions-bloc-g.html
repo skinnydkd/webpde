@@ -1152,7 +1152,219 @@
             const [vista, setVista] = useState('complet');
             return <div className="space-y-6"><SectionTitle icon="🗂️" title="Tema 60" subtitle={t('tema60.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema60Complet />}{vista === 'resum' && <Tema60Resum />}</div>;
         };
-        const Tema61 = () => <TemaPlaceholder num={61} title={t('tema61.title')} icon="👑" />;
+        // ════════════════════════════════════════════════════════════════
+        // TEMA 61 — Lideratge i estils de direcció
+        // ════════════════════════════════════════════════════════════════
+        const Tema61Complet = () => (
+            <div className="space-y-6 animate-fade">
+                <Card title="Introducció" icon="📌">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>La paraula <em>lideratge</em> s'ha convertit en una de les més invocades del vocabulari empresarial contemporani. Tanmateix, pocs conceptes acumulen més literatura, enfocaments i controvèrsia. Des de les teories dels grans homes del segle XIX fins al lideratge transformacional, situacional, servent o autèntic del segle XXI, cada generació ha reformulat les preguntes bàsiques: <strong>què distingeix un líder d'un cap?</strong>, <strong>el líder naix o es fa?</strong>, <strong>hi ha un estil òptim universal o depèn del context?</strong>.</p>
+                        <p>El tema té una dimensió pràctica innegable: els estils directius condicionen el clima laboral, la retenció del talent, la innovació i, en última instància, el rendiment empresarial. La irrupció del treball híbrid, la diversitat generacional (baby boomers, X, millennials, Z convivint al mateix equip) i l'aspiració a la conciliació exigeixen reformular les pràctiques tradicionals de direcció. Empreses com <em>Microsoft</em> sota Satya Nadella (des de 2014) han exemplificat una transformació cultural radical basada en un canvi d'estil directiu: de <em>know-it-all</em> a <em>learn-it-all</em>.</p>
+                        <p>El tema s'estructura en sis blocs: (1) concepte de lideratge i diferència entre líder i directiu; (2) enfocaments tradicionals (trets, conductual); (3) models contingents (Fiedler, Hersey-Blanchard, ruta-meta); (4) enfocaments contemporanis (transformacional, servent, autèntic); (5) delegació i descentralització; (6) el lideratge en l'empresa espanyola actual.</p>
+                    </div>
+                </Card>
+
+                <Card title="1. Concepte de lideratge: líder vs. directiu" icon="👑">
+                    <TheoryBlock title="1.1. Definició" color="indigo">
+                        <p>El <strong>lideratge</strong> es pot definir com la <strong>capacitat d'influir en un grup perquè assolisca voluntàriament uns objectius determinats</strong>. <strong>Gary Yukl</strong> (<em>Leadership in Organizations</em>, 2013) proposa que «lideratge és el procés d'influir altres per entendre i acordar què cal fer i com fer-ho, i el procés de facilitar els esforços individuals i col·lectius per assolir objectius compartits».</p>
+                        <p>Dos elements són essencials: (a) la <strong>influència</strong> (capacitat d'orientar conductes sense recórrer sistemàticament a la coacció); (b) la <strong>voluntarietat</strong> (els seguidors adherixen lliurement al projecte del líder).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.2. Líder vs. directiu (Zaleznik, 1977; Kotter, 1990)" color="violet">
+                        <p><strong>Abraham Zaleznik</strong> (Harvard, <em>HBR</em>, 1977) i <strong>John Kotter</strong> (<em>A Force for Change</em>, 1990) van formular la distinció clàssica:</p>
+                        <p>• El <strong>directiu</strong> administra la complexitat: planifica, organitza, controla, resol problemes. Pensa en el curt termini, en l'eficiència, en l'estabilitat.</p>
+                        <p>• El <strong>líder</strong> gestiona el canvi: inspira una visió, aliena persones, motiva, innova. Pensa en el llarg termini, en l'eficàcia, en la transformació.</p>
+                        <p>«Managers do things right; leaders do the right things» (Bennis i Nanus, 1985). Idealment, l'alta direcció ha de combinar ambdues dimensions; en termes del BSC, l'<strong>equilibri</strong> directiu-líder és clau per a un <em>performance</em> sostenible.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.3. Fonts del poder (French i Raven, 1959)" color="blue">
+                        <p><strong>John French i Bertram Raven</strong> van identificar 5 bases del poder social (+1 afegida el 1965):</p>
+                        <p>(1) <strong>Poder de recompensa</strong>: capacitat de donar premis.</p>
+                        <p>(2) <strong>Poder coercitiu</strong>: capacitat de castigar.</p>
+                        <p>(3) <strong>Poder legítim</strong>: atorgat pel càrrec formal.</p>
+                        <p>(4) <strong>Poder expert</strong>: derivat del coneixement.</p>
+                        <p>(5) <strong>Poder referent</strong>: atracció personal, carisma.</p>
+                        <p>(6) <strong>Poder informacional</strong> (Raven, 1965): accés a informació privilegiada.</p>
+                        <p>El líder eficaç combina els cinc primers; el poder expert i referent són els més efectius per al compromís real.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="2. Enfocaments tradicionals" icon="📜">
+                    <TheoryBlock title="2.1. Teoria dels trets (1900-1940)" color="rose">
+                        <p>Les primeres aproximacions, impregnades de la <em>teoria del gran home</em> (Carlyle, Galton), cercaven els trets innats del líder: intel·ligència, carisma, alçada, ambició, confiança. <strong>Ralph Stogdill</strong> (1948), en una meta-anàlisi crítica, va demostrar que cap tret era universalment determinant. Les versions modernes (Kirkpatrick i Locke, 1991) identifiquen 6 trets estadísticament recurrents: <em>ambició i empenta</em>, <em>voluntat de liderar</em>, <em>honestedat i integritat</em>, <em>autoconfiança</em>, <em>intel·ligència</em>, <em>coneixement tècnic</em>.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.2. Enfocaments conductuals (1940-1960)" color="amber">
+                        <p>Els estudis de la <strong>Universitat d'Ohio</strong> (Fleishman, 1953) i <strong>Michigan</strong> (Likert, 1961) van centrar l'atenció en <strong>què fa</strong> el líder, no en què <em>és</em>. Van identificar dues dimensions:</p>
+                        <p>• <strong>Orientació a la tasca</strong> (<em>initiating structure</em>): planificació, organització, control.</p>
+                        <p>• <strong>Orientació a les persones</strong> (<em>consideration</em>): confiança, suport, atenció als sentiments.</p>
+                        <p><strong>Rensis Likert</strong> (1961) va distingir 4 <strong>sistemes directius</strong>: (1) autoritari-explotador; (2) autoritari-benèvol; (3) consultiu; (4) participatiu de grup. Els estudis demostraven que el sistema 4 (participatiu) produïa millor rendiment i satisfacció.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.3. La graella gerencial (Blake i Mouton, 1964)" color="emerald">
+                        <p><strong>Robert Blake i Jane Mouton</strong>, a <em>The Managerial Grid</em> (1964), van sintetitzar ambdues dimensions en una <strong>matriu 9×9</strong>, on l'eix horitzontal és «preocupació per la producció» (1-9) i el vertical «preocupació per les persones» (1-9). Cinc estils característics:</p>
+                        <p>• <strong>1.1 Empobrit</strong>: esforç mínim en ambdues. <em>Laissez-faire</em>.</p>
+                        <p>• <strong>9.1 Autoritari de tasca</strong>: màxima producció, mínima consideració.</p>
+                        <p>• <strong>1.9 Country club</strong>: atenció a persones, escassa exigència.</p>
+                        <p>• <strong>5.5 Equilibrat (middle-of-the-road)</strong>: compromís intermedi.</p>
+                        <p>• <strong>9.9 Equip (team)</strong>: alta producció amb alta consideració. Estil òptim segons els autors.</p>
+                    </TheoryBlock>
+
+                    {/* SVG Blake & Mouton Grid */}
+                    <div className="my-6 flex justify-center">
+                        <svg viewBox="0 0 460 460" className="w-full max-w-lg mx-auto" style={{fontFamily: 'Plus Jakarta Sans, sans-serif'}}>
+                            <text x="230" y="22" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#1e293b">Graella gerencial — Blake i Mouton (1964)</text>
+                            <defs><pattern id="grid61" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e2e8f0" strokeWidth="1"/></pattern></defs>
+                            <rect x="60" y="50" width="360" height="360" fill="url(#grid61)"/>
+                            <rect x="60" y="50" width="360" height="360" fill="none" stroke="#475569" strokeWidth="2"/>
+                            <line x1="60" y1="410" x2="420" y2="410" stroke="#475569" strokeWidth="2"/>
+                            <line x1="60" y1="50" x2="60" y2="410" stroke="#475569" strokeWidth="2"/>
+                            <text x="240" y="440" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#475569">Preocupació per la PRODUCCIÓ</text>
+                            <text x="30" y="230" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#475569" transform="rotate(-90,30,230)">Preoc. per les PERSONES</text>
+                            {[1,3,5,7,9].map((n,i)=><text key={i} x={60+(n-1)*40} y="425" textAnchor="middle" fontSize="9" fill="#64748b">{n}</text>)}
+                            {[1,3,5,7,9].map((n,i)=><text key={i} x="48" y={415-(n-1)*40} textAnchor="middle" fontSize="9" fill="#64748b">{n}</text>)}
+                            {/* 1.1 */}
+                            <circle cx="100" cy="370" r="18" fill="#94a3b8" stroke="#475569" strokeWidth="2"/>
+                            <text x="100" y="374" textAnchor="middle" fontSize="10" fontWeight="bold" fill="#fff">1.1</text>
+                            <text x="100" y="345" textAnchor="middle" fontSize="9" fill="#475569">Empobrit</text>
+                            {/* 9.1 */}
+                            <circle cx="380" cy="370" r="18" fill="#dc2626" stroke="#991b1b" strokeWidth="2"/>
+                            <text x="380" y="374" textAnchor="middle" fontSize="10" fontWeight="bold" fill="#fff">9.1</text>
+                            <text x="380" y="345" textAnchor="middle" fontSize="9" fill="#991b1b">Autoritari</text>
+                            {/* 1.9 */}
+                            <circle cx="100" cy="90" r="18" fill="#2563eb" stroke="#1e40af" strokeWidth="2"/>
+                            <text x="100" y="94" textAnchor="middle" fontSize="10" fontWeight="bold" fill="#fff">1.9</text>
+                            <text x="100" y="120" textAnchor="middle" fontSize="9" fill="#1e40af">Country Club</text>
+                            {/* 5.5 */}
+                            <circle cx="240" cy="230" r="18" fill="#d97706" stroke="#92400e" strokeWidth="2"/>
+                            <text x="240" y="234" textAnchor="middle" fontSize="10" fontWeight="bold" fill="#fff">5.5</text>
+                            <text x="240" y="205" textAnchor="middle" fontSize="9" fill="#92400e">Equilibrat</text>
+                            {/* 9.9 */}
+                            <circle cx="380" cy="90" r="22" fill="#16a34a" stroke="#14532d" strokeWidth="2.5"/>
+                            <text x="380" y="94" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#fff">9.9</text>
+                            <text x="380" y="120" textAnchor="middle" fontSize="10" fontWeight="bold" fill="#14532d">Equip ★</text>
+                        </svg>
+                    </div>
+                </Card>
+
+                <Card title="3. Models contingents" icon="🌐">
+                    <TheoryBlock title="3.1. Model de Fiedler (1967)" color="indigo">
+                        <p><strong>Fred Fiedler</strong>, a <em>A Theory of Leadership Effectiveness</em> (1967), va proposar que l'eficàcia del líder depèn de la <strong>congruència</strong> entre el seu estil (mesurat amb l'escala LPC, <em>Least Preferred Coworker</em>) i el favorabilisme de la situació, determinat per 3 variables: (1) <em>relacions líder-membres</em>, (2) <em>estructura de la tasca</em>, (3) <em>poder del lloc</em>. Conclusió: líders orientats a tasca són eficaços en situacions molt favorables o molt desfavorables; líders orientats a persones, en situacions intermèdies.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.2. Lideratge situacional (Hersey i Blanchard, 1969)" color="violet">
+                        <p><strong>Paul Hersey i Ken Blanchard</strong> (<em>Management of Organizational Behavior</em>, 1969; reedicions posteriors) van proposar el <strong>Model de Lideratge Situacional</strong>. La variable clau és el <strong>nivell de maduresa</strong> (o preparació) del seguidor: capacitat + disposició. Proposen 4 estils:</p>
+                        <p>• <strong>E1 Dir</strong> (<em>telling</em>): alta tasca, baixa relació. Per a M1 (no capaç, no disposat).</p>
+                        <p>• <strong>E2 Vendre</strong> (<em>selling</em>): alta tasca, alta relació. Per a M2 (no capaç però disposat).</p>
+                        <p>• <strong>E3 Participar</strong> (<em>participating</em>): baixa tasca, alta relació. Per a M3 (capaç però no segur).</p>
+                        <p>• <strong>E4 Delegar</strong> (<em>delegating</em>): baixa tasca, baixa relació. Per a M4 (capaç i disposat).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.3. Model ruta-meta (House, 1971)" color="cyan">
+                        <p><strong>Robert House</strong> va desenvolupar el <strong>model path-goal</strong>: el líder ha d'aclarir el camí cap als objectius, eliminar obstacles i facilitar recompenses. Identifica 4 estils: directiu, de suport, participatiu i orientat a la consecució. L'estil òptim depèn de factors del subordinat (locus de control, experiència) i de l'entorn (estructura de la tasca, normes del grup).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.4. Continuum de Tannenbaum-Schmidt (1958)" color="emerald">
+                        <p>Aquests autors proposen un <strong>continuum</strong> entre lideratge autocràtic i democràtic, amb 7 estils intermedis segons qui pren les decisions (el líder sol, el líder consulta, el grup decideix amb límits). Variables d'elecció: forces en el líder, en el subordinat, en la situació.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="4. Enfocaments contemporanis" icon="🌟">
+                    <TheoryBlock title="4.1. Lideratge transaccional vs. transformacional (Burns, 1978; Bass, 1985)" color="rose">
+                        <p><strong>James MacGregor Burns</strong> (<em>Leadership</em>, 1978) i <strong>Bernard Bass</strong> (<em>Leadership and Performance Beyond Expectations</em>, 1985) van distingir:</p>
+                        <p>• <strong>Lideratge transaccional</strong>: intercanvi recompensa-rendiment. Basat en la gestió per contingències. Motivació extrínseca.</p>
+                        <p>• <strong>Lideratge transformacional</strong>: eleva els seguidors més enllà dels seus interessos immediats, apel·la a valors superiors, desperta compromís emocional. Quatre components (<em>«4 I's»</em>): <strong>Influència idealitzada</strong> (carisma), <strong>Inspiració motivacional</strong>, <strong>Estimulació intel·lectual</strong>, <strong>Consideració individualitzada</strong>. Casos emblemàtics: Steve Jobs a <em>Apple</em>, Ingvar Kamprad a <em>IKEA</em>.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.2. Lideratge servent (Greenleaf, 1977)" color="green">
+                        <p><strong>Robert Greenleaf</strong>, a <em>Servant Leadership</em> (1977), va formular un model inspirat en valors humanistes: el líder està <strong>al servei</strong> dels seus seguidors i els ajuda a créixer. Valors: empatia, humilitat, escolta activa, conscienciació, visió a llarg termini. Aplicacions: cooperativisme, economia social (<em>Mondragón</em>), empreses B-Corps.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.3. Lideratge autèntic i intel·ligència emocional" color="amber">
+                        <p><strong>Bill George</strong> (<em>Authentic Leadership</em>, 2003) proposa un model centrat en l'autoconeixement, els valors, les relacions autèntiques i la disciplina en l'acció. <strong>Daniel Goleman</strong> (<em>Emotional Intelligence</em>, 1995; <em>Primal Leadership</em>, 2002) ha popularitzat el paper de la <strong>intel·ligència emocional</strong> en el lideratge: autoconeixement, autogestió, empatia i gestió de relacions. Identifica 6 estils emocionals del líder: visionari, coaching, afiliatiu, democràtic, marcapàs i comandant.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.4. Tendències actuals (2020-2025)" color="violet">
+                        <p><strong>• Lideratge inclusiu</strong>: gestió de la diversitat, biaixos inconscients, equitat de gènere. Plans d'igualtat obligatoris a Espanya (RDL 6/2019).</p>
+                        <p><strong>• Lideratge híbrid i distribuït</strong>: adaptació al treball remot i equips distribuïts.</p>
+                        <p><strong>• Lideratge <em>conscious</em> i sostenible</strong>: incorporació dels ODS i la gestió d'<em>stakeholders</em>.</p>
+                        <p><strong>• Lideratge digital</strong>: data-driven decisions, gestió de la transformació digital.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="5. Delegació i descentralització" icon="🔀">
+                    <TheoryBlock title="5.1. Concepte i principis" color="indigo">
+                        <p>La <strong>delegació</strong> és la transferència d'autoritat i responsabilitat d'un superior a un subordinat per realitzar una tasca. La <strong>descentralització</strong> és la difusió sistemàtica de poder decisori cap a nivells inferiors.</p>
+                        <p>Principis clàssics (Fayol, Koontz):</p>
+                        <p>(1) <strong>Paritat</strong>: autoritat delegada = responsabilitat exigida.</p>
+                        <p>(2) <strong>Responsabilitat absoluta</strong>: el superior continua sent responsable davant del seu cap (no es delega la responsabilitat final).</p>
+                        <p>(3) <strong>Unitat de comandament</strong>: evitar doble dependència.</p>
+                        <p>(4) <strong>Nivell d'autoritat</strong>: delegar al nivell més baix que puga decidir amb eficàcia.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.2. Avantatges i riscos" color="amber">
+                        <p><strong>Avantatges</strong>: allibera temps directiu; motiva els subordinats; desenvolupa talent; millora la qualitat de les decisions (més pròximes al problema); accelera la resposta.</p>
+                        <p><strong>Riscos / obstacles</strong>: por del superior a perdre control; inseguretat del subordinat; manca de confiança mútua; sistema d'incentius inadequat; cultura organitzativa centralitzadora.</p>
+                        <p>La tensió centralització-descentralització es gestiona segons: mida de l'empresa, dispersió geogràfica, estabilitat de l'entorn, qualificació del personal, cultura. Cas <em>Mercadona</em>: tot i la seua mida, manté una cultura d'alta exigència operativa (protocols exhaustius) combinada amb descentralització de decisions comercials a nivell de botiga (gerent pot decidir promocions locals).</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="Conclusió" icon="✅">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>El lideratge ha recorregut un llarg camí conceptual: dels trets innats del «gran home» als enfocaments conductuals (Ohio, Michigan, Blake-Mouton), dels models contingents (Fiedler, Hersey-Blanchard, House) als paradigmes contemporanis del lideratge <strong>transformacional</strong> (Burns, Bass), <strong>servent</strong> (Greenleaf) i <strong>autèntic</strong> (George, Goleman). Cap model és universalment òptim: la lliçó profunda de la teoria contingent és que l'eficàcia depèn de la interacció entre líder, seguidors i situació.</p>
+                        <p>En el context actual espanyol i europeu, el lideratge transformacional, inclusiu i emocionalment intel·ligent s'imposa com a paradigma dominant, però conviu amb estils més transaccionals en entorns molt operatius o de crisi. La delegació i descentralització, encara pendents en part del teixit empresarial espanyol (predominant PIME amb direcció familiar), continuen sent palanques clau per al creixement i la innovació. Docentment, el tema ofereix oportunitats excel·lents d'aprenentatge actiu: tests d'estil directiu (Blake-Mouton), anàlisi de casos (Nadella a Microsoft, Pepe Carbonell a Mercadona), dinàmiques de grup sobre delegació.</p>
+                    </div>
+                </Card>
+
+                <BibliografiaBox items={[
+                    'STOGDILL, R.M. (1948): «Personal factors associated with leadership», Journal of Psychology, 25.',
+                    'LIKERT, R. (1961): New Patterns of Management, McGraw-Hill.',
+                    'BLAKE, R.R. i MOUTON, J.S. (1964): The Managerial Grid, Gulf Publishing.',
+                    'FIEDLER, F.E. (1967): A Theory of Leadership Effectiveness, McGraw-Hill.',
+                    'HERSEY, P. i BLANCHARD, K.H. (1969): Management of Organizational Behavior, Prentice Hall.',
+                    'HOUSE, R.J. (1971): «A path-goal theory of leader effectiveness», ASQ, 16(3).',
+                    'BURNS, J.M. (1978): Leadership, Harper & Row.',
+                    'BASS, B.M. (1985): Leadership and Performance Beyond Expectations, Free Press.',
+                    'GREENLEAF, R.K. (1977): Servant Leadership, Paulist Press.',
+                    'KOTTER, J.P. (1990): A Force for Change, Free Press.',
+                    'GOLEMAN, D. (1995): Emotional Intelligence, Bantam.',
+                    'GEORGE, B. (2003): Authentic Leadership, Jossey-Bass.',
+                    'YUKL, G. (2013): Leadership in Organizations, 8a ed., Pearson.',
+                    'FRENCH, J.R.P. i RAVEN, B. (1959): «The bases of social power», in Cartwright, Studies in Social Power.',
+                    'Real Decret-llei 6/2019, de mesures urgents per a la igualtat de tracte entre dones i homes.',
+                ]} />
+            </div>
+        );
+
+        const Tema61Resum = () => (
+            <div className="space-y-5 animate-fade">
+                <Card>
+                    <div className="p-4 bg-indigo-50 rounded-xl border border-indigo-200 mb-5">
+                        <p className="text-center font-bold text-indigo-800 text-lg">Tema 61: Lideratge i estils de direcció</p>
+                        <p className="text-center text-sm text-indigo-600 mt-1"><em>«Managers do things right; leaders do the right things»</em> — Bennis i Nanus (1985)</p>
+                    </div>
+                    <div className="space-y-4 text-sm text-slate-700">
+                        <div><h4 className="font-bold text-slate-800 mb-1">1. Concepte</h4><ul className="list-disc pl-5 space-y-1"><li>Lideratge = influència voluntària (Yukl, 2013).</li><li>Líder vs. directiu (Zaleznik 1977, Kotter 1990).</li><li>5+1 fonts de poder (French-Raven, 1959).</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">2. Tradicionals</h4><ul className="list-disc pl-5 space-y-1"><li>Teoria dels trets (Stogdill 1948, Kirkpatrick-Locke 1991).</li><li>Estudis Ohio/Michigan: tasca vs. persones.</li><li>Likert (1961): 4 sistemes directius.</li><li>Graella Blake-Mouton (1964): matriu 9×9, òptim 9.9.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">3. Contingents</h4><ul className="list-disc pl-5 space-y-1"><li>Fiedler (1967): LPC + 3 variables situacionals.</li><li>Hersey-Blanchard (1969): 4 estils segons maduresa.</li><li>House (1971): ruta-meta.</li><li>Tannenbaum-Schmidt (1958): continuum autocràtic-democràtic.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">4. Contemporanis</h4><ul className="list-disc pl-5 space-y-1"><li>Transaccional vs. transformacional (Burns 1978, Bass 1985): 4 I's.</li><li>Servent (Greenleaf 1977).</li><li>Autèntic (George 2003) + IE (Goleman 1995).</li><li>Tendències: inclusiu, híbrid, sostenible, digital.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">5. Delegació</h4><ul className="list-disc pl-5 space-y-1"><li>Paritat autoritat-responsabilitat.</li><li>Responsabilitat absoluta (no es delega).</li><li>Centralització vs. descentralització.</li></ul></div>
+                    </div>
+                    <ClauBox>
+                        <p>- Esmenta totes les <strong>generacions</strong> de teories (trets → conductual → contingent → transformacional → autèntic).</p>
+                        <p>- Dibuixa la <strong>graella 9×9 de Blake-Mouton</strong> o el <strong>Model situacional</strong> de Hersey-Blanchard.</p>
+                        <p>- Cita <strong>Bass (1985)</strong> i les <strong>4 I's</strong> del lideratge transformacional.</p>
+                        <p>- Connecta amb <strong>intel·ligència emocional</strong> (Goleman) i lideratge inclusiu (RDL 6/2019).</p>
+                    </ClauBox>
+                </Card>
+            </div>
+        );
+
+        const Tema61 = () => {
+            const [vista, setVista] = useState('complet');
+            return <div className="space-y-6"><SectionTitle icon="👑" title="Tema 61" subtitle={t('tema61.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema61Complet />}{vista === 'resum' && <Tema61Resum />}</div>;
+        };
         const Tema62 = () => <TemaPlaceholder num={62} title={t('tema62.title')} icon="🎭" />;
         const Tema63 = () => <TemaPlaceholder num={63} title={t('tema63.title')} icon="💬" />;
         const Tema64 = () => <TemaPlaceholder num={64} title={t('tema64.title')} icon="⚡" />;
