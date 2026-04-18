@@ -81,6 +81,17 @@ var PDE_SHARED_TRANSLATIONS = {
 
     // Print
     'print.button':       { val: '🖨️ Imprimir',          es: '🖨️ Imprimir',          en: '🖨️ Print' },
+
+    // Accessibility
+    'a11y.skipToContent': { val: 'Salt al contingut',     es: 'Saltar al contenido',   en: 'Skip to content' },
+    'a11y.mainContent':   { val: 'Contingut principal',   es: 'Contenido principal',   en: 'Main content' },
+    'a11y.sectionNav':    { val: 'Navegació de seccions', es: 'Navegación de secciones', en: 'Section navigation' },
+
+    // Share
+    'share.copy':         { val: 'Copiar enllaç',         es: 'Copiar enlace',          en: 'Copy link' },
+    'share.copied':       { val: 'Enllaç copiat! ✓',      es: '¡Enlace copiado! ✓',     en: 'Link copied! ✓' },
+    'share.share':        { val: 'Compartir',              es: 'Compartir',              en: 'Share' },
+    'share.shareSection': { val: 'Compartir secció',       es: 'Compartir sección',      en: 'Share section' },
 };
 
 // ─── Language Store (localStorage persistence + reactive pub/sub) ──
@@ -380,6 +391,40 @@ var PDE_STYLES = {
     // Bottom nav scrollbar hide (inject into <style>)
     bottomNavCSS: '.pde-bottom-nav-scroll::-webkit-scrollbar { display: none; }',
 
+    // Accessibility (inject into <style>)
+    a11yCSS: [
+        // Skip link: hidden by default, visible on focus
+        '.pde-skip-link { position: absolute; top: -100%; left: 50%; transform: translateX(-50%); z-index: 9999; padding: 0.75rem 1.5rem; background: #ec4899; color: white; font-weight: 700; border-radius: 0 0 0.75rem 0.75rem; text-decoration: none; transition: top 0.2s; }',
+        '.pde-skip-link:focus { top: 0; outline: none; }',
+        // Focus rings for keyboard users (visible only on keyboard nav, not mouse)
+        ':focus-visible { outline: 2px solid #ec4899; outline-offset: 2px; border-radius: 4px; }',
+        ':focus:not(:focus-visible) { outline: none; }',
+        // Reduced motion: disable animations for users who prefer it
+        '@media (prefers-reduced-motion: reduce) {',
+        '  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }',
+        '  .pde-lazy-reveal { opacity: 1 !important; transform: none !important; }',
+        '}',
+    ].join('\n'),
+
+    // Lazy reveal animation (inject into <style>)
+    lazyRevealCSS: [
+        '.pde-lazy-reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease-out, transform 0.5s ease-out; }',
+        '.pde-lazy-reveal.pde-revealed { opacity: 1; transform: translateY(0); }',
+        // Staggered delay variants (for grids)
+        '.pde-lazy-delay-1 { transition-delay: 0.05s; }',
+        '.pde-lazy-delay-2 { transition-delay: 0.1s; }',
+        '.pde-lazy-delay-3 { transition-delay: 0.15s; }',
+        '.pde-lazy-delay-4 { transition-delay: 0.2s; }',
+        '.pde-lazy-delay-5 { transition-delay: 0.25s; }',
+    ].join('\n'),
+
+    // Share toast notification (inject into <style>)
+    shareToastCSS: [
+        '.pde-toast { position: fixed; bottom: 5rem; left: 50%; transform: translateX(-50%) translateY(100px); z-index: 9999; padding: 0.75rem 1.5rem; background: #111827; color: white; border-radius: 0.75rem; font-size: 0.875rem; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.2); opacity: 0; transition: all 0.3s ease; pointer-events: none; }',
+        '.pde-toast.pde-toast-visible { opacity: 1; transform: translateX(-50%) translateY(0); }',
+        '.dark .pde-toast { background: #f3f4f6; color: #111827; }',
+    ].join('\n'),
+
     // Print styles (inject into <style>)
     printCSS: [
         '@media print {',
@@ -452,3 +497,113 @@ function pdeSetHashSection(section) {
         history.replaceState(null, '', window.location.pathname);
     }
 }
+
+// ─── Lazy Reveal (IntersectionObserver) ─────────────────────────
+/**
+ * Initialise lazy reveal for elements with .pde-lazy-reveal class.
+ * Elements fade-in + slide-up when they enter the viewport.
+ * Call once per page after content is rendered.
+ *
+ * Automatically assigns stagger delays to siblings in a grid/flex container.
+ */
+function pdeInitLazyReveal() {
+    // Respect reduced motion preference
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!('IntersectionObserver' in window)) return;
+
+    var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('pde-revealed');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    var elements = document.querySelectorAll('.pde-lazy-reveal');
+    elements.forEach(function(el) { observer.observe(el); });
+}
+
+// ─── Share / Copy Link ──────────────────────────────────────────
+/**
+ * Copy the current page URL (with optional hash) to clipboard.
+ * Shows a toast notification on success.
+ *
+ * @param {string} [hash] - Optional section hash to append (without #)
+ * @param {string} [toastText] - Custom toast message
+ */
+function pdeShareLink(hash, toastText) {
+    var url = window.location.origin + window.location.pathname;
+    if (hash && hash !== 'inicio') url += '#' + hash;
+
+    // Try Web Share API first (mobile native share)
+    if (navigator.share) {
+        navigator.share({ url: url }).catch(function() {
+            // User cancelled or error — fall through to clipboard
+            _pdeCopyToClipboard(url, toastText);
+        });
+        return;
+    }
+
+    _pdeCopyToClipboard(url, toastText);
+}
+
+function _pdeCopyToClipboard(text, toastText) {
+    var fallback = function() {
+        // Fallback for older browsers
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta);
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).catch(fallback);
+    } else {
+        fallback();
+    }
+
+    _pdeShowToast(toastText || 'Enllaç copiat! ✓');
+}
+
+function _pdeShowToast(msg) {
+    // Reuse existing toast or create new
+    var toast = document.getElementById('pde-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'pde-toast';
+        toast.className = 'pde-toast';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    // Trigger animation
+    toast.classList.remove('pde-toast-visible');
+    void toast.offsetWidth; // force reflow
+    toast.classList.add('pde-toast-visible');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(function() {
+        toast.classList.remove('pde-toast-visible');
+    }, 2500);
+}
+
+// ─── Runtime CSS Injection ─────────────────────────────────────
+// Inject a11y, lazy-reveal, and toast CSS into the document.
+// Runs once on load — works in both dev (source) and prod (compiled).
+(function() {
+    try {
+        var css = [
+            PDE_STYLES.a11yCSS,
+            PDE_STYLES.lazyRevealCSS,
+            PDE_STYLES.shareToastCSS,
+            PDE_STYLES.bottomNavCSS,
+        ].join('\n');
+        var style = document.createElement('style');
+        style.id = 'pde-runtime-css';
+        style.textContent = css;
+        document.head.appendChild(style);
+    } catch (e) {}
+})();
