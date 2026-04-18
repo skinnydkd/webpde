@@ -1365,7 +1365,198 @@
             const [vista, setVista] = useState('complet');
             return <div className="space-y-6"><SectionTitle icon="👑" title="Tema 61" subtitle={t('tema61.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema61Complet />}{vista === 'resum' && <Tema61Resum />}</div>;
         };
-        const Tema62 = () => <TemaPlaceholder num={62} title={t('tema62.title')} icon="🎭" />;
+        // ════════════════════════════════════════════════════════════════
+        // TEMA 62 — Cultura i imatge de l'empresa
+        // ════════════════════════════════════════════════════════════════
+        const Tema62Complet = () => (
+            <div className="space-y-6 animate-fade">
+                <Card title="Introducció" icon="📌">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>La <strong>cultura empresarial</strong> és el conjunt de valors, creences, normes, rituals i formes de fer compartides pels membres d'una organització. Malgrat el seu caràcter intangible —o precisament per això—, condiciona decisivament el rendiment, la innovació, la capacitat d'atraure talent i la resiliència davant les crisis. Com va advertir <strong>Peter Drucker</strong>, «<em>culture eats strategy for breakfast</em>»: per brillant que siga un pla, la cultura existent determinarà si s'executa o no.</p>
+                        <p>La irrupció del capitalisme responsable, els <strong>ODS</strong> (Agenda 2030) i l'exigència creixent de <strong>transparència ètica</strong> han desplaçat la cultura i la RSC al centre del debat empresarial. Normatives com la Directiva 2014/95/UE sobre informació no financera, transposada a Espanya per la Llei 11/2018, obliguen les grans empreses a publicar informes de sostenibilitat. La CSRD europea (Directiva 2022/2464) amplia encara més aquestes obligacions a partir de 2024-2025.</p>
+                        <p>El tema s'estructura en 5 blocs: (1) concepte i nivells de cultura; (2) tipologies culturals; (3) dimensions culturals de Hofstede; (4) l'estil Z d'Ouchi i la imatge corporativa; (5) ètica empresarial i RSC.</p>
+                    </div>
+                </Card>
+
+                <Card title="1. Concepte i nivells de cultura organitzativa" icon="🎭">
+                    <TheoryBlock title="1.1. Definició de cultura" color="indigo">
+                        <p><strong>Edgar Schein</strong>, a <em>Organizational Culture and Leadership</em> (1985, reedicions fins 2017), va formular la definició canònica: la cultura és «el patró de pressupòsits bàsics compartits que un grup ha après en resoldre els seus problemes d'adaptació externa i integració interna, que han funcionat prou bé per ser considerats vàlids i, per tant, per ensenyar-los als nous membres com la forma correcta de percebre, pensar i sentir respecte d'aquells problemes».</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.2. Els tres nivells de Schein (1985)" color="violet">
+                        <p><strong>Nivell 1 — Artefactes</strong>: els elements visibles (logotip, oficines, codi d'indumentària, rituals, llenguatge). Són fàcils de percebre però difícils de desxifrar.</p>
+                        <p><strong>Nivell 2 — Valors proclamats</strong>: el que l'organització <em>diu</em> que considera important (missió, visió, codi ètic publicat).</p>
+                        <p><strong>Nivell 3 — Supòsits bàsics subjacents</strong>: creences profundes, inconscients, sobre la natura humana, el temps, la veritat. Són l'essència de la cultura i el nivell més difícil de canviar.</p>
+                        <p>La metàfora habitual és la de l'<strong>iceberg</strong>: els artefactes són la punta visible, els supòsits bàsics el gran bloc submergit.</p>
+                    </TheoryBlock>
+
+                    {/* SVG Iceberg Schein */}
+                    <div className="my-6 flex justify-center">
+                        <svg viewBox="0 0 500 380" className="w-full max-w-xl mx-auto" style={{fontFamily: 'Plus Jakarta Sans, sans-serif'}}>
+                            <text x="250" y="24" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#1e293b">Els 3 nivells de cultura — Schein (1985)</text>
+                            <line x1="0" y1="120" x2="500" y2="120" stroke="#0ea5e9" strokeWidth="2" strokeDasharray="6,3"/>
+                            <text x="30" y="115" fontSize="10" fill="#0284c7" fontStyle="italic">Superfície</text>
+                            <polygon points="200,55 300,55 330,115 170,115" fill="#fde68a" stroke="#d97706" strokeWidth="2"/>
+                            <text x="250" y="80" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#92400e">1. ARTEFACTES</text>
+                            <text x="250" y="96" textAnchor="middle" fontSize="9" fill="#92400e">Visibles: logo, oficines,</text>
+                            <text x="250" y="107" textAnchor="middle" fontSize="9" fill="#92400e">rituals, llenguatge, vestuari</text>
+                            <polygon points="170,115 330,115 370,210 130,210" fill="#bfdbfe" stroke="#2563eb" strokeWidth="2"/>
+                            <text x="250" y="150" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#1e40af">2. VALORS proclamats</text>
+                            <text x="250" y="170" textAnchor="middle" fontSize="9" fill="#1e3a8a">Missió, visió, codi ètic,</text>
+                            <text x="250" y="182" textAnchor="middle" fontSize="9" fill="#1e3a8a">eslògans, estratègia</text>
+                            <text x="250" y="196" textAnchor="middle" fontSize="9" fontStyle="italic" fill="#1e3a8a">(el que l'empresa diu)</text>
+                            <polygon points="130,210 370,210 450,340 50,340" fill="#c7d2fe" stroke="#4f46e5" strokeWidth="2"/>
+                            <text x="250" y="245" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#3730a3">3. SUPÒSITS BÀSICS</text>
+                            <text x="250" y="263" textAnchor="middle" fontSize="9" fill="#312e81">Creences profundes inconscients</text>
+                            <text x="250" y="278" textAnchor="middle" fontSize="9" fill="#312e81">sobre natura humana, temps,</text>
+                            <text x="250" y="292" textAnchor="middle" fontSize="9" fill="#312e81">realitat, relacions, veritat</text>
+                            <text x="250" y="312" textAnchor="middle" fontSize="10" fontWeight="bold" fill="#3730a3">★ Essència invisible</text>
+                            <text x="250" y="328" textAnchor="middle" fontSize="9" fontStyle="italic" fill="#3730a3">El més difícil de canviar</text>
+                        </svg>
+                    </div>
+                </Card>
+
+                <Card title="2. Tipologies culturals" icon="🗺️">
+                    <TheoryBlock title="2.1. Handy (1978) — 4 cultures" color="rose">
+                        <p><strong>Charles Handy</strong>, a <em>Understanding Organizations</em> (1978), va identificar 4 cultures amb metàfores mitològiques:</p>
+                        <p>• <strong>Cultura del poder (Zeus)</strong>: centralitzada, dependent d'una figura fundadora (típica de startups i empreses familiars).</p>
+                        <p>• <strong>Cultura del rol (Apol·lo)</strong>: burocràcia, estructures formals, papers definits (típica de l'administració pública, banca tradicional).</p>
+                        <p>• <strong>Cultura de la tasca (Atena)</strong>: orientada a projectes, equips flexibles (consultories, I+D).</p>
+                        <p>• <strong>Cultura de la persona (Dionís)</strong>: l'organització serveix els individus (cooperatives professionals, bufets).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.2. Cameron i Quinn (1999) — Competing Values Framework" color="cyan">
+                        <p>El <strong>Competing Values Framework</strong> identifica 4 cultures en una matriu (flexibilitat/estabilitat × focus intern/extern):</p>
+                        <p>• <strong>Clan</strong> (intern + flexible): familiar, col·laborativa. <em>Mondragón</em>.</p>
+                        <p>• <strong>Adhocràtica</strong> (extern + flexible): innovadora, emprenedora. <em>Google</em>, <em>3M</em>.</p>
+                        <p>• <strong>Jeràrquica</strong> (intern + estable): controlada, formal. Funció pública.</p>
+                        <p>• <strong>De mercat</strong> (extern + estable): orientada a resultats, competitiva. <em>General Electric</em> sota Jack Welch.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.3. Cultures fortes vs. febles" color="amber">
+                        <p>Una <strong>cultura forta</strong> és àmpliament compartida, intensa i coherent amb l'estratègia. Les cultures fortes alineen conductes sense necessitat de normes detallades, però poden ser barrera al canvi. Les <strong>cultures febles</strong> són ambigües, disperses i obliguen a un control més formal. L'excés de fortalesa pot derivar en <strong>etnocentrisme corporatiu</strong> i dificultar les fusions (cas <em>Daimler-Chrysler</em>, 1998-2007, fracassada per incompatibilitat cultural).</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="3. Dimensions culturals nacionals: Hofstede (1980)" icon="🌍">
+                    <TheoryBlock title="3.1. El projecte IBM de Hofstede" color="indigo">
+                        <p><strong>Geert Hofstede</strong> (1928-2020), al seu llibre seminal <em>Culture's Consequences</em> (1980), va analitzar enquestes de 116.000 empleats d'IBM a 50 països. Va identificar inicialment <strong>4 dimensions</strong> culturals nacionals (ampliades posteriorment a 6):</p>
+                        <p>(1) <strong>Distància jeràrquica</strong> (<em>Power Distance Index</em>): grau d'acceptació de desigualtats de poder.</p>
+                        <p>(2) <strong>Individualisme vs. col·lectivisme</strong>: prioritat al jo vs. al grup.</p>
+                        <p>(3) <strong>Masculinitat vs. feminitat</strong>: competitivitat i assoliment vs. qualitat de vida i cooperació.</p>
+                        <p>(4) <strong>Evitació de la incertesa</strong>: tolerància a l'ambigüitat.</p>
+                        <p>(5) <strong>Orientació a llarg/curt termini</strong> (afegida 1991, inspirada en el confucionisme): perseverança, estalvi.</p>
+                        <p>(6) <strong>Indulgència vs. contenció</strong> (afegida 2010): gratificació de desitjos vs. autocontrol.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.2. Resultats i aplicacions" color="violet">
+                        <p>Espanya es caracteritza per: distància jeràrquica mitjana-alta, col·lectivisme moderat (més que EUA), feminitat (més que Japó), alta evitació de la incertesa, orientació curt termini i indulgència moderada. La comparació amb Japó (col·lectivista, masculí, orientat a llarg termini) o els Països Nòrdics (feminins, baixa distància jeràrquica) ajuda a entendre diferències en estils directius, negociació i disseny organitzatiu.</p>
+                        <p>Aplicacions: direcció d'equips multiculturals, expansió internacional (Inditex ajusta formats de botiga segons mercat), fusions i adquisicions transfrontereres.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.3. Crítiques i alternatives" color="rose">
+                        <p>El model ha rebut crítiques: representativitat (una única empresa, IBM), dades dels 70, homogeneïtzació dels països. Alternatives: projecte <strong>GLOBE</strong> (House et al., 2004) amb 9 dimensions i 62 societats; model de <strong>Trompenaars</strong> (7 dimensions).</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="4. Estil Z, identitat i imatge corporativa" icon="🎨">
+                    <TheoryBlock title="4.1. L'estil Z d'Ouchi (1981)" color="green">
+                        <p>Ja presentat al Tema 59. <strong>William Ouchi</strong> va comparar empreses americanes (tipus A) i japoneses (tipus J) i va proposar un model híbrid per a Occident (tipus Z), caracteritzat per: ocupació de llarga durada, decisió consensuada, responsabilitat col·lectiva, carreres lentes i no especialitzades, control implícit informal però intensiu, holisme en l'atenció al treballador. Casos: <em>Hewlett-Packard</em>, <em>IBM</em> tradicional, i en Espanya, <em>Mercadona</em> (amb el seu «model del client com a cap»).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.2. Identitat vs. imatge corporativa" color="indigo">
+                        <p>Cal distingir:</p>
+                        <p>• <strong>Identitat corporativa</strong>: el que l'empresa <em>és</em> (personalitat, valors, cultura real, visió interna).</p>
+                        <p>• <strong>Identitat visual corporativa</strong>: els signes gràfics (logotip, tipografia, colors, manual d'identitat).</p>
+                        <p>• <strong>Imatge corporativa</strong>: la percepció que tenen els públics externs (clients, societat, mitjans).</p>
+                        <p>• <strong>Reputació corporativa</strong>: el reconeixement sostingut i agregat de l'empresa (<em>Merco Ranking</em> mesura la reputació de les empreses espanyoles anualment).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.3. Tècniques d'investigació cultural" color="cyan">
+                        <p>La cultura pot analitzar-se mitjançant: enquestes quantitatives d'engagement / clima laboral (Great Place to Work, Top Employers), entrevistes en profunditat, grups focals, observació etnogràfica, anàlisi documental (intranet, correus, memòries), estudi d'artefactes. Consultores especialitzades com Korn Ferry o el mateix <em>Hofstede Insights</em> ofereixen diagnòstics culturals professionals.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="5. Ètica empresarial i Responsabilitat Social Corporativa" icon="⚖️">
+                    <TheoryBlock title="5.1. L'ètica empresarial" color="rose">
+                        <p>L'<strong>ètica empresarial</strong> és la reflexió sistemàtica sobre el que està bé o malament en el context empresarial. Autors de referència: <strong>Milton Friedman</strong> (<em>«The Social Responsibility of Business is to Increase its Profits»</em>, NYT Magazine, 1970), defensor que la responsabilitat única de l'empresa és maximitzar beneficis dins la llei; en oposició, <strong>Edward Freeman</strong> (<em>Strategic Management: A Stakeholder Approach</em>, 1984) que defensa la teoria dels <em>stakeholders</em>: l'empresa ha de respondre davant de tots els grups d'interès.</p>
+                        <p>Instruments ètics pràctics: <strong>codis ètics</strong> (codi de conducta de <em>Inditex</em>, 2001), <strong>canals de denúncies</strong> (Directiva Whistleblowing 2019/1937, Llei 2/2023 espanyola), <strong>comités ètics</strong>, <strong>formacions en compliance</strong>.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.2. La piràmide de la RSC (Carroll, 1991)" color="violet">
+                        <p><strong>Archie Carroll</strong> va proposar la piràmide de 4 responsabilitats de l'empresa:</p>
+                        <p>(1) <strong>Econòmica</strong> (base): ser rendible i crear valor.</p>
+                        <p>(2) <strong>Legal</strong>: complir les lleis.</p>
+                        <p>(3) <strong>Ètica</strong>: fer el correcte, més enllà del legal.</p>
+                        <p>(4) <strong>Filantròpica</strong>: contribuir al benestar social.</p>
+                        <p>Models posteriors (Elkington, 1997) han reformulat la RSC com a <strong>triple bottom line</strong>: persones, planeta i beneficis (3P). <strong>Porter i Kramer</strong> (2011) han popularitzat el <strong>Valor Compartit</strong> (Creating Shared Value, CSV).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.3. Marc normatiu actual" color="emerald">
+                        <p><strong>• ODS</strong> (Agenda 2030): 17 Objectius de Desenvolupament Sostenible.</p>
+                        <p><strong>• Pacte Mundial de l'ONU</strong>: 10 principis en drets humans, treball, medi ambient i anticorrupció.</p>
+                        <p><strong>• Global Reporting Initiative (GRI)</strong>: estàndards per a informes de sostenibilitat.</p>
+                        <p><strong>• ISO 26000</strong>: guia de responsabilitat social (2010).</p>
+                        <p><strong>• Directiva UE CSRD</strong> (2022/2464): informes de sostenibilitat obligatoris (en vigor des de 2024-2025 per a grans empreses).</p>
+                        <p><strong>• Taxonomia europea verda</strong> (Reg. 2020/852): classificació d'activitats sostenibles.</p>
+                        <p>Exemples: <em>Iberdrola</em> publica informe integrat anual; <em>Mercadona</em> té Model de Qualitat Total; <em>Ferrovial</em> ha emès <em>green bonds</em> per valor de 1.300 M€ (2023).</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="Conclusió" icon="✅">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>La cultura és a l'empresa el que la personalitat és a l'individu: determina comportaments, reaccions i decisions de manera silenciosa però decisiva. El model de tres nivells de <strong>Schein (1985)</strong>, les tipologies de <strong>Handy</strong> i <strong>Cameron-Quinn</strong>, i les dimensions nacionals de <strong>Hofstede (1980)</strong> ofereixen lents complementàries per diagnosticar-la.</p>
+                        <p>En un entorn on la confiança és un actiu escàs i la reputació un diferencial competitiu, la cultura ja no és un tema d'<em>soft management</em> sinó una palanca estratègica de primer ordre. L'exigència d'<strong>ètica empresarial</strong> i <strong>RSC</strong> —articulada per Carroll (1991), Freeman (1984), Elkington (1997) i Porter-Kramer (2011)— s'ha traduït en marcs normatius obligatoris (CSRD, Pacte Mundial, GRI) que professionalitzen la gestió de la sostenibilitat. El docent ha de transmetre aquestes idees amb rigor i amb exemples locals (<em>Mercadona</em>, <em>Iberdrola</em>, <em>Inditex</em>) que facen tangible l'aprenentatge.</p>
+                    </div>
+                </Card>
+
+                <BibliografiaBox items={[
+                    'SCHEIN, E.H. (1985): Organizational Culture and Leadership, Jossey-Bass [5a ed. 2017].',
+                    'HANDY, C. (1978): Understanding Organizations, Penguin.',
+                    'HOFSTEDE, G. (1980): Culture\'s Consequences, Sage.',
+                    'OUCHI, W.G. (1981): Theory Z, Addison-Wesley.',
+                    'CAMERON, K.S. i QUINN, R.E. (1999): Diagnosing and Changing Organizational Culture, Addison-Wesley.',
+                    'CARROLL, A.B. (1991): «The pyramid of corporate social responsibility», Business Horizons, 34(4).',
+                    'FREEMAN, R.E. (1984): Strategic Management: A Stakeholder Approach, Pitman.',
+                    'FRIEDMAN, M. (1970): «The Social Responsibility of Business is to Increase its Profits», NYT Magazine, 13 sep.',
+                    'ELKINGTON, J. (1997): Cannibals with Forks: The Triple Bottom Line, Capstone.',
+                    'PORTER, M.E. i KRAMER, M.R. (2011): «Creating Shared Value», Harvard Business Review, 89(1-2).',
+                    'HOUSE, R.J. et al. (2004): Culture, Leadership and Organizations: The GLOBE Study, Sage.',
+                    'Llei 11/2018, de 28 de desembre, d\'informació no financera i diversitat.',
+                    'Directiva (UE) 2022/2464 CSRD.',
+                    'Llei 2/2023, de 20 de febrer, de protecció de persones informants (whistleblowing).',
+                ]} />
+            </div>
+        );
+
+        const Tema62Resum = () => (
+            <div className="space-y-5 animate-fade">
+                <Card>
+                    <div className="p-4 bg-indigo-50 rounded-xl border border-indigo-200 mb-5">
+                        <p className="text-center font-bold text-indigo-800 text-lg">Tema 62: Cultura i imatge empresarial</p>
+                        <p className="text-center text-sm text-indigo-600 mt-1"><em>«Culture eats strategy for breakfast»</em> — Peter Drucker</p>
+                    </div>
+                    <div className="space-y-4 text-sm text-slate-700">
+                        <div><h4 className="font-bold text-slate-800 mb-1">1. Concepte</h4><ul className="list-disc pl-5 space-y-1"><li>Schein (1985): patró de pressupòsits bàsics compartits.</li><li>3 nivells: artefactes / valors / supòsits (iceberg).</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">2. Tipologies</h4><ul className="list-disc pl-5 space-y-1"><li>Handy (1978): Zeus, Apol·lo, Atena, Dionís.</li><li>Cameron-Quinn: clan, adhocràtica, jeràrquica, mercat.</li><li>Fortes vs. febles (barrera al canvi).</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">3. Hofstede (1980)</h4><ul className="list-disc pl-5 space-y-1"><li>6 dimensions: distància jer., individ./col·lect., masc./fem., evitació incertesa, LP/CP, indulgència.</li><li>Alternatives: GLOBE (House 2004), Trompenaars.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">4. Estil Z i imatge</h4><ul className="list-disc pl-5 space-y-1"><li>Ouchi (1981): ocupació llarga, consens, holisme.</li><li>Identitat / identitat visual / imatge / reputació.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">5. Ètica i RSC</h4><ul className="list-disc pl-5 space-y-1"><li>Friedman (1970) vs. Freeman (1984, stakeholders).</li><li>Piràmide Carroll (1991): econ./legal/ètica/filantròpica.</li><li>Triple bottom line (Elkington, 1997); CSV (Porter-Kramer, 2011).</li><li>Marc: ODS, Pacte Mundial, GRI, CSRD, taxonomia verda.</li></ul></div>
+                    </div>
+                    <ClauBox>
+                        <p>- Domina <strong>Schein (1985)</strong> i els <strong>3 nivells</strong> (artefactes/valors/supòsits).</p>
+                        <p>- Cita <strong>Hofstede (1980)</strong> amb les 6 dimensions i compara Espanya amb Japó/EUA.</p>
+                        <p>- <strong>Piràmide Carroll</strong> i debat <strong>Friedman vs. Freeman</strong> com a pilars de la RSC.</p>
+                        <p>- Connecta amb <strong>CSRD</strong>, Llei 11/2018 i ODS com a marc actual.</p>
+                    </ClauBox>
+                </Card>
+            </div>
+        );
+
+        const Tema62 = () => {
+            const [vista, setVista] = useState('complet');
+            return <div className="space-y-6"><SectionTitle icon="🎭" title="Tema 62" subtitle={t('tema62.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema62Complet />}{vista === 'resum' && <Tema62Resum />}</div>;
+        };
         const Tema63 = () => <TemaPlaceholder num={63} title={t('tema63.title')} icon="💬" />;
         const Tema64 = () => <TemaPlaceholder num={64} title={t('tema64.title')} icon="⚡" />;
         const Tema65 = () => <TemaPlaceholder num={65} title={t('tema65.title')} icon="⚖️" />;
