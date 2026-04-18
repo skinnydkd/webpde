@@ -29,6 +29,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.1.16/umd/Recharts.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./pde-shared.js"></script>
     <script src="./pde-components.js" type="text/babel"></script>
@@ -66,6 +67,7 @@
     <div id="root"></div>
     <script type="text/babel">
 const { useState, useMemo, useEffect } = React;
+const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, Legend, BarChart, Bar, PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ComposedChart, Scatter, ReferenceLine } = Recharts;
 
 function BlocBApp() {
     const [section, setSection] = useState('inicio');
@@ -844,6 +846,23 @@ function BlocBApp() {
                 <p>- Relaciona <strong>elasticitat i ingrés total</strong>: és l'aplicació pràctica més important. Aporta exemples reals (OPEP, béns de luxe).</p>
                 <p>- Connecta amb la <strong>LOMLOE</strong> (RD 243/2022, Bloc B) i les competències STEM, CE, CPSAA i CC.</p>
             </ClauBox>
+
+            {/* ReCharts: Ingrés total vs elasticitat */}
+            <Card title="💹 Elasticitat-preu i ingrés total" icon="📈">
+                <p className="text-sm text-slate-600 mb-3">Si la demanda és elàstica (|E|&gt;1) pujar preu redueix IT; si és inelàstica pujar preu augmenta IT.</p>
+                <ResponsiveContainer width="100%" height={280}>
+                    <LineChart data={[{P:1,Q_el:50,IT_el:50,Q_in:20,IT_in:20},{P:2,Q_el:40,IT_el:80,Q_in:19,IT_in:38},{P:3,Q_el:30,IT_el:90,Q_in:18,IT_in:54},{P:4,Q_el:20,IT_el:80,Q_in:17,IT_in:68},{P:5,Q_el:10,IT_el:50,Q_in:16,IT_in:80},{P:6,Q_el:5,IT_el:30,Q_in:15,IT_in:90}]}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="P" label={{value:'Preu', position:'bottom'}} />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Line type="monotone" dataKey="IT_el" stroke="#ec4899" strokeWidth={2} name="IT (elàstic)" />
+                        <Line type="monotone" dataKey="IT_in" stroke="#8b5cf6" strokeWidth={2} name="IT (inelàstic)" />
+                    </LineChart>
+                </ResponsiveContainer>
+                <p className="text-xs text-slate-500 mt-3">L'IT del bé elàstic té forma de «U invertida»: màxim al punt d'elasticitat unitària (P=3). El bé inelàstic té IT creixent: sempre val la pena pujar preu (però la demanda cau poc).</p>
+            </Card>
         </div>
     );
 
@@ -2591,6 +2610,25 @@ function BlocBApp() {
                 <p>- Presenta la <strong>doble eficiència</strong>: assignativa (P = CMg) i productiva (P = CMe mín.). Primer teorema del benestar (Arrow-Debreu).</p>
                 <p>- Ofereix una <strong>valoració equilibrada</strong>: virtuts (eficiència), limitacions (irrealisme, externalitats) i crítica de <strong>Schumpeter</strong> (destrucció creativa).</p>
             </ClauBox>
+
+            {/* ReCharts: curva O/D interactiva */}
+            <Card title="📈 Gràfic O/D interactiu (dades simulades)" icon="📊">
+                <p className="text-sm text-slate-600 mb-3">Oferta i demanda. Equilibri: P=10, Q=50.</p>
+                <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={[{Q:0,D:20,O:0},{Q:10,D:18,O:2},{Q:20,D:16,O:4},{Q:30,D:14,O:6},{Q:40,D:12,O:8},{Q:50,D:10,O:10},{Q:60,D:8,O:12},{Q:70,D:6,O:14},{Q:80,D:4,O:16},{Q:90,D:2,O:18},{Q:100,D:0,O:20}]}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="Q" label={{ value: 'Quantitat', position: 'bottom' }} />
+                        <YAxis label={{ value: 'Preu', angle: -90, position: 'left' }} />
+                        <Tooltip />
+                        <Legend />
+                        <Line type="monotone" dataKey="D" stroke="#ec4899" strokeWidth={2} dot={false} name="Demanda" />
+                        <Line type="monotone" dataKey="O" stroke="#8b5cf6" strokeWidth={2} dot={false} name="Oferta" />
+                        <ReferenceLine x={50} stroke="#16a34a" strokeDasharray="3 3" label={{value:'Q*=50',position:'top'}} />
+                        <ReferenceLine y={10} stroke="#16a34a" strokeDasharray="3 3" />
+                    </LineChart>
+                </ResponsiveContainer>
+                <p className="text-xs text-slate-500 mt-3">Les línies tallen al punt d'equilibri (P*, Q*). Per damunt: excés d'oferta. Per davall: excés de demanda.</p>
+            </Card>
         </div>
     );
 
@@ -4936,6 +4974,18 @@ function BlocBApp() {
                 <p>- Les PIME representen <strong>{'>'}99%</strong> del teixit empresarial espanyol. Coneix les xifres UE de classificació.</p>
                 <p>- Connecta amb LOMLOE (CE1, CE2), competència emprenedora (CE), i vincula amb Economia 1r Bach i EDMN 2n Bach.</p>
             </ClauBox>
+
+            {/* ReCharts: Distribució empresa per mida */}
+            <Card title="🏢 Dades reals: estructura empresarial espanyola" icon="📊">
+                <p className="text-sm text-slate-600 mb-3">Distribució per dimensió (DIRCE, INE 2024). Total: 3,3M empreses.</p>
+                <ResponsiveContainer width="100%" height={260}>
+                    <PieChart>
+                        <Pie data={[{name:'Autònoms',value:55.6,fill:'#ec4899'},{name:'Micro (1-9)',value:40.0,fill:'#f472b6'},{name:'Petita (10-49)',value:3.9,fill:'#f9a8d4'},{name:'Mitjana (50-249)',value:0.45,fill:'#fbcfe8'},{name:'Gran (≥250)',value:0.17,fill:'#fce7f3'}]} cx="50%" cy="50%" outerRadius={90} label={(e) => e.name + ': ' + e.value + '%'} dataKey="value" />
+                        <Tooltip />
+                    </PieChart>
+                </ResponsiveContainer>
+                <p className="text-xs text-slate-500 mt-3">99,83% són PIMES (micro + petita + mitjana) i autònoms. Només 5.500 grans empreses. Contrasta amb el 'Mittelstand' alemany (més empreses mitjanes).</p>
+            </Card>
         </div>
     );
 

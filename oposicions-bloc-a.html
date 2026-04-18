@@ -29,6 +29,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.1.16/umd/Recharts.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./pde-shared.js"></script>
     <script src="./pde-components.js" type="text/babel"></script>
@@ -66,6 +67,7 @@
     <div id="root"></div>
     <script type="text/babel">
 const { useState, useMemo, useEffect } = React;
+const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, Legend, BarChart, Bar, PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ComposedChart, Scatter, ReferenceLine } = Recharts;
 
 function BlocAApp() {
     const [section, setSection] = useState('inicio');
@@ -1843,6 +1845,21 @@ function BlocAApp() {
                 'Real Decreto 243/2022, de 5 de abril (currículo Bachillerato).',
                 'INE (Instituto Nacional de Estadística): www.ine.es',
             ]} />
+
+            {/* ReCharts: IPC Espanya (Números índex, dades reals INE) */}
+            <Card title="📊 Dades reals: evolució IPC Espanya" icon="📈">
+                <p className="text-sm text-slate-600 mb-3">Índex de Preus de Consum (base 2021=100). Font: INE.</p>
+                <ResponsiveContainer width="100%" height={260}>
+                    <LineChart data={[{any:'2019',IPC:97.6},{any:'2020',IPC:97.3},{any:'2021',IPC:100},{any:'2022',IPC:108.4},{any:'2023',IPC:112.2},{any:'2024',IPC:115.5}]}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                        <XAxis dataKey="any" stroke="#64748b" />
+                        <YAxis stroke="#64748b" domain={[95,120]} />
+                        <Tooltip />
+                        <Line type="monotone" dataKey="IPC" stroke="#8b5cf6" strokeWidth={3} dot={{fill:'#7c3aed',r:5}} />
+                    </LineChart>
+                </ResponsiveContainer>
+                <p className="text-xs text-slate-500 mt-3">Salta del 2021 al 2022: inflació postpandèmia (+8,4 %). L'IPC mesura la variació de preus d'una cistella representativa (479 productes, INE).</p>
+            </Card>
         </div>
     );
 
@@ -4457,6 +4474,21 @@ function BlocAApp() {
                 'Ley Orgánica 3/2020, de 29 de diciembre (LOMLOE). Real Decreto 243/2022, de 5 de abril (currículo Bachillerato).',
                 'ONU (2015): Agenda 2030 para el Desarrollo Sostenible. 17 Objetivos de Desarrollo Sostenible.',
             ]} />
+
+            {/* ReCharts: IDH per regions (dades PNUD 2023) */}
+            <Card title="🌍 Dades reals: IDH per regions" icon="📊">
+                <p className="text-sm text-slate-600 mb-3">Índex de Desenvolupament Humà mitjà per regió (PNUD 2023, escala 0-1).</p>
+                <ResponsiveContainer width="100%" height={280}>
+                    <BarChart data={[{r:'Europa N.',idh:0.952},{r:'Europa S.',idh:0.893},{r:'EUA-Canadà',idh:0.942},{r:'Llatin.',idh:0.766},{r:'Àsia Est',idh:0.768},{r:'Sud Àsia',idh:0.642},{r:'Àfrica SS',idh:0.547}]}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="r" angle={-30} textAnchor="end" height={80} />
+                        <YAxis domain={[0,1]} />
+                        <Tooltip />
+                        <Bar dataKey="idh" fill="#8b5cf6" />
+                    </BarChart>
+                </ResponsiveContainer>
+                <p className="text-xs text-slate-500 mt-3">L'IDH combina esperança de vida, educació i ingrés. Espanya: 0,911 (pos. 25/193 el 2023).</p>
+            </Card>
         </div>
     );
 
@@ -5444,6 +5476,21 @@ function BlocAApp() {
                 'Ley Orgánica 3/2020, de 29 de diciembre (LOMLOE). Real Decreto 243/2022, de 5 de abril.',
                 'PAULI, G. (2010): The Blue Economy, Paradigm Publications.',
             ]} />
+
+            {/* ReCharts: Emissions CO2 Espanya */}
+            <Card title="🌡️ Dades reals: emissions CO₂ Espanya" icon="📉">
+                <p className="text-sm text-slate-600 mb-3">Emissions GEI equivalents (Mt CO₂ eq). Font: MITERD.</p>
+                <ResponsiveContainer width="100%" height={280}>
+                    <AreaChart data={[{any:'1990',em:289},{any:'2000',em:381},{any:'2005',em:440},{any:'2010',em:354},{any:'2015',em:333},{any:'2019',em:314},{any:'2020',em:272},{any:'2022',em:298},{any:'2023',em:275}]}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="any" />
+                        <YAxis />
+                        <Tooltip />
+                        <Area type="monotone" dataKey="em" stroke="#ef4444" fill="#fecaca" strokeWidth={2} />
+                    </AreaChart>
+                </ResponsiveContainer>
+                <p className="text-xs text-slate-500 mt-3">Pic el 2005 (+52% vs 1990). El 2023: −5% vs 1990. Objectiu 2030 (Llei 7/2021): −23% vs 1990. Objectiu 2050: neutralitat climàtica.</p>
+            </Card>
         </div>
     );
 
