@@ -1374,7 +1374,176 @@
             const [vista, setVista] = useState('complet');
             return <div className="space-y-6"><SectionTitle icon="💰" title="Tema 43" subtitle={t('tema43.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema43Complet />}{vista === 'resum' && <Tema43Resum />}</div>;
         };
-        const Tema44 = () => <TemaPlaceholder num={44} title={t('tema44.title')} icon="📋" />;
+        // ════════════════════════════════════════════════════════════════
+        // TEMA 44 — Planificació i programació de la producció
+        // ════════════════════════════════════════════════════════════════
+        const Tema44Complet = () => (
+            <div className="space-y-6 animate-fade">
+                <Card title="Introducció" icon="📌">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>La <strong>planificació i programació de la producció</strong> respon a quatre preguntes clau: <em>què</em> produir, <em>quant</em> produir, <em>quan</em> produir i <em>amb quins recursos</em>. En un entorn on les cadenes de subministrament globals són vulnerables (crisi semiconductors 2021-2022, col·lapse del Canal de Suez 2021, guerra d'Ucraïna 2022), una bona planificació productiva és més que mai un factor competitiu. Les empreses que van aguantar millor la pandèmia foren les que tenien sistemes àgils capaços de reaccionar ràpidament a canvis de demanda.</p>
+                        <p>Aquest tema connecta directament amb el Tema 42 (sistema de producció), el Tema 57 (decisions) i el Tema 58 (planificació). Aplica tècniques quantitatives sofisticades —MRP, PERT/CPM, programació lineal, Kanban— que l'oposició exigeix dominar amb rigor.</p>
+                        <p>El tema s'estructura en 5 blocs: (1) nivells i horitzons de planificació productiva; (2) planificació agregada i pla mestre; (3) MRP i gestió d'inventaris; (4) PERT/CPM i Gantt; (5) noves metodologies (Kanban, APS, agilitat).</p>
+                    </div>
+                </Card>
+
+                <Card title="1. Nivells i horitzons de la planificació productiva" icon="📐">
+                    <TheoryBlock title="1.1. Jerarquia de la planificació" color="indigo">
+                        <p>La planificació productiva s'estructura en tres nivells jeràrquics, alineats amb la planificació general (Tema 58):</p>
+                        <p><strong>a) Planificació estratègica</strong> (LP, 2-10 anys): capacitat instal·lada, localització, tecnologia, mix de productes.</p>
+                        <p><strong>b) Planificació tàctica / agregada</strong> (MP, 6-18 mesos): ajust de capacitat mitjana, nivell d'inventaris, contractació / subcontractació, hores extres.</p>
+                        <p><strong>c) Planificació operativa / programació</strong> (CP, dies-setmanes): seqüenciació, assignació a màquines, ordres de treball.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.2. Tipus de producció i planificació" color="violet">
+                        <p>El sistema productiu (Woodward, Tema 42) determina l'enfocament planificador:</p>
+                        <p><strong>• Producció en sèrie</strong>: planificació per <em>pull</em> (JIT, Kanban) o <em>push</em> (MRP).</p>
+                        <p><strong>• Producció per encàrrec</strong>: project management (PERT/CPM, Gantt).</p>
+                        <p><strong>• Producció per unitat (projectes)</strong>: disseny específic, tècniques de gestió de projectes.</p>
+                        <p><strong>• Producció contínua</strong>: optimització de flux, balance de línia.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="2. Planificació agregada i pla mestre" icon="📊">
+                    <TheoryBlock title="2.1. Planificació agregada" color="cyan">
+                        <p>La <strong>planificació agregada</strong> (<em>Aggregate Planning</em>) equilibra oferta i demanda a mig termini per famílies de productes. Estratègies bàsiques:</p>
+                        <p>• <strong>Chase strategy</strong> (seguiment de la demanda): ajust de producció a la demanda variable mitjançant contractacions, acomiadaments, subcontractació. Adequada per a sectors amb estacionalitat marcada.</p>
+                        <p>• <strong>Level strategy</strong> (nivellament): producció constant, absorbint oscil·lacions amb inventaris o llista d'espera. Estabilitat laboral, però alts costos d'estoc.</p>
+                        <p>• <strong>Estratègia mixta</strong>: combina ambdues, usual a la pràctica.</p>
+                        <p>Mètodes: tantejament, programació lineal, models heurístics, simulació.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.2. Pla mestre de producció (MPS)" color="amber">
+                        <p>El <strong>Master Production Schedule (MPS)</strong> desglossa la planificació agregada en <strong>productes finals concrets i setmanes</strong>. Indica quantes unitats de cada producte es fabricaran i quan, respectant capacitats i compromisos amb clients. Serveix de punt de partida per a la següent etapa (MRP).</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="3. MRP — Material Requirements Planning" icon="📦">
+                    <TheoryBlock title="3.1. MRP I (Orlicky, 1975)" color="indigo">
+                        <p>L'<strong>MRP</strong> (<em>Material Requirements Planning</em>), desenvolupat per <strong>Joseph Orlicky</strong> a <em>IBM</em> i formalitzat al llibre <em>Material Requirements Planning</em> (1975), va ser la primera aplicació informàtica rellevant del management. Respon a les preguntes: <em>què</em> comprar / fabricar, <em>quant</em>, <em>quan</em>.</p>
+                        <p><strong>Inputs</strong> necessaris:</p>
+                        <p>(1) <strong>Pla mestre (MPS)</strong>: necessitats de productes finals.</p>
+                        <p>(2) <strong>Llista de materials</strong> (<em>Bill of Materials, BOM</em>): estructura del producte, nivells 0, 1, 2... amb quantitats.</p>
+                        <p>(3) <strong>Registre d'inventaris</strong>: existències actuals, comandes pendents, terminis de lliurament (<em>lead times</em>).</p>
+                        <p><strong>Output</strong>: ordres de compra i de fabricació amb quantitats i dates.</p>
+                        <p>Lògica: càlcul de necessitats brutes (explosió de la BOM) → restar existències → netes → ajustar pels terminis.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.2. MRP II i ERP" color="violet">
+                        <p><strong>MRP II</strong> (<em>Manufacturing Resource Planning</em>, Wight 1984): amplia l'MRP I integrant capacitat productiva (CRP, <em>Capacity Requirements Planning</em>) i aspectes financers.</p>
+                        <p><strong>ERP</strong> (<em>Enterprise Resource Planning</em>): evolució natural que integra tots els processos de l'empresa (producció, finances, RRHH, comercial, logística). Sistemes principals: <strong>SAP</strong> (líder mundial), <strong>Oracle</strong>, <strong>Microsoft Dynamics</strong>, <strong>Sage</strong>. A Espanya, SAP és present a gran empresa; <em>Sage</em> i <em>Holded</em> a PIME.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.3. Gestió d'inventaris: el model EOQ" color="emerald">
+                        <p>Un complement essencial del MRP és la <strong>gestió d'inventaris</strong>. El model clàssic és el <strong>Economic Order Quantity</strong> (EOQ), desenvolupat per <strong>Ford W. Harris</strong> el 1913:</p>
+                        <p>EOQ = √(2·D·S / H), on D = demanda anual, S = cost de llançar una comanda, H = cost unitari d'emmagatzematge anual.</p>
+                        <p>El model es basa en equilibrar costos de comanda (decreixents amb la quantitat) i costos d'emmagatzematge (creixents).</p>
+                        <p>Altres models: <strong>ROP</strong> (Reorder Point), <strong>ABC</strong> d'inventaris (regla 80/20 de Pareto), <strong>Wilson</strong> amb descomptes per volum.</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="EOQ = √(2·D·S / H)" desc="Quantitat Econòmica de Comanda (Harris, 1913)" />
+                </Card>
+
+                <Card title="4. Gestió de projectes: PERT/CPM i Gantt" icon="🗓️">
+                    <TheoryBlock title="4.1. Diagrama de Gantt (1917)" color="rose">
+                        <p><strong>Henry Gantt</strong>, deixeble de Taylor, va desenvolupar cap al 1910 el <strong>diagrama de barres</strong> que porta el seu nom. Representa visualment les activitats d'un projecte al llarg del temps. És la tècnica més simple i encara àmpliament utilitzada (Microsoft Project, Asana, Trello, Gantt Chart d'Excel).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.2. PERT (1958) i CPM (1957)" color="indigo">
+                        <p><strong>PERT</strong> (<em>Program Evaluation and Review Technique</em>) va ser desenvolupat per la <em>US Navy</em> el 1958 per gestionar el programa del míssil Polaris (60.000 contractes, 23 mesos). <strong>CPM</strong> (<em>Critical Path Method</em>) va ser desenvolupat simultàniament per <em>DuPont</em> (1957). Ambdues tècniques són similars i s'han unificat en la pràctica.</p>
+                        <p><strong>Procediment</strong>:</p>
+                        <p>(1) <strong>Identificar activitats</strong> (llista WBS, <em>Work Breakdown Structure</em>).</p>
+                        <p>(2) <strong>Establir precedents</strong>: quines activitats han de completar-se abans d'altres.</p>
+                        <p>(3) <strong>Estimar durades</strong> (PERT usa 3 estimacions: optimista <em>a</em>, probable <em>m</em>, pessimista <em>b</em>; durada esperada: <em>t_e = (a + 4m + b) / 6</em>).</p>
+                        <p>(4) <strong>Construir el graf</strong> de xarxa (AON o AOA).</p>
+                        <p>(5) <strong>Calcular temps early / late</strong> de cada node.</p>
+                        <p>(6) <strong>Identificar camí crític</strong>: seqüència d'activitats amb folgança zero; determina la durada total del projecte.</p>
+                        <p>(7) <strong>Calcular folgances</strong>: total, lliure.</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="t_e = (a + 4m + b) / 6   |   σ² = ((b − a) / 6)²" desc="Durada esperada i variància (PERT, distribució beta)" />
+
+                    <TheoryBlock title="4.3. Exemple simplificat" color="amber">
+                        <p>Projecte de 5 activitats amb les durades i precedents següents:</p>
+                        <p>A (inici): 2 dies · B (després A): 4 · C (després A): 3 · D (després B): 2 · E (després C,D): 1.</p>
+                        <p>Camins possibles:</p>
+                        <p>• A-B-D-E: 2+4+2+1 = 9 dies</p>
+                        <p>• A-C-E: 2+3+1 = 6 dies</p>
+                        <p>Camí crític: A-B-D-E (9 dies). Folgança total en C: 9 − 6 = 3 dies.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="5. Metodologies modernes: Kanban, APS, agilitat" icon="🚀">
+                    <TheoryBlock title="5.1. Kanban i JIT (Toyota)" color="emerald">
+                        <p>Com s'ha exposat al Tema 42, el <strong>JIT</strong> (<em>Just-In-Time</em>) i el <strong>Kanban</strong> (Ohno, Toyota, 1950-70s) implementen la lògica <em>pull</em>: només es produeix el que la següent estació (o el client) demana. La senyal <em>kanban</em> (targeta) autoritza la producció. Avantatges: reducció d'inventaris, detecció ràpida de defectes, flexibilitat.</p>
+                        <p>Requisits: demanda estable, proveïdors fiables, treballadors polivalents, cultura de qualitat. La seua aplicació al software (<em>software Kanban</em>, David Anderson, 2010) ha impulsat el seu ús fora de la manufactura.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.2. APS (Advanced Planning & Scheduling)" color="violet">
+                        <p>Els sistemes <strong>APS</strong> utilitzen optimització matemàtica avançada (programació lineal, algorismes genètics, simulació) per a crear plans òptims respectant múltiples restriccions simultàniament. Integrats habitualment amb ERPs. Proveïdors: <em>SAP IBP</em>, <em>Oracle ASCP</em>, <em>Kinaxis</em>.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.3. Agile i Scrum en producció" color="cyan">
+                        <p>Originat en el desenvolupament de software (<em>Agile Manifesto</em>, 2001), el paradigma <strong>àgil</strong> s'ha expandit a la producció, especialment en sectors d'alta incertesa (tecnologia, productes innovadors). <strong>Scrum</strong> (Sutherland, Schwaber) organitza el treball en iteracions curtes (<em>sprints</em> de 2-4 setmanes) amb rols definits (<em>Product Owner</em>, <em>Scrum Master</em>, equip).</p>
+                        <p>L'<strong>Industry 4.0</strong> (Tema 42) combina MRP, Kanban, APS i IA per aconseguir <strong>fàbriques intel·ligents</strong>: autoconfiguració, manteniment predictiu, simulació digital twin, optimització en temps real.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.4. Gestió de la cadena de subministrament (SCM)" color="indigo">
+                        <p>La planificació productiva s'integra avui en una visió més àmplia: <strong>Supply Chain Management</strong>. Inclou proveïdors, transport, magatzems, distribució i clients. Tècniques: <em>S&OP</em> (Sales and Operations Planning), col·laboració VMI, <em>drop-shipping</em>, <em>omni-channel</em>. Casos paradigmàtics: cadena d'<em>Inditex</em> (2-3 setmanes des del disseny fins a la botiga), <em>Mercadona</em> amb el seu sistema de proveïdors estratègics (<em>interproveïdors</em>), <em>Amazon</em> amb les seues capacitats logístiques globals.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="Conclusió" icon="✅">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>La planificació i programació de la producció combina tècniques clàssiques (Gantt 1917, PERT/CPM 1957-58, EOQ 1913, MRP 1975) amb metodologies modernes (Lean/Kanban, APS, Agile, Industry 4.0). La seua qualitat determina costos, terminis, servei i, en definitiva, la competitivitat de l'empresa.</p>
+                        <p>Les disrupcions recents (pandèmia COVID-19, xocs geopolítics) han redefinit prioritats: de l'optimització extrema basada en costos cap a cadenes més <strong>resilients i flexibles</strong>. Les <strong>PERTE</strong> del Pla de Recuperació (automoció, semiconductors, agroalimentari) i la inversió en <strong>digitalització</strong> i <strong>economia circular</strong> busquen precisament enfortir aquesta capacitat. El domini d'aquestes tècniques per l'alumnat de Batxillerat és essencial per entendre el funcionament intern de l'empresa moderna.</p>
+                    </div>
+                </Card>
+
+                <BibliografiaBox items={[
+                    'HARRIS, F.W. (1913): «How Many Parts to Make at Once», Factory, 10(2).',
+                    'GANTT, H.L. (1919): Organizing for Work, Harcourt.',
+                    'ORLICKY, J. (1975): Material Requirements Planning, McGraw-Hill.',
+                    'WIGHT, O.W. (1984): Manufacturing Resource Planning: MRP II, Oliver Wight.',
+                    'CHASE, R., AQUILANO, N. i JACOBS, F.R. (2005): Operations Management for Competitive Advantage, McGraw-Hill.',
+                    'HEIZER, J. i RENDER, B. (2018): Operations Management, 12a ed., Pearson.',
+                    'SCHWABER, K. i SUTHERLAND, J. (2020): The Scrum Guide, Scrum.org.',
+                    'ANDERSON, D.J. (2010): Kanban: Successful Evolutionary Change for Your Technology Business, Blue Hole.',
+                    'DOMÍNGUEZ MACHUCA, J.A. et al. (1995): Dirección de Operaciones, McGraw-Hill.',
+                    'MALIK, S. (2017): Software Agile and Scrum, Editorial.',
+                ]} />
+            </div>
+        );
+
+        const Tema44Resum = () => (
+            <div className="space-y-5 animate-fade">
+                <Card>
+                    <div className="p-4 bg-orange-50 rounded-xl border border-orange-200 mb-5">
+                        <p className="text-center font-bold text-orange-800 text-lg">Tema 44: Planificació i programació de la producció</p>
+                        <p className="text-center text-sm text-orange-600 mt-1"><em>Què produir, quant, quan, amb quins recursos</em></p>
+                    </div>
+                    <div className="space-y-4 text-sm text-slate-700">
+                        <div><h4 className="font-bold text-slate-800 mb-1">1. Nivells</h4><ul className="list-disc pl-5 space-y-1"><li>Estratègic (LP, 2-10a), tàctic/agregat (6-18m), operatiu (dies-setm).</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">2. Planificació agregada</h4><ul className="list-disc pl-5 space-y-1"><li>Chase vs. Level strategy.</li><li>MPS (Master Production Schedule) per producte i setmana.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">3. MRP</h4><ul className="list-disc pl-5 space-y-1"><li>MRP I (Orlicky, 1975): MPS + BOM + inventaris → ordres.</li><li>MRP II (Wight, 1984) → ERP (SAP, Oracle).</li><li>EOQ = √(2DS/H) (Harris, 1913).</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">4. PERT/CPM/Gantt</h4><ul className="list-disc pl-5 space-y-1"><li>Gantt (1917): diagrama de barres.</li><li>PERT (1958, US Navy Polaris) i CPM (1957, DuPont).</li><li>t_e = (a+4m+b)/6. Camí crític amb folgança zero.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">5. Modernes</h4><ul className="list-disc pl-5 space-y-1"><li>Kanban/JIT (Ohno Toyota): pull.</li><li>APS: optimització avançada.</li><li>Agile/Scrum (2001), Industry 4.0, SCM.</li></ul></div>
+                    </div>
+                    <FormulaBox formula="EOQ = √(2·D·S/H)   |   t_e = (a+4m+b)/6" desc="Harris (1913) + PERT (1958)" />
+                    <ClauBox>
+                        <p>- Domina <strong>MRP</strong> (Orlicky 1975), <strong>PERT/CPM</strong> amb càlcul de camí crític, <strong>EOQ</strong> de Harris.</p>
+                        <p>- Resol un exemple simple de <strong>PERT</strong> amb 4-5 activitats identificant el camí crític.</p>
+                        <p>- Contrasta <strong>push (MRP)</strong> vs. <strong>pull (Kanban/JIT)</strong>.</p>
+                        <p>- Connecta amb <strong>Industry 4.0</strong> i SCM (actualitat: Inditex, Mercadona).</p>
+                    </ClauBox>
+                </Card>
+            </div>
+        );
+
+        const Tema44 = () => {
+            const [vista, setVista] = useState('complet');
+            return <div className="space-y-6"><SectionTitle icon="📋" title="Tema 44" subtitle={t('tema44.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema44Complet />}{vista === 'resum' && <Tema44Resum />}</div>;
+        };
         const Tema45 = () => <TemaPlaceholder num={45} title={t('tema45.title')} icon="📣" />;
         const Tema46 = () => <TemaPlaceholder num={46} title={t('tema46.title')} icon="📦" />;
         const Tema47 = () => <TemaPlaceholder num={47} title={t('tema47.title')} icon="📺" />;
