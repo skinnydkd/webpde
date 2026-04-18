@@ -1707,7 +1707,210 @@
             const [vista, setVista] = useState('complet');
             return <div className="space-y-6"><SectionTitle icon="💬" title="Tema 63" subtitle={t('tema63.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema63Complet />}{vista === 'resum' && <Tema63Resum />}</div>;
         };
-        const Tema64 = () => <TemaPlaceholder num={64} title={t('tema64.title')} icon="⚡" />;
+        // ════════════════════════════════════════════════════════════════
+        // TEMA 64 — Clima de l'empresa i motivació
+        // ════════════════════════════════════════════════════════════════
+        const Tema64Complet = () => (
+            <div className="space-y-6 animate-fade">
+                <Card title="Introducció" icon="📌">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>Comprendre què mou les persones a treballar —i a fer-ho bé— constitueix un dels problemes centrals del <em>management</em> modern. La <strong>motivació laboral</strong> no és un tema perifèric de recursos humans, sinó una palanca estratègica: afecta la productivitat, la innovació, la retenció del talent, l'absentisme i fins i tot la salut mental dels treballadors. Segons l'<strong>Informe Gallup State of the Global Workplace 2024</strong>, només el 21 % dels treballadors al món declaren estar «<em>engaged</em>», amb un cost per a l'economia global estimat en 8,8 bilions de dòlars anuals en productivitat perduda.</p>
+                        <p>En paral·lel, el <strong>clima organitzatiu</strong> —la percepció col·lectiva de l'ambient de treball— modula directament l'experiència motivacional individual. El clima és la manifestació visible de la cultura (Tema 62) i el resultat de la interacció entre lideratge (Tema 61), comunicació (Tema 63) i estructura (Tema 60). A Espanya, les enquestes anuals de <em>Great Place to Work</em> o el rànquing <em>Top Employers</em> documenten les empreses amb millor clima laboral: <em>Cisco</em>, <em>Mapfre</em>, <em>ING</em>, <em>Mahou-San Miguel</em>, entre altres.</p>
+                        <p>El tema s'estructura en 5 blocs: (1) concepte i tipologia de motivacions; (2) teories de contingut (Maslow, Herzberg, McClelland, Alderfer); (3) teories de procés (Vroom, Adams, Locke); (4) aplicacions i tècniques motivacionals; (5) clima organitzatiu i satisfacció laboral.</p>
+                    </div>
+                </Card>
+
+                <Card title="1. Concepte i tipologia de motivacions" icon="⚡">
+                    <TheoryBlock title="1.1. Definició de motivació" color="indigo">
+                        <p>La <strong>motivació</strong> és el conjunt de forces internes i externes que activen, dirigeixen i mantenen la conducta d'un individu cap a un objectiu. Segons <strong>Robbins</strong> (2013), és «el procés responsable de la intensitat, direcció i persistència de l'esforç d'una persona per a la consecució d'una meta». Tres dimensions clau: <em>intensitat</em>, <em>direcció</em> i <em>persistència</em>.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.2. Motivació intrínseca vs. extrínseca (Deci i Ryan, 1985)" color="violet">
+                        <p><strong>Edward Deci i Richard Ryan</strong>, a <em>Intrinsic Motivation and Self-Determination in Human Behavior</em> (1985), van distingir:</p>
+                        <p>• <strong>Motivació intrínseca</strong>: el treball és gratificant per si mateix (satisfacció, aprenentatge, sentit).</p>
+                        <p>• <strong>Motivació extrínseca</strong>: la recompensa és externa al treball (salari, reconeixement, evitar càstig).</p>
+                        <p>La seua <strong>Self-Determination Theory</strong> identifica 3 necessitats psicològiques bàsiques innates: <em>autonomia</em> (control), <em>competència</em> (mestria) i <em>relació</em> (vincles). Les recompenses extrínseques mal dissenyades poden <strong>erosionar</strong> la motivació intrínseca (<em>crowding-out effect</em>).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.3. Tipologia de motivacions" color="cyan">
+                        <p><strong>Segons l'origen</strong>: primàries (fisiològiques) vs. secundàries (apreses).</p>
+                        <p><strong>Segons el sentit</strong>: d'aproximació (obtindre) vs. d'evitació (no perdre).</p>
+                        <p><strong>Segons el contingut</strong>: econòmiques, de poder, d'afiliació, d'assoliment, de seguretat, de trascendència.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="2. Teories de contingut: QUÈ motiva" icon="🧗">
+                    <TheoryBlock title="2.1. Piràmide de Maslow (1943)" color="rose">
+                        <p><strong>Abraham Maslow</strong>, a <em>A Theory of Human Motivation</em> (<em>Psychological Review</em>, 1943), va proposar 5 nivells jeràrquics de necessitats:</p>
+                        <p>(1) <strong>Fisiològiques</strong> (menjar, beure, dormir) → salari bàsic.</p>
+                        <p>(2) <strong>Seguretat</strong> (estabilitat, salut) → contracte fix, prevenció riscos.</p>
+                        <p>(3) <strong>Socials</strong> (pertinença, afecte) → treball en equip, clima.</p>
+                        <p>(4) <strong>Estima</strong> (reconeixement, estatus) → promoció, elogi públic.</p>
+                        <p>(5) <strong>Autorealització</strong> (creixement personal) → projectes reptadors, formació.</p>
+                        <p>Principi: un nivell es converteix en motivador només quan l'inferior està satisfet. Crítica: la seqüència rígida no es verifica empíricament; l'ordre depèn de cultura i individu. Malgrat això, continua sent el marc divulgatiu més conegut.</p>
+                    </TheoryBlock>
+
+                    {/* SVG Piràmide Maslow */}
+                    <div className="my-6 flex justify-center">
+                        <svg viewBox="0 0 500 380" className="w-full max-w-xl mx-auto" style={{fontFamily: 'Plus Jakarta Sans, sans-serif'}}>
+                            <text x="250" y="22" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#1e293b">Piràmide de necessitats — Maslow (1943)</text>
+                            <polygon points="220,50 280,50 300,100 200,100" fill="#c7d2fe" stroke="#4f46e5" strokeWidth="2"/>
+                            <text x="250" y="82" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#312e81">Autorealització</text>
+                            <polygon points="200,100 300,100 320,160 180,160" fill="#ddd6fe" stroke="#7c3aed" strokeWidth="2"/>
+                            <text x="250" y="135" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#5b21b6">Estima</text>
+                            <polygon points="180,160 320,160 350,220 150,220" fill="#e9d5ff" stroke="#a855f7" strokeWidth="2"/>
+                            <text x="250" y="195" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#6b21a8">Socials</text>
+                            <polygon points="150,220 350,220 380,285 120,285" fill="#fae8ff" stroke="#c026d3" strokeWidth="2"/>
+                            <text x="250" y="258" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#86198f">Seguretat</text>
+                            <polygon points="120,285 380,285 420,350 80,350" fill="#fdf4ff" stroke="#d946ef" strokeWidth="2"/>
+                            <text x="250" y="322" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#701a75">Fisiològiques</text>
+                            {/* Labels right */}
+                            <text x="430" y="75" fontSize="10" fill="#312e81">Creixement personal</text>
+                            <text x="430" y="135" fontSize="10" fill="#5b21b6">Reconeixement, estatus</text>
+                            <text x="430" y="195" fontSize="10" fill="#6b21a8">Pertinença, afecte</text>
+                            <text x="430" y="258" fontSize="10" fill="#86198f">Contracte fix, salut</text>
+                            <text x="430" y="322" fontSize="10" fill="#701a75">Salari, aliment, son</text>
+                            {/* D and B labels left */}
+                            <text x="60" y="95" fontSize="10" fontWeight="bold" fill="#16a34a" transform="rotate(-90,60,95)">Ser (creixement)</text>
+                            <text x="30" y="310" fontSize="10" fontWeight="bold" fill="#dc2626" transform="rotate(-90,30,310)">Dèficit</text>
+                        </svg>
+                    </div>
+
+                    <TheoryBlock title="2.2. Teoria dels dos factors (Herzberg, 1959)" color="amber">
+                        <p><strong>Frederick Herzberg</strong>, a <em>The Motivation to Work</em> (1959), va estudiar 200 enginyers i comptables a Pittsburgh. Va identificar que els factors que causen <strong>satisfacció</strong> són diferents dels que causen <strong>insatisfacció</strong>:</p>
+                        <p>• <strong>Factors higiènics</strong> (extrínsecs): salari, condicions físiques, supervisió, relacions, polítiques. La seua absència causa insatisfacció, però la seua presència no motiva; només evita el descontent.</p>
+                        <p>• <strong>Factors motivadors</strong> (intrínsecs): assoliment, reconeixement, responsabilitat, treball interessant, creixement. La seua presència motiva i genera satisfacció.</p>
+                        <p>Aplicació pràctica: l'<strong>enriquiment del lloc</strong> (<em>job enrichment</em>) augmenta els factors motivadors; l'<em>ampliació</em> (<em>job enlargement</em>) només amplia tasques del mateix nivell.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.3. Teoria ERG (Alderfer, 1969)" color="green">
+                        <p><strong>Clayton Alderfer</strong> va reformular Maslow en 3 grups: <strong>E</strong>xistència (fisiològiques + seguretat), <strong>R</strong>elació (socials + part d'estima), <strong>G</strong>rowth/Creixement (part d'estima + autorealització). Diferència clau: admet la <strong>regressió per frustració</strong> (si no s'assoleix el creixement, es pot intensificar la demanda de relació o existència).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.4. Teoria de les necessitats apreses (McClelland, 1961)" color="blue">
+                        <p><strong>David McClelland</strong>, a <em>The Achieving Society</em> (1961), va identificar 3 necessitats socialment apreses:</p>
+                        <p>• <strong>Necessitat d'assoliment (nAch)</strong>: voluntat d'excel·lir, de complir desafiaments. Típica d'emprenedors.</p>
+                        <p>• <strong>Necessitat de poder (nPow)</strong>: influir en altres. Útil per a directius.</p>
+                        <p>• <strong>Necessitat d'afiliació (nAff)</strong>: relacions interpersonals. Útil per a rols de servei al client.</p>
+                        <p>El perfil motivacional es pot mesurar amb el <em>Thematic Apperception Test</em> (TAT). Les tres necessitats tenen proporcions òptimes segons el rol.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="3. Teories de procés: COM es motiva" icon="🧮">
+                    <TheoryBlock title="3.1. Teoria de les expectatives (Vroom, 1964)" color="indigo">
+                        <p><strong>Victor Vroom</strong>, a <em>Work and Motivation</em> (1964), va formular la teoria més influent sobre el procés motivacional. La motivació és producte de 3 factors (model <strong>VIE</strong>):</p>
+                        <p>• <strong>Expectativa</strong> (E): ¿si m'esforce, rendiré? (probabilitat que l'esforç produïsca rendiment).</p>
+                        <p>• <strong>Instrumentalitat</strong> (I): ¿si rendisc, obtindré la recompensa? (probabilitat que el rendiment porte a la recompensa).</p>
+                        <p>• <strong>València</strong> (V): ¿vull aqueixa recompensa? (valor que li atribueix l'individu).</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="Motivació = Expectativa × Instrumentalitat × València" desc="Vroom (1964). Si qualsevol factor és 0, la motivació és 0." />
+
+                    <TheoryBlock title="3.2. Teoria de l'equitat (Adams, 1965)" color="rose">
+                        <p><strong>J. Stacy Adams</strong> va proposar que els treballadors comparen la seua <strong>ràtio aportacions/compensacions</strong> amb la d'altres de referència. Si perceben desigualtat, aplicaran estratègies de restauració: reduir esforç, demanar pujada, canviar de referent, o bé abandonar. La percepció d'equitat és clau per al clima i la motivació sostinguda. Les decisions salarials opaques són font freqüent d'inequitat percebuda.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.3. Teoria de fixació d'objectius (Locke i Latham, 1968)" color="emerald">
+                        <p><strong>Edwin Locke</strong> i <strong>Gary Latham</strong> van demostrar empíricament que els <strong>objectius específics i desafiadors</strong>, acceptats per l'individu i amb <em>feedback</em>, generen millor rendiment que objectius vagues o fàcils. Base científica dels objectius <strong>SMART</strong> i de l'<strong>MBO</strong> de Drucker (Tema 58).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.4. Teoria del reforçament (Skinner, 1938-1953)" color="amber">
+                        <p><strong>B.F. Skinner</strong> va aplicar el condicionament operant al món laboral: la conducta és funció de les seues conseqüències (reforç positiu, negatiu, càstig, extinció). Fonament dels sistemes d'incentius per peces, comissions i <em>gamification</em> moderna.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="4. Aplicacions i tècniques motivacionals" icon="🧰">
+                    <TheoryBlock title="4.1. Disseny del lloc de treball" color="cyan">
+                        <p><strong>Hackman i Oldham</strong> (<em>Job Characteristics Model</em>, 1976) van identificar 5 dimensions que generen estats psicològics crítics i motivació intrínseca: <em>varietat</em>, <em>identitat de la tasca</em>, <em>rellevància</em>, <em>autonomia</em>, <em>feedback</em>. El <strong>MPS</strong> (Motivating Potential Score) combina aquestes dimensions.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.2. Sistemes de retribució" color="violet">
+                        <p><strong>• Retribució fixa</strong>: salari base contractual.</p>
+                        <p><strong>• Retribució variable</strong>: bonus, comissions, <em>stock options</em>, participació en beneficis.</p>
+                        <p><strong>• Retribució en espècie</strong>: xec menjador, guarderia, assegurança, cotxe empresa (tractament fiscal IRPF).</p>
+                        <p><strong>• Retribució flexible</strong>: l'empleat tria el mix entre retribució monetària i en espècie (beneficis fiscals).</p>
+                        <p>Tendència: <strong>salaris emocionals</strong> (conciliació, teletreball, dies personals) tenen pes creixent especialment entre millennials i Z. La Llei 10/2021 de treball a distància ha regulat el teletreball a Espanya.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.3. Reconeixement i cultura del feedback" color="rose">
+                        <p>Sistemes de <em>performance management</em>: entrevistes anuals han evolucionat cap a <strong>feedback continu</strong>, <em>check-ins</em> trimestrals (Adobe, Accenture, Microsoft). Eines digitals (<em>peer recognition</em>, <em>Kudos</em>, <em>BetterUp</em>).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.4. Participació i empowerment" color="emerald">
+                        <p>Cercles de qualitat (Ishikawa), equips autoorganitzats, democràcia industrial (model alemany de cogestió), ESOP (<em>Employee Stock Ownership Plan</em>) a EUA. Exemples espanyols: grup <em>Mondragón</em> (cooperativisme), <em>Eroski</em>.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="5. Clima organitzatiu i satisfacció laboral" icon="🌤️">
+                    <TheoryBlock title="5.1. Concepte de clima" color="indigo">
+                        <p>El <strong>clima organitzatiu</strong> és la percepció compartida pels membres d'una organització sobre l'ambient psicològic de treball. <strong>Litwin i Stringer</strong> (1968) van identificar 9 dimensions: estructura, responsabilitat, recompensa, risc, cordialitat, suport, estàndards, conflicte, identitat. Cal distingir-lo de la cultura (més profunda, de canvi lent) i de la satisfacció (individual, afectiva).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.2. Satisfacció laboral" color="violet">
+                        <p>Estat afectiu positiu cap al treball. Determinants: característiques del treball, supervisió, col·legues, retribució, oportunitats. Té conseqüències sobre productivitat, absentisme, rotació, salut mental. Mesurament: Job Descriptive Index (JDI), Minnesota Satisfaction Questionnaire (MSQ), enquestes Great Place to Work.</p>
+                        <p>La <strong>Llei 31/1995 de Prevenció de Riscos Laborals</strong> inclou riscos psicosocials (estrès, burnout) el tractament dels quals ha guanyat rellevància després de la pandèmia (OMS, 2019: reconeixement oficial del <em>burnout</em> com a fenomen laboral).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.3. Engagement i employee experience" color="cyan">
+                        <p><strong>Engagement</strong> (Schaufeli, 2002): implicació emocional, vigor i absorció en el treball. Mesurable amb la UWES. <strong>Employee Experience</strong>: visió holística de tot el cicle del treballador (<em>onboarding</em>, desenvolupament, <em>offboarding</em>). Ha desplaçat progressivament el concepte tradicional de «clima».</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="Conclusió" icon="✅">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>La motivació laboral és un dels camps més fèrtils i mixturats de la psicologia organitzativa. Les teories de contingut (<strong>Maslow 1943, Herzberg 1959, Alderfer 1969, McClelland 1961</strong>) pregunten què motiva; les de procés (<strong>Vroom 1964, Adams 1965, Locke 1968, Skinner</strong>) com es produeix motivacionalment. Cap teoria és completa per si sola: les aportacions són complementàries i cal aplicar-les segons el context.</p>
+                        <p>Les pràctiques contemporànies —retribució flexible, teletreball, <em>engagement</em>, <em>employee experience</em>— reflecteixen una concepció holística del treballador com a persona completa, coherent amb la <strong>Self-Determination Theory</strong> (Deci-Ryan). El clima organitzatiu i la satisfacció laboral, mesurats amb rigor, permeten detectar palanques d'acció. En un context on la generació Z exigeix sentit, flexibilitat i impacte, les empreses espanyoles que invertiran sistemàticament en motivació i clima estaran millor posicionades per a atraure i retenir talent.</p>
+                    </div>
+                </Card>
+
+                <BibliografiaBox items={[
+                    'MASLOW, A.H. (1943): «A Theory of Human Motivation», Psychological Review, 50.',
+                    'HERZBERG, F. (1959): The Motivation to Work, John Wiley.',
+                    'MCCLELLAND, D.C. (1961): The Achieving Society, Van Nostrand.',
+                    'VROOM, V.H. (1964): Work and Motivation, John Wiley.',
+                    'ADAMS, J.S. (1965): «Inequity in social exchange», Advances in Experimental Social Psychology, 2.',
+                    'LOCKE, E.A. (1968): «Toward a theory of task motivation and incentives», OBHP, 3.',
+                    'ALDERFER, C.P. (1969): «An empirical test of a new theory of human needs», OBHP, 4.',
+                    'HACKMAN, J.R. i OLDHAM, G.R. (1976): «Motivation through the design of work», OBHP, 16.',
+                    'DECI, E.L. i RYAN, R.M. (1985): Intrinsic Motivation and Self-Determination, Plenum.',
+                    'SKINNER, B.F. (1953): Science and Human Behavior, Macmillan.',
+                    'LITWIN, G.H. i STRINGER, R.A. (1968): Motivation and Organizational Climate, Harvard Business School.',
+                    'SCHAUFELI, W.B. et al. (2002): «The measurement of engagement and burnout», JOHP.',
+                    'Llei 31/1995, de 8 de novembre, de Prevenció de Riscos Laborals.',
+                    'Llei 10/2021, de 9 de juliol, de treball a distància.',
+                ]} />
+            </div>
+        );
+
+        const Tema64Resum = () => (
+            <div className="space-y-5 animate-fade">
+                <Card>
+                    <div className="p-4 bg-indigo-50 rounded-xl border border-indigo-200 mb-5">
+                        <p className="text-center font-bold text-indigo-800 text-lg">Tema 64: Clima i motivació</p>
+                        <p className="text-center text-sm text-indigo-600 mt-1"><em>Motivació = E × I × V</em> — Vroom (1964)</p>
+                    </div>
+                    <div className="space-y-4 text-sm text-slate-700">
+                        <div><h4 className="font-bold text-slate-800 mb-1">1. Concepte</h4><ul className="list-disc pl-5 space-y-1"><li>Motivació = intensitat + direcció + persistència (Robbins).</li><li>Intrínseca vs. extrínseca (Deci-Ryan, 1985): SDT.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">2. Teories de contingut (QUÈ)</h4><ul className="list-disc pl-5 space-y-1"><li>Maslow (1943): 5 nivells jeràrquics.</li><li>Herzberg (1959): 2 factors (higiènics vs. motivadors).</li><li>Alderfer (1969): ERG + regressió.</li><li>McClelland (1961): nAch, nPow, nAff.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">3. Teories de procés (COM)</h4><ul className="list-disc pl-5 space-y-1"><li>Vroom (1964): M = E·I·V.</li><li>Adams (1965): equitat, ràtios aportacions/compensacions.</li><li>Locke (1968): fixació d'objectius SMART.</li><li>Skinner: reforçament operant.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">4. Aplicacions</h4><ul className="list-disc pl-5 space-y-1"><li>Hackman-Oldham (1976): 5 dimensions del lloc + MPS.</li><li>Retribució: fixa, variable, en espècie, flexible, emocional.</li><li>Feedback continu, participació, ESOP, cooperativisme.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">5. Clima i satisfacció</h4><ul className="list-disc pl-5 space-y-1"><li>Litwin-Stringer (1968): 9 dimensions.</li><li>Engagement (Schaufeli, 2002), Employee Experience.</li><li>Llei 31/1995 PRL, Llei 10/2021 teletreball.</li></ul></div>
+                    </div>
+                    <FormulaBox formula="M = E × I × V" desc="Vroom (1964)" />
+                    <ClauBox>
+                        <p>- Domina les <strong>4 teories de contingut</strong> (Maslow, Herzberg, ERG, McClelland) i el <strong>VIE de Vroom</strong>.</p>
+                        <p>- Distingeix <strong>contingut (QUÈ) vs. procés (COM)</strong>.</p>
+                        <p>- Cita <strong>Deci-Ryan (SDT)</strong> i la distinció intrínseca/extrínseca.</p>
+                        <p>- Connecta amb el <strong>teletreball</strong> (Llei 10/2021) i <em>employee experience</em> (actualitat).</p>
+                    </ClauBox>
+                </Card>
+            </div>
+        );
+
+        const Tema64 = () => {
+            const [vista, setVista] = useState('complet');
+            return <div className="space-y-6"><SectionTitle icon="⚡" title="Tema 64" subtitle={t('tema64.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema64Complet />}{vista === 'resum' && <Tema64Resum />}</div>;
+        };
         const Tema65 = () => <TemaPlaceholder num={65} title={t('tema65.title')} icon="⚖️" />;
 
         // INICIO
