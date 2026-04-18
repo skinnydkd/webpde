@@ -1510,7 +1510,205 @@
             const [vista, setVista] = useState('complet');
             return <div className="space-y-6"><SectionTitle icon="📈" title="Tema 55" subtitle={t('tema55.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema55Complet />}{vista === 'resum' && <Tema55Resum />}</div>;
         };
-        const Tema56 = () => <TemaPlaceholder num={56} title={t('tema56.title')} icon="🧾" />;
+        // ════════════════════════════════════════════════════════════════
+        // TEMA 56 — Préstecs, emprèstits, usdefruit i nua propietat
+        // ════════════════════════════════════════════════════════════════
+        const Tema56Complet = () => (
+            <div className="space-y-6 animate-fade">
+                <Card title="Introducció" icon="📌">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>Els <strong>préstecs</strong> i <strong>emprèstits</strong> són els instruments clàssics de finançament a mitjà i llarg termini. Els primers són bilaterals (un prestador, un prestatari); els segons, col·lectius (emissor únic, múltiples obligacionistes). Dominar els seus sistemes d'amortització i les seues equivalències financeres és imprescindible per a qualsevol analista, directiu o docent d'economia.</p>
+                        <p>A Espanya, el mercat hipotecari —regulat per la Llei 5/2019— representa un 47 % del PIB i afecta més de 5 milions de llars. Les empreses cotitzades mobilitzen emissions anuals superiors a 40.000 M€ al mercat de capitals (BME, 2023). Entendre com es construeixen aquests instruments és una competència cívica i professional crucial.</p>
+                        <p>Aquest tema tanca el Bloc F i aprofundeix en: (1) préstecs i mètodes d'amortització; (2) sistema francès; (3) sistema americà i italià; (4) emprèstits; (5) usdefruit i nua propietat.</p>
+                    </div>
+                </Card>
+
+                <Card title="1. Préstecs: concepte i classificacions" icon="🧾">
+                    <TheoryBlock title="1.1. Definició jurídica i financera" color="indigo">
+                        <p>El <strong>préstec</strong> és el contracte pel qual una part (prestador) entrega a l'altra (prestatari) una quantitat de diners, comprometent-se aquesta a retornar-la en un termini, juntament amb els interessos pactats. Regulat pel Codi Civil (art. 1753-1757) i, en el cas del crèdit al consum o hipotecari, per lleis específiques: Llei 16/2011 i Llei 5/2019.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.2. Classificacions" color="violet">
+                        <p><strong>Per les garanties</strong>: personal (aval), hipotecari (finca), pignoraticia (béns mobles).</p>
+                        <p><strong>Per termini</strong>: curt (&lt;1 any), mitjà (1-5 anys), llarg (&gt;5 anys).</p>
+                        <p><strong>Per destinació</strong>: consum, habitatge, empresa, vehicle, estudis.</p>
+                        <p><strong>Per tipus d'interès</strong>: fix, variable (Euribor + diferencial), mixt.</p>
+                        <p><strong>Per moneda</strong>: en euros o en divisa (amb risc de tipus de canvi).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.3. Elements del préstec" color="emerald">
+                        <p>• <strong>Capital (C)</strong>: import prestat.</p>
+                        <p>• <strong>Tipus d'interès (i)</strong>: nominal o efectiu periòdic.</p>
+                        <p>• <strong>Termini (n)</strong>: nombre de períodes.</p>
+                        <p>• <strong>Quota (c)</strong>: pagament periòdic. Composada per dos parts: interès del període (I_k = i·C_pendent) i amortització del principal (A_k = c − I_k).</p>
+                        <p>• <strong>Quadre d'amortització</strong>: taula que mostra, per a cada període: quota, interès, amortització i capital pendent.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="2. Sistema francès (quotes constants)" icon="🇫🇷">
+                    <TheoryBlock title="2.1. Característiques" color="indigo">
+                        <p>El <strong>sistema francès</strong> (també dit <em>progressiu</em> o de <em>termes amortitzats constants</em>) és el més utilitzat a Espanya. Característica: <strong>les quotes periòdiques són constants</strong>. Com el capital pendent va disminuint, la part d'interessos cau cada període i la d'amortització creix.</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="c = C · i / [1 − (1+i)⁻ⁿ]" desc="Quota constant del sistema francès" />
+
+                    <TheoryBlock title="2.2. Exemple numèric" color="amber">
+                        <p>Préstec de 10.000 € a 3 anys, i = 5 % anual, quotes anuals postpagables.</p>
+                        <p>c = 10.000 · 0,05 / [1 − 1,05⁻³] = 500 / 0,13616 = <strong>3.672,09 €</strong>.</p>
+                        <p>Quadre d'amortització:</p>
+                        <p>Any 1: I₁ = 10.000·0,05 = 500 € ; A₁ = 3.672,09 − 500 = 3.172,09 € ; Pendent = 6.827,91 €.</p>
+                        <p>Any 2: I₂ = 6.827,91·0,05 = 341,40 € ; A₂ = 3.330,69 € ; Pendent = 3.497,22 €.</p>
+                        <p>Any 3: I₃ = 3.497,22·0,05 = 174,86 € ; A₃ = 3.497,22 € ; Pendent = 0 €. ✓</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.3. Fórmules per calcular l'amortització" color="cyan">
+                        <p>Per al període k:</p>
+                        <p>A_k = A_1 · (1+i)^(k-1) (progressió geomètrica).</p>
+                        <p>A_1 = c · (1+i)⁻ⁿ (primera quota d'amortització).</p>
+                        <p>Capital pendent al període k: C_k = c · [1 − (1+i)^(k-n)] / i.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="3. Sistema americà i italià" icon="🌐">
+                    <TheoryBlock title="3.1. Sistema americà" color="violet">
+                        <p>El <strong>sistema americà</strong> (o <em>de quota d'interès constant</em>) es caracteritza perquè durant tota la vida del préstec es paguen <strong>només interessos</strong> i, al venciment, s'amortitza el capital íntegrament. Paral·lelament, el prestatari constitueix un <strong>fons de reintegració</strong> o <em>sinking fund</em> amb aportacions periòdiques que, capitalitzades, reuneixen el capital al venciment.</p>
+                        <p>És poc habitual a Espanya per a préstecs al particular, però existeix en algunes emissions d'obligacions i en finançament estructurat.</p>
+                        <p>Quota d'interessos anual: I = C · i.</p>
+                        <p>Aportació al sinking fund (a interès i'): a = C · i' / [(1+i')ⁿ − 1].</p>
+                        <p>Cost total anual: I + a.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.2. Sistema italià" color="emerald">
+                        <p>El <strong>sistema italià</strong> (o <em>lineal</em>, o <em>d'amortització constant</em>) es caracteritza perquè <strong>la quota d'amortització és fixa</strong>. Com els interessos baixen amb el capital pendent, les quotes totals són <strong>decreixents</strong>.</p>
+                        <p>Amortització constant: A = C / n.</p>
+                        <p>Quota del període k: c_k = A + i · C_{k−1} = A + i · [C − (k−1)·A].</p>
+                        <p>Avantatge: es paga més al principi, menys al final. Total d'interessos inferior al sistema francès.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.3. Comparativa" color="rose">
+                        <p>Exemple: préstec 10.000 € a 3 anys al 5 %.</p>
+                        <p>• <strong>Francès</strong>: quotes constants 3.672 €. Total interessos: 1.016 €.</p>
+                        <p>• <strong>Italià</strong>: quotes 3.833, 3.667, 3.500. Total interessos: 1.000 €.</p>
+                        <p>• <strong>Americà</strong> (només interessos): 500, 500, 10.500. Total interessos si no hi ha sinking fund: 1.500 €.</p>
+                        <p>Si es constitueix sinking fund al 4 %, el cost total efectiu puja. Els sistemes amb amortització ràpida (italià) paguen menys interessos totals.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="4. Emprèstits (bons i obligacions)" icon="📜">
+                    <TheoryBlock title="4.1. Concepte" color="indigo">
+                        <p>L'<strong>emprèstit</strong> és un préstec de gran quantia fragmentat en parts iguals anomenades <strong>obligacions</strong> o <strong>bons</strong>, que l'empresa o l'Estat emet al mercat de capitals. Cada obligació representa una fracció del deute. Regulats per RDL 1/2010 (LSC, art. 401-410) i, en el cas públic, pel Tresor Públic.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.2. Elements" color="violet">
+                        <p>• <strong>Valor nominal (VN)</strong>: base del càlcul d'interessos.</p>
+                        <p>• <strong>Valor d'emissió (VE)</strong>: pot ser a la par (=VN), sota la par (prima d'emissió, VE &lt; VN) o damunt la par (agio).</p>
+                        <p>• <strong>Valor de reemborsament (VR)</strong>: el que paga l'emissor al venciment. Pot ser a la par o amb prima.</p>
+                        <p>• <strong>Cupó</strong>: interès periòdic explícit. Pot ser fix, variable, zero (s'emet a descompte).</p>
+                        <p>• <strong>Termini</strong>: curt (&lt; 2 anys), mitjà (2-7), llarg (&gt; 7).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.3. Rendibilitat al venciment (YTM)" color="emerald">
+                        <p>La <strong>rendibilitat al venciment</strong> (<em>Yield To Maturity</em>) és la TIR de l'obligació, la taxa que iguala VA fluxos (cupons + reemborsament) amb el preu pagat:</p>
+                        <p>P₀ = Σ_k [Cupó / (1+YTM)^k] + VR / (1+YTM)ⁿ.</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="P₀ = Σ Cupó_k/(1+YTM)^k + VR/(1+YTM)ⁿ" desc="Preu d'una obligació = VA dels fluxos descomptats a la YTM" />
+
+                    <TheoryBlock title="4.4. Tipus d'obligacions" color="amber">
+                        <p>• <strong>Bons sobirans</strong>: emesos per l'Estat (Bonos, Obligaciones del Tesoro, BOE 10 anys tradicional).</p>
+                        <p>• <strong>Corporate bonds</strong>: d'empreses. Amb rating (AAA, AA, A, BBB, <em>junk</em>).</p>
+                        <p>• <strong>Convertibles</strong>: poden transformar-se en accions.</p>
+                        <p>• <strong>Bons zero-cupó</strong>: emesos a descompte, sense cupons intermedis.</p>
+                        <p>• <strong>Green bonds</strong>: finançament de projectes ambientals (Iberdrola n'ha emés per &gt; 20.000 M€).</p>
+                        <p>• <strong>CoCos</strong> (Contingent Convertibles): usats per bancs com a capital addicional de nivell 1 (AT1).</p>
+                        <p>• <strong>Covered bonds</strong> (cèdules hipotecàries): amb garantia hipotecària.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.5. Mercats espanyols i europeus" color="cyan">
+                        <p>• <strong>Mercat AIAF</strong>: mercat secundari de renda fixa espanyol.</p>
+                        <p>• <strong>MARF</strong> (Mercado Alternativo de Renta Fija): per a mitjanes empreses.</p>
+                        <p>• <strong>SEND</strong>: plataforma electrònica de negociació.</p>
+                        <p>• <strong>Eurobond market</strong>: mercat europeu de renda fixa internacional.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="5. Usdefruit i nua propietat" icon="🏠">
+                    <TheoryBlock title="5.1. Concepte" color="indigo">
+                        <p>En algunes operacions financeres o immobiliàries, la titularitat es pot desdoblar en:</p>
+                        <p>• <strong>Usdefruit (usufructo)</strong>: dret a percebre els rendiments o usar el bé.</p>
+                        <p>• <strong>Nua propietat (nuda propiedad)</strong>: propietat sense dret d'ús ni gaudiment.</p>
+                        <p>Regulats pel Codi Civil (arts. 467-522 per a l'usdefruit; 534-614 per a la nua propietat).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.2. Valoració de l'usdefruit" color="violet">
+                        <p>El Codi Civil i la normativa tributària (RDL 1/1993 i Reglament ITP AJD) estableixen regles de valoració:</p>
+                        <p>• <strong>Usdefruit temporal</strong>: 2 % per cada any, amb màxim del 70 %.</p>
+                        <p>• <strong>Usdefruit vitalici</strong>: 70 % si &lt; 20 anys; reduint-se 1 punt per cada any addicional, mínim 10 %.</p>
+                        <p>• <strong>Nua propietat</strong>: valor total del bé menys el de l'usdefruit.</p>
+                        <p>Des de la perspectiva financera: V_usdefruit = Σ renda anual / (1+i)^k; V_nua propietat = VR / (1+i)ⁿ.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.3. Aplicacions" color="emerald">
+                        <p>• <strong>Planificació successòria</strong>: cedir nua propietat en vida per reduir herència.</p>
+                        <p>• <strong>Venda d'usdefruit</strong>: per a majors amb habitatge en propietat (productes com «nua propietat» comercialitzats per asseguradores).</p>
+                        <p>• <strong>Bons amb cupó</strong>: l'usdefruit és equivalent als cupons; la nua propietat al reemborsament.</p>
+                        <p>• <strong>Stripped bonds</strong>: bons els cupons i el principal dels quals es venen per separat (mercat nord-americà STRIPS).</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="Conclusió" icon="✅">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>Els <strong>préstecs</strong> i <strong>emprèstits</strong>, amb els seus diferents sistemes d'amortització (francès, americà, italià), constitueixen la columna vertebral del finançament a mitjà i llarg termini. El sistema francès, quasi ubic a la hipoteca espanyola, combina senzillesa amb càrrega total d'interessos relativament alta. Els sistemes alternatius (italià, americà) tenen aplicacions específiques.</p>
+                        <p>Els <strong>emprèstits</strong> amplien la capacitat de finançament a través del mercat de capitals, permetent a les empreses i Estats mobilitzar volums massius. Les seues característiques (cupó, venciment, garanties, convertibilitat) s'han diversificat amb l'auge del deute sostenible (<strong>green bonds</strong>, <strong>social bonds</strong>). Els conceptes d'<strong>usdefruit</strong> i <strong>nua propietat</strong> connecten la matemàtica financera amb el dret civil i la planificació patrimonial.</p>
+                        <p>Aquest tema tanca el Bloc F. El futur docent ha de transmetre que la matemàtica financera, lluny de ser un càlcul abstracte, és un llenguatge universal per a comprendre i comunicar decisions econòmiques amb rigor i transparència.</p>
+                    </div>
+                </Card>
+
+                <BibliografiaBox items={[
+                    'MURIOLA, J. i LAMOTHE, P. (2007): Manual de matemáticas financieras, Pirámide.',
+                    'NAVARRO, E. i MARTÍN, J.L. (2012): Manual de matemáticas financieras, McGraw-Hill.',
+                    'MASCAREÑAS, J. (2010): Gestión de carteras I: Selección de carteras, Universidad Complutense.',
+                    'FABOZZI, F.J. (2012): Bond Markets, Analysis, and Strategies, 8a ed., Pearson.',
+                    'BERK, J. i DEMARZO, P. (2020): Corporate Finance, 5a ed., Pearson.',
+                    'SUÁREZ SUÁREZ, A.S. (2014): Decisiones óptimas de inversión y financiación en la empresa, Pirámide.',
+                    'Codi Civil: arts. 1753-1757 (préstec), 467-522 (usdefruit), 534-614 (nua propietat).',
+                    'Reial Decret Legislatiu 1/2010 (LSC), arts. 401-410 (obligacions).',
+                    'Llei 16/2011 de Contractes de Crèdit al Consumidor.',
+                    'Llei 5/2019 reguladora dels contractes de crèdit immobiliari.',
+                    'Real Decret Legislatiu 1/1993 (ITP AJD) i Reglament.',
+                ]} />
+            </div>
+        );
+
+        const Tema56Resum = () => (
+            <div className="space-y-5 animate-fade">
+                <Card>
+                    <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200 mb-5">
+                        <p className="text-center font-bold text-emerald-800 text-lg">Tema 56: Préstecs i emprèstits</p>
+                        <p className="text-center text-sm text-emerald-600 mt-1">c = C · i / [1 − (1+i)⁻ⁿ] (sistema francès)</p>
+                    </div>
+                    <div className="space-y-4 text-sm text-slate-700">
+                        <div><h4 className="font-bold text-slate-800 mb-1">1. Préstecs</h4><ul className="list-disc pl-5 space-y-1"><li>Personal, hipotecari, pignoraticia.</li><li>Tipus fix, variable (Euribor), mixt.</li><li>Regulació: Llei 16/2011, Llei 5/2019.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">2. Sistema francès</h4><ul className="list-disc pl-5 space-y-1"><li>Quotes constants: c = C·i/[1−(1+i)⁻ⁿ].</li><li>Amortització creixent, interessos decreixents.</li><li>A_k = A_1·(1+i)^(k-1).</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">3. Americà i italià</h4><ul className="list-disc pl-5 space-y-1"><li>Americà: només interessos + sinking fund.</li><li>Italià: amortització constant A = C/n.</li><li>Italià: menys interessos totals que francès.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">4. Emprèstits</h4><ul className="list-disc pl-5 space-y-1"><li>Bons/obligacions (LSC arts. 401-410).</li><li>VN, VE, VR, cupó, rating.</li><li>YTM: P₀ = Σ Cupó/(1+YTM)^k + VR/(1+YTM)ⁿ.</li><li>Green bonds, CoCos, convertibles.</li><li>Mercats: AIAF, MARF, SEND.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">5. Usdefruit i nua propietat</h4><ul className="list-disc pl-5 space-y-1"><li>CC arts. 467-522 (usdefruit).</li><li>Valoració tributària RDL 1/1993.</li><li>Aplicacions: successió, bons amb cupó, STRIPS.</li></ul></div>
+                    </div>
+                    <FormulaBox formula="c_frances = C·i/[1−(1+i)⁻ⁿ]    P₀_bo = Σ Cupó/(1+YTM)^k + VR/(1+YTM)ⁿ" />
+                    <ClauBox>
+                        <p>- Calcula una <strong>quota del sistema francès</strong> amb un exemple complet.</p>
+                        <p>- Compara <strong>francès vs. italià vs. americà</strong> (amortització creixent/lineal/final).</p>
+                        <p>- Construeix un <strong>quadre d'amortització</strong> de 3-5 períodes.</p>
+                        <p>- Calcula la <strong>YTM</strong> d'un bo i cita els tipus d'emprèstits actuals (green bonds, CoCos).</p>
+                    </ClauBox>
+                </Card>
+            </div>
+        );
+
+        const Tema56 = () => {
+            const [vista, setVista] = useState('complet');
+            return <div className="space-y-6"><SectionTitle icon="🧾" title="Tema 56" subtitle={t('tema56.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema56Complet />}{vista === 'resum' && <Tema56Resum />}</div>;
+        };
 
         const temes = [
             { id: 'tema49', num: 49, emoji: '💼', available: true },
