@@ -7,10 +7,10 @@
     <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bloc G: Sistema Financer — Oposicions | PDE</title>
-    <meta name="description" content="Temes 61-66 d'oposicions d'Economia. Actius financers, borsa, assegurances, planificació financera, sistema tributari, IRPF i IVA.">
-    <meta property="og:title" content="Bloc G: Sistema Financer — Oposicions | PDE">
-    <meta property="og:description" content="Temes 61-66 d'oposicions d'Economia. Actius financers, borsa, assegurances, planificació financera, sistema tributari, IRPF i IVA.">
+    <title>Bloc G: Organització i Direcció — Oposicions | PDE</title>
+    <meta name="description" content="Temes 57-65 d'oposicions d'Economia. Presa de decisions, planificació, teories de l'organització, estructures, lideratge, cultura, comunicació, motivació i govern corporatiu.">
+    <meta property="og:title" content="Bloc G: Organització i Direcció — Oposicions | PDE">
+    <meta property="og:description" content="Temes 57-65 d'oposicions d'Economia. Presa de decisions, planificació, teories de l'organització, estructures, lideratge, cultura, comunicació, motivació i govern corporatiu.">
     <meta property="og:image" content="https://profedeeconomia.es/og/oposicions-bloc-g.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -26,636 +26,503 @@
     <link rel="alternate" hreflang="es" href="https://profedeeconomia.es/oposicions-bloc-g">
     <link rel="alternate" hreflang="en" href="https://profedeeconomia.es/oposicions-bloc-g">
     <link rel="alternate" hreflang="x-default" href="https://profedeeconomia.es/oposicions-bloc-g">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.1.16/umd/Recharts.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./pde-shared.js"></script>
     <script src="./pde-components.js" type="text/babel"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #0d9488 #f0fdfa; }
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #6366f1 #eef2ff; }
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f0fdfa; }
-        ::-webkit-scrollbar-thumb { background-color: #0d9488; border-radius: 3px; }
-        /* Dark mode */
+        ::-webkit-scrollbar-track { background: #eef2ff; }
+        ::-webkit-scrollbar-thumb { background-color: #6366f1; border-radius: 3px; }
         .dark { color-scheme: dark; }
         .dark body { background: #111827 !important; color: #e5e7eb; }
         .dark .bg-gradient-to-br { background: #111827 !important; }
         .dark * { scrollbar-color: #ec4899 #1f2937; }
         .dark ::-webkit-scrollbar-track { background: #1f2937; }
-
-        /* Print */
         @media print {
             body { background: white !important; color: black !important; font-size: 12pt; }
-            .dark body { background: white !important; color: black !important; }
             header, footer, .pde-no-print, nav { display: none !important; }
             .pde-print-only { display: block !important; }
             a { color: black !important; text-decoration: underline; }
-            h1, h2, h3, h4 { page-break-after: avoid; color: black !important; }
-            pre, blockquote, table, figure { page-break-inside: avoid; }
-            img { max-width: 100% !important; }
-            .max-w-7xl, .max-w-6xl, .max-w-5xl, .max-w-4xl, .max-w-3xl { max-width: 100% !important; }
-            * { box-shadow: none !important; text-shadow: none !important; }
         }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade { animation: fadeIn 0.4s ease-out; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-teal-50 via-white to-cyan-50 min-h-screen">
+<body class="bg-gradient-to-br from-indigo-50 via-white to-violet-50 min-h-screen">
     <div id="root"></div>
     <script type="text/babel">
-const { useState, useMemo, useEffect } = React;
+    const { useState, useMemo, useEffect } = React;
+    const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, ReferenceLine, Legend, BarChart, Bar, ComposedChart, Scatter, PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } = Recharts;
 
-function BlocGApp() {
-    const [section, setSection] = useState('inicio');
-    const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+    function BlocGApp() {
+        const [section, setSection] = useState('inicio');
+        const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+        usePdeDeepLink(section, setSection);
 
-    usePdeDeepLink(section, setSection);
+        const pageTranslations = {
+            'nav.oposicions-bloc-g': { val: 'Bloc G: Organització i Direcció', es: 'Bloque G: Organización y Dirección', en: 'Block G: Organization & Management' },
+            'footer.appname': { val: "Bloc G — Oposicions d'Economia", es: "Bloque G — Oposiciones de Economía", en: 'Block G — Economics Exams' },
+            'inicio.title': { val: 'Bloc G: Organització i Direcció', es: 'Bloque G: Organización y Dirección', en: 'Block G: Organization & Management' },
+            'inicio.subtitle': { val: "Temes 57-65 de les oposicions d'Economia a Secundària. Presa de decisions, planificació, teories de l'organització, estructures, lideratge, cultura, comunicació, motivació i govern corporatiu.", es: 'Temas 57-65 de las oposiciones de Economía. Toma de decisiones, planificación, teorías de la organización, estructuras, liderazgo, cultura, comunicación, motivación y gobierno corporativo.', en: 'Topics 57-65. Decision-making, planning, organization theories, structures, leadership, culture, communication, motivation and corporate governance.' },
+            'inicio.backOpo': { val: "← Tornar a Oposicions", es: '← Volver a Oposiciones', en: '← Back to Exams' },
+            'inicio.disponible': { val: "Disponible", es: 'Disponible', en: 'Available' },
+            'inicio.properament': { val: "Properament", es: 'Próximamente', en: 'Coming soon' },
+            'sec.inicio': { val: 'Inici', es: 'Inicio', en: 'Home' },
+            'tab.complet': { val: 'Tema complet', es: 'Tema completo', en: 'Full topic' },
+            'tab.resum': { val: 'Resum / Esquema', es: 'Resumen / Esquema', en: 'Summary / Outline' },
+            'tema57.title': { val: "La presa de decisions a l'empresa. Tipus de decisions. Incertesa i risc. Decisions en sistemes oberts.", es: 'La toma de decisiones en la empresa. Tipos de decisiones. Incertidumbre y riesgo. Decisiones en sistemas abiertos.', en: 'Decision-making in the firm. Types. Uncertainty and risk. Open-system decisions.' },
+            'tema58.title': { val: "La planificació a l'empresa. Elements i etapes. El control. Tècniques de control. Sistemes integrats de planificació i control.", es: 'La planificación en la empresa. Elementos y etapas. El control. Técnicas de control. Sistemas integrados de planificación y control.', en: 'Planning in the firm. Elements and stages. Control. Integrated planning and control systems.' },
+            'tema59.title': { val: "L'empresa com a organització i institució. Teories clàssiques (Taylor, Fayol, Weber). Escola de Relacions Humanes (Mayo). Teoria de la contingència. Teoria contractual.", es: 'La empresa como organización e institución. Teorías clásicas. Escuela de Relaciones Humanas. Teoría de la contingencia. Teoría contractual.', en: 'The firm as organization and institution. Classical theories. Human Relations. Contingency theory. Contractual theory.' },
+            'tema60.title': { val: "Les estructures formals i informals. Les relacions a l'organització. Dinàmica de grups. Conflicte, canvi i desenvolupament.", es: 'Las estructuras formales e informales. Las relaciones en la organización. Dinámica de grupos. Conflicto, cambio y desarrollo.', en: 'Formal and informal structures. Organizational relationships. Group dynamics. Conflict, change and development.' },
+            'tema61.title': { val: "Lideratge i estils de direcció. Enfocaments tradicionals. Models contingents. Delegació i descentralització.", es: 'Liderazgo y estilos de dirección. Enfoques tradicionales. Modelos contingentes. Delegación y descentralización.', en: 'Leadership and management styles. Traditional approaches. Contingent models. Delegation and decentralization.' },
+            'tema62.title': { val: "Cultura i imatge de l'empresa. L'estil Z. Tècniques d'investigació. Cultura i ètica a les organitzacions empresarials.", es: 'Cultura e imagen de la empresa. El estilo Z. Técnicas de investigación. Cultura y ética en las organizaciones empresariales.', en: 'Corporate culture and image. Style Z. Research techniques. Culture and ethics in business organizations.' },
+            'tema63.title': { val: "La comunicació a l'empresa. Informació i comunicació. Xarxes i estructures. Estratègia de comunicacions.", es: 'La comunicación en la empresa. Información y comunicación. Redes y estructuras. Estrategia de comunicaciones.', en: 'Communication in the firm. Information and communication. Networks and structures. Communication strategy.' },
+            'tema64.title': { val: "Clima de l'empresa i motivació. Motivació i satisfacció en el treball. Tipologia de motivacions. Valors, actituds i satisfacció.", es: 'Clima de la empresa y motivación. Motivación y satisfacción en el trabajo. Tipología de motivaciones. Valores, actitudes y satisfacción.', en: 'Corporate climate and motivation. Motivation and job satisfaction. Types of motivations. Values, attitudes and satisfaction.' },
+            'tema65.title': { val: "Evolució de les relacions propietat-control. La tecnoestructura. L'empresa integrada. Relacions de propietat i poder.", es: 'Evolución de las relaciones propiedad-control. La tecnoestructura. La empresa integrada. Relaciones de propiedad y poder.', en: 'Evolution of ownership-control relationships. Technostructure. The integrated firm. Ownership and power relationships.' },
+        };
 
-    const pageTranslations = {
-        'nav.oposicions-bloc-g': { val: 'Bloc G: Sistema Financer', es: 'Bloque G: Sistema Financiero', en: 'Block G: Financial System' },
-        'footer.appname': { val: "Bloc G — Oposicions d'Economia", es: "Bloque G — Oposiciones de Economía", en: 'Block G — Economics Exams' },
-        'inicio.title': { val: 'Bloc G: Sistema Financer', es: 'Bloque G: Sistema Financiero', en: 'Block G: Financial System' },
-        'inicio.subtitle': { val: "Temes 61-66 de les oposicions d'Economia a Secundària", es: 'Temas 61-66 de las oposiciones de Economía en Secundaria', en: 'Topics 61-66 of the Secondary Economics teaching exams' },
-        'inicio.disponible': { val: 'Disponible', es: 'Disponible', en: 'Available' },
-        'inicio.properament': { val: 'Properament', es: 'Próximamente', en: 'Coming soon' },
-        'inicio.backOpo': { val: '← Tornar a Oposicions', es: '← Volver a Oposiciones', en: '← Back to Exams' },
-        'sec.inicio': { val: 'Inici', es: 'Inicio', en: 'Home' },
-        'sec.tema61': { val: 'Tema 61', es: 'Tema 61', en: 'Topic 61' },
-        'sec.tema62': { val: 'Tema 62', es: 'Tema 62', en: 'Topic 62' },
-        'sec.tema63': { val: 'Tema 63', es: 'Tema 63', en: 'Topic 63' },
-        'sec.tema64': { val: 'Tema 64', es: 'Tema 64', en: 'Topic 64' },
-        'sec.tema65': { val: 'Tema 65', es: 'Tema 65', en: 'Topic 65' },
-        'sec.tema66': { val: 'Tema 66', es: 'Tema 66', en: 'Topic 66' },
-        'tab.complet': { val: 'Tema complet', es: 'Tema completo', en: 'Full topic' },
-        'tab.resum': { val: 'Resum / Esquema', es: 'Resumen / Esquema', en: 'Summary / Outline' },
-        'tema61.title': { val: 'Actius financers. Renda fixa i variable.', es: 'Activos financieros. Renta fija y variable.', en: 'Financial assets. Fixed and variable income.' },
-        'tema62.title': { val: 'La Borsa de Valors. Funcionament i índexs.', es: 'La Bolsa de Valores. Funcionamiento e índices.', en: 'The Stock Exchange. Operation and indices.' },
-        'tema63.title': { val: 'Assegurances. Principis i modalitats.', es: 'Seguros. Principios y modalidades.', en: 'Insurance. Principles and types.' },
-        'tema64.title': { val: 'Planificació financera personal. Estalvi i inversió.', es: 'Planificación financiera personal. Ahorro e inversión.', en: 'Personal financial planning. Saving and investment.' },
-        'tema65.title': { val: 'El sistema tributari espanyol.', es: 'El sistema tributario español.', en: 'The Spanish tax system.' },
-        'tema66.title': { val: 'Impostos directes i indirectes. IRPF i IVA.', es: 'Impuestos directos e indirectos. IRPF e IVA.', en: 'Direct and indirect taxes. Income tax and VAT.' },
-        'placeholder.msg': { val: 'Aquest tema estarà disponible properament.', es: 'Este tema estará disponible próximamente.', en: 'This topic will be available soon.' },
-    };
+        const t = createTranslator(pageTranslations, idioma);
+        const lang = idioma;
 
-    const t = createTranslator(pageTranslations, idioma);
-    const lang = idioma;
-
-    // ════════════════════════════════════════════════════════════════
-    // REUSABLE COMPONENTS
-    // ════════════════════════════════════════════════════════════════
-    const Card = ({ children, className = "", title, icon }) => (
-        <div className={`bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 hover:shadow-md transition-shadow ${className} animate-fade`}>
-            {title && <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100"><span className="text-2xl">{icon}</span><h3 className="font-bold text-slate-800 text-lg">{title}</h3></div>}
-            {children}
-        </div>
-    );
-    const Tabs = ({ tabs, active, onChange }) => (
-        <div className="flex flex-wrap gap-1 p-1.5 bg-slate-100 rounded-xl">
-            {tabs.map(tab => (<button key={tab.id} onClick={() => onChange(tab.id)} className={`flex-1 min-w-fit py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${active === tab.id ? 'bg-white shadow-sm text-teal-600' : 'text-slate-600 hover:text-slate-800 hover:bg-white/50'}`}>{tab.label}</button>))}
-        </div>
-    );
-    const FormulaBox = ({ formula, desc }) => (
-        <div className="my-4 p-5 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-xl border border-teal-100">
-            <p className="text-center font-mono text-lg text-teal-800 font-semibold">{formula}</p>
-            {desc && <p className="text-center text-sm text-teal-600 mt-2">{desc}</p>}
-        </div>
-    );
-    const TheoryBlock = ({ title, children, color = "slate" }) => {
-        const colors = { slate: "border-slate-300 bg-slate-50", blue: "border-blue-300 bg-blue-50", green: "border-green-300 bg-green-50", amber: "border-amber-300 bg-amber-50", pink: "border-pink-300 bg-pink-50", violet: "border-violet-300 bg-violet-50", red: "border-red-300 bg-red-50", cyan: "border-cyan-300 bg-cyan-50", emerald: "border-emerald-300 bg-emerald-50", purple: "border-purple-300 bg-purple-50", rose: "border-rose-300 bg-rose-50", indigo: "border-indigo-300 bg-indigo-50", teal: "border-teal-300 bg-teal-50", orange: "border-orange-300 bg-orange-50" };
-        return (<div className={`border-l-4 ${colors[color] || colors.slate} p-5 rounded-r-xl my-4`}>{title && <h4 className="font-bold text-slate-800 mb-3 text-base">{title}</h4>}<div className="text-slate-700 text-sm leading-relaxed space-y-2">{children}</div></div>);
-    };
-    const SectionTitle = ({ icon, title, subtitle }) => (<div className="mb-8"><div className="flex items-center gap-3 mb-2"><span className="text-3xl">{icon}</span><h1 className="text-3xl font-black text-slate-800">{title}</h1></div>{subtitle && <p className="text-slate-500 ml-12">{subtitle}</p>}</div>);
-    const BibliografiaBox = ({ items }) => (<div className="my-6 p-6 bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl border border-slate-200"><h4 className="font-bold text-slate-800 mb-4 text-base flex items-center gap-2"><span>📚</span> Bibliografía</h4><ul className="space-y-2">{items.map((item, i) => (<li key={i} className="text-sm text-slate-700 leading-relaxed pl-4 border-l-2 border-slate-200">{item}</li>))}</ul></div>);
-    const ClauBox = ({ children }) => (<div className="my-4 p-5 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200"><div className="flex items-start gap-3"><span className="text-2xl">🔑</span><div><h4 className="font-bold text-amber-700 mb-2">{lang === 'es' ? 'Clave para el 10' : lang === 'en' ? 'Key for top marks' : 'Clau per al 10'}</h4><div className="text-sm text-amber-800 space-y-1">{children}</div></div></div></div>);
-
-    // ════════════════════════════════════════════════════════════════
-    // THEME DATA
-    // ════════════════════════════════════════════════════════════════
-    const temes = [
-        { num: 61, id: 'tema61', available: true },
-        { num: 62, id: 'tema62', available: true },
-        { num: 63, id: 'tema63', available: true },
-        { num: 64, id: 'tema64', available: true },
-        { num: 65, id: 'tema65', available: true },
-        { num: 66, id: 'tema66', available: true },
-    ];
-
-    // ════════════════════════════════════════════════════════════════
-    // INICIO
-    // ════════════════════════════════════════════════════════════════
-    const Inicio = () => (
-        <div className="animate-fade">
-            <a href="./oposicions" className="inline-flex items-center gap-2 text-sm text-teal-600 hover:text-teal-800 mb-6 transition-colors">{t('inicio.backOpo')}</a>
-            <div className="text-center mb-10">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-teal-100 text-teal-700 rounded-full text-sm font-semibold mb-4"><span>💹</span> Bloc G</div>
-                <h1 className="text-4xl font-black text-slate-800 mb-3">{t('inicio.title')}</h1>
-                <p className="text-slate-500 text-lg max-w-2xl mx-auto">{t('inicio.subtitle')}</p>
+        const Card = ({ children, className = "", title, icon }) => (
+            <div className={`bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 hover:shadow-md transition-shadow ${className} animate-fade`}>
+                {title && <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100"><span className="text-2xl">{icon}</span><h3 className="font-bold text-slate-800 text-lg">{title}</h3></div>}
+                {children}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {temes.map(tema => (
-                    <button key={tema.id} onClick={() => { if (tema.available) { setSection(tema.id); pdeSetHashSection(tema.id); pdeScrollToTop(); } }}
-                        className={`text-left p-5 rounded-2xl border transition-all ${tema.available ? 'bg-white border-teal-200 hover:shadow-lg hover:border-teal-300 cursor-pointer' : 'bg-gray-50 border-gray-200 opacity-70 cursor-not-allowed'}`}>
-                        <div className="flex items-start gap-3">
-                            <span className={`inline-flex items-center justify-center w-10 h-10 rounded-xl text-sm font-black text-white ${tema.available ? 'bg-gradient-to-br from-teal-500 to-cyan-600' : 'bg-gray-400'}`}>T{tema.num}</span>
-                            <div className="flex-1 min-w-0">
-                                <p className="font-semibold text-slate-800 text-sm leading-snug mb-2">{t(`tema${tema.num}.title`)}</p>
-                                <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${tema.available ? 'bg-teal-100 text-teal-700' : 'bg-gray-100 text-gray-500'}`}>{tema.available ? '✓ ' + t('inicio.disponible') : '🔒 ' + t('inicio.properament')}</span>
-                            </div>
-                        </div>
-                    </button>
+        );
+
+        const Tabs = ({ tabs, active, onChange }) => (
+            <div className="flex flex-wrap gap-1 p-1.5 bg-slate-100 rounded-xl">
+                {tabs.map(tab => (
+                    <button key={tab.id} onClick={() => onChange(tab.id)} className={`flex-1 min-w-fit py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${active === tab.id ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-600 hover:text-slate-800 hover:bg-white/50'}`}>{tab.label}</button>
                 ))}
             </div>
-        </div>
-    );
+        );
 
-    // ════════════════════════════════════════════════════════════════
-    // TEMA 61 — Actius financers. Renda fixa i variable.
-    // ════════════════════════════════════════════════════════════════
-    const Tema61Complet = () => (
-        <div className="space-y-6 animate-fade">
-            <Card title="Introducció" icon="📌">
-                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
-                    <p>Els <strong>actius financers</strong> són títols o contractes que representen un dret per al seu titular (l'inversor) i una obligació per a l'emissor. Constitueixen el mecanisme fonamental a través del qual el sistema financer canalitza l'estalvi cap a la inversió. La distinció entre <strong>renda fixa</strong> (deute) i <strong>renda variable</strong> (accions) és essencial per a comprendre els mercats financers, la gestió de carteres i l'educació financera del ciutadà.</p>
-                    <p>Aquest tema s'emmarca en els continguts d'<strong>Economia de 1r de Batxillerat</strong> (RD 243/2022) sobre el sistema financer i els mercats, i en els continguts transversals d'educació financera. S'estructura en: concepte i característiques, renda fixa, renda variable, fons d'inversió i relació rendibilitat-risc.</p>
+        const TheoryBlock = ({ title, children, color = "slate" }) => {
+            const colors = { slate: "border-slate-300 bg-slate-50", blue: "border-blue-300 bg-blue-50", teal: "border-teal-300 bg-teal-50", cyan: "border-cyan-300 bg-cyan-50", indigo: "border-indigo-300 bg-indigo-50", violet: "border-violet-300 bg-violet-50", purple: "border-purple-300 bg-purple-50", green: "border-green-300 bg-green-50", emerald: "border-emerald-300 bg-emerald-50", amber: "border-amber-300 bg-amber-50", rose: "border-rose-300 bg-rose-50", pink: "border-pink-300 bg-pink-50", red: "border-red-300 bg-red-50", orange: "border-orange-300 bg-orange-50" };
+            return (
+                <div className={`border-l-4 ${colors[color] || colors.slate} p-5 rounded-r-xl my-4`}>
+                    {title && <h4 className="font-bold text-slate-800 mb-3 text-base">{title}</h4>}
+                    <div className="text-slate-700 text-sm leading-relaxed space-y-2">{children}</div>
                 </div>
-            </Card>
-            <Card title="1. Concepte i característiques dels actius financers" icon="📘">
-                <TheoryBlock title="1.1. Definició" color="teal"><p>Un <strong>actiu financer</strong> és un títol emés per una unitat econòmica deficitària (empresa, Estat) que representa un deute (renda fixa) o una participació en la propietat (renda variable) i que atorga al seu titular el dret a rebre fluxos de caixa futurs (interessos, dividends, reemborsament del principal).</p></TheoryBlock>
-                <TheoryBlock title="1.2. Tres característiques fonamentals" color="cyan"><p><strong>1. Rendibilitat:</strong> rendiment que proporciona l'actiu (interessos, dividends, plusvàlues). Pot ser fixa (coneguda per endavant — bons) o variable (incerta — accions).<br/><strong>2. Risc:</strong> probabilitat que el rendiment real diferisca de l'esperat. Inclou: risc de crèdit (impagament de l'emissor), risc de mercat (fluctuacions de preu), risc de tipus d'interès, risc de liquiditat, risc de tipus de canvi.<br/><strong>3. Liquiditat:</strong> facilitat per a convertir l'actiu en diners sense pèrdua significativa de valor. Els diners són l'actiu més líquid; un immoble, el menys.</p><p><strong>Relació fonamental:</strong> a major rendibilitat esperada, major risc. A major liquiditat, menor rendibilitat. No existeix la inversió d'alta rendibilitat, baix risc i alta liquiditat simultàniament (triangle impossible).</p></TheoryBlock>
-                <FormulaBox formula="Rentabilitat ↑ ↔ Risc ↑ | Liquiditat ↑ ↔ Rentabilitat ↓" desc="El triangle impossible: no es pot tindre tot alhora" />
-            </Card>
-            <Card title="2. Renda fixa" icon="📘">
-                <TheoryBlock title="2.1. Concepte" color="teal"><p>Els actius de <strong>renda fixa</strong> representen un <strong>préstec</strong> de l'inversor a l'emissor: l'inversor presta diners i rep a canvi interessos periòdics (cupó) i la devolució del principal al venciment. El rendiment és predictible (d'ací «fixa»), encara que el preu de mercat pot fluctuar si es ven abans del venciment.</p></TheoryBlock>
-                <TheoryBlock title="2.2. Tipus de renda fixa" color="cyan">
-                    <p><strong>Deute públic:</strong><br/>— <em>Lletres del Tresor:</em> CP (3, 6, 12 mesos). Emeses al descompte (es compra per davall del nominal i es cobra el nominal al venciment). Risc molt baix.<br/>— <em>Bons de l'Estat:</em> MP (2-5 anys). Cupó anual.<br/>— <em>Obligacions de l'Estat:</em> LP (10, 15, 30, 50 anys). Cupó anual.</p>
-                    <p><strong>Renda fixa privada (corporativa):</strong><br/>— <em>Pagarés d'empresa:</em> CP. Similars a les lletres.<br/>— <em>Bons i obligacions corporatives:</em> emesos per empreses. Major risc (i major rendibilitat) que el deute públic. Les <em>agències de rating</em> (Moody's, S&P, Fitch) qualifiquen la solvència de l'emissor: investment grade (BBB o superior) vs. high yield/bo escombraria (BB o inferior).</p>
-                </TheoryBlock>
-                <TheoryBlock title="2.3. Preu i tipus d'interès" color="teal"><p>El preu d'un bo en el mercat secundari té una <strong>relació inversa</strong> amb el tipus d'interès: quan els tipus pugen, el preu dels bons baixa (perquè els bons existents amb cupons més baixos són menys atractius), i viceversa. Aquesta és la font principal de risc de mercat de la renda fixa.</p></TheoryBlock>
+            );
+        };
 
-                {/* SVG 1: Tipus d'Actius Financers */}
-                <div className="my-6 flex justify-center">
-                    <svg viewBox="0 0 560 400" className="w-full max-w-xl mx-auto" style={{fontFamily: 'Plus Jakarta Sans, sans-serif'}}>
-                        <text x="280" y="28" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#1e293b">Tipus d'Actius Financers</text>
-                        <text x="280" y="48" textAnchor="middle" fontSize="12" fill="#64748b">Classificació per rendibilitat i risc</text>
+        const FormulaBox = ({ formula, desc }) => (
+            <div className="my-4 p-5 bg-gradient-to-r from-indigo-50 to-violet-50 rounded-xl border border-indigo-100">
+                <p className="text-center font-mono text-lg text-indigo-800 font-semibold">{formula}</p>
+                {desc && <p className="text-center text-sm text-indigo-600 mt-2">{desc}</p>}
+            </div>
+        );
 
-                        {/* Renda Fixa box */}
-                        <rect x="30" y="75" width="230" height="200" rx="12" fill="#f0fdfa" stroke="#0d9488" strokeWidth="2"/>
-                        <rect x="30" y="75" width="230" height="40" rx="12" fill="#0d9488"/>
-                        <rect x="30" y="95" width="230" height="20" fill="#0d9488"/>
-                        <text x="145" y="100" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#ffffff">RENDA FIXA</text>
-                        <text x="145" y="118" textAnchor="middle" fontSize="11" fill="#ffffff">Préstec → cupó + devolució</text>
+        const SectionTitle = ({ icon, title, subtitle }) => (
+            <div className="mb-8">
+                <div className="flex items-center gap-3 mb-2"><span className="text-3xl">{icon}</span><h1 className="text-3xl font-black text-slate-800">{title}</h1></div>
+                {subtitle && <p className="text-slate-500 ml-12 text-sm">{subtitle}</p>}
+            </div>
+        );
 
-                        <rect x="50" y="140" width="190" height="28" rx="6" fill="#ccfbf1" stroke="#14b8a6" strokeWidth="1"/>
-                        <text x="145" y="159" textAnchor="middle" fontSize="11" fontWeight="600" fill="#0f766e">Lletres del Tresor (CP)</text>
-                        <rect x="50" y="175" width="190" height="28" rx="6" fill="#ccfbf1" stroke="#14b8a6" strokeWidth="1"/>
-                        <text x="145" y="194" textAnchor="middle" fontSize="11" fontWeight="600" fill="#0f766e">Bons de l'Estat (MP)</text>
-                        <rect x="50" y="210" width="190" height="28" rx="6" fill="#ccfbf1" stroke="#14b8a6" strokeWidth="1"/>
-                        <text x="145" y="229" textAnchor="middle" fontSize="11" fontWeight="600" fill="#0f766e">Obligacions (LP)</text>
-                        <rect x="50" y="245" width="190" height="28" rx="6" fill="#e0f2fe" stroke="#0ea5e9" strokeWidth="1"/>
-                        <text x="145" y="264" textAnchor="middle" fontSize="11" fontWeight="600" fill="#0369a1">Bons corporatius / Pagarés</text>
+        const BibliografiaBox = ({ items }) => (
+            <div className="my-6 p-6 bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl border border-slate-200">
+                <h4 className="font-bold text-slate-800 mb-4 text-base flex items-center gap-2"><span>📚</span> Bibliografia</h4>
+                <ul className="space-y-2">{items.map((item, i) => <li key={i} className="text-sm text-slate-700 leading-relaxed pl-4 border-l-2 border-slate-200">{item}</li>)}</ul>
+            </div>
+        );
 
-                        {/* Renda Variable box */}
-                        <rect x="300" y="75" width="230" height="200" rx="12" fill="#fff7ed" stroke="#f97316" strokeWidth="2"/>
-                        <rect x="300" y="75" width="230" height="40" rx="12" fill="#f97316"/>
-                        <rect x="300" y="95" width="230" height="20" fill="#f97316"/>
-                        <text x="415" y="100" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#ffffff">RENDA VARIABLE</text>
-                        <text x="415" y="118" textAnchor="middle" fontSize="11" fill="#ffffff">Propietat → dividends + plusvàlues</text>
-
-                        <rect x="320" y="140" width="190" height="28" rx="6" fill="#ffedd5" stroke="#fb923c" strokeWidth="1"/>
-                        <text x="415" y="159" textAnchor="middle" fontSize="11" fontWeight="600" fill="#c2410c">Accions (SA cotitzades)</text>
-                        <rect x="320" y="175" width="190" height="28" rx="6" fill="#ffedd5" stroke="#fb923c" strokeWidth="1"/>
-                        <text x="415" y="194" textAnchor="middle" fontSize="11" fontWeight="600" fill="#c2410c">ETFs (fons cotitzats)</text>
-                        <rect x="320" y="210" width="190" height="28" rx="6" fill="#ffedd5" stroke="#fb923c" strokeWidth="1"/>
-                        <text x="415" y="229" textAnchor="middle" fontSize="11" fontWeight="600" fill="#c2410c">Derivats (futur, opcions)</text>
-                        <rect x="320" y="245" width="190" height="28" rx="6" fill="#fef3c7" stroke="#f59e0b" strokeWidth="1"/>
-                        <text x="415" y="264" textAnchor="middle" fontSize="11" fontWeight="600" fill="#92400e">Criptoactius (Bitcoin...)</text>
-
-                        {/* Risk/Return arrow */}
-                        <defs>
-                            <linearGradient id="riskGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stopColor="#0d9488"/>
-                                <stop offset="100%" stopColor="#f97316"/>
-                            </linearGradient>
-                            <marker id="arrowRisk1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-                                <polygon points="0 0, 8 3, 0 6" fill="#f97316"/>
-                            </marker>
-                        </defs>
-                        <rect x="30" y="300" width="500" height="50" rx="10" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1"/>
-                        <line x1="60" y1="325" x2="490" y2="325" stroke="url(#riskGrad1)" strokeWidth="3" markerEnd="url(#arrowRisk1)"/>
-                        <text x="60" y="345" fontSize="10" fill="#0d9488" fontWeight="bold">↓ Risc / ↓ Rendibilitat</text>
-                        <text x="500" y="345" textAnchor="end" fontSize="10" fill="#f97316" fontWeight="bold">↑ Risc / ↑ Rendibilitat</text>
-                        <text x="280" y="315" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#475569">Relació Risc — Rendibilitat</text>
-
-                        {/* Triangle impossible label */}
-                        <rect x="160" y="365" width="240" height="28" rx="8" fill="#0d9488"/>
-                        <text x="280" y="384" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#ffffff">⚠ Triangle impossible: Rendibilitat ↔ Risc ↔ Liquiditat</text>
-                    </svg>
+        const ClauBox = ({ children }) => (
+            <div className="my-4 p-5 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200">
+                <div className="flex items-start gap-3">
+                    <span className="text-2xl">🔑</span>
+                    <div>
+                        <h4 className="font-bold text-amber-700 mb-2">{lang === 'es' ? 'Clave para el 10' : lang === 'en' ? 'Key for top marks' : 'Clau per al 10'}</h4>
+                        <div className="text-sm text-amber-800 space-y-1">{children}</div>
+                    </div>
                 </div>
-            </Card>
-            <Card title="3. Renda variable" icon="📘">
-                <TheoryBlock title="3.1. Les accions" color="teal"><p>Les <strong>accions</strong> representen una participació en la <strong>propietat</strong> d'una societat anònima. L'accionista és copropietari i té drets: <strong>econòmics</strong> (dividends, participació en el patrimoni en cas de liquidació, subscripció preferent en ampliacions) i <strong>polítics</strong> (vot en la Junta General d'Accionistes, informació). La rendibilitat prové de: <strong>dividends</strong> (part del benefici distribuïda) + <strong>plusvàlues</strong> (guany per venda a preu superior al de compra).</p></TheoryBlock>
-                <TheoryBlock title="3.2. Valoració d'accions" color="cyan"><p><strong>Valor nominal:</strong> valor que figura en els estatuts (capital social / n.º accions).<br/><strong>Valor comptable (teòric):</strong> patrimoni net / n.º accions.<br/><strong>Valor de mercat (cotització):</strong> preu al qual es compra/ven en Borsa. Determinat per oferta i demanda, expectatives de beneficis, tipus d'interès, sentiment del mercat.<br/><strong>PER (Price Earnings Ratio):</strong> Cotització / BPA (Benefici Per Acció). Indica quants anys de beneficis es paguen per l'acció. PER alt → acció «cara» (o expectatives altes); PER baix → acció «barata» (o expectatives baixes).</p></TheoryBlock>
-                <FormulaBox formula="PER = Cotització / BPA | Rendibilitat acció = (Dividends + Plusvàlua) / Preu compra" desc="PER alt → cara o expectatives altes. PER baix → barata o expectatives baixes." />
-            </Card>
-            <Card title="4. Fons d'inversió i altres vehicles" icon="📘">
-                <TheoryBlock title="4.1. Fons d'inversió" color="teal"><p>Un <strong>fons d'inversió</strong> és un patrimoni col·lectiu format per les aportacions de múltiples inversors (partícips), gestionat per una <strong>societat gestora</strong> professional i custodiat per una <strong>entitat depositària</strong>. La diversificació redueix el risc. Tipus: fons de renda fixa, renda variable, mixtos, garantits, indexats (repliquen un índex), temàtics (tecnologia, ESG), monetaris. A Espanya, més de 350.000 M€ de patrimoni gestionat.</p></TheoryBlock>
-                <TheoryBlock title="4.2. ETFs, plans de pensions i altres" color="cyan"><p><strong>ETF (Exchange-Traded Fund):</strong> fons cotitzat en Borsa com una acció. Comissions baixes, liquiditat alta. Repliquen índexs (IBEX 35, S&P 500).<br/><strong>Plans de pensions:</strong> estalvi a llarg termini per a la jubilació. Avantatges fiscals (aportacions deduïbles en IRPF, amb límit d'1.500 €/any). Il·líquids (només rescatables en jubilació, incapacitat, atur LP o als 10 anys).<br/><strong>Criptoactius:</strong> Bitcoin, Ethereum. Actius digitals descentralitzats, alta volatilitat, regulació en desenvolupament (MiCA a la UE).<br/><strong>Derivats:</strong> futurs, opcions, swaps. Instruments el valor dels quals depén d'un actiu subjacent. Ús: cobertura de riscos i especulació.</p></TheoryBlock>
-            </Card>
-            <Card title="5. La relació rendibilitat-risc i la diversificació" icon="📘">
-                <TheoryBlock color="teal"><p><strong>Harry Markowitz</strong> (1952, Teoria Moderna de Carteres) va demostrar que la <strong>diversificació</strong> —combinar actius amb correlacions baixes o negatives— redueix el risc d'una cartera sense reduir proporcionalment la rendibilitat esperada. El <strong>risc diversificable</strong> (específic d'una empresa) s'elimina; el <strong>risc sistemàtic</strong> (de mercat) no. El model <strong>CAPM</strong> (Sharpe, 1964) estableix que la rendibilitat esperada d'un actiu depén de la seua beta (sensibilitat al mercat): E(Ri) = Rf + βi × (E(Rm) − Rf).</p></TheoryBlock>
-            </Card>
-            <Card title="Síntesi" icon="📝">
-                <TheoryBlock color="teal"><p>Els actius financers es caracteritzen per rendibilitat, risc i liquiditat (triangle impossible). La renda fixa (lletres, bons, obligacions) representa un préstec: cupó + devolució; preu invers a tipus. La renda variable (accions) representa propietat: dividends + plusvàlues; valoració per PER. Els fons d'inversió diversifiquen (350.000 M€ a Espanya); els ETFs cotitzen com accions. Plans de pensions: estalvi jubilació amb avantatge fiscal. Markowitz: la diversificació redueix el risc diversificable. CAPM: rendibilitat esperada funció de beta.</p></TheoryBlock>
-            </Card>
-            <BibliografiaBox items={["Brealey, R., Myers, S. & Allen, F. (2020). Principios de Finanzas Corporativas. McGraw-Hill.","Markowitz, H. (1952). Portfolio Selection. Journal of Finance.","Sharpe, W. (1964). Capital Asset Prices. Journal of Finance.","CNMV. Guía de productos financieros para inversores. www.cnmv.es","Banco de España. Portal del Cliente Bancario. www.bde.es","Tesoro Público. Valores del Tesoro. www.tesoro.es","Inverco. Estadísticas de fondos de inversión. www.inverco.es","Malkiel, B. (2019). A Random Walk Down Wall Street, 12.ª ed. Norton.","Bodie, Z., Kane, A. & Marcus, A. (2021). Investments, 12.ª ed. McGraw-Hill.","Reglamento MiCA (UE) 2023/1114 sobre mercados de criptoactivos."]} />
-        </div>
-    );
-    const Tema61Resum = () => (
-        <div className="space-y-5 animate-fade"><Card>
-            <div className="p-4 bg-teal-50 rounded-xl border border-teal-200 mb-5"><p className="text-center font-bold text-teal-800 text-lg">Tema 61: Actius financers. Renda fixa i variable.</p><p className="text-center text-sm text-teal-600 mt-1"><em>"Rentabilitat ↔ Risc ↔ Liquiditat: el triangle impossible"</em></p></div>
-            <div className="space-y-4 text-sm text-slate-700">
-                <div><h4 className="font-bold text-slate-800 mb-1">1. Característiques</h4><ul className="list-disc pl-5 space-y-1"><li>Rentabilitat, risc, liquiditat. Triangle impossible: no es pot maximitzar tot.</li></ul></div>
-                <div><h4 className="font-bold text-slate-800 mb-1">2. Renda fixa</h4><ul className="list-disc pl-5 space-y-1"><li>Préstec al emissor. Cupó + devolució principal. Preu invers a tipus interès.</li><li>Pública: lletres (CP), bons (MP), obligacions (LP). Privada: pagarés, bons corporatius. Rating: S&P, Moody's.</li></ul></div>
-                <div><h4 className="font-bold text-slate-800 mb-1">3. Renda variable</h4><ul className="list-disc pl-5 space-y-1"><li>Accions = propietat. Dividends + plusvàlues. Drets econòmics i polítics.</li><li>Valor nominal, comptable, de mercat. PER = Cotització/BPA.</li></ul></div>
-                <div><h4 className="font-bold text-slate-800 mb-1">4. Fons i altres</h4><ul className="list-disc pl-5 space-y-1"><li>Fons inversió: patrimoni col·lectiu, gestora, diversificació. 350.000 M€ Espanya.</li><li>ETF (fons cotitzat), plans pensions (1.500€/any deduïble), criptoactius (MiCA), derivats.</li></ul></div>
-                <div><h4 className="font-bold text-slate-800 mb-1">5. Diversificació</h4><ul className="list-disc pl-5 space-y-1"><li>Markowitz: diversificar redueix risc diversificable. CAPM (Sharpe): E(Ri) = Rf + β(Rm−Rf).</li></ul></div>
             </div>
-            <ClauBox><p>- Explica el <strong>triangle impossible</strong> (rentabilitat-risc-liquiditat).</p><p>- Diferencia <strong>renda fixa vs. variable</strong> amb instruments concrets.</p><p>- Inclou <strong>fons, ETFs, plans pensions, criptoactius</strong>.</p><p>- Connecta amb <strong>Markowitz i CAPM</strong> (diversificació, beta).</p></ClauBox>
-        </Card></div>
-    );
-    const Tema61 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="💹" title="Tema 61" subtitle={t('tema61.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema61Complet />}{vista === 'resum' && <Tema61Resum />}</div>); };
+        );
 
-    // ════════════════════════════════════════════════════════════════
-    // TEMA 62 — La Borsa de Valors. Funcionament i índexs.
-    // ════════════════════════════════════════════════════════════════
-    const Tema62Complet = () => (
-        <div className="space-y-6 animate-fade">
-            <Card title="Introducció" icon="📌">
-                <div className="text-sm text-slate-700 leading-relaxed space-y-3">
-                    <p>La <strong>Borsa de Valors</strong> és el mercat organitzat on es compren i venen actius financers, principalment accions i bons. Compleix funcions essencials: canalitza l'estalvi cap a la inversió productiva, proporciona liquiditat als inversors, valora les empreses cotitzades i facilita la transparència informativa. La Borsa és, a més, un baròmetre de la confiança econòmica i un mecanisme d'assignació eficient de recursos.</p>
-                    <p>Aquest tema s'emmarca en els continguts d'<strong>Economia de 1r de Batxillerat</strong> i d'educació financera. S'estructura en: concepte i funcions, mercat primari i secundari, la Borsa espanyola (BME), els índexs borsaris i la regulació.</p>
+        // ════════════════════════════════════════════════════════════════
+        // TEMA 57 — La presa de decisions a l'empresa
+        // ════════════════════════════════════════════════════════════════
+        const Tema57Complet = () => (
+            <div className="space-y-6 animate-fade">
+                <Card title="Introducció" icon="📌">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>La <strong>presa de decisions</strong> constitueix l'essència mateixa de la direcció empresarial. Com va afirmar <strong>Herbert A. Simon</strong> (Premi Nobel d'Economia 1978), «dirigir és, fonamentalment, decidir». Tota organització, des d'un autònom fins a una multinacional com <em>Inditex</em> o <em>Telefónica</em>, s'estructura al voltant d'un flux continu de decisions que configuren la seua estratègia, els seus resultats i la seua supervivència.</p>
+                        <p>En un entorn cada vegada més volàtil, incert, complex i ambigu —el conegut acrònim <strong>VUCA</strong>—, la capacitat de prendre decisions racionals, oportunes i ètiques esdevé un avantatge competitiu de primera magnitud. Els xocs recents (crisi financera de 2008, pandèmia de la COVID-19, guerra a Ucraïna, tensions inflacionistes 2022-2024) han posat a prova la capacitat decisòria de les empreses espanyoles i europees.</p>
+                        <p>Aquest tema, en connexió directa amb el Tema 58 (Planificació), el Tema 59 (Teories de l'organització) i el Tema 61 (Lideratge), aborda: (1) el concepte i característiques de la decisió empresarial; (2) la tipologia de decisions; (3) els entorns de decisió (certesa, risc, incertesa); (4) els models de decisió (racional, racionalitat limitada, polític, <em>garbage can</em>); (5) les tècniques quantitatives (arbres de decisió, matrius, valor esperat); i (6) la seua aplicació en sistemes oberts amb l'enfocament sistèmic.</p>
+                    </div>
+                </Card>
+
+                <Card title="1. Concepte i naturalesa de la decisió empresarial" icon="🎯">
+                    <TheoryBlock title="1.1. Definició de decisió" color="indigo">
+                        <p>La <strong>decisió</strong> és el <strong>procés cognitiu de selecció, entre dues o més alternatives possibles, d'aquella que es considera més idònia per assolir un determinat objectiu</strong>, donades unes restriccions i un context específic. No hi ha decisió sense: (a) un <em>agent decisor</em>, (b) un <em>objectiu</em>, (c) un conjunt d'<em>alternatives</em>, (d) un <em>entorn</em> amb estats de la naturalesa i (e) un <em>criteri</em> d'elecció.</p>
+                        <p><strong>Herbert Simon</strong> (1947), en <em>Administrative Behavior</em>, va redefinir el <em>management</em> com a «<strong>ciència de la decisió</strong>»: els directius són essencialment decisors que processen informació i trien cursos d'acció. Aquesta visió va revolucionar l'enfocament clàssic (Taylor, Fayol), centrat en funcions administratives estàtiques, i va obrir les portes a la teoria del comportament organitzatiu.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.2. Característiques de les decisions empresarials" color="violet">
+                        <p><strong>a) Orientació a objectius</strong>: tota decisió ha de contribuir a la consecució d'un objectiu (benefici, quota, sostenibilitat).</p>
+                        <p><strong>b) Informació asimètrica i incompleta</strong>: rarament es disposa de tota la informació rellevant (Stiglitz i Akerlof, Nobel 2001).</p>
+                        <p><strong>c) Irreversibilitat parcial</strong>: moltes decisions generen costos enfonsats (<em>sunk costs</em>).</p>
+                        <p><strong>d) Impacte sobre <em>stakeholders</em> múltiples</strong>: treballadors, accionistes, clients, proveïdors, administració, societat.</p>
+                        <p><strong>e) Dimensió temporal</strong>: efectes a curt, mitjà i llarg termini, no sempre alineats.</p>
+                        <p><strong>f) Dimensió ètica</strong>: tota decisió econòmica incorpora judicis de valor (Amartya Sen, Nobel 1998).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.3. Elements del problema de decisió (Luce i Raiffa, 1957)" color="blue">
+                        <p>Tot problema de decisió es pot representar com una <strong>matriu</strong> amb:</p>
+                        <p>• <strong>Estratègies (E₁, E₂, ..., Eₘ)</strong>: accions entre les quals pot elegir el decisor.</p>
+                        <p>• <strong>Estats de la naturalesa (N₁, ..., Nₙ)</strong>: situacions externes fora del seu control.</p>
+                        <p>• <strong>Resultats (Rᵢⱼ)</strong>: conseqüència d'adoptar Eᵢ davall Nⱼ.</p>
+                        <p>• <strong>Probabilitats (pⱼ)</strong>: verosimilitud de cada estat (en entorns de risc).</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="Matriu R[m×n]  |  Σ pⱼ = 1" desc="Representació formal del problema de decisió (Luce i Raiffa, 1957)" />
+                </Card>
+
+                <Card title="2. Tipus de decisions empresarials" icon="🗂️">
+                    <TheoryBlock title="2.1. Classificació d'Ansoff (1965) — segons nivell jeràrquic" color="indigo">
+                        <p><strong>Igor Ansoff</strong>, en <em>Corporate Strategy</em> (1965), va proposar la classificació més influent:</p>
+                        <p><strong>a) Decisions estratègiques</strong>: afecten l'organització globalment, a llarg termini (3-10 anys), alta incertesa, irreversibles. Exemple: entrada d'<em>Inditex</em> al mercat xinés (2006) o llançament de <em>Zara Home</em> (2003).</p>
+                        <p><strong>b) Decisions tàctiques</strong>: d'abast departamental, mitjà termini (1-3 anys). Exemple: campanya publicitària estacional, obertura d'un punt de venda.</p>
+                        <p><strong>c) Decisions operatives</strong>: diàries, repetitives, programables, curt termini. Exemple: quota de producció setmanal, assignació de torns.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.2. Classificació de Simon (1977) — segons estructuració" color="violet">
+                        <p><strong>a) Programades (estructurades)</strong>: repetitives, rutinàries, amb procediments estandarditzats (<em>SOP</em>). Poden automatitzar-se. Exemple: sistema de reposició automàtica d'estoc a <em>Mercadona</em>.</p>
+                        <p><strong>b) No programades (no estructurades)</strong>: noves, úniques, amb alts nivells d'incertesa; exigeixen creativitat i judici directiu. Exemple: entrada d'<em>Iberdrola</em> al mercat eòlic marí (2007).</p>
+                        <p><strong>c) Semiestructurades</strong>: combinen elements d'ambdues (concessió de crèdit bancari, assignació de pressupostos).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.3. Altres classificacions" color="blue">
+                        <p><strong>Segons el nombre d'agents</strong>: individuals vs. grupals (consell d'administració, comités). Les grupals eviten biaixos individuals però pateixen <em>groupthink</em> (Janis, 1972) i polarització.</p>
+                        <p><strong>Segons reversibilitat</strong>: reversibles vs. irreversibles (fusió, liquidació).</p>
+                        <p><strong>Segons temporalitat</strong>: immediates, curt, mitjà i llarg termini.</p>
+                        <p><strong>Segons dependència</strong>: autònomes vs. seqüencials (cada decisió condiciona les següents, cas dels arbres de decisió).</p>
+                    </TheoryBlock>
+
+                    {/* SVG: Piràmide de decisions */}
+                    <div className="my-6 flex justify-center">
+                        <svg viewBox="0 0 560 360" className="w-full max-w-2xl mx-auto" style={{fontFamily: 'Plus Jakarta Sans, sans-serif'}}>
+                            <text x="280" y="24" textAnchor="middle" fontSize="15" fontWeight="bold" fill="#1e293b">Piràmide jeràrquica de decisions (Ansoff, 1965)</text>
+                            <polygon points="220,50 340,50 380,120 180,120" fill="#c7d2fe" stroke="#4f46e5" strokeWidth="2"/>
+                            <text x="280" y="85" textAnchor="middle" fontSize="13" fontWeight="bold" fill="#312e81">ESTRATÈGIQUES</text>
+                            <text x="280" y="103" textAnchor="middle" fontSize="10" fill="#4338ca">Alta direcció · 3-10 anys</text>
+                            <polygon points="180,120 380,120 430,210 130,210" fill="#ddd6fe" stroke="#7c3aed" strokeWidth="2"/>
+                            <text x="280" y="160" textAnchor="middle" fontSize="13" fontWeight="bold" fill="#5b21b6">TÀCTIQUES</text>
+                            <text x="280" y="178" textAnchor="middle" fontSize="10" fill="#6d28d9">Direcció mitjana · 1-3 anys</text>
+                            <polygon points="130,210 430,210 500,320 60,320" fill="#e9d5ff" stroke="#a855f7" strokeWidth="2"/>
+                            <text x="280" y="255" textAnchor="middle" fontSize="13" fontWeight="bold" fill="#6b21a8">OPERATIVES</text>
+                            <text x="280" y="275" textAnchor="middle" fontSize="10" fill="#7e22ce">Supervisió · diàries / setmanals</text>
+                            <defs><marker id="arrUp" markerWidth="8" markerHeight="8" refX="4" refY="6" orient="auto"><polygon points="0 6, 4 0, 8 6" fill="#64748b"/></marker></defs>
+                            <line x1="30" y1="320" x2="30" y2="60" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrUp)"/>
+                            <text x="20" y="200" textAnchor="middle" fontSize="10" fontWeight="600" fill="#475569" transform="rotate(-90,20,200)">Incertesa ↑ · Impacte ↑</text>
+                            <text x="530" y="85" fontSize="11" fill="#312e81">Poques / grans</text>
+                            <text x="530" y="325" fontSize="11" fill="#6b21a8">Moltes / petites</text>
+                        </svg>
+                    </div>
+                </Card>
+
+                <Card title="3. Entorns de decisió: certesa, risc i incertesa" icon="🎲">
+                    <TheoryBlock title="3.1. Decisions en certesa" color="green">
+                        <p>En entorns de <strong>certesa</strong>, el decisor coneix amb exactitud l'estat de la naturalesa; hi ha una única conseqüència per a cada alternativa. Són situacions hipotètiques, poc freqüents. L'elecció és directa: la millor alternativa per resultat.</p>
+                        <p>Exemples: pagar una factura amb venciment determinat, triar entre dipòsits bancaris amb TAE coneguda i mateixa durada i garantia.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.2. Decisions en risc" color="amber">
+                        <p>En entorns de <strong>risc</strong>, el decisor coneix (o pot estimar) les <strong>probabilitats objectives o subjectives</strong> dels estats. El criteri més usat és el <strong>valor monetari esperat (VME)</strong>. Per avaluar el risc s'usen la variància, la desviació típica i el coeficient de variació. El <strong>Teorema de Bayes</strong> permet actualitzar probabilitats davant nova informació.</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="VME(Eᵢ) = Σⱼ pⱼ · Rᵢⱼ" desc="Valor Monetari Esperat: suma ponderada dels resultats per les probabilitats dels estats" />
+
+                    <TheoryBlock title="3.3. Decisions en incertesa" color="red">
+                        <p><strong>Frank Knight</strong> (1921) va distingir formalment <em>risc</em> (probabilitats conegudes) d'<em>incertesa</em> (desconegudes). Els criteris no probabilístics principals són:</p>
+                        <p><strong>• Laplace</strong> (raó insuficient): assumir equiprobabilitat. Mitjana aritmètica dels resultats.</p>
+                        <p><strong>• Wald o <em>maximin</em></strong>: pessimista. Triar l'alternativa la pitjor conseqüència de la qual siga la millor entre les pitjors.</p>
+                        <p><strong>• <em>Maximax</em></strong>: optimista. Triar l'alternativa amb el millor resultat possible.</p>
+                        <p><strong>• Hurwicz</strong> (1951): combinació ponderada del millor i pitjor resultat mitjançant un coeficient α (optimisme).</p>
+                        <p><strong>• Savage (mínim penediment)</strong>: minimitzar la màxima pèrdua d'oportunitat. Matriu de penediments.</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="H(Eᵢ) = α · max(Rᵢⱼ) + (1−α) · min(Rᵢⱼ)" desc="Criteri d'Hurwicz, α ∈ [0,1] reflecteix el grau d'optimisme" />
+
+                    {/* SVG: Matriu criteris */}
+                    <div className="my-6 flex justify-center">
+                        <svg viewBox="0 0 640 340" className="w-full max-w-3xl mx-auto" style={{fontFamily: 'Plus Jakarta Sans, sans-serif'}}>
+                            <text x="320" y="22" textAnchor="middle" fontSize="15" fontWeight="bold" fill="#1e293b">Criteris de decisió en incertesa — Exemple numèric</text>
+                            <text x="320" y="42" textAnchor="middle" fontSize="11" fill="#64748b">Benefici (milers €) segons estat de demanda</text>
+                            <rect x="40" y="60" width="120" height="34" fill="#4f46e5"/><text x="100" y="82" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#fff">Alternativa</text>
+                            <rect x="160" y="60" width="90" height="34" fill="#6366f1"/><text x="205" y="82" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#fff">Baixa</text>
+                            <rect x="250" y="60" width="90" height="34" fill="#6366f1"/><text x="295" y="82" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#fff">Mitjana</text>
+                            <rect x="340" y="60" width="90" height="34" fill="#6366f1"/><text x="385" y="82" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#fff">Alta</text>
+                            <rect x="430" y="60" width="85" height="34" fill="#7c3aed"/><text x="472" y="82" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#fff">Wald</text>
+                            <rect x="515" y="60" width="85" height="34" fill="#7c3aed"/><text x="557" y="82" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#fff">Maximax</text>
+                            <rect x="40" y="94" width="560" height="30" fill="#fff" stroke="#e5e7eb"/>
+                            <text x="100" y="113" textAnchor="middle" fontSize="12" fontWeight="600" fill="#334155">A: Conservadora</text>
+                            <text x="205" y="113" textAnchor="middle" fontSize="12" fill="#334155">20</text><text x="295" y="113" textAnchor="middle" fontSize="12" fill="#334155">30</text><text x="385" y="113" textAnchor="middle" fontSize="12" fill="#334155">40</text>
+                            <text x="472" y="113" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#16a34a">20 ✓</text><text x="557" y="113" textAnchor="middle" fontSize="12" fill="#64748b">40</text>
+                            <rect x="40" y="124" width="560" height="30" fill="#f8fafc" stroke="#e5e7eb"/>
+                            <text x="100" y="143" textAnchor="middle" fontSize="12" fontWeight="600" fill="#334155">B: Moderada</text>
+                            <text x="205" y="143" textAnchor="middle" fontSize="12" fill="#334155">10</text><text x="295" y="143" textAnchor="middle" fontSize="12" fill="#334155">50</text><text x="385" y="143" textAnchor="middle" fontSize="12" fill="#334155">70</text>
+                            <text x="472" y="143" textAnchor="middle" fontSize="12" fill="#64748b">10</text><text x="557" y="143" textAnchor="middle" fontSize="12" fill="#64748b">70</text>
+                            <rect x="40" y="154" width="560" height="30" fill="#fff" stroke="#e5e7eb"/>
+                            <text x="100" y="173" textAnchor="middle" fontSize="12" fontWeight="600" fill="#334155">C: Expansiva</text>
+                            <text x="205" y="173" textAnchor="middle" fontSize="12" fill="#334155">−20</text><text x="295" y="173" textAnchor="middle" fontSize="12" fill="#334155">60</text><text x="385" y="173" textAnchor="middle" fontSize="12" fill="#334155">120</text>
+                            <text x="472" y="173" textAnchor="middle" fontSize="12" fill="#64748b">−20</text><text x="557" y="173" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#16a34a">120 ✓</text>
+                            <rect x="40" y="200" width="560" height="125" fill="#eef2ff" stroke="#c7d2fe" rx="8"/>
+                            <text x="55" y="222" fontSize="12" fontWeight="bold" fill="#3730a3">Interpretació:</text>
+                            <text x="55" y="244" fontSize="11" fill="#4338ca">• Laplace (equiprob.): A=30, B=43,3, C=53,3 → C</text>
+                            <text x="55" y="262" fontSize="11" fill="#4338ca">• Wald (pessimista): màx dels mínims → A (20)</text>
+                            <text x="55" y="280" fontSize="11" fill="#4338ca">• Maximax (optimista): màx dels màxims → C (120)</text>
+                            <text x="55" y="298" fontSize="11" fill="#4338ca">• Hurwicz (α=0,6): A=32, B=46, C=64 → C</text>
+                            <text x="55" y="316" fontSize="11" fill="#4338ca">• Savage: avalua penediments d'oportunitat</text>
+                        </svg>
+                    </div>
+                </Card>
+
+                <Card title="4. Models de decisió" icon="🧠">
+                    <TheoryBlock title="4.1. Model racional (Von Neumann-Morgenstern, 1944)" color="indigo">
+                        <p>El <strong>model racional pur</strong>, formalitzat per <strong>Von Neumann i Morgenstern</strong> en <em>Theory of Games and Economic Behavior</em> (1944), assumeix que el decisor: (1) té informació completa, (2) coneix totes les alternatives, (3) té preferències transitives i consistents, (4) maximitza una funció d'utilitat esperada. Etapes: identificació → objectius → generació d'alternatives → avaluació → elecció → implementació → control.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.2. Racionalitat limitada (Simon, 1947)" color="violet">
+                        <p><strong>Simon</strong> va formular la crítica definitiva: els decisors humans tenen <strong>racionalitat limitada</strong> (<em>bounded rationality</em>) per (a) capacitat cognitiva finita, (b) informació incompleta, (c) temps limitat. No <em>maximitzen</em>, sinó que <strong>satisfan</strong> (<em>satisficing</em>): accepten la primera alternativa que compleix uns mínims aspiracionals.</p>
+                        <p>Desenvolupat per l'<strong>economia conductual</strong> de <strong>Kahneman i Tversky</strong> (Nobel 2002) i <strong>Thaler</strong> (Nobel 2017), que documenten biaixos sistemàtics: aversió a la pèrdua, efecte d'ancoratge, disponibilitat, <em>status quo</em>, sobreconfiança.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.3. Models polític i garbage can" color="rose">
+                        <p>El <strong>model polític</strong> (Allison, 1971; Pfeffer, 1981) concep l'organització com una coalició de grups d'interès amb objectius divergents. Les decisions són resultat de negociacions, aliances i exercici de poder.</p>
+                        <p>El <strong>model del «paper de fem»</strong> (<em>garbage can</em>), de <strong>Cohen, March i Olsen</strong> (1972), descriu organitzacions anàrquiques on problemes, solucions, participants i ocasions es troben aleatòriament. Les solucions sovint precedeixen els problemes.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="5. L'arbre de decisió: tècnica fonamental" icon="🌳">
+                    <TheoryBlock title="5.1. Concepte i utilitat" color="emerald">
+                        <p>L'<strong>arbre de decisió</strong> és una representació gràfica seqüencial d'un problema amb: <strong>nodes de decisió</strong> (quadrats ▪), <strong>nodes d'atzar</strong> (cercles ●) i <strong>resultats terminals</strong> (triangles ▲). Formalitzat per <strong>Howard Raiffa</strong> (1968) a <em>Decision Analysis</em>.</p>
+                        <p>Especialment útil per a decisions seqüencials multietapa: llançament de producte amb fase pilot, plans d'inversió per fases, litigi vs. negociació.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.2. Algorisme — backward induction" color="blue">
+                        <p>Resolució per <strong>inducció cap endarrere</strong>: (1) avaluar els nodes terminals; (2) als nodes d'atzar, calcular VME; (3) als nodes de decisió, triar el major VME (beneficis) o menor (costos); (4) recórrer l'arbre fins al node inicial.</p>
+                    </TheoryBlock>
+
+                    {/* SVG Arbre de decisió */}
+                    <div className="my-6 flex justify-center">
+                        <svg viewBox="0 0 680 400" className="w-full max-w-4xl mx-auto" style={{fontFamily: 'Plus Jakarta Sans, sans-serif'}}>
+                            <text x="340" y="24" textAnchor="middle" fontSize="15" fontWeight="bold" fill="#1e293b">Arbre de decisió: llançar un nou producte? (Raiffa, 1968)</text>
+                            <rect x="30" y="180" width="30" height="30" fill="#4f46e5" stroke="#3730a3" strokeWidth="2"/>
+                            <text x="45" y="200" textAnchor="middle" fontSize="13" fontWeight="bold" fill="#fff">D</text>
+                            <text x="45" y="170" textAnchor="middle" fontSize="10" fill="#475569">Decisió</text>
+                            <line x1="60" y1="195" x2="170" y2="100" stroke="#4f46e5" strokeWidth="2"/>
+                            <text x="100" y="135" fontSize="11" fontWeight="600" fill="#312e81">Llançar (−100)</text>
+                            <circle cx="185" cy="95" r="15" fill="#7c3aed" stroke="#5b21b6" strokeWidth="2"/>
+                            <text x="185" y="100" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#fff">C</text>
+                            <text x="185" y="75" textAnchor="middle" fontSize="10" fill="#475569">Demanda?</text>
+                            <line x1="200" y1="90" x2="350" y2="40" stroke="#7c3aed" strokeWidth="1.5"/>
+                            <text x="270" y="55" fontSize="10" fill="#6d28d9">Alta (p=0,4)</text>
+                            <polygon points="355,40 370,35 370,45" fill="#16a34a"/>
+                            <text x="380" y="44" fontSize="11" fontWeight="bold" fill="#15803d">+400</text>
+                            <line x1="200" y1="98" x2="350" y2="95" stroke="#7c3aed" strokeWidth="1.5"/>
+                            <text x="270" y="88" fontSize="10" fill="#6d28d9">Mitja (p=0,4)</text>
+                            <polygon points="355,95 370,90 370,100" fill="#d97706"/>
+                            <text x="380" y="99" fontSize="11" fontWeight="bold" fill="#b45309">+150</text>
+                            <line x1="200" y1="105" x2="350" y2="150" stroke="#7c3aed" strokeWidth="1.5"/>
+                            <text x="270" y="140" fontSize="10" fill="#6d28d9">Baixa (p=0,2)</text>
+                            <polygon points="355,150 370,145 370,155" fill="#dc2626"/>
+                            <text x="380" y="154" fontSize="11" fontWeight="bold" fill="#b91c1c">−80</text>
+                            <line x1="60" y1="210" x2="170" y2="290" stroke="#4f46e5" strokeWidth="2"/>
+                            <text x="100" y="260" fontSize="11" fontWeight="600" fill="#312e81">No llançar</text>
+                            <polygon points="175,290 190,285 190,295" fill="#64748b"/>
+                            <text x="200" y="294" fontSize="11" fontWeight="bold" fill="#475569">0</text>
+                            <rect x="450" y="180" width="210" height="160" fill="#eef2ff" stroke="#c7d2fe" rx="8"/>
+                            <text x="460" y="200" fontSize="11" fontWeight="bold" fill="#3730a3">Càlcul del VME:</text>
+                            <text x="460" y="220" fontSize="11" fill="#4338ca">Llançar = −100 + 0,4(400)</text>
+                            <text x="460" y="238" fontSize="11" fill="#4338ca">  + 0,4(150) + 0,2(−80)</text>
+                            <text x="460" y="256" fontSize="11" fill="#4338ca">  = −100+160+60−16</text>
+                            <text x="460" y="274" fontSize="12" fontWeight="bold" fill="#16a34a">  = +104 (milers €)</text>
+                            <line x1="460" y1="284" x2="650" y2="284" stroke="#c7d2fe"/>
+                            <text x="460" y="302" fontSize="11" fill="#4338ca">No llançar = 0</text>
+                            <text x="460" y="324" fontSize="12" fontWeight="bold" fill="#4f46e5">→ DECISIÓ: llançar ✓</text>
+                        </svg>
+                    </div>
+                </Card>
+
+                <Card title="6. Decisions en sistemes oberts i enfocament sistèmic" icon="🔄">
+                    <TheoryBlock title="6.1. Teoria general de sistemes (Bertalanffy, 1968)" color="cyan">
+                        <p><strong>Ludwig von Bertalanffy</strong> va formular que les organitzacions són <strong>sistemes oberts</strong> que interaccionen amb l'entorn mitjançant <em>inputs</em> (recursos, informació) i <em>outputs</em> (productes, residus). Característiques: totalitat, sinergia, equifinalitat, retroalimentació (<em>feedback</em>) i homeòstasi.</p>
+                        <p>Les decisions, en un sistema obert, no són aïllables: generen <em>feedback</em> i interaccions. Cal un <strong>enfocament holístic</strong> que consideri externalitats i <em>stakeholders</em>.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="6.2. Decisions en entorns VUCA" color="rose">
+                        <p><strong>• Anàlisi d'escenaris</strong> (Shell, 1970): construir 3-4 futurs plausibles i avaluar robustesa.</p>
+                        <p><strong>• Real options</strong> (Myers, 1977; Dixit i Pindyck, 1994): tractar decisions com opcions financeres que incorporen flexibilitat.</p>
+                        <p><strong>• Simulació Monte Carlo</strong>: generar milers de trajectòries aleatòries per estimar distribucions de resultats.</p>
+                        <p><strong>• IA i <em>big data</em></strong>: algorismes de <em>machine learning</em> aplicats a decisions comercials i logístiques (<em>Inditex</em> usa IA per predir demanda a les 5.800 botigues <em>Zara</em>).</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="Sistema obert: Inputs → Transformació → Outputs + Feedback" desc="Bertalanffy, 1968. Les decisions han de considerar retroalimentacions i externalitats" />
+                </Card>
+
+                <Card title="Conclusió" icon="✅">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>Al llarg del tema s'ha presentat la <strong>presa de decisions</strong> com l'activitat central de la direcció empresarial, en la línia de <strong>Simon (1947)</strong>. La sistematització del problema (alternatives, estats, resultats, probabilitats) permet aplicar tècniques rigoroses: matrius, criteris en incertesa (Laplace, Wald, Hurwicz, Savage) i arbres de decisió seqüencials (Raiffa, 1968).</p>
+                        <p>La tipologia d'Ansoff i la classificació de Simon ofereixen mapes jeràrquics útils a l'aula. Els models alternatius —racionalitat limitada, polític, <em>garbage can</em>— corregeixen les limitacions del model racional i connecten amb l'<strong>economia conductual</strong>. L'enfocament sistèmic de Bertalanffy obliga a concebre l'empresa com un sistema obert davant un entorn VUCA. Els reptes actuals —transició ecològica, digitalització, IA— exigeixen decisions robustes, flexibles i ètiques.</p>
+                    </div>
+                </Card>
+
+                <BibliografiaBox items={[
+                    'SIMON, H.A. (1947): Administrative Behavior, Macmillan [trad. El comportamiento administrativo, Aguilar, 1972].',
+                    'VON NEUMANN, J. i MORGENSTERN, O. (1944): Theory of Games and Economic Behavior, Princeton Univ. Press.',
+                    'LUCE, R.D. i RAIFFA, H. (1957): Games and Decisions, John Wiley.',
+                    'ANSOFF, H.I. (1965): Corporate Strategy, McGraw-Hill.',
+                    'RAIFFA, H. (1968): Decision Analysis, Addison-Wesley.',
+                    'KNIGHT, F.H. (1921): Risk, Uncertainty and Profit, Houghton Mifflin.',
+                    'COHEN, M., MARCH, J. i OLSEN, J. (1972): «A Garbage Can Model of Organizational Choice», ASQ 17(1).',
+                    'KAHNEMAN, D. (2011): Pensar rápido, pensar despacio, Debate.',
+                    'THALER, R. i SUNSTEIN, C. (2008): Nudge, Taurus.',
+                    'BERTALANFFY, L. von (1968): General System Theory, Braziller.',
+                    'IBORRA, M. et al. (2019): Fundamentos de dirección de empresas, 3a ed., Paraninfo.',
+                    'Real Decreto 243/2022 (currículum Batxillerat — Empresa i DMN).',
+                ]} />
+            </div>
+        );
+
+        const Tema57Resum = () => (
+            <div className="space-y-5 animate-fade">
+                <Card>
+                    <div className="p-4 bg-indigo-50 rounded-xl border border-indigo-200 mb-5">
+                        <p className="text-center font-bold text-indigo-800 text-lg">Tema 57: La presa de decisions</p>
+                        <p className="text-center text-sm text-indigo-600 mt-1"><em>«Dirigir és, fonamentalment, decidir»</em> — Herbert A. Simon (1947)</p>
+                    </div>
+                    <div className="space-y-4 text-sm text-slate-700">
+                        <div><h4 className="font-bold text-slate-800 mb-1">1. Concepte i elements</h4><ul className="list-disc pl-5 space-y-1"><li>Decisió = elecció entre alternatives per assolir un objectiu.</li><li>Elements: agent, objectiu, alternatives, estats, criteri (Luce-Raiffa, 1957).</li><li>Simon (1947): direcció = «ciència de la decisió».</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">2. Tipologia</h4><ul className="list-disc pl-5 space-y-1"><li>Ansoff (1965): estratègiques / tàctiques / operatives.</li><li>Simon (1977): programades vs. no programades.</li><li>Individuals/grupals · reversibles/irreversibles.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">3. Entorns</h4><ul className="list-disc pl-5 space-y-1"><li>Certesa · Risc (VME) · Incertesa (Knight, 1921).</li><li>Criteris: Laplace, Wald, Maximax, Hurwicz, Savage.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">4. Models</h4><ul className="list-disc pl-5 space-y-1"><li>Racional (VN-Morgenstern, 1944): maximitzar utilitat esperada.</li><li>Racionalitat limitada (Simon): <em>satisficing</em>.</li><li>Conductual (Kahneman, Thaler): biaixos.</li><li>Polític (Allison) i <em>garbage can</em> (Cohen-March-Olsen, 1972).</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">5. Tècniques</h4><ul className="list-disc pl-5 space-y-1"><li>Arbre de decisió (Raiffa, 1968): <em>backward induction</em>.</li><li>VME = Σpⱼ · Rᵢⱼ.</li><li><em>Real options</em>, Monte Carlo, escenaris.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">6. Sistemes oberts</h4><ul className="list-disc pl-5 space-y-1"><li>Bertalanffy (1968): empresa com a sistema obert amb <em>feedback</em>.</li><li>Entorns VUCA: volatilitat, incertesa, complexitat, ambigüitat.</li></ul></div>
+                    </div>
+                    <FormulaBox formula="VME(Eᵢ) = Σⱼ pⱼ · Rᵢⱼ" />
+                    <FormulaBox formula="H(Eᵢ) = α · max + (1−α) · min" desc="Criteri d'Hurwicz" />
+                    <ClauBox>
+                        <p>- Cita <strong>Simon (1947)</strong> i <strong>Knight (1921)</strong> (distinció risc/incertesa).</p>
+                        <p>- Resol un exemple numèric amb <strong>VME</strong> i els 4 criteris en incertesa.</p>
+                        <p>- Connecta amb <strong>economia conductual</strong> (Kahneman, Thaler) com a superació del model racional.</p>
+                        <p>- Esmenta entorns VUCA i IA aplicada (cas Inditex).</p>
+                    </ClauBox>
+                </Card>
+            </div>
+        );
+
+        const Tema57 = () => {
+            const [vista, setVista] = useState('complet');
+            return <div className="space-y-6"><SectionTitle icon="🎯" title="Tema 57" subtitle={t('tema57.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema57Complet />}{vista === 'resum' && <Tema57Resum />}</div>;
+        };
+
+        // TEMES 58-65 — Placeholders, es completaran en edicions posteriors
+        const TemaPlaceholder = ({ num, title, icon }) => (
+            <div className="space-y-6">
+                <SectionTitle icon={icon} title={`Tema ${num}`} subtitle={title} />
+                <Card>
+                    <div className="text-center py-12">
+                        <p className="text-4xl mb-4">🚧</p>
+                        <p className="text-lg font-bold text-slate-700 mb-2">Tema en desenvolupament</p>
+                        <p className="text-sm text-slate-500 max-w-md mx-auto">Aquest tema s'està actualitzant amb contingut rigorós, gràfics, exemples pràctics i referències acadèmiques actualitzades. Torna pròximament!</p>
+                    </div>
+                </Card>
+            </div>
+        );
+
+        const Tema58 = () => <TemaPlaceholder num={58} title={t('tema58.title')} icon="📋" />;
+        const Tema59 = () => <TemaPlaceholder num={59} title={t('tema59.title')} icon="🏛️" />;
+        const Tema60 = () => <TemaPlaceholder num={60} title={t('tema60.title')} icon="🗂️" />;
+        const Tema61 = () => <TemaPlaceholder num={61} title={t('tema61.title')} icon="👑" />;
+        const Tema62 = () => <TemaPlaceholder num={62} title={t('tema62.title')} icon="🎭" />;
+        const Tema63 = () => <TemaPlaceholder num={63} title={t('tema63.title')} icon="💬" />;
+        const Tema64 = () => <TemaPlaceholder num={64} title={t('tema64.title')} icon="⚡" />;
+        const Tema65 = () => <TemaPlaceholder num={65} title={t('tema65.title')} icon="⚖️" />;
+
+        // INICIO
+        const temes = [
+            { id: 'tema57', num: 57, emoji: '🎯', available: true },
+            { id: 'tema58', num: 58, emoji: '📋', available: true },
+            { id: 'tema59', num: 59, emoji: '🏛️', available: true },
+            { id: 'tema60', num: 60, emoji: '🗂️', available: true },
+            { id: 'tema61', num: 61, emoji: '👑', available: true },
+            { id: 'tema62', num: 62, emoji: '🎭', available: true },
+            { id: 'tema63', num: 63, emoji: '💬', available: true },
+            { id: 'tema64', num: 64, emoji: '⚡', available: true },
+            { id: 'tema65', num: 65, emoji: '⚖️', available: true },
+        ];
+
+        const Inicio = () => (
+            <div className="animate-fade">
+                <a href="./oposicions" className="inline-flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-800 mb-6 transition-colors">{t('inicio.backOpo')}</a>
+                <div className="text-center mb-10">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-indigo-100 text-indigo-700 rounded-full text-sm font-semibold mb-4"><span>🏛️</span> Bloc G · BOE 57-65</div>
+                    <h1 className="text-4xl font-black text-slate-800 mb-3">{t('inicio.title')}</h1>
+                    <p className="text-slate-500 text-lg max-w-3xl mx-auto">{t('inicio.subtitle')}</p>
                 </div>
-            </Card>
-            <Card title="1. Concepte i funcions de la Borsa" icon="📘">
-                <TheoryBlock title="1.1. Funcions" color="teal">
-                    <p><strong>1. Canalització de l'estalvi:</strong> permet a les empreses obtindre finançament emetent accions (ampliacions de capital) o obligacions.<br/><strong>2. Liquiditat:</strong> els inversors poden vendre els seus títols en qualsevol moment al preu de mercat.<br/><strong>3. Valoració:</strong> la cotització reflecteix (en teoria) el valor de l'empresa segons les expectatives del mercat.<br/><strong>4. Informació i transparència:</strong> les empreses cotitzades han de publicar informació financera periòdica (fets rellevants, comptes anuals, informes trimestrals).<br/><strong>5. Protecció de l'inversor:</strong> regulació (CNMV), normes de conducta, prohibició d'informació privilegiada i manipulació de mercat.</p>
-                </TheoryBlock>
-            </Card>
-            <Card title="2. Mercat primari i secundari" icon="📘">
-                <TheoryBlock title="2.1. Mercat primari (d'emissió)" color="teal"><p>On s'emeten i col·loquen per primera vegada els títols: <strong>OPV</strong> (Oferta Pública de Venda: l'empresa ix a Borsa venent accions al públic), <strong>OPS</strong> (Oferta Pública de Subscripció: ampliació de capital amb noves accions), emissió de bons i obligacions. Hi participen: l'empresa emissora, els bancs d'inversió (col·locadors) i els inversors.</p></TheoryBlock>
-                <TheoryBlock title="2.2. Mercat secundari (de negociació)" color="cyan"><p>On es compren i venen els títols ja emesos entre inversors. La Borsa pròpiament dita és un mercat secundari. <strong>No aporta finançament directe a l'empresa</strong> (els diners van d'un inversor a un altre), però proporciona liquiditat i valoració. Sense un mercat secundari eficient, ningú compraria en el primari (no podria vendre després).</p></TheoryBlock>
-            </Card>
-            <Card title="3. La Borsa espanyola: BME" icon="📘">
-                <TheoryBlock title="3.1. Estructura" color="teal"><p><strong>BME (Borses i Mercats Espanyols)</strong>, adquirida pel grup suís <strong>SIX</strong> en 2020, opera: les quatre borses històriques (Madrid, Barcelona, Bilbao, València) integrades en el <strong>SIBE</strong> (Sistema d'Interconnexió Borsària), el mercat de renda fixa (AIAF), el mercat de derivats (<strong>MEFF</strong> — futurs i opcions sobre IBEX i accions), el mercat alternatiu borsari (<strong>BME Growth</strong>, per a pimes i empreses en creixement) i l'entitat de contrapartida central (<strong>BME Clearing</strong>).</p></TheoryBlock>
-                <TheoryBlock title="3.2. Funcionament de la contractació" color="cyan"><p>El SIBE funciona com un mercat electrònic continu: les ordres de compra i venda es creuen automàticament per preu i prioritat temporal. <strong>Horari:</strong> subhasta d'obertura (8:30-9:00), mercat obert (9:00-17:30), subhasta de tancament (17:30-17:35). Tipus d'ordres: a mercat, limitada, a la millor, stop-loss.</p></TheoryBlock>
-
-                {/* SVG 2: Funcionament de la Borsa — gràfic de preus */}
-                <div className="my-6 flex justify-center">
-                    <svg viewBox="0 0 560 340" className="w-full max-w-xl mx-auto" style={{fontFamily: 'Plus Jakarta Sans, sans-serif'}}>
-                        <text x="280" y="24" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#1e293b">Funcionament de la Borsa: Cotització d'una acció</text>
-                        <text x="280" y="42" textAnchor="middle" fontSize="11" fill="#64748b">Zones de compra (suport) i venda (resistència)</text>
-
-                        {/* Axes */}
-                        <line x1="60" y1="60" x2="60" y2="280" stroke="#94a3b8" strokeWidth="1.5"/>
-                        <line x1="60" y1="280" x2="530" y2="280" stroke="#94a3b8" strokeWidth="1.5"/>
-                        <text x="30" y="170" textAnchor="middle" fontSize="10" fill="#64748b" transform="rotate(-90,30,170)">Preu (€)</text>
-                        <text x="295" y="300" textAnchor="middle" fontSize="10" fill="#64748b">Temps</text>
-
-                        {/* Y-axis labels */}
-                        <text x="52" y="85" textAnchor="end" fontSize="9" fill="#94a3b8">30</text>
-                        <text x="52" y="130" textAnchor="end" fontSize="9" fill="#94a3b8">25</text>
-                        <text x="52" y="175" textAnchor="end" fontSize="9" fill="#94a3b8">20</text>
-                        <text x="52" y="220" textAnchor="end" fontSize="9" fill="#94a3b8">15</text>
-                        <text x="52" y="265" textAnchor="end" fontSize="9" fill="#94a3b8">10</text>
-                        {/* Grid lines */}
-                        <line x1="60" y1="82" x2="530" y2="82" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="4"/>
-                        <line x1="60" y1="127" x2="530" y2="127" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="4"/>
-                        <line x1="60" y1="172" x2="530" y2="172" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="4"/>
-                        <line x1="60" y1="217" x2="530" y2="217" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="4"/>
-
-                        {/* Resistance zone */}
-                        <rect x="60" y="95" width="470" height="25" fill="#fecaca" opacity="0.35" rx="2"/>
-                        <text x="525" y="112" textAnchor="end" fontSize="9" fontWeight="bold" fill="#dc2626">Resistència (venda)</text>
-
-                        {/* Support zone */}
-                        <rect x="60" y="225" width="470" height="25" fill="#bbf7d0" opacity="0.35" rx="2"/>
-                        <text x="525" y="242" textAnchor="end" fontSize="9" fontWeight="bold" fill="#16a34a">Suport (compra)</text>
-
-                        {/* Price line */}
-                        <polyline points="80,230 110,210 140,190 160,150 185,110 210,130 240,170 265,230 290,235 315,200 340,160 365,115 390,105 415,125 440,170 465,210 490,195 515,155" fill="none" stroke="#0d9488" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round"/>
-
-                        {/* Buy signals */}
-                        <circle cx="265" cy="230" r="8" fill="#16a34a" opacity="0.8"/>
-                        <text x="265" y="234" textAnchor="middle" fontSize="8" fontWeight="bold" fill="#ffffff">C</text>
-                        <text x="265" y="258" textAnchor="middle" fontSize="9" fontWeight="600" fill="#16a34a">Compra</text>
-                        <circle cx="290" cy="235" r="8" fill="#16a34a" opacity="0.8"/>
-                        <text x="290" y="239" textAnchor="middle" fontSize="8" fontWeight="bold" fill="#ffffff">C</text>
-
-                        {/* Sell signals */}
-                        <circle cx="185" cy="110" r="8" fill="#dc2626" opacity="0.8"/>
-                        <text x="185" y="114" textAnchor="middle" fontSize="8" fontWeight="bold" fill="#ffffff">V</text>
-                        <text x="185" y="78" textAnchor="middle" fontSize="9" fontWeight="600" fill="#dc2626">Venda</text>
-                        <circle cx="390" cy="105" r="8" fill="#dc2626" opacity="0.8"/>
-                        <text x="390" y="109" textAnchor="middle" fontSize="8" fontWeight="bold" fill="#ffffff">V</text>
-
-                        {/* Legend */}
-                        <rect x="140" y="310" width="280" height="22" rx="6" fill="#f1f5f9"/>
-                        <circle cx="165" cy="321" r="5" fill="#16a34a"/>
-                        <text x="175" y="325" fontSize="9" fill="#334155">C = Compra (suport)</text>
-                        <circle cx="305" cy="321" r="5" fill="#dc2626"/>
-                        <text x="315" y="325" fontSize="9" fill="#334155">V = Venda (resistència)</text>
-                    </svg>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {temes.map(tema => (
+                        <button key={tema.id} onClick={() => { if (tema.available) { setSection(tema.id); pdeSetHashSection(tema.id); pdeScrollToTop(); } }} className={`text-left p-5 rounded-2xl border transition-all ${tema.available ? 'bg-white border-indigo-200 hover:shadow-lg hover:border-indigo-400 cursor-pointer' : 'bg-gray-50 border-gray-200 opacity-70 cursor-not-allowed'}`}>
+                            <div className="flex items-start gap-3">
+                                <span className={`inline-flex items-center justify-center w-11 h-11 rounded-xl text-sm font-black text-white ${tema.available ? 'bg-gradient-to-br from-indigo-500 to-violet-600' : 'bg-gray-400'}`}>T{tema.num}</span>
+                                <div className="flex-1 min-w-0">
+                                    <p className="font-semibold text-slate-800 text-sm leading-snug mb-2">{t(`tema${tema.num}.title`)}</p>
+                                    <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${tema.available ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-500'}`}>{tema.available ? '✓ ' + t('inicio.disponible') : '🔒 ' + t('inicio.properament')}</span>
+                                </div>
+                            </div>
+                        </button>
+                    ))}
                 </div>
-            </Card>
-            <Card title="4. Els índexs borsaris" icon="📘">
-                <TheoryBlock title="4.1. Concepte" color="teal"><p>Un <strong>índex borsari</strong> és un indicador estadístic que reflecteix l'evolució del preu d'un conjunt d'accions representatives d'un mercat o sector. S'utilitza com a referència (benchmark) per a mesurar el rendiment de carteres d'inversió.</p></TheoryBlock>
-                <TheoryBlock title="4.2. Principals índexs" color="cyan">
-                    <p><strong>IBEX 35:</strong> índex de referència de la Borsa espanyola. Inclou les 35 empreses amb major liquiditat i capitalització: Inditex, Santander, BBVA, Iberdrola, Telefónica, Amadeus, Ferrovial, CaixaBank, Repsol, Cellnex, etc. Ponderat per capitalització borsària ajustada per free float. Base 3.000 (30/12/1989).<br/><strong>S&P 500 (EUA):</strong> 500 majors empreses dels EUA. L'índex de referència mundial.<br/><strong>Dow Jones Industrial Average:</strong> 30 grans empreses industrials dels EUA. Històric (1896) però ponderat per preu (menys representatiu).<br/><strong>NASDAQ Composite:</strong> empreses tecnològiques (Apple, Microsoft, Amazon, Google, Meta, Tesla).<br/><strong>Euro Stoxx 50:</strong> 50 majors empreses de la zona euro.<br/><strong>FTSE 100 (Londres), DAX 40 (Frankfurt), CAC 40 (París), Nikkei 225 (Tòquio).</strong></p>
-                </TheoryBlock>
-                <FormulaBox formula="IBEX 35: 35 empreses amb major liquiditat i capitalització de la Borsa espanyola" desc="Base 3.000 (30/12/1989). Ponderat per capitalització ajustada per free float." />
-            </Card>
-            <Card title="5. Regulació i protecció de l'inversor" icon="📘">
-                <TheoryBlock color="teal"><p>La <strong>CNMV</strong> supervisa els mercats de valors espanyols: autoritza l'admissió a cotització, vigila la transparència informativa, investiga i sanciona l'ús d'<strong>informació privilegiada</strong> (insider trading) i la <strong>manipulació de mercat</strong>. La regulació europea (MiFID II, Reglament d'Abús de Mercat) harmonitza les normes a nivell de la UE. La <strong>protecció de l'inversor minorista</strong> inclou: test de conveniència/idoneïtat, informació prèvia obligatòria (KID), restriccions a productes complexos, fons de garantia d'inversions (100.000 € per titular).</p></TheoryBlock>
-            </Card>
-            <Card title="Síntesi" icon="📝">
-                <TheoryBlock color="teal"><p>La Borsa canalitza estalvi, proporciona liquiditat, valora empreses i exigeix transparència. Es distingeix mercat primari (emissió: OPV, OPS) i secundari (negociació entre inversors). BME/SIX opera el SIBE (contractació electrònica), MEFF (derivats), BME Growth (pimes) i AIAF (renda fixa). L'IBEX 35 (35 empreses, base 3.000 en 1989) és l'índex de referència espanyol; el S&P 500 és la referència mundial. La CNMV supervisa, amb regulació europea harmonitzada (MiFID II). La protecció de l'inversor inclou fons de garantia (100.000 €) i restriccions a productes complexos.</p></TheoryBlock>
-            </Card>
-            <BibliografiaBox items={["CNMV. Guía del inversor. www.cnmv.es","BME/SIX. Estadísticas del mercado. www.bolsasymercados.es","Ley del Mercado de Valores (texto refundido, RDL 4/2015).","Directiva MiFID II (2014/65/UE).","Malkiel, B. (2019). A Random Walk Down Wall Street. Norton.","Brealey, R. et al. (2020). Principios de Finanzas Corporativas. McGraw-Hill.","Bodie, Z., Kane, A. & Marcus, A. (2021). Investments. McGraw-Hill.","Banco de España. Informe de Estabilidad Financiera.","Fama, E. (1970). Efficient Capital Markets. Journal of Finance.","Bloomberg / Reuters. Datos de mercado en tiempo real."]} />
-        </div>
-    );
-    const Tema62Resum = () => (
-        <div className="space-y-5 animate-fade"><Card>
-            <div className="p-4 bg-teal-50 rounded-xl border border-teal-200 mb-5"><p className="text-center font-bold text-teal-800 text-lg">Tema 62: La Borsa de Valors. Funcionament i índexs.</p><p className="text-center text-sm text-teal-600 mt-1"><em>"IBEX 35, S&P 500, NASDAQ: els termòmetres de l'economia"</em></p></div>
-            <div className="space-y-4 text-sm text-slate-700">
-                <div><h4 className="font-bold text-slate-800 mb-1">1. Funcions</h4><ul className="list-disc pl-5 space-y-1"><li>Canalitzar estalvi, liquiditat, valoració, transparència, protecció inversor.</li></ul></div>
-                <div><h4 className="font-bold text-slate-800 mb-1">2. Mercats</h4><ul className="list-disc pl-5 space-y-1"><li>Primari: emissió (OPV, OPS). Secundari: negociació entre inversors (la Borsa pròpiament).</li></ul></div>
-                <div><h4 className="font-bold text-slate-800 mb-1">3. BME/SIX</h4><ul className="list-disc pl-5 space-y-1"><li>SIBE (contratació electrònica, 9-17:30), MEFF (derivats), BME Growth (pimes), AIAF (renda fixa).</li></ul></div>
-                <div><h4 className="font-bold text-slate-800 mb-1">4. Índexs</h4><ul className="list-disc pl-5 space-y-1"><li>IBEX 35 (Espanya), S&P 500 (EUA, referència mundial), NASDAQ (tech), Euro Stoxx 50, DAX, CAC, Nikkei.</li></ul></div>
-                <div><h4 className="font-bold text-slate-800 mb-1">5. Regulació</h4><ul className="list-disc pl-5 space-y-1"><li>CNMV. MiFID II. Insider trading prohibit. Fons garantia inversions: 100.000€.</li></ul></div>
             </div>
-            <ClauBox><p>- Diferencia <strong>mercat primari vs. secundari</strong> (funció de cadascun).</p><p>- Detalla l'<strong>estructura de BME/SIX</strong> (SIBE, MEFF, Growth, AIAF).</p><p>- Enumera els <strong>principals índexs mundials</strong> amb les seues característiques.</p><p>- Inclou <strong>regulació</strong> (CNMV, MiFID II, insider trading).</p></ClauBox>
-        </Card></div>
-    );
-    const Tema62 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="📈" title="Tema 62" subtitle={t('tema62.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema62Complet />}{vista === 'resum' && <Tema62Resum />}</div>); };
+        );
 
-    // ════════════════════════════════════════════════════════════════
-    // TEMA 63 — Assegurances. Principis i modalitats.
-    // ════════════════════════════════════════════════════════════════
-    const Tema63Complet = () => (
-        <div className="space-y-6 animate-fade">
-            <Card title="Introducció" icon="📌">
-                <div className="text-sm text-slate-700 leading-relaxed space-y-3"><p>L'<strong>assegurança</strong> és un contracte pel qual l'assegurador s'obliga, a canvi d'una <strong>prima</strong>, a indemnitzar l'assegurat pels danys derivats d'un <strong>sinistre</strong> (event incert). És el mecanisme fonamental de transferència i mutualització del risc en les economies modernes. El sector assegurador espanyol mou més de 60.000 milions d'euros anuals en primes.</p><p>Aquest tema connecta amb els continguts d'educació financera i sistema financer d'<strong>Economia de 1r de Batxillerat</strong>. S'estructura en: principis de l'assegurança, elements del contracte, modalitats i el sector assegurador espanyol.</p></div>
-            </Card>
-            <Card title="1. Principis de l'assegurança" icon="📘">
-                <TheoryBlock title="1.1. Concepte i base tècnica" color="teal"><p>L'assegurança es basa en la <strong>llei dels grans nombres</strong>: encara que el sinistre individual és aleatori, en una massa gran d'assegurats les pèrdues totals són predictibles estadísticament. L'assegurador calcula la <strong>prima pura</strong> (esperança matemàtica de la pèrdua: probabilitat × quantia del sinistre) i hi afig recàrrecs (despeses de gestió, benefici, marge de seguretat) per a obtindre la <strong>prima comercial</strong>.</p></TheoryBlock>
-                <TheoryBlock title="1.2. Principis fonamentals" color="cyan"><p><strong>Bona fe:</strong> ambdues parts han d'actuar amb honestedat; l'assegurat ha de declarar fidelment el risc.<br/><strong>Interès assegurable:</strong> l'assegurat ha de tindre un interès legítim en la cosa assegurada (no es pot assegurar el que no és teu).<br/><strong>Indemnització:</strong> l'assegurança compensa el dany però no enriqueix l'assegurat (principi indemnitzatori); la indemnització no pot superar el valor del dany real.<br/><strong>Subrogació:</strong> l'assegurador, després de pagar la indemnització, es subroga en els drets de l'assegurat contra el causant del dany.<br/><strong>Contribució i repartiment:</strong> si hi ha diverses assegurances sobre el mateix risc, cada assegurador contribueix proporcionalment.</p></TheoryBlock>
-            </Card>
-            <Card title="2. Elements del contracte d'assegurança" icon="📘">
-                <TheoryBlock title="2.1. Elements personals" color="teal"><p><strong>Assegurador:</strong> la companyia d'assegurances (ha de ser una SA, mútua o cooperativa autoritzada per la DGSFP).<br/><strong>Prenedor:</strong> qui contracta i paga la prima.<br/><strong>Assegurat:</strong> titular de l'interès assegurat (pot coincidir amb el prenedor).<br/><strong>Beneficiari:</strong> qui rep la indemnització (en assegurances de vida pot ser un tercer).<br/><strong>Mediadors:</strong> agents d'assegurances (vinculats a una companyia) i corredors (independents, assessoren el client).</p></TheoryBlock>
-                <TheoryBlock title="2.2. Elements formals i reals" color="cyan"><p><strong>Pòlissa:</strong> document del contracte. Conté: dades de l'assegurat, risc cobert, capital assegurat, prima, durada, franquícia, exclusions.<br/><strong>Prima:</strong> preu de l'assegurança. Pot ser única o periòdica (anual).<br/><strong>Sinistre:</strong> materialització del risc cobert.<br/><strong>Capital assegurat:</strong> quantitat màxima que pagarà l'assegurador.<br/><strong>Franquícia:</strong> quantitat que l'assegurat assumeix en cada sinistre abans que l'assegurador pague (redueix la prima i el risc moral).</p></TheoryBlock>
-            </Card>
-            <Card title="3. Modalitats d'assegurança" icon="📘">
-                <TheoryBlock title="3.1. Assegurances personals" color="teal"><p><strong>Assegurança de vida:</strong> en cas de defunció (vida-risc: paga als beneficiaris) o supervivència (vida-estalvi: l'assegurat cobra al venciment). Mixtes: combinen ambdues. Unit-linked: lligades a fons d'inversió.<br/><strong>Assegurança d'accidents:</strong> cobreix lesions corporals per accident.<br/><strong>Assegurança de salut (malaltia):</strong> cobreix despeses mèdiques, hospitalització, proves diagnòstiques. Complementa la sanitat pública. Principals: Adeslas, Sanitas, DKV, Asisa.</p></TheoryBlock>
-                <TheoryBlock title="3.2. Assegurances patrimonials (de danys)" color="cyan"><p><strong>Assegurança d'incendi i danys materials:</strong> cobreix danys al patrimoni per incendi, explosió, catàstrofes naturals.<br/><strong>Assegurança de la llar:</strong> multirisc que cobreix continent (edifici) + contingut (mobles, objectes) + responsabilitat civil.<br/><strong>Assegurança d'automòbil:</strong> obligatòria (assegurança a tercers: cobreix danys a tercers per accident) o voluntària (tot risc: inclou danys propis, robatori, llunes). La més contractada a Espanya.<br/><strong>Assegurança de responsabilitat civil:</strong> cobreix les indemnitzacions que l'assegurat haja de pagar a tercers per danys causats.<br/><strong>Altres:</strong> assegurança de transport (marítim, terrestre, aeri), assegurança de crèdit (impagament de clients), assegurança agrària (pèrdua de collites — Agroseguro), assegurança de caució.</p></TheoryBlock>
-                <TheoryBlock title="3.3. Assegurances de prestació de serveis" color="teal"><p><strong>Assistència en viatge:</strong> cobertura mèdica, repatriació, pèrdua d'equipatge en viatges.<br/><strong>Defensa jurídica:</strong> cobertura de despeses legals.<br/><strong>Decessos:</strong> cobertura de les despeses del sepeli. Molt estesa a Espanya (més de 20 milions d'assegurats).</p></TheoryBlock>
-            </Card>
-            <Card title="4. El sector assegurador espanyol" icon="📘">
-                <TheoryBlock color="teal"><p>El sector assegurador espanyol genera més de <strong>60.000 milions d'euros en primes anuals</strong> i dona faena a més de 50.000 persones. Les principals companyies: <strong>Mapfre</strong> (la major espanyola, amb presència global), <strong>Mutua Madrileña</strong>, <strong>Línea Directa</strong>, <strong>Santalucía</strong>, <strong>Pelayo</strong>, <strong>Catalana Occidente</strong>, <strong>Zurich</strong>, <strong>Allianz</strong>, <strong>AXA</strong>, <strong>Generali</strong>. El <strong>Consorci de Compensació d'Assegurances</strong> (CCS) és una entitat pública que cobreix riscos extraordinaris (terratrèmols, inundacions, terrorisme) i actua com a fons de garantia quan l'assegurador és insolvent. La supervisió correspon a la <strong>DGSFP</strong> i a la normativa europea <strong>Solvència II</strong>.</p></TheoryBlock>
-            </Card>
-            <Card title="Síntesi" icon="📝">
-                <TheoryBlock color="teal"><p>L'assegurança transfereix risc de l'assegurat a l'assegurador a canvi d'una prima, basant-se en la llei dels grans nombres. Els principis són: bona fe, interès assegurable, indemnització (no enriquiment), subrogació. El contracte (pòlissa) inclou: parts, prima, capital, franquícia. Les modalitats són: personals (vida, accidents, salut), patrimonials (llar, auto —obligatori—, RC, crèdit, agrari) i de serveis (viatge, decessos). El sector espanyol: 60.000 M€ en primes. Mapfre líder. CCS per a riscos extraordinaris. Supervisió: DGSFP + Solvència II.</p></TheoryBlock>
-            </Card>
-            <BibliografiaBox items={["Ley 50/1980, de 8 de octubre, de Contrato de Seguro.","Ley 20/2015, de 14 de julio, de ordenación, supervisión y solvencia de las entidades aseguradoras.","DGSFP. Informe del sector de seguros. www.dgsfp.mineco.es","UNESPA. El seguro en cifras. www.unespa.es","Mapfre. Diccionario de seguros. www.fundacionmapfre.org","Directiva Solvencia II (2009/138/CE).","Consorcio de Compensación de Seguros. www.consorseguros.es","Bueno Campos, E. (2022). Curso básico de Economía de la Empresa. Pirámide.","Castelo, J. & Guardiola, A. (2010). Diccionario Mapfre de Seguros. Mapfre."]} />
-        </div>
-    );
-    const Tema63Resum = () => (
-        <div className="space-y-5 animate-fade"><Card>
-            <div className="p-4 bg-teal-50 rounded-xl border border-teal-200 mb-5"><p className="text-center font-bold text-teal-800 text-lg">Tema 63: Assegurances. Principis i modalitats.</p><p className="text-center text-sm text-teal-600 mt-1"><em>"Transferir el risc: de l'auto obligatori a l'assegurança de vida"</em></p></div>
-            <div className="space-y-4 text-sm text-slate-700">
-                <div><h4 className="font-bold text-slate-800 mb-1">1. Principis</h4><ul className="list-disc pl-5 space-y-1"><li>Llei grans nombres: sinistre individual aleatori → pèrdues col·lectives predibles.</li><li>Bona fe, interès assegurable, indemnització (no enriquiment), subrogació.</li></ul></div>
-                <div><h4 className="font-bold text-slate-800 mb-1">2. Elements contracte</h4><ul className="list-disc pl-5 space-y-1"><li>Persones: assegurador (cia.), prenedor, assegurat, beneficiari, mediadors (agents/corredors).</li><li>Pòlissa, prima, sinistre, capital assegurat, franquícia.</li></ul></div>
-                <div><h4 className="font-bold text-slate-800 mb-1">3. Modalitats</h4><ul className="list-disc pl-5 space-y-1"><li>Personals: vida (risc, estalvi, mixt), accidents, salut (Adeslas, Sanitas).</li><li>Patrimonials: llar, auto (obligatori: tercers; voluntari: tot risc), RC, crèdit, agrari.</li><li>Serveis: viatge, defensa jurídica, decessos (20+ M assegurats a Espanya).</li></ul></div>
-                <div><h4 className="font-bold text-slate-800 mb-1">4. Sector espanyol</h4><ul className="list-disc pl-5 space-y-1"><li>60.000 M€ primes/any. Mapfre líder. CCS: riscos extraordinaris. DGSFP + Solvència II.</li></ul></div>
+        const headerSections = [
+            { id: 'inicio', label: t('sec.inicio'), emoji: '🏠' },
+            { id: 'tema57', label: 'T57', emoji: '🎯' },
+            { id: 'tema58', label: 'T58', emoji: '📋' },
+            { id: 'tema59', label: 'T59', emoji: '🏛️' },
+            { id: 'tema60', label: 'T60', emoji: '🗂️' },
+            { id: 'tema61', label: 'T61', emoji: '👑' },
+            { id: 'tema62', label: 'T62', emoji: '🎭' },
+            { id: 'tema63', label: 'T63', emoji: '💬' },
+            { id: 'tema64', label: 'T64', emoji: '⚡' },
+            { id: 'tema65', label: 'T65', emoji: '⚖️' },
+        ];
+
+        return (
+            <div className="min-h-screen">
+                <PdeHeader idioma={idioma} setIdioma={setIdioma} currentApp="oposicions-bloc-g" sections={headerSections} currentSection={section} setSection={setSection} />
+                <main className="max-w-7xl mx-auto px-4 py-8">
+                    {section === 'inicio' && <Inicio />}
+                    {section === 'tema57' && <Tema57 />}
+                    {section === 'tema58' && <Tema58 />}
+                    {section === 'tema59' && <Tema59 />}
+                    {section === 'tema60' && <Tema60 />}
+                    {section === 'tema61' && <Tema61 />}
+                    {section === 'tema62' && <Tema62 />}
+                    {section === 'tema63' && <Tema63 />}
+                    {section === 'tema64' && <Tema64 />}
+                    {section === 'tema65' && <Tema65 />}
+                </main>
+                <PdePrevNext sections={headerSections} currentSection={section} setSection={setSection} idioma={idioma} />
+                <PdeFooter appEmoji="🎯" appName={t('footer.appname')} idioma={idioma} />
+                <PdeScrollToTop />
             </div>
-            <ClauBox><p>- Explica la <strong>base tècnica</strong> (llei grans nombres, prima pura).</p><p>- Detalla les <strong>3 categories</strong> (personals, patrimonials, serveis) amb exemples.</p><p>- Inclou l'<strong>auto obligatori</strong> i el <strong>CCS</strong> (riscos extraordinaris).</p></ClauBox>
-        </Card></div>
-    );
-    const Tema63 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="🛡️" title="Tema 63" subtitle={t('tema63.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema63Complet />}{vista === 'resum' && <Tema63Resum />}</div>); };
+        );
+    }
 
-    // ════════════════════════════════════════════════════════════════
-    // TEMA 64 — Planificació financera personal. Estalvi i inversió.
-    // ════════════════════════════════════════════════════════════════
-    const Tema64Complet = () => (
-        <div className="space-y-6 animate-fade">
-            <Card title="Introducció" icon="📌">
-                <div className="text-sm text-slate-700 leading-relaxed space-y-3"><p>La <strong>planificació financera personal</strong> és el procés de gestionar els ingressos, despeses, estalvi, inversió, endeutament, assegurances i fiscalitat d'una persona o família per a assolir els seus objectius vitals (comprar un habitatge, finançar estudis, preparar la jubilació, crear un fons d'emergència). L'<strong>educació financera</strong> —entendre conceptes com interès compost, inflació, diversificació, endeutament responsable— és essencial per a l'autonomia i el benestar dels ciutadans.</p><p>Aquest tema és transversal en el currículum LOMLOE (educació financera com a competència clau) i es connecta amb els continguts d'Economia de 1r de Batxillerat. S'estructura en: pressupost personal, estalvi, inversió, endeutament responsable i planificació de la jubilació.</p></div>
-            </Card>
-            <Card title="1. El pressupost personal" icon="📘">
-                <TheoryBlock title="1.1. Ingressos, despeses i estalvi" color="teal"><p><strong>Pressupost:</strong> pla que detalla els ingressos i despeses previstes per a un període (mensual, anual). Permet controlar les finances, detectar despeses innecessàries i generar estalvi.<br/><strong>Regla 50/30/20</strong> (Elizabeth Warren): 50 % de l'ingrés net a necessitats (habitatge, alimentació, transport), 30 % a desitjos (oci, viatges, roba), 20 % a estalvi i inversió.<br/><strong>Fons d'emergència:</strong> estalvi líquid equivalent a 3-6 mesos de despeses fixes, per a imprevistos (pèrdua de treball, avaria, malaltia). És la primera prioritat d'estalvi.</p></TheoryBlock>
-            </Card>
-            <Card title="2. L'estalvi" icon="📘">
-                <TheoryBlock title="2.1. Productes d'estalvi" color="teal"><p><strong>Comptes d'estalvi / dipòsits a la vista:</strong> liquiditat total, rendibilitat molt baixa (però coberts pel FGD fins a 100.000 €).<br/><strong>Dipòsits a termini fix:</strong> major rendibilitat a canvi de menor liquiditat (penalització per cancel·lació anticipada).<br/><strong>Lletres del Tresor:</strong> deute públic a CP (3, 6, 12 mesos). Molt segures, rendibilitat moderada.<br/><strong>Comptes remunerats:</strong> comptes corrents amb interès (oferits per neobancs i fintech).</p></TheoryBlock>
-                <TheoryBlock title="2.2. L'interès compost" color="cyan"><p>L'<strong>interès compost</strong> és la «huitena meravella del món» (atribuït a Einstein): els interessos generats es reinverteixen i generen al seu torn nous interessos. La fórmula: <strong>Cf = Ci × (1 + i)ⁿ</strong>, on Ci = capital inicial, i = tipus d'interès per període, n = nombre de períodes, Cf = capital final.<br/><strong>Exemple:</strong> 10.000 € al 5 % anual durant 30 anys = 10.000 × 1,05³⁰ = <strong>43.219 €</strong> (més del quàdruple). La clau és començar prompte i ser constant.</p></TheoryBlock>
-                <FormulaBox formula="Cf = Ci × (1 + i)ⁿ | 10.000€ al 5% durant 30 anys = 43.219€" desc="Interès compost: el temps és el millor aliat de l'estalviador" />
-            </Card>
-            <Card title="3. La inversió" icon="📘">
-                <TheoryBlock title="3.1. Perfil inversor" color="teal"><p>Abans d'invertir, l'inversor ha de definir el seu <strong>perfil</strong>: <strong>horitzó temporal</strong> (CP, MP, LP), <strong>tolerància al risc</strong> (conservador, moderat, agressiu), <strong>objectius</strong> (complement jubilació, compra habitatge, educació fills) i <strong>situació financera</strong> (ingressos, despeses, deutes, patrimoni). Els tests de conveniència/idoneïtat (MiFID II) ajuden a determinar el perfil.</p></TheoryBlock>
-                <TheoryBlock title="3.2. Productes d'inversió" color="cyan"><p><strong>Fons d'inversió:</strong> diversificació professional. Tipus: renda fixa, variable, mixtos, indexats, garantits. Comissions: gestió, depòsit, subscripció, reemborsament. Fiscalitat: tributen en realitzar la plusvàlua (19-28 % sobre guanys).<br/><strong>ETFs:</strong> fons cotitzats, comissions baixes, rèplica d'índexs.<br/><strong>Accions:</strong> inversió directa en empreses cotitzades. Major risc i potencial de rendibilitat.<br/><strong>Immobles:</strong> inversió tradicional a Espanya. Lloguer + revaloració. Il·líquid, concentració de risc.<br/><strong>Plans de pensions:</strong> estalvi finalista per a la jubilació. Avantatge fiscal: aportacions deduïbles en IRPF (màx. 1.500 €/any). Il·líquids fins a jubilació/contingències. Tributen com a rendiment del treball en el rescat (tipus marginal IRPF).<br/><strong>Roboadvisors:</strong> plataformes d'inversió automatitzada basades en algoritmes (Indexa Capital, Finizens, MyInvestor). Carteres diversificades de fons indexats amb comissions baixes.</p></TheoryBlock>
-
-                {/* SVG 3: Piràmide d'Inversió */}
-                <div className="my-6 flex justify-center">
-                    <svg viewBox="0 0 520 420" className="w-full max-w-xl mx-auto" style={{fontFamily: 'Plus Jakarta Sans, sans-serif'}}>
-                        <text x="260" y="24" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#1e293b">Piràmide d'Inversió</text>
-                        <text x="260" y="42" textAnchor="middle" fontSize="11" fill="#64748b">Relació entre risc i rendibilitat esperada</text>
-
-                        {/* Pyramid - bottom layer (low risk) */}
-                        <polygon points="60,360 460,360 400,280 120,280" fill="#ccfbf1" stroke="#0d9488" strokeWidth="2"/>
-                        <text x="260" y="310" textAnchor="middle" fontSize="13" fontWeight="bold" fill="#0f766e">Dipòsits / Comptes d'estalvi</text>
-                        <text x="260" y="328" textAnchor="middle" fontSize="10" fill="#0f766e">FGD 100.000€ | Lletres del Tresor</text>
-                        <text x="260" y="348" textAnchor="middle" fontSize="10" fontWeight="600" fill="#14b8a6">▸ Risc BAIX · Rendibilitat BAIXA</text>
-
-                        {/* Pyramid - middle layer (medium risk) */}
-                        <polygon points="120,280 400,280 340,195 180,195" fill="#99f6e4" stroke="#0d9488" strokeWidth="2"/>
-                        <text x="260" y="228" textAnchor="middle" fontSize="13" fontWeight="bold" fill="#0f766e">Renda Fixa / Fons mixtos</text>
-                        <text x="260" y="246" textAnchor="middle" fontSize="10" fill="#0f766e">Bons, obligacions, fons indexats</text>
-                        <text x="260" y="264" textAnchor="middle" fontSize="10" fontWeight="600" fill="#0d9488">▸ Risc MITJÀ · Rendibilitat MITJANA</text>
-
-                        {/* Pyramid - upper layer (high risk) */}
-                        <polygon points="180,195 340,195 290,120 230,120" fill="#5eead4" stroke="#0d9488" strokeWidth="2"/>
-                        <text x="260" y="150" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#134e4a">Accions / ETFs</text>
-                        <text x="260" y="168" textAnchor="middle" fontSize="10" fill="#134e4a">Renda variable cotitzada</text>
-                        <text x="260" y="184" textAnchor="middle" fontSize="9" fontWeight="600" fill="#0f766e">▸ Risc ALT</text>
-
-                        {/* Pyramid - top (very high risk) */}
-                        <polygon points="230,120 290,120 260,65" fill="#14b8a6" stroke="#0d9488" strokeWidth="2"/>
-                        <text x="260" y="98" textAnchor="middle" fontSize="10" fontWeight="bold" fill="#ffffff">Derivats</text>
-                        <text x="260" y="112" textAnchor="middle" fontSize="8" fill="#ffffff">Cripto</text>
-
-                        {/* Left arrow - Risk */}
-                        <defs>
-                            <marker id="arrowUp3" markerWidth="8" markerHeight="6" refX="4" refY="6" orient="auto">
-                                <polygon points="0 6, 4 0, 8 6" fill="#dc2626"/>
-                            </marker>
-                            <marker id="arrowDown3" markerWidth="8" markerHeight="6" refX="4" refY="0" orient="auto">
-                                <polygon points="0 0, 4 6, 8 0" fill="#16a34a"/>
-                            </marker>
-                        </defs>
-                        <line x1="30" y1="350" x2="30" y2="75" stroke="#dc2626" strokeWidth="2.5" markerEnd="url(#arrowUp3)"/>
-                        <text x="18" y="210" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#dc2626" transform="rotate(-90,18,210)">RISC ↑</text>
-
-                        {/* Right arrow - Return */}
-                        <line x1="490" y1="350" x2="490" y2="75" stroke="#0d9488" strokeWidth="2.5" markerEnd="url(#arrowUp3)"/>
-                        <text x="505" y="210" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#0d9488" transform="rotate(90,505,210)">RENDIBILITAT ESPERADA ↑</text>
-
-                        {/* Bottom labels */}
-                        <rect x="130" y="380" width="260" height="28" rx="8" fill="#0d9488"/>
-                        <text x="260" y="399" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#ffffff">Diversificar segons perfil inversor (MiFID II)</text>
-                    </svg>
-                </div>
-            </Card>
-            <Card title="4. Endeutament responsable" icon="📘">
-                <TheoryBlock title="4.1. Tipus de deute" color="teal"><p><strong>Deute bo:</strong> finança actius que generen valor o es revaloritzen (hipoteca per a habitatge habitual, préstec per a formació). Tipus d'interès baix, termini llarg.<br/><strong>Deute dolent:</strong> finança consum que es deprecia (préstecs al consum per a vacances, electrònica, targetes de crèdit revolving). Tipus d'interès alt, termini curt.<br/><strong>Regla del 35 %:</strong> la quota total de deutes (hipoteca + altres préstecs) no hauria de superar el 35 % dels ingressos nets mensuals.<br/><strong>TAE (Taxa Anual Equivalent):</strong> indicador que inclou el tipus d'interès nominal + comissions + despeses, permetent comparar ofertes. Obligatori informar (Banc d'Espanya).</p></TheoryBlock>
-            </Card>
-            <Card title="5. Planificació de la jubilació" icon="📘">
-                <TheoryBlock color="teal"><p>El sistema públic de pensions (repartiment) pot no ser suficient per a mantindre el nivell de vida. La <strong>taxa de substitució</strong> (pensió / últim salari) és ~80 % a Espanya (la més alta de l'OCDE), però tendirà a reduir-se per l'envelliment. És recomanable complementar amb estalvi privat: plans de pensions, fons d'inversió, immobles, PIAS (Plans Individuals d'Estalvi Sistemàtic). <strong>Començar prompte</strong> és clau: gràcies a l'interès compost, estalviar 200 €/mes des dels 25 anys genera molt més que estalviar 400 €/mes des dels 45.</p></TheoryBlock>
-            </Card>
-            <Card title="Síntesi" icon="📝">
-                <TheoryBlock color="teal"><p>La planificació financera personal comprén pressupost (regla 50/30/20), fons d'emergència (3-6 mesos), estalvi (dipòsits, lletres, comptes), inversió (fons, ETFs, accions, immobles, plans pensions, roboadvisors — segons perfil inversor: horitzó, risc, objectius) i endeutament responsable (regla 35%, TAE, deute bo vs. dolent). L'interès compost (Cf = Ci×(1+i)ⁿ) és la clau: el temps multiplica l'estalvi. Planificar la jubilació aviat és essencial davant la reducció prevista de la taxa de substitució.</p></TheoryBlock>
-            </Card>
-            <BibliografiaBox items={["Banco de España. Portal del Cliente Bancario. clientebancario.bde.es","CNMV. Guía de educación financiera. www.cnmv.es","Kiyosaki, R. (1997). Padre rico, padre pobre. Aguilar.","Warren, E. & Tyagi, A. W. (2005). All Your Worth. Free Press.","Finanzas para Mortales. Programa de educación financiera de Santander. www.finanzasparamortales.es","Plan de Educación Financiera (Banco de España + CNMV). www.finanzasparatodos.es","Bogle, J. (2007). The Little Book of Common Sense Investing. Wiley.","Inverco. Guía de fondos de inversión. www.inverco.es","Indexa Capital. Blog de inversión indexada. www.indexacapital.com","OCDE. Financial Literacy and Inclusion: Results from PISA."]} />
-        </div>
-    );
-    const Tema64Resum = () => (
-        <div className="space-y-5 animate-fade"><Card>
-            <div className="p-4 bg-teal-50 rounded-xl border border-teal-200 mb-5"><p className="text-center font-bold text-teal-800 text-lg">Tema 64: Planificació financera personal. Estalvi i inversió.</p><p className="text-center text-sm text-teal-600 mt-1"><em>"Cf = Ci × (1+i)ⁿ: l'interès compost és el millor aliat de l'estalviador"</em></p></div>
-            <div className="space-y-4 text-sm text-slate-700">
-                <div><h4 className="font-bold text-slate-800 mb-1">1. Pressupost</h4><ul className="list-disc pl-5 space-y-1"><li>Regla 50/30/20: necessitats / desitjos / estalvi. Fons emergència: 3-6 mesos despeses.</li></ul></div>
-                <div><h4 className="font-bold text-slate-800 mb-1">2. Estalvi</h4><ul className="list-disc pl-5 space-y-1"><li>Comptes, dipòsits a termini, lletres Tresor. FGD: 100.000€.</li><li>Interès compost: Cf = Ci×(1+i)ⁿ. 10.000€ al 5% × 30 anys = 43.219€.</li></ul></div>
-                <div><h4 className="font-bold text-slate-800 mb-1">3. Inversió</h4><ul className="list-disc pl-5 space-y-1"><li>Perfil: horitzó, tolerància risc, objectius. MiFID II: test conveniència.</li><li>Fons (diversificació), ETFs (baixos costos), accions, immobles, plans pensions (1.500€/any deduïble), roboadvisors.</li></ul></div>
-                <div><h4 className="font-bold text-slate-800 mb-1">4. Endeutament</h4><ul className="list-disc pl-5 space-y-1"><li>Deute bo (hipoteca, formació) vs. dolent (consum, revolving). Regla 35%. TAE per comparar.</li></ul></div>
-                <div><h4 className="font-bold text-slate-800 mb-1">5. Jubilació</h4><ul className="list-disc pl-5 space-y-1"><li>Taxa substitució ~80% (baixarà). Complementar: plans pensions, fons, PIAS. Començar aviat!</li></ul></div>
-            </div>
-            <FormulaBox formula="Cf = Ci × (1+i)ⁿ | Regla 50/30/20 | Regla 35% endeutament" desc="3 fórmules/regles clau per a la planificació financera personal" />
-            <ClauBox><p>- Centra en <strong>educació financera pràctica</strong> aplicable a l'alumnat.</p><p>- Domina l'<strong>interès compost</strong> amb exemples numèrics.</p><p>- Diferencia <strong>deute bo vs. dolent</strong> i la regla del 35%.</p><p>- Inclou <strong>productes actuals</strong>: roboadvisors, ETFs, neobancs.</p></ClauBox>
-        </Card></div>
-    );
-    const Tema64 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="🏦" title="Tema 64" subtitle={t('tema64.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema64Complet />}{vista === 'resum' && <Tema64Resum />}</div>); };
-
-    // ════════════════════════════════════════════════════════════════
-    // TEMA 65 — El sistema tributari espanyol.
-    // ════════════════════════════════════════════════════════════════
-    const Tema65Complet = () => (
-        <div className="space-y-6 animate-fade">
-            <Card title="Introducció" icon="📌">
-                <div className="text-sm text-slate-700 leading-relaxed space-y-3"><p>El <strong>sistema tributari</strong> és el conjunt de tributs (impostos, taxes i contribucions especials) que financen la despesa pública. A Espanya, la pressió fiscal (~38 % del PIB) és inferior a la mitjana de la UE (~41 %). L'article 31.1 de la Constitució estableix els principis del deure de contribuir: <strong>capacitat econòmica, igualtat, progressivitat i no confiscatorietat</strong>.</p><p>Aquest tema connecta amb CE3 d'<strong>Economia de 1r de Batxillerat</strong> (sector públic, política fiscal) i amb els continguts transversals de ciutadania fiscal. S'estructura en: concepte de tribut, principis constitucionals, estructura del sistema, principals figures i l'AEAT.</p></div>
-            </Card>
-            <Card title="1. Concepte i classificació de tributs" icon="📘">
-                <TheoryBlock title="1.1. Tipus de tributs" color="teal"><p><strong>Impostos:</strong> tributs exigits sense contraprestació directa. Són la principal font d'ingressos públics. Es classifiquen en <em>directes</em> (graven la renda o patrimoni del contribuent: IRPF, IS, IP, ISD) i <em>indirectes</em> (graven el consum o les transaccions: IVA, IIEE, ITP-AJD).<br/><strong>Taxes:</strong> tributs per la utilització del domini públic o la prestació d'un servei públic que beneficia especialment l'obligat (taxa d'escombraries, taxa d'expedició de DNI).<br/><strong>Contribucions especials:</strong> tributs per la realització d'obres públiques que beneficien especialment un grup de contribuents (obertura d'un carrer que revaloritza els immobles confrontants).</p></TheoryBlock>
-                <TheoryBlock title="1.2. Elements de l'impost" color="cyan"><p><strong>Fet imposable:</strong> circumstància que genera l'obligació tributària (obtindre renda, posseir un patrimoni, comprar un bé).<br/><strong>Subjecte passiu (contribuent):</strong> persona obligada al pagament.<br/><strong>Base imposable:</strong> quantificació del fet imposable (la renda obtinguda, el valor de l'immoble).<br/><strong>Base liquidable:</strong> base imposable − reduccions.<br/><strong>Tipus impositiu:</strong> percentatge o tarifa que s'aplica a la base (pot ser proporcional —tipus fix— o progressiu —tipus creixents per trams—).<br/><strong>Quota íntegra:</strong> base liquidable × tipus. <strong>Quota líquida:</strong> quota íntegra − deduccions. <strong>Quota diferencial:</strong> quota líquida − retencions i pagaments a compte.</p></TheoryBlock>
-            </Card>
-            <Card title="2. Estructura del sistema tributari espanyol" icon="📘">
-                <TheoryBlock title="2.1. Nivells de govern" color="teal"><p><strong>Estat:</strong> IRPF (compartit 50 % amb CCAA), IS, IVA (compartit 50 %), IIEE (compartit 58 %), aranzels.<br/><strong>CCAA:</strong> 50 % IRPF (amb capacitat normativa sobre tipus i deduccions), 50 % IVA, 58 % IIEE, Impost sobre el Patrimoni, ISD (Successions i Donacions, amb grans diferències entre CCAA), ITP-AJD, tributs propis, tributs cedits.<br/><strong>Entitats locals:</strong> IBI (Impost sobre Béns Immobles), IAE (Impost sobre Activitats Econòmiques), IVTM (Impost sobre Vehicles), IIVTNU (plusvàlua municipal), ICIO (Impost sobre Construccions).<br/><strong>Règim foral:</strong> País Basc i Navarra recapten tots els impostos i paguen un cup/aportació a l'Estat.</p></TheoryBlock>
-            </Card>
-            <Card title="3. L'AEAT i la lluita contra el frau" icon="📘">
-                <TheoryBlock color="teal"><p>L'<strong>AEAT</strong> (Agència Estatal d'Administració Tributària, 1992) gestiona, inspecciona i recapta els tributs estatals. Espanya és líder en administració tributària electrònica: Renta Web (esborrany IRPF), SII (IVA en temps real), big data. La lluita contra el <strong>frau fiscal</strong> i l'economia submergida (17-22 % del PIB) és prioritària: llistes de morosos (&gt;600.000 €), límit de pagaments en efectiu (1.000 €), intercanvi automàtic d'informació bancària (CRS/OCDE), impost mínim global del 15 % (Pilar 2 OCDE).</p></TheoryBlock>
-            </Card>
-            <Card title="Síntesi" icon="📝">
-                <TheoryBlock color="teal"><p>El sistema tributari espanyol es fonamenta en l'art. 31.1 CE: capacitat econòmica, igualtat, progressivitat, no confiscatorietat. Els tributs es classifiquen en impostos (directes: IRPF, IS, IP, ISD; indirectes: IVA, IIEE, ITP), taxes i contribucions especials. Els elements de l'impost: fet imposable, subjecte passiu, base imposable, base liquidable, tipus, quota. El sistema es reparteix entre Estat, CCAA (50% IRPF, ISD amb grans diferències), EELL (IBI, IAE) i règim foral (País Basc, Navarra). L'AEAT gestiona amb tecnologia punta (Renta Web, SII, big data). La pressió fiscal (~38% PIB) és inferior a la mitjana UE (~41%).</p></TheoryBlock>
-            </Card>
-            <BibliografiaBox items={["Constitución Española, artículo 31.","Ley 58/2003, de 17 de diciembre, General Tributaria.","AEAT. Portal de la Agencia Tributaria. www.agenciatributaria.es","Ministerio de Hacienda. Presupuestos Generales del Estado.","AIReF. Informes sobre ingresos tributarios. www.airef.es","Eurostat. Taxation trends in the EU. ec.europa.eu/eurostat","OCDE. Revenue Statistics: Spain. www.oecd.org","Lago, S. et al. (2021). El sistema fiscal español. Thomson-Civitas.","Comisión Europea. Fiscalidad en España: informes periódicos."]} />
-        </div>
-    );
-    const Tema65Resum = () => (
-        <div className="space-y-5 animate-fade"><Card>
-            <div className="p-4 bg-teal-50 rounded-xl border border-teal-200 mb-5"><p className="text-center font-bold text-teal-800 text-lg">Tema 65: El sistema tributari espanyol.</p><p className="text-center text-sm text-teal-600 mt-1"><em>"Art. 31.1 CE: capacitat econòmica, igualtat, progressivitat"</em></p></div>
-            <div className="space-y-4 text-sm text-slate-700">
-                <div><h4 className="font-bold text-slate-800 mb-1">1. Tributs</h4><ul className="list-disc pl-5 space-y-1"><li>Impostos (directes/indirectes), taxes (contraprestació), contribucions especials (obra pública).</li><li>Elements: fet imposable, subjecte passiu, base imposable, base liquidable, tipus, quota.</li></ul></div>
-                <div><h4 className="font-bold text-slate-800 mb-1">2. Nivells</h4><ul className="list-disc pl-5 space-y-1"><li>Estat: IRPF (50%), IS, IVA (50%), IIEE (58%). CCAA: 50% IRPF, ISD, ITP, Patrimoni.</li><li>EELL: IBI, IAE, IVTM, plusvàlua, ICIO. Foral: PB i Navarra recapten tot.</li></ul></div>
-                <div><h4 className="font-bold text-slate-800 mb-1">3. AEAT</h4><ul className="list-disc pl-5 space-y-1"><li>Renta Web, SII, big data. Frau: efectiu ≤1.000€, morosos &gt;600.000€, CRS/OCDE, Pilar 2 (15%).</li><li>Pressió fiscal: ~38% PIB (UE: ~41%). Bretxa fiscal: ~3 pp.</li></ul></div>
-            </div>
-            <ClauBox><p>- Estructura per <strong>nivells de govern</strong> (Estat, CCAA, EELL, foral).</p><p>- Diferencia <strong>impostos directes vs. indirectes</strong> amb figures concretes.</p><p>- Inclou els <strong>elements tècnics</strong> de l'impost (base, tipus, quota).</p></ClauBox>
-        </Card></div>
-    );
-    const Tema65 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="🏛️" title="Tema 65" subtitle={t('tema65.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema65Complet />}{vista === 'resum' && <Tema65Resum />}</div>); };
-
-    // ════════════════════════════════════════════════════════════════
-    // TEMA 66 — Impostos directes i indirectes. IRPF i IVA.
-    // ════════════════════════════════════════════════════════════════
-    const Tema66Complet = () => (
-        <div className="space-y-6 animate-fade">
-            <Card title="Introducció" icon="📌">
-                <div className="text-sm text-slate-700 leading-relaxed space-y-3"><p>L'<strong>IRPF</strong> (Impost sobre la Renda de les Persones Físiques) i l'<strong>IVA</strong> (Impost sobre el Valor Afegit) són els dos pilars del sistema tributari espanyol: junts representen més del 60 % de la recaptació total. L'IRPF és el principal impost directe (progressiu, grava la renda) i l'IVA és el principal impost indirecte (proporcional, grava el consum). La seua comprensió és essencial tant per a la formació del futur ciutadà com per a la preparació d'oposicions.</p><p>Aquest tema s'emmarca en CE3 d'<strong>Economia de 1r de Batxillerat</strong> i en els continguts transversals d'educació financera i ciutadania fiscal.</p></div>
-            </Card>
-            <Card title="1. L'IRPF" icon="📘">
-                <TheoryBlock title="1.1. Característiques" color="teal"><p>Impost <strong>directe, personal, subjectiu, progressiu i periòdic</strong> (període impositiu: any natural). Grava la <strong>renda</strong> obtinguda per les persones físiques residents a Espanya. És l'impost que més recapta (~90.000 M€, ~8,5 % del PIB). És <strong>compartit</strong> (50 % Estat, 50 % CCAA, que tenen capacitat normativa sobre tipus i deduccions).</p></TheoryBlock>
-                <TheoryBlock title="1.2. Base imposable: tipus de renda" color="cyan"><p><strong>Rendiments del treball:</strong> salaris, pensions, prestacions per desocupació. La gran majoria de la base imposable.<br/><strong>Rendiments del capital:</strong> immobiliari (lloguers) i mobiliari (interessos, dividends).<br/><strong>Rendiments d'activitats econòmiques:</strong> beneficis d'autònoms i professionals (estimació directa o per mòduls).<br/><strong>Guanys i pèrdues patrimonials:</strong> plusvàlues per venda d'immobles, accions, fons d'inversió.<br/><strong>Imputacions de renda:</strong> immobles urbans no llogats (imputació de renda immobiliària).</p></TheoryBlock>
-                <TheoryBlock title="1.3. Liquidació simplificada" color="teal"><p><strong>Base imposable general</strong> (treball, activitats, capital immobiliari) → reduccions (aportacions a plans de pensions, pensions compensatòries, mínims personal i familiar) → <strong>Base liquidable general</strong> → s'aplica la <strong>tarifa progressiva per trams</strong> (estatal + autonòmica):</p><p>0 − 12.450 €: 19 % | 12.450 − 20.200 €: 24 % | 20.200 − 35.200 €: 30 % | 35.200 − 60.000 €: 37 % | 60.000 − 300.000 €: 45 % | &gt;300.000 €: 47 % (tipus orientatius 2024, varien segons CCAA).</p><p><strong>Base imposable de l'estalvi</strong> (interessos, dividends, plusvàlues) → tarifa de l'estalvi: 19 % (fins a 6.000 €), 21 % (6.000-50.000), 23 % (50.000-200.000), 27 % (200.000-300.000), 28 % (&gt;300.000).</p><p>Quota íntegra − deduccions (habitatge habitual anterior a 2013, donatius, maternitat, etc.) = <strong>Quota líquida</strong> − Retencions practicades = <strong>Quota diferencial</strong> (a pagar o a tornar).</p></TheoryBlock>
-                <FormulaBox formula="IRPF: Tarifa progressiva per trams (19% → 47%)" desc="Més renda → tipus marginal més alt. El més recaptador (~90.000 M€)" />
-            </Card>
-            <Card title="2. L'IVA" icon="📘">
-                <TheoryBlock title="2.1. Característiques" color="teal"><p>Impost <strong>indirecte, real, objectiu, proporcional i instantani</strong>. Grava el <strong>consum</strong>: s'aplica en cada fase de la cadena de producció-distribució sobre el <strong>valor afegit</strong> en eixa fase. El consumidor final suporta tot l'IVA; les empreses intermèdies són mers recaptadors (dedueixen l'IVA suportat en les seues compres de l'IVA repercutit en les seues vendes i liquiden la diferència a Hisenda). Harmonitzat a nivell de la UE (Directiva IVA 2006/112/CE). No s'aplica a Canàries (IGIC), Ceuta i Melilla (IPSI).</p></TheoryBlock>
-                <TheoryBlock title="2.2. Tipus impositius" color="cyan"><p><strong>Tipus general: 21 %</strong> — s'aplica a la majoria de béns i serveis.<br/><strong>Tipus reduït: 10 %</strong> — aliments (excepte els superreduïts), aigua, medicaments d'ús animal, transport de viatgers, hostaleria, habitatge nou, espectacles culturals i esportius.<br/><strong>Tipus superreduït: 4 %</strong> — pa, llet, ous, fruites, verdures, cereals, formatges, llibres, periòdics, medicaments d'ús humà, cadires de rodes, habitatge de protecció oficial.<br/><strong>Tipus 0 % (exempt amb dret a deducció):</strong> exportacions, lliuraments intracomunitaris.</p></TheoryBlock>
-                <TheoryBlock title="2.3. Mecànica de liquidació" color="teal"><p>Cada empresa en la cadena: <strong>IVA repercutit</strong> (cobrat a clients) − <strong>IVA suportat</strong> (pagat a proveïdors) = <strong>Liquidació a Hisenda</strong> (positiva: ingressa; negativa: sol·licita devolució o compensa).<br/><strong>Exemple:</strong> un fabricant ven un producte per 1.000 € + 21 % IVA = 1.210 €. Ha comprat matèries primeres per 600 € + 21 % IVA = 726 €. Liquidació: 210 € (repercutit) − 126 € (suportat) = <strong>84 € a ingressar</strong>.</p></TheoryBlock>
-                <FormulaBox formula="IVA a ingressar = IVA repercutit − IVA suportat" desc="21% general | 10% reduït | 4% superreduït. El consumidor final suporta tot." />
-            </Card>
-            <Card title="3. Comparació IRPF vs. IVA" icon="📘">
-                <TheoryBlock color="teal"><p><strong>IRPF:</strong> directe, personal, progressiu (qui més guanya, més paga proporcionalment). Més equitatiu (s'adapta a la capacitat econòmica del contribuent), però més complex i susceptible d'elusió/evasió.<br/><strong>IVA:</strong> indirecte, real, proporcional (el mateix tipus per a tots). Més eficient en la recaptació (difícil d'evadir — cadascú vigila que l'anterior pague), però <strong>regressiu</strong> en termes relatius (les famílies de renda baixa destinen una proporció major dels seus ingressos al consum, i per tant paguen proporcionalment més IVA). Els tipus reduïts i superreduïts intenten mitigar aquesta regressivitat en béns bàsics.</p></TheoryBlock>
-            </Card>
-            <Card title="Síntesi" icon="📝">
-                <TheoryBlock color="teal"><p>L'IRPF és el principal impost directe: progressiu per trams (19-47%), grava la renda (treball, capital, activitats, plusvàlues), recapta ~90.000 M€. L'IVA és el principal indirecte: proporcional (21/10/4%), grava el consum en cada fase (valor afegit), el consumidor final suporta tot. L'IRPF és més equitatiu (s'adapta a la capacitat econòmica) però complex; l'IVA és més eficient però regressiu (les rendes baixes paguen proporcionalment més). Junts representen &gt;60% de la recaptació total. La comprensió d'ambdós és essencial per a la ciutadania fiscal.</p></TheoryBlock>
-            </Card>
-            <BibliografiaBox items={["Ley 35/2006 del IRPF (texto consolidado).","Ley 37/1992 del IVA (texto consolidado).","AEAT. Manual práctico del IRPF e IVA. www.agenciatributaria.es","Lago, S. et al. (2021). El sistema fiscal español. Thomson-Civitas.","AIReF. Informes sobre el sistema tributario. www.airef.es","Directiva 2006/112/CE del Consejo (sistema común del IVA).","Eurostat. Taxation trends in the EU.","Ministerio de Hacienda. Estadísticas tributarias. www.hacienda.gob.es","OCDE. Tax Policy Reviews: Spain. www.oecd.org","Albi, E., González-Páramo, J. M. & Zubiri, I. (2017). Economía Pública. Ariel."]} />
-        </div>
-    );
-    const Tema66Resum = () => (
-        <div className="space-y-5 animate-fade"><Card>
-            <div className="p-4 bg-teal-50 rounded-xl border border-teal-200 mb-5"><p className="text-center font-bold text-teal-800 text-lg">Tema 66: Impostos directes i indirectes. IRPF i IVA.</p><p className="text-center text-sm text-teal-600 mt-1"><em>"IRPF (progressiu, 19-47%) + IVA (proporcional, 21/10/4%) = >60% recaptació"</em></p></div>
-            <div className="space-y-4 text-sm text-slate-700">
-                <div><h4 className="font-bold text-slate-800 mb-1">1. IRPF</h4><ul className="list-disc pl-5 space-y-1"><li>Directe, personal, progressiu, periòdic. ~90.000 M€. Compartit 50% Estat / 50% CCAA.</li><li>Rendes: treball, capital (immobiliari + mobiliari), activitats econòmiques, guanys patrimonials.</li><li>Tarifa: 19% (fins 12.450€) → 47% (&gt;300.000€). Estalvi: 19-28%.</li><li>Liquidació: BI − reduccions = BL × tarifa = Quota − deduccions − retencions = Diferencial.</li></ul></div>
-                <div><h4 className="font-bold text-slate-800 mb-1">2. IVA</h4><ul className="list-disc pl-5 space-y-1"><li>Indirecte, real, proporcional, instantani. Grava consum (valor afegit cada fase).</li><li>Tipus: 21% general, 10% reduït, 4% superreduït, 0% exportacions.</li><li>Mecànica: IVA repercutit − IVA suportat = liquidació Hisenda.</li><li>No s'aplica a Canàries (IGIC), Ceuta i Melilla (IPSI).</li></ul></div>
-                <div><h4 className="font-bold text-slate-800 mb-1">3. Comparació</h4><ul className="list-disc pl-5 space-y-1"><li>IRPF: equitatiu (progressiu) però complex. IVA: eficient però regressiu (rendes baixes paguen més % ingressos).</li></ul></div>
-            </div>
-            <FormulaBox formula="IRPF: 19-47% progressiu | IVA: 21/10/4% proporcional" desc="Junts: >60% recaptació. IRPF = equitat; IVA = eficiència" />
-            <ClauBox><p>- Detalla la <strong>tarifa progressiva de l'IRPF</strong> per trams amb tipus.</p><p>- Explica la <strong>mecànica de liquidació de l'IVA</strong> (repercutit − suportat).</p><p>- Compara <strong>equitat (IRPF) vs. eficiència (IVA)</strong> amb la regressivitat.</p><p>- Inclou els <strong>3 tipus d'IVA</strong> amb productes concrets a cada un.</p></ClauBox>
-        </Card></div>
-    );
-    const Tema66 = () => { const [vista, setVista] = useState('complet'); return (<div className="space-y-6"><SectionTitle icon="📑" title="Tema 66" subtitle={t('tema66.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema66Complet />}{vista === 'resum' && <Tema66Resum />}</div>); };
-
-    // ════════════════════════════════════════════════════════════════
-    // NAVIGATION AND RENDER
-    // ════════════════════════════════════════════════════════════════
-    const headerSections = [
-        { id: 'inicio', label: t('sec.inicio'), emoji: '🏠' },
-        { id: 'tema61', label: 'T61', emoji: '💹' },
-        { id: 'tema62', label: 'T62', emoji: '📈' },
-        { id: 'tema63', label: 'T63', emoji: '🛡️' },
-        { id: 'tema64', label: 'T64', emoji: '🏦' },
-        { id: 'tema65', label: 'T65', emoji: '🏛️' },
-        { id: 'tema66', label: 'T66', emoji: '📑' },
-    ];
-
-    return (
-        <div className="min-h-screen">
-            <PdeHeader idioma={idioma} setIdioma={setIdioma} currentApp="oposicions-bloc-g" sections={headerSections} currentSection={section} setSection={setSection} />
-            <main className="max-w-7xl mx-auto px-4 py-8">
-                {section === 'inicio' && <Inicio />}
-                {section === 'tema61' && <Tema61 />}
-                {section === 'tema62' && <Tema62 />}
-                {section === 'tema63' && <Tema63 />}
-                {section === 'tema64' && <Tema64 />}
-                {section === 'tema65' && <Tema65 />}
-                {section === 'tema66' && <Tema66 />}
-            </main>
-            <PdePrevNext sections={headerSections} currentSection={section} setSection={setSection} idioma={idioma} />
-            <PdeFooter appEmoji="💹" appName={t('footer.appname')} idioma={idioma} />
-            <PdeScrollToTop />
-        </div>
-    );
-}
-
-ReactDOM.render(<BlocGApp />, document.getElementById('root'));
+    ReactDOM.render(<BlocGApp />, document.getElementById('root'));
     </script>
 </body>
 </html>
