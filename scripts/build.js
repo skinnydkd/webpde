@@ -15,6 +15,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 const babel = require('@babel/core');
+const { minify: minifyHTML } = require('html-minifier-terser');
 
 const ROOT = path.resolve(__dirname, '..');
 const DIST = path.join(ROOT, 'dist');
@@ -104,9 +105,10 @@ function compileJSX(code, filename) {
  *  - Pin unpinned CDN versions
  *  - Add preconnects
  */
-function processHTML(srcPath, destPath) {
+async function processHTML(srcPath, destPath) {
     let html = fs.readFileSync(srcPath, 'utf-8');
     const basename = path.basename(srcPath);
+    const originalSize = Buffer.byteLength(html, 'utf-8');
 
     // 1. Remove Babel CDN (multiple patterns)
     html = html.replace(/\s*<script src="https:\/\/unpkg\.com\/@babel\/standalone\/babel\.min\.js"><\/script>\s*/g, '\n');
@@ -148,19 +150,52 @@ function processHTML(srcPath, destPath) {
         html = html.split(from).join(to);
     }
 
-    // 6. Add preconnects after <meta charset> or at start of <head>
+    // 6. Add preconnects + preload critical resources after <meta charset>
     const preconnectTags = PRECONNECTS.map(
-        url => `    <link rel="preconnect" href="${url}" crossorigin>`
+        url => `<link rel="preconnect" href="${url}" crossorigin>`
     ).join('\n');
+
+    const preloadTags = [
+        '<link rel="preload" href="./pde.css" as="style">',
+        '<link rel="preload" href="./pde-shared.js" as="script">',
+    ].join('\n');
 
     // Insert after <meta charset="UTF-8"> line
     html = html.replace(
         /(<meta charset="UTF-8">)/i,
-        `$1\n${preconnectTags}`
+        `$1\n${preconnectTags}\n${preloadTags}`
     );
 
-    fs.writeFileSync(destPath, html, 'utf-8');
-    console.log(`  ✓ ${basename}`);
+    // 7. Minify HTML (collapse whitespace, remove comments, minify inline JS/CSS)
+    let minified;
+    try {
+        minified = await minifyHTML(html, {
+            collapseWhitespace: true,
+            conservativeCollapse: true,     // keep at least 1 space
+            removeComments: true,
+            removeRedundantAttributes: true,
+            removeEmptyAttributes: true,
+            minifyCSS: true,
+            minifyJS: {
+                compress: { drop_console: false },
+                mangle: false,              // don't rename variables (React refs)
+            },
+            processScripts: ['application/ld+json'],
+        });
+    } catch (err) {
+        console.warn(`  ⚠ Minify failed for ${basename}, using unminified: ${err.message.slice(0, 80)}`);
+    }
+
+    // Only use minified version if it's actually smaller than the compiled
+    // (pre-minify) output. Some text-heavy files grow due to terser escaping.
+    const compiledSize = Buffer.byteLength(html, 'utf-8');
+    const minifiedSize = minified ? Buffer.byteLength(minified, 'utf-8') : Infinity;
+    const finalHtml = (minifiedSize < compiledSize) ? minified : html;
+    const finalSize = Buffer.byteLength(finalHtml, 'utf-8');
+    const saved = ((1 - finalSize / originalSize) * 100).toFixed(0);
+
+    fs.writeFileSync(destPath, finalHtml, 'utf-8');
+    console.log(`  ✓ ${basename} (${(originalSize/1024).toFixed(0)}K → ${(finalSize/1024).toFixed(0)}K, -${saved}%)`);
 }
 
 /**
@@ -208,9 +243,9 @@ function buildTailwind() {
 
 // ── Main ───────────────────────────────────────────────────────
 
-function main() {
+async function main() {
     const start = Date.now();
-    console.log('PDE Build — compiling JSX + Tailwind…\n');
+    console.log('PDE Build — compiling JSX + Tailwind + Minify…\n');
 
     // Clean dist
     if (fs.existsSync(DIST)) fs.rmSync(DIST, { recursive: true });
@@ -231,11 +266,11 @@ function main() {
         }
     }
 
-    // 3. Process HTML files
+    // 3. Process + minify HTML files
     console.log('\nHTML pages:');
     const htmlFiles = fs.readdirSync(ROOT).filter(f => f.endsWith('.html'));
     for (const f of htmlFiles) {
-        processHTML(path.join(ROOT, f), path.join(DIST, f));
+        await processHTML(path.join(ROOT, f), path.join(DIST, f));
     }
 
     // 4. Build Tailwind CSS
@@ -260,4 +295,7 @@ function main() {
     console.log(`\n✅ Build complete in ${elapsed}s — output: dist/`);
 }
 
-main();
+main().catch(err => {
+    console.error('Build failed:', err);
+    process.exit(1);
+});
