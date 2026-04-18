@@ -93,10 +93,42 @@ var PdeLanguageStore = {
     get: function() {
         try {
             const lang = localStorage.getItem(this.KEY);
-            return PDE_CONFIG.supportedLangs.includes(lang) ? lang : PDE_CONFIG.defaultLang;
+            if (PDE_CONFIG.supportedLangs.includes(lang)) return lang;
+            // First visit (no stored preference): detect from browser language
+            return this._detectBrowserLang();
         } catch (e) {
             return PDE_CONFIG.defaultLang;
         }
+    },
+
+    /**
+     * Detect language from navigator.language / navigator.languages.
+     * Maps: ca/ca-ES/ca-ES-valencia → 'val', es/es-* → 'es', en/en-* → 'en'.
+     * Falls back to PDE_CONFIG.defaultLang ('val').
+     */
+    _detectBrowserLang: function() {
+        try {
+            // Check primary browser language first
+            var primary = (navigator.language || navigator.userLanguage || '').toLowerCase();
+            var detected = this._mapLang(primary);
+            if (detected) return detected;
+
+            // Check full language preference list
+            var languages = navigator.languages || [];
+            for (var i = 0; i < languages.length; i++) {
+                detected = this._mapLang(languages[i].toLowerCase());
+                if (detected) return detected;
+            }
+        } catch (e) {}
+        return PDE_CONFIG.defaultLang;
+    },
+
+    /** Map a BCP 47 tag to a PDE language code. Returns null if no match. */
+    _mapLang: function(tag) {
+        if (tag.startsWith('ca')) return 'val';   // ca, ca-ES, ca-ES-valencia
+        if (tag.startsWith('es')) return 'es';    // es, es-ES, es-MX, es-AR...
+        if (tag.startsWith('en')) return 'en';    // en, en-US, en-GB...
+        return null;
     },
 
     // Map internal lang codes to BCP 47 tags for <html lang>
@@ -345,6 +377,9 @@ var PDE_STYLES = {
         '@media print { .dark body { background: white !important; color: black !important; } }',
     ].join('\n'),
 
+    // Bottom nav scrollbar hide (inject into <style>)
+    bottomNavCSS: '.pde-bottom-nav-scroll::-webkit-scrollbar { display: none; }',
+
     // Print styles (inject into <style>)
     printCSS: [
         '@media print {',
@@ -372,8 +407,8 @@ var PDE_STYLES = {
     mobileMenuItemActive: 'bg-pink-100 dark:bg-pink-900/40 text-pink-700 dark:text-pink-300',
     mobileMenuItemInactive: 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700',
 
-    // Scroll-to-top button
-    scrollTopBtn: 'fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-pink-500 text-white shadow-lg shadow-pink-500/30 flex items-center justify-center hover:bg-pink-600 hover:scale-110 transition-all cursor-pointer pde-no-print',
+    // Scroll-to-top button (bottom-20 on mobile to clear bottom nav, bottom-6 on desktop)
+    scrollTopBtn: 'fixed bottom-20 xl:bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-pink-500 text-white shadow-lg shadow-pink-500/30 flex items-center justify-center hover:bg-pink-600 hover:scale-110 transition-all cursor-pointer pde-no-print',
 
     // Prev/Next navigation
     prevNextContainer: 'flex justify-between items-center mt-12 pt-6 border-t border-gray-200 dark:border-gray-700',

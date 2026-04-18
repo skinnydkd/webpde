@@ -499,7 +499,11 @@ function PdeHeader({
     onClose: function () {
       setSearchOpen(false);
     }
-  }));
+  }), sections && sections.length > 0 && setSection && ReactDOM.createPortal(/*#__PURE__*/React.createElement(PdeBottomNav, {
+    sections: sections,
+    currentSection: currentSection,
+    setSection: setSection
+  }), document.body));
 }
 
 // ─── Footer ─────────────────────────────────────────────────────
@@ -597,6 +601,77 @@ function PdePrevNext({
   }, "(", next.label, ")"), t('nav.next')) : /*#__PURE__*/React.createElement("div", null));
 }
 
+// ─── Bottom Mobile Nav ─────────────────────────────────────────
+/**
+ * Fixed bottom navigation bar for mobile devices.
+ * Shows section tabs as a scrollable horizontal strip.
+ * Only visible below xl: breakpoint (where desktop nav is hidden).
+ *
+ * @param {{
+ *   sections: Array<{ id: string, label: string, emoji?: string }>,
+ *   currentSection: string,
+ *   setSection: Function,
+ * }} props
+ */
+function PdeBottomNav({
+  sections,
+  currentSection,
+  setSection
+}) {
+  const scrollRef = _useRef(null);
+  const activeRef = _useRef(null);
+  if (!sections || sections.length === 0 || !setSection) return null;
+
+  // Auto-scroll to keep the active section button centered
+  _useEffect(function () {
+    if (activeRef.current && scrollRef.current) {
+      var container = scrollRef.current;
+      var active = activeRef.current;
+      var scrollLeft = active.offsetLeft - container.offsetWidth / 2 + active.offsetWidth / 2;
+      container.scrollTo({
+        left: Math.max(0, scrollLeft),
+        behavior: 'smooth'
+      });
+    }
+  }, [currentSection]);
+
+  // Add bottom padding to body so content isn't hidden behind the nav
+  _useEffect(function () {
+    var mq = window.matchMedia('(min-width: 1280px)'); // xl breakpoint
+    function update() {
+      document.body.style.paddingBottom = mq.matches ? '' : '56px';
+    }
+    update();
+    mq.addEventListener('change', update);
+    return function () {
+      mq.removeEventListener('change', update);
+      document.body.style.paddingBottom = '';
+    };
+  }, []);
+  return /*#__PURE__*/React.createElement("nav", {
+    className: "xl:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-t border-gray-200 dark:border-gray-700 shadow-[0_-2px_10px_rgba(0,0,0,0.08)] pde-no-print"
+  }, /*#__PURE__*/React.createElement("div", {
+    ref: scrollRef,
+    className: "pde-bottom-nav-scroll flex items-center gap-1 px-2 py-1.5 overflow-x-auto",
+    style: {
+      scrollbarWidth: 'none',
+      msOverflowStyle: 'none'
+    }
+  }, sections.map(function (sec) {
+    var isActive = currentSection === sec.id;
+    return /*#__PURE__*/React.createElement("button", {
+      key: sec.id,
+      ref: isActive ? activeRef : null,
+      onClick: function () {
+        setSection(sec.id);
+        pdeSetHashSection(sec.id);
+        pdeScrollToTop();
+      },
+      className: 'flex-shrink-0 flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-all whitespace-nowrap ' + (isActive ? 'bg-pink-100 dark:bg-pink-900/40 text-pink-700 dark:text-pink-300 shadow-sm' : 'text-gray-500 dark:text-gray-400 active:bg-gray-100 dark:active:bg-gray-800')
+    }, sec.emoji && /*#__PURE__*/React.createElement("span", null, sec.emoji), /*#__PURE__*/React.createElement("span", null, sec.label));
+  })));
+}
+
 // ─── Floating Home Button (for immersive pages) ─────────────────
 /**
  * Small floating button for playground/concurs to return to PDE hub.
@@ -643,6 +718,7 @@ window.PdeCrossNav = PdeCrossNav;
 window.PdeScrollToTop = PdeScrollToTop;
 window.PdePrevNext = PdePrevNext;
 window.PdeHomeButton = PdeHomeButton;
+window.PdeBottomNav = PdeBottomNav;
 window.PdeThemeToggle = PdeThemeToggle;
 window.PdeSearch = PdeSearch;
 window.PdeProgressBar = PdeProgressBar;
@@ -658,6 +734,7 @@ window.PDE = {
   ScrollToTop: PdeScrollToTop,
   PrevNext: PdePrevNext,
   HomeButton: PdeHomeButton,
+  BottomNav: PdeBottomNav,
   ThemeToggle: PdeThemeToggle,
   Search: PdeSearch,
   ProgressBar: PdeProgressBar,
