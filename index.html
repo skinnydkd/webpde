@@ -58,6 +58,26 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #fdf2f8; }
         ::-webkit-scrollbar-thumb { background-color: #ec4899; border-radius: 3px; }
+        /* Dark mode */
+        .dark { color-scheme: dark; }
+        .dark body { background: #111827 !important; color: #e5e7eb; }
+        .dark .bg-gradient-to-br { background: #111827 !important; }
+        .dark * { scrollbar-color: #ec4899 #1f2937; }
+        .dark ::-webkit-scrollbar-track { background: #1f2937; }
+
+        /* Print */
+        @media print {
+            body { background: white !important; color: black !important; font-size: 12pt; }
+            .dark body { background: white !important; color: black !important; }
+            header, footer, .pde-no-print, nav { display: none !important; }
+            .pde-print-only { display: block !important; }
+            a { color: black !important; text-decoration: underline; }
+            h1, h2, h3, h4 { page-break-after: avoid; color: black !important; }
+            pre, blockquote, table, figure { page-break-inside: avoid; }
+            img { max-width: 100% !important; }
+            .max-w-7xl, .max-w-6xl, .max-w-5xl, .max-w-4xl, .max-w-3xl { max-width: 100% !important; }
+            * { box-shadow: none !important; text-shadow: none !important; }
+        }
         * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         @keyframes goldPulse { 0%, 100% { box-shadow: 0 0 5px #fbbf24, 0 0 10px #f59e0b; } 50% { box-shadow: 0 0 15px #fbbf24, 0 0 25px #f59e0b; } }
@@ -550,6 +570,7 @@
             });
             const [menuOpen, setMenuOpen] = useState(false);
             const [idioma, setIdioma] = useState(PdeLanguageStore.get());
+            const [theme, toggleTheme] = usePdeTheme();
             const [activeTab, setActiveTab] = useState(() => {
                 const hash = window.location.hash.replace('#', '');
                 return ['alumnat', 'professorat', 'opositor'].includes(hash) ? hash : 'general';
@@ -838,13 +859,21 @@
                             try { sessionStorage.setItem('pde_splash_shown', '1'); } catch (e) {}
                         }} />
                     )}
-                    <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
+                    <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50">
                         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <GraduationCap className="text-pink-500" size={28} />
-                                <span className="font-black text-xl text-gray-800">PDE</span>
+                                <span className="font-black text-xl text-gray-800 dark:text-gray-100">PDE</span>
                             </div>
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2">
+                                {/* Search */}
+                                <button onClick={() => { const e = new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }); window.dispatchEvent(e); }}
+                                    className="p-2 text-gray-500 dark:text-gray-400 hover:text-pink-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all pde-no-print"
+                                    title="Buscar (⌘K)" aria-label="Buscar">
+                                    <span className="text-sm">🔍</span>
+                                </button>
+                                {/* Dark mode */}
+                                <PdeThemeToggle theme={theme} toggleTheme={toggleTheme} idioma={idioma} />
                                 <LanguageSelector />
                                 <nav className="hidden md:flex gap-1">
                                     {tabs.map(tab => (
@@ -861,6 +890,8 @@
                             </div>
                         </div>
                     </header>
+
+                    <PdeSearch idioma={idioma} currentApp="index" />
 
                     <section className="py-12 md:py-16">
                         <div className="max-w-6xl mx-auto px-4 text-center">
