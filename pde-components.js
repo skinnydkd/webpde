@@ -59,6 +59,95 @@ function usePdeTheme() {
     return [theme, toggleTheme];
 }
 
+// ─── Skip Link (Accessibility) ─────────────────────────────────
+/**
+ * Accessible skip-to-content link. Hidden by default, visible on Tab focus.
+ * @param {{ idioma: string }} props
+ */
+function PdeSkipLink({ idioma }) {
+    const t = createTranslator({}, idioma);
+    return (
+        <a href="#root" className="pde-skip-link">
+            {t('a11y.skipToContent')}
+        </a>
+    );
+}
+
+// ─── Lazy Reveal Wrapper ───────────────────────────────────────
+/**
+ * Wraps children in an IntersectionObserver-powered reveal animation.
+ * Elements fade-in + slide-up when entering the viewport.
+ *
+ * @param {{ children: React.ReactNode, delay?: number, className?: string }} props
+ * delay: stagger index (0-5), adds incremental transition-delay
+ */
+function PdeLazyReveal({ children, delay, className }) {
+    const ref = _useRef(null);
+    const [revealed, setRevealed] = _useState(false);
+
+    _useEffect(function() {
+        // Respect reduced motion
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            setRevealed(true);
+            return;
+        }
+        if (!('IntersectionObserver' in window) || !ref.current) {
+            setRevealed(true);
+            return;
+        }
+
+        var observer = new IntersectionObserver(function(entries) {
+            if (entries[0].isIntersecting) {
+                setRevealed(true);
+                observer.disconnect();
+            }
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+        observer.observe(ref.current);
+        return function() { observer.disconnect(); };
+    }, []);
+
+    var delayClass = delay != null && delay >= 1 && delay <= 5
+        ? ' pde-lazy-delay-' + delay
+        : '';
+
+    return (
+        <div
+            ref={ref}
+            className={'pde-lazy-reveal' + (revealed ? ' pde-revealed' : '') + delayClass + (className ? ' ' + className : '')}
+        >
+            {children}
+        </div>
+    );
+}
+
+// ─── Share Button ──────────────────────────────────────────────
+/**
+ * Button to copy current section link or trigger native share.
+ * Uses Web Share API on mobile, clipboard fallback on desktop.
+ *
+ * @param {{ idioma: string, section?: string }} props
+ */
+function PdeShareButton({ idioma, section }) {
+    const t = createTranslator({}, idioma);
+
+    const handleShare = _useCallback(function() {
+        pdeShareLink(section, t('share.copied'));
+    }, [section, idioma]);
+
+    return (
+        <button
+            onClick={handleShare}
+            className="pde-no-print flex items-center gap-1.5 px-2 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/30 rounded-lg transition-all"
+            title={t('share.shareSection')}
+            aria-label={t('share.shareSection')}
+        >
+            <span className="text-sm">🔗</span>
+            <span className="hidden sm:inline text-xs">{t('share.share')}</span>
+        </button>
+    );
+}
+
 // ─── Dark Mode Toggle ──────────────────────────────────────────
 /**
  * Compact dark/light toggle button.
@@ -385,8 +474,9 @@ function PdeCrossNav({ idioma, currentApp }) {
                             <a key={app.id}
                                href={app.href}
                                className={currentApp === app.id ? PDE_STYLES.navLinkActive : PDE_STYLES.navLink}
+                               aria-current={currentApp === app.id ? 'page' : undefined}
                             >
-                                <span>{app.emoji}</span> {t('nav.' + app.id)}
+                                <span aria-hidden="true">{app.emoji}</span> {t('nav.' + app.id)}
                             </a>
                         );
                     })}
@@ -417,12 +507,15 @@ function PdeHeader({ idioma, setIdioma, currentApp, sections, currentSection, se
     const isIndex = currentApp === 'index';
 
     return (
-        <header className={PDE_STYLES.header}>
+        <header className={PDE_STYLES.header} role="banner">
+            {/* Skip link for keyboard/screen reader users */}
+            <PdeSkipLink idioma={idioma} />
+
             <div className={PDE_STYLES.headerContainer}>
                 {/* Left: Logo + Home link */}
                 <div className="flex items-center gap-3">
                     <a href="./" className="flex items-center gap-2 hover:opacity-80 transition-opacity" title={t('nav.home')}>
-                        <span className="text-xl">🎓</span>
+                        <span className="text-xl" aria-hidden="true">🎓</span>
                         <span className="font-black text-xl text-gray-800 dark:text-gray-100">PDE</span>
                     </a>
 
@@ -438,7 +531,7 @@ function PdeHeader({ idioma, setIdioma, currentApp, sections, currentSection, se
 
                 {/* Center: Desktop section nav (if sections provided) */}
                 {sections && sections.length > 0 && setSection && (
-                    <nav className="hidden xl:flex items-center gap-1 max-w-3xl overflow-x-auto">
+                    <nav className="hidden xl:flex items-center gap-1 max-w-3xl overflow-x-auto" aria-label={t('a11y.sectionNav')}>
                         {sections.map(function(sec) {
                             const isActive = currentSection === sec.id;
                             return (
@@ -454,8 +547,9 @@ function PdeHeader({ idioma, setIdioma, currentApp, sections, currentSection, se
                                             ? 'bg-pink-100 text-pink-700'
                                             : 'text-gray-600 hover:bg-gray-100'
                                         )}
+                                    aria-current={isActive ? 'true' : undefined}
                                 >
-                                    {sec.emoji && <span className="text-xs">{sec.emoji}</span>}
+                                    {sec.emoji && <span className="text-xs" aria-hidden="true">{sec.emoji}</span>}
                                     {sec.label}
                                 </button>
                             );
@@ -479,6 +573,11 @@ function PdeHeader({ idioma, setIdioma, currentApp, sections, currentSection, se
                     >
                         <span className="text-sm">🔍</span>
                     </button>
+
+                    {/* Share section link */}
+                    {sections && sections.length > 0 && (
+                        <PdeShareButton idioma={idioma} section={currentSection} />
+                    )}
 
                     {/* Print (only on content pages, not index/games) */}
                     {sections && sections.length > 0 && (
@@ -560,7 +659,7 @@ function PdeFooter({ appEmoji, appName, idioma }) {
     const t = createTranslator({}, idioma);
 
     return (
-        <footer className={PDE_STYLES.footer}>
+        <footer className={PDE_STYLES.footer} role="contentinfo">
             <div className="max-w-7xl mx-auto px-4">
                 <p>
                     {appEmoji} {appName} · {PDE_CONFIG.name} · {PDE_CONFIG.year}
@@ -699,7 +798,7 @@ function PdeBottomNav({ sections, currentSection, setSection }) {
     }, []);
 
     return (
-        <nav className="xl:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-t border-gray-200 dark:border-gray-700 shadow-[0_-2px_10px_rgba(0,0,0,0.08)] pde-no-print">
+        <nav className="xl:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-t border-gray-200 dark:border-gray-700 shadow-[0_-2px_10px_rgba(0,0,0,0.08)] pde-no-print" role="tablist" aria-label="Seccions">
             <div
                 ref={scrollRef}
                 className="pde-bottom-nav-scroll flex items-center gap-1 px-2 py-1.5 overflow-x-auto"
@@ -711,6 +810,8 @@ function PdeBottomNav({ sections, currentSection, setSection }) {
                         <button
                             key={sec.id}
                             ref={isActive ? activeRef : null}
+                            role="tab"
+                            aria-selected={isActive ? 'true' : 'false'}
                             onClick={function() {
                                 setSection(sec.id);
                                 pdeSetHashSection(sec.id);
@@ -785,6 +886,9 @@ window.PdeThemeToggle = PdeThemeToggle;
 window.PdeSearch = PdeSearch;
 window.PdeProgressBar = PdeProgressBar;
 window.PdePrintButton = PdePrintButton;
+window.PdeSkipLink = PdeSkipLink;
+window.PdeLazyReveal = PdeLazyReveal;
+window.PdeShareButton = PdeShareButton;
 window.usePdeDeepLink = usePdeDeepLink;
 window.usePdeIdioma = usePdeIdioma;
 window.usePdeTheme = usePdeTheme;
@@ -802,6 +906,9 @@ window.PDE = {
     Search: PdeSearch,
     ProgressBar: PdeProgressBar,
     PrintButton: PdePrintButton,
+    SkipLink: PdeSkipLink,
+    LazyReveal: PdeLazyReveal,
+    ShareButton: PdeShareButton,
     useDeepLink: usePdeDeepLink,
     useIdioma: usePdeIdioma,
     useTheme: usePdeTheme,
