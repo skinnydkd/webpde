@@ -1125,7 +1125,198 @@
             const [vista, setVista] = useState('complet');
             return <div className="space-y-6"><SectionTitle icon="⚖️" title="Tema 53" subtitle={t('tema53.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema53Complet />}{vista === 'resum' && <Tema53Resum />}</div>;
         };
-        const Tema54 = () => <TemaPlaceholder num={54} title={t('tema54.title')} icon="📊" />;
+        // ════════════════════════════════════════════════════════════════
+        // TEMA 54 — Estructura financera òptima i Modigliani-Miller
+        // ════════════════════════════════════════════════════════════════
+        const Tema54Complet = () => (
+            <div className="space-y-6 animate-fade">
+                <Card title="Introducció" icon="📌">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>¿Existeix una estructura financera <strong>òptima</strong> (ratio deute/equity) que maximitzi el valor de l'empresa? Aquesta pregunta ha generat una de les tradicions més fecundes de les finances corporatives, amb dues aportacions seminals: la <strong>tesi tradicional</strong> (en forma de U) i el <strong>teorema de Modigliani-Miller</strong> (1958), que va valdre el Nobel d'Economia als seus autors (M-M, 1985 i 1990).</p>
+                        <p>Vinculat a aquesta qüestió, la <strong>política de dividends</strong> —distribuir beneficis o retenir-los— també ha generat un rica literatura. Els casos d'<em>Apple</em> (que durant anys va evitar repartir dividends i els va reprendre el 2012), <em>Microsoft</em> (divisor estable), <em>Inditex</em> (dividend creixent), <em>Telefónica</em> (retallades per desapalancament) il·lustren estratègies diverses.</p>
+                        <p>El tema s'estructura en 5 blocs: (1) tesi tradicional; (2) teorema de Modigliani-Miller; (3) teories posteriors (trade-off, pecking order, signaling); (4) política de dividends; (5) aplicacions pràctiques.</p>
+                    </div>
+                </Card>
+
+                <Card title="1. Tesi tradicional" icon="📊">
+                    <TheoryBlock title="1.1. Plantejament" color="amber">
+                        <p>La <strong>tesi tradicional</strong> (Durand, 1952; Solomon, 1963) sostenia intuïtivament que:</p>
+                        <p>• A mesura que l'empresa incorpora deute (més barat que el capital), el WACC baixa.</p>
+                        <p>• A partir d'un determinat nivell, el risc financer percebut eleva Ke i Kd.</p>
+                        <p>• Existeix un <strong>nivell òptim</strong> on el WACC és mínim i, per tant, el valor de l'empresa màxim.</p>
+                        <p>Gràficament, el WACC té forma de U (o més precisament, J invertida a l'inici). L'estructura òptima és la que minimitza el WACC.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.2. Crítica" color="red">
+                        <p>La tesi tradicional té intuïció però careix de fonamentació rigorosa. Manca justificar per què els inversors no haurien d'exigir, des del primer euro de deute, primes de risc que compensin exactament l'avantatge del cost menor del deute. Aquesta crítica va donar lloc a Modigliani-Miller.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="2. Teorema de Modigliani-Miller" icon="🏆">
+                    <TheoryBlock title="2.1. MM sense impostos (1958)" color="indigo">
+                        <p><strong>Franco Modigliani i Merton Miller</strong>, a «The Cost of Capital, Corporation Finance and the Theory of Investment» (<em>AER</em>, 1958), van demostrar una proposició revolucionària:</p>
+                        <p><strong>Proposició I</strong>: En un mercat perfecte i sense impostos, el valor d'una empresa és <strong>independent</strong> de la seua estructura de capital. V_U = V_L.</p>
+                        <p><strong>Proposició II</strong>: El cost dels recursos propis (Ke) creix linealment amb el ratio D/E, compensant exactament l'ús de deute més barat. Per tant, el WACC és constant.</p>
+                        <p>Ke_L = Ke_U + (Ke_U − Kd) · D/E.</p>
+                        <p>Demostració: per arbitratge. Si dues empreses idèntiques tinguessen diferents valors per estructura, un arbitrageur podria comprar la infravalorada, vendre la sobrevalorada i obtenir un benefici sense risc.</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="V_U = V_L    |    Ke_L = Ke_U + (Ke_U − Kd) · D/E" desc="Modigliani-Miller 1958 sense impostos: irrellevància" />
+
+                    <TheoryBlock title="2.2. MM amb impostos (1963)" color="violet">
+                        <p>L'any 1963, Modigliani i Miller van publicar una correcció important incorporant l'impost de societats. Com els interessos són deduïbles, el deute crea valor per l'escut fiscal:</p>
+                        <p><strong>V_L = V_U + t · D</strong> (escut fiscal = tipus impositiu × deute).</p>
+                        <p>Conclusió extrema: <em>maximitzar el deute</em> (100 %) maximitza el valor. Però aquesta conclusió xoca amb la realitat empírica. Evidentment, altres forces compensen.</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="V_L = V_U + t · D" desc="Modigliani-Miller 1963 amb impostos: escut fiscal del deute" />
+
+                    <TheoryBlock title="2.3. Supòsits (i crítica)" color="rose">
+                        <p>Els supòsits originals de MM: (1) mercats perfectes (sense costos de transacció); (2) informació simètrica; (3) absència de costos de fallida; (4) política de dividends irrellevant; (5) individus i empreses poden prestar/agafar prestat a la mateixa taxa. Cap d'aquests supòsits es compleix a la realitat. El seu valor està en oferir un punt de referència teòric rigorós.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="3. Teories posteriors" icon="🔄">
+                    <TheoryBlock title="3.1. Trade-off theory (Kraus-Litzenberger 1973)" color="emerald">
+                        <p>La <strong>teoria del trade-off</strong> proposa que l'empresa equilibra:</p>
+                        <p>• <strong>Beneficis</strong>: escut fiscal del deute (t·D).</p>
+                        <p>• <strong>Costos</strong>: costos de fallida esperats, que creixen exponencialment amb el ratio D/E.</p>
+                        <p>L'òptim és al punt on el benefici marginal de més deute iguala el cost marginal. V_L = V_U + VP_escut − VP_costos_fallida.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.2. Pecking order theory (Myers-Majluf 1984)" color="indigo">
+                        <p><strong>Stewart Myers i Nicholas Majluf</strong> van proposar una teoria alternativa basada en asimetries d'informació: els directius tenen millor informació sobre el valor real de l'empresa que els inversors externs. Això crea una jerarquia de preferències:</p>
+                        <p><strong>1. Autofinançament</strong> (finançament interna) — preferit.</p>
+                        <p><strong>2. Deute</strong> (cost baix, poca senyalització).</p>
+                        <p><strong>3. Accions noves</strong> (el mercat les interpreta com a senyal negatiu de valoració).</p>
+                        <p>La jerarquia (<em>pecking order</em>) explica per què empreses rendibles tendeixen a tenir poc deute (es financen amb retencions) i empreses amb poc cash flow s'endeuten més.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.3. Signaling theory (Ross 1977)" color="cyan">
+                        <p><strong>Stephen Ross</strong> va formular que l'estructura de capital envia <em>senyals</em> al mercat:</p>
+                        <p>• Un alt deute senyalitza confiança dels directius en la capacitat de l'empresa per generar cash flow suficient.</p>
+                        <p>• Una ampliació de capital senyalitza que els directius creuen l'acció sobrevalorada.</p>
+                        <p>Aquesta teoria explica reaccions empíriques (pujar deute puja preu de l'acció; ampliar capital el baixa) que contradiuen MM pur.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.4. Teoria de l'agència aplicada a l'estructura (Jensen-Meckling 1976, Jensen 1986)" color="amber">
+                        <p>Com es va exposar als Temes 59 i 65, el deute pot <strong>disciplinar</strong> els directius forçant-los a ser eficients (el deute els obliga a pagar interessos regularment, reduint el <em>free cash flow</em> disponible per a projectes subòptims). Alhora, massa deute pot induir comportaments arriscats (<em>risk shifting</em>) a costa dels creditors.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="4. Política de dividends" icon="💰">
+                    <TheoryBlock title="4.1. Gordon-Shapiro (1959) i la vida eterna" color="emerald">
+                        <p>El <strong>model de Gordon-Shapiro</strong>, ja presentat al Tema 53 per calcular Ke, també és el model canònic de valoració d'accions basat en dividends:</p>
+                        <p>P₀ = D₁ / (Ke − g), on g és la taxa de creixement sostenible dels dividends.</p>
+                        <p>Una política estable de dividends creixents és, en aquest model, l'ideal per maximitzar el preu.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.2. Miller-Modigliani (1961): irrellevància" color="indigo">
+                        <p>Modigliani i Miller van estendre la seua teoria a la política de dividends a «Dividend Policy, Growth, and the Valuation of Shares» (<em>J. of Business</em>, 1961). En mercats perfectes, la política de dividends és <strong>irrellevant</strong> per al valor de l'empresa. Si cal diners, l'accionista pot vendre accions («<em>homemade dividends</em>»).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.3. Lintner (1956): dividends estables" color="violet">
+                        <p><strong>John Lintner</strong>, mitjançant entrevistes amb directius, va documentar que les empreses mantenen dividends estables i els ajusten lentament als canvis de beneficis. Model: ΔD_t = a + b · (D_objectiu − D_{t−1}). El ratio de pagament objectiu i la velocitat d'ajust són claus.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.4. Teories modernes de dividends" color="rose">
+                        <p><strong>• Bird-in-the-hand</strong> (Gordon 1963, Lintner 1962): els inversors prefereixen dividends certs al creixement incert. Justifica política generosa de dividends.</p>
+                        <p><strong>• Efecte clientela</strong>: diferents inversors tenen diferents preferències fiscals per dividends vs. plusvàlues. Empreses atrauen «clientela» consistent amb la seua política.</p>
+                        <p><strong>• Senyalització de dividends</strong>: els canvis en dividends transmeten informació. Una pujada és positiva, una retallada negativa (excepte excepcions com Telefónica 2019).</p>
+                        <p><strong>• Recompra d'accions (buybacks)</strong>: alternativa flexible al dividend tradicional, amb avantatges fiscals per als accionistes. Molt utilitzada a EUA; més regulada a Europa.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.5. Fiscalitat dels dividends a Espanya" color="cyan">
+                        <p>A Espanya, els dividends tributen com a <strong>renda de l'estalvi</strong> a l'IRPF:</p>
+                        <p>• 19 % (fins a 6.000 €).</p>
+                        <p>• 21 % (6.000-50.000 €).</p>
+                        <p>• 23 % (50.000-200.000 €).</p>
+                        <p>• 27 % (200.000-300.000 €).</p>
+                        <p>• 28 % (&gt;300.000 €).</p>
+                        <p>Existeix la possibilitat d'exempció per a dividends intragrup (amb &gt; 5 % participació, 1 any de tinença), deducció per doble imposició i deducció de 1.500 € en alguns casos (vigent fins 2014). Les empreses tendeixen a preferir la recompra d'accions quan la fiscalitat sobre dividends és alta.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="5. Aplicacions pràctiques" icon="🧮">
+                    <TheoryBlock title="5.1. Determinants empírics de l'estructura" color="violet">
+                        <p>La investigació empírica (Rajan-Zingales 1995, Graham-Harvey 2001) identifica com a determinants significatius:</p>
+                        <p>• <strong>Tangibilitat dels actius</strong>: més actius tangibles (garantia) → més deute.</p>
+                        <p>• <strong>Rendibilitat</strong>: empreses més rendibles tenen menys deute (pecking order).</p>
+                        <p>• <strong>Mida</strong>: empreses grans tenen més accés a mercats de deute.</p>
+                        <p>• <strong>Creixement</strong>: més creixement → més intangibles → menys deute.</p>
+                        <p>• <strong>Taxa impositiva</strong>: més impostos → més deute (escut fiscal).</p>
+                        <p>• <strong>Volatilitat</strong>: més risc operatiu → menys deute (costos fallida).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.2. Cas espanyol i casos rellevants" color="emerald">
+                        <p>Mitjana d'endeutament de les empreses cotitzades espanyoles (IBEX-35): D/E ≈ 0,8-1,2. Les elèctriques (Iberdrola, Endesa) tenen ratios més alts (intensitat de capital i regulació estable); les tecnològiques (IAG, Amadeus) menors.</p>
+                        <p><strong>Casos d'estudi</strong>:</p>
+                        <p>• <em>Telefónica</em>: desapalancament progressiu 2012-2024 (de &gt; 60.000 M€ a &lt; 30.000 M€).</p>
+                        <p>• <em>Abengoa</em>: excessiu palanquejament, concurs 2015, liquidació 2022.</p>
+                        <p>• <em>Ferrovial</em>: finançament de projectes d'infraestructures via deute específic de projecte.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.3. Reptes 2020-2025" color="amber">
+                        <p>• <strong>Tipus elevats</strong>: el deute és més car post-2022.</p>
+                        <p>• <strong>ESG i deute sostenible</strong>: <em>green bonds</em>, <em>sustainability-linked loans</em>.</p>
+                        <p>• <strong>Regulació prudencial</strong>: Basilea III/IV afecta cost del deute bancari.</p>
+                        <p>• <strong>Tokenització i DeFi</strong>: noves vies de finançament encara en desenvolupament.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="Conclusió" icon="✅">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>La qüestió de l'estructura òptima de capital, des de la <strong>tesi tradicional</strong> fins a les reformulacions modernes (<strong>trade-off, pecking order, signaling</strong>), és una de les més fecundes de les finances corporatives. <strong>Modigliani-Miller (1958, 1963)</strong> van oferir el marc teòric de referència que, tot i les seues limitacions, continua sent el punt de partida imprescindible.</p>
+                        <p>La política de dividends presenta paral·lelismes: des de la irrellevància teòrica (MM 1961) fins a la rellevància empírica (Lintner 1956, models de senyalització, efecte clientela). La pràctica empresarial és complexa i contextual: no hi ha una resposta universal, però sí criteris rigorosos per decidir. El docent ha de transmetre aquesta doble dimensió: el rigor teòric com a eina d'anàlisi i la capacitat d'interpretar amb sensibilitat el context específic de cada empresa.</p>
+                    </div>
+                </Card>
+
+                <BibliografiaBox items={[
+                    'DURAND, D. (1952): «Cost of Debt and Equity Funds for Business», in Conference on Research in Business Finance, NBER.',
+                    'LINTNER, J. (1956): «Distribution of Incomes of Corporations», AER, 46.',
+                    'MODIGLIANI, F. i MILLER, M.H. (1958): «The Cost of Capital, Corporation Finance and the Theory of Investment», AER, 48.',
+                    'GORDON, M.J. i SHAPIRO, E. (1959): «Capital Equipment Analysis», Management Science, 3.',
+                    'MILLER, M.H. i MODIGLIANI, F. (1961): «Dividend Policy, Growth, and the Valuation of Shares», J. of Business, 34.',
+                    'MODIGLIANI, F. i MILLER, M.H. (1963): «Corporate Income Taxes and the Cost of Capital», AER, 53.',
+                    'KRAUS, A. i LITZENBERGER, R.H. (1973): «A State-Preference Model of Optimal Financial Leverage», J. of Finance, 28.',
+                    'ROSS, S.A. (1977): «The Determination of Financial Structure», Bell J. of Economics, 8.',
+                    'MYERS, S.C. i MAJLUF, N.S. (1984): «Corporate Financing and Investment Decisions...», J. of Financial Economics, 13.',
+                    'JENSEN, M.C. (1986): «Agency Costs of Free Cash Flow», AER, 76.',
+                    'RAJAN, R.G. i ZINGALES, L. (1995): «What Do We Know about Capital Structure?», J. of Finance, 50.',
+                    'GRAHAM, J.R. i HARVEY, C.R. (2001): «The Theory and Practice of Corporate Finance», JFE, 60.',
+                ]} />
+            </div>
+        );
+
+        const Tema54Resum = () => (
+            <div className="space-y-5 animate-fade">
+                <Card>
+                    <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200 mb-5">
+                        <p className="text-center font-bold text-emerald-800 text-lg">Tema 54: Estructura òptima i dividends</p>
+                        <p className="text-center text-sm text-emerald-600 mt-1">V_L = V_U + t · D (MM 1963)</p>
+                    </div>
+                    <div className="space-y-4 text-sm text-slate-700">
+                        <div><h4 className="font-bold text-slate-800 mb-1">1. Tesi tradicional</h4><ul className="list-disc pl-5 space-y-1"><li>Durand (1952), Solomon (1963).</li><li>WACC en U: existeix òptim que minimitza WACC.</li><li>Criticada per falta de rigor.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">2. Modigliani-Miller</h4><ul className="list-disc pl-5 space-y-1"><li>MM 1958 sense impostos: V_U = V_L (irrellevància).</li><li>MM 1963 amb impostos: V_L = V_U + t·D.</li><li>Demostració per arbitratge.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">3. Teories posteriors</h4><ul className="list-disc pl-5 space-y-1"><li>Trade-off (Kraus-Litzenberger 1973): escut fiscal vs. fallida.</li><li>Pecking order (Myers-Majluf 1984): interna → deute → accions.</li><li>Signaling (Ross 1977): deute = confiança.</li><li>Agència (Jensen 1986): deute disciplina.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">4. Dividends</h4><ul className="list-disc pl-5 space-y-1"><li>Gordon-Shapiro: P₀ = D₁/(Ke−g).</li><li>MM (1961): irrellevància.</li><li>Lintner (1956): dividends estables.</li><li>Bird-in-hand, efecte clientela, senyalització, buybacks.</li><li>IRPF Espanya: 19-28 % sobre dividends.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">5. Aplicacions</h4><ul className="list-disc pl-5 space-y-1"><li>Determinants empírics (Rajan-Zingales 1995).</li><li>Casos: Telefónica desapalancament, Abengoa.</li><li>Green bonds, sustainability-linked.</li></ul></div>
+                    </div>
+                    <FormulaBox formula="V_L = V_U + t·D   |   Ke_L = Ke_U + (Ke_U − Kd)·D/E" desc="MM 1963 + Prop II" />
+                    <ClauBox>
+                        <p>- Domina <strong>MM 1958</strong> (irrellevància) i <strong>MM 1963</strong> (amb impostos).</p>
+                        <p>- Explica la demostració per <strong>arbitratge</strong> de MM.</p>
+                        <p>- Cita <strong>Myers-Majluf 1984 (pecking order)</strong> com a teoria dominant empíricament.</p>
+                        <p>- Coneix la <strong>política de dividends</strong>: Gordon-Shapiro, Lintner, buybacks, IRPF.</p>
+                    </ClauBox>
+                </Card>
+            </div>
+        );
+
+        const Tema54 = () => {
+            const [vista, setVista] = useState('complet');
+            return <div className="space-y-6"><SectionTitle icon="📊" title="Tema 54" subtitle={t('tema54.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema54Complet />}{vista === 'resum' && <Tema54Resum />}</div>;
+        };
         const Tema55 = () => <TemaPlaceholder num={55} title={t('tema55.title')} icon="📈" />;
         const Tema56 = () => <TemaPlaceholder num={56} title={t('tema56.title')} icon="🧾" />;
 
