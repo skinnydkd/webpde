@@ -332,7 +332,158 @@
             const [vista, setVista] = useState('complet');
             return <div className="space-y-6"><SectionTitle icon="📈" title="Tema 27" subtitle={t('tema27.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema27Complet />}{vista === 'resum' && <Tema27Resum />}</div>;
         };
-        const Tema28 = () => <TemaPlaceholder num={28} title={t('tema28.title')} icon="🌍" />;
+        // ════════════════════════════════════════════════════════════════
+        // TEMA 28 — Límits del creixement, medi ambient i sostenibilitat
+        // ════════════════════════════════════════════════════════════════
+        const Tema28Complet = () => (
+            <div className="space-y-6 animate-fade">
+                <Card title="Introducció" icon="📌">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>El <strong>creixement il·limitat</strong> sobre un planeta finit és, segons nombrosos economistes (des de Malthus fins Meadows i Daly), una contradicció en termes. El segle XXI ha vist eclosionar el debat sobre la <strong>sostenibilitat</strong>: com compatibilitzar el progrés material amb la preservació dels ecosistemes, dels recursos i de les generacions futures?</p>
+                        <p>Les xifres actuals són alarmants: emissions globals de CO₂ &gt; 37 Gt anuals (2023), concentració atmosfèrica de 421 ppm (vs. 280 ppm preindustrials), pèrdua anual de ~10 milions d'hectàrees de boscos. L'<strong>Acord de París</strong> (2015) i el <strong>Pacte Verd Europeu</strong> (2019) marquen l'agenda política.</p>
+                        <p>El tema s'estructura en 5 blocs: (1) límits del creixement; (2) externalitats i béns públics; (3) instruments de política ambiental; (4) desenvolupament sostenible; (5) economia circular i transició energètica.</p>
+                    </div>
+                </Card>
+
+                <Card title="1. Els límits del creixement" icon="⛔">
+                    <TheoryBlock title="1.1. Malthus (1798) i la crítica clàssica" color="amber">
+                        <p><strong>Thomas Malthus</strong> va ser el primer a denunciar la incompatibilitat entre creixement poblacional i recursos finits. Encara que les seues prediccions catastròfiques no es van complir (gràcies a la revolució agrícola i industrial), va obrir una línia de pensament crític.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.2. El Club de Roma i els Límits del Creixement (Meadows 1972)" color="red">
+                        <p>L'informe del Club de Roma, <em>The Limits to Growth</em> (Meadows, Randers, Behrens 1972), va projectar amb models de dinàmica de sistemes el col·lapse cap al 2050 si continuaven les tendències exponencials. Actualitzacions posteriors (2002, 2022) han confirmat, amb matisos, les seues prediccions.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.3. Georgescu-Roegen i l'entropia" color="violet">
+                        <p><strong>Nicholas Georgescu-Roegen</strong>, a <em>The Entropy Law and the Economic Process</em> (1971), va introduir la termodinàmica a l'economia: tot procés productiu degrada energia d'utilitzable a no utilitzable (augment d'entropia). Pare de l'<strong>economia ecològica</strong>.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.4. Límits planetaris (Rockström 2009)" color="emerald">
+                        <p><strong>Johan Rockström</strong> i equip (Stockholm Resilience Centre) van identificar <strong>9 límits planetaris</strong> crítics: canvi climàtic, biodiversitat, nitrogen-fòsfor, ocupació del sòl, aigua dolça, ocidificació oceans, aerosols, capa d'ozó, contaminants químics. Ja hem superat 6.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="2. Externalitats i béns públics ambientals" icon="🌐">
+                    <TheoryBlock title="2.1. Externalitats (Pigou 1920)" color="indigo">
+                        <p>Una <strong>externalitat</strong> és un efecte d'una activitat econòmica sobre tercers que no s'integra al preu. Les <strong>externalitats negatives</strong> ambientals (CO₂, contaminació, soroll) són el cas paradigmàtic: el cost privat &lt; cost social → excés de producció.</p>
+                        <p>Solució Pigou: <strong>impost pigouvià</strong> que internalitzi l'externalitat. Fonament teòric dels impostos ambientals.</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="Cost social = Cost privat + Cost extern  |  Impost Pigou = Cost marginal extern" desc="Pigou (1920): internalitzar externalitats via impost" />
+
+                    <TheoryBlock title="2.2. Teorema de Coase (1960)" color="cyan">
+                        <p><strong>Ronald Coase</strong> (Nobel 1991), a «The Problem of Social Cost» (<em>JLE</em>, 1960), va proposar una alternativa: si els drets de propietat estan ben definits i els costos de transacció són baixos, les parts poden negociar una solució eficient sense intervenció estatal. Fonament dels <strong>mercats de drets d'emissió</strong> (cap-and-trade) com l'EU ETS.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.3. Tragèdia dels béns comuns (Hardin 1968, Ostrom 2009)" color="rose">
+                        <p><strong>Garrett Hardin</strong> (1968) va descriure com els recursos comuns (atmosfera, pesqueries) s'exploten en excés per racionalitat individual contra interès col·lectiu.</p>
+                        <p><strong>Elinor Ostrom</strong> (Nobel 2009) va mostrar, amb evidència empírica, que les comunitats locals sovint gestionen amb èxit béns comuns mitjançant regles autoorganitzades (8 principis de disseny institucional).</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="3. Instruments de política ambiental" icon="🛠️">
+                    <TheoryBlock title="3.1. Regulació directa (command & control)" color="amber">
+                        <p>Normes tècniques i prohibicions: límits d'emissions, zones protegides, prohibició de substàncies (CFCs via Protocol de Mont-real 1987). Avantatges: certesa; inconvenients: rigidesa, cost econòmic alt.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.2. Instruments econòmics" color="emerald">
+                        <p><strong>• Impostos pigouvians</strong>: CO₂ (Suècia 127 €/t, Espanya ~14 €/t via especials), plàstic, hidrocarburs.</p>
+                        <p><strong>• Mercats d'emissions</strong>: EU ETS (sistema europeu, des 2005, cobrint 40 % emissions UE). Preu ~80-90 €/t CO₂ (2024).</p>
+                        <p><strong>• Subvencions verdes</strong>: per a renovables, rehabilitació, vehicle elèctric.</p>
+                        <p><strong>• Dipòsits i devolucions</strong>: per envasos.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.3. Instruments mixts i voluntaris" color="violet">
+                        <p>Acords voluntaris, ecoetiquetes, ISO 14001, certificacions FSC, acords sectorials. Taxonomia europea (Reg. 2020/852) classifica activitats segons contribució ambiental.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="4. Desenvolupament sostenible" icon="♻️">
+                    <TheoryBlock title="4.1. Concepte (Brundtland 1987)" color="green">
+                        <p>La <strong>Comissió Brundtland</strong> (<em>Our Common Future</em>, 1987) va formular la definició clàssica: «desenvolupament sostenible és aquell que satisfà les necessitats del present sense comprometre la capacitat de les generacions futures de satisfer les seves pròpies».</p>
+                        <p>Tres pilars: <strong>econòmic</strong>, <strong>social</strong>, <strong>ambiental</strong>. Triple bottom line (Elkington 1997). Els <strong>17 ODS</strong> operatiivitzen el concepte.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.2. Economia ambiental vs. ecològica" color="cyan">
+                        <p><strong>Economia ambiental</strong>: branca de l'economia neoclàssica, internalitza externalitats (Pigou, Coase, Solow). Creu en la sostenibilitat dèbil (capital natural substituïble).</p>
+                        <p><strong>Economia ecològica</strong> (Daly, Georgescu-Roegen, Martínez-Alier): reconeix l'economia com a subsistema de la biosfera. Defensa la sostenibilitat forta (capital natural insubstituïble). Proposa <em>steady-state economy</em> o <em>decreixement</em> (Latouche, Raworth).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.3. Corba de Kuznets ambiental" color="rose">
+                        <p>Hipòtesi (Grossman-Krueger 1991): la degradació ambiental té forma de U invertida respecte al PIB per càpita. Països pobres contaminen poc, mitjans molt, rics menys (transició postindustrial + tecnologia). Evidència empírica: es compleix per alguns contaminants locals (SO₂) però no per globals (CO₂).</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="5. Economia circular i transició energètica" icon="🔄">
+                    <TheoryBlock title="5.1. Economia circular (Pearce-Turner 1990, Ellen MacArthur Foundation)" color="emerald">
+                        <p>Enfront del model lineal (extracció-producció-consum-residu), l'<strong>economia circular</strong> busca mantenir els materials al cicle productiu el major temps possible mitjançant: reducció, reutilització, reparació, reciclatge, recuperació (5R). Normatives UE: Pla d'Acció Economia Circular 2020.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.2. Transició energètica" color="amber">
+                        <p>Canvi del sistema fòssil al baix carboni. Instruments: EU ETS, Fit for 55 (-55 % emissions 2030), Green Deal europeu (2019), Llei 7/2021 canvi climàtic i transició energètica (Espanya), PNIEC 2021-2030. Objectiu europeu: neutralitat climàtica 2050.</p>
+                        <p>Dades Espanya: renovables 50,3 % electricitat (2023), emissions −34 % vs. 1990.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.3. Donut Economics (Raworth 2017)" color="violet">
+                        <p><strong>Kate Raworth</strong> proposa un model visual: l'economia ha d'operar en l'espai entre el «sòl social» (drets humans bàsics) i el «sostre ecològic» (límits planetaris). Forma de «dònut» entre ambdues. Adoptat per Amsterdam, Copenhague, Barcelona com a marc de política urbana.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="Conclusió" icon="✅">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>Els <strong>límits del creixement</strong> —advertits des de <strong>Malthus (1798)</strong> i reformulats per <strong>Meadows (1972)</strong>, <strong>Georgescu-Roegen (1971)</strong> i <strong>Rockström (2009)</strong>— són ja una realitat empírica contrastable. La resposta requereix instruments econòmics (Pigou, Coase, Ostrom Nobel 2009), tecnològics (transició energètica), institucionals (ODS, Green Deal) i culturals.</p>
+                        <p>El <strong>desenvolupament sostenible</strong> (Brundtland 1987) i les seues reformulacions (<strong>triple bottom line</strong>, <strong>donut economics</strong> de Raworth 2017) ofereixen marcs conceptuals. L'<strong>economia circular</strong> i la <strong>transició energètica</strong> són ja polítiques públiques amb inversions massives (fons Next Gen, Pacte Verd). El docent té la responsabilitat d'educar ciutadans conscients que el creixement sense sostenibilitat és una estratègia suïcida i que existeixen alternatives rigoroses i viables.</p>
+                    </div>
+                </Card>
+
+                <BibliografiaBox items={[
+                    'MALTHUS, T.R. (1798): An Essay on the Principle of Population.',
+                    'PIGOU, A.C. (1920): The Economics of Welfare, Macmillan.',
+                    'COASE, R.H. (1960): «The Problem of Social Cost», J. of Law and Economics, 3.',
+                    'HARDIN, G. (1968): «The Tragedy of the Commons», Science, 162.',
+                    'GEORGESCU-ROEGEN, N. (1971): The Entropy Law and the Economic Process, Harvard Univ. Press.',
+                    'MEADOWS, D. et al. (1972): The Limits to Growth, Universe Books.',
+                    'BRUNDTLAND, G.H. (1987): Our Common Future, WCED/ONU.',
+                    'PEARCE, D. i TURNER, R.K. (1990): Economics of Natural Resources and the Environment, Johns Hopkins.',
+                    'GROSSMAN, G.M. i KRUEGER, A.B. (1991): «Environmental Impacts of NAFTA», NBER WP.',
+                    'DALY, H.E. (1996): Beyond Growth, Beacon Press.',
+                    'ELKINGTON, J. (1997): Cannibals with Forks: The Triple Bottom Line, Capstone.',
+                    'OSTROM, E. (1990): Governing the Commons, Cambridge Univ. Press.',
+                    'ROCKSTRÖM, J. et al. (2009): «A safe operating space for humanity», Nature, 461.',
+                    'RAWORTH, K. (2017): Doughnut Economics, Random House.',
+                    'Acord de París (2015); Llei 7/2021 canvi climàtic Espanya.',
+                ]} />
+            </div>
+        );
+
+        const Tema28Resum = () => (
+            <div className="space-y-5 animate-fade">
+                <Card>
+                    <div className="p-4 bg-red-50 rounded-xl border border-red-200 mb-5">
+                        <p className="text-center font-bold text-red-800 text-lg">Tema 28: Límits i sostenibilitat</p>
+                        <p className="text-center text-sm text-red-600 mt-1"><em>«Sostenible = satisfer present sense comprometre futur»</em> — Brundtland (1987)</p>
+                    </div>
+                    <div className="space-y-4 text-sm text-slate-700">
+                        <div><h4 className="font-bold text-slate-800 mb-1">1. Límits</h4><ul className="list-disc pl-5 space-y-1"><li>Malthus (1798), Meadows (1972, Club de Roma).</li><li>Georgescu-Roegen (1971): entropia.</li><li>Rockström (2009): 9 límits planetaris.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">2. Externalitats</h4><ul className="list-disc pl-5 space-y-1"><li>Pigou (1920): impost pigouvià.</li><li>Coase (1960, Nobel 1991): drets propietat.</li><li>Hardin (1968) tragèdia; Ostrom (Nobel 2009) solucions.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">3. Instruments</h4><ul className="list-disc pl-5 space-y-1"><li>Command&control, impostos, mercats (EU ETS), subvencions.</li><li>Taxonomia UE 2020/852.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">4. Sostenibilitat</h4><ul className="list-disc pl-5 space-y-1"><li>Brundtland (1987), triple bottom line (Elkington 1997).</li><li>Econ. ambiental vs. ecològica (Daly).</li><li>Corba Kuznets ambiental (Grossman-Krueger 1991).</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">5. Circular i transició</h4><ul className="list-disc pl-5 space-y-1"><li>Economia circular: 5R.</li><li>EU Green Deal, Fit for 55, Llei 7/2021.</li><li>Donut Economics (Raworth 2017).</li></ul></div>
+                    </div>
+                    <ClauBox>
+                        <p>- Domina <strong>Pigou (1920)</strong>, <strong>Coase (1960)</strong>, <strong>Ostrom (Nobel 2009)</strong>.</p>
+                        <p>- Cita <strong>Brundtland (1987)</strong> com a definició canònica.</p>
+                        <p>- Connecta amb <strong>EU Green Deal</strong>, <strong>EU ETS</strong>, <strong>Llei 7/2021</strong>.</p>
+                        <p>- Menciona <strong>donut economics (Raworth 2017)</strong> com a proposta actual.</p>
+                    </ClauBox>
+                </Card>
+            </div>
+        );
+
+        const Tema28 = () => {
+            const [vista, setVista] = useState('complet');
+            return <div className="space-y-6"><SectionTitle icon="🌍" title="Tema 28" subtitle={t('tema28.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema28Complet />}{vista === 'resum' && <Tema28Resum />}</div>;
+        };
         const Tema29 = () => <TemaPlaceholder num={29} title={t('tema29.title')} icon="📊" />;
         const Tema30 = () => <TemaPlaceholder num={30} title={t('tema30.title')} icon="🔥" />;
         const Tema31 = () => <TemaPlaceholder num={31} title={t('tema31.title')} icon="👥" />;
