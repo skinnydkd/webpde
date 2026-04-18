@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 — Pàgina no trobada | PDE</title>
+    <meta name="robots" content="noindex">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./pde-shared.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        .dark { color-scheme: dark; }
+        .dark body { background: #111827 !important; color: #e5e7eb; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        @keyframes shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-5deg); } 75% { transform: rotate(5deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .float { animation: float 3s ease-in-out infinite; }
+        .shake { animation: shake 2s ease-in-out infinite; }
+        .fade-in { animation: fadeIn 0.6s ease-out both; }
+        .fade-in-1 { animation-delay: 0.1s; }
+        .fade-in-2 { animation-delay: 0.3s; }
+        .fade-in-3 { animation-delay: 0.5s; }
+        .fade-in-4 { animation-delay: 0.7s; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-white to-pink-50 min-h-screen flex flex-col items-center justify-center px-4">
+    <script>
+        // Apply dark mode immediately
+        try { PdeThemeStore._apply(PdeThemeStore.get()); } catch(e) {}
+    </script>
+
+    <div class="text-center max-w-lg mx-auto">
+        <!-- Animated pig -->
+        <div class="float mb-6">
+            <span class="text-8xl md:text-9xl block shake">🐷</span>
+        </div>
+
+        <!-- 404 number -->
+        <h1 class="fade-in text-7xl md:text-8xl font-black text-pink-500 mb-2">404</h1>
+
+        <!-- Messages (multilingual) -->
+        <div id="message" class="fade-in fade-in-1">
+            <p class="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2" id="title-text"></p>
+            <p class="text-gray-500 dark:text-gray-400 mb-8" id="subtitle-text"></p>
+        </div>
+
+        <!-- Fun economic fact -->
+        <div class="fade-in fade-in-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-4 mb-8 border border-gray-100 dark:border-gray-700">
+            <p class="text-sm text-gray-600 dark:text-gray-300" id="fact-text"></p>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="fade-in fade-in-3 flex flex-col sm:flex-row gap-3 justify-center mb-10">
+            <a href="./" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl shadow-lg shadow-pink-500/30 transition-all hover:scale-105">
+                <span>🎓</span> <span id="home-btn"></span>
+            </a>
+            <a href="./playground" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-xl border border-gray-200 dark:border-gray-600 transition-all hover:scale-105">
+                <span>🎮</span> <span id="play-btn"></span>
+            </a>
+        </div>
+
+        <!-- Quick links grid -->
+        <div class="fade-in fade-in-4 grid grid-cols-3 sm:grid-cols-5 gap-2" id="quick-links"></div>
+    </div>
+
+    <script>
+        (function() {
+            // Detect language
+            var lang = PdeLanguageStore.get();
+
+            var messages = {
+                val: {
+                    title: 'Ups! Aquesta pàgina no existeix',
+                    subtitle: 'Potser el mercat l\'ha absorbit... o simplement has escrit malament la URL 😅',
+                    home: 'Tornar a l\'inici',
+                    play: 'Jugar una estona',
+                },
+                es: {
+                    title: '¡Ups! Esta página no existe',
+                    subtitle: 'Quizás el mercado la ha absorbido... o simplemente has escrito mal la URL 😅',
+                    home: 'Volver al inicio',
+                    play: 'Jugar un rato',
+                },
+                en: {
+                    title: 'Oops! This page doesn\'t exist',
+                    subtitle: 'Maybe the market absorbed it... or you just mistyped the URL 😅',
+                    home: 'Back to home',
+                    play: 'Play a game',
+                },
+            };
+
+            var facts = {
+                val: [
+                    '💡 Sabies que... el cost d\'oportunitat d\'estar ací és no estar estudiant economia?',
+                    '📉 Aquesta pàgina ha patit una recessió del 100%. No queda res.',
+                    '🏦 El BCE no pot rescatar pàgines 404. Ho hem intentat.',
+                    '📊 Segons la llei de l\'oferta i la demanda, ningú demana aquesta pàgina.',
+                    '💰 Adam Smith diria: "La mà invisible t\'ha portat al lloc equivocat."',
+                    '🐷 El porquet PDE ha buscat per tot arreu... i no l\'ha trobada.',
+                ],
+                es: [
+                    '💡 ¿Sabías que... el coste de oportunidad de estar aquí es no estar estudiando economía?',
+                    '📉 Esta página ha sufrido una recesión del 100%. No queda nada.',
+                    '🏦 El BCE no puede rescatar páginas 404. Lo hemos intentado.',
+                    '📊 Según la ley de oferta y demanda, nadie demanda esta página.',
+                    '💰 Adam Smith diría: "La mano invisible te ha llevado al lugar equivocado."',
+                    '🐷 El cerdito PDE ha buscado por todos lados... y no la ha encontrado.',
+                ],
+                en: [
+                    '💡 Did you know... the opportunity cost of being here is not studying economics?',
+                    '📉 This page suffered a 100% recession. Nothing left.',
+                    '🏦 The ECB can\'t bail out 404 pages. We tried.',
+                    '📊 According to supply and demand, nobody demands this page.',
+                    '💰 Adam Smith would say: "The invisible hand led you to the wrong place."',
+                    '🐷 The PDE piggy looked everywhere... and couldn\'t find it.',
+                ],
+            };
+
+            var m = messages[lang] || messages['val'];
+            var f = facts[lang] || facts['val'];
+
+            document.getElementById('title-text').textContent = m.title;
+            document.getElementById('subtitle-text').textContent = m.subtitle;
+            document.getElementById('home-btn').textContent = m.home;
+            document.getElementById('play-btn').textContent = m.play;
+            document.getElementById('fact-text').textContent = f[Math.floor(Math.random() * f.length)];
+
+            // Quick links
+            var links = PDE_NAV.slice(0, 5).map(function(app) {
+                var label = PDE_SHARED_TRANSLATIONS['nav.' + app.id];
+                return '<a href="' + app.href + '" class="flex flex-col items-center gap-1 p-3 rounded-xl bg-white/60 dark:bg-gray-800/60 hover:bg-pink-50 dark:hover:bg-pink-900/30 border border-gray-100 dark:border-gray-700 transition-all hover:scale-105">' +
+                    '<span class="text-xl">' + app.emoji + '</span>' +
+                    '<span class="text-xs font-medium text-gray-600 dark:text-gray-400">' + (label ? (label[lang] || label['val']) : app.id) + '</span></a>';
+            });
+            document.getElementById('quick-links').innerHTML = links.join('');
+        })();
+    </script>
+</body>
+</html>
