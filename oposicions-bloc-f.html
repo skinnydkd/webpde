@@ -1317,7 +1317,199 @@
             const [vista, setVista] = useState('complet');
             return <div className="space-y-6"><SectionTitle icon="📊" title="Tema 54" subtitle={t('tema54.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema54Complet />}{vista === 'resum' && <Tema54Resum />}</div>;
         };
-        const Tema55 = () => <TemaPlaceholder num={55} title={t('tema55.title')} icon="📈" />;
+        // ════════════════════════════════════════════════════════════════
+        // TEMA 55 — Sistemes de capitalització i rendes
+        // ════════════════════════════════════════════════════════════════
+        const Tema55Complet = () => (
+            <div className="space-y-6 animate-fade">
+                <Card title="Introducció" icon="📌">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>La <strong>matemàtica financera</strong> proporciona les eines quantitatives per a valorar, comparar i operar amb imports monetaris situats en diferents moments del temps. Amortitzar un préstec, valorar una hipoteca, calcular la pensió futura d'un pla, comparar ofertes financeres: totes aquestes tasques requereixen dominar els sistemes de capitalització i el concepte de <strong>renda financera</strong>.</p>
+                        <p>A Espanya, la <strong>Llei 16/2011 de Contractes de Crèdit al Consumidor</strong>, el <strong>RD 84/2015</strong> i la <strong>Llei 5/2019 reguladora dels contractes de crèdit immobiliari</strong> han normativitzat el càlcul de la TAE i la transparència financera, exigint als docents i professionals un domini sòlid d'aquests conceptes.</p>
+                        <p>El tema, més tècnic que els anteriors, s'estructura en 5 blocs: (1) sistemes de capitalització; (2) equivalència financera i TAE; (3) rendes: concepte i classificació; (4) valor actual i final de rendes; (5) aplicacions i casos pràctics.</p>
+                    </div>
+                </Card>
+
+                <Card title="1. Sistemes de capitalització" icon="💹">
+                    <TheoryBlock title="1.1. Capitalització simple" color="indigo">
+                        <p>La <strong>capitalització simple</strong> genera interessos únicament sobre el capital inicial (C₀); els interessos no capitalitzen. Fórmula:</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="Cₙ = C₀ · (1 + i · n)" desc="Capitalització simple: interessos proporcionals al temps i al capital" />
+
+                    <TheoryBlock title="1.2. Capitalització composta" color="violet">
+                        <p>A la <strong>capitalització composta</strong>, els interessos s'afegeixen al capital i generen nous interessos («interès sobre interès»). És la base de les operacions financeres a llarg termini:</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="Cₙ = C₀ · (1 + i)ⁿ" desc="Capitalització composta: creixement exponencial" />
+
+                    <TheoryBlock title="1.3. Comparativa simple vs. composta" color="emerald">
+                        <p>Per a períodes curts (&lt; 1 any) sovint s'utilitza simple per conveniència; a llarg termini, composta. A igual <em>i</em> i <em>n</em>, la composta sempre és major si n &gt; 1.</p>
+                        <p><strong>Exemple</strong>: C₀ = 10.000 €, i = 5 %, n = 10 anys.</p>
+                        <p>• Simple: 10.000 · (1 + 0,05 · 10) = 15.000 €.</p>
+                        <p>• Composta: 10.000 · (1,05)¹⁰ = 10.000 · 1,6289 = 16.289 €.</p>
+                        <p>Diferència: 1.289 € (l'«efecte bola de neu»).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.4. Capitalització contínua" color="cyan">
+                        <p>Quan la capitalització es realitza «en tot moment», s'obté el límit continu:</p>
+                        <p>Cₙ = C₀ · e^(i·n), on e ≈ 2,71828.</p>
+                        <p>Aquesta fórmula s'usa en models teòrics avançats (Black-Scholes, per exemple).</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="Cₙ = C₀ · e^(i·n)" desc="Capitalització contínua: base de les finances modernes teòriques" />
+                </Card>
+
+                <Card title="2. Equivalència financera, TIN i TAE" icon="⚖️">
+                    <TheoryBlock title="2.1. Principi d'equivalència financera" color="indigo">
+                        <p>Dos imports en diferents moments del temps són <strong>financerament equivalents</strong> si, descomptats a una taxa donada, tenen el mateix valor actual. És el principi fonamental de la matemàtica financera.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.2. Tipus d'Interès Nominal (TIN)" color="violet">
+                        <p>El <strong>TIN</strong> (Tipus d'Interès Nominal) és el tipus anunciat contractualment, sense considerar la freqüència de capitalització ni les comissions. Si la freqüència de liquidació és <em>m</em> vegades l'any, el tipus efectiu per període és i_m = TIN/m.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.3. Taxa Anual Equivalent (TAE)" color="emerald">
+                        <p>La <strong>TAE</strong> (Taxa Anual Equivalent), regulada per la Circular 5/2012 del Banc d'Espanya i les lleis 16/2011 i 5/2019, és l'<strong>indicador de transparència</strong> que homogeneïtza el cost real de productes financers. Incorpora:</p>
+                        <p>• Freqüència de capitalització.</p>
+                        <p>• Comissions i despeses financeres.</p>
+                        <p>Fórmula bàsica (només freqüència de capitalització):</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="TAE = (1 + TIN/m)^m − 1" desc="Taxa Anual Equivalent simple (sense comissions). m = freqüència de liquidació" />
+
+                    <TheoryBlock title="2.4. Exemple numèric de TAE" color="amber">
+                        <p>Préstec amb TIN = 6 % liquidat mensualment (m = 12): TAE = (1 + 0,06/12)¹² − 1 = 1,005¹² − 1 = 0,0617 = <strong>6,17 %</strong>.</p>
+                        <p>Amb comissió d'obertura del 1 %, el càlcul exacte s'obté resolent l'equació d'equivalència financera que iguala cobraments i pagaments actualitzats.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="3. Rendes: concepte i classificació" icon="🔄">
+                    <TheoryBlock title="3.1. Concepte de renda" color="indigo">
+                        <p>Una <strong>renda financera</strong> és un conjunt de capitals (termes) que venceixen en moments diferents del temps. Exemples: les quotes d'un préstec hipotecari, les aportacions a un pla de pensions, el cobrament d'una pensió, el lloguer mensual.</p>
+                        <p>Elements: <strong>terme</strong> (import de cada capital), <strong>període</strong> (interval entre termes), <strong>durada</strong> (total), <strong>origen</strong> i <strong>venciment</strong> de la renda, <strong>valoració</strong> (moment en què es calcula el valor).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.2. Classificació" color="violet">
+                        <p><strong>Segons la quantia dels termes</strong>:</p>
+                        <p>• <strong>Constant</strong>: tots els termes iguals.</p>
+                        <p>• <strong>Variable</strong>: termes diferents, possiblement amb llei (aritmètica, geomètrica).</p>
+                        <p><strong>Segons la durada</strong>:</p>
+                        <p>• <strong>Temporal</strong>: durada finita.</p>
+                        <p>• <strong>Perpètua</strong>: indefinida.</p>
+                        <p><strong>Segons el moment del pagament</strong>:</p>
+                        <p>• <strong>Prepagable</strong>: al principi del període (com el lloguer).</p>
+                        <p>• <strong>Postpagable</strong>: al final del període (com la majoria de préstecs).</p>
+                        <p><strong>Segons l'inici</strong>:</p>
+                        <p>• <strong>Immediata</strong>: l'origen coincideix amb la valoració.</p>
+                        <p>• <strong>Diferida / Anticipada</strong>: l'origen és posterior / anterior.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="4. Valor actual i final de rendes" icon="🧮">
+                    <TheoryBlock title="4.1. Renda constant postpagable immediata (a vençut)" color="emerald">
+                        <p>Sigui una renda de n termes iguals a c, amb interès i, postpagable. El valor actual a l'origen:</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="Vₐ = c · aₙ₎ᵢ = c · [1 − (1+i)⁻ⁿ] / i" desc="Valor actual d'una renda constant postpagable immediata" />
+
+                    <FormulaBox formula="V_f = c · sₙ₎ᵢ = c · [(1+i)ⁿ − 1] / i" desc="Valor final d'una renda constant postpagable immediata" />
+
+                    <TheoryBlock title="4.2. Renda constant prepagable" color="violet">
+                        <p>Per una renda prepagable, els imports es capitalitzen un període més. Relació amb postpagable:</p>
+                        <p>V_a^pre = V_a^post · (1+i) ; V_f^pre = V_f^post · (1+i).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.3. Renda perpètua" color="indigo">
+                        <p>Per a una renda constant postpagable perpètua (n → ∞) amb i &gt; 0:</p>
+                        <p>V_a = c / i (fórmula molt utilitzada per valorar empreses, bons perpetus, consols britànics del XIX).</p>
+                        <p>Si creixement g, taxa k (k &gt; g): V_a = c / (k − g) (Gordon-Shapiro, Tema 53).</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="V_a (perpètua) = c / i    |    V_a (perpètua creixent) = c / (i − g)" desc="Renda perpètua constant i creixent (Gordon-Shapiro)" />
+
+                    <TheoryBlock title="4.4. Rendes variables" color="amber">
+                        <p><strong>• Variació aritmètica</strong>: termes c, c+d, c+2d, ... c+(n−1)d. Es resol descomponent en una constant + una aritmètica pura.</p>
+                        <p><strong>• Variació geomètrica</strong>: termes c, c·q, c·q², ... c·q^(n−1). Fórmula:</p>
+                        <p>V_a = c · [1 − (q/(1+i))ⁿ] / (i − g), on g = q − 1.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="5. Aplicacions pràctiques" icon="🧾">
+                    <TheoryBlock title="5.1. Càlcul de la quota d'un préstec (sistema francès)" color="emerald">
+                        <p>En un préstec de capital C a n períodes amb tipus i, pel sistema francès (quotes constants postpagables), la quota fixa és:</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="c = C · i / [1 − (1+i)⁻ⁿ]" desc="Quota fixa del sistema francès (detallat al Tema 56)" />
+
+                    <TheoryBlock title="5.2. Plans de pensions" color="violet">
+                        <p>Aportació mensual a un pla de pensions durant els anys laborals per obtenir un capital final. Ex.: aportació mensual de 100 € durant 30 anys a un 4 % anual (0,33 %/mes). Capital final = 100 · [(1,0033)³⁶⁰ − 1] / 0,0033 ≈ 69.600 €.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.3. Valoració d'empreses amb rendes" color="rose">
+                        <p>El mètode <strong>DCF</strong> (Discounted Cash Flow) valora l'empresa com el valor actual dels fluxos de caixa futurs. Pot combinar una fase explícita (5-10 anys, fluxos projectats) i un valor terminal (perpetuïtat amb Gordon-Shapiro). És el mètode dominant a la valoració corporativa.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.4. Exemple integrador" color="cyan">
+                        <p>Hipoteca de 200.000 € a 30 anys, tipus 3,5 % anual nominal (TIN), quotes mensuals, comissió obertura 1.000 €.</p>
+                        <p>Tipus mensual i = 0,035/12 = 0,002917.</p>
+                        <p>Quota = 200.000 · 0,002917 / (1 − 1,002917⁻³⁶⁰) = 200.000 · 0,002917 / 0,6497 ≈ <strong>898 €/mes</strong>.</p>
+                        <p>TAE (amb comissió): requereix iterar l'equació d'equivalència. Aproximadament TAE ≈ 3,61 %.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="Conclusió" icon="✅">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>La matemàtica financera és la disciplina que ha transformat les finances en una ciència rigorosa. Des dels sistemes de <strong>capitalització</strong> (simple, composta, contínua) fins al càlcul de rendes, tots els conceptes descansen en un principi central: el <strong>valor temporal del diner</strong> (<strong>Fisher, 1930</strong>). La <strong>TAE</strong>, regulada per lleis de transparència financera, és una aplicació pràctica essencial per a la protecció del consumidor.</p>
+                        <p>Les <strong>rendes financeres</strong> —constants, variables, perpètues, prepagables, diferides— permeten modelar pràcticament qualsevol situació: hipoteques, pensions, valoracions empresarials, loteries, assegurances. El domini d'aquests càlculs és indispensable per a l'alumnat que aspira a carreres en finances, economia, gestió o actuariat. El docent ha de combinar el rigor matemàtic amb exemples pràctics significatius per al dia a dia dels estudiants.</p>
+                    </div>
+                </Card>
+
+                <BibliografiaBox items={[
+                    'FISHER, I. (1930): The Theory of Interest, Macmillan.',
+                    'MURIOLA, J. i LAMOTHE, P. (2007): Manual de matemáticas financieras, Pirámide.',
+                    'NAVARRO, E. i MARTÍN, J.L. (2012): Manual de matemáticas financieras, McGraw-Hill.',
+                    'MILES, E. (2016): Matemática financiera, Pirámide.',
+                    'DE PABLO LÓPEZ, A. (2004): Matemática de las operaciones financieras, UNED.',
+                    'MASCAREÑAS, J. (2015): Valoración de empresas, Universidad Complutense.',
+                    'Llei 16/2011 de Contractes de Crèdit al Consumidor.',
+                    'Llei 5/2019 reguladora dels contractes de crèdit immobiliari.',
+                    'Real Decret 84/2015 (desenvolupament Llei 10/2014).',
+                    'Circular 5/2012 del Banco de España (TAE).',
+                    'Real Decret Legislatiu 1/2007, Llei General de Defensa dels Consumidors.',
+                ]} />
+            </div>
+        );
+
+        const Tema55Resum = () => (
+            <div className="space-y-5 animate-fade">
+                <Card>
+                    <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200 mb-5">
+                        <p className="text-center font-bold text-emerald-800 text-lg">Tema 55: Capitalització i rendes</p>
+                        <p className="text-center text-sm text-emerald-600 mt-1">TAE = (1 + TIN/m)^m − 1</p>
+                    </div>
+                    <div className="space-y-4 text-sm text-slate-700">
+                        <div><h4 className="font-bold text-slate-800 mb-1">1. Capitalització</h4><ul className="list-disc pl-5 space-y-1"><li>Simple: Cₙ = C₀(1+in).</li><li>Composta: Cₙ = C₀(1+i)ⁿ.</li><li>Contínua: Cₙ = C₀·e^(in).</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">2. TIN i TAE</h4><ul className="list-disc pl-5 space-y-1"><li>TIN: tipus nominal contractual.</li><li>TAE = (1+TIN/m)^m − 1 + ajust comissions.</li><li>Regulació: Llei 16/2011, 5/2019, Circular BdE 5/2012.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">3. Rendes</h4><ul className="list-disc pl-5 space-y-1"><li>Constant vs. variable (aritmètica/geomètrica).</li><li>Temporal vs. perpètua.</li><li>Prepagable vs. postpagable.</li><li>Immediata vs. diferida/anticipada.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">4. Valoració</h4><ul className="list-disc pl-5 space-y-1"><li>Vₐ = c · [1−(1+i)⁻ⁿ] / i.</li><li>V_f = c · [(1+i)ⁿ−1] / i.</li><li>Perpètua: Vₐ = c/i.</li><li>Creixent: Vₐ = c/(i−g).</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">5. Aplicacions</h4><ul className="list-disc pl-5 space-y-1"><li>Quota préstec (sistema francès).</li><li>Plans de pensions.</li><li>Valoració d'empreses (DCF + Gordon-Shapiro).</li></ul></div>
+                    </div>
+                    <FormulaBox formula="Cₙ = C₀(1+i)ⁿ    TAE = (1+TIN/m)^m − 1    Vₐ = c·[1−(1+i)⁻ⁿ]/i" />
+                    <ClauBox>
+                        <p>- Domina la distinció <strong>capitalització simple vs. composta</strong>.</p>
+                        <p>- Calcula la <strong>TAE</strong> a partir del TIN i la freqüència de capitalització.</p>
+                        <p>- Valora una <strong>renda perpètua</strong> (Vₐ = c/i) i creixent (Gordon-Shapiro).</p>
+                        <p>- Aplica fórmules al càlcul d'una <strong>quota d'hipoteca</strong> (sistema francès).</p>
+                    </ClauBox>
+                </Card>
+            </div>
+        );
+
+        const Tema55 = () => {
+            const [vista, setVista] = useState('complet');
+            return <div className="space-y-6"><SectionTitle icon="📈" title="Tema 55" subtitle={t('tema55.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema55Complet />}{vista === 'resum' && <Tema55Resum />}</div>;
+        };
         const Tema56 = () => <TemaPlaceholder num={56} title={t('tema56.title')} icon="🧾" />;
 
         const temes = [
