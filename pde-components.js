@@ -4,7 +4,7 @@
  * Requires: React 18, pde-shared.js globals (PDE_CONFIG, PDE_NAV, PDE_STYLES, etc.)
  */
 
-const { useState: _useState, useEffect: _useEffect, useCallback: _useCallback } = React;
+const { useState: _useState, useEffect: _useEffect, useCallback: _useCallback, useRef: _useRef, useMemo: _useMemo } = React;
 
 // ─── usePdeIdioma Hook ──────────────────────────────────────────
 /**
@@ -35,6 +35,282 @@ function usePdeIdioma() {
     }, []);
 
     return [idioma, setIdioma];
+}
+
+// ─── usePdeTheme Hook ──────────────────────────────────────────
+/**
+ * Dark mode hook. Reads from PdeThemeStore and auto-updates.
+ * Returns [theme, toggleTheme] where theme is 'light' or 'dark'.
+ */
+function usePdeTheme() {
+    const [theme, setThemeState] = _useState(function() { return PdeThemeStore.get(); });
+
+    _useEffect(function() {
+        const unsubscribe = PdeThemeStore.subscribe(function(t) {
+            setThemeState(function(prev) { return prev === t ? prev : t; });
+        });
+        return unsubscribe;
+    }, []);
+
+    const toggleTheme = _useCallback(function() {
+        PdeThemeStore.toggle();
+    }, []);
+
+    return [theme, toggleTheme];
+}
+
+// ─── Dark Mode Toggle ──────────────────────────────────────────
+/**
+ * Compact dark/light toggle button.
+ * @param {{ theme: string, toggleTheme: Function, idioma: string }} props
+ */
+function PdeThemeToggle({ theme, toggleTheme, idioma }) {
+    const t = createTranslator({}, idioma);
+    const isDark = theme === 'dark';
+
+    return (
+        <button
+            onClick={toggleTheme}
+            className={'p-2 rounded-lg transition-all ' +
+                (isDark
+                    ? 'text-yellow-400 hover:bg-gray-800'
+                    : 'text-gray-500 hover:bg-gray-100'
+                )}
+            title={t('theme.toggle')}
+            aria-label={t('theme.toggle')}
+        >
+            <span className="text-sm">{isDark ? '☀️' : '🌙'}</span>
+        </button>
+    );
+}
+
+// ─── Search Modal ──────────────────────────────────────────────
+/**
+ * Global search with Ctrl+K shortcut.
+ * Searches across PDE_NAV pages and optional sections.
+ *
+ * @param {{ idioma: string, sections?: Array, currentApp?: string }} props
+ */
+function PdeSearch({ idioma, sections, currentApp, externalOpen, onClose }) {
+    const [open, setOpen] = _useState(false);
+    const [query, setQuery] = _useState('');
+    const inputRef = _useRef(null);
+    const t = createTranslator({}, idioma);
+
+    // Sync with external open trigger
+    _useEffect(function() {
+        if (externalOpen) setOpen(true);
+    }, [externalOpen]);
+
+    function closeSearch() {
+        setOpen(false);
+        setQuery('');
+        if (typeof onClose === 'function') onClose();
+    }
+
+    // Ctrl+K / Cmd+K shortcut
+    _useEffect(function() {
+        function handleKey(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                setOpen(function(prev) {
+                    const next = !prev;
+                    if (!next && typeof onClose === 'function') onClose();
+                    return next;
+                });
+            }
+            if (e.key === 'Escape') closeSearch();
+        }
+        window.addEventListener('keydown', handleKey);
+        return function() { window.removeEventListener('keydown', handleKey); };
+    }, [onClose]);
+
+    // Auto-focus input when opened
+    _useEffect(function() {
+        if (open && inputRef.current) inputRef.current.focus();
+    }, [open]);
+
+    // Build search index
+    const searchIndex = _useMemo(function() {
+        const items = [];
+
+        // Add nav pages
+        PDE_NAV.forEach(function(app) {
+            const label = PDE_SHARED_TRANSLATIONS['nav.' + app.id];
+            if (label) {
+                items.push({
+                    type: 'page',
+                    id: app.id,
+                    emoji: app.emoji,
+                    label: label[idioma] || label['val'],
+                    keywords: [label['val'], label['es'], label['en']].join(' ').toLowerCase(),
+                    href: app.href,
+                });
+            }
+        });
+
+        // Add current page sections
+        if (sections && sections.length > 0) {
+            sections.forEach(function(sec) {
+                items.push({
+                    type: 'section',
+                    id: sec.id,
+                    emoji: sec.emoji || '📄',
+                    label: sec.label,
+                    keywords: sec.label.toLowerCase() + ' ' + (sec.id || ''),
+                    href: '#' + sec.id,
+                    page: currentApp,
+                });
+            });
+        }
+
+        return items;
+    }, [idioma, sections, currentApp]);
+
+    // Filter results
+    const results = _useMemo(function() {
+        if (!query.trim()) return searchIndex.slice(0, 10);
+        const q = query.toLowerCase().trim();
+        return searchIndex.filter(function(item) {
+            return item.keywords.includes(q) || item.label.toLowerCase().includes(q);
+        });
+    }, [query, searchIndex]);
+
+    if (!open) return null;
+
+    return (
+        <div
+            className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh]"
+            onClick={closeSearch}
+        >
+            {/* Backdrop */}
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+
+            {/* Modal */}
+            <div
+                className="relative w-full max-w-lg mx-4 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+                onClick={function(e) { e.stopPropagation(); }}
+            >
+                {/* Search input */}
+                <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+                    <span className="text-gray-400">🔍</span>
+                    <input
+                        ref={inputRef}
+                        type="text"
+                        value={query}
+                        onChange={function(e) { setQuery(e.target.value); }}
+                        placeholder={t('search.placeholder')}
+                        className="flex-1 bg-transparent text-gray-800 dark:text-gray-200 placeholder-gray-400 outline-none text-sm"
+                    />
+                    <kbd className="hidden sm:inline px-2 py-0.5 text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 rounded">ESC</kbd>
+                </div>
+
+                {/* Results */}
+                <div className="max-h-[40vh] overflow-y-auto py-2">
+                    {results.length === 0 ? (
+                        <p className="px-4 py-6 text-center text-sm text-gray-400">{t('search.noResults')}</p>
+                    ) : (
+                        results.map(function(item, i) {
+                            return (
+                                <a
+                                    key={item.type + '-' + item.id}
+                                    href={item.href}
+                                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-pink-900/30 hover:text-pink-600 transition-all"
+                                    onClick={closeSearch}
+                                >
+                                    <span>{item.emoji}</span>
+                                    <span className="flex-1">{item.label}</span>
+                                    <span className="text-xs text-gray-400">
+                                        {item.type === 'page' ? '→' : '#'}
+                                    </span>
+                                </a>
+                            );
+                        })
+                    )}
+                </div>
+
+                {/* Footer hint */}
+                <div className="px-4 py-2 border-t border-gray-100 dark:border-gray-800 text-xs text-gray-400 flex justify-between">
+                    <span>{results.length} {t('search.results')}</span>
+                    <span>⌘K</span>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ─── Progress Bar ──────────────────────────────────────────────
+/**
+ * Compact progress indicator for section-based pages.
+ * Shows completion percentage and marks sections as visited.
+ *
+ * @param {{ pageId: string, sections: Array, currentSection: string, idioma: string }} props
+ */
+function PdeProgressBar({ pageId, sections, currentSection, idioma }) {
+    const [completed, setCompleted] = _useState(function() {
+        return PdeProgressStore.get(pageId);
+    });
+    const t = createTranslator({}, idioma);
+
+    // Mark current section as completed after 5 seconds of viewing
+    _useEffect(function() {
+        if (!currentSection || !pageId) return;
+        const timer = setTimeout(function() {
+            PdeProgressStore.markCompleted(pageId, currentSection);
+            setCompleted(PdeProgressStore.get(pageId));
+        }, 5000);
+        return function() { clearTimeout(timer); };
+    }, [currentSection, pageId]);
+
+    if (!sections || sections.length === 0) return null;
+
+    const percent = Math.round((completed.length / sections.length) * 100);
+
+    return (
+        <div className="flex items-center gap-2 pde-no-print">
+            {/* Mini progress dots */}
+            <div className="hidden sm:flex items-center gap-0.5">
+                {sections.map(function(sec) {
+                    const done = completed.includes(sec.id);
+                    return (
+                        <div
+                            key={sec.id}
+                            className={'w-1.5 h-1.5 rounded-full transition-all ' +
+                                (done ? 'bg-emerald-500' :
+                                 sec.id === currentSection ? 'bg-pink-500' :
+                                 'bg-gray-300 dark:bg-gray-600')}
+                            title={sec.label + (done ? ' ✓' : '')}
+                        />
+                    );
+                })}
+            </div>
+            {/* Percentage */}
+            <span className={'text-xs font-medium ' +
+                (percent === 100 ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400')}>
+                {percent}%
+            </span>
+        </div>
+    );
+}
+
+// ─── Print Button ──────────────────────────────────────────────
+/**
+ * Simple print button, hidden in print view.
+ * @param {{ idioma: string }} props
+ */
+function PdePrintButton({ idioma }) {
+    const t = createTranslator({}, idioma);
+
+    return (
+        <button
+            onClick={function() { window.print(); }}
+            className="pde-no-print flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/30 rounded-lg transition-all"
+            title={t('print.button')}
+        >
+            <span>🖨️</span>
+            <span className="hidden sm:inline text-xs">{t('print.button').replace('🖨️ ', '')}</span>
+        </button>
+    );
 }
 
 // ─── Language Selector ──────────────────────────────────────────
@@ -98,7 +374,7 @@ function PdeCrossNav({ idioma, currentApp }) {
             </button>
 
             {open && (
-                <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50">
+                <div className="absolute right-0 top-full mt-1 w-56 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-50">
                     <a href="./"
                        className={currentApp === 'index' ? PDE_STYLES.navLinkActive : PDE_STYLES.navLink}
                     >
@@ -135,6 +411,8 @@ function PdeCrossNav({ idioma, currentApp }) {
  */
 function PdeHeader({ idioma, setIdioma, currentApp, sections, currentSection, setSection }) {
     const [menuOpen, setMenuOpen] = _useState(false);
+    const [searchOpen, setSearchOpen] = _useState(false);
+    const [theme, toggleTheme] = usePdeTheme();
     const t = createTranslator({}, idioma);
     const isIndex = currentApp === 'index';
 
@@ -145,14 +423,14 @@ function PdeHeader({ idioma, setIdioma, currentApp, sections, currentSection, se
                 <div className="flex items-center gap-3">
                     <a href="./" className="flex items-center gap-2 hover:opacity-80 transition-opacity" title={t('nav.home')}>
                         <span className="text-xl">🎓</span>
-                        <span className="font-black text-xl text-gray-800">PDE</span>
+                        <span className="font-black text-xl text-gray-800 dark:text-gray-100">PDE</span>
                     </a>
 
                     {!isIndex && (
-                        <span className="text-gray-300">|</span>
+                        <span className="text-gray-300 dark:text-gray-600">|</span>
                     )}
                     {!isIndex && (
-                        <span className="text-sm font-semibold text-pink-600">
+                        <span className="text-sm font-semibold text-pink-600 dark:text-pink-400">
                             {t('nav.' + currentApp)}
                         </span>
                     )}
@@ -185,8 +463,31 @@ function PdeHeader({ idioma, setIdioma, currentApp, sections, currentSection, se
                     </nav>
                 )}
 
-                {/* Right: Language + Cross-app nav + Mobile hamburger */}
-                <div className="flex items-center gap-2">
+                {/* Right: Tools + Language + Cross-app nav + Mobile hamburger */}
+                <div className="flex items-center gap-1">
+                    {/* Progress (only on section-based pages) */}
+                    {sections && sections.length > 0 && (
+                        <PdeProgressBar pageId={currentApp} sections={sections} currentSection={currentSection} idioma={idioma} />
+                    )}
+
+                    {/* Search */}
+                    <button
+                        onClick={function() { setSearchOpen(true); }}
+                        className="p-2 text-gray-500 dark:text-gray-400 hover:text-pink-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all pde-no-print"
+                        title={t('search.open') + ' (⌘K)'}
+                        aria-label={t('search.open')}
+                    >
+                        <span className="text-sm">🔍</span>
+                    </button>
+
+                    {/* Print (only on content pages, not index/games) */}
+                    {sections && sections.length > 0 && (
+                        <PdePrintButton idioma={idioma} />
+                    )}
+
+                    {/* Dark mode toggle */}
+                    <PdeThemeToggle theme={theme} toggleTheme={toggleTheme} idioma={idioma} />
+
                     <PdeLanguageSelector idioma={idioma} setIdioma={setIdioma} />
                     <PdeCrossNav idioma={idioma} currentApp={currentApp} />
 
@@ -227,6 +528,15 @@ function PdeHeader({ idioma, setIdioma, currentApp, sections, currentSection, se
                     })}
                 </div>
             )}
+
+            {/* Search modal */}
+            <PdeSearch
+                idioma={idioma}
+                sections={sections}
+                currentApp={currentApp}
+                externalOpen={searchOpen}
+                onClose={function() { setSearchOpen(false); }}
+            />
         </header>
     );
 }
@@ -384,8 +694,13 @@ window.PdeCrossNav = PdeCrossNav;
 window.PdeScrollToTop = PdeScrollToTop;
 window.PdePrevNext = PdePrevNext;
 window.PdeHomeButton = PdeHomeButton;
+window.PdeThemeToggle = PdeThemeToggle;
+window.PdeSearch = PdeSearch;
+window.PdeProgressBar = PdeProgressBar;
+window.PdePrintButton = PdePrintButton;
 window.usePdeDeepLink = usePdeDeepLink;
 window.usePdeIdioma = usePdeIdioma;
+window.usePdeTheme = usePdeTheme;
 
 window.PDE = {
     Header: PdeHeader,
@@ -395,6 +710,11 @@ window.PDE = {
     ScrollToTop: PdeScrollToTop,
     PrevNext: PdePrevNext,
     HomeButton: PdeHomeButton,
+    ThemeToggle: PdeThemeToggle,
+    Search: PdeSearch,
+    ProgressBar: PdeProgressBar,
+    PrintButton: PdePrintButton,
     useDeepLink: usePdeDeepLink,
     useIdioma: usePdeIdioma,
+    useTheme: usePdeTheme,
 };
