@@ -989,7 +989,185 @@
             const [vista, setVista] = useState('complet');
             return <div className="space-y-6"><SectionTitle icon="📏" title="Tema 41" subtitle={t('tema41.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema41Complet />}{vista === 'resum' && <Tema41Resum />}</div>;
         };
-        const Tema42 = () => <TemaPlaceholder num={42} title={t('tema42.title')} icon="⚙️" />;
+        // ════════════════════════════════════════════════════════════════
+        // TEMA 42 — Sistema de producció
+        // ════════════════════════════════════════════════════════════════
+        const Tema42Complet = () => (
+            <div className="space-y-6 animate-fade">
+                <Card title="Introducció" icon="📌">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>La <strong>producció</strong> és l'activitat econòmica fonamental: transforma <em>inputs</em> (matèries primeres, treball, capital, energia, coneixement) en <em>outputs</em> (béns i serveis) que satisfan necessitats humanes. La gestió de la producció —també anomenada direcció d'operacions— ha evolucionat des del taller artesanal fins a les fàbriques 4.0 dotades d'intel·ligència artificial i robòtica col·laborativa.</p>
+                        <p>La <strong>productivitat</strong>, raó entre output i inputs, és el motor últim del progrés econòmic: Paul Krugman va afirmar que «la productivitat no ho és tot, però a llarg termini és quasi tot». La bretxa de productivitat entre Espanya i la UE-27 (~15 % inferior, Eurostat 2024) és una de les principals preocupacions de política econòmica.</p>
+                        <p>El tema s'estructura en 5 blocs: (1) sistema de producció i enfocament modern; (2) tipus de processos productius; (3) productivitat: concepte i mesura; (4) millora de la productivitat: lean, Six Sigma, Indústria 4.0; (5) qualitat i sostenibilitat.</p>
+                    </div>
+                </Card>
+
+                <Card title="1. Sistema de producció" icon="⚙️">
+                    <TheoryBlock title="1.1. Concepte d'operacions" color="orange">
+                        <p>La <strong>direcció d'operacions</strong> (<em>Operations Management</em>) gestiona el sistema transformador de l'empresa. Segons <strong>Chase, Aquilano i Jacobs</strong> (<em>Operations Management for Competitive Advantage</em>, 2005), el sistema productiu és «el conjunt d'activitats que produeixen valor en forma de béns i serveis transformant inputs en outputs».</p>
+                        <p>Objectius clàssics de la direcció d'operacions (<em>operations objectives</em>): cost, qualitat, flexibilitat, termini de lliurament, servei, sostenibilitat. La <strong>matriu de Porter</strong> del Tema 58 mostra que cap empresa pot excel·lir en tots simultàniament: ha de triar una estratègia (cost vs. diferenciació vs. enfocament).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.2. Funció de producció" color="violet">
+                        <p>La <strong>funció de producció</strong> expressa la relació tècnica entre inputs i output: Q = f(K, L, T) on K és capital, L treball, T tecnologia. Tipus habituals:</p>
+                        <p>• <strong>Cobb-Douglas</strong>: Q = A · K^α · L^β. Rendiments constants si α + β = 1, creixents si &gt; 1, decreixents si &lt; 1.</p>
+                        <p>• <strong>Lineal</strong>: Q = aK + bL (substituts perfectes).</p>
+                        <p>• <strong>Leontief</strong>: Q = min(K/a, L/b) (complementaris perfectes, proporcions fixes).</p>
+                        <p>• <strong>CES</strong> (Constant Elasticity of Substitution, Arrow et al., 1961).</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="Q = A · K^α · L^β" desc="Funció Cobb-Douglas (Cobb i Douglas, 1928)" />
+                </Card>
+
+                <Card title="2. Tipus de processos productius" icon="🏭">
+                    <TheoryBlock title="2.1. Segons el flux productiu (Woodward, 1965)" color="indigo">
+                        <p><strong>Joan Woodward</strong> (<em>Industrial Organization</em>, 1965) va classificar els processos segons la seua complexitat tècnica:</p>
+                        <p><strong>a) Producció unitària o per projecte</strong>: productes únics a mida. Exemples: vaixells, edificis, bodes. Alta flexibilitat, baixa estandardització. Mà d'obra molt qualificada.</p>
+                        <p><strong>b) Producció per lots (batch)</strong>: volums intermedis de productes diferenciats. Exemples: panaderia industrial, laboratoris farmacèutics.</p>
+                        <p><strong>c) Producció massiva (en sèrie)</strong>: volums alts de producte homogeni. Exemples: automòbils (Ford), electrodomèstics. Alta estandardització, economies d'escala, rigidesa.</p>
+                        <p><strong>d) Producció contínua (flux)</strong>: producció 24×7 sense interrupcions. Exemples: refineries, paperes, ciment. Alts costos fixos, molt capital intensiu.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.2. Classificacions complementàries" color="blue">
+                        <p><strong>Segons la demanda</strong>: <em>make-to-stock</em> (per estoc, MTS), <em>make-to-order</em> (per encàrrec, MTO), <em>assemble-to-order</em> (muntatge a demanda, ATO), <em>engineer-to-order</em> (disseny personalitzat, ETO).</p>
+                        <p><strong>Segons el layout</strong>: producció en cadena (<em>línia</em>), per funció (<em>tallers</em> o <em>job shop</em>), fixa (<em>project shop</em>), cel·lular (agrupació per famílies de producte).</p>
+                        <p><strong>Segons la seqüència</strong>: seqüencial, paral·lela, híbrida.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.3. Serveis: particularitats" color="emerald">
+                        <p>La producció de <strong>serveis</strong> presenta trets específics: (1) <strong>intangibilitat</strong>; (2) <strong>inseparabilitat</strong> producció-consum; (3) <strong>heterogeneïtat</strong> (depenent del proveïdor); (4) <strong>caducitat</strong> (no es pot emmagatzemar); (5) <strong>interacció</strong> amb el client (<em>moment of truth</em>).</p>
+                        <p>L'economia espanyola és eminentment serveis: 74 % del VAB (INE 2024). Sectors clau: turisme (12 % del PIB), comerç, finances, sanitat, educació.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="3. Productivitat: concepte i mesura" icon="📊">
+                    <TheoryBlock title="3.1. Definició" color="indigo">
+                        <p>La <strong>productivitat</strong> és la <strong>ratio entre outputs produïts i inputs utilitzats</strong>, en un període determinat. Mesura l'eficiència tècnica del procés productiu.</p>
+                        <p><strong>Productivitat parcial</strong>: Q / input específic (ex. Q/L = productivitat del treball).</p>
+                        <p><strong>Productivitat total o multifactorial (TFP)</strong>: Q / (α·K + β·L + γ·M...), combinació de tots els factors. La <strong>TFP</strong> capta el component tecnològic i organitzatiu.</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="Productivitat = Output / Input" desc="Mesura bàsica d'eficiència" />
+                    <FormulaBox formula="Productivitat del treball = Q / L  |  TFP = Q / f(K, L, M, ...)" desc="Productivitat parcial vs. total factorial" />
+
+                    <TheoryBlock title="3.2. La productivitat en la comptabilitat del creixement (Solow, 1957)" color="violet">
+                        <p><strong>Robert Solow</strong> (Nobel 1987) va descompondre el creixement econòmic en: (a) creixement del capital; (b) creixement del treball; (c) <strong>residual de Solow</strong> o progrés tècnic (TFP), que explica la major part del creixement a llarg termini. Aquesta descomposició ha inspirat tota l'economia del creixement modern.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.3. Productivitat a Espanya i la UE" color="cyan">
+                        <p>La productivitat del treball espanyol és el 87 % de la UE-27 (Eurostat 2024). Factors explicatius: dimensió empresarial petita, baixa intensitat de R+D (1,44 % del PIB vs. 2,2 % UE), especialització en serveis de baixa productivitat (turisme), dualitat del mercat laboral, escassetat de talent STEM.</p>
+                        <p>Programes actuals de millora: <strong>Pla de Recuperació (PRTR)</strong>, <strong>Kit Digital</strong>, <strong>Generation D</strong> (digitalització PYMES).</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="4. Millora de la productivitat i sistemes moderns" icon="🚀">
+                    <TheoryBlock title="4.1. Lean Manufacturing (Toyota, 1950s)" color="emerald">
+                        <p>El <strong>Toyota Production System (TPS)</strong>, desenvolupat per <strong>Taiichi Ohno</strong> i <strong>Shigeo Shingo</strong> als anys 50-70, i popularitzat per <strong>Womack i Jones</strong> (<em>The Machine That Changed the World</em>, 1990; <em>Lean Thinking</em>, 1996), és la filosofia manufacturera més influent de la segona meitat del segle XX.</p>
+                        <p>Principis: identificar <strong>valor</strong>, mapar la <strong>cadena de valor</strong>, crear <strong>flux continu</strong>, estirar des del client (<em>pull</em>), buscar la <strong>perfecció</strong> mitjançant millora contínua (<em>kaizen</em>).</p>
+                        <p>Eliminació dels <strong>7+1 mudas</strong> (pèrdues): sobreproducció, espera, transport, sobreprocessament, inventari, moviment, defectes i talent infrautilitzat.</p>
+                        <p>Eines: <em>Just-In-Time</em> (JIT), <em>Kanban</em>, <em>SMED</em> (reducció temps canvi), <em>Poka-Yoke</em> (a prova d'error), <em>5S</em> (ordre), <em>jidoka</em> (autonomació).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.2. Six Sigma (Motorola, 1986)" color="violet">
+                        <p><strong>Six Sigma</strong> és una metodologia de millora de la qualitat desenvolupada per <em>Motorola</em> (1986) i adoptada extensament per <em>General Electric</em> sota Jack Welch. L'objectiu: reduir defectes fins a 3,4 per milió d'oportunitats (6σ de desviació estàndard).</p>
+                        <p>Metodologia <strong>DMAIC</strong>: <strong>D</strong>efine, <strong>M</strong>easure, <strong>A</strong>nalyze, <strong>I</strong>mprove, <strong>C</strong>ontrol.</p>
+                        <p>Organització: <em>black belts</em>, <em>green belts</em>, <em>yellow belts</em>. La síntesi amb Lean ha donat lloc al <strong>Lean Six Sigma</strong>, adopció típica de grans empreses industrials i de serveis.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.3. Theory of Constraints (Goldratt, 1984)" color="amber">
+                        <p><strong>Eliyahu Goldratt</strong>, a <em>The Goal</em> (1984), va formular la <strong>Teoria de les Restriccions (TOC)</strong>: el rendiment d'un sistema està limitat pel seu <strong>coll d'ampolla</strong>. El focus ha d'estar a identificar-lo, explotar-lo, subordinar-hi la resta, elevar-lo i repetir el cicle. Mètode de producció associat: <em>Drum-Buffer-Rope</em>.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.4. Indústria 4.0 i producció digital" color="indigo">
+                        <p>La <strong>Indústria 4.0</strong>, concepte encunyat al <em>Hannover Messe</em> de 2011, descriu la quarta revolució industrial basada en:</p>
+                        <p>• <strong>IoT industrial</strong> (<em>Industrial Internet of Things</em>): sensors en totes les màquines.</p>
+                        <p>• <strong>Big data i analítica avançada</strong>.</p>
+                        <p>• <strong>Cloud computing</strong>.</p>
+                        <p>• <strong>Robòtica col·laborativa</strong> (<em>cobots</em>).</p>
+                        <p>• <strong>Intel·ligència artificial</strong> i <em>machine learning</em>.</p>
+                        <p>• <strong>Fabricació additiva</strong> (impressió 3D).</p>
+                        <p>• <strong>Realitat augmentada/virtual</strong>.</p>
+                        <p>• <strong>Digital twin</strong>: rèplica virtual en temps real.</p>
+                        <p>A Espanya, la Indústria 4.0 s'impulsa mitjançant el programa <em>Industria Conectada 4.0</em> (2015) i el PERTE d'automoció (fons Next Gen EU, &gt;4.300 M€).</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="5. Qualitat i sostenibilitat" icon="♻️">
+                    <TheoryBlock title="5.1. Evolució de la qualitat" color="rose">
+                        <p><strong>Fases històriques</strong> (Evans i Lindsay, <em>Managing for Quality and Performance Excellence</em>, 2016):</p>
+                        <p>(1) <strong>Inspecció</strong> (1900s): detecció de defectes al final.</p>
+                        <p>(2) <strong>Control estadístic</strong> (Shewhart, 1931): cartes de control, límits de variabilitat.</p>
+                        <p>(3) <strong>Aseguració de la qualitat</strong> (Juran, 1950s): enfocament processos, trilogia de la qualitat (planificació, control, millora).</p>
+                        <p>(4) <strong>Gestió de la Qualitat Total</strong> (TQM, anys 80): Deming 14 punts, cultura organitzativa.</p>
+                        <p>(5) <strong>Excel·lència</strong>: EFQM, Malcolm Baldrige, ISO 9001:2015.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.2. Deming i els 14 punts" color="emerald">
+                        <p><strong>W. Edwards Deming</strong>, pioner de la qualitat total, va influir decisivament en la recuperació industrial japonesa. Els seus <em>14 punts per a la direcció</em> (<em>Out of the Crisis</em>, 1986) inclouen: constància del propòsit, adopció d'una nova filosofia, evitar la inspecció massiva, evitar el menor preu com a criteri únic, millora contínua, formació en el lloc, lideratge, evitar la por, trencar barreres departamentals, eliminar eslògans, eliminar quotes numèriques, donar dignitat al treballador, educació i millora, compromís de tothom.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.3. Sostenibilitat productiva" color="green">
+                        <p>La <strong>producció sostenible</strong> integra criteris ambientals i socials: reducció d'emissions, economia circular, eficiència energètica, logística verda, comerç just. Normatives: <strong>ISO 14001</strong> (ambiental), <strong>ISO 50001</strong> (energia), <strong>Llei 7/2022</strong> de residus i sòls contaminats, <strong>Pla PERTE d'economia circular</strong>.</p>
+                        <p>Concepte rellevant: <em>cradle-to-cradle</em> (Braungart-McDonough, 2002) enfront del <em>cradle-to-grave</em> tradicional. Casos: <em>Patagonia</em>, <em>Interface</em>, <em>Ecoalf</em> (Espanya).</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="Conclusió" icon="✅">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>El sistema de producció ha sigut un dels camps més dinàmics del <em>management</em>. Des de <strong>Taylor (1911)</strong> i <strong>Ford (1913)</strong> fins al <strong>Toyota Production System</strong>, passant per la <strong>Theory of Constraints</strong> (Goldratt, 1984), el <strong>Six Sigma</strong> (Motorola, 1986) i la <strong>Indústria 4.0</strong>, cada generació ha aportat millores substancials a l'eficiència. La <strong>productivitat</strong> —multifactorial, a la Solow (1957)— és el motor del creixement econòmic a llarg termini.</p>
+                        <p>En l'actualitat, la convergència entre <em>lean thinking</em>, qualitat total i transformació digital configura la fàbrica del futur: flexible, àgil, sostenible i intel·ligent. Espanya té una oportunitat històrica amb els fons Next Gen EU i els PERTE per tancar la bretxa de productivitat. El docent ha de transmetre que la producció no és un tema «tècnic» reservat als enginyers, sinó el cor mateix de la competitivitat empresarial i de la prosperitat social.</p>
+                    </div>
+                </Card>
+
+                <BibliografiaBox items={[
+                    'COBB, C. i DOUGLAS, P. (1928): «A Theory of Production», AER, 18.',
+                    'SHEWHART, W. (1931): Economic Control of Quality of Manufactured Product, Van Nostrand.',
+                    'SOLOW, R.M. (1957): «Technical Change and the Aggregate Production Function», REStat, 39.',
+                    'ARROW, K. et al. (1961): «Capital-Labor Substitution and Economic Efficiency», REStat, 43.',
+                    'WOODWARD, J. (1965): Industrial Organization, Oxford Univ. Press.',
+                    'JURAN, J.M. (1951): Quality Control Handbook, McGraw-Hill.',
+                    'DEMING, W.E. (1986): Out of the Crisis, MIT Press.',
+                    'GOLDRATT, E.M. (1984): The Goal, North River Press.',
+                    'OHNO, T. (1988): Toyota Production System, Productivity Press.',
+                    'WOMACK, J., JONES, D. i ROOS, D. (1990): The Machine That Changed the World, Rawson.',
+                    'WOMACK, J. i JONES, D. (1996): Lean Thinking, Simon & Schuster.',
+                    'CHASE, R., AQUILANO, N. i JACOBS, F.R. (2005): Operations Management for Competitive Advantage, 11a ed., McGraw-Hill.',
+                    'EVANS, J. i LINDSAY, W. (2016): Managing for Quality and Performance Excellence, Cengage.',
+                    'BRAUNGART, M. i MCDONOUGH, W. (2002): Cradle to Cradle, North Point.',
+                    'ISO 9001:2015 (qualitat) i ISO 14001:2015 (ambiental).',
+                ]} />
+            </div>
+        );
+
+        const Tema42Resum = () => (
+            <div className="space-y-5 animate-fade">
+                <Card>
+                    <div className="p-4 bg-orange-50 rounded-xl border border-orange-200 mb-5">
+                        <p className="text-center font-bold text-orange-800 text-lg">Tema 42: Sistema de producció</p>
+                        <p className="text-center text-sm text-orange-600 mt-1"><em>«La productivitat no ho és tot, però a LP és quasi tot»</em> — Krugman</p>
+                    </div>
+                    <div className="space-y-4 text-sm text-slate-700">
+                        <div><h4 className="font-bold text-slate-800 mb-1">1. Sistema</h4><ul className="list-disc pl-5 space-y-1"><li>Direcció d'operacions: cost, qualitat, flexibilitat, termini, servei.</li><li>Funció Cobb-Douglas Q = A·K^α·L^β.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">2. Tipus</h4><ul className="list-disc pl-5 space-y-1"><li>Woodward (1965): unitari, lots, massiu, continu.</li><li>Per demanda: MTS, MTO, ATO, ETO.</li><li>Serveis: intangibilitat, inseparabilitat, caducitat.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">3. Productivitat</h4><ul className="list-disc pl-5 space-y-1"><li>Parcial (Q/L) vs. total factorial (TFP).</li><li>Residual de Solow (1957): TFP explica CP a LP.</li><li>Espanya 87 % UE-27 (Eurostat 2024).</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">4. Millora</h4><ul className="list-disc pl-5 space-y-1"><li>Lean (Ohno, TPS): 7+1 mudas, JIT, Kanban, SMED.</li><li>Six Sigma (Motorola 1986): DMAIC, 3,4 ppm.</li><li>TOC (Goldratt 1984): coll d'ampolla.</li><li>Indústria 4.0: IoT, IA, cobots, digital twin.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">5. Qualitat i sostenibilitat</h4><ul className="list-disc pl-5 space-y-1"><li>Evolució: inspecció → Shewhart → Juran → Deming TQM → ISO/EFQM.</li><li>Deming: 14 punts.</li><li>Economia circular, ISO 14001, Llei 7/2022.</li></ul></div>
+                    </div>
+                    <FormulaBox formula="Q = A · K^α · L^β" desc="Cobb-Douglas (1928)" />
+                    <ClauBox>
+                        <p>- Cita <strong>Cobb-Douglas (1928)</strong>, <strong>Woodward (1965)</strong> i <strong>Solow (1957, residual)</strong>.</p>
+                        <p>- Domina <strong>Lean (TPS)</strong> amb els 7+1 mudas i el <strong>Six Sigma</strong> (DMAIC).</p>
+                        <p>- Connecta amb <strong>Indústria 4.0</strong>, PERTE i Kit Digital (actualitat).</p>
+                        <p>- Esmenta el <strong>residual de Solow</strong> com a clau de la TFP.</p>
+                    </ClauBox>
+                </Card>
+            </div>
+        );
+
+        const Tema42 = () => {
+            const [vista, setVista] = useState('complet');
+            return <div className="space-y-6"><SectionTitle icon="⚙️" title="Tema 42" subtitle={t('tema42.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema42Complet />}{vista === 'resum' && <Tema42Resum />}</div>;
+        };
         const Tema43 = () => <TemaPlaceholder num={43} title={t('tema43.title')} icon="💰" />;
         const Tema44 = () => <TemaPlaceholder num={44} title={t('tema44.title')} icon="📋" />;
         const Tema45 = () => <TemaPlaceholder num={45} title={t('tema45.title')} icon="📣" />;
