@@ -2192,7 +2192,229 @@
             const [vista, setVista] = useState('complet');
             return <div className="space-y-6"><SectionTitle icon="📺" title="Tema 47" subtitle={t('tema47.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema47Complet />}{vista === 'resum' && <Tema47Resum />}</div>;
         };
-        const Tema48 = () => <TemaPlaceholder num={48} title={t('tema48.title')} icon="💶" />;
+        // ════════════════════════════════════════════════════════════════
+        // TEMA 48 — La política de preus i estratègia de màrqueting
+        // ════════════════════════════════════════════════════════════════
+        const Tema48Complet = () => (
+            <div className="space-y-6 animate-fade">
+                <Card title="Introducció" icon="📌">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>El <strong>preu</strong> és l'única de les 4 P que <strong>genera ingressos</strong>: les altres (producte, distribució, comunicació) generen costos. És també l'element més flexible del mix (es pot modificar ràpidament) i el que més influeix a curt termini en vendes i rendibilitat. <em>Warren Buffett</em> va dir: «El test més important de la qualitat d'un negoci és la capacitat de pujar els preus sense perdre clients».</p>
+                        <p>En un entorn inflacionari com el 2022-2024, amb pics d'IPC del 10,8 % (juliol 2022) i estabilització al voltant del 3 % el 2024, la gestió dels preus ha adquirit una importància estratègica excepcional. Les empreses han hagut de decidir entre absorbir costos, traslladar-los (<em>pricing power</em>) o ajustar mix de productes. Casos com les pujades de <em>Mercadona</em>, les estratègies de marca blanca d'<em>Aldi/Lidl</em> o la política de <em>Ryanair</em> il·lustren respostes diferents.</p>
+                        <p>Aquest tema, l'últim del Bloc E, s'estructura en 5 blocs: (1) concepte i factors que condicionen el preu; (2) mètodes de fixació de preus; (3) estratègies de preu; (4) discriminació de preus i altres tècniques avançades; (5) planificació, organització i control de l'estratègia de màrqueting.</p>
+                    </div>
+                </Card>
+
+                <Card title="1. Concepte i factors condicionants del preu" icon="💶">
+                    <TheoryBlock title="1.1. Concepte" color="orange">
+                        <p>El <strong>preu</strong> és la <strong>quantitat de diner (o altres recursos) que un client lliura a canvi d'un producte o servei</strong>. Des de la perspectiva del client, és el sacrifici; des de l'empresa, l'ingrés unitari. Expressa l'intercanvi del valor creat per l'empresa.</p>
+                        <p>El preu té una <strong>dimensió múltiple</strong>: preu facial, preu net (amb descomptes), preu percebut pel client, preu psicològic, preu de referència (el que el client creu habitual), preu màxim disposat a pagar (<em>reservation price</em>).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.2. Factors interns" color="violet">
+                        <p>(1) <strong>Costos</strong>: el preu ha de cobrir els costos a llarg termini. El punt mort (Tema 43) és una referència clau.</p>
+                        <p>(2) <strong>Objectius empresarials</strong>: maximització del benefici, quota de mercat, supervivència, prestigi (estratègies diferents).</p>
+                        <p>(3) <strong>Cicle de vida del producte</strong>: preus alts en introducció (<em>skimming</em>) o baixos (<em>penetració</em>), ajust en maduresa.</p>
+                        <p>(4) <strong>Estratègia global del mix</strong>: coherència amb producte, canal i comunicació (un perfum de luxe a 3€ no té sentit).</p>
+                        <p>(5) <strong>Capacitat productiva</strong>: si la demanda supera la capacitat, preus alts.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.3. Factors externs" color="cyan">
+                        <p>(1) <strong>Demanda</strong>: elasticitat-preu (Tema 11), sensibilitat del consumidor.</p>
+                        <p>(2) <strong>Competència</strong>: estructura del mercat (competència perfecta, monopoli, oligopoli), nivell de preus del mercat.</p>
+                        <p>(3) <strong>Regulació</strong>: preus regulats (energia, tarifes públiques, productes farmacèutics amb recepta), prohibicions (venda a pèrdua, Llei 7/1996).</p>
+                        <p>(4) <strong>Entorn econòmic</strong>: inflació, tipus d'interès, tipus de canvi.</p>
+                        <p>(5) <strong>Percepció i imatge de marca</strong>: preu com a senyal de qualitat (efecte Veblen per a béns de luxe).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.4. Elasticitat-preu de la demanda" color="emerald">
+                        <p>Concepte fonamental (Tema 11, Microeconomia): mesura la variació percentual de la quantitat demandada davant una variació percentual del preu.</p>
+                        <p>E_p = (ΔQ/Q)/(ΔP/P). Si |E_p| &gt; 1 → demanda elàstica (un augment de preu redueix ingressos). Si |E_p| &lt; 1 → demanda inelàstica (un augment augmenta ingressos). La majoria de béns de primera necessitat són inelàstics; els béns de luxe o amb substituts, elàstics.</p>
+                        <p>Factors de l'elasticitat: disponibilitat de substituts, proporció de la renda, temps d'adaptació, caràcter essencial o discrecional.</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="E_p = (ΔQ/Q) / (ΔP/P)   |   IT = P · Q" desc="Elasticitat-preu: si |E_p|>1, baixar preu augmenta IT; si <1, pujar preu augmenta IT" />
+                </Card>
+
+                <Card title="2. Mètodes de fixació de preus" icon="🧮">
+                    <TheoryBlock title="2.1. Mètodes basats en costos (cost-plus)" color="indigo">
+                        <p>Més simples i habituals. Parteixen del cost i hi afegeixen un marge:</p>
+                        <p><strong>a) Preu de cost + marge</strong>: P = CT unitari × (1 + m), on m és el percentatge de marge.</p>
+                        <p><strong>b) Preu de retorn d'inversió (ROI)</strong>: P = CT unitari + (ROI desitjat × Capital invertit) / Vendes estimades.</p>
+                        <p><strong>c) Preu objectiu de benefici</strong>: P = (CF + B_objectiu) / Q + CVu.</p>
+                        <p><strong>Avantatges</strong>: simplicitat, justícia percebuda, garanteix rendibilitat.</p>
+                        <p><strong>Inconvenients</strong>: ignora la demanda i la competència.</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="P = CT_unitari · (1 + m)   |   P objectiu = (CF + B_obj)/Q + CVu" desc="Fixació de preus basada en costos" />
+
+                    <TheoryBlock title="2.2. Mètodes basats en la competència" color="violet">
+                        <p><strong>a) Preu respecte a la competència</strong>: preu igual (paritat), sobre o sota. Típic en mercats madurs.</p>
+                        <p><strong>b) Preu de licitació</strong>: subhastes, concursos públics (llei de contractes del sector públic 9/2017). Predir el preu del competidor és clau.</p>
+                        <p><strong>c) Preu de mercat</strong>: acceptar el preu vigent (price taker en competència).</p>
+                        <p>Les empreses que segueixen el líder utilitzen una <em>estratègia seguidora</em>; les que reten el líder, <em>estratègia agressiva</em>; les de nínxol, <em>estratègia especialista</em>.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.3. Mètodes basats en el valor" color="emerald">
+                        <p>Es parteix del <strong>valor percebut pel client</strong>, no del cost. P = Valor percebut − Marge percebut del client. Exigeix investigació en profunditat.</p>
+                        <p>Tècniques:</p>
+                        <p>• <strong>Preu EDLP</strong> (Every Day Low Price, Walmart, Mercadona): preus estables baixos.</p>
+                        <p>• <strong>Value pricing</strong>: oferir alta qualitat a preu moderat.</p>
+                        <p>• <strong>Target pricing</strong> japonés (Tema 43): es parteix del preu que el client accepta i es dissenya per complir-ne el cost.</p>
+                        <p>• <strong>Pricing dinàmic</strong>: algoritmes que ajusten preu en temps real (aerolínies, Uber surge pricing).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.4. Mètode òptim microeconòmic" color="rose">
+                        <p>En competència perfecta: P = CMg (preu igual al cost marginal). En monopoli i altres formes no competitives, la condició de maximització del benefici és <strong>IMg = CMg</strong>, amb el preu resultant al tram elàstic de la corba de demanda.</p>
+                        <p>Fórmula de Lerner: (P − CMg) / P = 1 / |E_p|. Mostra que el marge sobre el CMg depèn inversament de l'elasticitat.</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="(P − CMg)/P = 1 / |E_p|" desc="Condició de Lerner: marge òptim inversament proporcional a l'elasticitat" />
+                </Card>
+
+                <Card title="3. Estratègies de preu" icon="🎯">
+                    <TheoryBlock title="3.1. Estratègies de llançament" color="amber">
+                        <p><strong>a) Descremat (skimming)</strong>: preu inicial alt, per capturar els clients amb major disposició a pagar. Es redueix gradualment. Requereix: producte innovador, demanda inelàstica al principi, protecció davant copiadors. Exemple clàssic: Apple amb iPhones nous.</p>
+                        <p><strong>b) Penetració</strong>: preu inicial baix per conquerir ràpidament quota. Requereix: demanda elàstica, economies d'escala, dissuasió de competidors. Exemple: Spotify entrant a Espanya (2008).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.2. Estratègies de línia de producte" color="violet">
+                        <p><strong>a) Preus captius</strong>: producte principal barat, complements cars (màquines d'afaitar + fulles; Nespresso + càpsules; impressores + tinta).</p>
+                        <p><strong>b) Bundle pricing</strong> (preu del paquet): packs amb preu inferior a la suma individual (menú vs. plats solts, Office 365).</p>
+                        <p><strong>c) Preus per línies</strong>: gamma amb preus diferenciats (iPhone SE, iPhone estàndard, iPhone Pro).</p>
+                        <p><strong>d) Preus de dos parts</strong>: quota fixa + preu per ús (Gym, parc d'atraccions, operadores mòbils).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.3. Estratègies psicològiques" color="rose">
+                        <p><strong>a) Preus psicològics</strong> (<em>odd-pricing</em>): 9,99 € en lloc de 10 €. Aprofita biaixos cognitius.</p>
+                        <p><strong>b) Preu de prestigi</strong>: preus alts per senyalar qualitat (efecte Veblen). Patek Philippe, Ferrari.</p>
+                        <p><strong>c) Preu de referència</strong>: mostrar preu tatxat (abans 100 €, ara 59 €).</p>
+                        <p><strong>d) Decoy pricing</strong>: introduir una opció dominada per fer més atractiva una altra (classic Economist subscription trick).</p>
+                        <p><strong>e) Anchoring</strong>: posar un preu alt abans per fer semblar baix un altre.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.4. Estratègies promocionals" color="emerald">
+                        <p>Descomptes (quantitatius, estacionals, de caixa), <em>loss leaders</em> (productes ganxo a preu molt baix que atreuen trànsit), ofertes 2×1 i 3×2, cupons, preus introductoris, promocions flash (Black Friday, Cyber Monday, Rebajas).</p>
+                        <p>Limitacions legals: <strong>venda a pèrdua</strong> prohibida a detallistes en condicions generals (Llei 7/1996), excepte productes peribles, saldos i liquidacions.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="4. Discriminació de preus i tècniques avançades" icon="🔬">
+                    <TheoryBlock title="4.1. Discriminació de preus (Pigou, 1920)" color="indigo">
+                        <p><strong>Arthur Pigou</strong>, a <em>The Economics of Welfare</em> (1920), va classificar la <strong>discriminació de preus</strong> en 3 graus:</p>
+                        <p><strong>• 1r grau (perfecta)</strong>: cobrar a cada client el seu preu màxim (<em>reservation price</em>). Hipotètica, captura tot l'excedent del consumidor.</p>
+                        <p><strong>• 2n grau</strong>: preus diferents segons quantitat o versió (<em>versioning</em>, <em>quantity discounts</em>). Spotify Free vs. Premium, aerolínies (classe turista/business).</p>
+                        <p><strong>• 3r grau</strong>: preus diferents per a segments identificables amb diferent elasticitat. Descomptes d'estudiant/jubilat, preus internacionals diferents, preus per zona geogràfica.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.2. Condicions per a la discriminació" color="violet">
+                        <p>Per a aplicar-la eficaçment cal:</p>
+                        <p>(1) <strong>Poder de mercat</strong> (no és possible en competència perfecta).</p>
+                        <p>(2) <strong>Segmentació clara</strong> amb elasticitats diferents.</p>
+                        <p>(3) <strong>No-arbitratge</strong>: impedir revenda entre segments.</p>
+                        <p>Exemples controvertits: <em>dynamic pricing</em> d'Uber, preus d'avió per IP geogràfica, <em>personalitzat pricing</em> amb IA.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.3. Tècniques avançades" color="cyan">
+                        <p><strong>• Revenue Management / Yield Management</strong>: optimitzar ingressos amb capacitat fixa i demanda variable. Originat a les aerolínies (American Airlines, 1985). S'aplica a hotels, trens, lloguer de cotxes, esdeveniments.</p>
+                        <p><strong>• Subscription economy</strong>: Netflix, Spotify, SaaS (Microsoft 365, Adobe Creative Cloud). El client paga regular, ingressos més estables.</p>
+                        <p><strong>• Freemium</strong>: gratuït bàsic + premium de pagament (Spotify, Duolingo).</p>
+                        <p><strong>• Pay-what-you-want</strong>: el client decideix (Humble Bundle, alguns museus).</p>
+                        <p><strong>• AI pricing</strong>: algoritmes d'aprenentatge automàtic optimitzen preus en temps real segons stock, demanda, perfil client.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="5. Planificació, organització i control de l'estratègia de màrqueting" icon="📊">
+                    <TheoryBlock title="5.1. El pla de màrqueting" color="orange">
+                        <p>El <strong>pla de màrqueting</strong> és el document que sistematitza l'estratègia i les accions comercials. Estructura habitual:</p>
+                        <p>(1) <strong>Resum executiu</strong>.</p>
+                        <p>(2) <strong>Anàlisi de situació</strong>: PESTEL, 5 forces de Porter, DAFO.</p>
+                        <p>(3) <strong>Objectius</strong>: SMART.</p>
+                        <p>(4) <strong>Estratègia</strong>: segmentació, targeting, posicionament (STP).</p>
+                        <p>(5) <strong>Màrqueting mix</strong>: 4 P concretes.</p>
+                        <p>(6) <strong>Pressupost</strong>: ingressos, costos, compte de resultats previsional.</p>
+                        <p>(7) <strong>Calendari</strong> d'accions.</p>
+                        <p>(8) <strong>Indicadors de control</strong>: KPIs.</p>
+                        <p>(9) <strong>Contingències</strong>.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.2. Organització del departament de màrqueting" color="violet">
+                        <p>Estructures organitzatives típiques:</p>
+                        <p>• <strong>Funcional</strong>: producte, preus, distribució, comunicació, investigació.</p>
+                        <p>• <strong>Per productes</strong> (<em>Product Manager</em>): un responsable per línia o marca (P&G històric).</p>
+                        <p>• <strong>Per mercats</strong>: un responsable per segment/geografia.</p>
+                        <p>• <strong>Matricial</strong>: combinació producte-mercat.</p>
+                        <p>Tendència actual: <em>growth teams</em> multidisciplinaris, <em>agile marketing</em>.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.3. Control del màrqueting" color="emerald">
+                        <p>El <strong>control</strong> del màrqueting (Kotler-Armstrong) té 4 nivells:</p>
+                        <p>(1) <strong>Control del pla anual</strong>: anàlisi de vendes vs. objectius, quota, ratio vendes/despeses.</p>
+                        <p>(2) <strong>Control de rendibilitat</strong>: per producte, territori, client, canal.</p>
+                        <p>(3) <strong>Control d'eficiència</strong>: productivitat de la força de vendes, de la publicitat, del màrqueting digital.</p>
+                        <p>(4) <strong>Control estratègic</strong>: auditoria de màrqueting, revisió del pla estratègic.</p>
+                        <p><strong>KPIs</strong> típics: <em>market share</em>, <em>customer acquisition cost</em> (CAC), <em>customer lifetime value</em> (CLV o LTV), <em>churn rate</em>, <em>NPS</em> (Net Promoter Score), <em>ROMI</em> (return on marketing investment).</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="CLV = Marge/client × Vida útil − CAC   |   ROMI = (B_atribuible − Inv. Mkt) / Inv. Mkt" desc="Indicadors clau d'eficiència del màrqueting" />
+                </Card>
+
+                <Card title="Conclusió" icon="✅">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>El preu, única P del mix que genera ingressos, exigeix una gestió subtil que combina factors interns (costos, objectius, cicle del producte), externs (demanda, competència, regulació) i psicològics. Els tres enfocaments fonamentals —<strong>costos, competència i valor</strong>— es complementen; la condició òptima microeconòmica (IMg = CMg, Lerner) marca la referència analítica.</p>
+                        <p>Les estratègies de preu (descremat, penetració, captius, psicològics, <em>odd-pricing</em>), la discriminació de preus en els seus 3 graus (<strong>Pigou, 1920</strong>) i les tècniques contemporànies (<em>revenue management</em>, <em>subscription</em>, <em>freemium</em>, <em>AI pricing</em>) ofereixen un arsenal ric de recursos. Tot plegat s'integra en el <strong>pla de màrqueting</strong>, que especifica objectius, estratègia STP, mix de 4 P, pressupost i control mitjançant KPIs (CAC, CLV, NPS, ROMI).</p>
+                        <p>Aquest tema tanca el Bloc E i constitueix la frontera amb el Bloc F (Inversió i Finançament). L'alumnat ha d'assimilar que la gestió empresarial és un sistema integrat on cada decisió (producte, preu, distribució, comunicació) condiciona les altres i totes alhora configuren la proposta de valor que l'empresa ofereix al client i a la societat.</p>
+                    </div>
+                </Card>
+
+                <BibliografiaBox items={[
+                    'PIGOU, A.C. (1920): The Economics of Welfare, Macmillan.',
+                    'LERNER, A.P. (1934): «The Concept of Monopoly and the Measurement of Monopoly Power», RES, 1(3).',
+                    'KOTLER, P. i ARMSTRONG, G. (2020): Principles of Marketing, 18a ed., Pearson.',
+                    'NAGLE, T.T. i MÜLLER, G. (2018): The Strategy and Tactics of Pricing, 6a ed., Routledge.',
+                    'MONROE, K.B. (2003): Pricing: Making Profitable Decisions, 3a ed., McGraw-Hill.',
+                    'SIMON, H. i FASSNACHT, M. (2019): Price Management, Springer.',
+                    'LAMBIN, J.-J. (1995): Marketing Estratégico, McGraw-Hill.',
+                    'SANTESMASES, M. (2012): Marketing: Conceptos y estrategias, 6a ed., Pirámide.',
+                    'THALER, R.H. (1985): «Mental Accounting and Consumer Choice», Marketing Science, 4.',
+                    'KAHNEMAN, D. i TVERSKY, A. (1979): «Prospect Theory», Econometrica, 47.',
+                    'Llei 7/1996, de 15 de gener, d\'ordenació del comerç minorista.',
+                    'Llei 9/2017, de 8 de novembre, de Contractes del Sector Públic.',
+                    'Llei 15/2007, de 3 de juliol, de Defensa de la Competència.',
+                    'Directiva (UE) 2019/2161 (transparència de preus).',
+                ]} />
+            </div>
+        );
+
+        const Tema48Resum = () => (
+            <div className="space-y-5 animate-fade">
+                <Card>
+                    <div className="p-4 bg-orange-50 rounded-xl border border-orange-200 mb-5">
+                        <p className="text-center font-bold text-orange-800 text-lg">Tema 48: La política de preus</p>
+                        <p className="text-center text-sm text-orange-600 mt-1">«El preu és l'única P del mix que genera ingressos»</p>
+                    </div>
+                    <div className="space-y-4 text-sm text-slate-700">
+                        <div><h4 className="font-bold text-slate-800 mb-1">1. Concepte i factors</h4><ul className="list-disc pl-5 space-y-1"><li>Factors interns: costos, objectius, cicle vida, capacitat.</li><li>Factors externs: demanda (elasticitat), competència, regulació, inflació.</li><li>Elasticitat-preu E_p = (ΔQ/Q)/(ΔP/P).</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">2. Mètodes</h4><ul className="list-disc pl-5 space-y-1"><li>Basats en costos: P = CT·(1+m).</li><li>Basats en competència: paritat, licitació, seguidor/líder.</li><li>Basats en valor: EDLP, value pricing, target pricing, dinàmic.</li><li>Òptim microecon.: IMg=CMg; Lerner: (P−CMg)/P = 1/|E_p|.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">3. Estratègies</h4><ul className="list-disc pl-5 space-y-1"><li>Llançament: skimming (descremat) vs. penetració.</li><li>Línia producte: captiu, bundle, línies, dos parts.</li><li>Psicològic: odd, prestigi, referència, decoy, anchoring.</li><li>Promocional: descomptes, loss leaders, 2×1.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">4. Discriminació</h4><ul className="list-disc pl-5 space-y-1"><li>Pigou (1920): 1r / 2n / 3r grau.</li><li>Condicions: poder mercat, segmentació, no-arbitratge.</li><li>Yield management, subscripció, freemium, AI pricing.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">5. Pla de màrqueting</h4><ul className="list-disc pl-5 space-y-1"><li>9 etapes: resum, situació, objectius, estratègia STP, mix, pressupost, calendari, KPIs, contingències.</li><li>Organització: funcional, producte, mercat, matricial.</li><li>KPIs: CAC, CLV, NPS, ROMI, churn rate.</li></ul></div>
+                    </div>
+                    <FormulaBox formula="(P−CMg)/P = 1/|E_p|   |   E_p = (ΔQ/Q)/(ΔP/P)" desc="Lerner + elasticitat" />
+                    <ClauBox>
+                        <p>- Domina els <strong>3 enfocaments</strong> (costos, competència, valor) i la <strong>regla de Lerner</strong>.</p>
+                        <p>- Cita <strong>Pigou (1920)</strong> amb els 3 graus de discriminació.</p>
+                        <p>- Les estratègies de <strong>llançament</strong> (skimming/penetració) són un clàssic.</p>
+                        <p>- Tanca amb el <strong>pla de màrqueting</strong> i KPIs (CAC, CLV, NPS, ROMI) com a síntesi.</p>
+                    </ClauBox>
+                </Card>
+            </div>
+        );
+
+        const Tema48 = () => {
+            const [vista, setVista] = useState('complet');
+            return <div className="space-y-6"><SectionTitle icon="💶" title="Tema 48" subtitle={t('tema48.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema48Complet />}{vista === 'resum' && <Tema48Resum />}</div>;
+        };
 
         const temes = [
             { id: 'tema38', num: 38, emoji: '🏢', available: true },
