@@ -58,6 +58,28 @@ function ensureDir(dir) {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 }
 
+/**
+ * Recursively copy a directory's contents to dest.
+ * Preserves subdirectory structure (e.g. public/og/*.png → dist/og/*.png).
+ */
+function copyDirRecursive(srcDir, destDir) {
+    const entries = fs.readdirSync(srcDir, { withFileTypes: true });
+    let count = 0;
+    for (const entry of entries) {
+        const srcPath = path.join(srcDir, entry.name);
+        const destPath = path.join(destDir, entry.name);
+        if (entry.isDirectory()) {
+            ensureDir(destPath);
+            count += copyDirRecursive(srcPath, destPath);
+        } else {
+            fs.copyFileSync(srcPath, destPath);
+            count++;
+        }
+    }
+    console.log(`  ✓ ${path.relative(path.resolve(srcDir, '..'), srcDir)}/ (${count} files)`);
+    return count;
+}
+
 function compileJSX(code, filename) {
     try {
         const result = babel.transformSync(code, {
@@ -225,6 +247,13 @@ function main() {
     if (fs.existsSync(vercelSrc)) {
         fs.copyFileSync(vercelSrc, path.join(DIST, 'vercel.json'));
         console.log('\n  ✓ vercel.json (copied)');
+    }
+
+    // 6. Copy public/ assets (favicons, og images, etc.)
+    const publicDir = path.join(ROOT, 'public');
+    if (fs.existsSync(publicDir)) {
+        console.log('\nPublic assets:');
+        copyDirRecursive(publicDir, DIST);
     }
 
     const elapsed = ((Date.now() - start) / 1000).toFixed(1);
