@@ -565,7 +565,190 @@
             const [vista, setVista] = useState('complet');
             return <div className="space-y-6"><SectionTitle icon="⚠️" title="Tema 50" subtitle={t('tema50.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema50Complet />}{vista === 'resum' && <Tema50Resum />}</div>;
         };
-        const Tema51 = () => <TemaPlaceholder num={51} title={t('tema51.title')} icon="💳" />;
+        // ════════════════════════════════════════════════════════════════
+        // TEMA 51 — La finançament a l'empresa. Període maduració i FM.
+        // ════════════════════════════════════════════════════════════════
+        const Tema51Complet = () => (
+            <div className="space-y-6 animate-fade">
+                <Card title="Introducció" icon="📌">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>Tot projecte empresarial necessita <strong>recursos financers</strong> per adquirir actius i mantenir l'operació diària. La <strong>finançament</strong> és la funció que capta aquests recursos, determina la seua estructura i en gestiona el cost. Al costat del subsistema real (producció), el financer és la columna vertebral de qualsevol empresa.</p>
+                        <p>A Espanya, l'estructura financera de les PyMES s'ha caracteritzat històricament per l'alta dependència del crèdit bancari (BCE 2023: ~75 %), en contrast amb el model anglosaxó on el mercat de capitals té més pes. La crisi financera de 2008, la crisi sobirana 2011-2013 i les recents pujades de tipus d'interès (BCE: 0 % → 4,5 % entre 2022-2023, i estabilització a 3,25 % el 2024) han posat a prova la resiliència financera empresarial.</p>
+                        <p>Aquest tema aborda: (1) concepte i funció financera; (2) període mitjà de maduració; (3) fons de maniobra (FM) i necessitats operatives (NOF); (4) finançament extern a curt termini; (5) finançament extern a mitjà i llarg termini.</p>
+                    </div>
+                </Card>
+
+                <Card title="1. Concepte i funció financera" icon="💳">
+                    <TheoryBlock title="1.1. La funció financera" color="emerald">
+                        <p>La <strong>funció financera</strong> s'articula al voltant de tres decisions fonamentals (Pike-Neale, 2012):</p>
+                        <p><strong>(1) Decisió d'inversió</strong> (Tema 49-50): en què invertir?</p>
+                        <p><strong>(2) Decisió de finançament</strong> (Temes 51-54): com finançar-ho?</p>
+                        <p><strong>(3) Decisió de dividends</strong> (Tema 54): com distribuir el resultat?</p>
+                        <p>El principi general: maximitzar el valor de l'empresa, que equival a maximitzar el patrimoni dels accionistes, subjecte a restriccions d'ètica, llei i <em>stakeholders</em>.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.2. Fonts de finançament: classificacions" color="indigo">
+                        <p><strong>Segons l'origen</strong>: pròpies (capital, reserves, autofinançament) vs. alienes (préstecs, proveïdors, emprèstits).</p>
+                        <p><strong>Segons la titularitat</strong>: internes (generades per la mateixa empresa) vs. externes (captades de tercers).</p>
+                        <p><strong>Segons el termini</strong>: curt (&lt; 1 any), mitjà (1-5 anys), llarg (&gt; 5 anys).</p>
+                        <p><strong>Segons l'exigibilitat</strong>: exigibles (préstecs, proveïdors) vs. no exigibles (capital, reserves).</p>
+                        <p>La finançament interna es desenvolupa al Tema 52; aquest tema se centra sobretot en la externa.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="2. Període mitjà de maduració (PMM)" icon="⏳">
+                    <TheoryBlock title="2.1. Concepte" color="violet">
+                        <p>El <strong>període mitjà de maduració</strong> (PMM o <em>operating cycle</em>) és el temps mitjà que transcorre des que l'empresa paga la compra de matèries primeres fins que cobra la venda del producte acabat. Expressa la intensitat de capital circulant necessari.</p>
+                        <p>Diferenciem:</p>
+                        <p><strong>• PMM econòmic</strong>: des de l'entrada de les matèries primeres fins al cobrament.</p>
+                        <p><strong>• PMM financer (cash conversion cycle)</strong>: resta del PMM econòmic el període de pagament a proveïdors; representa els dies de finançament propi requerit.</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="PMM_ec = PMa + PMf + PMv + PMc" desc="PMa = dies aprovisionament; PMf = fabricació; PMv = vendes; PMc = cobrament" />
+                    <FormulaBox formula="PMM_fin = PMM_ec − PMp" desc="PMp = dies de pagament a proveïdors (cash conversion cycle)" />
+
+                    <TheoryBlock title="2.2. Càlcul dels subperíodes" color="blue">
+                        <p>Cada subperíode es calcula com dies = Stock mitjà × 365 / Flux anual:</p>
+                        <p>• <strong>PMa</strong> = Existències MP × 365 / Consum MP.</p>
+                        <p>• <strong>PMf</strong> = Existències en curs × 365 / Cost de producció.</p>
+                        <p>• <strong>PMv</strong> = Existències PT × 365 / Cost vendes.</p>
+                        <p>• <strong>PMc</strong> = Clients × 365 / Vendes.</p>
+                        <p>• <strong>PMp</strong> = Proveïdors × 365 / Compres.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.3. Implicacions estratègiques" color="rose">
+                        <p>Un PMM curt és favorable: menys capital circulant, millor liquiditat. Estratègies per reduir-lo: just-in-time (menys existències), digitalització del cobrament, incentius al cobrament (descomptes per pagament ràpid), allargar el pagament a proveïdors (amb límits ètics).</p>
+                        <p>La <strong>Llei 18/2022 contra la morositat</strong> estableix límits al termini de pagament a proveïdors (30-60 dies) a Espanya.</p>
+                        <p>Exemples: <em>Mercadona</em> i <em>Inditex</em> tenen PMM negatius (cobren abans de pagar proveïdors), finançant-se «gratuïtament» amb els seus proveïdors.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="3. Fons de Maniobra (FM) i Necessitats Operatives (NOF)" icon="⚖️">
+                    <TheoryBlock title="3.1. Fons de Maniobra" color="indigo">
+                        <p>El <strong>Fons de Maniobra</strong> (FM, <em>working capital</em>) és la part de l'actiu circulant finançada amb recursos permanents. Expressa el marge de seguretat financera:</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="FM = Actiu Circulant − Passiu Circulant = Recursos Permanents − Actiu No Circulant" desc="Dues formulacions equivalents del Fons de Maniobra" />
+
+                    <TheoryBlock title="3.2. Anàlisi del FM" color="emerald">
+                        <p>• <strong>FM &gt; 0</strong>: part del circulant es finança amb recursos permanents. Situació saludable.</p>
+                        <p>• <strong>FM = 0</strong>: l'actiu circulant just cobreix les obligacions a CT. Situació de risc.</p>
+                        <p>• <strong>FM &lt; 0</strong>: part de l'actiu fix es finança amb deute a CT. Situació problemàtica (excepte a hipermercats amb cobrament instantani i pagament diferit).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.3. Necessitats Operatives de Fons (NOF)" color="violet">
+                        <p>Les <strong>NOF</strong> (Necessitats Operatives de Fons, <em>operating working capital requirement</em>) mesuren la inversió necessària en circulant operatiu:</p>
+                        <p>NOF = Existències + Clients − Proveïdors.</p>
+                        <p>La diferència FM − NOF és la <strong>tresoreria</strong> (positiva si el FM cobreix les NOF).</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="NOF = Existències + Clients − Proveïdors   |   Tresoreria = FM − NOF" desc="Gestió del circulant: FM vs. NOF" />
+                </Card>
+
+                <Card title="4. Finançament extern a curt termini" icon="📅">
+                    <TheoryBlock title="4.1. Crèdit comercial de proveïdors" color="cyan">
+                        <p>El <strong>crèdit comercial</strong> (ajornament del pagament a proveïdors) és la forma més natural i sovint més barata de finançament a CT. Instruments: lletres, <em>confirming</em> (anticipació del pagament al proveïdor per un tercer). Limitat per la Llei 18/2022.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.2. Crèdits i préstecs bancaris a curt termini" color="indigo">
+                        <p><strong>• Pòlissa de crèdit</strong>: límit màxim disponible. Flexible: només es paguen interessos pel que s'usa. Ideal per a desfasaments de tresoreria.</p>
+                        <p><strong>• Préstec a curt</strong>: quantitat fixa amb retorn en un any.</p>
+                        <p><strong>• Descobert bancari</strong>: tolerància puntual, molt car.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.3. Descompte d'efectes" color="amber">
+                        <p>L'<strong>empresa</strong> cedeix al banc lletres o pagarés pendents de venciment; el banc anticipa l'import menys els interessos (descompte). Si l'efecte resulta impagat, el banc pot retornar-lo (descompte amb recurs). Tipus: descompte comercial (lletres) vs. financer (pagarés).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.4. Factoring i confirming" color="rose">
+                        <p><strong>Factoring</strong> (cessió de crèdits a un <em>factor</em>): amb recurs o sense (aquest últim assumeix el risc d'insolvència). Operació típica: el factor paga el 80-90 % immediat i la resta al cobrament.</p>
+                        <p><strong>Confirming</strong>: l'empresa gestiona amb el banc els seus pagaments a proveïdors. Els proveïdors poden anticipar el cobrament (al banc) amb descompte. Popularitzat per <em>Santander</em> als anys 90.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="5. Finançament extern a mitjà i llarg termini" icon="🏦">
+                    <TheoryBlock title="5.1. Préstecs i crèdits bancaris" color="indigo">
+                        <p><strong>Préstec</strong>: quantitat fixa que s'amortitza segons un quadre preestablert (sistema francès més comú, Tema 56). <strong>Crèdit</strong>: límit disponible flexible. Per a empreses, els préstecs a LT solen ser 5-15 anys, amb garanties (hipotecària, personal, pignoraticia).</p>
+                        <p>El <strong>tipus d'interès</strong> pot ser fix o variable (Euribor + diferencial). Des de 2022, les pujades del BCE han encarit els tipus variables.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.2. Leasing i renting" color="emerald">
+                        <p><strong>Leasing (arrendament financer)</strong>: regulat per Disposició Addicional 3a Llei 10/2014. L'empresa utilitza un actiu a canvi de quotes i al final pot adquirir-lo (opció de compra). Fiscalment deduïble. Típic per maquinària, vehicles, equips.</p>
+                        <p><strong>Renting</strong>: arrendament operatiu pur, sense opció de compra. Servei inclòs (manteniment, assegurança). Flexibilitat, sense comptabilització a actiu amb el nou PGC (excepte arrendaments curts/baix valor, NIIF 16).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.3. Emissió d'obligacions (emprèstits)" color="violet">
+                        <p>Els <strong>emprèstits</strong> (<em>bond issues</em>) són deute emès al mercat de capitals amb cupó i venciment. Disponible per a grans empreses (AENA, Iberdrola, Telefónica) i l'Estat. Detallat al Tema 56.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.4. Capital risc i finançament alternatiu" color="cyan">
+                        <p><strong>Venture capital</strong>: inversió en startups a canvi de participació. Actors espanyols: Kibo Ventures, K Fund, Seaya. <em>Private equity</em>: inversió en empreses madures. Casos recents: IFM Investors a Naturgy (2021), KKR a Masmóvil (2020).</p>
+                        <p><strong>Crowdfunding</strong>: captació massiva (equity, préstec, donacions). Llei 5/2015 de foment del finançament empresarial. Plataformes: Fellow Funders, Capital Cell.</p>
+                        <p><strong>Business angels</strong>: inversors individuals que aporten capital i expertesa a startups.</p>
+                        <p><strong>MARF</strong> (Mercat Alternatiu de Renda Fixa, 2013): per a emprèstits de mitjanes empreses.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.5. Subvencions i fons europeus" color="green">
+                        <p>A Espanya, programes clau:</p>
+                        <p>• <strong>ICO</strong> (Instituto de Crédito Oficial): línies de crèdit amb garantia pública.</p>
+                        <p>• <strong>Enisa</strong>: préstecs participatius per emprenedors.</p>
+                        <p>• <strong>CDTI</strong>: préstecs parcialment reemborsables per R+D+i.</p>
+                        <p>• <strong>Next Gen EU / PRTR</strong>: 160.000 M€ 2021-2026, mix subvencions i préstecs.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="Conclusió" icon="✅">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>La gestió del finançament empresarial integra una combinació de fonts pròpies (Tema 52) i alienes, a CT i LT, cadascuna amb costos, flexibilitat i implicacions estratègiques diferents. L'anàlisi del <strong>període mitjà de maduració</strong> i del <strong>fons de maniobra/NOF</strong> és imprescindible per evitar situacions de tensió financera —una causa freqüent de concurs de creditors, fins i tot en empreses rendibles.</p>
+                        <p>En el context espanyol, dominat per PyMES i dependent del crèdit bancari, la diversificació de fonts (MARF, crowdfunding, venture capital, leasing) i l'aprofitament dels fons europeus (Next Gen, ICO, Enisa) són palanques clau per al creixement. Els futurs docents han de transmetre a l'alumnat que una bona gestió financera no només finança: <strong>crea valor</strong> optimitzant el cost del capital i el risc.</p>
+                    </div>
+                </Card>
+
+                <BibliografiaBox items={[
+                    'PIKE, R., NEALE, B. i LINSLEY, P. (2012): Corporate Finance and Investment, 7a ed., Pearson.',
+                    'SUÁREZ SUÁREZ, A.S. (2014): Decisiones óptimas de inversión y financiación en la empresa, 21a ed., Pirámide.',
+                    'BREALEY, R., MYERS, S. i ALLEN, F. (2020): Principles of Corporate Finance, 13a ed., McGraw-Hill.',
+                    'ROSS, S., WESTERFIELD, R. i JAFFE, J. (2019): Corporate Finance, 12a ed., McGraw-Hill.',
+                    'AECA (Asociación Española de Contabilidad y Administración de Empresas): Documentos de Principios Contables.',
+                    'SANTANDRÉU, E. i SANTANDRÉU, P. (2008): Manual de finanzas, Gestión 2000.',
+                    'Banco de España (2024): Informe de Estabilidad Financiera.',
+                    'Llei 18/2022 contra la morositat.',
+                    'Llei 10/2014 d\'ordenació de crèdit (leasing).',
+                    'Llei 5/2015 de foment del finançament empresarial.',
+                    'Reglament UE NIIF 16 (leasing).',
+                ]} />
+            </div>
+        );
+
+        const Tema51Resum = () => (
+            <div className="space-y-5 animate-fade">
+                <Card>
+                    <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200 mb-5">
+                        <p className="text-center font-bold text-emerald-800 text-lg">Tema 51: Finançament i FM</p>
+                        <p className="text-center text-sm text-emerald-600 mt-1">FM = AC − PC = RP − ANC</p>
+                    </div>
+                    <div className="space-y-4 text-sm text-slate-700">
+                        <div><h4 className="font-bold text-slate-800 mb-1">1. Funció financera</h4><ul className="list-disc pl-5 space-y-1"><li>Decisions: inversió, finançament, dividends.</li><li>Classificacions: pròpies/alienes, CT/LT, exigibles/no.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">2. PMM</h4><ul className="list-disc pl-5 space-y-1"><li>PMM_ec = PMa + PMf + PMv + PMc.</li><li>PMM_fin = PMM_ec − PMp (cash conversion cycle).</li><li>Casos PMM&lt;0: Mercadona, Inditex.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">3. FM i NOF</h4><ul className="list-disc pl-5 space-y-1"><li>FM = AC−PC = RP−ANC.</li><li>NOF = Existències + Clients − Proveïdors.</li><li>Tresoreria = FM − NOF.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">4. CT</h4><ul className="list-disc pl-5 space-y-1"><li>Crèdit proveïdors, pòlissa, préstec CT, descobert.</li><li>Descompte d'efectes, factoring, confirming.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">5. LT</h4><ul className="list-disc pl-5 space-y-1"><li>Préstecs i crèdits (fix/variable Euribor).</li><li>Leasing vs. renting (NIIF 16).</li><li>Obligacions, VC, crowdfunding, MARF, business angels.</li><li>ICO, Enisa, CDTI, Next Gen EU.</li></ul></div>
+                    </div>
+                    <FormulaBox formula="FM = AC−PC = RP−ANC   |   NOF = Existències + Clients − Proveïdors" />
+                    <ClauBox>
+                        <p>- Domina el càlcul del <strong>PMM econòmic/financer</strong>.</p>
+                        <p>- Distingeix <strong>FM vs. NOF</strong> i la relació amb la tresoreria.</p>
+                        <p>- Cita <strong>Llei 18/2022</strong> (morositat) i <strong>Llei 5/2015</strong> (crowdfunding).</p>
+                        <p>- Connecta amb fons <strong>Next Gen EU</strong>, <strong>ICO</strong>, <strong>Enisa</strong>, <strong>CDTI</strong>.</p>
+                    </ClauBox>
+                </Card>
+            </div>
+        );
+
+        const Tema51 = () => {
+            const [vista, setVista] = useState('complet');
+            return <div className="space-y-6"><SectionTitle icon="💳" title="Tema 51" subtitle={t('tema51.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema51Complet />}{vista === 'resum' && <Tema51Resum />}</div>;
+        };
         const Tema52 = () => <TemaPlaceholder num={52} title={t('tema52.title')} icon="🏛️" />;
         const Tema53 = () => <TemaPlaceholder num={53} title={t('tema53.title')} icon="⚖️" />;
         const Tema54 = () => <TemaPlaceholder num={54} title={t('tema54.title')} icon="📊" />;
