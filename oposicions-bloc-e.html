@@ -1168,7 +1168,212 @@
             const [vista, setVista] = useState('complet');
             return <div className="space-y-6"><SectionTitle icon="⚙️" title="Tema 42" subtitle={t('tema42.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema42Complet />}{vista === 'resum' && <Tema42Resum />}</div>;
         };
-        const Tema43 = () => <TemaPlaceholder num={43} title={t('tema43.title')} icon="💰" />;
+        // ════════════════════════════════════════════════════════════════
+        // TEMA 43 — Els costos a l'empresa
+        // ════════════════════════════════════════════════════════════════
+        const Tema43Complet = () => (
+            <div className="space-y-6 animate-fade">
+                <Card title="Introducció" icon="📌">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>El <strong>cost</strong> és una de les variables més rellevants de la gestió empresarial: condiciona la fixació de preus, la rendibilitat, la competitivitat, la decisió de produir internament o externament, i els criteris d'assignació de recursos. Una empresa que no coneix els seus costos, no coneix el seu negoci. La <strong>comptabilitat analítica</strong> o de costos és l'eina rigorosa per gestionar-los.</p>
+                        <p>Aquest tema connecta directament amb el Tema 41 (dimensió i economies d'escala), el Tema 42 (producció), el Tema 48 (fixació de preus), els Temes 66-68 (comptabilitat) i el Tema 13 de microeconomia (costos a curt i llarg termini). A la pràctica, la gestió de costos és una palanca competitiva essencial: la reducció sostenible de costos ha sigut el nucli estratègic de <em>Mercadona</em> (model SPB: Sempre Preus Baixos), <em>Ryanair</em> (lideratge en costos) i <em>Aldi/Lidl</em>.</p>
+                        <p>El tema s'estructura en 5 blocs: (1) concepte i classificació de costos; (2) costos a curt i llarg termini; (3) anàlisi del punt mort; (4) sistemes de costos; (5) formació del cost i gestió estratègica.</p>
+                    </div>
+                </Card>
+
+                <Card title="1. Concepte i classificacions" icon="💰">
+                    <TheoryBlock title="1.1. Concepte de cost" color="orange">
+                        <p>El <strong>cost</strong> és la <strong>valoració monetària del consum de factors productius necessaris per obtenir un producte o servei</strong>. Cal distingir-lo de: (a) <em>despesa</em> (adquisició d'un factor, comptabilitzat en la comptabilitat financera); (b) <em>pagament</em> (moviment de tresoreria); (c) <em>inversió</em> (despesa en actius de llarga durada). El <strong>cost d'oportunitat</strong> (Tema 2) és el valor de la millor alternativa rebutjada.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.2. Costos fixos i costos variables" color="violet">
+                        <p>Classificació fonamental segons la relació amb el nivell d'activitat:</p>
+                        <p><strong>• Costos fixos (CF)</strong>: no varien amb el volum de producció (a curt termini). Ex.: lloguer, amortització de maquinària, salaris fixos, assegurances. Gràficament, una recta horitzontal.</p>
+                        <p><strong>• Costos variables (CV)</strong>: varien amb el volum. Ex.: matèries primeres, energia elèctrica, comissions, subministraments variables.</p>
+                        <p><strong>• Costos semivariables o mixtos</strong>: tenen component fix i variable (ex.: factura telefònica amb quota + consum).</p>
+                        <p>Important: la distinció només és vàlida <strong>a curt termini</strong>. A llarg termini, tots els costos són variables (es poden modificar: tancar plantes, canviar tecnologia).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.3. Altres classificacions" color="blue">
+                        <p><strong>• Directes vs. indirectes</strong>: imputables a un producte concret vs. compartits entre diversos.</p>
+                        <p><strong>• Incorporables / no incorporables</strong>: inclosos o no en el càlcul del cost del producte.</p>
+                        <p><strong>• Monetaris vs. implícits</strong>: pagats vs. cost d'oportunitat (ús de capital propi, dedicació personal de l'empresari).</p>
+                        <p><strong>• Econòmic vs. comptable</strong>: el cost econòmic inclou el cost d'oportunitat (benefici econòmic ≤ benefici comptable).</p>
+                        <p><strong>• Relevants vs. irrellevants</strong>: aquells que canvien segons la decisió vs. els costos enfonsats (<em>sunk costs</em>, no rellevants per a decisions futures).</p>
+                        <p><strong>• Controlables vs. no controlables</strong> per un responsable.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="2. Els costos a curt i llarg termini" icon="📉">
+                    <TheoryBlock title="2.1. Costos a curt termini" color="indigo">
+                        <p>A <strong>curt termini</strong> almenys un factor productiu és fix (generalment el capital: plantes, maquinària). Les funcions de cost es defineixen:</p>
+                        <p>• <strong>Cost Total (CT)</strong>: CT = CF + CV.</p>
+                        <p>• <strong>Cost Mitjà (CMe)</strong>: CMe = CT/Q = CF/Q + CV/Q = CFMe + CVMe.</p>
+                        <p>• <strong>Cost Marginal (CMg)</strong>: CMg = ΔCT/ΔQ = dCT/dQ. És l'increment de cost en produir una unitat addicional.</p>
+                        <p>La <strong>corba de CMe</strong> té forma de U (primer decreix per les economies, després creix per la llei de rendiments decreixents). El CMg talla el CMe pel seu mínim (resultat matemàtic clàssic).</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="CT = CF + CV  |  CMe = CT/Q  |  CMg = dCT/dQ" desc="Funcions bàsiques de cost a curt termini" />
+
+                    <TheoryBlock title="2.2. Costos a llarg termini" color="violet">
+                        <p>A <strong>llarg termini</strong> tots els factors són variables. La corba de <strong>CMeLT</strong> és l'envolvent de les corbes a CT per a diferents dimensions. Mostra economies d'escala (descendent), dimensió òptima (mínim) i deseconomies (ascendent), com s'ha vist al Tema 41.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="3. Anàlisi del punt mort (break-even)" icon="🎯">
+                    <TheoryBlock title="3.1. Concepte" color="emerald">
+                        <p>El <strong>punt mort</strong>, <strong>punt d'equilibri</strong>, <strong>llindar de rendibilitat</strong> o <em>break-even point</em> és el <strong>nivell d'activitat per al qual els ingressos totals igualen els costos totals</strong>, és a dir, l'empresa no té ni beneficis ni pèrdues. Per davall, perd; per damunt, guanya.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.2. Càlcul" color="indigo">
+                        <p>Partint de: IT = P · Q ; CT = CF + CVu · Q (on CVu és cost variable unitari). L'equació IT = CT ens dona:</p>
+                        <p>P · Q = CF + CVu · Q → Q*(P − CVu) = CF → <strong>Q* = CF / (P − CVu)</strong>.</p>
+                        <p>El factor (P − CVu) es diu <strong>marge de contribució unitari</strong> (<em>contribution margin</em>). És la part de cada unitat venuda que contribueix a cobrir els CF i, superat el punt mort, a generar benefici.</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="Q* = CF / (P − CVu)" desc="Punt mort: quantitat que cobreix tots els costos" />
+
+                    <TheoryBlock title="3.3. Exemple numèric" color="amber">
+                        <p>Empresa amb CF = 60.000 €/any, CVu = 12 €, P = 20 €.</p>
+                        <p>Marge unitari: 20 − 12 = 8 €.</p>
+                        <p>Q* = 60.000 / 8 = <strong>7.500 unitats</strong>.</p>
+                        <p>Comprovació: IT = 20 · 7.500 = 150.000 €; CT = 60.000 + 12·7.500 = 150.000 €. ✓</p>
+                        <p>Si vol un benefici objectiu Bo = 20.000 €: Q'= (CF + Bo)/(P − CVu) = 80.000/8 = 10.000 unitats.</p>
+                    </TheoryBlock>
+
+                    {/* SVG Punt mort */}
+                    <div className="my-6 flex justify-center">
+                        <svg viewBox="0 0 560 360" className="w-full max-w-2xl mx-auto" style={{fontFamily: 'Plus Jakarta Sans, sans-serif'}}>
+                            <text x="280" y="22" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#1e293b">Anàlisi del punt mort (break-even)</text>
+                            <line x1="60" y1="300" x2="520" y2="300" stroke="#475569" strokeWidth="2"/>
+                            <line x1="60" y1="300" x2="60" y2="50" stroke="#475569" strokeWidth="2"/>
+                            <polygon points="520,300 510,295 510,305" fill="#475569"/>
+                            <polygon points="60,50 55,60 65,60" fill="#475569"/>
+                            <text x="530" y="305" fontSize="11" fontWeight="600" fill="#475569">Q</text>
+                            <text x="30" y="45" fontSize="11" fontWeight="600" fill="#475569">€</text>
+                            {/* CF */}
+                            <line x1="60" y1="240" x2="490" y2="240" stroke="#6b7280" strokeWidth="2"/>
+                            <text x="495" y="245" fontSize="10" fontWeight="bold" fill="#374151">CF</text>
+                            {/* CT */}
+                            <line x1="60" y1="240" x2="490" y2="120" stroke="#ea580c" strokeWidth="2.5"/>
+                            <text x="495" y="120" fontSize="10" fontWeight="bold" fill="#c2410c">CT = CF + CV</text>
+                            {/* IT */}
+                            <line x1="60" y1="300" x2="490" y2="70" stroke="#16a34a" strokeWidth="2.5"/>
+                            <text x="495" y="70" fontSize="10" fontWeight="bold" fill="#15803d">IT = P·Q</text>
+                            {/* Breakeven */}
+                            <circle cx="265" cy="175" r="8" fill="#dc2626" stroke="#991b1b" strokeWidth="2"/>
+                            <text x="265" y="160" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#dc2626">Q*</text>
+                            <line x1="265" y1="175" x2="265" y2="300" stroke="#dc2626" strokeDasharray="3,3"/>
+                            <text x="265" y="320" textAnchor="middle" fontSize="10" fontWeight="bold" fill="#dc2626">Punt mort</text>
+                            {/* Regions */}
+                            <text x="150" y="275" fontSize="10" fontWeight="bold" fill="#dc2626">PÈRDUES</text>
+                            <text x="380" y="110" fontSize="10" fontWeight="bold" fill="#16a34a">BENEFICIS</text>
+                            {/* formula box */}
+                            <rect x="320" y="240" width="170" height="55" fill="#fff7ed" stroke="#ea580c" rx="6"/>
+                            <text x="405" y="260" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#9a3412">Q* = CF / (P − CVu)</text>
+                            <text x="405" y="278" textAnchor="middle" fontSize="9" fill="#9a3412">Marge contribució unitari</text>
+                            <text x="405" y="290" textAnchor="middle" fontSize="9" fill="#9a3412">= P − CVu</text>
+                        </svg>
+                    </div>
+
+                    <TheoryBlock title="3.4. Limitacions i extensions" color="rose">
+                        <p>El model assumeix: (a) preus i CVu constants; (b) funcions lineals; (c) un sol producte; (d) CF ben identificables. La realitat és més complexa.</p>
+                        <p><strong>Extensions</strong>: punt mort <em>multiproducte</em> (mitjana ponderada per mix), <em>palanquejament operatiu</em> (L = Q(P−CVu)/[Q(P−CVu)−CF]) que mesura la sensibilitat del benefici davant variacions en les vendes, anàlisi cost-volum-benefici (CVP) amb escenaris.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="4. Sistemes de costos" icon="🗂️">
+                    <TheoryBlock title="4.1. Costos segons tècnica de càlcul" color="indigo">
+                        <p><strong>a) Full costing</strong>: assigna tots els costos (fixos i variables, directes i indirectes) al producte. Resultat: cost complet. Útil per a preus a llarg termini.</p>
+                        <p><strong>b) Direct costing o cost variable</strong>: només imputa costos variables al producte; els fixos van directament al compte de resultats. Útil per a decisions de curt termini (subcontractar?, acceptar comanda addicional?).</p>
+                        <p><strong>c) Costos estàndard</strong>: cost predeterminat com a referència. Desviacions: tècniques (quantitat) vs. econòmiques (preu).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.2. Sistemes per procés i per ordres" color="violet">
+                        <p><strong>• Sistema per ordres de treball (<em>job costing</em>)</strong>: producció heterogènia, cada ordre és un objecte de cost. Típic de projectes, construcció, consultoria.</p>
+                        <p><strong>• Sistema per processos</strong>: producció homogènia i contínua, el cost es calcula per departament/procés i s'assigna al producte per unitats equivalents. Típic de química, tèxtil.</p>
+                        <p><strong>• Costos conjunts</strong>: productes que s'obtenen simultàniament d'un procés comú (petroli en refineria → gasolina + gasoil + plàstics).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.3. ABC — Activity Based Costing (Kaplan-Cooper, 1988)" color="emerald">
+                        <p><strong>Robert Kaplan</strong> i <strong>Robin Cooper</strong>, a partir de 1988, van proposar el <strong>Cost Basat en Activitats</strong> (ABC). Crítica al <em>full costing</em> tradicional: imputa costos indirectes (mà d'obra indirecta, amortitzacions) proporcionalment a mà d'obra directa o hores màquina, distorsió quan els productes tenen estructures molt diferents.</p>
+                        <p>L'ABC identifica <strong>activitats</strong> (preparar una comanda, fer una inspecció de qualitat, processar una factura) i assigna costos segons el consum real d'activitats per producte. Permet una comprensió més fina del cost real, especialment en empreses amb gran diversitat productiva.</p>
+                        <p>L'evolució ABM (<em>Activity Based Management</em>) aplica l'anàlisi ABC a la presa de decisions.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="5. Procés de formació del cost i gestió estratègica" icon="📈">
+                    <TheoryBlock title="5.1. Formació del cost: classe, secció, portador" color="violet">
+                        <p>El procés tradicional (<strong>models orgànics</strong>): els costos per <strong>classe</strong> (tipologia: materials, salaris, amortitzacions) s'agrupen en <strong>seccions</strong> (centres: aprovisionament, transformació, vendes, administració) i d'aquí s'imputen als <strong>portadors</strong> (productes o serveis finals). És el sistema habitual del PGC en sectors industrials.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.2. Target costing (japonés)" color="amber">
+                        <p>El <strong>cost objectiu</strong> o <em>target costing</em> (desenvolupat a Toyota, Nissan als 60-70) inverteix la lògica: en lloc de calcular el cost i fixar el preu, es parteix del <strong>preu de mercat</strong> (determinat pel client), es resta el <strong>marge objectiu</strong> i s'obté el <strong>cost màxim</strong> que l'empresa s'ha de permetre: <em>Cost màxim = Preu − Marge</em>. Tot el procés de disseny i producció s'orienta a aconseguir aquest cost.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.3. Gestió estratègica de costos" color="indigo">
+                        <p><strong>Shank i Govindarajan</strong> (<em>Strategic Cost Management</em>, 1993) proposen integrar l'anàlisi de costos en la gestió estratègica: (1) <strong>anàlisi de la cadena de valor</strong> (Porter); (2) <strong>anàlisi dels <em>cost drivers</em></strong> estratègics (escala, experiència, tecnologia); (3) <strong>anàlisi del posicionament</strong> (lideratge en costos vs. diferenciació).</p>
+                        <p>Eines complementàries: <em>value analysis</em> (anàlisi de valor, GE els 40s), <em>benchmarking</em> de costos, <em>cost kaizen</em> (millora contínua de costos, 3-5 % anual), <em>economia circular</em> per reduir costos de residus.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.4. Costos ocults i costos de no-qualitat" color="rose">
+                        <p>Conceptes rellevants:</p>
+                        <p>• <strong>Costos ocults</strong>: absentisme, rotació, accidents, conflictes (Savall, model ISEOR).</p>
+                        <p>• <strong>Costos de no-qualitat</strong> (<em>cost of poor quality</em>, Juran): prevenció, avaluació, errors interns (refer), errors externs (reclamacions, garanties). Regla 10: un error que costa 1 € detectar en disseny, costa 10 € en producció i 100 € si arriba al client.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="Conclusió" icon="✅">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>La comptabilitat de costos ha evolucionat des de les tècniques tradicionals (full costing, direct costing, per processos vs. per ordres) cap a enfocaments més sofisticats com l'<strong>ABC de Kaplan-Cooper (1988)</strong>, el <strong>target costing</strong> japonés i la <strong>gestió estratègica</strong> de Shank-Govindarajan (1993). Les classificacions (fix/variable, directe/indirecte, rellevant/irrellevant) són fonamentals per a diferents decisions empresarials.</p>
+                        <p>L'<strong>anàlisi del punt mort</strong> (Q* = CF/(P−CVu)) ofereix una eina simple però poderosa per a la planificació i la fixació de preus. En empreses modernes, la gestió de costos és inseparable de l'estratègia competitiva: <em>Mercadona</em>, <em>Ryanair</em> o <em>Ikea</em> són exemples d'empreses que han convertit el lideratge en costos en un avantatge sostenible. Per al docent, l'essencial és transmetre que els costos no són un concepte tècnic reservat als comptables, sinó un mirall de les decisions operatives i estratègiques de l'empresa.</p>
+                    </div>
+                </Card>
+
+                <BibliografiaBox items={[
+                    'HORNGREN, C.T., DATAR, S.M. i RAJAN, M. (2015): Cost Accounting: A Managerial Emphasis, 15a ed., Pearson.',
+                    'KAPLAN, R.S. i COOPER, R. (1988): «Measure Costs Right: Make the Right Decisions», HBR, 66(5).',
+                    'KAPLAN, R.S. i COOPER, R. (1998): Cost and Effect, Harvard Business Press.',
+                    'SHANK, J.K. i GOVINDARAJAN, V. (1993): Strategic Cost Management, Free Press.',
+                    'JURAN, J.M. (1988): Juran on Planning for Quality, Free Press.',
+                    'MONDEN, Y. (1995): Cost Reduction Systems: Target Costing and Kaizen Costing, Productivity Press.',
+                    'AECA (Asociación Española de Contabilidad y Administración de Empresas): Documentos sobre Contabilidad de Gestión.',
+                    'IBORRA, M. et al. (2019): Fundamentos de dirección de empresas, 3a ed., Paraninfo.',
+                    'SAEZ TORRECILLA, A., FERNÁNDEZ, A. i GUTIÉRREZ, G. (2015): Contabilidad de Costes y Contabilidad de Gestión, 2a ed., McGraw-Hill.',
+                    'Real Decret 1514/2007 (PGC, Grup 9 comptabilitat analítica interna).',
+                ]} />
+            </div>
+        );
+
+        const Tema43Resum = () => (
+            <div className="space-y-5 animate-fade">
+                <Card>
+                    <div className="p-4 bg-orange-50 rounded-xl border border-orange-200 mb-5">
+                        <p className="text-center font-bold text-orange-800 text-lg">Tema 43: Els costos a l'empresa</p>
+                        <p className="text-center text-sm text-orange-600 mt-1">Punt mort: Q* = CF / (P − CVu)</p>
+                    </div>
+                    <div className="space-y-4 text-sm text-slate-700">
+                        <div><h4 className="font-bold text-slate-800 mb-1">1. Concepte</h4><ul className="list-disc pl-5 space-y-1"><li>Cost = valoració monetària del consum de factors.</li><li>Fixos vs. variables (CP); tots variables (LP).</li><li>Directes/indirectes, econòmic/comptable, rellevants/sunk.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">2. CT, CMe, CMg</h4><ul className="list-disc pl-5 space-y-1"><li>CT = CF + CV.</li><li>CMe = CT/Q (forma U).</li><li>CMg = dCT/dQ. CMg talla CMe al seu mínim.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">3. Punt mort</h4><ul className="list-disc pl-5 space-y-1"><li>Q* = CF / (P − CVu).</li><li>P − CVu = marge de contribució unitari.</li><li>Palanquejament operatiu, multiproducte.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">4. Sistemes</h4><ul className="list-disc pl-5 space-y-1"><li>Full costing vs. direct costing vs. estàndard.</li><li>Per ordres vs. per processos. Costos conjunts.</li><li>ABC (Kaplan-Cooper, 1988): costos per activitats.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">5. Estratègica</h4><ul className="list-disc pl-5 space-y-1"><li>Models orgànics: classe → secció → portador.</li><li>Target costing japonés: C_max = P − Marge.</li><li>Shank-Govindarajan (1993): cost drivers estratègics.</li><li>Costos de no-qualitat (Juran): regla 10.</li></ul></div>
+                    </div>
+                    <FormulaBox formula="Q* = CF / (P − CVu)" desc="Punt mort (break-even)" />
+                    <ClauBox>
+                        <p>- Domina el càlcul del <strong>punt mort</strong> i el <strong>marge de contribució</strong>.</p>
+                        <p>- Explica la forma en U del <strong>CMe</strong> i la seua relació amb CMg.</p>
+                        <p>- Cita <strong>ABC de Kaplan-Cooper (1988)</strong> i <strong>target costing</strong> com a innovacions rellevants.</p>
+                        <p>- Connecta amb l'estratègia: <strong>Mercadona</strong>, <strong>Ryanair</strong>, <strong>Ikea</strong>.</p>
+                    </ClauBox>
+                </Card>
+            </div>
+        );
+
+        const Tema43 = () => {
+            const [vista, setVista] = useState('complet');
+            return <div className="space-y-6"><SectionTitle icon="💰" title="Tema 43" subtitle={t('tema43.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema43Complet />}{vista === 'resum' && <Tema43Resum />}</div>;
+        };
         const Tema44 = () => <TemaPlaceholder num={44} title={t('tema44.title')} icon="📋" />;
         const Tema45 = () => <TemaPlaceholder num={45} title={t('tema45.title')} icon="📣" />;
         const Tema46 = () => <TemaPlaceholder num={46} title={t('tema46.title')} icon="📦" />;
