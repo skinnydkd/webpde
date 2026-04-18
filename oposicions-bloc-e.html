@@ -596,7 +596,180 @@
             const [vista, setVista] = useState('complet');
             return <div className="space-y-6"><SectionTitle icon="🎯" title="Tema 39" subtitle={t('tema39.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema39Complet />}{vista === 'resum' && <Tema39Resum />}</div>;
         };
-        const Tema40 = () => <TemaPlaceholder num={40} title={t('tema40.title')} icon="📍" />;
+        // ════════════════════════════════════════════════════════════════
+        // TEMA 40 — La decisió de localització
+        // ════════════════════════════════════════════════════════════════
+        const Tema40Complet = () => (
+            <div className="space-y-6 animate-fade">
+                <Card title="Introducció" icon="📌">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>La <strong>localització</strong> empresarial —on situar una fàbrica, un magatzem, una oficina o un punt de venda— és una decisió estratègica de gran calat: implica inversions elevades, té efectes a llarg termini, condiciona costos operatius i accessibilitat, i és difícilment reversible. En un món cada vegada més globalitzat, la decisió de localització ha adquirit una dimensió internacional: les empreses avaluen llocs al món sencer (<em>offshoring</em>, <em>nearshoring</em>, <em>reshoring</em>).</p>
+                        <p>Decisions recents il·lustratives: la inversió d'<em>Stellantis</em> (Vigo/Saragossa, ~1.300 M€ el 2023) per fabricar vehicles elèctrics; la Gigafactory de <em>Volkswagen</em> i <em>Navantia</em> a Sagunt (2.700 M€, 3.000 llocs de treball); la localització de centres logístics d'<em>Amazon</em> a Madrid, Barcelona i Sevilla; el <em>reshoring</em> parcial postpandèmia després del col·lapse de cadenes de subministrament xineses.</p>
+                        <p>El tema s'estructura en 5 blocs: (1) concepte i importància; (2) factors de localització; (3) models clàssics (Weber, Hotelling); (4) models moderns (economies d'aglomeració, IA de localització); (5) localització i globalització.</p>
+                    </div>
+                </Card>
+
+                <Card title="1. Concepte i importància" icon="📍">
+                    <TheoryBlock title="1.1. Definició i tipus de decisió" color="orange">
+                        <p>La <strong>decisió de localització</strong> és l'elecció del lloc geogràfic on ubicar les instal·lacions de l'empresa: plantes productives, magatzems, centres logístics, oficines, punts de venda. Pot comportar: (a) <strong>primera localització</strong> (nova empresa o activitat); (b) <strong>relocalització</strong> (trasllat, relacionat amb canvis de mercat o costos); (c) <strong>deslocalització</strong> (<em>offshoring</em>: trasllat a països amb menors costos).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="1.2. Característiques estratègiques" color="violet">
+                        <p>(1) <strong>Irreversibilitat parcial</strong>: els costos enfonsats (<em>sunk costs</em>) en instal·lacions són molt elevats.</p>
+                        <p>(2) <strong>Efectes a llarg termini</strong>: condiciona la competitivitat durant dècades.</p>
+                        <p>(3) <strong>Interacció amb altres decisions</strong>: influeix en producció, logística, màrqueting.</p>
+                        <p>(4) <strong>Multiplicitat de criteris</strong>: costos, mercat, talent, regulació, sostenibilitat.</p>
+                        <p>(5) <strong>Incertesa i canvis estructurals</strong>: globalització, transicions energètica i digital, geopolítica, pandèmies.</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="2. Factors de localització" icon="🗺️">
+                    <TheoryBlock title="2.1. Factors del costat de l'oferta" color="amber">
+                        <p><strong>• Proximitat a matèries primeres</strong>: si el producte perd pes en la transformació (siderúrgia, ciment), interessa proximitat a la mina.</p>
+                        <p><strong>• Cost i disponibilitat del treball</strong>: salaris, qualificació, conflictivitat laboral. Motiu del <em>offshoring</em> cap a Àsia i Europa de l'Est.</p>
+                        <p><strong>• Infraestructures</strong>: transport (port, aeroport, ferrocarril, autopistes), energia, telecomunicacions, aigua.</p>
+                        <p><strong>• Sòl</strong>: preu, disponibilitat, qualificació urbanística (ús industrial, terciari).</p>
+                        <p><strong>• Incentius fiscals i ajudes</strong>: zones especials (Canàries ZEC, Ceuta-Melilla), incentius regionals (Llei 50/1985), ajudes de minimis UE, fons Next Generation.</p>
+                        <p><strong>• Proveïdors i serveis auxiliars</strong>.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.2. Factors del costat de la demanda" color="emerald">
+                        <p><strong>• Proximitat al mercat</strong>: si el producte guanya pes o perd valor en transport (begudes, pa fresc), cal estar prop del consumidor.</p>
+                        <p><strong>• Mida del mercat</strong>: poblacions grans per a establiments majoristes/comercials.</p>
+                        <p><strong>• Nivell de renda</strong>: productes de luxe requereixen poblacions d'alt poder adquisitiu.</p>
+                        <p><strong>• Competència local</strong>: millor allunyar-se (Launhardt) o concentrar-se (Hotelling) segons el producte.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="2.3. Factors institucionals i socials" color="cyan">
+                        <p><strong>• Marc legal i tributari</strong>: normativa laboral, fiscal, ambiental.</p>
+                        <p><strong>• Estabilitat política</strong> i seguretat jurídica.</p>
+                        <p><strong>• Idioma, cultura i costums</strong>.</p>
+                        <p><strong>• Sistema educatiu</strong>: disponibilitat de talent tècnic.</p>
+                        <p><strong>• Qualitat de vida</strong>: rellevant per a atreure talent directiu.</p>
+                        <p><strong>• Sostenibilitat i impacte ambiental</strong>: regulacions cada vegada més exigents (UE <em>Green Deal</em>).</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="3. Models clàssics de localització" icon="🧮">
+                    <TheoryBlock title="3.1. Model de Weber (1909)" color="indigo">
+                        <p>L'economista alemany <strong>Alfred Weber</strong>, en <em>Über den Standort der Industrien</em> (1909, trad. <em>Theory of the Location of Industries</em>), va formular el primer model formal de localització industrial. El principi: l'empresa s'ubica al <strong>punt que minimitza els costos totals de transport</strong>, tenint en compte el pes i la distància dels <em>inputs</em> i <em>outputs</em>.</p>
+                        <p>Weber introdueix el concepte d'<strong>índex material</strong>: ratio entre pes dels inputs locals i pes del producte final. Si IM &gt; 1, l'empresa és <em>orientada a les matèries primeres</em> (ex. siderúrgia); si IM &lt; 1, és <em>orientada al mercat</em> (ex. embotellament de begudes).</p>
+                        <p>Factors complementaris: costos laborals (<em>índex laboral</em>) i economies d'aglomeració (veure secció següent).</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="Índex material = Pes dels inputs locals / Pes del producte final" desc="Weber (1909): si IM > 1, la localització s'orienta a les matèries primeres" />
+
+                    <TheoryBlock title="3.2. Model de Hotelling (1929) — la gelateria de la platja" color="rose">
+                        <p><strong>Harold Hotelling</strong>, a «Stability in Competition» (<em>Economic Journal</em>, 1929), va plantejar un problema clàssic: dues gelateries competeixen a una platja. Quines són les seues ubicacions d'equilibri? Hotelling demostra que, en competència per preu uniforme, ambdues tendeixen a ubicar-se <strong>al centre</strong> de la platja (tocant-se), perquè cadascuna busca capturar la meitat més propera del mercat.</p>
+                        <p>Implicació: explica per què els partits polítics convergeixen al centre, per què les cadenes de comerç (McDonald's-Burger King) s'agrupen, per què els concessionaris d'automòbils de vàries marques s'alien en polígons comercials. Amb preus flexibles, els resultats poden ser diferents (<em>principi de mínima diferenciació</em>).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.3. Model de von Thünen (1826) — cercles agrícoles" color="green">
+                        <p>El pioner alemany <strong>Johann Heinrich von Thünen</strong>, a <em>Der isolierte Staat</em> (1826), va formular el primer model econòmic-espacial rigorós, explicant la distribució dels cultius al voltant d'una ciutat. Els productes peribles (llet, verdures) s'ubiquen prop; els durables (cereals) més lluny. Principi: <strong>la renda del sòl disminueix amb la distància al mercat</strong>. Aquest esquema (cercles concèntrics) és l'antecessor de la geografia econòmica moderna (Krugman, 1991).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="3.4. Mètode del centre de gravetat" color="violet">
+                        <p>Tècnica quantitativa per a ubicar un centre logístic davant múltiples clients o proveïdors:</p>
+                        <p>Coordenades del centre òptim: Cx = Σ(xᵢ · Wᵢ) / Σ Wᵢ ; Cy = Σ(yᵢ · Wᵢ) / Σ Wᵢ</p>
+                        <p>On (xᵢ, yᵢ) són les coordenades dels destinataris i Wᵢ els pesos/volums transportats. Minimitza el cost de transport ponderat. Variacions: distància euclidiana vs. rectilínia (Manhattan), itinerari real.</p>
+                    </TheoryBlock>
+
+                    <FormulaBox formula="Cx = Σ(xᵢ · Wᵢ) / Σ Wᵢ  |  Cy = Σ(yᵢ · Wᵢ) / Σ Wᵢ" desc="Centre de gravetat ponderat per volums de transport" />
+                </Card>
+
+                <Card title="4. Economies d'aglomeració i clústers" icon="🏭">
+                    <TheoryBlock title="4.1. Economies d'aglomeració (Marshall, 1890)" color="cyan">
+                        <p><strong>Alfred Marshall</strong> (1890) va identificar els avantatges de la concentració geogràfica d'empreses del mateix sector, coneguts com a <strong>economies d'aglomeració</strong>:</p>
+                        <p>(1) <strong>Pool de treball especialitzat</strong>: mercat laboral dens i qualificat.</p>
+                        <p>(2) <strong>Compartició d'inputs i proveïdors</strong>: xarxa de proveïdors especialitzats.</p>
+                        <p>(3) <strong>Spillovers de coneixement</strong> (<em>«knowledge in the air»</em>): difusió informal d'idees, innovacions, millors pràctiques.</p>
+                        <p>Es distingeixen <strong>economies de localització</strong> (empreses del mateix sector) i <strong>economies d'urbanització</strong> (beneficis generals de les ciutats grans).</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.2. Clústers (Porter, 1990, 1998)" color="indigo">
+                        <p><strong>Michael Porter</strong>, a <em>The Competitive Advantage of Nations</em> (1990) i <em>On Competition</em> (1998), va popularitzar el concepte de <strong>clúster</strong>: concentració geogràfica d'empreses i institucions interconnectades d'un mateix sector. Exemples paradigmàtics: Silicon Valley (tecnologia), Hollywood (cinema), City de Londres (finances), clúster de l'automoció a Wolfsburg, districte industrial de Prato (tèxtil).</p>
+                        <p>A Espanya: clúster tèxtil de Galícia (<em>Inditex</em>, <em>Mango</em>), automoció Catalunya (SEAT), ceràmica de Castelló, calçat del Vinalopó, moble de València (l'Horta, Vall d'Albaida), agroalimentari de Múrcia i València.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.3. Nova Geografia Econòmica (Krugman, 1991)" color="amber">
+                        <p><strong>Paul Krugman</strong> (Nobel 2008), a «Increasing Returns and Economic Geography» (<em>JPE</em>, 1991), va formalitzar per què les activitats econòmiques es concentren geogràficament, malgrat la globalització. La resposta: <strong>rendiments creixents</strong> a escala + <strong>costos de transport no negligibles</strong> generen dinàmiques d'autorefortament (més empreses = mercat més gran = més empreses). El seu model «centre-perifèria» explica la persistència de divergències regionals.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="4.4. Contra-force: deseconomies d'aglomeració" color="red">
+                        <p>La concentració també genera costos: congestió de trànsit, pol·lució, preus del sòl i habitatge, escassetat de talent, saturació ambiental. Exemples a Espanya: preu desorbitat de l'habitatge a Madrid i Barcelona ha induït el <em>teletreball</em> postpandèmia i la sortida d'empreses cap a ciutats mitjanes (Saragossa, València, Sevilla).</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="5. Globalització i tendències actuals" icon="🌍">
+                    <TheoryBlock title="5.1. Offshoring, nearshoring, reshoring" color="violet">
+                        <p><strong>Offshoring</strong> (des dels 80): trasllat d'activitats a països amb menors costos. Xina, Vietnam, Mèxic van rebre grans inversions.</p>
+                        <p><strong>Nearshoring</strong>: trasllat a països propers però més barats (Europa de l'Est per a empreses alemanyes; Mèxic per a empreses nord-americanes).</p>
+                        <p><strong>Reshoring</strong>: tornada a la localització original, especialment després de la pandèmia (2020-2022), la guerra a Ucraïna i les tensions USA-Xina. La Llei de Chips (EU Chips Act, 2023, 43.000 M€) i l'Inflation Reduction Act als EUA (IRA, 2022) incentiven el <em>reshoring</em> industrial.</p>
+                    </TheoryBlock>
+
+                    <TheoryBlock title="5.2. Tendències 2020-2025" color="emerald">
+                        <p>• <strong>Sostenibilitat ambiental</strong>: criteris ESG en decisions de localització.</p>
+                        <p>• <strong>Digitalització i remot-first</strong>: reducció de la rellevància de la localització per a activitats de servei.</p>
+                        <p>• <strong>Geopolítica i friendshoring</strong>: diversificació cap a «aliats» (polítiques del G7).</p>
+                        <p>• <strong>Incentius fiscals autonòmics</strong> a Espanya: Madrid (IRPF, Successions), Andalusia (IS reduït per a noves inversions).</p>
+                        <p>• <strong>Intel·ligència artificial</strong> per a decisió de localització (GIS, <em>big data</em>, algorismes de <em>site selection</em>).</p>
+                    </TheoryBlock>
+                </Card>
+
+                <Card title="Conclusió" icon="✅">
+                    <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                        <p>La localització empresarial és una decisió estratègica que combina factors de l'oferta (costos, recursos) i de la demanda (mercat, competència). Els models clàssics de <strong>Weber (1909)</strong>, <strong>Hotelling (1929)</strong> i <strong>von Thünen (1826)</strong> proporcionen l'estructura analítica; les <strong>economies d'aglomeració</strong> (Marshall, 1890) i els <strong>clústers</strong> (Porter, 1990) expliquen per què les empreses es concentren; la <strong>Nova Geografia Econòmica</strong> (Krugman, 1991) ofereix un marc unificador.</p>
+                        <p>En l'era actual, la globalització i la digitalització han reconfigurat radicalment el problema: <em>offshoring</em>, <em>nearshoring</em>, <em>reshoring</em> i <em>friendshoring</em> descriuen onades successives. Els fons Next Generation EU (més de 160.000 M€ per a Espanya), l'EU Chips Act o l'IRA nord-americà il·lustren com la localització és ara objecte d'<strong>estratègia industrial pública</strong>. El docent ha d'ajudar l'alumnat a comprendre que darrere d'una simple pregunta —«on instal·lar la fàbrica?»— hi ha segles de teoria econòmica i algunes de les qüestions geopolítiques més rellevants del nostre temps.</p>
+                    </div>
+                </Card>
+
+                <BibliografiaBox items={[
+                    'VON THÜNEN, J.H. (1826): Der isolierte Staat, Perthes.',
+                    'MARSHALL, A. (1890): Principles of Economics, Macmillan.',
+                    'WEBER, A. (1909): Über den Standort der Industrien, Mohr.',
+                    'HOTELLING, H. (1929): «Stability in Competition», Economic Journal, 39.',
+                    'LAUNHARDT, W. (1885): Mathematische Begründung der Volkswirtschaftslehre, Engelmann.',
+                    'LÖSCH, A. (1940): Die räumliche Ordnung der Wirtschaft, Fischer.',
+                    'PORTER, M.E. (1990): The Competitive Advantage of Nations, Free Press.',
+                    'PORTER, M.E. (1998): On Competition, Harvard Business Press.',
+                    'KRUGMAN, P. (1991): «Increasing Returns and Economic Geography», JPE, 99(3).',
+                    'FUJITA, M., KRUGMAN, P. i VENABLES, A. (1999): The Spatial Economy, MIT Press.',
+                    'ALCAIDE, J. i ALCAIDE, P. (2023): Balance Económico Regional, FUNCAS.',
+                    'Llei 50/1985 d\'incentius regionals.',
+                    'Regulament (UE) 2023/1781 (EU Chips Act).',
+                ]} />
+            </div>
+        );
+
+        const Tema40Resum = () => (
+            <div className="space-y-5 animate-fade">
+                <Card>
+                    <div className="p-4 bg-orange-50 rounded-xl border border-orange-200 mb-5">
+                        <p className="text-center font-bold text-orange-800 text-lg">Tema 40: Decisió de localització</p>
+                        <p className="text-center text-sm text-orange-600 mt-1"><em>«Location, location, location»</em> — màxima immobiliària</p>
+                    </div>
+                    <div className="space-y-4 text-sm text-slate-700">
+                        <div><h4 className="font-bold text-slate-800 mb-1">1. Concepte</h4><ul className="list-disc pl-5 space-y-1"><li>Localització, relocalització, deslocalització.</li><li>Decisió estratègica: irreversible, LP, sunk costs.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">2. Factors</h4><ul className="list-disc pl-5 space-y-1"><li>Oferta: MP, treball, infraestructures, sòl, incentius.</li><li>Demanda: mercat, renda, competència.</li><li>Institucionals: legal, fiscal, cultural, educatiu, sostenibilitat.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">3. Models clàssics</h4><ul className="list-disc pl-5 space-y-1"><li>Weber (1909): mín. costos de transport, índex material.</li><li>Hotelling (1929): competència espacial, gelateria de platja.</li><li>Von Thünen (1826): cercles agrícoles, renda del sòl.</li><li>Centre de gravetat: Cx=Σ(xᵢWᵢ)/ΣWᵢ.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">4. Aglomeració</h4><ul className="list-disc pl-5 space-y-1"><li>Marshall (1890): pool laboral, proveïdors, spillovers.</li><li>Clústers (Porter, 1990/1998).</li><li>NGE (Krugman, 1991): rendiments creixents + transport.</li><li>Deseconomies: congestió, preu sòl.</li></ul></div>
+                        <div><h4 className="font-bold text-slate-800 mb-1">5. Globalització</h4><ul className="list-disc pl-5 space-y-1"><li>Offshoring / Nearshoring / Reshoring / Friendshoring.</li><li>EU Chips Act (2023), IRA EUA (2022), Next Gen EU.</li><li>Digitalització → reducció de factor localització en serveis.</li></ul></div>
+                    </div>
+                    <FormulaBox formula="Índex material = Pes inputs / Pes output" />
+                    <ClauBox>
+                        <p>- Cita <strong>Weber (1909)</strong> i <strong>Hotelling (1929)</strong> com a models seminals.</p>
+                        <p>- Domina <strong>aglomeració Marshall (1890)</strong> i <strong>clústers Porter (1990)</strong>.</p>
+                        <p>- Explica tendència <strong>reshoring / friendshoring</strong> postpandèmia.</p>
+                        <p>- Exemples espanyols: Stellantis, PowerCo Sagunt, Inditex Galícia, ceràmica Castelló.</p>
+                    </ClauBox>
+                </Card>
+            </div>
+        );
+
+        const Tema40 = () => {
+            const [vista, setVista] = useState('complet');
+            return <div className="space-y-6"><SectionTitle icon="📍" title="Tema 40" subtitle={t('tema40.title')} /><Tabs tabs={[{ id: 'complet', label: '📝 ' + t('tab.complet') }, { id: 'resum', label: '📋 ' + t('tab.resum') }]} active={vista} onChange={setVista} />{vista === 'complet' && <Tema40Complet />}{vista === 'resum' && <Tema40Resum />}</div>;
+        };
         const Tema41 = () => <TemaPlaceholder num={41} title={t('tema41.title')} icon="📏" />;
         const Tema42 = () => <TemaPlaceholder num={42} title={t('tema42.title')} icon="⚙️" />;
         const Tema43 = () => <TemaPlaceholder num={43} title={t('tema43.title')} icon="💰" />;
