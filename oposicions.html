@@ -114,11 +114,11 @@ function OposicionsApp() {
         'bloc.a': { val: "Fonaments d'Economia", es: 'Fundamentos de Economía', en: 'Economics Fundamentals' },
         'bloc.b': { val: 'Microeconomia', es: 'Microeconomía', en: 'Microeconomics' },
         'bloc.c': { val: 'Macroeconomia', es: 'Macroeconomía', en: 'Macroeconomics' },
-        'bloc.d': { val: 'Economia internacional', es: 'Economía internacional', en: 'International Economics' },
-        'bloc.e': { val: 'Economia espanyola i europea', es: 'Economía española y europea', en: 'Spanish & European Economy' },
-        'bloc.f': { val: "Economia de l'empresa", es: 'Economía de la empresa', en: 'Business Economics' },
-        'bloc.g': { val: 'Sistema financer', es: 'Sistema financiero', en: 'Financial System' },
-        'bloc.h': { val: 'Comptabilitat', es: 'Contabilidad', en: 'Accounting' },
+        'bloc.d': { val: 'Creixement, Cicles i Treball', es: 'Crecimiento, Ciclos y Trabajo', en: 'Growth, Cycles & Labour' },
+        'bloc.e': { val: 'Empresa I: Fonaments i Màrqueting', es: 'Empresa I: Fundamentos y Marketing', en: 'Business I: Fundamentals & Marketing' },
+        'bloc.f': { val: "Inversió i Finançament", es: 'Inversión y Financiación', en: 'Investment & Finance' },
+        'bloc.g': { val: 'Organització i Direcció', es: 'Organización y Dirección', en: 'Organization & Management' },
+        'bloc.h': { val: 'Comptabilitat i Didàctica', es: 'Contabilidad y Didáctica', en: 'Accounting & Teaching' },
 
         // Filter
         'filter.all': { val: 'Tots', es: 'Todos', en: 'All' },
@@ -132,9 +132,17 @@ function OposicionsApp() {
         'sup.macro': { val: 'Macroeconomia', es: 'Macroeconomía', en: 'Macroeconomics' },
         'sup.macro.desc': { val: "PIB, IS-LM, política fiscal i monetària, multiplicador, inflació", es: 'PIB, IS-LM, política fiscal y monetaria, multiplicador, inflación', en: 'GDP, IS-LM, fiscal & monetary policy, multiplier, inflation' },
         'sup.empresa': { val: 'Empresa', es: 'Empresa', en: 'Business' },
-        'sup.empresa.desc': { val: "Costos, punt mort, VAN/TIR, comptabilitat, balanç, ràtios, productivitat", es: 'Costes, punto muerto, VAN/TIR, contabilidad, balance, ratios, productividad', en: 'Costs, break-even, NPV/IRR, accounting, balance sheet, ratios, productivity' },
-        'sup.inter': { val: 'Internacional', es: 'Internacional', en: 'International' },
-        'sup.inter.desc': { val: "Balança de pagaments, tipus de canvi, avantatge comparatiu", es: 'Balanza de pagos, tipo de cambio, ventaja comparativa', en: 'Balance of payments, exchange rates, comparative advantage' },
+        'sup.empresa.desc': { val: "Costos, punt mort, productivitat, localització, DAFO + BCG, cicle de vida", es: 'Costes, punto muerto, productividad, localización, DAFO + BCG', en: 'Costs, break-even, productivity, location, SWOT, BCG' },
+        'sup.comerc': { val: 'Comerç Internacional', es: 'Comercio Internacional', en: 'International Trade' },
+        'sup.comerc.desc': { val: "Balança de pagaments, tipus de canvi, ventaja comparativa (Ricardo), aranzels", es: 'Balanza de pagos, tipo de cambio, ventaja comparativa, aranceles', en: 'Balance of payments, exchange rates, comparative advantage, tariffs' },
+        'sup.treball': { val: 'Mercat de Treball', es: 'Mercado de Trabajo', en: 'Labour Market' },
+        'sup.treball.desc': { val: "Oferta/demanda de treball, SMI, taxes EPA, productivitat, corba de Phillips", es: 'Oferta/demanda de trabajo, SMI, tasas EPA, productividad, curva de Phillips', en: 'Labour supply/demand, minimum wage, employment rates, Phillips curve' },
+        'sup.organitzacio': { val: 'Organització i Direcció', es: 'Organización y Dirección', en: 'Organization & Management' },
+        'sup.organitzacio.desc': { val: "Matriu de decisió, arbre de decisió (VME), PERT camí crític, DAFO", es: 'Matriz de decisión, árbol VME, PERT, DAFO', en: 'Decision matrices, decision trees (EMV), PERT, SWOT' },
+        'sup.finances': { val: 'Mat. Financeres', es: 'Mat. Financieras', en: 'Financial Math' },
+        'sup.finances.desc': { val: "Capitalització, TAE, préstecs (sistema francès), VAN/TIR, WACC, Modigliani-Miller", es: 'Capitalización, TAE, préstamos, VAN/TIR, WACC', en: 'Compounding, APR, loans, NPV/IRR, WACC' },
+        'sup.comptabilitat': { val: 'Comptabilitat', es: 'Contabilidad', en: 'Accounting' },
+        'sup.comptabilitat.desc': { val: "Masses patrimonials, assentaments, ràtios liquiditat/solvència, DuPont, Z-score Altman", es: 'Masas patrimoniales, asientos, ratios, DuPont, Z-score Altman', en: 'Patrimonial classes, entries, ratios, DuPont, Altman Z-score' },
         'sup.properament': { val: 'Properament', es: 'Próximamente', en: 'Coming soon' },
 
         // Probability calculator
@@ -199,111 +207,114 @@ function OposicionsApp() {
     // ─── 71 Official Themes ────────────────────────────────────────
     const blocs = [
         { id: 'a', label: 'A', name: t('bloc.a'), color: 'from-purple-500 to-violet-600', range: [1, 10] },
-        { id: 'b', label: 'B', name: t('bloc.b'), color: 'from-pink-500 to-rose-600', range: [11, 20] },
-        { id: 'c', label: 'C', name: t('bloc.c'), color: 'from-blue-500 to-indigo-600', range: [21, 30] },
-        { id: 'd', label: 'D', name: t('bloc.d'), color: 'from-green-500 to-emerald-600', range: [31, 38] },
-        { id: 'e', label: 'E', name: t('bloc.e'), color: 'from-amber-500 to-orange-600', range: [39, 48] },
-        { id: 'f', label: 'F', name: t('bloc.f'), color: 'from-red-500 to-rose-600', range: [49, 60] },
-        { id: 'g', label: 'G', name: t('bloc.g'), color: 'from-teal-500 to-cyan-600', range: [61, 66] },
-        { id: 'h', label: 'H', name: t('bloc.h'), color: 'from-slate-500 to-gray-600', range: [67, 71] },
+        { id: 'b', label: 'B', name: t('bloc.b'), color: 'from-pink-500 to-rose-600', range: [11, 19] },
+        { id: 'c', label: 'C', name: t('bloc.c'), color: 'from-blue-500 to-indigo-600', range: [20, 26] },
+        { id: 'd', label: 'D', name: t('bloc.d'), color: 'from-red-500 to-rose-600', range: [27, 37] },
+        { id: 'e', label: 'E', name: t('bloc.e'), color: 'from-orange-500 to-amber-600', range: [38, 48] },
+        { id: 'f', label: 'F', name: t('bloc.f'), color: 'from-emerald-500 to-teal-600', range: [49, 56] },
+        { id: 'g', label: 'G', name: t('bloc.g'), color: 'from-indigo-500 to-violet-600', range: [57, 65] },
+        { id: 'h', label: 'H', name: t('bloc.h'), color: 'from-teal-500 to-cyan-600', range: [66, 71] },
     ];
 
     const temes = [
-        // Bloc A: Fonaments d'Economia (1-10)
-        { num: 1, bloc: 'a', title: { val: "Economia: ciència de l'escassetat. Objecte i mètode.", es: 'Economía: ciencia de la escasez. Objeto y método.', en: 'Economics: the science of scarcity. Subject and method.' } },
-        { num: 2, bloc: 'a', title: { val: "L'escassetat, l'elecció i l'assignació de recursos. El cost d'oportunitat.", es: 'La escasez, la elección y la asignación de recursos. El coste de oportunidad.', en: 'Scarcity, choice and resource allocation. Opportunity cost.' } },
-        { num: 3, bloc: 'a', title: { val: 'Els agents econòmics. Flux circular de la renda.', es: 'Los agentes económicos. Flujo circular de la renta.', en: 'Economic agents. Circular flow of income.' } },
-        { num: 4, bloc: 'a', title: { val: 'Els sistemes econòmics. Economia de mercat, planificada i mixta.', es: 'Los sistemas económicos. Economía de mercado, planificada y mixta.', en: 'Economic systems. Market, planned and mixed economies.' } },
-        { num: 5, bloc: 'a', title: { val: 'El pensament econòmic: evolució i principals corrents.', es: 'El pensamiento económico: evolución y principales corrientes.', en: 'Economic thought: evolution and main currents.' } },
-        { num: 6, bloc: 'a', title: { val: 'Els factors productius. La funció de producció.', es: 'Los factores productivos. La función de producción.', en: 'Factors of production. The production function.' } },
-        { num: 7, bloc: 'a', title: { val: "La divisió del treball, la productivitat i les economies d'escala.", es: 'La división del trabajo, la productividad y las economías de escala.', en: 'Division of labour, productivity and economies of scale.' } },
-        { num: 8, bloc: 'a', title: { val: 'El creixement econòmic. Desenvolupament i subdesenvolupament.', es: 'El crecimiento económico. Desarrollo y subdesarrollo.', en: 'Economic growth. Development and underdevelopment.' } },
-        { num: 9, bloc: 'a', title: { val: 'Població i mercat de treball.', es: 'Población y mercado de trabajo.', en: 'Population and labour market.' } },
-        { num: 10, bloc: 'a', title: { val: "El medi ambient i l'economia. Desenvolupament sostenible.", es: 'El medio ambiente y la economía. Desarrollo sostenible.', en: 'The environment and the economy. Sustainable development.' } },
+        // Bloc A: Fonaments d'Economia (BOE 1-10)
+        { num: 1, bloc: 'a', title: { val: "Objecte de l'Economia. Economia i Economia Política. Relacions amb altres CCSS.", es: 'Objeto de la Economía. Economía y Economía Política. Relaciones con otras CCSS.', en: 'Subject of Economics. Relations with other social sciences.' } },
+        { num: 2, bloc: 'a', title: { val: "Els mètodes en Economia. Economia positiva i normativa. Judicis de valor.", es: 'Los métodos en Economía. Economía positiva y normativa. Juicios de valor.', en: 'Methods in Economics. Positive and normative economics.' } },
+        { num: 3, bloc: 'a', title: { val: "Tècniques i procediments. Els models. Variables econòmiques. Els números índex.", es: 'Las técnicas y procedimientos. Los modelos. Variables económicas. Los números índice.', en: 'Techniques, models, variables and index numbers.' } },
+        { num: 4, bloc: 'a', title: { val: "Evolució del pensament econòmic. Economia clàssica. Crítica marxista. Economia neoclàssica.", es: 'Evolución del pensamiento económico. Clásicos, marxismo, neoclásicos.', en: 'Evolution of economic thought. Classics, marxism, neoclassicals.' } },
+        { num: 5, bloc: 'a', title: { val: "Institucionalisme. Keynesianisme. Monetarisme. Tendències actuals.", es: 'Institucionalismo. Keynesianismo. Monetarismo. Tendencias actuales.', en: 'Institutionalism. Keynesianism. Monetarism. Current trends.' } },
+        { num: 6, bloc: 'a', title: { val: "La base humana de l'activitat econòmica. Les necessitats. Els béns econòmics.", es: 'La base humana de la actividad económica. Necesidades. Bienes económicos.', en: 'Human basis of economic activity. Needs. Economic goods.' } },
+        { num: 7, bloc: 'a', title: { val: "Els factors productius. La FPP. Cost d'oportunitat. Progrés tècnic. Acumulació capital.", es: 'Los factores productivos. La FPP. Coste oportunidad. Progreso técnico.', en: 'Factors of production. PPF. Opportunity cost.' } },
+        { num: 8, bloc: 'a', title: { val: "Els problemes econòmics bàsics. Decisions: tradició, mercat, autoritat. Els sistemes econòmics.", es: 'Problemas económicos básicos. Decisiones: tradición, mercado, autoridad. Sistemas económicos.', en: 'Basic economic problems. Decisions and economic systems.' } },
+        { num: 9, bloc: 'a', title: { val: "Divisió del treball i especialització. Interdependència econòmica. Sectors econòmics.", es: 'División del trabajo y especialización. Interdependencia. Sectores económicos.', en: 'Division of labour and specialisation. Economic sectors.' } },
+        { num: 10, bloc: 'a', title: { val: "Del troc al diner i al mercat. Mecanisme del mercat. Demanda, oferta i equilibri.", es: 'Del trueque al dinero y al mercado. Demanda, oferta y equilibrio.', en: 'From barter to money and markets. Demand, supply and equilibrium.' } },
 
-        // Bloc B: Microeconomia (11-20)
-        { num: 11, bloc: 'b', title: { val: "La demanda. La utilitat. L'elasticitat-preu.", es: 'La demanda. La utilidad. La elasticidad-precio.', en: 'Demand. Utility. Price elasticity.' } },
-        { num: 12, bloc: 'b', title: { val: "L'oferta. Costos de producció i benefici empresarial.", es: 'La oferta. Costes de producción y beneficio empresarial.', en: 'Supply. Production costs and business profit.' } },
-        { num: 13, bloc: 'b', title: { val: "L'equilibri de mercat. Variacions i intervencions.", es: 'El equilibrio de mercado. Variaciones e intervenciones.', en: 'Market equilibrium. Changes and interventions.' } },
-        { num: 14, bloc: 'b', title: { val: 'La competència perfecta.', es: 'La competencia perfecta.', en: 'Perfect competition.' } },
-        { num: 15, bloc: 'b', title: { val: 'El monopoli.', es: 'El monopolio.', en: 'Monopoly.' } },
-        { num: 16, bloc: 'b', title: { val: "L'oligopoli i la competència monopolística.", es: 'El oligopolio y la competencia monopolística.', en: 'Oligopoly and monopolistic competition.' } },
-        { num: 17, bloc: 'b', title: { val: 'Fallades de mercat. Externalitats i béns públics.', es: 'Fallos de mercado. Externalidades y bienes públicos.', en: 'Market failures. Externalities and public goods.' } },
-        { num: 18, bloc: 'b', title: { val: 'La distribució de la renda. Desigualtat i pobresa.', es: 'La distribución de la renta. Desigualdad y pobreza.', en: 'Income distribution. Inequality and poverty.' } },
-        { num: 19, bloc: 'b', title: { val: "L'empresa. Teoria i tipus. L'empresari.", es: 'La empresa. Teoría y tipos. El empresario.', en: 'The firm. Theory and types. The entrepreneur.' } },
-        { num: 20, bloc: 'b', title: { val: "L'empresa com a organització. Estructura, funcions i objectius.", es: 'La empresa como organización. Estructura, funciones y objetivos.', en: 'The firm as an organization. Structure, functions and objectives.' } },
+        // Bloc B: Microeconomia (BOE 11-19)
+        { num: 11, bloc: 'b', title: { val: "Teoria de la demanda i de la utilitat. Comportament del consumidor. Efectes renda i substitució.", es: 'Teoría de la demanda y de la utilidad. Efectos renta y sustitución.', en: 'Demand and utility theory. Consumer behaviour. Slutsky.' } },
+        { num: 12, bloc: 'b', title: { val: "La funció de producció. Isoquantes i isocostos. Funció homogènia. Llei de rendiments decreixents.", es: 'Función de producción. Isocuantas e isocostes. Rendimientos decrecientes.', en: 'Production function. Isoquants and isocosts. Diminishing returns.' } },
+        { num: 13, bloc: 'b', title: { val: "Costos de producció a CP i LP. Economies i deseconomies d'escala. Dimensió òptima.", es: 'Costes de producción a CP y LP. Economías de escala. Dimensión óptima.', en: 'Short/long-run costs. Economies of scale. Optimal size.' } },
+        { num: 14, bloc: 'b', title: { val: "Supòsits de la competència perfecta. Formes de competència. Mercat CP.", es: 'Supuestos de la competencia perfecta. Funcionamiento del mercado CP.', en: 'Perfect competition: assumptions and functioning.' } },
+        { num: 15, bloc: 'b', title: { val: "Competència imperfecta i concentració. El monopoli. Regulació del monopoli.", es: 'Competencia imperfecta y concentración. Monopolio. Regulación.', en: 'Imperfect competition. Monopoly and regulation.' } },
+        { num: 16, bloc: 'b', title: { val: "L'oligopoli. Colusió i competència. Competència monopolística. Diferenciació i publicitat.", es: 'El oligopolio. Colusión y competencia. Competencia monopolística.', en: 'Oligopoly. Collusion. Monopolistic competition.' } },
+        { num: 17, bloc: 'b', title: { val: "Desequilibris i limitacions del mercat. Béns públics. Externalitats. Òptims paretians.", es: 'Desequilibrios del mercado. Bienes públicos. Externalidades. Óptimos paretianos.', en: 'Market failures. Public goods. Externalities. Pareto optima.' } },
+        { num: 18, bloc: 'b', title: { val: "La intervenció de l'Estat: justificació i funcions. Mitjans i instruments.", es: 'La intervención del Estado: justificación y funciones. Medios e instrumentos.', en: 'State intervention: justification and tools.' } },
+        { num: 19, bloc: 'b', title: { val: "La distribució de la renda. Teoria marginal de la distribució i les seues crítiques. Polítiques.", es: 'La distribución de la renta. Teoría marginal. Políticas de distribución.', en: 'Income distribution. Marginal theory. Distribution policies.' } },
 
-        // Bloc C: Macroeconomia (21-30)
-        { num: 21, bloc: 'c', title: { val: 'Variables macroeconòmiques: PIB, renda nacional.', es: 'Variables macroeconómicas: PIB, renta nacional.', en: 'Macroeconomic variables: GDP, national income.' } },
-        { num: 22, bloc: 'c', title: { val: "L'oferta i demanda agregades. L'equilibri macroeconòmic.", es: 'La oferta y demanda agregadas. El equilibrio macroeconómico.', en: 'Aggregate supply and demand. Macroeconomic equilibrium.' } },
-        { num: 23, bloc: 'c', title: { val: "La renda d'equilibri i el multiplicador.", es: 'La renta de equilibrio y el multiplicador.', en: 'Equilibrium income and the multiplier.' } },
-        { num: 24, bloc: 'c', title: { val: "El consum, l'estalvi i la inversió.", es: 'El consumo, el ahorro y la inversión.', en: 'Consumption, saving and investment.' } },
-        { num: 25, bloc: 'c', title: { val: "El pressupost de l'Estat. Política fiscal.", es: 'El presupuesto del Estado. Política fiscal.', en: 'The State budget. Fiscal policy.' } },
-        { num: 26, bloc: 'c', title: { val: 'El dèficit públic i el deute públic.', es: 'El déficit público y la deuda pública.', en: 'Public deficit and public debt.' } },
-        { num: 27, bloc: 'c', title: { val: 'El diner: funcions, creació i mesura.', es: 'El dinero: funciones, creación y medida.', en: 'Money: functions, creation and measurement.' } },
-        { num: 28, bloc: 'c', title: { val: 'El sistema financer. Intermediaris i mercats.', es: 'El sistema financiero. Intermediarios y mercados.', en: 'The financial system. Intermediaries and markets.' } },
-        { num: 29, bloc: 'c', title: { val: 'El Banc Central i la política monetària.', es: 'El Banco Central y la política monetaria.', en: 'The Central Bank and monetary policy.' } },
-        { num: 30, bloc: 'c', title: { val: 'La inflació. Causes, efectes i mesura.', es: 'La inflación. Causas, efectos y medida.', en: 'Inflation. Causes, effects and measurement.' } },
+        // Bloc C: Macroeconomia (BOE 20-26)
+        { num: 20, bloc: 'c', title: { val: "Fluxos de renda a l'economia. Comptabilitat nacional. PIB i magnituds derivades.", es: 'Flujos de renta. Contabilidad nacional. PIB y magnitudes derivadas.', en: 'National accounts. GDP and derived magnitudes.' } },
+        { num: 21, bloc: 'c', title: { val: "La demanda agregada. Consum, estalvi i inversió. Multiplicador. Oferta agregada.", es: 'Demanda agregada. Consumo, ahorro e inversión. Multiplicador. Oferta agregada.', en: 'Aggregate demand. Consumption, saving, investment. Multiplier.' } },
+        { num: 22, bloc: 'c', title: { val: "El sector públic i la política fiscal. Ingressos i despeses del sector públic. Finançament del dèficit.", es: 'Sector público y política fiscal. Ingresos y gastos. Financiación del déficit.', en: 'Public sector and fiscal policy. Revenue, spending, deficit.' } },
+        { num: 23, bloc: 'c', title: { val: "Finançament de l'economia. Evolució del diner. Bancs i creació de diner. Intermediaris financers.", es: 'Financiación de la economía. Dinero. Bancos. Intermediarios financieros.', en: 'Financing the economy. Money, banks, intermediaries.' } },
+        { num: 24, bloc: 'c', title: { val: "El Banc Central i la política monetària. Control oferta monetària. Objectius i instruments.", es: 'Banco Central y política monetaria. Control de la oferta monetaria.', en: 'Central Bank and monetary policy. Money supply control.' } },
+        { num: 25, bloc: 'c', title: { val: "El comerç internacional: ventaja comparativa. Lliurecanvi vs proteccionisme. Balança de Pagaments.", es: 'Comercio internacional. Ventaja comparativa. Balanza de pagos.', en: 'International trade. Comparative advantage. Balance of payments.' } },
+        { num: 26, bloc: 'c', title: { val: "Pagaments internacionals i mercat de divises. Sistemes de tipus de canvi. SMI i SME.", es: 'Pagos internacionales y divisas. Sistemas de tipos de cambio. SMI y SME.', en: 'International payments and FX. Exchange rate systems.' } },
 
-        // Bloc D: Economia internacional (31-38)
-        { num: 31, bloc: 'd', title: { val: 'El comerç internacional. Avantatge absolut i comparatiu.', es: 'El comercio internacional. Ventaja absoluta y comparativa.', en: 'International trade. Absolute and comparative advantage.' } },
-        { num: 32, bloc: 'd', title: { val: 'Barreres comercials. Proteccionisme vs lliurecanvi.', es: 'Barreras comerciales. Proteccionismo vs librecambio.', en: 'Trade barriers. Protectionism vs free trade.' } },
-        { num: 33, bloc: 'd', title: { val: 'La balança de pagaments.', es: 'La balanza de pagos.', en: 'The balance of payments.' } },
-        { num: 34, bloc: 'd', title: { val: 'El mercat de divises. Tipus de canvi.', es: 'El mercado de divisas. Tipos de cambio.', en: 'The foreign exchange market. Exchange rates.' } },
-        { num: 35, bloc: 'd', title: { val: 'La globalització econòmica.', es: 'La globalización económica.', en: 'Economic globalization.' } },
-        { num: 36, bloc: 'd', title: { val: "La integració econòmica. La Unió Europea.", es: 'La integración económica. La Unión Europea.', en: 'Economic integration. The European Union.' } },
-        { num: 37, bloc: 'd', title: { val: "La Unió Econòmica i Monetària. L'euro.", es: 'La Unión Económica y Monetaria. El euro.', en: 'The Economic and Monetary Union. The euro.' } },
-        { num: 38, bloc: 'd', title: { val: "L'economia dels països en via de desenvolupament.", es: 'La economía de los países en vías de desarrollo.', en: 'The economy of developing countries.' } },
+        // Bloc D: Creixement, Cicles i Treball (BOE 27-37)
+        { num: 27, bloc: 'd', title: { val: "Creixement i desenvolupament econòmic. Factors. Teories explicatives. Subdesenvolupament.", es: 'Crecimiento y desarrollo. Factores. Teorías. Subdesarrollo.', en: 'Economic growth and development. Factors. Theories.' } },
+        { num: 28, bloc: 'd', title: { val: "Els límits al creixement. Consideració econòmica del medi ambient. Desenvolupament sostenible.", es: 'Límites al crecimiento. Medio ambiente. Desarrollo sostenible.', en: 'Growth limits. Environmental economics. Sustainable development.' } },
+        { num: 29, bloc: 'd', title: { val: "Els cicles econòmics. Teories explicatives. La inversió i el cicle. Polítiques estabilitzadores.", es: 'Los ciclos económicos. Teorías. Inversión y ciclo. Políticas estabilizadoras.', en: 'Economic cycles. Theories. Stabilisation policies.' } },
+        { num: 30, bloc: 'd', title: { val: "La inflació: naturalesa, classes i efectes. Teories sobre la inflació. Polítiques antiinflacionistes.", es: 'Inflación: clases y efectos. Teorías. Políticas antiinflacionistas.', en: 'Inflation: types, effects, theories, policies.' } },
+        { num: 31, bloc: 'd', title: { val: "La naturalesa especial del mercat de treball. Teories sobre l'atur. Polítiques d'ocupació.", es: 'Naturaleza del mercado de trabajo. Teorías del desempleo. Políticas de empleo.', en: 'Labour market. Unemployment theories. Employment policies.' } },
+        { num: 32, bloc: 'd', title: { val: "Noves tecnologies, ocupació i qualificació. Canvi tècnic i ocupacions.", es: 'Nuevas tecnologías, empleo y cualificación. Cambio técnico y ocupaciones.', en: 'New technologies, employment and skills.' } },
+        { num: 33, bloc: 'd', title: { val: "Crisi econòmica i desajustos al mercat de treball. Economia submergida. Sindicalisme i negociació col·lectiva.", es: 'Crisis económica y desajustes laborales. Economía sumergida. Sindicalismo.', en: 'Economic crisis. Labour market imbalances. Shadow economy. Unionism.' } },
+        { num: 34, bloc: 'd', title: { val: "La cooperació econòmica internacional. La integració econòmica a la UE.", es: 'Cooperación económica internacional. La integración económica en la UE.', en: 'International cooperation. EU integration.' } },
+        { num: 35, bloc: 'd', title: { val: "Producció i consum. La societat de consum. Transformació models consum. Protecció consumidors.", es: 'Producción y consumo. Sociedad de consumo. Protección consumidores.', en: 'Production and consumption. Consumer society. Consumer protection.' } },
+        { num: 36, bloc: 'd', title: { val: "Economia del Benestar. Pobresa, igualtat i eficiència. Estat del Benestar: orígens i evolució.", es: 'Economía del Bienestar. Pobreza, igualdad y eficiencia. Estado de Bienestar.', en: 'Welfare Economics. Poverty, equality, efficiency. Welfare State.' } },
+        { num: 37, bloc: 'd', title: { val: "Qualitat de vida i indicadors. Enfocament sistèmic. Cap a un índex global.", es: 'Calidad de vida e indicadores. Enfoque sistémico. Hacia un índice global.', en: 'Quality of life and indicators. Systemic approach.' } },
 
-        // Bloc E: Economia espanyola i europea (39-48)
-        { num: 39, bloc: 'e', title: { val: "L'economia espanyola: característiques i estructura productiva.", es: 'La economía española: características y estructura productiva.', en: 'The Spanish economy: characteristics and productive structure.' } },
-        { num: 40, bloc: 'e', title: { val: "L'agricultura i la pesca a Espanya.", es: 'La agricultura y la pesca en España.', en: 'Agriculture and fishing in Spain.' } },
-        { num: 41, bloc: 'e', title: { val: "La indústria a Espanya.", es: 'La industria en España.', en: 'Industry in Spain.' } },
-        { num: 42, bloc: 'e', title: { val: 'El sector serveis a Espanya. El turisme.', es: 'El sector servicios en España. El turismo.', en: 'The service sector in Spain. Tourism.' } },
-        { num: 43, bloc: 'e', title: { val: "El sector públic a Espanya.", es: 'El sector público en España.', en: 'The public sector in Spain.' } },
-        { num: 44, bloc: 'e', title: { val: "El mercat de treball a Espanya. L'atur.", es: 'El mercado de trabajo en España. El desempleo.', en: 'The labour market in Spain. Unemployment.' } },
-        { num: 45, bloc: 'e', title: { val: 'El sistema financer espanyol.', es: 'El sistema financiero español.', en: 'The Spanish financial system.' } },
-        { num: 46, bloc: 'e', title: { val: "L'economia de la Unió Europea.", es: 'La economía de la Unión Europea.', en: 'The economy of the European Union.' } },
-        { num: 47, bloc: 'e', title: { val: 'La política agrària comunitària (PAC).', es: 'La política agraria comunitaria (PAC).', en: 'The Common Agricultural Policy (CAP).' } },
-        { num: 48, bloc: 'e', title: { val: 'Les polítiques regionals i estructurals de la UE.', es: 'Las políticas regionales y estructurales de la UE.', en: 'EU regional and structural policies.' } },
+        // Bloc E: Empresa I — Fonaments i Màrqueting (BOE 38-48)
+        { num: 38, bloc: 'e', title: { val: "Evolució conceptes empresa i empresari. Funcions i objectius. Classes. L'empresa com a sistema.", es: 'Evolución conceptos empresa y empresario. Funciones, objetivos, clases. La empresa como sistema.', en: 'Firm and entrepreneur concepts. Functions, types. Firm as a system.' } },
+        { num: 39, bloc: 'e', title: { val: "El problema de la fixació d'objectius. Concepcions. La teoria de l'organització en els objectius.", es: 'El problema de la fijación de objetivos. La dirección ante los objetivos.', en: 'Goal setting. Management and objectives.' } },
+        { num: 40, bloc: 'e', title: { val: "La decisió de localització de l'empresa. Models mecànics. Costos. Economies d'aglomeració.", es: 'La decisión de localización. Modelos mecánicos. Economías de aglomeración.', en: 'Location decisions. Mechanical models. Agglomeration.' } },
+        { num: 41, bloc: 'e', title: { val: "Dimensió de l'empresa. Aspectes de la dimensió. Dimensió òptima. Dimensió i ocupació.", es: 'Dimensión empresarial. Dimensión óptima. Dimensión y ocupación.', en: 'Firm size. Optimal size. Size and employment.' } },
+        { num: 42, bloc: 'e', title: { val: "El sistema de producció. Classes de processos productius. Productivitat. Millora de la productivitat.", es: 'Sistema de producción. Procesos productivos. Productividad y mejora.', en: 'Production system. Processes. Productivity.' } },
+        { num: 43, bloc: 'e', title: { val: "Els costos a l'empresa. Estructura de costos. Anàlisi del punt de cobertura. Formació del cost.", es: 'Los costes. Estructura. Punto de cobertura. Formación del coste.', en: 'Firm costs. Structure. Break-even analysis.' } },
+        { num: 44, bloc: 'e', title: { val: "Planificació i programació de la producció. En sèrie, per encàrrec, per unitat. Nous mètodes.", es: 'Planificación y programación de la producción. Nuevos métodos.', en: 'Production planning and scheduling. New methods.' } },
+        { num: 45, bloc: 'e', title: { val: "El màrqueting: naturalesa i evolució. Investigació de mercats. Segmentació.", es: 'El marketing: naturaleza y evolución. Investigación de mercados. Segmentación.', en: 'Marketing: nature, evolution. Research. Segmentation.' } },
+        { num: 46, bloc: 'e', title: { val: "Política de producte i distribució. Cicle de vida. Canals de distribució.", es: 'Política de producto. Ciclo de vida. Distribución. Canales.', en: 'Product policy. Life cycle. Distribution channels.' } },
+        { num: 47, bloc: 'e', title: { val: "La política de comunicació. Promoció. Publicitat. Mitjans publicitaris. Pla de mitjans.", es: 'Política de comunicación. Publicidad. Medios. Plan de medios.', en: 'Communication. Advertising. Media plan.' } },
+        { num: 48, bloc: 'e', title: { val: "La política de preus. Mètodes de fixació. Planificació, organització i control estratègia màrqueting.", es: 'Política de precios. Métodos. Planificación estrategia de marketing.', en: 'Pricing. Methods. Marketing strategy.' } },
 
-        // Bloc F: Economia de l'empresa (49-60)
-        { num: 49, bloc: 'f', title: { val: "L'empresa: concepte, elements i funcions.", es: 'La empresa: concepto, elementos y funciones.', en: 'The firm: concept, elements and functions.' } },
-        { num: 50, bloc: 'f', title: { val: "Anàlisi de l'entorn general i específic.", es: 'Análisis del entorno general y específico.', en: 'Analysis of the general and specific environment.' } },
-        { num: 51, bloc: 'f', title: { val: 'La localització i dimensió empresarial.', es: 'La localización y dimensión empresarial.', en: 'Business location and size.' } },
-        { num: 52, bloc: 'f', title: { val: 'La funció de producció. Costos i punt mort.', es: 'La función de producción. Costes y punto muerto.', en: 'The production function. Costs and break-even.' } },
-        { num: 53, bloc: 'f', title: { val: "L'organització empresarial. Estructura.", es: 'La organización empresarial. Estructura.', en: 'Business organization. Structure.' } },
-        { num: 54, bloc: 'f', title: { val: "La direcció de l'empresa. Planificació i control.", es: 'La dirección de la empresa. Planificación y control.', en: 'Business management. Planning and control.' } },
-        { num: 55, bloc: 'f', title: { val: 'La gestió de recursos humans. Motivació i lideratge.', es: 'La gestión de recursos humanos. Motivación y liderazgo.', en: 'Human resource management. Motivation and leadership.' } },
-        { num: 56, bloc: 'f', title: { val: 'La funció comercial. El mix de marketing.', es: 'La función comercial. El mix de marketing.', en: 'The commercial function. The marketing mix.' } },
-        { num: 57, bloc: 'f', title: { val: 'La funció financera. Fonts de finançament.', es: 'La función financiera. Fuentes de financiación.', en: 'The financial function. Sources of financing.' } },
-        { num: 58, bloc: 'f', title: { val: "La selecció d'inversions. VAN, TIR, Payback.", es: 'La selección de inversiones. VAN, TIR, Payback.', en: 'Investment selection. NPV, IRR, Payback.' } },
-        { num: 59, bloc: 'f', title: { val: 'Patrimoni empresarial. Balanç de situació.', es: 'Patrimonio empresarial. Balance de situación.', en: 'Business assets. Balance sheet.' } },
-        { num: 60, bloc: 'f', title: { val: "Compte de resultats. Anàlisi economicofinancera.", es: 'Cuenta de resultados. Análisis económico-financiero.', en: 'Income statement. Economic-financial analysis.' } },
+        // Bloc F: Inversió i Finançament (BOE 49-56)
+        { num: 49, bloc: 'f', title: { val: "Concepte i classes d'inversió. Dimensions: tecnològica, financera i econòmica. Criteris d'anàlisi.", es: 'Concepto y clases de inversión. Dimensiones. Criterios de análisis.', en: 'Investment concept. Analysis criteria (NPV, IRR).' } },
+        { num: 50, bloc: 'f', title: { val: "Risc, inflació i impostos en les decisions d'inversió. Models de programació d'inversions.", es: 'Riesgo, inflación e impuestos en las decisiones de inversión.', en: 'Risk, inflation and taxes in investment decisions.' } },
+        { num: 51, bloc: 'f', title: { val: "El finançament a l'empresa. PMM i fons de maniobra. Finançament extern a CT, MT i LT.", es: 'La financiación empresarial. PMM y fondo de maniobra. Financiación externa.', en: 'Business financing. Operating cycle, working capital.' } },
+        { num: 52, bloc: 'f', title: { val: "Finançament interna: concepte i classes. Autofinançament. Amortització. Provisions i reserves.", es: 'Financiación interna. Autofinanciación. Amortización. Provisiones y reservas.', en: 'Internal financing. Self-financing, depreciation.' } },
+        { num: 53, bloc: 'f', title: { val: "El cost del capital. Cost de les diferents fonts. Cost del capital mitjà ponderat (WACC).", es: 'El coste del capital. Coste de fuentes. WACC.', en: 'Cost of capital. WACC.' } },
+        { num: 54, bloc: 'f', title: { val: "L'estructura financera òptima. Tesi tradicional. Modigliani-Miller. Política de dividends òptima.", es: 'Estructura financiera óptima. Modigliani-Miller. Política de dividendos.', en: 'Optimal capital structure. Modigliani-Miller. Dividend policy.' } },
+        { num: 55, bloc: 'f', title: { val: "Sistemes de capitalització. Equivalència financera. Rendes: concepte i classes. Actualització i capitalització.", es: 'Sistemas de capitalización. Equivalencia financiera. Rentas.', en: 'Capitalisation systems. Annuities.' } },
+        { num: 56, bloc: 'f', title: { val: "Préstecs: mètodes d'amortització. Emprèstits. Usdefruit i nua propietat.", es: 'Préstamos: métodos de amortización. Empréstitos. Usufructo y nuda propiedad.', en: 'Loans: amortisation methods. Bond issues.' } },
 
-        // Bloc G: Sistema financer (61-66)
-        { num: 61, bloc: 'g', title: { val: 'Actius financers. Renda fixa i variable.', es: 'Activos financieros. Renta fija y variable.', en: 'Financial assets. Fixed and variable income.' } },
-        { num: 62, bloc: 'g', title: { val: 'La Borsa de Valors. Funcionament i índexs.', es: 'La Bolsa de Valores. Funcionamiento e índices.', en: 'The Stock Exchange. Operation and indices.' } },
-        { num: 63, bloc: 'g', title: { val: 'Assegurances. Principis i modalitats.', es: 'Seguros. Principios y modalidades.', en: 'Insurance. Principles and types.' } },
-        { num: 64, bloc: 'g', title: { val: 'Planificació financera personal. Estalvi i inversió.', es: 'Planificación financiera personal. Ahorro e inversión.', en: 'Personal financial planning. Saving and investment.' } },
-        { num: 65, bloc: 'g', title: { val: 'El sistema tributari espanyol.', es: 'El sistema tributario español.', en: 'The Spanish tax system.' } },
-        { num: 66, bloc: 'g', title: { val: 'Impostos directes i indirectes. IRPF i IVA.', es: 'Impuestos directos e indirectos. IRPF e IVA.', en: 'Direct and indirect taxes. Income tax and VAT.' } },
+        // Bloc G: Organització i Direcció (BOE 57-65)
+        { num: 57, bloc: 'g', title: { val: "El procés de presa de decisions. Tipus de decisions. Incertesa i risc. Decisions en sistemes oberts.", es: 'Toma de decisiones. Tipos. Incertidumbre y riesgo. Sistemas abiertos.', en: 'Decision-making. Types. Uncertainty and risk.' } },
+        { num: 58, bloc: 'g', title: { val: "La planificació. Elements i etapes. El control. Tècniques. Sistemes integrats.", es: 'La planificación. Elementos y etapas. El control. Técnicas.', en: 'Planning. Elements, stages. Control techniques.' } },
+        { num: 59, bloc: 'g', title: { val: "L'empresa com a organització. Teories clàssiques (Taylor, Fayol, Weber). Mayo. Contingència. Contractual.", es: 'La empresa como organización. Teorías clásicas. Relaciones humanas. Contingencia. Contractual.', en: 'Firm as organization. Classical theories. Human relations.' } },
+        { num: 60, bloc: 'g', title: { val: "Les estructures formals i informals. Relacions. Dinàmica de grups. Conflicte, canvi, desenvolupament.", es: 'Estructuras formales e informales. Dinámica de grupos. Conflicto y cambio.', en: 'Formal/informal structures. Group dynamics.' } },
+        { num: 61, bloc: 'g', title: { val: "Lideratge i estils de direcció. Enfocaments tradicionals. Models contingents. Delegació.", es: 'Liderazgo y estilos de dirección. Modelos contingentes. Delegación.', en: 'Leadership and management styles. Contingent models.' } },
+        { num: 62, bloc: 'g', title: { val: "Cultura i imatge de l'empresa. Estil Z. Tècniques d'investigació. Cultura i ètica.", es: 'Cultura e imagen. Estilo Z. Cultura y ética en la empresa.', en: 'Corporate culture. Style Z. Ethics.' } },
+        { num: 63, bloc: 'g', title: { val: "La comunicació a l'empresa. Informació i comunicació. Xarxes i estructures. Estratègia.", es: 'Comunicación. Información y comunicación. Redes. Estrategia.', en: 'Communication. Networks and strategy.' } },
+        { num: 64, bloc: 'g', title: { val: "Clima i motivació. Motivació i satisfacció. Tipologia. Valors, actituds, satisfacció.", es: 'Clima y motivación. Satisfacción laboral. Valores y actitudes.', en: 'Climate and motivation. Job satisfaction.' } },
+        { num: 65, bloc: 'g', title: { val: "Evolució propietat-control. La tecnoestructura. L'empresa integrada. Relacions propietat i poder.", es: 'Propiedad-control. Tecnoestructura. Empresa integrada. Relaciones de poder.', en: 'Ownership-control. Technostructure. Corporate power.' } },
 
-        // Bloc H: Comptabilitat (67-71)
-        { num: 67, bloc: 'h', title: { val: 'El patrimoni. Masses patrimonials.', es: 'El patrimonio. Masas patrimoniales.', en: 'Net worth. Asset classes.' } },
-        { num: 68, bloc: 'h', title: { val: 'La metodologia comptable. Comptes i assentaments.', es: 'La metodología contable. Cuentas y asientos.', en: 'Accounting methodology. Accounts and entries.' } },
-        { num: 69, bloc: 'h', title: { val: 'El cicle comptable. Regularització i tancament.', es: 'El ciclo contable. Regularización y cierre.', en: 'The accounting cycle. Adjustment and closing.' } },
-        { num: 70, bloc: 'h', title: { val: 'El Pla General Comptable.', es: 'El Plan General Contable.', en: 'The General Accounting Plan.' } },
-        { num: 71, bloc: 'h', title: { val: "Anàlisi d'estats financers. Ràtios.", es: 'Análisis de estados financieros. Ratios.', en: 'Financial statement analysis. Ratios.' } },
+        // Bloc H: Comptabilitat i Didàctica (BOE 66-71)
+        { num: 66, bloc: 'h', title: { val: "Anàlisi comptable. Estats comptables. Legislació mercantil i PGC. Els comptes anuals.", es: 'Análisis contable. Estados contables. PGC. Cuentas anuales.', en: 'Accounting analysis. Financial statements. Spanish GAAP.' } },
+        { num: 67, bloc: 'h', title: { val: "El patrimoni: components i valoració. Valoració econòmica d'actius i empreses.", es: 'El patrimonio: componentes y valoración. Valoración económica.', en: 'Net worth: components and valuation. Economic valuation.' } },
+        { num: 68, bloc: 'h', title: { val: "Anàlisi d'estats comptables. Estructura. Anàlisi econòmic i financer. Ràtios.", es: 'Análisis de estados contables. Análisis económico y financiero. Ratios.', en: 'Financial statement analysis. Ratios.' } },
+        { num: 69, bloc: 'h', title: { val: "Balanç Social de l'Empresa. Auditoria social. Instrument de gestió.", es: 'Balance Social. Auditoría social. Instrumento de gestión.', en: 'Social Balance Sheet. Social audit.' } },
+        { num: 70, bloc: 'h', title: { val: "Concepcions d'un curs bàsic d'Economia a Batxillerat. Aproximació raonada. Mètodes expositius i d'indagació.", es: 'Concepciones del curso de Economía en Bachillerato. Aproximación razonada. Métodos.', en: 'Approaches to Economics teaching. Reasoned approach. Methods.' } },
+        { num: 71, bloc: 'h', title: { val: "Disseny i desenvolupament d'un projecte empresarial com a metodologia didàctica.", es: 'Diseño y desarrollo de un proyecto empresarial como metodología didáctica.', en: 'Business project as teaching methodology.' } },
     ];
 
     // ─── Suposits data ─────────────────────────────────────────────
     const supositsCategories = [
-        { id: 'micro', icon: '\u{1F4C8}', gradient: 'from-pink-500 to-rose-500', bgLight: 'bg-pink-50', border: 'border-pink-200' },
-        { id: 'macro', icon: '\u{1F3DB}', gradient: 'from-blue-500 to-indigo-500', bgLight: 'bg-blue-50', border: 'border-blue-200' },
-        { id: 'empresa', icon: '\u{1F3E2}', gradient: 'from-amber-500 to-orange-500', bgLight: 'bg-amber-50', border: 'border-amber-200' },
-        { id: 'inter', icon: '\u{1F30D}', gradient: 'from-green-500 to-emerald-500', bgLight: 'bg-green-50', border: 'border-green-200' },
-        { id: 'pedagogia', icon: '\u{1F393}', gradient: 'from-violet-500 to-purple-500', bgLight: 'bg-violet-50', border: 'border-violet-200' },
+        { id: 'micro', icon: '\u{1F4C8}', gradient: 'from-pink-500 to-rose-500', bgLight: 'bg-pink-50', border: 'border-pink-200', count: 9 },
+        { id: 'macro', icon: '\u{1F3DB}', gradient: 'from-blue-500 to-indigo-500', bgLight: 'bg-blue-50', border: 'border-blue-200', count: 8 },
+        { id: 'finances', icon: '\u{1F4B0}', gradient: 'from-emerald-500 to-teal-500', bgLight: 'bg-emerald-50', border: 'border-emerald-200', count: 8 },
+        { id: 'empresa', icon: '\u{1F3E2}', gradient: 'from-amber-500 to-orange-500', bgLight: 'bg-amber-50', border: 'border-amber-200', count: 8 },
+        { id: 'comptabilitat', icon: '\u{1F4D2}', gradient: 'from-teal-500 to-cyan-500', bgLight: 'bg-teal-50', border: 'border-teal-200', count: 9 },
+        { id: 'comerc', icon: '\u{1F30D}', gradient: 'from-blue-500 to-indigo-500', bgLight: 'bg-blue-50', border: 'border-blue-200', count: 6 },
+        { id: 'treball', icon: '\u{1F465}', gradient: 'from-indigo-500 to-violet-500', bgLight: 'bg-indigo-50', border: 'border-indigo-200', count: 4 },
+        { id: 'organitzacio', icon: '\u{1F9E0}', gradient: 'from-violet-500 to-purple-500', bgLight: 'bg-violet-50', border: 'border-violet-200', count: 8 },
     ];
 
     // ─── CCAA data ─────────────────────────────────────────────────
@@ -689,7 +700,7 @@ function OposicionsApp() {
                     <div className="flex items-center justify-between">
                         <div>
                             <h3 className="text-xl font-bold">📝 {t('sup.title')}</h3>
-                            <p className="text-teal-100 mt-1">{idioma === 'es' ? '37 ejercicios interactivos con solución paso a paso' : idioma === 'en' ? '37 interactive exercises with step-by-step solutions' : '37 exercicis interactius amb solució pas a pas'}</p>
+                            <p className="text-teal-100 mt-1">{idioma === 'es' ? '60 ejercicios interactivos con solución paso a paso' : idioma === 'en' ? '60 interactive exercises with step-by-step solutions' : '60 exercicis interactius amb solució pas a pas'}</p>
                             <p className="text-teal-200 text-sm mt-1">{idioma === 'es' ? 'Micro · Macro · Mat. Financieras · Empresa · Contabilidad · Comercio · Trabajo · Organización' : idioma === 'en' ? 'Micro · Macro · Financial Math · Business · Accounting · Trade · Labour · Organization' : 'Micro · Macro · Mat. Financeres · Empresa · Comptabilitat · Comerç · Treball · Organització'}</p>
                         </div>
                         <span className="text-3xl">→</span>
@@ -707,7 +718,7 @@ function OposicionsApp() {
                                         <div className="flex items-center gap-2">
                                             <h3 className="text-lg font-bold text-gray-800">{t('sup.' + cat.id)}</h3>
                                             <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-semibold">
-                                                5 {idioma === 'es' ? 'ejercicios' : idioma === 'en' ? 'exercises' : 'exercicis'}
+                                                {cat.count} {idioma === 'es' ? 'ejercicios' : idioma === 'en' ? 'exercises' : 'exercicis'}
                                             </span>
                                         </div>
                                         <p className="text-sm text-gray-600 mt-2">{t('sup.' + cat.id + '.desc')}</p>
