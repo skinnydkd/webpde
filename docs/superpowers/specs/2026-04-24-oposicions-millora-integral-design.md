@@ -221,15 +221,15 @@ Per a blocs infra-desenvolupats, el subagent **preserva** el text existent i l'e
 
 | Bloc | Temes | Línies actuals | Línies target | Sessions |
 |---|---:|---:|---:|---:|
-| **C** (20–31) | 12 | 295 | ~2400 | 2–3 |
+| **C** (20–26) | 7 | 295 | ~1400 | 1–2 |
 | **H** (66–71) | 6 | 302 | ~1200 | 1 |
 | **A** (1–10) | 10 | 457 | ~2000 | 2 |
 | **B** (11–19) | 9 | 1172 | ~1800 | 1 (polida) |
-| **D** (32–39) | 8 | 1307 | ~1600 | 1 (polida) |
-| **E** (40–49) | 10 | 2499 | ~2200 | 1 (polida) |
-| **F** (50–58) | 9 | 1784 | ~1800 | 1 (polida) |
-| **G** (59–65) | 7 | 2168 | ~1800 | 1 (polida) |
-| **TOTAL** | 71 | ~10.000 | ~14.400 | **10–11** |
+| **D** (27–37) | 11 | 1307 | ~2200 | 1 (polida) |
+| **E** (38–48) | 11 | 2499 | ~2200 | 1 (polida) |
+| **F** (49–56) | 8 | 1784 | ~1800 | 1 (polida) |
+| **G** (57–65) | 9 | 2168 | ~1800 | 1 (polida) |
+| **TOTAL** | 71 | ~10.000 | ~14.400 | **9–10** |
 
 Cada bloc genera **1 PR**. Entre sessions del mateix bloc la branca es manté viva; merge només quan el bloc està complet i validat.
 
@@ -287,8 +287,8 @@ Checklist que Pau aplica a cada PR:
 | `scripts/audit-bloc.py` | **CREAR** |
 | `oposicions-bloc-a.html` | **EXPANDIR** (~457 → ~2000 lín) |
 | `oposicions-bloc-b.html` | **POLIR** (1172 → ~1800 lín) |
-| `oposicions-bloc-c.html` | **EXPANDIR** (295 → ~2400 lín) |
-| `oposicions-bloc-d.html` | **POLIR** (1307 → ~1600 lín) |
+| `oposicions-bloc-c.html` | **EXPANDIR** (295 → ~1400 lín) |
+| `oposicions-bloc-d.html` | **POLIR** (1307 → ~2200 lín) |
 | `oposicions-bloc-e.html` | **POLIR** (2499 → ~2200 lín) |
 | `oposicions-bloc-f.html` | **POLIR** (1784 → ~1800 lín) |
 | `oposicions-bloc-g.html` | **POLIR** (2168 → ~1800 lín) |
